@@ -519,11 +519,12 @@ class DispatcherController extends FrontController
                     'Authorization: key=' . $from,
                     'Content-Type: application/json',
                 ];
+                $body =  str_replace('{order_id}', $orderData->order_number, $notification_content->content);
                 $data = [
                     "registration_ids" => $devices,
                     "notification" => [
                         'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
+                        'body'  => $body,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => route('cancel-order.requests'),
@@ -531,7 +532,7 @@ class DispatcherController extends FrontController
                     ],
                     "data" => [
                         'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
+                        'body'  => $body,
                         'data' => $orderData,
                         'type' => "order_cancellation_request"
                     ],
