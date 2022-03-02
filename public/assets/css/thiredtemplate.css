@@ -156,7 +156,7 @@ body .modal-content{overflow: hidden;}
 .al_new_wrapper_design .common-product-box:hover,
 .al_new_wrapper_design .product-box:hover,
 .al_new_wrapper_design .suppliers-box:hover {box-shadow: none;box-sizing: border-box;border: 1px solid transparent;}
-body #page-container .al_new_wrapper_design .footer-theme .sub-title .contact-list li span {
+body #page-container  #footer .footer-theme .sub-title .contact-list li span {
     padding-left: 0;
 }
 
