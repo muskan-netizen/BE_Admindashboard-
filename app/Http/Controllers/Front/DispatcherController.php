@@ -489,9 +489,10 @@ class DispatcherController extends FrontController
                 $order_cancel_request->save();
                 DB::commit();
                 
+                $order = Order::select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount', 'created_at')->find($checkiftokenExist->order_id);
                 $super_admin = User::where('is_superadmin', 1)->pluck('id');
                 // $user_vendors = UserVendor::where(['vendor_id' => $checkiftokenExist->vendor_id])->pluck('user_id');
-                $this->sendOrderCancelRequestNotification($super_admin, $checkiftokenExist);
+                $this->sendOrderCancelRequestNotification($super_admin, $order);
 
                 return $this->successResponse('', __('Request for order cancellation has been submitted'));
             }
