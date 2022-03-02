@@ -142,9 +142,10 @@ class OrderCancelRequestsController extends BaseController
             $vendor_id = $cancel_req->vendor_id;
             $order_vendor_id = $cancel_req->order_vendor_id;
             $client_preferences = ClientPreference::first();
+            $currentOrderStatus = OrderVendor::with('orderDetail', 'vendor')->where(['id'=>$order_vendor_id, 'vendor_id' => $vendor_id, 'order_id' => $order_id])->first();
+
             // If cancel order request has been approved
             if($status == 1){
-                $currentOrderStatus = OrderVendor::with('orderDetail', 'vendor')->where(['id'=>$order_vendor_id, 'vendor_id' => $vendor_id, 'order_id' => $order_id])->first();
                 if ($currentOrderStatus->order_status_option_id == 3) {
                     return $this->errorResponse(__('Order has already been rejected'), 422);
                 }
