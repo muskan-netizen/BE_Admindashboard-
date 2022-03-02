@@ -123,7 +123,7 @@ function getClientPreferenceDetail()
 function getClientDetail()
 {
     $clientData = ClientData::first();
-    $clientData->logo_image_url = $clientData ? $clientData->logo['image_fit'].'150/92'.$clientData->logo['image_path'] : " ";
+    $clientData->logo_image_url = $clientData ? $clientData->logo['original'] : ' ';
     return $clientData;
 }
 function getRazorPayApiKey()
@@ -697,7 +697,6 @@ function getDollarCompareAmount($amount, $customerCurrency='')
 function decimal_format($number,$format="")
 {
     $preference = session()->get('preferences');
-    $digits = $preference['digit_after_decimal'];
+    $digits = $preference['digit_after_decimal'] ?? 2;
     return number_format($number,$digits,'.',$format);
-
 }

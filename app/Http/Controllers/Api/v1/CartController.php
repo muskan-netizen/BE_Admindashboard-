@@ -343,7 +343,7 @@ class CartController extends BaseController
                 }
                 $cart->variant_price = $variant_price;
                 $cart->addon_set = $addon_set;
-                $cart->total_variant_price = number_format($cart->quantity * $variant_price, 2, '.', '');
+                $cart->total_variant_price = decimal_format($cart->quantity * $variant_price);
 
                 if($cart->vendor->show_slot == 0){
                     if( ($cart->vendor->slotDate->isEmpty()) && ($cart->vendor->slot->isEmpty()) ){
@@ -715,8 +715,8 @@ class CartController extends BaseController
                                     $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
                                     if (!empty($deliver_charge) && $delivery_count == 0) {
                                         $delivery_count = 1;
-                                        $prod->deliver_charge = number_format($deliver_charge, 2, '.', '');
-                                        $payable_amount = $payable_amount + $deliver_charge;
+                                        $prod->deliver_charge = decimal_format($deliver_charge);
+                                       // $payable_amount = $payable_amount + $deliver_charge;
                                         $order_sub_total = $order_sub_total + $deliver_charge;
                                         $delivery_fee_charges = $deliver_charge;
                                     }
@@ -999,7 +999,7 @@ class CartController extends BaseController
             $cart->closed_store_order_scheduled = 0;
         }
 
-        $cart->total_service_fee = number_format($total_service_fee, 2, '.', '');
+        $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
         // $cart->gross_paybale_amount = $total_paying;
@@ -1043,9 +1043,9 @@ class CartController extends BaseController
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
         $cart->tip = array(
-            ['label' => '5%', 'value' => number_format((0.05 * $cart->total_payable_amount), 2, '.', '')],
-            ['label' => '10%', 'value' => number_format((0.1 * $cart->total_payable_amount), 2, '.', '')],
-            ['label' => '15%', 'value' => number_format((0.15 * $cart->total_payable_amount), 2, '.', '')]
+            ['label' => '5%', 'value' => decimal_format(0.05 * $cart->total_payable_amount)],
+            ['label' => '10%', 'value' => decimal_format(0.1 * $cart->total_payable_amount)],
+            ['label' => '15%', 'value' => decimal_format(0.15 * $cart->total_payable_amount)]
         );
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;
@@ -1312,7 +1312,7 @@ class CartController extends BaseController
                                     $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
                                     if (!empty($deliver_charge) && $delivery_count == 0) {
                                         $delivery_count = 1;
-                                        $prod->deliver_charge = number_format($deliver_charge, 2, '.', '');
+                                        $prod->deliver_charge = decimal_format($deliver_charge);
                                         $payable_amount = $payable_amount + $deliver_charge;
                                         $order_sub_total = $order_sub_total + $deliver_charge;
                                         $delivery_fee_charges = $deliver_charge;
@@ -1521,7 +1521,7 @@ class CartController extends BaseController
                 $cart->slots = [];
             }
 
-        $cart->total_service_fee = number_format($total_service_fee, 2, '.', '');
+        $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
         // $cart->gross_paybale_amount = $total_paying;
@@ -1560,9 +1560,9 @@ class CartController extends BaseController
         $cart->deliver_status = $delivery_status;
         $cart->loyalty_amount = $loyalty_amount_saved;
         $cart->tip = array(
-            ['label' => '5%', 'value' => number_format((0.05 * $cart->total_payable_amount), 2, '.', '')],
-            ['label' => '10%', 'value' => number_format((0.1 * $cart->total_payable_amount), 2, '.', '')],
-            ['label' => '15%', 'value' => number_format((0.15 * $cart->total_payable_amount), 2, '.', '')]
+            ['label' => '5%', 'value' => decimal_format(0.05 * $cart->total_payable_amount)],
+            ['label' => '10%', 'value' => decimal_format(0.1 * $cart->total_payable_amount)],
+            ['label' => '15%', 'value' => decimal_format(0.15 * $cart->total_payable_amount)]
         );
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;

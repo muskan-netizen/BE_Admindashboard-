@@ -63,7 +63,7 @@ class UserController extends BaseController
     public function getFilterData(Request $request)
     {
         $current_user = Auth::user();
-        $users = User::withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
+        $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
 
         return Datatables::of($users)
             ->addColumn('edit_url', function($users) {
@@ -93,6 +93,19 @@ class UserController extends BaseController
             })
             ->addColumn('wallet', function($users) {
                 return $users->wallet;
+            })
+            ->addColumn('signup_date', function($users) {
+                $date = dateTimeInUserTimeZone($users->created_at, $users->timezone);
+                return explode(' ',$date)[0] ; 
+            })
+            ->addColumn('last_login', function($users) {
+                return is_null($users->last_login_at) ? ' - ' : dateTimeInUserTimeZone($users->last_login_at, $users->timezone);
+            })
+            ->addColumn('total_order_value', function($users) {
+                return decimal_format($users->orders->sum('total_amount'));
+            })
+            ->addColumn('total_discount_value', function($users) {
+                return decimal_format($users->orders->sum('total_discount'));
             })
             ->addColumn('login_type_value', function($users) {
                 if (!empty($users->facebook_auth_id)) {

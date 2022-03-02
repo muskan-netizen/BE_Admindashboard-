@@ -30,7 +30,7 @@ $timezone = Auth::user()->timezone;
 $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
 }
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
-$urlImg =  $clientData ? $clientData->logo['image_fit'].'150/92'.$clientData->logo['image_path'] : " ";
+$urlImg = $clientData ? $clientData->logo['original'] : ' ';
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
@@ -198,6 +198,20 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <% } %>
                             <% }); %>
                         <% } %>
+
+                        <% if(vendor_product.pvariant.container_charges > 0){%>
+                            <div class="row">
+                                <div class="col-md-3 col-sm-4 items-details text-left">
+                                    <p class="p-0 m-0 alert-danger">{{ __('Container Charges') }} *</p>
+                                </div>
+                                <div class="col-md-2 col-sm-4 text-center">
+                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.container_charges) %></div>
+                                </div>
+                                <div class="col-md-7 col-sm-4 text-right">
+                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_container_charges) %></div>
+                                </div>
+                            </div>
+                        <% } %>
                     </div>
 
                     <% if( (vendor_product.product.delay_order_time.delay_order_hrs != undefined && vendor_product.product.delay_order_time.delay_order_min != undefined ) &&  ((vendor_product.product.delay_order_time.delay_order_hrs != 0) || (vendor_product.product.delay_order_time.delay_order_hrs != 0))) { %>
@@ -336,16 +350,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
         </div>
         <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
-            <div class="row">
-                <div class="col-6">{{__('Total')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
-            </div>
-            <hr class="my-2">
-            <div class="row">
-                <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_taxable_amount) %></div>
-            </div>
-            <hr class="my-2">
             <% if(cart_details.total_service_fee > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>
@@ -353,6 +357,25 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <hr class="my-2">
             <% } %>
+            
+            <% if(cart_details.total_container_charges > 0) { %>
+                <div class="row">
+                    <div class="col-6">{{__('Total Container Charges')}}</div>
+                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_container_charges) %></div>
+                </div>
+                <hr class="my-2">
+            <% } %>
+            <div class="row">
+                <div class="col-6">{{__('Tax')}}</div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_taxable_amount) %></div>
+            </div>
+            <hr class="my-2">
+            <div class="row">
+                <div class="col-6">{{__('Total')}}</div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
+            </div>
+            <hr class="my-2">
+           
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
