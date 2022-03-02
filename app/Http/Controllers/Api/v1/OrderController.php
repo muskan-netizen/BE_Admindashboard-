@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
+use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
 use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\OrderTrait;
 
@@ -207,8 +207,14 @@ class OrderController extends BaseController
                                 }
                             }
                             if ($action == 'delivery') {
-                                if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) {
-                                    $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
+                                $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
+                                if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1) || isset($deliver_fee_data)) {
+                                    $order_vendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type??'D';
+                                    $order_vendor->courier_id = $deliver_fee_data->courier_id??0;
+
+                                    if($deliver_fee_data)
+                                    $delivery_fee  = $deliver_fee_data->delivery_fee??0.00;
+
                                     if (!empty($delivery_fee) && $delivery_count == 0) {
                                         $delivery_count = 1;
                                         $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2, '.', '');

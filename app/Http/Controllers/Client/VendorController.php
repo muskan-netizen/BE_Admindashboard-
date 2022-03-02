@@ -1007,7 +1007,8 @@ class VendorController extends BaseController
                 $vendor->save();
                 return redirect()->back()->with('success', $msg . ' successfully!');
              }
-             return redirect()->back()->with('error_delete',$save->errors->address[0]);
+            // dd($save);
+             return redirect()->back()->with('error_delete',$save->message);
         }
 
     }

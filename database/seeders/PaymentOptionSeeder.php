@@ -34,6 +34,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '18', 'path' => 'academe/omnipay-authorizenetapi', 'code' => 'authorize_net', 'title' => 'Authorize.net', 'off_site' => '1', 'status' => '0'),
         array('id' => '19', 'path' => 'omnipay/stripe', 'code' => 'stripe_fpx', 'title' => 'Stripe FPX', 'off_site' => '1', 'status' => '0'),
         array('id' => '20', 'path' => 'kongapay/pay', 'code' => 'kongapay', 'title' => 'KongaPay', 'off_site' => '1', 'status' => '0'),
+        array('id' => '21', 'path' => 'vivawallet/pay', 'code' => 'viva_wallet', 'title' => 'Viva Wallet', 'off_site' => '1', 'status' => '0'),
       ); 
  
       if($option_count == 0)
