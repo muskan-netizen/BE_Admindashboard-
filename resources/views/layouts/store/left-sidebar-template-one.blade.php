@@ -152,7 +152,7 @@ $pages = \App\Models\Page::with([
             <div class="col-lg-12">
                <div class="row mobile-header align-items-center justify-content-between my-sm-2">
                   <div class="logo ">
-                     <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" href="{{route('userHome')}}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
+                     <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" href="{{route('userHome')}}"><img style="height:60px" class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                   </div>
                   <div class="al_count_tabs">
                      @if($mod_count > 1)
