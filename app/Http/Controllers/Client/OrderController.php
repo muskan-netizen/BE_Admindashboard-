@@ -193,7 +193,7 @@ class OrderController extends BaseController
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    });
+                    })->with('vendors.acceptedBy');
 
                     break;
                 case 'orders_history':
@@ -205,7 +205,7 @@ class OrderController extends BaseController
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    })->with('vendors.cancelledBy');
+                    })->with('vendors.cancelledBy','vendors.acceptedBy');
 
                     break;
             }
@@ -396,7 +396,7 @@ class OrderController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function changeStatus(Request $request, $domain = '')
+    public function changeStatus(Request $request, $domain = '') 
     {
 
         DB::beginTransaction();
@@ -445,6 +445,10 @@ class OrderController extends BaseController
                         //Create Shipping place order request for Ahoy Masa
                         $order_dunzo = $this->placeOrderRequestAhoy($request);
                     }
+                    $orderData->accepted_by = Auth::user()->id;
+                    $orderData->save();
+
+
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
 

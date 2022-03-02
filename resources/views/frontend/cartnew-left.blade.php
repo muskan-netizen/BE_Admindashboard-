@@ -140,7 +140,7 @@
 
                 <div class="form-row mb-3">
                     <div class="col-md-6 mb-3">
-                        <label for="house_number">{{ __('House / Apartment/ Flat number') }}</label>
+                        <label for="house_number">{{ __('House / Apartment/ Flat No.') }}</label>
                         <input type="text" class="form-control" id="house_number" placeholder="{{ __('House / Apartment/ Flat number') }}" name="house_number" >
                         <span class="text-danger" id="house_number_error"></span>
                     </div>

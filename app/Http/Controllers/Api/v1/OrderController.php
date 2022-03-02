@@ -217,7 +217,7 @@ class OrderController extends BaseController
 
                                     if (!empty($delivery_fee) && $delivery_count == 0) {
                                         $delivery_count = 1;
-                                        $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2, '.', '');
+                                        $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
                                         // $payable_amount = $payable_amount + $delivery_fee;
                                         $delivery_fee_charges = $delivery_fee;
                                         $latitude = $request->header('latitude');
@@ -398,7 +398,7 @@ class OrderController extends BaseController
                     if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
                         $tip_amount = $request->tip;
                         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
-                        $order->tip_amount = number_format($tip_amount, 2);
+                        $order->tip_amount = decimal_format($tip_amount);
                     }
                     $payable_amount = $payable_amount + $tip_amount ;
                     $order->total_service_fee = $total_service_fee;
@@ -1160,9 +1160,9 @@ class OrderController extends BaseController
                 $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
                 $order->tip_amount = $order->tip_amount;
                 $order->tip = array(
-                    ['label' => '5%', 'value' => number_format((0.05 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')],
-                    ['label' => '10%', 'value' => number_format((0.1 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')],
-                    ['label' => '15%', 'value' => number_format((0.15 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')]
+                    ['label' => '5%', 'value' => decimal_format(0.05 * ($order->payable_amount - $order->total_discount_calculate))],
+                    ['label' => '10%', 'value' => decimal_format(0.1 * ($order->payable_amount - $order->total_discount_calculate))],
+                    ['label' => '15%', 'value' => decimal_format(0.15 * ($order->payable_amount - $order->total_discount_calculate))]
                 );
                 foreach ($order->vendors as $vendor) {
                     $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order_id)->where('vendor_id', $vendor->vendor->id)->orderBy('id', 'DESC')->first();
@@ -1463,7 +1463,7 @@ class OrderController extends BaseController
                                         $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
                                         if (!empty($delivery_fee) && $delivery_count == 0) {
                                             $delivery_count = 1;
-                                            $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2, '.', '');
+                                            $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
                                             // $payable_amount = $payable_amount + $delivery_fee;
                                             $delivery_fee_charges = $delivery_fee;
                                             $latitude = $request->header('latitude');
