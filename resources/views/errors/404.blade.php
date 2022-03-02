@@ -117,7 +117,7 @@ svg {
     top: 0;
     width: 100%;
     padding: 20px;
-    background-color: #FA1C0A;
+    background-color: {{getClientPreferenceDetail()->web_color}};
     color: #fff;
     z-index: 1;
 }
