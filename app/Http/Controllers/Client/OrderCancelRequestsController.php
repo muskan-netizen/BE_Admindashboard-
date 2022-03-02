@@ -110,10 +110,10 @@ class OrderCancelRequestsController extends BaseController
                     $search = $request->get('search');
                     $instance->where(function($query) use($search) {
                         $query->where('reject_reason', 'LIKE', '%'.$search.'%')
-                        ->orWhereHas('order', function($q){
+                        ->orWhereHas('order', function($q) use($search){
                             $q->where('order_number', 'LIKE', '%'.$search.'%');
                         })
-                        ->orWhereHas('order_vendor.vendor', function($q){
+                        ->orWhereHas('order_vendor.vendor', function($q) use($search){
                             $q->where('name', 'LIKE', '%'.$search.'%');
                         });
                     });
