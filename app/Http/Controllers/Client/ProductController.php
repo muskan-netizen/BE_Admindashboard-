@@ -423,7 +423,7 @@ class ProductController extends BaseController
                         $variantData->title             = $request->variant_titles[$key];
                         $variantData->price             = $request->variant_price[$key];
                         $variantData->compare_at_price  = $request->variant_compare_price[$key];
-                        $variantData->container_charges  = $request->container_charges[$key];
+                        $variantData->container_charges  = $request->container_charges[$key]??"";
                         $variantData->cost_price        = $request->variant_cost_price[$key];
                         $variantData->quantity          = $request->variant_quantity[$key];
                         $variantData->tax_category_id   = $request->tax_category;
