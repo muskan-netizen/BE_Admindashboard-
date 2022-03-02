@@ -184,7 +184,7 @@
 												<% if(vendor.vendor_id==product.vendor_id){%>
 													<li class="text-center"> <img class="blur-up lazyload" data-src="<%=product.image_url %>" alt="" title=""> <span class="item_no position-absolute">x <%=product.quantity %></span>
 														<label class="items_price">{{Session::get('currencySymbol')}}
-															<%=product.price * product.pricedoller_compare %>
+															<%= Helper.formatPrice(product.price * product.pricedoller_compare) %>
 														</label>
 													</li>
 													<% product_total_price=product.price * product.doller_compare; product_total_count +=product.quantity * product_total_price; product_taxable_amount +=product.taxable_amount; total_tax_order_price +=product.taxable_amount; %>
@@ -195,14 +195,14 @@
 									<div class="col-md-5 mt-md-0 mt-sm-2">
 										<ul class="price_box_bottom m-0 p-0">
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Product Total')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.subtotal_amount)%></span> </li>
+												<label class="m-0">{{__('Product Total')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.subtotal_amount) %></span> </li>
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Coupon Discount')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.discount_amount)%></span> </li>
+												<label class="m-0">{{__('Coupon Discount')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.discount_amount) %></span> </li>
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Delivery Fee')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.delivery_fee)%></span> </li>
+												<label class="m-0">{{__('Delivery Fee')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.delivery_fee) %></span> </li>
 											<li class="grand_total d-flex align-items-center justify-content-between">
 												<label class="m-0">{{__('Amount')}}</label>
-												<% product_subtotal_amount=product_total_count - vendor.discount_amount + vendor.delivery_fee; subtotal_order_price +=product_subtotal_amount; %> <span>{{Session::get('currencySymbol')}}<%=(vendor.payable_amount)%></span> </li>
+												<% product_subtotal_amount=product_total_count - vendor.discount_amount + vendor.delivery_fee; subtotal_order_price +=product_subtotal_amount; %> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.payable_amount) %></span> </li>
 										</ul>
 									</div>
 								</div>
@@ -210,7 +210,7 @@
 					<% }); %>
 						<% }); %>
 </script>
-<section class="section-b-space p-t-0 pt-4 ratio_asos">
+<section class="section-b-space p-t-0 pt-4 ratio_asos  shimmer_effect">
 	<div class="container mb-5 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">
@@ -334,7 +334,7 @@
 
 	</div>
 
-	
+
 	</div>
 </section>
 
@@ -346,11 +346,11 @@
 
 
 <section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div">
-	<div class="vendors"> 
-		@foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery') 
+	<div class="vendors">
+		@foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery')
 		@if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
-		 @include('frontend.booking.cabbooking-single-module') @endif 
-		 @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') 
+		 @include('frontend.booking.cabbooking-single-module') @endif
+		 @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page')
 		 @elseif($homePageLabel->slug == 'brands')
 		<section class="popular-brands left-shape_ position-relative">
 			<!-- <div class="container ">
@@ -404,14 +404,14 @@
 					<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
 			</div>
 			<div class="row">
-				<div class="col-12"> 
+				<div class="col-12">
 					@if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
 					<div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
 					@elseif($homePageLabel->slug=='recent_orders')
 					<div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
 					@else
 					<div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
-					@endif 
+					@endif
 				</div>
 			</div>
 		</section> @endif @endforeach </div>
@@ -449,6 +449,6 @@
 </div>
 @endsection @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script src="{{asset('front-assets/js/fly-cart.js')}}"></script> 
+<script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/less@4"></script>
 @endsection

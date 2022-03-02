@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag};
+use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -31,6 +31,7 @@ class ClientPreferenceController extends BaseController{
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         $driver_registration_documents = DriverRegistrationDocument::with('primary')->get();
 
+      
         $last_mile_teams = [];
         $laundry_teams = [];
         # if last mile on
@@ -46,7 +47,22 @@ class ClientPreferenceController extends BaseController{
 
         $tags = Tag::with('primary')->get();
         $slots = ClientSlot::get();
-        return view('backend/setting/config')->with(['tags' => $tags,'slots'=>$slots,'laundry_teams' => $laundry_teams,'last_mile_teams' => $last_mile_teams,'client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'driver_registration_documents' => $driver_registration_documents, 'file_types_driver' => $file_types_driver]);
+        return view('backend/setting/config')->with([
+                                                'tags' => $tags,
+                                                'slots'=>$slots,
+                                                'laundry_teams' => $laundry_teams,
+                                                'last_mile_teams' => $last_mile_teams,
+                                                'client' => $client,
+                                                'preference' => $preference,
+                                                'mapTypes'=> $mapTypes,
+                                                'smsTypes' => $smsTypes, 
+                                                'client_languages' => $client_languages,
+                                                'file_types' => $file_types,
+                                                'vendor_registration_documents' => $vendor_registration_documents,
+                                               
+                                                'driver_registration_documents' => $driver_registration_documents, 
+                                                'file_types_driver' => $file_types_driver
+                                            ]);
     }
 
     public function getCustomizePage(ClientPreference $clientPreference){
@@ -76,6 +92,9 @@ class ClientPreferenceController extends BaseController{
         }
         $tags = Tag::with('primary')->get();
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
+
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+
         if($preference->reffered_by_amount == null){
             $reffer_by = 0;
         }else{
@@ -86,12 +105,13 @@ class ClientPreferenceController extends BaseController{
         }else{
             $reffer_to = $preference->reffered_to_amount;
         }
+       // pr($user_registration_documents->toArray());
         $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
                     ->where('client_languages.client_code', Auth::user()->code)
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
-        return view('backend.setting.customize', compact('client','nomenclature_value','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to'));
     }
 
     public function referandearnUpdate(Request $request, $code){
@@ -114,14 +134,13 @@ class ClientPreferenceController extends BaseController{
      */
     public function update(Request $request, $code){
 
-
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(!$preference){
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes');
+        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes');
 
         foreach ($request->all() as $key => $value) {
             if(!in_array($key, $keyShouldNot)){
@@ -192,10 +211,13 @@ class ClientPreferenceController extends BaseController{
         if($request->has('verify_config') && $request->verify_config == '1'){
             $preference->verify_email = ($request->has('verify_email') && $request->verify_email == 'on') ? 1 : 0;
             $preference->verify_phone = ($request->has('verify_phone') && $request->verify_phone == 'on') ? 1 : 0;
+        }
+        if($request->has('verify_vendor_type') && $request->verify_vendor_type == '1')
+        {
             if((!$request->has('dinein_check') && !$request->dinein_check == 'on')
                 && (!$request->has('takeaway_check') && !$request->dinein_check == 'on')
                 && (!$request->has('delivery_check') && !$request->dinein_check == 'on')){
-                    return redirect()->route('configure.index')->with('error', 'One Option must be acitve');
+                    return redirect()->route('configure.customize')->with('error', 'One Option must be acitve');
             }
             $preference->dinein_check = ($request->has('dinein_check') && $request->dinein_check == 'on') ? 1 : 0;
             $preference->takeaway_check = ($request->has('takeaway_check') && $request->takeaway_check == 'on') ? 1 : 0;

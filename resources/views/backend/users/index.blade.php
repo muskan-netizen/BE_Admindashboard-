@@ -96,6 +96,7 @@
                                     <th>{{ __('Image')}}</th>
                                     <th>{{ __('Name')}}</th>
                                     <th>{{ __('Login Type') }}</th>
+                                    <th>{{ __('Signup Date')}}</th>
                                     <th>{{ __('Email/Auth-id')}}</th>
                                     <th>{{ __('Phone')}}</th>
                                     <th>{{ __("Email OTP") }}</th>
@@ -232,6 +233,12 @@
                         {
                             data: 'login_type',
                             name: 'login_type',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'signup_date',
+                            name: 'signup_date',
                             orderable: false,
                             searchable: false
                         },

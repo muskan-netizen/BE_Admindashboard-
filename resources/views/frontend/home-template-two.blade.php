@@ -1,28 +1,22 @@
 @extends('layouts.store', ['title' => __('Home')])
 
 @section('content')
+
+
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
 <section class="home-slider-wrapper pt-md-3" data-aos="zoom-in">
 	<div class="container">
 		<div id="myCarousel" class="carousel slide" data-ride="carousel">
-			<div class="carousel-inner">
+			<div class="carousel-inner slides2" data-visible="2">
 				@foreach($banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
-					@if($key == 0)
-					<div class="carousel-item active">
-					<a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
-					</a>
+					<div class="carousel-item {{$key == 0 ? 'active' : ''}}">
+						<a class="banner-img-outer" href="{{$url??'#'}}">
+							<img alt="" title="" class="blur-up lazyload w-100" src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+						</a>
 					</div>
-					@else
-					<div class="carousel-item ">
-					<a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
-					</a>
-					</div>
-					@endif
 				@endforeach
 
 			</div>
@@ -35,10 +29,151 @@
 				<span class="sr-only">Next</span>
 			</a>
 		</div>
+
 	</div>
 </section>
- @endif
 
+ @endif
+<!-- shimmer_effect start -->
+<section class="section-b-space_  p-0 ratio_asos">
+	<div class="container mb-5 shimmer_effect">
+		<div class="row">
+			<div class="col-12 cards">
+				<h2 class="h2-heading loading mb-3"></h2> </div>
+		</div>
+		<div class="grid-row grid-4-4">
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+		</div>
+
+		<div class="grid-row grid-4-4">
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+		</div>
+
+	</div>
+
+
+	</div>
+</section>
+<!-- shimmer_effect end -->
+<!-- no-store-wrapper start -->
+<section class="no-store-wrapper mb-3 d-none" >
+	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
+		<div class="row">
+			<div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur-up lazyload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>
+		</div>
+		<div class="row">
+			<div class="col-12 text-center mt-2">
+				<h4>{{__('There are no stores available in your area currently.')}}</h4> </div>
+		</div> @endif </div>
+</section><!-- no-store-wrapper end -->
  <!-- vendors_template start -->
 <script type="text/template" id="vendors_template" data-aos="zoom-in">
 	<% _.each(vendors, function(vendor, k){%>
@@ -199,7 +334,7 @@
 												<% if(vendor.vendor_id==product.vendor_id){%>
 													<li class="text-center"> <img class="blur-up lazyload" data-src="<%=product.image_url %>" alt="" title=""> <span class="item_no position-absolute">x <%=product.quantity %></span>
 														<label class="items_price">{{Session::get('currencySymbol')}}
-															<%=product.price * product.pricedoller_compare %>
+															<%= Helper.formatPrice(product.price * product.pricedoller_compare) %>
 														</label>
 													</li>
 													<% product_total_price=product.price * product.doller_compare; product_total_count +=product.quantity * product_total_price; product_taxable_amount +=product.taxable_amount; total_tax_order_price +=product.taxable_amount; %>
@@ -210,14 +345,14 @@
 									<div class="col-md-5 mt-md-0 mt-sm-2">
 										<ul class="price_box_bottom m-0 p-0">
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Product Total')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.subtotal_amount)%></span> </li>
+												<label class="m-0">{{__('Product Total')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.subtotal_amount) %></span> </li>
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Coupon Discount')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.discount_amount)%></span> </li>
+												<label class="m-0">{{__('Coupon Discount')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.discount_amount) %></span> </li>
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Delivery Fee')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.delivery_fee)%></span> </li>
+												<label class="m-0">{{__('Delivery Fee')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.delivery_fee) %></span> </li>
 											<li class="grand_total d-flex align-items-center justify-content-between">
 												<label class="m-0">{{__('Amount')}}</label>
-												<% product_subtotal_amount=product_total_count - vendor.discount_amount + vendor.delivery_fee; subtotal_order_price +=product_subtotal_amount; %> <span>{{Session::get('currencySymbol')}}<%=(vendor.payable_amount)%></span> </li>
+												<% product_subtotal_amount=product_total_count - vendor.discount_amount + vendor.delivery_fee; subtotal_order_price +=product_subtotal_amount; %> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.payable_amount) %></span> </li>
 										</ul>
 									</div>
 								</div>
@@ -226,135 +361,7 @@
 						<% }); %>
 </script><!-- recent_orders_template end -->
 
-<!-- shimmer_effect start -->
-<section class="section-b-space p-t-0 pt-4 ratio_asos">
-	<div class="container mb-5 shimmer_effect">
-		<div class="row">
-			<div class="col-12 cards">
-				<h2 class="h2-heading loading mb-3"></h2> </div>
-		</div>
-		<div class="grid-row grid-4-4">
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-		</div>
 
-		<div class="grid-row grid-4-4">
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-		</div>
-
-	</div>
-
-	
-	</div>
-</section>
-<!-- shimmer_effect end -->
 
 <!-- our_vendor_main_div start -->
 <section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div" data-aos="zoom-in">
@@ -409,18 +416,8 @@
 			</div>
 		</section> @endif @endforeach </div>
 </section><!-- our_vendor_main_div end -->
- 
-<!-- no-store-wrapper start -->
-<section class="no-store-wrapper mb-3" data-aos="zoom-in">
-	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
-		<div class="row">
-			<div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur-up lazyload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>
-		</div>
-		<div class="row">
-			<div class="col-12 text-center mt-2">
-				<h4>{{__('There are no stores available in your area currently.')}}</h4> </div>
-		</div> @endif </div>
-</section><!-- no-store-wrapper end -->
+
+
 
 <!-- age-restriction star -->
 <div class="modal age-restriction fade" id="age_restriction" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -452,10 +449,4 @@
 @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-<script type="text/javascript">
-	$(document).ready(function() {
-	  $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
-	  $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
-	});
-</script>
 @endsection

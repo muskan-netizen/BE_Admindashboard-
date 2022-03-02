@@ -7,7 +7,7 @@
 
 @section('content')
 
-<section class="wrapper-main py-lg-5">
+<section class="wrapper-main py-lg-5 d-flex align-items-center">
     <div class="container">
         <div class="row align-items-center h-100" id="login-section">
             <div class="col-lg-6 mb-lg-0 mb-3 text-center border-right pb-4 pb-sm-0">
@@ -159,6 +159,7 @@
         </form>
     </div>
 </section>
+
 @endsection
 @section('script')
 {{-- <script src="https://www.gstatic.com/firebasejs/5.5.9/firebase.js"></script> --}}

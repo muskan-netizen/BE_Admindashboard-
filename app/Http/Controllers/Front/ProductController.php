@@ -61,9 +61,8 @@ class ProductController extends FrontController{
                 $productVendorId = $product->vendor_id;
                 if(Session::has('vendors')){
                     $vendors = Session::get('vendors');
-                    if(is_array($vendors)){
-
-                    }
+                    if(is_array($vendors))
+                    $vendors = $vendors;
                     else
                     $vendors = $vendors->toArray();
 
@@ -343,7 +342,7 @@ class ProductController extends FrontController{
                 ->whereIn('id', $pv_ids)->get();
             if ($variantData) {
                 foreach($variantData as $variant){
-                    $variant->productPrice =  number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
+                    $variant->productPrice =  decimal_format(($variant->price * $clientCurrency->doller_compare));
                     // $variant->productPrice = Session::get('currencySymbol') . number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
                     // $sets[] = $availableSet->toArray();
                     // foreach($availableSet->groupBy('product_variant_id') as $avSets){

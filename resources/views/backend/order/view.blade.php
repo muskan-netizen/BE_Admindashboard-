@@ -1,8 +1,12 @@
 @extends('layouts.vertical', ['title' => 'Order Detail'])
 @section('css')
-<!-- <style>
-td { white-space:pre-line; word-break:break-all}
-</style> -->
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<style>
+/* td { white-space:pre-line; word-break:break-all} */
+#cancel-request-card{
+    background: #ddd;
+}
+</style>
 @endsection
 @section('content')
 @php
@@ -22,6 +26,26 @@ $timezone = Auth::user()->timezone;
 
             </div>
         </div>
+        
+        @if($order->vendors->first())
+            @if( ($order->vendors->first()->cancel_request) && ($order->vendors->first()->cancel_request->status == 'Pending') )
+            <div class="row">
+                <div class="col-lg-12 mb-3">
+                    <div class="card mb-0 h-100" id="cancel-request-card">
+                        <div class="card-body">
+                            <h4 class="header-title mb-3">{{__('Cancel Order Request')}}</h4>
+                            <button type="button" class="complete_request_btn btn btn-sm btn-info" title='Approve' data-status="1" data-id="{{$order->vendors->first()->cancel_request->id}}">
+                                <i class='fa fa-check mr-1'></i> Approve
+                            </button>
+                            <button type="button" class="complete_request_btn btn btn-sm btn-danger" title='Reject' data-status="2" data-id="{{$order->vendors->first()->cancel_request->id}}">
+                                <i class='fa fa-times mr-1'></i> Reject
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+        @endif
         <div class="row">
             <div class="col-lg-4 mb-3">
                 <div class="card mb-0 h-100">
@@ -240,6 +264,7 @@ $timezone = Auth::user()->timezone;
                                     @php
                                     $taxable_amount = $vendor->taxable_amount;
                                     $vendor_service_fee = $vendor->service_fee_percentage_amount;
+                                    $container_charges = $vendor->total_container_charges;
                                     $sub_total += $product->total_amount;
                                     $revenue += ($vendor->service_fee_percentage_amount + $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
@@ -276,58 +301,66 @@ $timezone = Auth::user()->timezone;
                                         </td>
                                         <td>{{ $product->quantity }}</td>
                                         <td>
-                                            {{$clientCurrency->currency->symbol}}@money($product->price)
+                                            {{$clientCurrency->currency->symbol}}{{decimal_format($product->price)}}
                                             @if($product->addon->isNotEmpty())
                                                 <hr class="my-2">
                                                 @foreach($product->addon as $addon)
-                                                    <p class="p-0 m-0">{{$clientCurrency->currency->symbol}}{{ $addon->option->price_in_cart }}</p>
+                                                    <p class="p-0 m-0">{{$clientCurrency->currency->symbol}}{{ decimal_format($addon->option->price_in_cart) }}</p>
                                                 @endforeach
                                             @endif
                                         </td>
 
-                                        <td>{{$clientCurrency->currency->symbol}}@money($product->total_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($product->total_amount)}}</td>
                                     </tr>
                                     @endif
                                     @endforeach
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{__('Delivery Fee')}} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->delivery_fee)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->delivery_fee)}}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Sub Total") }} :</th>
                                         <td>
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}@money($sub_total)</div>
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($sub_total)}}</div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{__('Total Discount')}} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->discount_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->discount_amount)}}</td>
                                     </tr>
 
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Estimated Tax") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($taxable_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($taxable_amount)}}</td>
                                     </tr>
                                     @if($vendor_service_fee > 0)
                                         <tr>
                                             <th scope="row" colspan="4" class="text-end">{{ __("Service Fee") }} :</th>
-                                            <td>{{$clientCurrency->currency->symbol}}@money($vendor_service_fee)</td>
+                                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor_service_fee)}}</td>
                                         </tr>
                                     @endif
+
+                                    @if($container_charges > 0)
+                                        <tr>
+                                            <th scope="row" colspan="4" class="text-end">{{ __("Container Charges") }} :</th>
+                                            <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
+                                        </tr>
+                                    @endif
+
                                     @if(Auth::user()->is_superadmin)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($revenue)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($revenue)}}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)}}</td>
                                     </tr>
                                     @endif
                                     @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Redemmed Loyality Points") }} :</th>
-                                        <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}@money($vendor->orderDetail->loyalty_amount_saved??0.00))</td>
+                                        <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
                                     </tr>
                                     @endif
                                     @if($vendor->reject_reason)
@@ -339,7 +372,7 @@ $timezone = Auth::user()->timezone;
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare)</div>
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -473,6 +506,7 @@ $timezone = Auth::user()->timezone;
 <!--End Order Invoice Code -->
 @endsection
 @section('script')
+<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
     $("#order_statuses li").click(function() {
         Swal.fire({
@@ -565,6 +599,60 @@ $timezone = Auth::user()->timezone;
             }
         });
     });
+
+    $(document).on('click', '.complete_request_btn', function(e) {
+        let id = $(this).attr('data-id');
+        let status = $(this).attr('data-status');
+        let title = $(this).attr('title');
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You really want to "+ title +" this request?",
+            icon: 'warning',
+            iconColor: '{{getClientPreferenceDetail()->web_color}}',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, '+ title + ' it!',
+            confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
+        }).then((result) => {
+            if(result.value)
+            {
+                $.ajax({
+                    type: "POST",
+                    data: {id: id, status: status},
+                    url: "{{ route('cancel-order.request.status.update') }}",
+                    headers: {Accept: "application/json"},
+                    success: function(response) {
+                        if (response.status == 'Success') {
+                            $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                            setTimeout(function(){location.reload();}, 2500);
+                        } else {
+                            Swal.fire({
+                                text: response.message,
+                                icon : "error",
+                                button: "OK",
+                            });
+                            return false;
+                        }
+                    },
+                    beforeSend: function(){
+                        $(".loader_box").show();
+                    },
+                    complete: function(){
+                        $(".loader_box").hide();
+                    },
+                    error: function(response) {
+                        let error = response.responseJSON;
+                        Swal.fire({
+                            text: error.message,
+                            icon : "error",
+                            button: "OK",
+                        });
+                        return false;
+                    }
+                });
+            }
+        });
+    });
+
     function printDiv()
     {
         var divToPrint=document.getElementById('al_print_area');

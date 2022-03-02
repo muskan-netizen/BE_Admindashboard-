@@ -341,4 +341,38 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
+
+
+$("#change_password").on("hidden.bs.modal", function(){
+    $('.pwd-msg').html("");
+    $('#change_password_form').trigger("reset");
+});
+
+
+$("#change_password_form").submit(function(e){
+   // return false;
+    e.preventDefault();
+    $('.pwd-msg').html("");
+    $.ajax({
+            url:"{{route('client.password.update')}}",
+            type:'POST',
+            data:$(this).serialize(),
+            dataType:'JSON',
+            success:function(result){
+                if(result.type=="error")
+                {
+                    var pwderror = '<span class="text-danger" role="alert"><strong>'+result.message+'</strong></span>';
+                    $('.pwd-msg').html(pwderror);                    
+                }else{
+                    var pwderror = '<span class="text-success" role="alert"><strong>'+result.message+'</strong></span>';
+                    $('.pwd-msg').html(pwderror);
+                    $('#change_password_form').trigger("reset");
+                    setTimeout(function () {                        
+                        $('#change_password').modal('toggle');
+                    }, 1000);
+                }
+            }
+
+    });
+});
 </script>

@@ -63,7 +63,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h3 class="page-title text-uppercase">{{__('Cart')}}</h3>
+                <h3 class="page-title text-uppercase mt-4">{{__('Cart')}}</h3>
             </div>
             <div class="cart_response mt-3 mb-3 d-none">
                 <div class="alert p-0" role="alert"></div>
@@ -197,6 +197,20 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 </div>
                             <% } %>
                             <% }); %>
+                        <% } %>
+
+                        <% if(vendor_product.pvariant.container_charges > 0){%>
+                            <div class="row">
+                                <div class="col-md-3 col-sm-4 items-details text-left">
+                                    <p class="p-0 m-0 alert-danger">{{ __('Container Charges') }} *</p>
+                                </div>
+                                <div class="col-md-2 col-sm-4 text-center">
+                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.container_charges) %></div>
+                                </div>
+                                <div class="col-md-7 col-sm-4 text-right">
+                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_container_charges) %></div>
+                                </div>
+                            </div>
                         <% } %>
                     </div>
 
@@ -336,16 +350,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
         </div>
         <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
-            <div class="row">
-                <div class="col-6">{{__('Total')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
-            </div>
-            <hr class="my-2">
-            <div class="row">
-                <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_taxable_amount) %></div>
-            </div>
-            <hr class="my-2">
             <% if(cart_details.total_service_fee > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>
@@ -353,6 +357,25 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <hr class="my-2">
             <% } %>
+            
+            <% if(cart_details.total_container_charges > 0) { %>
+                <div class="row">
+                    <div class="col-6">{{__('Total Container Charges')}}</div>
+                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_container_charges) %></div>
+                </div>
+                <hr class="my-2">
+            <% } %>
+            <div class="row">
+                <div class="col-6">{{__('Tax')}}</div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_taxable_amount) %></div>
+            </div>
+            <hr class="my-2">
+            <div class="row">
+                <div class="col-6">{{__('Total')}}</div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
+            </div>
+            <hr class="my-2">
+           
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
