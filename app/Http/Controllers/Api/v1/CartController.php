@@ -545,6 +545,7 @@ class CartController extends BaseController
         $item_count = 0;
         $total_delivery_amount = 0;
         $order_sub_total = 0;
+        $totalDeliveryCharges = 0;
         if ($cartData) {
             $cart_dinein_table_id = NULL;
             $action = $type;
@@ -1184,7 +1185,6 @@ class CartController extends BaseController
         $item_count = 0;
         $total_delivery_amount = 0;
         $order_sub_total = 0;
-        $totalDeliveryCharges = 0;
         if ($cartData) {
             $cart_dinein_table_id = NULL;
             $action = $type;
