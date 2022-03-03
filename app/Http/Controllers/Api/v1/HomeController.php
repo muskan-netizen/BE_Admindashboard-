@@ -15,6 +15,7 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart};
@@ -370,6 +371,19 @@ class HomeController extends BaseController
         }
     }
 
+    //git user registration document 
+     public function UserRegistrationDocument(){
+        $user = Auth::user();
+        $langId = $user->language;
+        //$user_registration_documents = UserRegistrationDocuments::with(['primary'])->get();
+        if( $langId){
+            $user_registration_documents = UserRegistrationDocuments::with(['translations' => function ($q) use ($langId) {
+                $q->where('language_id', $langId);
+            }])->get();
+           
+        }
+        return $this->successResponse($user_registration_documents);
+     }
   
     public function getEditedOrders(Request $request){
         // Get user Edited Orders from Temp Cart

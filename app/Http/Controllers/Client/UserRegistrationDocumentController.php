@@ -29,12 +29,23 @@ class UserRegistrationDocumentController extends BaseController{
             $language_id = $request->language_id;
             foreach ($request->name as $k => $name) {
                 if($name){
-                    $UserRegistrationDocumentTranslation = new UserRegistrationDocumentTranslation();
-                    $UserRegistrationDocumentTranslation->name = $name;
-                    $UserRegistrationDocumentTranslation->slug = Str::slug($name, '-');
-                    $UserRegistrationDocumentTranslation->language_id = $language_id[$k];
-                    $UserRegistrationDocumentTranslation->user_registration_document_id = $user_registration_document->id;
-                    $UserRegistrationDocumentTranslation->save();
+                    $data= [
+                            'name' => $name,
+                            'slug' => Str::slug($name, '-'),
+                            'language_id' =>$language_id[$k],
+                            'user_registration_document_id' =>$user_registration_document->id
+                        ];
+                        $Loction = UserRegistrationDocumentTranslation::updateOrCreate(
+                        ['slug'=>Str::slug($name, '-'),'language_id' =>$language_id[$k],'user_registration_document_id' =>$user_registration_document->id ],
+                            $data
+                        );
+                    
+                    // $UserRegistrationDocumentTranslation = new UserRegistrationDocumentTranslation();
+                    // $UserRegistrationDocumentTranslation->name = $name;
+                    // $UserRegistrationDocumentTranslation->slug = Str::slug($name, '-');
+                    // $UserRegistrationDocumentTranslation->language_id = $language_id[$k];
+                    // $UserRegistrationDocumentTranslation->user_registration_document_id = $user_registration_document->id;
+                    // $UserRegistrationDocumentTranslation->save();
                 }
             }
            
@@ -87,12 +98,23 @@ class UserRegistrationDocumentController extends BaseController{
             UserRegistrationDocumentTranslation::where('user_registration_document_id', $user_registration_document_id)->delete();
             foreach ($request->name as $k => $name) {
                 if($name){
-                    $UserRegistrationDocumentTranslation = new UserRegistrationDocumentTranslation();
-                    $UserRegistrationDocumentTranslation->name = $name;
-                    $UserRegistrationDocumentTranslation->slug = Str::slug($name, '-');
-                    $UserRegistrationDocumentTranslation->language_id = $language_id[$k];
-                    $UserRegistrationDocumentTranslation->user_registration_document_id = $user_registration_document->id;
-                    $UserRegistrationDocumentTranslation->save();
+                    $data= [
+                        'name' => $name,
+                        'slug' => Str::slug($name, '-'),
+                        'language_id' =>$language_id[$k],
+                        'user_registration_document_id' =>$user_registration_document->id
+                    ];
+                    $Loction = UserRegistrationDocumentTranslation::updateOrCreate(
+                    ['slug'=>Str::slug($name, '-'),'language_id' =>$language_id[$k],'user_registration_document_id' =>$user_registration_document->id ],
+                        $data
+                    );
+                
+                    // $UserRegistrationDocumentTranslation = new UserRegistrationDocumentTranslation();
+                    // $UserRegistrationDocumentTranslation->name = $name;
+                    // $UserRegistrationDocumentTranslation->slug = Str::slug($name, '-');
+                    // $UserRegistrationDocumentTranslation->language_id = $language_id[$k];
+                    // $UserRegistrationDocumentTranslation->user_registration_document_id = $user_registration_document->id;
+                    // $UserRegistrationDocumentTranslation->save();
                 }
             }
             DB::commit();

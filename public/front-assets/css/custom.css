@@ -226,3 +226,15 @@ article#content-wrap {padding-bottom:20px;}
 .footer-theme .sub-title .contact-list i {position: relative;margin-right: 10px;}
 .footer-theme .sub-title li{font-size: 14px;}
 }
+
+/* // whatsapp link ui */
+.royo_whatsapp_img img {
+    width: 47px;
+}
+
+.royo_whatsapp_img {
+    position: fixed;
+    z-index: 99999;
+    bottom: 2%;
+    right: 2%;
+}
