@@ -497,7 +497,7 @@ class HomeController extends BaseController
                     ->where('categories.is_core', 1)
                     ->where('cts.language_id', $langId)
                     ->where(function ($q) use ($keyword) {
-                        $q->where('cts.name', ' LIKE', '%' . $keyword . '%')
+                        $q->where('cts.name', 'LIKE', '%' . $keyword . '%')
                             ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
                             ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
                     })->orderBy('categories.parent_id', 'asc')
