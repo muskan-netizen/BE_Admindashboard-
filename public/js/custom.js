@@ -211,6 +211,21 @@ window.initializeSlider = function initializeSlider() {
             { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
+    $(".al_mobile_banner").slick({
+        dots: false,
+        infinite: true,
+        speed: 300,
+        slidesToShow: 4,
+        centerMode: true,
+        centerPadding: '60px',
+        slidesToScroll: 4,
+        arrows: true,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+        ]
+    });
 
     $(".product-4-on_sale").slick({
         dots: false,
@@ -2419,7 +2434,7 @@ $(document).ready(function() {
 
     });
 
-    function setTipAmount(tip, amount_payable, currency) { 
+    function setTipAmount(tip, amount_payable, currency) {
         if (tip != 'custom') {
             if ((tip == '') || (isNaN(tip))) {
                 tip = 0;

@@ -1,8 +1,12 @@
 @extends('layouts.vertical', ['title' => 'Order Detail'])
 @section('css')
-<!-- <style>
-td { white-space:pre-line; word-break:break-all}
-</style> -->
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<style>
+/* td { white-space:pre-line; word-break:break-all} */
+#cancel-request-card{
+    background: #ddd;
+}
+</style>
 @endsection
 @section('content')
 @php
@@ -22,6 +26,26 @@ $timezone = Auth::user()->timezone;
 
             </div>
         </div>
+        
+        @if($order->vendors->first())
+            @if( ($order->vendors->first()->cancel_request) && ($order->vendors->first()->cancel_request->status == 'Pending') )
+            <div class="row">
+                <div class="col-lg-12 mb-3">
+                    <div class="card mb-0 h-100" id="cancel-request-card">
+                        <div class="card-body">
+                            <h4 class="header-title mb-3">{{__('Cancel Order Request')}}</h4>
+                            <button type="button" class="complete_request_btn btn btn-sm btn-info" title='Approve' data-status="1" data-id="{{$order->vendors->first()->cancel_request->id}}">
+                                <i class='fa fa-check mr-1'></i> Approve
+                            </button>
+                            <button type="button" class="complete_request_btn btn btn-sm btn-danger" title='Reject' data-status="2" data-id="{{$order->vendors->first()->cancel_request->id}}">
+                                <i class='fa fa-times mr-1'></i> Reject
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+        @endif
         <div class="row">
             <div class="col-lg-4 mb-3">
                 <div class="card mb-0 h-100">
@@ -522,6 +546,7 @@ $timezone = Auth::user()->timezone;
 <!--End Order Invoice Code -->
 @endsection
 @section('script')
+<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
     $("#order_statuses li").click(function() {
         Swal.fire({
@@ -614,6 +639,60 @@ $timezone = Auth::user()->timezone;
             }
         });
     });
+
+    $(document).on('click', '.complete_request_btn', function(e) {
+        let id = $(this).attr('data-id');
+        let status = $(this).attr('data-status');
+        let title = $(this).attr('title');
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You really want to "+ title +" this request?",
+            icon: 'warning',
+            iconColor: '{{getClientPreferenceDetail()->web_color}}',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, '+ title + ' it!',
+            confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
+        }).then((result) => {
+            if(result.value)
+            {
+                $.ajax({
+                    type: "POST",
+                    data: {id: id, status: status},
+                    url: "{{ route('cancel-order.request.status.update') }}",
+                    headers: {Accept: "application/json"},
+                    success: function(response) {
+                        if (response.status == 'Success') {
+                            $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                            setTimeout(function(){location.reload();}, 2500);
+                        } else {
+                            Swal.fire({
+                                text: response.message,
+                                icon : "error",
+                                button: "OK",
+                            });
+                            return false;
+                        }
+                    },
+                    beforeSend: function(){
+                        $(".loader_box").show();
+                    },
+                    complete: function(){
+                        $(".loader_box").hide();
+                    },
+                    error: function(response) {
+                        let error = response.responseJSON;
+                        Swal.fire({
+                            text: error.message,
+                            icon : "error",
+                            button: "OK",
+                        });
+                        return false;
+                    }
+                });
+            }
+        });
+    });
+
     function printDiv()
     {
         var divToPrint=document.getElementById('al_print_area');

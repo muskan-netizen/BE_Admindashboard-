@@ -1,6 +1,6 @@
 @php
 $clientData = \App\Models\Client::where('id', '>', 0)->first();
-$urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'];
+$urlImg = $clientData ? $clientData->logo['original'] : ' ';
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 @endphp
         </article>
@@ -14,7 +14,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <div class="col-lg-2 d-flex align-items-center justify-content-center justify-content-md-start">
                         <div class="footer-logo mb-0">
                             <a href="{{ route('userHome') }}">
-                                <img class="img-fluid blur-up lazyload" src="{{$urlImg}}">
+                                <img class="blur-up lazyload" src="{{$urlImg}}" height="60">
                             </a>
                         </div>
                     </div>

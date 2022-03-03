@@ -306,7 +306,7 @@ class HomeController extends BaseController
                     'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
                     'inquiry_only' => $new_product_detail->inquiry_only,
                     'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
-                    'price' => number_format($new_product_detail->variant->first()->price * $multiply, 2, '.', ''),
+                    'price' => decimal_format($new_product_detail->variant->first()->price * $multiply),
                     'category' => ($new_product_detail->category->categoryDetail->translation->first()) ? $new_product_detail->category->categoryDetail->translation->first()->name : $new_product_detail->category->categoryDetail->slug
                 );
             }
@@ -322,7 +322,7 @@ class HomeController extends BaseController
                     'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
                     'inquiry_only' => $feature_product_detail->inquiry_only,
                     'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
-                    'price' => number_format($feature_product_detail->variant->first()->price * $multiply, 2, '.', ''),
+                    'price' => decimal_format($feature_product_detail->variant->first()->price * $multiply),
                     'category' => ($feature_product_detail->category->categoryDetail->translation->first()) ? $feature_product_detail->category->categoryDetail->translation->first()->name : $feature_product_detail->category->categoryDetail->slug
                 );
             }
@@ -338,7 +338,7 @@ class HomeController extends BaseController
                     'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
                     'inquiry_only' => $on_sale_product_detail->inquiry_only,
                     'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
-                    'price' => number_format($on_sale_product_detail->variant->first()->price * $multiply, 2, '.', ''),
+                    'price' => decimal_format($on_sale_product_detail->variant->first()->price * $multiply),
                     'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
                 );
             }

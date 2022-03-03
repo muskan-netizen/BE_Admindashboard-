@@ -21,7 +21,7 @@
     <div class="row align-items-center">
         <div class="col-sm-12">
             <div class="page-title-box">
-                <h4 class="page-title">{{ __('Order Cancel Requests') }}</h4>
+                <h4 class="page-title">{{ __('Cancel Order Requests') }}</h4>
             </div>
         </div>
     </div>

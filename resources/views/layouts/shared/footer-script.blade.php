@@ -245,6 +245,22 @@ if (Session::has('toaster')) {
                     console.log(payload_data.order_number);
                     get_latest_order_socket(payload_data.order_number);
                 }
+                else if(payload.data.type=="order_cancellation_request"){
+                    var notificationTitle = payload.notification.title;
+                    var notificationOptions = {
+                        body: payload.notification.body,
+                        icon: payload.notification.icon
+                    };
+                    var push_notification = new Notification(
+                        notificationTitle,
+                        notificationOptions
+                    );
+                    push_notification.onclick = function(event) {
+                        event.preventDefault();
+                        window.open(payload.notification.click_action, "_blank");
+                        push_notification.close();
+                    };
+                }
             }
         }
     });
