@@ -696,12 +696,17 @@ $timezone = Auth::user()->timezone;
     function printDiv()
     {
         var divToPrint=document.getElementById('al_print_area');
-        var newWin=window.open('','Print-Window');
-        newWin.document.open();
-        newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
+        var windowUrl = 'about:blank';
+        var windowName = 'Print Order Detail';
+        var newWin=window.open(windowUrl, windowName);
+        newWin.document.write(divToPrint.innerHTML);
         newWin.document.close();
+        newWin.focus();
+        newWin.print();
         setTimeout(function(){newWin.close();},10);
     }
 
+
 </script>
+
 @endsection
