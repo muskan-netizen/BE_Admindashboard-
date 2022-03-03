@@ -31,7 +31,7 @@
                             enctype="multipart/form-data">
                             @endif
                             @csrf
-                           
+
                             <div class=" row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -60,16 +60,16 @@
                             </div>
 
                             <div class="row">
-                               
-                               
+
+
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="password" class="control-label">{{ __("Status") }}</label>
                                         <select name="status" class="form-control">
                                             <option value="1" @if($subadmin->status==1) selected @endif>{{ __("Active") }}</option>
                                             <option value="3" @if($subadmin->status==3) selected @endif>{{ __("Inactive") }}</option>
-                                           
-                                        </select>                                        
+
+                                        </select>
                                     </div>
                                 </div>
 
@@ -79,7 +79,7 @@
                                          <select name="is_admin" class="form-control">
                                             <option value="0" @if($subadmin->is_admin==0) selected @endif>{{ __("No") }}</option>
                                             <option value="1" @if($subadmin->is_admin==1) selected @endif>{{ __("Yes") }}</option>
-                                        </select>                                        
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -122,7 +122,11 @@
                                             <label for="">{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}</label>
                                             <input type="file" accept="image/*" data-plugins="dropify" name="{{$user_registration_document->primary->slug??''}}" class="dropify" data-default-file="{{ $field_value }}" />
                                             @else
-                                            <label class="d-flex align-items-center justify-content-between" for="">{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}<a href="{{ $field_value }}" target="__blank"><i class="fa fa-eye" aria-hidden="true"></i></a></label>
+                                            <label class="d-flex align-items-center justify-content-between" for="">{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}<a href="{{ $field_value }}" target="__blank">
+                                                @if($field_value)
+                                                    <i class="fa fa-file-pdf" aria-hidden="true"></i>
+                                                @endif
+                                            </a></label>
                                             <input type="file" accept=".pdf" data-plugins="dropify" name="{{$user_registration_document->primary->slug??''}}" class="dropify" data-default-file="{{ $field_value }}" />
                                             @endif
                                         @endif
@@ -148,31 +152,31 @@
                                         }
                                     @endphp
                                     <table class="table table-borderless table-nowrap table-hover table-centered m-0">
-        
+
                                         <thead class="thead-light">
                                             <tr>
                                                 <th>{{ __("Permission Name") }}</th>
                                                 <th>{{ __("Status") }}</th>
                                             </tr>
-                                            
+
                                         </thead>
                                         <tbody>
-                                            @php 
+                                            @php
                                             $brity = \App\Models\ClientPreference::where(['id' => 1])->first('celebrity_check');
                                             @endphp
                                             @foreach($permissions as $singlepermission)
                                             @if($singlepermission->name == 'CELEBRITY')
-                                                
+
                                                     @if(!empty($brity) && $brity->celebrity_check == 1)
                                                     <tr>
                                                     <td>
                                                         <h5 class="m-0 font-weight-normal">{{ ucwords(strtolower($singlepermission->name)) }}</h5>
                                                     </td>
-            
+
                                                     <td>
                                                         <div class="custom-control custom-switch">
                                                             <input type="checkbox" class="custom-control-input event_type" data-id="{{ $singlepermission->id }}" data-event-type="permission" id="permission_{{ $singlepermission->id}}" name="permissions[]" value="{{ $singlepermission->id }}" @if(in_array($singlepermission->id, $userpermissions)) checked @endif >
-                                                            
+
                                                             <label class="custom-control-label" for="permission_{{ $singlepermission->id}}"></label>
                                                         </div>
                                                     </td>
@@ -184,91 +188,91 @@
                                                     <td>
                                                         <h5 class="m-0 font-weight-normal">{{ $singlepermission->name }}</h5>
                                                     </td>
-            
+
                                                     <td>
                                                         <div class="custom-control custom-switch">
                                                             <input type="checkbox" class="custom-control-input event_type" data-id="{{ $singlepermission->id }}" data-event-type="permission" id="permission_{{ $singlepermission->id}}" name="permissions[]" value="{{ $singlepermission->id }}" @if(in_array($singlepermission->id, $userpermissions)) checked @endif >
-                                                            
+
                                                             <label class="custom-control-label" for="permission_{{ $singlepermission->id}}"></label>
                                                         </div>
                                                     </td>
-                                                </tr> 
-                                            @else   
+                                                </tr>
+                                            @else
                                                 <tr>
                                                     <td>
                                                         <h5 class="m-0 font-weight-normal">{{ ucwords(strtolower($singlepermission->name)) }}</h5>
                                                     </td>
-            
+
                                                     <td>
                                                         <div class="custom-control custom-switch">
                                                             <input type="checkbox" class="custom-control-input event_type" data-id="{{ $singlepermission->id }}" data-event-type="permission" id="permission_{{ $singlepermission->id}}" name="permissions[]" value="{{ $singlepermission->id }}" @if(in_array($singlepermission->id, $userpermissions)) checked @endif >
-                                                            
+
                                                             <label class="custom-control-label" for="permission_{{ $singlepermission->id}}"></label>
                                                         </div>
                                                     </td>
-                                                </tr> 
+                                                </tr>
                                             @endif
                                             @endforeach
-        
+
                                         </tbody>
                                     </table>
                                 </div>
 
                                 <div class="col-lg-6 team_perm_section table-responsive">
-                                
+
                                     <table class="table table-borderless table-nowrap table-hover table-centered m-0">
-        
+
                                         <thead class="thead-light">
                                             <tr>
                                                 <th>{{__('Vendors')}}</th>
                                                 <th>{{ __("Status") }}</th>
                                             </tr>
-                                            
+
                                         </thead>
-                                        <tbody> 
+                                        <tbody>
                                             {{-- <tr>
                                                 <td>
                                                     <h5 class="m-0 font-weight-normal">{{__('Select All')}}</h5>
                                                 </td>
-        
+
                                                 <td>
                                                     <div class="custom-control custom-switch">
                                                         <input type="checkbox" class="custom-control-input all_vendor_check" id="vendor_permission_all"
-                                                        data-event-type="vendor_permission" 
-                                                        name="vendor_permission_all"  
+                                                        data-event-type="vendor_permission"
+                                                        name="vendor_permission_all"
                                                        >
                                                         <label class="custom-control-label" for="vendor_permission_all"></label>
                                                     </div>
                                                 </td>
                                             </tr>  --}}
-                                            
+
                                             @foreach($vendors as $vendor)
                                             <tr>
                                                 <td>
                                                     <h5 class="m-0 font-weight-normal">{{ $vendor->name }}</h5>
                                                 </td>
-        
+
                                                 <td>
                                                     <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input vendor_permission_check" data-id="{{ $vendor->id }}" 
-                                                        data-event-type="vendor_permission" id="vendor_permission_{{ $vendor->id}}" 
-                                                        name="vendor_permissions[]" value="{{ $vendor->id }}" 
+                                                        <input type="checkbox" class="custom-control-input vendor_permission_check" data-id="{{ $vendor->id }}"
+                                                        data-event-type="vendor_permission" id="vendor_permission_{{ $vendor->id}}"
+                                                        name="vendor_permissions[]" value="{{ $vendor->id }}"
                                                         @if(in_array($vendor->id, $vendor_permissions)) checked @endif>
                                                         <label class="custom-control-label" for="vendor_permission_{{ $vendor->id}}"></label>
                                                     </div>
                                                 </td>
                                             </tr>
                                             @endforeach
-        
+
                                         </tbody>
                                     </table>
                                 </div>
-                                
+
                             </div>
-                                                    
-                            
-                            
-                        
+
+
+
+
 
                             <div class="row mb-2 mt-4">
                                 <div class="col-12">

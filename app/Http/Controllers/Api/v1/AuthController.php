@@ -266,6 +266,7 @@ class AuthController extends BaseController
      */
     public function signup(Request $signReq)
     {
+
         $preferences = ClientPreference::first();
         $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
         $rules = [
@@ -290,6 +291,7 @@ class AuthController extends BaseController
         }
 
         $validator = Validator::make($signReq->all(), $rules);
+
         if( (empty($signReq->email)) && (empty($signReq->phone_number)) ){
             $validator = Validator::make($signReq->all(), [
                 'email'  => 'required',
@@ -327,7 +329,7 @@ class AuthController extends BaseController
             }
         }
         $client_timezone = Client::where('id', '>', 0)->value('timezone');
-        
+
         $user = new User();
 
         foreach ($signReq->only('name', 'country_id', 'phone_number', 'dial_code') as $key => $value) {
