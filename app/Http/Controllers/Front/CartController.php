@@ -110,11 +110,7 @@ class CartController extends FrontController
             $public_key_yoco= $public_key_yoco->credentials??'';
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
-        }
-
-
-
-
+        } 
 
         return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
@@ -680,7 +676,7 @@ class CartController extends FrontController
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price;
-                    $price_in_doller_compare = $prod->pvariant->price;
+                    $price_in_doller_compare = $prod->pvariant->price; 
                     $container_charges_in_currency = $prod->pvariant->container_charges;
                     $container_charges_in_doller_compare = $prod->pvariant->container_charges;
                     if($customerCurrency){
@@ -704,6 +700,25 @@ class CartController extends FrontController
                     $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
+                    if($prod->addon->isNotEmpty()){
+                        foreach ($prod->addon as $ck => $addons) {
+                            if(isset($addons->option)){
+                                $opt_price_in_currency = $addons->option->price;
+                                $opt_price_in_doller_compare = $addons->option->price;
+                                if($customerCurrency){
+                                    $opt_price_in_currency = $addons->option->price / $divider;
+                                    $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
+                                }
+                                $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);
+                                $addons->option->price_in_cart = $addons->option->price;
+                                $addons->option->price = decimal_format($opt_price_in_currency);
+                                $addons->option->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
+                                $addons->option->quantity_price = $opt_quantity_price;
+                                $payable_amount = $payable_amount + $opt_quantity_price;
+                                $quantity_price = $quantity_price + $opt_quantity_price; 
+                            }
+                        }
+                    }
                     $taxData = array();
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
@@ -720,24 +735,7 @@ class CartController extends FrontController
                         unset($prod->product->taxCategory);
                     }
                     $prod->taxdata = $taxData;
-                    if($prod->addon->isNotEmpty()){
-                        foreach ($prod->addon as $ck => $addons) {
-                            if(isset($addons->option)){
-                                $opt_price_in_currency = $addons->option->price;
-                                $opt_price_in_doller_compare = $addons->option->price;
-                                if($customerCurrency){
-                                    $opt_price_in_currency = $addons->option->price / $divider;
-                                    $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
-                                }
-                                $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);
-                                $addons->option->price_in_cart = $addons->option->price;
-                                $addons->option->price = decimal_format($opt_price_in_currency);
-                                $addons->option->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
-                                $addons->option->quantity_price = $opt_quantity_price;
-                                $payable_amount = $payable_amount + $opt_quantity_price;
-                            }
-                        }
-                    }
+                    
                     if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
                         $prod->cartImg = $prod->pvariant->image->imagedata;
                     } else {
