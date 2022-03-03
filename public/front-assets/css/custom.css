@@ -247,6 +247,6 @@ body .al_footer_template_two .footer-theme .sub-title .contact-list li i {top: 0
 .royo_whatsapp_img {
     position: fixed;
     z-index: 99999;
-    bottom: 2%;
-    right: 2%;
+    bottom: 3%;
+    left: 2%;
 }
