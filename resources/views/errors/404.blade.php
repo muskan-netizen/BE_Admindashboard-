@@ -117,7 +117,7 @@ svg {
 body { font-family: 'Montserrat', sans-serif;margin: 0; overflow: hidden;
 background-position: right !important;
 background-repeat: no-repeat !important;
-background-color: rgba(var(--color), .1) !important;
+background-color: rgba({{getClientPreferenceDetail()->site_top_header_color}}, .1) !important;
  }
 
 
@@ -176,7 +176,7 @@ h1, h2, h3, h4, h5, h6 {
 .page-section .content-detail .sub-title,
 .page-section .content-detail .detail-text {
     display: block;
-    color: #5076db;
+    color: {{getClientPreferenceDetail()->web_color}};
     text-align: center;
 }
 .page-section .content-detail .sub-title {
@@ -186,7 +186,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .page-section .content-detail .global-title {
     display: block;
-    color: #5bc86d;
+    color: {{getClientPreferenceDetail()->site_top_header_color}};
     font-size: 150px;
     font-weight: 800;
     margin: 0;
@@ -222,14 +222,14 @@ animation-delay: 3s; }
 }
 .page-section .content-detail .back-btn .btn {
     padding: 8px 15px;
-    color: #5076db;
-    border: 1px solid #5076db;
+    color: {{getClientPreferenceDetail()->web_color}};
+    border: 1px solid {{getClientPreferenceDetail()->web_color}};
     border-radius: 30px;
     font-size: 14px;
     text-decoration: none;
 }
 .page-section .content-detail .back-btn .btn:hover {
-    background-color: #5076db;
+    background-color: {{getClientPreferenceDetail()->web_color}};
     color: #fff;
 }
 .background_color {
@@ -274,7 +274,7 @@ animation-delay: 3s; }
     }
 }
     </style>
-
+ 
 
 </head>
 <body>
@@ -292,7 +292,7 @@ animation-delay: 3s; }
                     <p class="detail-text">We're sorry,<br> The page you were looking for doesn't exist anymore.</p>
 
                     <div class="back-btn">
-                        <a href="https://erratum-html.netlify.app/main/classic/index.html" class="btn">Back to Home</a>
+                        <a href="{{route('userHome')}}" class="btn">Back to Home</a>
                     </div>
                 </div>
             </div>
@@ -300,8 +300,8 @@ animation-delay: 3s; }
     </section>
     <div class="background_color"></div>
 <script type="text/javascript" class="bg">
-    var green = '#5bc86d';
-    var red = '#5bc86d';
+    var green = '{{getClientPreferenceDetail()->site_top_header_color}}';
+    var red = '{{getClientPreferenceDetail()->site_top_header_color}}';
     var svg = '<svg width="393" height="393" viewBox="0 0 393 393" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="154.149" y="0.691137" width="283" height="283" rx="69.5" transform="rotate(32.7999 154.149 0.691137)" stroke="'+red+'"/><rect x="160.591" y="33.1011" width="236.275" height="236.275" rx="70" transform="rotate(32.7999 160.591 33.1011)" fill="'+green+'"/></svg>';
         var encoded = window.btoa(svg);
         document.getElementsByClassName("background_color")[0].style.background = "url(data:image/svg+xml;base64,"+encoded+")";
