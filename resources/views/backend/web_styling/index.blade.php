@@ -217,6 +217,15 @@
                                         </span>
                                         @endif
                                     </div>
+                                    <div class="form-group mt-2 mb-0">
+                                        <label for="whatsapp_url">{{ __("WhatsApp link") }}</label>
+                                        <input type="text" name="whatsapp_url" id="whatsapp_url" placeholder="" class="form-control" value="{{ old('whatsapp_url', $clientContact->whatsapp_url ?? '')}}">
+                                        @if($errors->has('whatsapp_url'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('whatsapp_url') }}</strong>
+                                        </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>

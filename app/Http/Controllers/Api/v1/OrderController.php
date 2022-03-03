@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
+use App\Models\{Order, OrderProduct,UserDocs, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
 use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\OrderTrait;
 
@@ -942,7 +942,7 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
+                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
                 if (!empty($prefer->sms_provider)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 }
@@ -1274,7 +1274,11 @@ class OrderController extends BaseController
                     $order['order_data'] = $response;
                 }
             }
+            $user_docs = UserDocs::where('user_id', $order->user_id)->get();
+            $user_registration_documents = UserRegistrationDocuments::get();
 
+            $order['user_document_value'] =  $user_docs;
+            $order['user_document_list'] =  $user_registration_documents;
 
             return $this->successResponse($order, null, 201);
         } catch (Exception $e) {

@@ -383,7 +383,7 @@ class OrderController extends FrontController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
+                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
             //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                 if (!empty($prefer->sms_provider)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
