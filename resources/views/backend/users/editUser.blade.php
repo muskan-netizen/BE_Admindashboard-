@@ -122,11 +122,13 @@
                                             <label for="">{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}</label>
                                             <input type="file" accept="image/*" data-plugins="dropify" name="{{$user_registration_document->primary->slug??''}}" class="dropify" data-default-file="{{ $field_value }}" />
                                             @else
-                                            <label class="d-flex align-items-center justify-content-between" for="">{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}<a href="{{ $field_value }}" target="__blank">
+                                            <label class="d-flex align-items-center justify-content-between" for="">{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}
                                                 @if($field_value)
-                                                    <i class="fa fa-file-pdf" aria-hidden="true"></i>
+                                                    <a href="{{ $field_value }}" target="__blank">
+                                                        <i class="fa fa-file-pdf" aria-hidden="true"></i>
+                                                    </a>
                                                 @endif
-                                            </a></label>
+                                        </label>
                                             <input type="file" accept=".pdf" data-plugins="dropify" name="{{$user_registration_document->primary->slug??''}}" class="dropify" data-default-file="{{ $field_value }}" />
                                             @endif
                                         @endif
