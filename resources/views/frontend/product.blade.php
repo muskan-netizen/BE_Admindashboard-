@@ -304,7 +304,7 @@
                                                         <button type="button" class="btn quantity-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
                                                         </button>
                                                     </span>
-                                                    <input type="text" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
+                                                    <input type="text" name="quantity"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="quantity" class="form-control input-qty-number quantity_count"  value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
                                                     <span class="input-group-prepend quant-plus">
                                                         <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
                                                             <i class="ti-angle-right"></i>
@@ -625,7 +625,7 @@
                     <button type="button" class="btn quantity-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
                     </button>
                 </span>
-                <input type="text" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="1">
+                <input type="text" onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="1">
                 <span class="input-group-prepend quant-plus">
                     <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="">
                         <i class="ti-angle-right"></i>

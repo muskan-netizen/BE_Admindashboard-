@@ -2628,7 +2628,25 @@ $(document).ready(function() {
 
 
     function addToCart() {
+
+
         var breakOut = false;
+        var Product_quantity = $('.quantity_count').val();
+
+        if(Product_quantity <=0){
+            Swal.fire({
+                // title: "Warning!",
+                text: "Please enter quantity",
+                icon : "warning",
+                button: "OK",
+             });
+
+
+            breakOut = true;
+            return false;
+
+        }
+
         $(".productAddonSetOptions").each(function(index) {
             var min_select = $(this).attr("data-min");
             var max_select = $(this).attr("data-max");

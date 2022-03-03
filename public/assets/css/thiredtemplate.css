@@ -202,3 +202,14 @@ section.home-slider-wrapper{padding-top: 20px !important;padding-bottom: 20px;}
 .al_custom_head_map_box {    margin-bottom: 10px;}
 .home-slider-wrapper .banner-img-outer img {    border-radius: 20px;}
 }
+
+.royo_whatsapp_img img {
+    width: 50px;
+}
+
+.royo_whatsapp_img {
+    position: fixed;
+    z-index: 99999;
+    bottom:15%;
+    left: 1%;
+}

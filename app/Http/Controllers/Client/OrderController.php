@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency};
+use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -379,6 +379,9 @@ class OrderController extends BaseController
             $vendor_order_status_option_ids[] = $vendor_order_status->order_status_option_id;
         }
 
+        $user_docs = UserDocs::where('user_id', $order->user_id)->get();
+        $user_registration_documents = UserRegistrationDocuments::get();
+        //pr($user_docs->toArray() );
         $vendor_data = Vendor::where('id',$vendor_id)->first();
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 'order' => $order,
@@ -386,7 +389,11 @@ class OrderController extends BaseController
             'vendor_order_status_option_ids' => $vendor_order_status_option_ids,
             'order_status_options' => $order_status_options,
             'dispatcher_status_options' => $dispatcher_status_options,
-            'vendor_order_status_created_dates' => $vendor_order_status_created_dates, 'clientCurrency' => $clientCurrency,'vendor_data' => $vendor_data
+            'vendor_order_status_created_dates' => $vendor_order_status_created_dates,
+            'user_registration_documents' => $user_registration_documents,
+            'clientCurrency' => $clientCurrency,
+            'user_docs' => $user_docs,
+            'vendor_data' => $vendor_data
         ]);
     }
 

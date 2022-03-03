@@ -111,15 +111,15 @@
         });
     });
 
-    $(".editVendor").click(function (e) {  
-        
+    $(".editVendor").click(function (e) {
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
         });
         e.preventDefault();
-       
+
         var uid = $(this).attr('userId');
 
         $.ajax({
@@ -147,7 +147,7 @@
             e.preventDefault();
     });
 
-    $(document).on('click', '.submitCustomerForm', function() { 
+    $(document).on('click', '.submitCustomerForm', function() {
         var form =  document.getElementById('add_user');
         var formData = new FormData(form);
         var urls = "{{URL::route('customer.store')}}";
@@ -182,7 +182,7 @@
                 console.log(response);
                 if (response.status == 'success') {
                     $("#" + modal + " .close").click();
-                    location.reload(); 
+                    location.reload();
                 } else {
                     $(".show_all_error.invalid-feedback").show();
                     $(".show_all_error.invalid-feedback").text(response.message);
@@ -196,6 +196,10 @@
                         $("#" + key + "Input" + inp + " input").addClass("is-invalid");
                         $("#" + key + "Input" + inp + " span.invalid-feedback").children("strong").text(errors[key][0]);
                         $("#" + key + "Input span.invalid-feedback").show();
+
+                        // $("#" + key + "Input input").addClass("is-invalid");
+                        // $("#" + key + "Input span.invalid-feedback").children("strong").text(errors[key][0]);
+                        // $("#" + key + "Input span.invalid-feedback").show();
                     });
                 } else {
                     $(".show_all_error.invalid-feedback").show();
@@ -207,5 +211,5 @@
 
     }
 
-    
+
 </script>

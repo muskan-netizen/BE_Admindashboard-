@@ -176,8 +176,10 @@ if (Session::has('toaster')) {
             success: function(response) {
                 if (response.status == 'Success') {
                     if (response.data.orders.data.length != 0) {
+                        $("#received_new_orders").find(".modal-body").html('');
                         let latest_order_template = _.template($('#latest_order_template').html());
                         $("#received_new_orders").find(".modal-body").append(latest_order_template({
+                            Helper: NumberFormatHelper,
                             orders: response.data.orders.data
                         }));
                         $("#received_new_orders").modal('show');
