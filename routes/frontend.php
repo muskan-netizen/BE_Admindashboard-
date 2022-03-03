@@ -139,6 +139,10 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
+	//ccavenue-pay
+	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
+	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
+	//Route::any('ccavenue/cancel', 'Front\CcavenueController@cancelForm')->name('ccavenue.cancel');
 
 	//KongaPay routes
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
