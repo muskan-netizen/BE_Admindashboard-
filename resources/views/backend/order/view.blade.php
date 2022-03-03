@@ -6,6 +6,10 @@
 #cancel-request-card{
     background: #ddd;
 }
+.royo-thumnail_img {
+    width: 100px;
+    height: auto;
+}
 </style>
 @endsection
 @section('content')
@@ -26,7 +30,7 @@ $timezone = Auth::user()->timezone;
 
             </div>
         </div>
-        
+
         @if($order->vendors->first())
             @if( ($order->vendors->first()->cancel_request) && ($order->vendors->first()->cancel_request->status == 'Pending') )
             <div class="row">
@@ -271,6 +275,7 @@ $timezone = Auth::user()->timezone;
                                     <tr>
                                         <th scope="row">
 
+
                                             <a href="{{ isset($product->product) ? route('product.edit', @$product->product->id) : '#'}}" target="_blank">
                                                 {{$product->product_name}}
                                             </a>
@@ -495,13 +500,15 @@ $timezone = Auth::user()->timezone;
                                 }
                             }
                             @endphp
-                            <div class="mb-2">                                
+                            <div class="mb-2">
                                 @if($field_value)
                                     <label class="mb-2"><b>{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}} : </b></label>
                                     @if(strtolower($user_registration_document->file_type) == 'image')
-                                        <div class="border rounded-lg text-center">
-                                            <img src="{{$field_value}}" class="fi" style="height: 200px !important; width: auto;">
+                                    <a href="{{$field_value}}" target="_blank">
+                                        <div class="border rounded-lg royo-thumnail_img text-center ">
+                                            <img src="{{$field_value}}" class="img-thumbnail fi">
                                         </div>
+                                    </a>
                                     @elseif(strtolower($user_registration_document->file_type) == 'pdf')
                                         <div>
                                             <a href="{{$field_value}}" target="_blank"><i class="fa fa-file-pdf fa-6x text-danger"></i></a>
@@ -509,7 +516,7 @@ $timezone = Auth::user()->timezone;
                                     @else
                                         {{$field_value}}
                                     @endif
-                                    
+
                                 @endif
                             </div>
                         @endforeach
