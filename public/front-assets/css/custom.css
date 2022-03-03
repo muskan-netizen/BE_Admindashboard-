@@ -241,12 +241,12 @@ body .al_footer_template_two .footer-theme .sub-title .contact-list li i {top: 0
 
 /* // whatsapp link ui */
 .royo_whatsapp_img img {
-    width: 47px;
+    width: 50px;
 }
 
 .royo_whatsapp_img {
     position: fixed;
     z-index: 99999;
-    bottom: 3%;
-    left: 2%;
+    bottom:15%;
+    left: 1%;
 }

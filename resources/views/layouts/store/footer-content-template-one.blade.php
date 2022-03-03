@@ -4,10 +4,14 @@ $urlImg = $clientData ? $clientData->logo['original'] : ' ';
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 @endphp
 </article>
+@if($clientData->whatsapp_url)
 <div class="royo_whatsapp_img">
-    <img src="{{ asset('images/whatsapp-img.png')}}" alt="">
+    <a href="{{$clientData->whatsapp_url}}" target="_blank">
+        <img src="{{ asset('images/whatsapp-img.png')}}" alt="">
+    </a>
 </div>
-    <footer id="footer" class="footer-light">
+@endif
+<footer id="footer" class="footer-light">
         <section class="section-b-space light-layout pt-3 pb-0">
             <div class="container">
 
