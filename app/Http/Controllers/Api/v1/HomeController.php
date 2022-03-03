@@ -533,7 +533,7 @@ class HomeController extends BaseController
 
 
                 $vendors = $vendors->where(function ($q) use ($keyword) {
-                    $q->where('name', 'LIKE', "%$keyword%")->orWhere('address', 'LIKE', '%' . $keyword . '%');
+                    $q->where('name', 'LIKE', '%'. $keyword .'%')->orWhere('address', 'LIKE', '%' . $keyword . '%');
                 })->where('status', 1)->paginate($limit, $page);
 
 
