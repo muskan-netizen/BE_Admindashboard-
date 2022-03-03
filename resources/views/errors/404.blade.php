@@ -1,4 +1,4 @@
-<style>
+<!-- <style>
     body {
   background-color: #2F3242;
 }
@@ -83,10 +83,8 @@ svg {
     text-align: center;
   }
 }
-    </style>
-
-
-<svg width="380px" height="500px" viewBox="0 0 837 1045" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    </style> -->
+    <!-- <svg width="380px" height="500px" viewBox="0 0 837 1045" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
         <path d="M353,9 L626.664028,170 L626.664028,487 L353,642 L79.3359724,487 L79.3359724,170 L353,9 Z" id="Polygon-1" stroke="#007FB2" stroke-width="6" sketch:type="MSShapeGroup"></path>
         <path d="M78.5,529 L147,569.186414 L147,648.311216 L78.5,687 L10,648.311216 L10,569.186414 L78.5,529 Z" id="Polygon-2" stroke="#EF4A5B" stroke-width="6" sketch:type="MSShapeGroup"></path>
@@ -94,8 +92,8 @@ svg {
         <path d="M639,529 L773,607.846761 L773,763.091627 L639,839 L505,763.091627 L505,607.846761 L639,529 Z" id="Polygon-4" stroke="#F2773F" stroke-width="6" sketch:type="MSShapeGroup"></path>
         <path d="M281,801 L383,861.025276 L383,979.21169 L281,1037 L179,979.21169 L179,861.025276 L281,801 Z" id="Polygon-5" stroke="#36B455" stroke-width="6" sketch:type="MSShapeGroup"></path>
     </g>
-</svg>
-<div class="message-box">
+</svg> -->
+<!-- <div class="message-box">
   <h1>404</h1>
   <p>Page not found / Not available at your selected location</p>
   <div class="buttons-con">
@@ -104,4 +102,50 @@ svg {
       {{-- <a href="{{route('userHome')}}" class="link-button">Go to Home Page</a> --}}
     </div>
   </div>
-</div>
+</div> -->
+<style type="text/css">
+      body {
+  background-color: #fefefe;
+  margin:0;
+  overflow: hidden;
+}
+.al_row {width:100%;height: 100%;text-align: center;position: relative;}
+.al_404_box{padding: 50px;position: absolute;top: 50%;-webkit-transform: translate(0, -50%);transform: translate(0, -50%);left: 0;right: 0;}
+.al_footer{position: fixed;bottom: 0;width: 100%;padding: 10px 0;background-color: {{getClientPreferenceDetail()->web_color}};color: #fff;}
+.al_fixed {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 20px;
+    background-color: {{getClientPreferenceDetail()->web_color}};
+    color: #fff;
+    z-index: 1;
+}
+.al_head{max-width: 1170px;width: 100%;padding: 15px;margin: 0 auto;}
+.link-button{float: right;
+    margin-right: 0;
+    border: 3px solid #fff;
+    padding: 8px 30px;
+    border-radius: 40px;cursor: pointer;}
+.logo{float: left;cursor: pointer;}
+</style>
+
+    <div class="al_row ">
+      <header class="al_fixed">
+        <div class="al_head">
+          <a href="{{route('userHome')}}"><img class="logo" height="60" src="{{ getClientDetail()->logo_image_url }}"></a>
+          <a onclick="history.back(-1)" class="link-button link-back-button">Go Back</a>
+        </div>
+      </header>
+
+      <div class="al_404_box">
+        <img class="404_img" src="{{asset('images/404.png')}}">
+      </div>
+
+      <footer class="al_footer">
+        @copyright at the 2021
+      </footer>
+    </div>
+
+
+
