@@ -1017,6 +1017,7 @@ class CartController extends BaseController
                 $vendorData->is_promo_code_available = $is_promo_code_available;
                 $slotsDate = findSlot('',$vendorData->vendor->id,'','api');
                 $vendorData->delaySlot = $slotsDate;
+                $totalDeliveryCharges+=$deliveryCharges;
             }
             ++$vondorCnt;
         }//End cart Vendor loop
@@ -1057,7 +1058,7 @@ class CartController extends BaseController
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
-        // $cart->gross_paybale_amount = $total_paying;
+        $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->gross_paybale_amount = $order_sub_total;
         $cart->total_discount_amount = $total_disc_amount * $clientCurrency->doller_compare;
         $cart->products = $cartData;
@@ -1183,6 +1184,7 @@ class CartController extends BaseController
         $item_count = 0;
         $total_delivery_amount = 0;
         $order_sub_total = 0;
+        $totalDeliveryCharges = 0;
         if ($cartData) {
             $cart_dinein_table_id = NULL;
             $action = $type;
