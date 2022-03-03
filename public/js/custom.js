@@ -2632,7 +2632,7 @@ $(document).ready(function() {
 
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
-        alert(Product_quantity);
+
         if(Product_quantity <=0){
             Swal.fire({
                 // title: "Warning!",
