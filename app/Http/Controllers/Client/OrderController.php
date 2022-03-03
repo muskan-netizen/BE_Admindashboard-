@@ -251,7 +251,7 @@ class OrderController extends BaseController
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
-                $vendor->vendor_name = $vendor ? $vendor->vendor->name : '';
+                $vendor->vendor_name = $vendor->vendor->name ?? '';
                 $product_total_count = 0;
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
