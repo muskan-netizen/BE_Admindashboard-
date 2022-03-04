@@ -171,6 +171,23 @@ body #page-container  .al_footer_template_one ul.contact-list.al li span{padding
 }
 /* al_footer_template_two css */
 
+/* change language new css start */
+body[dir="rtl"] #page-container .footer-theme .sub-title .contact-list li span {
+    padding-left: 0;
+    padding-right: 30px;
+    float: right;
+}
+body[dir="rtl"] .vendors .slick-slider {
+    direction: ltr;
+}
+
+
+
+
+/* change language new css end */
+
+
+
 
 /* Responsiveness Css Start From Here */
 @media (max-width: 1919px) {
