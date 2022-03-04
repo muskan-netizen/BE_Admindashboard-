@@ -91,6 +91,10 @@ class CcavenueController extends Controller
         $dataArray[$information[0]] = $information[1];
 	}
     $dataArray = (object)$dataArray;
+
+    $user  = User::find($dataArray->merchant_param4);
+    Auth::login($user);
+
     if($dataArray->order_status==="Success")
 	{
        return $this->saveSuccess($dataArray);
@@ -127,15 +131,13 @@ class CcavenueController extends Controller
 
    public function saveSuccess($request)
    {
-      $user  = User::find($request->merchant_param4);
-      Auth::login($user);
       $order = Order::where('order_number',$request->order_id)->first();
       $order->payment_status = '1';
       $order->save();
       // Auto accept order
       $orderController = new OrderController();
       $orderController->autoAcceptOrderIfOn($order->id);
-      $cart = Cart::where('user_id',$user->id)->select('id')->first();
+      $cart = Cart::where('user_id',auth()->id())->select('id')->first();
       $cartid = $cart->id;
       Cart::where('id', $cartid)->update([
         'schedule_type' => null, 'scheduled_date_time' => null,
