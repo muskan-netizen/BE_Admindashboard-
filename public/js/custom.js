@@ -911,6 +911,8 @@ $(document).ready(function() {
                 paymentViaStripeFPX('', 19, '');
             }else if (payment_option_id == 20) {
                 payWithKPG('');
+            }else if(payment_option_id == 22) {
+                payWithCcAvenue('');
             }
         } else {
             _this.attr("disabled", false);
@@ -1953,7 +1955,10 @@ $(document).ready(function() {
             paymentViaStripeFPX('', payment_option_id, '');
         }else if (payment_option_id == 20) {
             payWithKPG('');
+        }else if (payment_option_id == 22) {
+            payWithCcAvenue('');
         }
+        
     });
     $(document).on("click", ".remove_promo_code_btn", function() {
         let cart_id = $(this).data('cart_id');
