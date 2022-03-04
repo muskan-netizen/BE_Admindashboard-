@@ -165,7 +165,9 @@ class OrderController extends BaseController
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                     $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
-                    $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
+                    $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0; 
+                    $total_subscription_discount = 0;
+                    $total_container_charges = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $delivery_fee = 0;
                         $deliver_charge = $delivery_fee_charges = 0.00;
@@ -173,6 +175,7 @@ class OrderController extends BaseController
                         $product_taxable_amount = 0;
                         $vendor_products_total_amount = 0;
                         $vendor_payable_amount = 0;
+                        $vendor_total_container_charges = 0;
                         $vendor_discount_amount = 0;
                         $order_vendor = new OrderVendor;
                         $order_vendor->status = 0;
@@ -186,11 +189,16 @@ class OrderController extends BaseController
                             $quantity_price = 0;
                             $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                             $price_in_currency = $variant->price / $divider;
+                            $container_charges_in_currency = $variant->container_charges / $divider;
+                            $price_container_charges = $variant->container_charges;
                             $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
+                            $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
                             $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
+                            $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
                             $payable_amount = $payable_amount + $quantity_price;
-                            $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
-                            $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
+                            $total_container_charges = $total_container_charges + $quantity_container_charges;
+                            $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
+                            $vendor_payable_amount = $vendor_payable_amount + $quantity_price ;
                             $product_payable_amount = 0;
                             $vendor_taxable_amount = 0;
                             if (isset($vendor_cart_product->product->taxCategory)) {
@@ -237,6 +245,7 @@ class OrderController extends BaseController
                             $order_product->order_vendor_id = $order_vendor->id;
                             $order_product->order_id = $order->id;
                             $order_product->price = $variant->price;
+                            $order_product->container_charges = $variant->container_charges;
                             $order_product->taxable_amount = $product_taxable_amount;
                             $order_product->quantity = $vendor_cart_product->quantity;
                             $order_product->vendor_id = $vendor_cart_product->vendor_id;
@@ -348,6 +357,7 @@ class OrderController extends BaseController
                         $order_vendor->taxable_amount = $vendor_taxable_amount;
                         $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
+                        $order_vendor->total_container_charges = $vendor_total_container_charges;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
                             if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -412,6 +422,7 @@ class OrderController extends BaseController
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
                     $order->payable_amount = $payable_amount;
+                    $order->total_container_charges = $total_container_charges;
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                         $order->payment_status = 1;
                     }
@@ -1173,12 +1184,14 @@ class OrderController extends BaseController
                     }
                     $couponData = [];
                     $payable_amount = 0;
+                    $total_container_charges = 0;
                     $discount_amount = 0;
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
                         $product_addons = [];
                         $variant_options = [];
+                        $vendor_total_container_charges = 0;
                         $order_item_count += $product->quantity;
                         $product->image_path = $product->media->first() ? $product->media->first()->image->path : $product->image;
                         if ($product->pvariant) {
@@ -1273,7 +1286,7 @@ class OrderController extends BaseController
                     $response = $response->json();
                     $order['order_data'] = $response;
                 }
-            }
+            } 
             $user_docs = UserDocs::where('user_id', $order->user_id)->get();
             $user_registration_documents = UserRegistrationDocuments::get();
 

@@ -559,6 +559,7 @@ class CartController extends BaseController
             $PromoFreeDeliver = 0;
             $PromoDelete = 0;
             $couponApplied = 0;
+            $total_container_charges = 0 ;
             foreach ($cartData as $ven_key => $vendorData) {
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
@@ -647,10 +648,15 @@ class CartController extends BaseController
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
                         $price_in_doller_compare = $price_in_currency * $clientCurrency->doller_compare;
+                        $container_charges_in_currency = $prod->pvariant->container_charges;
+                        $container_charges_in_doller_compare = $prod->pvariant->container_charges;
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
+                        $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
+                        $quantity_container_charges = decimal_format($quantity_container_charges);
                         $item_count = $item_count + $prod->quantity;
-                        $proSum = $proSum + $quantity_price;
+                        $proSum = $proSum + $quantity_price + $quantity_container_charges;
                         $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
+                        $total_container_charges = $total_container_charges + $quantity_container_charges;
                         if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
                             $prod->cartImg = $prod->pvariant->image->imagedata;
                         } else {
@@ -703,6 +709,7 @@ class CartController extends BaseController
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
+                            $variantsData['quantity_container_charges'] = $quantity_container_charges;
                             $payable_amount = $payable_amount + $quantity_price;
                             if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
@@ -1057,6 +1064,7 @@ class CartController extends BaseController
         }
 
         $cart->total_service_fee = decimal_format($total_service_fee);
+        $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
         // $cart->gross_paybale_amount = $total_paying;
