@@ -15,6 +15,7 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart};
@@ -370,6 +371,19 @@ class HomeController extends BaseController
         }
     }
 
+    //git user registration document 
+     public function UserRegistrationDocument(){
+        $user = Auth::user();
+        $langId = $user->language;
+        //$user_registration_documents = UserRegistrationDocuments::with(['primary'])->get();
+        if( $langId){
+            $user_registration_documents = UserRegistrationDocuments::with(['translations' => function ($q) use ($langId) {
+                $q->where('language_id', $langId);
+            }])->get();
+           
+        }
+        return $this->successResponse($user_registration_documents);
+     }
   
     public function getEditedOrders(Request $request){
         // Get user Edited Orders from Temp Cart
@@ -497,11 +511,12 @@ class HomeController extends BaseController
                     ->where('categories.is_core', 1)
                     ->where('cts.language_id', $langId)
                     ->where(function ($q) use ($keyword) {
-                        $q->where('cts.name', ' LIKE', '%' . $keyword . '%')
+                        $q->where('cts.name', 'LIKE', '%' . $keyword . '%')
                             ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
                             ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
                     })->orderBy('categories.parent_id', 'asc')
-                    ->orderBy('categories.position', 'asc')->paginate($limit, $page);
+                    ->orderBy('categories.position', 'asc')
+                    ->groupBy('cts.category_id')->paginate($limit, $page);
                 foreach ($categories as $category) {
                     $category->response_type = 'category';
                     $category->image_url = $category->image['proxy_url'] . '80/80' . $category->image['image_path'];
@@ -533,7 +548,7 @@ class HomeController extends BaseController
 
 
                 $vendors = $vendors->where(function ($q) use ($keyword) {
-                    $q->where('name', 'LIKE', "%$keyword%")->orWhere('address', 'LIKE', '%' . $keyword . '%');
+                    $q->where('name', 'LIKE', '%'. $keyword .'%')->orWhere('address', 'LIKE', '%' . $keyword . '%');
                 })->where('status', 1)->paginate($limit, $page);
 
 

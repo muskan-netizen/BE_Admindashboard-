@@ -437,7 +437,7 @@
             <div class="modal-body text-center">
                 <img class="img-fluid blur-up lazyload" data-src="{{asset('assets/images/18.png')}}" alt="">
                 <p class="mb-0 mt-3">{{ $client_preference_detail ? $client_preference_detail->age_restriction_title : 'Are you 18 or older?' }}</p>
-                <p class="mb-0">Are you sure you want to continue?</p>
+                <p class="mb-0">{{__('Are you sure you want to continue?')}}</p>
             </div>
             <div class="modal-footer d-block">
                 <div class="row no-gutters">
@@ -458,6 +458,7 @@
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+        
         $("#doneeee").click(function() {
             console.log("nejhbfe");
             // $(".hide_div").hide();

@@ -911,6 +911,8 @@ $(document).ready(function() {
                 paymentViaStripeFPX('', 19, '');
             }else if (payment_option_id == 20) {
                 payWithKPG('');
+            }else if(payment_option_id == 22) {
+                payWithCcAvenue('');
             }
         } else {
             _this.attr("disabled", false);
@@ -1755,7 +1757,16 @@ $(document).ready(function() {
         }else if (payment_option_id == 20) {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
+                //Kongapay
                 payWithKPG(order);
+            }
+            else{
+                return false;
+            }
+        }else if (payment_option_id == 22) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                payWithCcAvenue(order);
             }
             else{
                 return false;
@@ -1944,7 +1955,10 @@ $(document).ready(function() {
             paymentViaStripeFPX('', payment_option_id, '');
         }else if (payment_option_id == 20) {
             payWithKPG('');
+        }else if (payment_option_id == 22) {
+            payWithCcAvenue('');
         }
+        
     });
     $(document).on("click", ".remove_promo_code_btn", function() {
         let cart_id = $(this).data('cart_id');
@@ -2628,7 +2642,25 @@ $(document).ready(function() {
 
 
     function addToCart() {
+
+
         var breakOut = false;
+        var Product_quantity = $('.quantity_count').val();
+
+        if(Product_quantity <=0){
+            Swal.fire({
+                // title: "Warning!",
+                text: "Please enter quantity",
+                icon : "warning",
+                button: "OK",
+             });
+
+
+            breakOut = true;
+            return false;
+
+        }
+
         $(".productAddonSetOptions").each(function(index) {
             var min_select = $(this).attr("data-min");
             var max_select = $(this).attr("data-max");

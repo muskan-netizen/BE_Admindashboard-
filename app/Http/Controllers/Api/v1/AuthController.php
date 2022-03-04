@@ -16,10 +16,11 @@ use Illuminate\Support\Facades\Hash;
 use App\Notifications\PasswordReset;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate,UserRegistrationDocuments,UserDocs};
 use Log;
 
 class AuthController extends BaseController
@@ -29,6 +30,13 @@ class AuthController extends BaseController
      * Get Country List
      * * @return country array
      */
+    private $folderName = '/user/document';
+
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/user/document';
+    }
     public function countries(Request $request)
     {
         $country = Country::select('id', 'code', 'name', 'nicename', 'phonecode')->get();
@@ -169,7 +177,7 @@ class AuthController extends BaseController
                 $errors['error'] = __('User is not register as vendor');
             }else{
                 $errors['error'] = __('User is not approved by admin');
-            }             
+            }
             return response()->json($errors, 422);
         }
         $prefer = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
@@ -258,7 +266,9 @@ class AuthController extends BaseController
      */
     public function signup(Request $signReq)
     {
+
         $preferences = ClientPreference::first();
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
         $rules = [
             'dial_code'   => 'required|string',
             'device_type'   => 'required|string',
@@ -274,7 +284,14 @@ class AuthController extends BaseController
         if($preferences->verify_phone == 1){
             $rules['phone_number'] = 'required|string|min:8|max:15|unique:users';
         }
+        foreach ($user_registration_documents as $user_registration_document) {
+            if($user_registration_document->is_required == 1){
+                $rules[$user_registration_document->primary->slug] = 'required';
+            }
+        }
+
         $validator = Validator::make($signReq->all(), $rules);
+
         if( (empty($signReq->email)) && (empty($signReq->phone_number)) ){
             $validator = Validator::make($signReq->all(), [
                 'email'  => 'required',
@@ -312,6 +329,7 @@ class AuthController extends BaseController
             }
         }
         $client_timezone = Client::where('id', '>', 0)->value('timezone');
+
         $user = new User();
 
         foreach ($signReq->only('name', 'country_id', 'phone_number', 'dial_code') as $key => $value) {
@@ -336,6 +354,39 @@ class AuthController extends BaseController
         $user->email_token_valid_till = $sendTime;
         $user->timezone = $client_timezone;
         $user->save();
+        // user upload document
+        if ($user_registration_documents->count() > 0) {
+            foreach ($user_registration_documents as $user_registration_document) {
+                $doc_name = str_replace(" ", "_", $user_registration_document->primary->slug);
+                if ($user_registration_document->file_type != "Text" && $user_registration_document->file_type != "selector") {
+                    if ($signReq->hasFile($doc_name)) {
+                        $vendor_docs =  new UserDocs();
+                        $vendor_docs->user_id = $user->id;
+                        $vendor_docs->user_registration_document_id = $user_registration_document->id;
+                        $vendor_docs->file_original_name = $signReq->file($doc_name)->getClientOriginalName();
+                        $filePath = $this->folderName . '/' . Str::random(40);
+                        $file = $signReq->file($doc_name);
+                        $vendor_docs->file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                        $vendor_docs->save();
+                    }
+                } else {
+                    if (!empty($signReq->$doc_name)) {
+                        $vendor_docs =  new UserDocs();
+                        $vendor_docs->user_id = $user->id;
+                        $vendor_docs->user_registration_document_id = $user_registration_document->id;
+                        $vendor_docs->file_name = $signReq->$doc_name;
+                        $vendor_docs->save();
+                    }
+                }
+            }
+        }
+        $user_id = $user->id;
+        $user_registration_documents = UserRegistrationDocuments::with(['user_document' =>function($q) use($user_id){
+            $q->where('user_id', $user_id);
+        },'primary'])->get();
+        $response['user_document'] = $user_registration_documents;
+      
+        //end user upload document
         $wallet = $user->wallet;
         $userRefferal = new UserRefferal();
         $userRefferal->refferal_code = $this->randomData("user_refferals", 8, 'refferal_code');
@@ -1058,6 +1109,10 @@ class AuthController extends BaseController
                 $prefer = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
                 $verified['is_email_verified'] = $user->is_email_verified;
                 $verified['is_phone_verified'] = $user->is_phone_verified;
+                $user_id =$user->id;
+                $user_registration_documents = UserRegistrationDocuments::with(['user_document' =>function($q) use($user_id){
+                    $q->where('user_id', $user_id);
+                },'primary'])->get();
                 $token1 = new Token;
                 $token = $token1->make([
                     'key' => 'royoorders-jwt',
@@ -1131,6 +1186,7 @@ class AuthController extends BaseController
                 $data['cca2'] = $user->country ? $user->country->code : '';
                 $data['callingCode'] = $user->country ? $user->country->phonecode : '';
                 $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code : '';
+                $data['user_document'] = $user_registration_documents;
                 return response()->json(['data' => $data]);
             }
             else {

@@ -63,6 +63,7 @@ class OrderCancelRequestsController extends BaseController
     public function filter(Request $request, $domain = '')
     {
         $user = Auth::user();
+        $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         
         $req = OrderCancelRequest::with(['order', 'vendor', 'order_vendor', 'updated_by_user'])->where('status', $request->status);
@@ -92,6 +93,12 @@ class OrderCancelRequestsController extends BaseController
             ->editColumn('updated_by', function($req) {
                 return $req->updated_by_user ? $req->updated_by_user->name : '';
             })
+            ->addColumn('requested_date', function($req) use($timezone) {
+                return dateTimeInUserTimeZone($req->created_at, $timezone);
+            })
+            ->addColumn('updated_date', function($req) use($timezone) {
+                return dateTimeInUserTimeZone($req->updated_at, $timezone);
+            })
             ->addColumn('action', function ($req) use($request) {
                 if($request->status == 0){
                     return "<div class='form-ul'>
@@ -110,10 +117,10 @@ class OrderCancelRequestsController extends BaseController
                     $search = $request->get('search');
                     $instance->where(function($query) use($search) {
                         $query->where('reject_reason', 'LIKE', '%'.$search.'%')
-                        ->orWhereHas('order', function($q){
+                        ->orWhereHas('order', function($q) use($search){
                             $q->where('order_number', 'LIKE', '%'.$search.'%');
                         })
-                        ->orWhereHas('order_vendor.vendor', function($q){
+                        ->orWhereHas('order_vendor.vendor', function($q) use($search){
                             $q->where('name', 'LIKE', '%'.$search.'%');
                         });
                     });
@@ -142,9 +149,10 @@ class OrderCancelRequestsController extends BaseController
             $vendor_id = $cancel_req->vendor_id;
             $order_vendor_id = $cancel_req->order_vendor_id;
             $client_preferences = ClientPreference::first();
+            $currentOrderStatus = OrderVendor::with('orderDetail', 'vendor')->where(['id'=>$order_vendor_id, 'vendor_id' => $vendor_id, 'order_id' => $order_id])->first();
+
             // If cancel order request has been approved
             if($status == 1){
-                $currentOrderStatus = OrderVendor::with('orderDetail', 'vendor')->where(['id'=>$order_vendor_id, 'vendor_id' => $vendor_id, 'order_id' => $order_id])->first();
                 if ($currentOrderStatus->order_status_option_id == 3) {
                     return $this->errorResponse(__('Order has already been rejected'), 422);
                 }

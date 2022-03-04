@@ -1,169 +1,338 @@
 @extends('layouts.store', ['title' => __('Register')])
 @section('css')
-<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
+    <link rel="stylesheet" href="{{ asset('assets/css/intlTelInput.css') }}">
+    <style type="text/css">
+        .file>label,
+        .file.upload-new>label {
+            width: 100%;
+            border: 1px solid #ddd;
+            padding: 30px 0;
+            height: 216px;
+        }
+
+        .file .update_pic img,
+        .file.upload-new img {
+            height: 130px;
+            width: auto;
+        }
+
+        .update_pic,
+        .file.upload-new .update_pic {
+            width: 100%;
+            height: auto;
+            margin: auto;
+            text-align: center;
+            border: 0;
+            border-radius: 0;
+        }
+
+        .file--upload>label {
+            margin-bottom: 0;
+        }
+
+    </style>
 @endsection
 @section('content')
-<section class="wrapper-main mb-5 py-lg-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12 mb-lg-0 mb-3 text-center">
-                <h3 class="mb-2">{{ __('New Customer') }}</h3>
-                @if(session('preferences'))
-                @if(session('preferences')->fb_login == 1 || session('preferences')->twitter_login == 1 || session('preferences')->google_login == 1 || session('preferences')->apple_login == 1)
-                <ul class="social-links d-flex align-items-center mx-auto mb-4 mt-3">
-                    @if(session('preferences')->google_login == 1)
-                    <li>
-                        <a href="{{url('auth/google')}}">
-                            <img src="{{asset('front-assets/images/google.svg')}}">
-                        </a>
-                    </li>
-                    @endif
-                    @if(session('preferences')->fb_login == 1)
-                    <li>
-                        <a href="{{url('auth/facebook')}}">
-                            <img src="{{asset('front-assets/images/facebook.svg')}}">
-                        </a>
-                    </li>
-                    @endif
-                    @if(session('preferences')->twitter_login)
-                    <li>
-                        <a href="{{url('auth/twitter')}}">
-                            <img src="{{asset('front-assets/images/twitter.svg')}}">
-                        </a>
-                    </li>
-                    @endif
-                    @if(session('preferences')->apple_login == 1)
-                    <li>
-                        <a href="javascript::void(0);">
-                            <img src="{{asset('front-assets/images/apple.svg')}}">
-                        </a>
-                    </li>
-                    @endif
-                </ul>
-                <div class="divider_line m-auto">
-                    <span>{{ __('OR') }}</span>
-                </div>
-                @endif
-                @endif
-                <div class="row mt-3">
-                    <div class="offset-xl-2 col-xl-8 text-left">
-                        <form name="register" id="register" action="{{route('customer.register')}}" class="px-lg-4" method="post"> @csrf
-                            <div class="row form-group mb-0">
-                                <div class="col-md-6 mb-3">
-                                    <label for="">{{ __('Full Name') }}</label>
-                                    <input type="text" class="form-control @error('name') is-invalid @enderror" placeholder="{{ __('Full Name') }}" name="name" value="{{ old('name')}}">
-                                    @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="">{{ __('Phone No.') }}</label>
-                                    <input type="tel" class="form-control phone @error('phone_number') is-invalid @enderror" id="phone" placeholder="{{ __('Phone No.') }}" name="phone_number" value="{{old('full_number')}}">
-                                    <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode','1') }}">
-                                    <input type="hidden" id="countryData" name="countryData" value="{{ old('countryData') ? old('countryData') : Session::get('default_country_code','US')}}">
-                                    @error('phone_number') 
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
+    <section class="wrapper-main mb-5 py-lg-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 mb-lg-0 mb-3 text-center">
+                    <h3 class="mb-2">{{ __('New Customer') }}</h3>
+
+                    @if (session('preferences'))
+                        @if (session('preferences')->fb_login == 1 || session('preferences')->twitter_login == 1 || session('preferences')->google_login == 1 || session('preferences')->apple_login == 1)
+                            <ul class="social-links d-flex align-items-center mx-auto mb-4 mt-3">
+                                @if (session('preferences')->google_login == 1)
+                                    <li>
+                                        <a href="{{ url('auth/google') }}">
+                                            <img src="{{ asset('front-assets/images/google.svg') }}">
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (session('preferences')->fb_login == 1)
+                                    <li>
+                                        <a href="{{ url('auth/facebook') }}">
+                                            <img src="{{ asset('front-assets/images/facebook.svg') }}">
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (session('preferences')->twitter_login)
+                                    <li>
+                                        <a href="{{ url('auth/twitter') }}">
+                                            <img src="{{ asset('front-assets/images/twitter.svg') }}">
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (session('preferences')->apple_login == 1)
+                                    <li>
+                                        <a href="javascript::void(0);">
+                                            <img src="{{ asset('front-assets/images/apple.svg') }}">
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                            <div class="divider_line m-auto">
+                                <span>{{ __('OR') }}</span>
                             </div>
-                            <div class="row form-group mb-0">
-                                <div class="col-md-6 mb-3">
-                                    <label for="">{{ __('Email') }}</label>
-                                    <input type="email" class="form-control @error('email') is-invalid @enderror" placeholder="{{ __('Email') }}" name="email" value="{{ old('email')}}">
-                                    @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="">{{ __('Password') }}</label>
-                                    <div class="position-relative">
-                                        <input type="password" id="password-field" class="form-control @error('password') is-invalid @enderror" id="review" placeholder="{{ __('Enter Your Password') }}" name="password">
-                                        <!-- <input id="password-field" type="password" class="form-control pr-3" name="password" placeholder="{{ __('Password') }}"> -->
-                                        <span toggle="#password-field" class="fa fa-eye-slash toggle-password" style="right:20px" ></span>
-                                        @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $errors->first('password') }}</strong>
-                                        </span>
+                        @endif
+                    @endif
+                    <div class="row mt-3">
+                        <div class="offset-xl-2 col-xl-8 text-left">
+                            <form name="register" id="register" enctype="multipart/form-data" action="{{ route('customer.register') }}"
+                                class="px-lg-4" method="post"> @csrf
+                                <div class="row form-group mb-0">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="">{{ __('Full Name') }}</label>
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                            placeholder="{{ __('Full Name') }}" name="name" value="{{ old('name') }}">
+                                        @error('name')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="">{{ __('Phone No.') }}</label>
+                                        <input type="tel"
+                                            class="form-control phone @error('phone_number') is-invalid @enderror"
+                                            id="phone" placeholder="{{ __('Phone No.') }}" name="phone_number"
+                                            value="{{ old('full_number') }}">
+                                        <input type="hidden" id="dialCode" name="dialCode"
+                                            value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode', '1') }}">
+                                        <input type="hidden" id="countryData" name="countryData"
+                                            value="{{ old('countryData') ? old('countryData') : Session::get('default_country_code', 'US') }}">
+                                        @error('phone_number')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row form-group mb-0 align-items-center">
-                                <div class="col-12 checkbox-input">
-                                    <input type="checkbox" id="html" name="term_and_condition" class="form-control @error('term_and_condition') is-invalid @enderror">
+                                <div class="row form-group mb-0">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="">{{ __('Email') }}</label>
+                                        <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                            placeholder="{{ __('Email') }}" name="email" value="{{ old('email') }}">
+                                        @error('email')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="">{{ __('Password') }}</label>
+                                        <div class="position-relative">
+                                            <input type="password" id="password-field"
+                                                class="form-control @error('password') is-invalid @enderror" id="review"
+                                                placeholder="{{ __('Enter Your Password') }}" name="password">
+                                            <!-- <input id="password-field" type="password" class="form-control pr-3" name="password" placeholder="{{ __('Password') }}"> -->
+                                            <span toggle="#password-field" class="fa fa-eye-slash toggle-password"
+                                                style="right:20px"></span>
+                                            @error('password')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $errors->first('password') }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
 
-                                  
-
-                                    <label for="html">{{__('I accept the')}}  
-                                    <a href="{{ ($terms) ? route('extrapage',$terms->slug) : '#'}}" target="_blank">{{__('Terms And Conditions')}} </a> 
-                                     {{__('and have read the')}} 
-                                    <a href="{{ ($privacy) ? route('extrapage',$privacy->slug) : '#'}}" target="_blank"> 
-                                        {{__('Privacy Policy')}}.
-                                    </a>
-                                    </label>
-                                    @if($errors->first('term_and_condition'))
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $errors->first('term_and_condition') }}</strong>
-                                    </span>
+                                <div class="form-row ">
+                                    @if (count($user_registration_documents) > 0)
+                                        <div class="user-info d-block w-100">
+                                            <h2 class="py-1">User Document</h2>
+                                        </div>
                                     @endif
+                                    @foreach ($user_registration_documents as $vendor_registration_document)
+                                        @if (isset($vendor_registration_document->primary->slug) && !empty($vendor_registration_document->primary->slug))
+                                            @if (strtolower($vendor_registration_document->file_type) == 'selector')
+                                                <div class="col-md-6 mb-3"
+                                                    id="{{ $vendor_registration_document->primary->slug ?? '' }}Input">
+                                                    <label
+                                                        for="">{{ $vendor_registration_document->primary ? $vendor_registration_document->primary->name : '' }}</label>
+                                                    <select
+                                                        class="form-control {{ !empty($vendor_registration_document->is_required) ? 'required' : '' }}"
+                                                        name="{{ $vendor_registration_document->primary->slug }}"
+                                                        id="input_file_selector_{{ $vendor_registration_document->id }}">
+                                                        <option value="">
+                                                            {{ __('Please Select ') .($vendor_registration_document->primary ? $vendor_registration_document->primary->name : '') }}
+                                                        </option>
+                                                        @foreach ($vendor_registration_document->options as $key => $value)
+                                                            <option value="{{ $value->id }}">
+                                                                {{ $value->translation ? $value->translation->name : '' }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    <span class="invalid-feedback"
+                                                        id="{{ $vendor_registration_document->primary->slug }}_error"><strong></strong></span>
+                                                </div>
+                                            @else
+                                                <div class="col-md-6 mb-3"
+                                                    id="{{ $vendor_registration_document->primary->slug ?? '' }}Input">
+                                                    <label
+                                                        for="">{{ $vendor_registration_document->primary ? $vendor_registration_document->primary->name : '' }}</label>
+                                                    @if (strtolower($vendor_registration_document->file_type) == 'text')
+                                                        <input id="input_file_logo_{{ $vendor_registration_document->id }}"
+                                                            type="text"
+                                                            name="{{ $vendor_registration_document->primary->slug }}"
+                                                            class="form-control {{ !empty($vendor_registration_document->is_required) ? 'required' : '' }}">
 
-                                    
+                                                        @error($vendor_registration_document->primary->slug)
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $errors->first($vendor_registration_document->primary->slug) }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    @else
+                                                        <div class="file file--upload">
+                                                            <label
+                                                                for="input_file_logo_{{ $vendor_registration_document->id }}">
+                                                                <span class="update_pic pdf-icon">
+                                                                    <img src=""
+                                                                        id="upload_logo_preview_{{ $vendor_registration_document->id }}">
+                                                                </span>
+                                                                <span class="plus_icon"
+                                                                    id="plus_icon_{{ $vendor_registration_document->id }}">
+                                                                    <i class="fa fa-plus"></i>
+                                                                </span>
+                                                            </label>
+                                                            @if (strtolower($vendor_registration_document->file_type) == 'image')
+                                                                <input
+                                                                    class="{{ !empty($vendor_registration_document->is_required) ? 'required' : '' }}"
+                                                                    id="input_file_logo_{{ $vendor_registration_document->id }}"
+                                                                    type="file"
+                                                                    name="{{ $vendor_registration_document->primary->slug }}"
+                                                                    accept="image/*"
+                                                                    data-rel="{{ $vendor_registration_document->id }}">
+                                                            @else
+                                                                <input
+                                                                    class="{{ !empty($vendor_registration_document->is_required) ? 'required' : '' }}"
+                                                                    id="input_file_logo_{{ $vendor_registration_document->id }}"
+                                                                    type="file"
+                                                                    name="{{ $vendor_registration_document->primary->slug }}"
+                                                                    accept=".pdf"
+                                                                    data-rel="{{ $vendor_registration_document->id }}">
+                                                            @endif
 
+                                                            @error($vendor_registration_document->primary->slug)
+                                                                <span class="invalid-feedback" role="alert">
+                                                                    <strong>{{ $errors->first($vendor_registration_document->primary->slug) }}</strong>
+                                                                </span>
+                                                            @enderror
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        @endif
+                                    @endforeach
                                 </div>
-                                <div class="col-md-6 hide position-absolute">
-                                    <label for="">Referral Code</label>
-                                    <input type="text" class="form-control" id="refferal_code" placeholder="Refferal Code" name="refferal_code" value="{{ old('refferal_code', $code ?? '')}}">
-                                    @if($errors->first('refferal_code'))
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $errors->first('refferal_code') }}</strong>
-                                    </span>
-                                    @endif
+                                <div class="row form-group mb-0 align-items-center">
+                                    <div class="col-12 checkbox-input">
+                                        <input type="checkbox" id="html" name="term_and_condition"
+                                            class="form-control @error('term_and_condition') is-invalid @enderror">
+
+
+
+                                        <label for="html">{{ __('I accept the') }}
+                                            <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                                                target="_blank">{{ __('Terms And Conditions') }} </a>
+                                            {{ __('and have read the') }}
+                                            <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
+                                                target="_blank">
+                                                {{ __('Privacy Policy') }}.
+                                            </a>
+                                        </label>
+                                        @if ($errors->first('term_and_condition'))
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $errors->first('term_and_condition') }}</strong>
+                                            </span>
+                                        @endif
+
+
+
+                                    </div>
+                                    <div class="col-md-6 hide position-absolute">
+                                        <label for="">Referral Code</label>
+                                        <input type="text" class="form-control" id="refferal_code"
+                                            placeholder="Refferal Code" name="refferal_code"
+                                            value="{{ old('refferal_code', $code ?? '') }}">
+                                        @if ($errors->first('refferal_code'))
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $errors->first('refferal_code') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row mt-3">
-                                <div class="col-md-12">
-                                    <input type="hidden" name="device_type" value="web">
-                                    <input type="hidden" name="device_token" value="web">
-                                    <button type="submit" class="btn btn-solid submitLogin w-100">{{ __('Create An Account') }}</button>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <input type="hidden" name="device_type" value="web">
+                                        <input type="hidden" name="device_token" value="web">
+                                        <button type="submit"
+                                            class="btn btn-solid submitLogin w-100">{{ __('Create An Account') }}</button>
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 @endsection
 @section('script')
-<script src="{{asset('assets/js/intlTelInput.js')}}"></script>
-<script>
-    var input = document.querySelector("#phone");
-    window.intlTelInput(input, {
-        separateDialCode: true,
-        hiddenInput: "full_number",
-        utilsScript: "{{asset('assets/js/utils.js')}}",
-        initialCountry: "{{ Session::get('default_country_code','US') }}",
-    });
-    $(document).ready(function() {
-        $("#phone").keypress(function(e) {
-            if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-                return false;
-            }
-            return true;
+    <script src="{{ asset('assets/js/intlTelInput.js') }}"></script>
+    <script>
+        var input = document.querySelector("#phone");
+        window.intlTelInput(input, {
+            separateDialCode: true,
+            hiddenInput: "full_number",
+            utilsScript: "{{ asset('assets/js/utils.js') }}",
+            initialCountry: "{{ Session::get('default_country_code', 'US') }}",
         });
-    });
-    $('.iti__country').click(function() {
-        var code = $(this).attr('data-country-code');
-        $('#countryData').val(code);
-        var dial_code = $(this).attr('data-dial-code');
-        $('#dialCode').val(dial_code);
-    });
-</script>
+        $(document).ready(function() {
+            $("#phone").keypress(function(e) {
+                if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                    return false;
+                }
+                return true;
+            });
+        });
+        $('.iti__country').click(function() {
+            var code = $(this).attr('data-country-code');
+            $('#countryData').val(code);
+            var dial_code = $(this).attr('data-dial-code');
+            $('#dialCode').val(dial_code);
+        });
+        $(document).on('change', '[id^=input_file_logo_]', function(event) {
+            var rel = $(this).data('rel');
+            // $('#plus_icon_'+rel).hide();
+            readURL(this, '#upload_logo_preview_' + rel);
+        });
+
+        function getExtension(filename) {
+            return filename.split('.').pop().toLowerCase();
+        }
+
+        function readURL(input, previewId) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                var extension = getExtension(input.files[0].name);
+                reader.onload = function(e) {
+                    if (extension == 'pdf') {
+                        $(previewId).attr('src', "{{ asset('assets/images/pdf-icon-png-2072.png') }}");
+                    } else if (extension == 'csv') {
+                        $(previewId).attr('src', text_image);
+                    } else if (extension == 'txt') {
+                        $(previewId).attr('src', text_image);
+                    } else if (extension == 'xls') {
+                        $(previewId).attr('src', text_image);
+                    } else if (extension == 'xlsx') {
+                        $(previewId).attr('src', text_image);
+                    } else {
+                        $(previewId).attr('src', e.target.result);
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 @endsection

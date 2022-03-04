@@ -167,7 +167,7 @@
                                                                 <td>{{$set->min_select}} - {{$set->max_select}}</td>
                                                                 <td>
                                                                     @foreach($set->option as $opt)
-                                                                    <span>{{$opt->title}} - {{$clientCurrency->currency->symbol}}{{$opt->price}}</span><br />
+                                                                    <span>{{$opt->title}} - {{$clientCurrency->currency->symbol}}{{decimal_format($opt->price)}}</span><br />
                                                                     <span></span>
                                                                     @endforeach
                                                                 </td>

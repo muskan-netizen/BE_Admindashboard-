@@ -1,7 +1,7 @@
 <?php
 
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml'); 
+Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
 Route::get('/debug-sentry', function () {
 	throw new Exception('My first Sentry error!');
 });
@@ -9,6 +9,11 @@ Route::get('/debug-sentry', function () {
 
 
 Route::group(['middleware' => ['domain']], function () {
+	//easypay test
+	Route::get('testpayment', 'Front\EasypaisaController@testpayment')->name('testpayment'); 
+	Route::get('response', 'Front\EasypaisaController@response')->name('response_payment');
+
+
 	Route::post('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
 	Route::post('webhook/ship-rocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
 	Route::post('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
@@ -130,7 +135,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/checkout', 'Front\CheckoutGatewayController@checkoutPurchase')->name('payment.checkoutPurchase');
 	Route::post('payment/checkout/notify', 'Front\CheckoutGatewayController@checkoutNotify')->name('payment.checkoutNotify');
 
-	//Passbase 
+	//Passbase
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
 	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 	Route::any('passbase/webhook','Front\PassbaseController@webhook')->name('passbase.webhook');
@@ -139,6 +144,10 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
+	//ccavenue-pay
+	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
+	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
+	//Route::any('ccavenue/cancel', 'Front\CcavenueController@cancelForm')->name('ccavenue.cancel');
 
 	//KongaPay routes
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
@@ -240,7 +249,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'vendor/{id?}', 'Front\VendorController@vendorProducts')->name('vendorDetail');
 	Route::get('vendor/{slug1}/{slug2}', 'Front\VendorController@vendorCategoryProducts')->name('vendorCategoryProducts');
 	Route::post('vendor/filters/{id}', 'Front\VendorController@vendorFilters')->name('vendorProductFilters');
-	Route::post('vendor/products/searchResults', 'Front\VendorController@vendorProductsSearchResults')->name('vendorProductsSearchResults'); 
+	Route::post('vendor/products/searchResults', 'Front\VendorController@vendorProductsSearchResults')->name('vendorProductsSearchResults');
 	Route::post('vendor/product/addons', 'Front\VendorController@vendorProductAddons')->name('vendorProductAddons');
 	Route::get('brand/{id?}', 'Front\BrandController@brandProducts')->name('brandDetail');
 	Route::post('brand/filters/{id}', 'Front\BrandController@brandFilters')->name('brandProductFilters');

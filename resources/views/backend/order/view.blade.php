@@ -6,6 +6,10 @@
 #cancel-request-card{
     background: #ddd;
 }
+.royo-thumnail_img {
+    width: 100px;
+    height: auto;
+}
 </style>
 @endsection
 @section('content')
@@ -26,7 +30,7 @@ $timezone = Auth::user()->timezone;
 
             </div>
         </div>
-        
+
         @if($order->vendors->first())
             @if( ($order->vendors->first()->cancel_request) && ($order->vendors->first()->cancel_request->status == 'Pending') )
             <div class="row">
@@ -271,6 +275,7 @@ $timezone = Auth::user()->timezone;
                                     <tr>
                                         <th scope="row">
 
+
                                             <a href="{{ isset($product->product) ? route('product.edit', @$product->product->id) : '#'}}" target="_blank">
                                                 {{$product->product_name}}
                                             </a>
@@ -475,11 +480,53 @@ $timezone = Auth::user()->timezone;
                 </div>
             </div>
 
+            @if(count($user_registration_documents) > 0)
+            <div class="col-lg-6 mb-3">
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <h4 class="header-title mb-3">{{ __('User Proof') }}</h4>
+                        @foreach($user_registration_documents as $user_registration_document)
+                            @php
+                            $field_value = "";
+                            if(!empty($user_docs) && count($user_docs) > 0){
+                                foreach($user_docs as $key => $user_doc){
+                                    if($user_registration_document->id == $user_doc->user_registration_document_id){
+                                        if($user_registration_document->file_type == 'Text' || $user_registration_document->file_type == 'selector' ){
+                                            $field_value = $user_doc->file_name;
+                                        } else {
+                                            $field_value = $user_doc->image_file['storage_url'];
+                                        }
+                                    }
+                                }
+                            }
+                            @endphp
+                            <div class="mb-2">
+                                @if($field_value)
+                                    <label class="mb-2"><b>{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}} : </b></label>
+                                    @if(strtolower($user_registration_document->file_type) == 'image')
+                                    <a href="{{$field_value}}" target="_blank">
+                                        <div class="border rounded-lg royo-thumnail_img text-center ">
+                                            <img src="{{$field_value}}" class="img-thumbnail fi">
+                                        </div>
+                                    </a>
+                                    @elseif(strtolower($user_registration_document->file_type) == 'pdf')
+                                        <div>
+                                            <a href="{{$field_value}}" target="_blank"><i class="fa fa-file-pdf fa-6x text-danger"></i></a>
+                                        </div>
+                                    @else
+                                        {{$field_value}}
+                                    @endif
+
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                </div>
+            </div>
+            @endif
 
         </div>
-
-
-
     </div>
 </div>
 <div id="delivery_info_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -656,12 +703,17 @@ $timezone = Auth::user()->timezone;
     function printDiv()
     {
         var divToPrint=document.getElementById('al_print_area');
-        var newWin=window.open('','Print-Window');
-        newWin.document.open();
-        newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
+        var windowUrl = 'about:blank';
+        var windowName = 'Print Order Detail';
+        var newWin=window.open(windowUrl, windowName);
+        newWin.document.write(divToPrint.innerHTML);
         newWin.document.close();
+        newWin.focus();
+        newWin.print();
         setTimeout(function(){newWin.close();},10);
     }
 
+
 </script>
+
 @endsection

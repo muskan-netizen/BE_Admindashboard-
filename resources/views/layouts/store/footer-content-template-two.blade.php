@@ -10,7 +10,14 @@ if(session()->has('applocale')){
 }
 @endphp
 </article>
-    <footer id="footer" class="footer-light">
+@if($clientData->whatsapp_url)
+<div class="royo_whatsapp_img">
+    <a href="{{$clientData->whatsapp_url}}" target="_blank">
+        <img src="{{ asset('images/whatsapp-img.png')}}" alt="">
+    </a>
+</div>
+@endif
+    <footer id="footer" class="footer-light al_footer_template_three">
         <section class="section-b-space light-layout pb-0">
             <div class="container">
 
