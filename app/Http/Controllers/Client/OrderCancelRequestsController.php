@@ -63,6 +63,7 @@ class OrderCancelRequestsController extends BaseController
     public function filter(Request $request, $domain = '')
     {
         $user = Auth::user();
+        $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         
         $req = OrderCancelRequest::with(['order', 'vendor', 'order_vendor', 'updated_by_user'])->where('status', $request->status);
@@ -91,6 +92,12 @@ class OrderCancelRequestsController extends BaseController
             })
             ->editColumn('updated_by', function($req) {
                 return $req->updated_by_user ? $req->updated_by_user->name : '';
+            })
+            ->addColumn('requested_date', function($req) use($timezone) {
+                return dateTimeInUserTimeZone($req->created_at, $timezone);
+            })
+            ->addColumn('updated_date', function($req) use($timezone) {
+                return dateTimeInUserTimeZone($req->updated_at, $timezone);
             })
             ->addColumn('action', function ($req) use($request) {
                 if($request->status == 0){
