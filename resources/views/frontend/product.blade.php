@@ -483,7 +483,7 @@
                                         <div class="material-border"></div>
                                     </li> -->
                                     @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                                    <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>Ratings & Reviews</a>
+                                    <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
                                         <div class="material-border"></div>
                                     </li>
                                     @endif

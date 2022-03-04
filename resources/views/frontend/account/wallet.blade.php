@@ -394,6 +394,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
