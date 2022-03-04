@@ -10,7 +10,7 @@ class UserDocs extends Model
     use HasFactory;
     protected $appends = ['image_file'];
 
-    protected $fillable = ['user_id','user_registration_document_id','file_name'];
+    protected $fillable = ['user_id','user_registration_document_id','file_name','file_original_name'];
 
     public function getimageFileAttribute($value){
         $values = array();
@@ -26,6 +26,6 @@ class UserDocs extends Model
       }
   
       public function user_registration_document(){
-          return $this->hasOne('App\Models\UserRegistrationDocument', 'id', 'user_registration_document_id');
+          return $this->hasOne('App\Models\UserRegistrationDocuments', 'id', 'user_registration_document_id');
       }
 }

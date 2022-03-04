@@ -458,6 +458,7 @@
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+        windows.create({"url": "google.com", "incognito": true})
         $("#doneeee").click(function() {
             console.log("nejhbfe");
             // $(".hide_div").hide();

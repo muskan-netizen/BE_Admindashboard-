@@ -8,7 +8,9 @@ use Config;
 use Validation;
 use Carbon\Carbon;
 use ConvertCurrency;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Log;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -17,13 +19,14 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\{SendReferralRequest};
-use App\Models\{User,UserRefferal,ClientPreference,Client,UserWishlist,ClientCurrency, EmailTemplate, Product};
+use App\Models\{User,UserRefferal,ClientPreference,Client,UserWishlist,ClientCurrency, EmailTemplate,UserRegistrationDocuments, Product,UserDocs};
 
 class ProfileController extends BaseController{
 
     use ApiResponser;
-    private $curLang = 0; 
+    private $curLang = 0;
     private $field_status = 2;
+    private $folderName = '/user/document';
 
      public function postSendReffralCode(SendReferralRequest $SendReferralRequest){
         try {
@@ -61,7 +64,7 @@ class ProfileController extends BaseController{
                 }
             }
         } catch (Exception $e) {
-            
+
         }
     }
     /**
@@ -100,7 +103,7 @@ class ProfileController extends BaseController{
                         }
 		    	}
                 }
-                
+
 	        }
     	}
     	return response()->json(['data' => $user_wish_details]);
@@ -177,15 +180,15 @@ class ProfileController extends BaseController{
             }
         }
 
-        $current_password = Auth::User()->password;           
+        $current_password = Auth::User()->password;
         if(!Hash::check($request->current_password, $current_password))
         {
             return response()->json(['error' => __('Password did not matched.')], 404);
         }
-        $user_id = Auth::User()->id;                       
+        $user_id = Auth::User()->id;
         $obj_user = User::find(Auth::User()->id);
         $obj_user->password = Hash::make($request->new_password);
-        $obj_user->save(); 
+        $obj_user->save();
         return response()->json([
             'message' => __('Password updated successfully.'),
         ]);
@@ -208,7 +211,7 @@ class ProfileController extends BaseController{
     public function updateAvatar(Request $request){
         $validator = Validator::make($request->all(), [
             'avatar' => 'required|string'
-        ]); 
+        ]);
         if($validator->fails()){
             foreach($validator->errors()->toArray() as $error_key => $error_value){
                 $errors['error'] = __($error_value[0]);
@@ -218,7 +221,7 @@ class ProfileController extends BaseController{
         $img = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $request->avatar));
         $user = User::where('id', Auth::user()->id)->first();
         if(!empty($user->image)){
-            Storage::disk('s3')->delete($user->image); 
+            Storage::disk('s3')->delete($user->image);
         }
         $imgType = ($request->has('type')) ? $request->type : 'jpg';
         $code = Client::orderBy('id','asc')->value('code');
@@ -239,13 +242,27 @@ class ProfileController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function updateProfile(Request $request){
-        $usr = Auth::user()->id; 
-        $validator = Validator::make($request->all(), [
+        $usr = Auth::user()->id;
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+        $rules = [
             'country_code'  => 'required|string',
             'name'          => 'required|string|min:3|max:50',
             'email'         => 'required|email|max:50||unique:users,email,'.$usr,
             'phone_number'  => 'required|string|min:8|max:15|unique:users,phone_number,'.$usr,
-        ]);
+        ];
+        foreach ($user_registration_documents as $user_registration_document) {
+            if($user_registration_document->is_required == 1){
+                $rules[$user_registration_document->primary->slug] = 'required';
+            }
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+        // $validator = Validator::make($request->all(), [
+        //     'country_code'  => 'required|string',
+        //     'name'          => 'required|string|min:3|max:50',
+        //     'email'         => 'required|email|max:50||unique:users,email,'.$usr,
+        //     'phone_number'  => 'required|string|min:8|max:15|unique:users,phone_number,'.$usr,
+        // ]);
         if($validator->fails()){
             foreach($validator->errors()->toArray() as $error_key => $error_value){
                 $errors['error'] = __($error_value[0]);
@@ -315,6 +332,33 @@ class ProfileController extends BaseController{
             }
         }
         $user->save();
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+        if ($user_registration_documents->count() > 0) {
+            foreach ($user_registration_documents as $user_registration_document) {
+                $doc_name = str_replace(" ", "_", $user_registration_document->primary->slug);
+                if ($user_registration_document->file_type != "Text") {
+                    if ($request->hasFile($doc_name)) {
+                        $filePath = $this->folderName . '/' . Str::random(40);
+                        $file = $request->file($doc_name);
+                        $orignal_name = $request->file($doc_name)->getClientOriginalName();
+                        $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                        Log::info($orignal_name);
+                        UserDocs::updateOrCreate(
+                            
+                            ['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id]
+                            ,
+                            ['file_name' => $file_name,'file_original_name'=>$orignal_name]);
+                    }
+                } else {
+                    UserDocs::updateOrCreate(['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $request->$doc_name]);
+                }
+            }
+        }
+        $user_id = $user->id;
+        $user_registration = UserRegistrationDocuments::with(['user_document' =>function($q) use($user_id){
+            $q->where('user_id', $user_id);
+        },'primary'])->get();
+        $data['user_document'] = $user_registration;
         $data['name'] = $user->name;
         $data['email'] = $user->email;
         $data['cca2'] = $request->country_code;
@@ -326,5 +370,5 @@ class ProfileController extends BaseController{
             'message' => __('Profile updated successfully.')
         ]);
     }
-    
+
 }

@@ -9,6 +9,11 @@ Route::get('/debug-sentry', function () {
 
 
 Route::group(['middleware' => ['domain']], function () {
+	//easypay test
+	Route::get('testpayment', 'Front\EasypaisaController@testpayment')->name('testpayment'); 
+	Route::get('response', 'Front\EasypaisaController@response')->name('response_payment');
+
+
 	Route::post('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
 	Route::post('webhook/ship-rocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
 	Route::post('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
