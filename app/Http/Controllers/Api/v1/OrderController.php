@@ -168,6 +168,7 @@ class OrderController extends BaseController
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0; 
                     $total_subscription_discount = 0;
                     $total_container_charges = 0;
+                    $vendor_total_container_charges = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $delivery_fee = 0;
                         $deliver_charge = $delivery_fee_charges = 0.00;
@@ -175,7 +176,6 @@ class OrderController extends BaseController
                         $product_taxable_amount = 0;
                         $vendor_products_total_amount = 0;
                         $vendor_payable_amount = 0;
-                        $vendor_total_container_charges = 0;
                         $vendor_discount_amount = 0;
                         $order_vendor = new OrderVendor;
                         $order_vendor->status = 0;
@@ -195,10 +195,11 @@ class OrderController extends BaseController
                             $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
                             $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
                             $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
-                            $payable_amount = $payable_amount + $quantity_price;
+                            $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                             $total_container_charges = $total_container_charges + $quantity_container_charges;
                             $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
-                            $vendor_payable_amount = $vendor_payable_amount + $quantity_price ;
+                            $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
+                            $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
                             $product_payable_amount = 0;
                             $vendor_taxable_amount = 0;
                             if (isset($vendor_cart_product->product->taxCategory)) {
@@ -240,7 +241,7 @@ class OrderController extends BaseController
                             }
                             $taxable_amount += $product_taxable_amount;
                             $vendor_taxable_amount += $taxable_amount;
-                            $total_amount += $vendor_cart_product->quantity * $variant->price;
+                            $total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);;
                             $order_product = new OrderProduct;
                             $order_product->order_vendor_id = $order_vendor->id;
                             $order_product->order_id = $order->id;
@@ -1111,7 +1112,7 @@ class OrderController extends BaseController
                     'vendors.tempCart.cartProducts.pvariant.media.pimage.image',
                     'vendors.tempCart.cartProducts.product.translation' => function ($q) use ($language_id) {
                         $q->where('language_id', $language_id)->groupBy('product_id');
-                    },
+                    }, 
                     'vendors.tempCart.cartProducts.addon.set' => function ($qry) use ($language_id) {
                         $qry->where('language_id', $language_id);
                     },
