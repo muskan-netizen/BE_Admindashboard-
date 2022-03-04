@@ -2610,6 +2610,7 @@ $(document).ready(function() {
     });
 
     $(document).on("click", ".addToCart", function() {
+
         if (!$.hasAjaxRunning()) {
             addToCart();
         }

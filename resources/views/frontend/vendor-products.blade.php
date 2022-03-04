@@ -1,40 +1,7 @@
 @extends('layouts.store', ['title' => $vendor->name])
 @section('css')
 <style type="text/css">
-.main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}
-.productVariants .firstChild {
-        min-width: 150px;
-        text-align: left !important;
-        border-radius: 0% !important;
-        margin-right: 10px;
-        cursor: default;
-        border: none !important;
-    }
-
-    .product-right .color-variant li,
-    .productVariants .otherChild {
-        height: 35px;
-        width: 35px;
-        border-radius: 50%;
-        margin-right: 10px;
-        cursor: pointer;
-        border: 1px solid #f7f7f7;
-        text-align: center;
-    }
-
-    .productVariants .otherSize {
-        height: auto !important;
-        width: auto !important;
-        border: none !important;
-        border-radius: 0%;
-    }
-
-    .product-right .size-box ul li.active {
-        background-color: inherit;
-    }
-    .product-box .product-detail h4, .product-box .product-info h4{
-        font-size: 16px;
-    }
+.main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}.product-box .product-detail h4,.product-box .product-info h4{font-size:16px}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
