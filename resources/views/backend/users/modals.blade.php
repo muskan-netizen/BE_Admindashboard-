@@ -5,7 +5,7 @@
                 <h4 class="modal-title">{{ __("Add Customer") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
-            <form id="add_user" action="{{ route('customer.store') }}" method="POST">
+            <form id="add_user" action="{{ route('customer.store') }}"  enctype="multipart/form-data" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
@@ -103,6 +103,42 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
+                        @foreach($user_registration_documents as $user_registration_document)
+                            @if(isset($user_registration_document->primary) && !empty($user_registration_document->primary))
+                                @if(strtolower($user_registration_document->file_type) == 'selector')
+                                    <div class="col-md-6 mb-3" id="{{$user_registration_document->primary->slug??''}}Input">
+                                        <label for="">{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}</label>
+                                        <select class="form-control {{ (!empty($user_registration_document->is_required))?'required':''}}" name="{{$user_registration_document->primary->slug}}"  id="input_file_selector_{{$user_registration_document->id}}">
+                                            <option value="" >{{__('Please Select '). ($user_registration_document->primary ? $user_registration_document->primary->name : '') }}</option>
+                                            @foreach ($user_registration_document->options as $key =>$value )
+                                                <option value="{{$value->id}}">{{$value->translation? $value->translation->name: ""}}</option>
+                                            @endforeach
+                                        </select>
+                                        <span class="invalid-feedback" id="{{$user_registration_document->primary->slug}}_error"><strong></strong></span>
+                                    </div>
+                                @else
+                                    <div class="col-md-6" >
+                                        <div class="form-group" id="{{$user_registration_document->primary->slug??''}}Input">
+                                            <label for="">{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}</label>
+                                            @if(strtolower($user_registration_document->file_type) == 'text')
+                                                <input id="input_file_logo_{{$user_registration_document->id}}" type="text" name="{{$user_registration_document->primary->slug}}" class="form-control">
+                                            @else
+                                                @if(strtolower($user_registration_document->file_type) == 'image')
+                                                <input type="file" accept="image/*" data-plugins="dropify" name="{{$user_registration_document->primary->slug}}" class="dropify" data-default-file="" />
+                                                @else
+                                                <input type="file" accept=".pdf" data-plugins="dropify" name="{{$user_registration_document->primary->slug}}" class="dropify" data-default-file="" />
+                                                @endif
+                                            @endif
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong></strong>
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endif
+                         @endforeach
                     </div>
                 </div>
                 <div class="modal-footer">

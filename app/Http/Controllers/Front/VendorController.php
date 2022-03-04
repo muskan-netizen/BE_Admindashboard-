@@ -517,6 +517,7 @@ class VendorController extends FrontController
                 $image_path = ($AddonData->media->isNotEmpty()) ? $AddonData->media->first()->image->path['image_path'] : '';
             }
             $AddonData->product_image = $image_fit . '800/800' . $image_path;
+            $AddonData->averageRating = number_format($AddonData->averageRating,1);
             $AddonData->translation_title = ($AddonData->translation->isNotEmpty()) ? $AddonData->translation->first()->title : $AddonData->title;
             $AddonData->translation_description = ($AddonData->translation->isNotEmpty()) ? strip_tags($AddonData->translation->first()->body_html) : '';
             $AddonData->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;

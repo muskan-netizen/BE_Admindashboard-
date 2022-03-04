@@ -176,8 +176,10 @@ if (Session::has('toaster')) {
             success: function(response) {
                 if (response.status == 'Success') {
                     if (response.data.orders.data.length != 0) {
+                        $("#received_new_orders").find(".modal-body").html('');
                         let latest_order_template = _.template($('#latest_order_template').html());
                         $("#received_new_orders").find(".modal-body").append(latest_order_template({
+                            Helper: NumberFormatHelper,
                             orders: response.data.orders.data
                         }));
                         $("#received_new_orders").modal('show');
@@ -244,6 +246,22 @@ if (Session::has('toaster')) {
                     console.log('firepase msg order number');
                     console.log(payload_data.order_number);
                     get_latest_order_socket(payload_data.order_number);
+                }
+                else if(payload.data.type=="order_cancellation_request"){
+                    var notificationTitle = payload.notification.title;
+                    var notificationOptions = {
+                        body: payload.notification.body,
+                        icon: payload.notification.icon
+                    };
+                    var push_notification = new Notification(
+                        notificationTitle,
+                        notificationOptions
+                    );
+                    push_notification.onclick = function(event) {
+                        event.preventDefault();
+                        window.open(payload.notification.click_action, "_blank");
+                        push_notification.close();
+                    };
                 }
             }
         }

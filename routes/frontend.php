@@ -1,7 +1,7 @@
 <?php
 
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml'); 
+Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
 Route::get('/debug-sentry', function () {
 	throw new Exception('My first Sentry error!');
 });
@@ -130,7 +130,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/checkout', 'Front\CheckoutGatewayController@checkoutPurchase')->name('payment.checkoutPurchase');
 	Route::post('payment/checkout/notify', 'Front\CheckoutGatewayController@checkoutNotify')->name('payment.checkoutNotify');
 
-	//Passbase 
+	//Passbase
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
 	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 	Route::any('passbase/webhook','Front\PassbaseController@webhook')->name('passbase.webhook');
@@ -244,7 +244,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'vendor/{id?}', 'Front\VendorController@vendorProducts')->name('vendorDetail');
 	Route::get('vendor/{slug1}/{slug2}', 'Front\VendorController@vendorCategoryProducts')->name('vendorCategoryProducts');
 	Route::post('vendor/filters/{id}', 'Front\VendorController@vendorFilters')->name('vendorProductFilters');
-	Route::post('vendor/products/searchResults', 'Front\VendorController@vendorProductsSearchResults')->name('vendorProductsSearchResults'); 
+	Route::post('vendor/products/searchResults', 'Front\VendorController@vendorProductsSearchResults')->name('vendorProductsSearchResults');
 	Route::post('vendor/product/addons', 'Front\VendorController@vendorProductAddons')->name('vendorProductAddons');
 	Route::get('brand/{id?}', 'Front\BrandController@brandProducts')->name('brandDetail');
 	Route::post('brand/filters/{id}', 'Front\BrandController@brandFilters')->name('brandProductFilters');

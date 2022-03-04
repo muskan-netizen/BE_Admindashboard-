@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Front;
 
 use Auth;
-use Session;
+use Session,Str;
 use Timezonelist;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\UserDevice;
-use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction};
+use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction,UserDocs,UserRegistrationDocuments};
 
 class ProfileController extends FrontController
 {
@@ -131,6 +131,23 @@ class ProfileController extends FrontController
             $user->description = $request->description;
             $user->phone_number = str_replace('-', '', $request->phone_number);
             $user->save();
+
+            $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+            if ($user_registration_documents->count() > 0) {
+                foreach ($user_registration_documents as $user_registration_document) {
+                    $doc_name = str_replace(" ", "_", $user_registration_document->primary->slug);
+                    if ($user_registration_document->file_type != "Text") {
+                        if ($request->hasFile($doc_name)) {
+                            $filePath = $this->folderName . '/' . Str::random(40);
+                            $file = $request->file($doc_name);
+                            $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                            UserDocs::updateOrCreate(['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $file_name]);
+                        }
+                    } else {
+                        UserDocs::updateOrCreate(['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $request->$doc_name]);
+                    }
+                }
+            }
             return redirect()->back()->with('success', 'Profile has been updated');
         }
         return redirect()->back()->with('errors', 'Profile updation failed');
@@ -164,7 +181,10 @@ class ProfileController extends FrontController
             'id'    => 'timezone',
             'class' => 'styled form-control',
         ]);
-        $returnHTML = view('frontend.account.edit-profile')->with(['user' => $user, 'userAddresses' => $user_addresses, 'timezone_list' => $timezone_list])->render();
+        $user_docs = UserDocs::where('user_id', Auth::user()->id)->get();
+        $user_registration_documents = UserRegistrationDocuments::get();
+//pr( $user_docs->toArray());
+        $returnHTML = view('frontend.account.edit-profile')->with(['user' => $user,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents , 'userAddresses' => $user_addresses, 'timezone_list' => $timezone_list])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 

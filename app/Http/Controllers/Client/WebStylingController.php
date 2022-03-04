@@ -518,6 +518,9 @@ class WebStylingController extends BaseController{
         $client->contact_address =  $request->contact_address ;
         $client->contact_phone_number =  $request->contact_phone_number ;
         $client->contact_email =  $request->contact_email ;
+        if($request->has('whatsapp_url'))
+        $client->whatsapp_url =  $request->whatsapp_url;
+
         $client->save();
         return redirect()->back()->with('success', 'Contact Us Updated successfully!');
     }

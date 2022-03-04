@@ -9,7 +9,7 @@
 @if(count($banners))
 <section class="home-slider-wrapper pt-md-3">
 	<div class="container">
-		<div id="myCarousel" class="carousel slide" data-ride="carousel">
+		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<div class="carousel-inner">
 
 				@foreach($banners as $key => $banner)
@@ -31,6 +31,31 @@
 				<span class="sr-only">Next</span>
 			</a>
 		</div>
+
+		<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel">
+			<div class="carousel-inner">
+
+				@foreach($banners as $key => $banner)
+					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+					<div class="carousel-item @if($key == 0) active @endif">
+					 <a class="banner-img-outer" href="{{$url??'#'}}">
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+					</a>
+					</div>
+				@endforeach
+
+			</div>
+			<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="sr-only">Previous</span>
+			</a>
+			<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="sr-only">Next</span>
+			</a>
+		</div>
+
+
       <!-- <div class="shimmer_effect">
          <div class="loading"></div>
       </div>
@@ -451,4 +476,31 @@
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/less@4"></script>
+<script>
+	$('.center').slick({
+  centerMode: true,
+  centerPadding: '60px',
+  slidesToShow: 2,
+  responsive: [
+    {
+      breakpoint: 768,
+      settings: {
+        arrows: false,
+        centerMode: true,
+        centerPadding: '40px',
+        slidesToShow: 2
+      }
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        arrows: false,
+        centerMode: true,
+        centerPadding: '40px',
+        slidesToShow: 1
+      }
+    }
+  ]
+});
+</script>
 @endsection
