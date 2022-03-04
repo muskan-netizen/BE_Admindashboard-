@@ -1543,14 +1543,14 @@ class CartController extends FrontController
                 }
 
                 $option[] = array(
-                    'type'=>'S',
+                    'type'=>'D',
                     'courier_name'=>__('Static'),
                     'rate' => $deliveryCharges,
                     'courier_company_id' => 0,
                     'etd' => 0,
                     'etd_hours' => 0,
                     'estimated_delivery_days' => 0,
-                    'code' => 'S_0'
+                    'code' => 'D_0'
                 );
 
            }//End statis fe code
