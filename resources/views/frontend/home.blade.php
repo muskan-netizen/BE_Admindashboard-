@@ -1,76 +1,12 @@
 @extends('layouts.store', ['title' => __('Home')])
-
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init();
+</script>
 @section('css')
 <style type="text/css">
-    .main-menu .brand-logo {
-        display: inline-block;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-
-    .shimmer_effect {
-        overflow: hidden;
-    }
-
-    .grid-row.grid-4-4 {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        grid-gap: 20px;
-    }
-
-    .shimmer_effect .card_image {
-        width: 100%;
-        height: 100%;
-    }
-
-    .shimmer_effect .card_image.loading {
-        width: 100%;
-        height: 180px;
-    }
-
-    .shimmer_effect .card_title.loading {
-        width: 50%;
-        height: 1rem;
-        margin: 1rem 0;
-        border-radius: 3px;
-        position: relative;
-    }
-
-    .shimmer_effect .card_description {
-        padding: 8px;
-        font-size: 16px;
-    }
-
-    .shimmer_effect .card_description.loading {
-        height: 1rem;
-        margin: 1rem 0;
-        border-radius: 3px;
-    }
-
-    .shimmer_effect .loading {
-        position: relative;
-        background: #cccccc86;
-    }
-
-    .shimmer_effect .loading:after {
-        content: "";
-        display: block;
-        position: absolute;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        transform: translateX(-100px);
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        animation: loading 0.8s infinite;
-    }
-    .no-store-wrapper{
-        display: none;
-    }
-    @keyframes loading {
-        100% {
-            transform: translateX(100%);
-        }
-    }
+.main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.shimmer_effect{overflow:hidden}.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(5,1fr);grid-gap:20px}.shimmer_effect .card_image{width:100%;height:100%}.shimmer_effect .card_image.loading{width:100%;height:180px}.shimmer_effect .card_title.loading{width:50%;height:1rem;margin:1rem 0;border-radius:3px;position:relative}.shimmer_effect .card_description{padding:8px;font-size:16px}.shimmer_effect .card_description.loading{height:1rem;margin:1rem 0;border-radius:3px}.shimmer_effect .loading{position:relative;background:#cccccc86}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}.no-store-wrapper{display:none}@keyframes loading{100%{transform:translateX(100%)}}
 </style>
 @endsection
 @section('content')
@@ -79,7 +15,7 @@
 
 @if(count($banners))
 <section class="p-0 small-slider al_desktop_banner">
-    <div class="slide-1 home-slider mb-md-4 mb-4 ">
+    <div class="slide-1 home-slider mb-sm-2 ">
         @foreach($banners as $banner)
         @php
         $url = '';
@@ -99,7 +35,7 @@
             <a href="{{$url}}">
                 @endif
                 <div class="home text-center">
-                    <img src="{{$banner->image['image_fit'] . '1920/1080' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
+                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
                 </div>
                 @if($url)
             </a>
@@ -110,8 +46,8 @@
 </section>
 @endif
 @if(count($banners))
-<section class="p-0 small-slider al_mobile_banner">
-    <div class="slide-1 home-slider mb-md-4 mb-4 ">
+<section class="p-0 small-slider al_mobile_banner" style="display:none;">
+    <div class="slide-1 home-slider mb-sm-2">
         @foreach($banners as $banner)
         @php
         $url = '';
@@ -131,7 +67,7 @@
             <a href="{{$url}}">
                 @endif
                 <div class="home text-center">
-                    <img src="{{$banner->image['image_fit'] . '1920/1080' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
+                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
                 </div>
                 @if($url)
             </a>
@@ -264,7 +200,7 @@
         <% subtotal_order_price = total_order_price = total_tax_order_price = 0; %>
         <% _.each(order.vendors, function(vendor, k){ %>
         <%   product_total_count = product_subtotal_amount = product_taxable_amount = 0; %>
-        <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0 mt-3">
+        <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0 ">
             <% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){ %>
                 <div class="progress-order font-12">
                 <% if(order.scheduled_date_time){ %>
@@ -411,7 +347,7 @@
     </div>
 </section>
 
-<section class="section-b-space ratio_asos d-none pb-0 pt-0" id="our_vendor_main_div">
+<section class="section-b-space ratio_asos d-none pb-0 pt-0 mt-0 al_template_two_content" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
         @if($homePageLabel->slug == 'pickup_delivery')
