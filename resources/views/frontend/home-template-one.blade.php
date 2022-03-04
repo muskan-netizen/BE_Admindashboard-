@@ -1,13 +1,16 @@
 @extends('layouts.store', ['title' => __('Home')]) @section('content')
 @section('css')
 <link rel="stylesheet/less" type="text/css" href="{{ asset('front-assets/css/shimmer-less.less') }}">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
 @endsection
 
 <!-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> -->
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
-<section class="home-slider-wrapper pt-md-3">
+<section class="home-slider-wrapper py-sm-3 ">
 	<div class="container">
 		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<div class="carousel-inner">
@@ -32,7 +35,7 @@
 			</a>
 		</div>
 
-		<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel">
+		<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel" style="display:none;">
 			<div class="carousel-inner">
 
 				@foreach($mobile_banners as $key => $banner)
@@ -165,7 +168,7 @@
 		<% subtotal_order_price = total_order_price = total_tax_order_price = 0; %>
 			<% _.each(order.vendors, function(vendor, k){ %>
 				<%   product_total_count = product_subtotal_amount = product_taxable_amount = 0; %>
-					<div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0 mt-3">
+					<div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-2">
 						<% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){%>
 							<div class="progress-order font-12">
 								<% if(order.scheduled_slot==null){%>
@@ -370,7 +373,7 @@
 
 
 
-<section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div">
+<section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0 mt-0" id="our_vendor_main_div">
 	<div class="vendors">
 		@foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery')
 		@if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
@@ -387,7 +390,7 @@
 					</div>
 				</div>
 			</div> -->
-			<div class="container ">
+			<div class="container " data-aos="zoom-in">
 				<div class="al_top_heading col-md-12">
 					<div class="row d-flex justify-content-between">
 						<h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
@@ -402,9 +405,9 @@
 			</div>
 		</section> @elseif($homePageLabel->slug == 'vendors')
 		<section class="suppliers-section">
-			<div class="container mb-0">
+			<div class="container" data-aos="zoom-in">
 				<div class="row">
-					<div class="col-12 top-heading d-flex align-items-center justify-content-between mb-2">
+					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
 						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2> <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a> </div>
 					<div class="col-12">
 						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
@@ -413,7 +416,7 @@
 			</div>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
 		<section class="suppliers-section">
-			<div class="container">
+			<div class="container" data-aos="zoom-in">
 				<div class="row">
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
 						<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
@@ -423,8 +426,8 @@
 				</div>
 			</div>
 		</section> @else
-		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-			<div class="row">
+		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" data-aos="zoom-in">
+			<div class="row" >
 				<div class="col-12 top-heading d-flex align-items-center justify-content-between">
 					<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
 			</div>
@@ -442,7 +445,7 @@
 		</section> @endif @endforeach </div>
 </section>
 
-<section class="no-store-wrapper mb-3" style="display: none;">
+<section class="no-store-wrapper mb-3" style="display: none;" data-aos="zoom-in">
 	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
 		<div class="row">
 			<div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur-up lazyload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>
@@ -502,5 +505,8 @@
     }
   ]
 });
+</script>
+<script>
+  AOS.init();
 </script>
 @endsection
