@@ -35,7 +35,7 @@
 		<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel">
 			<div class="carousel-inner">
 
-				@foreach($banners as $key => $banner)
+				@foreach($mobile_banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
 					 <a class="banner-img-outer" href="{{$url??'#'}}">
