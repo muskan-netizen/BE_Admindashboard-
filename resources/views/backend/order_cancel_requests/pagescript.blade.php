@@ -24,23 +24,13 @@
                 }},
                 {data: 'reject_reason', name: 'reject_reason', orderable: false, searchable: true},
                 {data: 'status', name: 'status', orderable: false, searchable: false},
-                // {data: 'offers', name: 'offers', class:'text-center', orderable: false, searchable: false, "mRender":function(data, type, full){
-                //     var markup = '';
-                //     for (var i = full.offers.length - 1; i >= 0; i--) {
-                //         if(full.offers[i]){
-                //             markup+="<span class='badge bg-soft-warning text-warning'>"+full.offers[i]+"</span>";
-                //         }
-                //     }
-                //     return markup;
-                // }},
-                // {data: 'add_category_option', class:'text-center', name: 'add_category_option', orderable: false, searchable: false},
-                // {data: 'commission_percent', class:'text-center', name: 'commission_percent', orderable: false, searchable: false},
-                // {data: 'products_count', class:'text-center', class:'text-center', name: 'products_count', orderable: false, searchable: false},
-                {data: 'updated_by', name: 'updated_by', orderable: false, searchable: false},
-                // {data: 'currently_working_orders_count', class:'text-center', name: 'currently_working_orders_count', orderable: false, searchable: false},
+                {data: 'requested_date', name: 'requested_date', orderable: false, searchable: false},
             ];
             if(status == 0){
                 dynamic_columns.push({data: 'action', class:'text-center', name: 'action', orderable: false, searchable: false});
+            }else{
+                dynamic_columns.push({data: 'updated_date', name: 'updated_date', orderable: false, searchable: false});
+                dynamic_columns.push({data: 'updated_by', name: 'updated_by', orderable: false, searchable: false});
             }
 
             $('#'+table).DataTable({
