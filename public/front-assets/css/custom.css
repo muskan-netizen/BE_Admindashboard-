@@ -67,7 +67,7 @@ html{scroll-behavior:smooth}body{scroll-behavior: smooth;overflow-x:hidden ; fon
 .dark .al_template_two_content .card:hover{background-color: transparent;}
 .al_template_two_content .card{background-color: transparent; -webkit-transform: scale(1);transform: scale(1);position: relative;z-index: 1;}
 .product-image img {
-    max-height: 160px;
+    max-height: 180px;
     width: 100%;
     position: absolute;
     top: 0;
