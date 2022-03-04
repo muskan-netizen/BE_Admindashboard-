@@ -29,7 +29,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue');
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -286,6 +286,18 @@ class PaymentOptionController extends BaseController
                     $json_creds = json_encode(array(
                         'api_key' => $request->kongapay_api_key,
                         'merchant_id' => $request->kongapay_merchant_id
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'ccavenue')) {
+                    $validatedData = $request->validate([
+                        'ccavenue_enc_key' => 'required',
+                        'ccavenue_access_code' => 'required',
+                        'ccavenue_merchant_id' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'enc_key' => $request->ccavenue_enc_key,
+                        'access_code' => $request->ccavenue_access_code,
+                        'merchant_id' => $request->ccavenue_merchant_id
                     ));
                 }
             }
