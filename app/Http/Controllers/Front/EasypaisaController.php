@@ -30,7 +30,7 @@ class EasypaisaController extends Controller
               'expiryDate' => $expiryDate,
               'merchantHashedReq' => '',
               'autoRedirect' => '1',
-              'paymentMethod' => 'MA_PAYMENT_METHOD',
+              'paymentMethod' => 'OTC_PAYMENT_METHOD',
               'mobileNum' => '+917508983302',
           );
           //payment method
