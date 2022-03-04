@@ -47,6 +47,19 @@
             display: none;
         }
     }
+    .border-product.al_disc ul, .border-product.al_disc ol {
+        padding-left: 30px;
+    }
+    .border-product.al_disc ul li,.border-product.al_disc ol li {
+        display: list-item;
+        padding-left: 0;
+        padding-top: 8px;
+        list-style-type: disc;
+        font-size: 14px;
+    }
+    .border-product.al_disc ol li {
+        list-style-type: decimal;
+    }
 </style>
 
 @endsection
@@ -434,10 +447,11 @@
                                         @endif
                                         @endif
                                     </div>
-                                    <div class="border-product">
+                                    <div class="border-product al_disc">
                                         <h6 class="product-title">{{__('Product Details')}}</h6>
-                                        <p>{!!(!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}</p>
+                                        <p></p>
+                                        {!!(!empty($product->translation) && isset($product->translation[0])) ?
+                                            $product->translation[0]->body_html : ''!!}
                                     </div>
                                     <div class="border-product">
                                         <h6 class="product-title">{{__('Share It')}}</h6>
@@ -455,28 +469,27 @@
                             </div>
                         </div>
                     </div>
+                    @if($client_preference_detail && $client_preference_detail->rating_check == 1)
                     <section class="tab-product m-0">
                         <div class="row">
                             <div class="col-sm-12 col-lg-12">
                                 <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
-                                    <li class="nav-item"><a class="nav-link active" id="top-home-tab" data-toggle="tab" href="#top-home" role="tab" aria-selected="true"><i class="icofont icofont-ui-home"></i>{{__('Description')}}</a>
+                                    <!-- <li class="nav-item"><a class="nav-link active" id="top-home-tab" data-toggle="tab" href="#top-home" role="tab" aria-selected="true"><i class="icofont icofont-ui-home"></i>{{__('Description')}}</a>
                                         <div class="material-border"></div>
-                                    </li>
+                                    </li> -->
                                     <!-- <li class="nav-item"><a class="nav-link" id="profile-top-tab" data-toggle="tab"
                                             href="#top-profile" role="tab" aria-selected="false"><i
                                                 class="icofont icofont-man-in-glasses"></i>Details</a>
                                         <div class="material-border"></div>
                                     </li> -->
-                                    @if($client_preference_detail)
-                                    @if($client_preference_detail->rating_check == 1)
-                                    <li class="nav-item"><a class="nav-link" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>Ratings & Reviews</a>
+                                    @if($client_preference_detail && $client_preference_detail->rating_check == 1)
+                                    <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>Ratings & Reviews</a>
                                         <div class="material-border"></div>
                                     </li>
                                     @endif
-                                    @endif
                                 </ul>
                                 <div class="tab-content nav-material" id="top-tabContent">
-                                    <div class="tab-pane fade show active" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
+                                    <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
                                         <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
                                             $product->translation[0]->body_html : ''!!}</p>
                                     </div>
@@ -484,7 +497,7 @@
                                         <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
                                             $product->translation[0]->body_html : ''!!}</p>
                                     </div>
-                                    <div class="tab-pane fade" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
+                                    <div class="tab-pane show active" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
                                         @forelse ($rating_details as $rating)
                                         <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
                                             <div class="review-box">
@@ -522,6 +535,7 @@
                             </div>
                         </div>
                     </section>
+                    @endif
                 </div>
             </div>
         </div>

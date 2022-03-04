@@ -9,6 +9,11 @@ Route::get('/debug-sentry', function () {
 
 
 Route::group(['middleware' => ['domain']], function () {
+	//easypay test
+	Route::get('testpayment', 'Front\EasypaisaController@testpayment')->name('testpayment'); 
+	Route::get('response', 'Front\EasypaisaController@response')->name('response_payment');
+
+
 	Route::post('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
 	Route::post('webhook/ship-rocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
 	Route::post('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
@@ -139,6 +144,10 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
+	//ccavenue-pay
+	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
+	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
+	//Route::any('ccavenue/cancel', 'Front\CcavenueController@cancelForm')->name('ccavenue.cancel');
 
 	//KongaPay routes
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');

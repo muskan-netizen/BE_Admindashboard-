@@ -1286,11 +1286,16 @@ class OrderController extends BaseController
                     $response = $response->json();
                     $order['order_data'] = $response;
                 }
-            } 
-            $user_docs = UserDocs::where('user_id', $order->user_id)->get();
-            $user_registration_documents = UserRegistrationDocuments::get();
+            }
+            $user_id = $order->user_id ?? '';
 
-            $order['user_document_value'] =  $user_docs;
+            //$user_docs = UserDocs::where('user_id', $order->user_id)->get();
+            $user_registration_documents = UserRegistrationDocuments::with('user_document','primary')
+            ->whereHas('user_document', function($q) use($user_id){
+                $q->where('user_id', $user_id);
+            })->get();
+
+           // $order['user_document_value'] =  $user_docs;
             $order['user_document_list'] =  $user_registration_documents;
 
             return $this->successResponse($order, null, 201);

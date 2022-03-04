@@ -62,6 +62,8 @@
                                                     <th>{{ __('Vendor') }}</th>
                                                     <th>{{ __('Cancel Reason') }}</th>
                                                     <th>{{ __('Status') }}</th>
+                                                    <th>{{ __('Requested At') }}</th>
+                                                    <th>{{ __('Updated At') }}</th>
                                                     <th>{{ __('Updated By') }}</th>
                                                 </tr>
                                             </thead>
@@ -87,7 +89,7 @@
                                                     <th>{{ __('Vendor') }}</th>
                                                     <th>{{ __('Cancel Reason') }}</th>
                                                     <th>{{ __('Status') }}</th>
-                                                    <th>{{ __('Updated By') }}</th>
+                                                    <th>{{ __('Requested At') }}</th>
                                                     <th>{{ __('Action') }}</th>
                                                 </tr>
                                             </thead>
@@ -112,6 +114,8 @@
                                                     <th>{{ __('Vendor') }}</th>
                                                     <th>{{ __('Cancel Reason') }}</th>
                                                     <th>{{ __('Status') }}</th>
+                                                    <th>{{ __('Requested At') }}</th>
+                                                    <th>{{ __('Updated At') }}</th>
                                                     <th>{{ __('Updated By') }}</th>
                                                 </tr>
                                             </thead>

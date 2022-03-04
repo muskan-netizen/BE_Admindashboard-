@@ -497,7 +497,7 @@
                              </a>
                           </div>
                           <div class="inner-div">
-                             <button type="button" class="btn btn-primary-outline action-icon delete_user_registration_document_btn" data-vendor_registration_document_id="{{$user_registration_documents->id}}">
+                             <button type="button" class="btn btn-primary-outline action-icon delete_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}">
                                 <i class="mdi mdi-delete"></i>
                              </button>
                           </div>
@@ -1287,7 +1287,38 @@
             error: function() {}
         });
     }
+    $(document).on("click", ".delete_user_registration_document_btn", function() {
+         var user_registration_document_id = $(this).data('user_registration_document_id');
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+         }).then((result) => {
+            if (result.value) {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('user.registration.document.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     user_registration_document_id: user_registration_document_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
+                  }
+               });
+            }
+        });
+    });
 
+
+    //vendor registration document
     $(document).on('click', '.submitSaveVendorRegistrationDocument', function(e) {
         var vendor_registration_document_id = $("#add_vendor_registration_document_modal input[name=vendor_registration_document_id]").val();
         if (vendor_registration_document_id) {

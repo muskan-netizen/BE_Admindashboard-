@@ -363,6 +363,7 @@ class AuthController extends BaseController
                         $vendor_docs =  new UserDocs();
                         $vendor_docs->user_id = $user->id;
                         $vendor_docs->user_registration_document_id = $user_registration_document->id;
+                        $vendor_docs->file_original_name = $signReq->file($doc_name)->getClientOriginalName();
                         $filePath = $this->folderName . '/' . Str::random(40);
                         $file = $signReq->file($doc_name);
                         $vendor_docs->file_name = Storage::disk('s3')->put($filePath, $file, 'public');
@@ -379,7 +380,12 @@ class AuthController extends BaseController
                 }
             }
         }
-        $response['document'] = UserDocs::where('user_id', $user->id)->get();
+        $user_id = $user->id;
+        $user_registration_documents = UserRegistrationDocuments::with(['user_document' =>function($q) use($user_id){
+            $q->where('user_id', $user_id);
+        },'primary'])->get();
+        $response['user_document'] = $user_registration_documents;
+      
         //end user upload document
         $wallet = $user->wallet;
         $userRefferal = new UserRefferal();
@@ -1103,6 +1109,10 @@ class AuthController extends BaseController
                 $prefer = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
                 $verified['is_email_verified'] = $user->is_email_verified;
                 $verified['is_phone_verified'] = $user->is_phone_verified;
+                $user_id =$user->id;
+                $user_registration_documents = UserRegistrationDocuments::with(['user_document' =>function($q) use($user_id){
+                    $q->where('user_id', $user_id);
+                },'primary'])->get();
                 $token1 = new Token;
                 $token = $token1->make([
                     'key' => 'royoorders-jwt',
@@ -1176,6 +1186,7 @@ class AuthController extends BaseController
                 $data['cca2'] = $user->country ? $user->country->code : '';
                 $data['callingCode'] = $user->country ? $user->country->phonecode : '';
                 $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code : '';
+                $data['user_document'] = $user_registration_documents;
                 return response()->json(['data' => $data]);
             }
             else {

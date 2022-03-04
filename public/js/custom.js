@@ -1755,7 +1755,16 @@ $(document).ready(function() {
         }else if (payment_option_id == 20) {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
+                //Kongapay
                 payWithKPG(order);
+            }
+            else{
+                return false;
+            }
+        }else if (payment_option_id == 22) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                payWithCcAvenue(order);
             }
             else{
                 return false;
@@ -2632,7 +2641,7 @@ $(document).ready(function() {
 
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
-        alert(Product_quantity);
+
         if(Product_quantity <=0){
             Swal.fire({
                 // title: "Warning!",

@@ -29,6 +29,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
     Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {
         
         Route::get('profile', 'Api\v1\ProfileController@profile');
+        Route::get('getProfile', 'Api\v1\ProfileController@getProfile');
         Route::get('account', 'Api\v1\ProfileController@account');
         Route::get('orders', 'Api\v1\OrderController@getOrdersList');
         Route::post('orders/tip-after-order', 'Api\v1\OrderController@tipAfterOrder'); 

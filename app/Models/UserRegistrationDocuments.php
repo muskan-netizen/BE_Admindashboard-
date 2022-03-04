@@ -14,9 +14,13 @@ class UserRegistrationDocuments extends Model
         ->join('client_languages as cl', 'cl.language_id', 'user_registration_document_translations.language_id')
         ->where('cl.is_primary', 1);
         return $langData;
-      }
-      public function translations(){
+    }
+    public function translations(){
         $langData = $this->hasMany('App\Models\UserRegistrationDocumentTranslation', "user_registration_document_id" ,'id');
         return $langData;
-      }
+    }
+    public function user_document(){
+        return $this->hasOne('App\Models\UserDocs','user_registration_document_id','id',);
+    }
+
 }
