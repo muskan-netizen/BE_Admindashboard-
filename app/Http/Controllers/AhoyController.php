@@ -285,7 +285,7 @@ class AhoyController extends Controller
         $trackingId = '';
         $json = json_decode($request->getContent());
 
-        if($request && isset($json->shipment_status_id)){
+        if($request){
             Webhook::create(['tracking_order_id'=>(($json->awb)?$json->awb:''),'response'=>$request->getContent()]);
            }
            

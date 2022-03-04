@@ -173,11 +173,7 @@ class KongapayController extends Controller
 
    public function completeOrderCart(Request $request)
     {
-      // if(isset($request->auth_token) && !empty($request->auth_token))
-      //   {
-      //       $user = User::where('auth_token', $request->auth_token)->first();
-      //       Auth::login($user);
-      //   }
+
       $order = Order::where('order_number',$request->merchant_reference)->first();
           if(isset($request->merchant_reference) && $request->status == 'success')
           {
