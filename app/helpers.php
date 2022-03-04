@@ -11,7 +11,7 @@ use App\Models\ClientPreference;
 use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
-use App\Models\{VendorSlot, ClientCurrency};
+use App\Models\{VendorSlot, ClientCurrency, Order};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,6 +20,17 @@ if (!function_exists('changeDateFormate')) {
         return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
     }
 }
+
+function orderProductDetails($order_id)
+{
+    $order = Order::find($order_id);
+    $itemsDetails = 'Order No : '.$order_id;
+    foreach($order->products as $items){
+        $itemsDetails .= ', Item Name : '.$items->product_name.', '.$items->product_variant_sets;
+    }
+    return $itemsDetails;
+}
+
 
 if (!function_exists('pr')) {
     function pr($var) {
