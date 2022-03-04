@@ -915,6 +915,7 @@ class UserhomeController extends FrontController
             $longitude = Session::get('longitude');
 
         }
+        $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
         $p_dim = '260/100';
         if (isset($set_template)  && $set_template->template_id == 3){
             $p_dim = '328/248';
