@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{User, TempCartProduct, Vendor};
+use App\Models\{Currency, User, TempCartProduct, Vendor};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -11,7 +11,7 @@ use App\Models\ClientPreference;
 use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
-use App\Models\{VendorSlot, ClientCurrency};
+use App\Models\{VendorSlot, ClientCurrency, Order};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,6 +20,17 @@ if (!function_exists('changeDateFormate')) {
         return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
     }
 }
+
+function orderProductDetails($order_id)
+{
+    $order = Order::find($order_id);
+    $itemsDetails = 'Order No : '.$order_id;
+    foreach($order->products as $items){
+       $itemsDetails .=  ', Item Name : '.$items->product_name.', '.$items->product_variant_sets;
+    }
+    return $itemsDetails;
+}
+
 
 if (!function_exists('pr')) {
     function pr($var) {
@@ -693,6 +704,16 @@ function getDollarCompareAmount($amount, $customerCurrency='')
     $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
     $amount = number_format($amount, 2,'.','');
     return $amount;
+}
+
+/* doller compare amount */
+function getPrimaryCurrencyName()
+{
+    $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+    $currencyName = Currency::find($primaryCurrency->currency_id);
+
+    $currencyName = $currencyName->iso_code;
+    return $currencyName;
 }
 
 // Number Format according to Client preferences

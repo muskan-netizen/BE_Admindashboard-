@@ -379,7 +379,9 @@ class AuthController extends BaseController
                 }
             }
         }
-        $response['document'] = UserDocs::where('user_id', $user->id)->get();
+
+        $response['user_registration_documents'] = $user_registration_documents;
+        $response['user_registration_velue'] = UserDocs::where('user_id', $user->id)->get();
         //end user upload document
         $wallet = $user->wallet;
         $userRefferal = new UserRefferal();

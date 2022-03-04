@@ -957,6 +957,38 @@ $(document).ready(function() {
     }
 
     ///////////////////////////Stripe FPX payment Gateway //////////////////////////////
+
+    window.payWithCcAvenue = function payWithCcAvenue(order='')
+    {
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        //let amt = cartElement.val()*100;
+        let total_amount = 0;
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscriptionId = $("input[name='subscription_id']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_from = '';
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            payment_from = 'cart';
+            var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            var rowData = 'amt='+total_amount+'&from='+payment_from;
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+            var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
+        }else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            subsId = subscriptionId.val();
+            payment_from = 'subscription';
+            var rowData = 'subsid='+subsId+'&from='+payment_from+'&amt='+total_amount;
+        }
+        window.location=create_ccavenue_url+'?'+rowData;
+    }
+
     window.payWithKPG = function payWithKPG(order='')
     {
         let cartElement = $("input[name='cart_total_payable_amount']");

@@ -11,7 +11,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
     </a>
 </div>
 @endif
-<footer id="footer" class="footer-light">
+<footer id="footer" class="footer-light al_footer_template_one">
         <section class="section-b-space light-layout pt-3 pb-0">
             <div class="container">
 

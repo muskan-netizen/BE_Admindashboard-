@@ -17,7 +17,7 @@ if(session()->has('applocale')){
     </a>
 </div>
 @endif
-    <footer id="footer" class="footer-light">
+    <footer id="footer" class="footer-light al_footer_template_three">
         <section class="section-b-space light-layout pb-0">
             <div class="container">
 
