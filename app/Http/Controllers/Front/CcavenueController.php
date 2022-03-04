@@ -92,8 +92,8 @@ class CcavenueController extends Controller
 	}
     $dataArray = (object)$dataArray;
 
-    // $user  = User::find($dataArray->merchant_param4);
-    // Auth::login($user);
+    $user  = User::find($dataArray->merchant_param4);
+    Auth::login($user);
 
     if($dataArray->order_status==="Success")
 	{
