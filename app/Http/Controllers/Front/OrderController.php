@@ -153,7 +153,7 @@ class OrderController extends FrontController
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
                 foreach ($vendor->products as $product) {
-                    if (isset($product->pvariant) && $product->pvariant->media->isNotEmpty()) {
+                    if ( isset($product->pvariant) &&  isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
                     } elseif ($product->media->isNotEmpty()) {
                         $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
@@ -763,10 +763,10 @@ class OrderController extends FrontController
                     $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
                     $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
                     $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
-                    $payable_amount = $payable_amount + $quantity_price;
+                    $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
-                    $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
-                    $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
+                    $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $quantity_container_charges;
+                    $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
                    
                     if (isset($vendor_cart_product->product->taxCategory)) {

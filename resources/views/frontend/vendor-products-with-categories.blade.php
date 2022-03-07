@@ -445,11 +445,11 @@
                                                         @elseif($vendor->is_vendor_closed == 0 && $vendor->show_slot == 1)
                                                             24 x 7 <span class="badge badge-success">Open</span>
                                                         @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
-                                                        <span class="badge badge-danger">Closed</span>
+                                                        <span class="badge badge-danger">{{__('Closed')}}</span>
                                                         {{__('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.
 
                                                         @else
-                                                            <span class="badge badge-danger">Closed</span>
+                                                            <span class="badge badge-danger">{{__('Closed')}}</span>
                                                         @endif
                                                         </span>
                                                         {{-- <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></span>
@@ -546,15 +546,15 @@
                                                     @endforeach
                                                 @endif
                                             </div>
-                                            <div class="col-6 text-right">Sort By : 
+                                            <div class="col-6 text-right">{{__('Sort By')}} : 
                                                 <select name="order_type" id='order_type' class="product_tag_filter p-1">
-                                                    <option value="featured">Featured</option>
-                                                    <option value="a_to_z">A to Z</option>
-                                                    <option value="z_to_a">Z to A</option>
-                                                    <option value="low_to_high">Cost : Low to High</option>
-                                                    <option value="high_to_low">Cost : High to Low</option>
-                                                    <option value="rating">Avg. Customer Review</option>
-                                                    <option value="newly_added">Newest Arrivals</option>
+                                                    <option value="featured">{{__('Featured')}}</option>
+                                                    <option value="a_to_z">{{__('A to Z')}}</option>
+                                                    <option value="z_to_a">{{__('Z to A')}}</option>
+                                                    <option value="low_to_high">{{__('Cost : Low to High')}}</option>
+                                                    <option value="high_to_low">{{__('Cost : High to Low')}}</option>
+                                                    <option value="rating">{{__('Avg. Customer Review')}}</option>
+                                                    <option value="newly_added">{{__('Newest Arrivals')}}</option>
                                                 </select>
                                             </div>
                                         </div>
