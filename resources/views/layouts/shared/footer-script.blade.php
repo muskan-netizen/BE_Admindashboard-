@@ -372,7 +372,7 @@ $("#change_password_form").submit(function(e){
     e.preventDefault();
     $('.pwd-msg').html("");
     $.ajax({
-            url:"{{route('client.password.update')}}",
+            url:"{{route('cl.password.update')}}",
             type:'POST',
             data:$(this).serialize(),
             dataType:'JSON',
@@ -393,4 +393,4 @@ $("#change_password_form").submit(function(e){
 
     });
 });
-</script>
+</script> 
