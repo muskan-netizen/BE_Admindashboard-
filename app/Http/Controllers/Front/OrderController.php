@@ -1021,10 +1021,12 @@ class OrderController extends FrontController
 
           
               
+            // Commented By Sujata
+            // foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+            //     $this->sendSuccessEmail($request, $order, $vendor_id);
+            // }
+            //End 
 
-            foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-                $this->sendSuccessEmail($request, $order, $vendor_id);
-            }
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
             $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay
