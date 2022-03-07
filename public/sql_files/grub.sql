@@ -14,9 +14,9 @@
 -- Dumping data for table `vendors`
 --
 
-TRUNCATE TABLE  `pages`;
-TRUNCATE TABLE  `page_translations`;
-TRUNCATE TABLE  `faq_translations`;
+Truncate `pages`;
+Truncate `page_translations`;
+Truncate `faq_translations`;
 
 INSERT INTO `vendors` (`id`, `name`, `slug`, `desc`, `logo`, `banner`, `address`, `email`, `website`, `phone_no`, `latitude`, `longitude`, `order_min_amount`, `order_pre_time`, `auto_reject_time`, `commission_percent`, `commission_fixed_per_order`, `commission_monthly`, `dine_in`, `takeaway`, `delivery`, `status`, `add_category`, `setting`, `is_show_vendor_details`, `created_at`, `updated_at`, `show_slot`, `vendor_templete_id`, `auto_accept_order`, `service_fee_percent`, `slot_minutes`, `order_amount_for_delivery_fee`, `delivery_fee_minimum`, `delivery_fee_maximum`, `closed_store_order_scheduled`, `pincode`, `shiprocket_pickup_name`, `city`, `state`, `country`, `return_request`, `ahoy_location`, `max_safety`, `need_container_charges`) VALUES
 (1, 'DeliveryZone', NULL, NULL, 'default/default_logo.png', 'default/default_image.png', 'Sheikh Zayed Road - Dubai - United Arab Emirates', NULL, NULL, NULL, '25.060924600000', '55.128979500000', '0.00', NULL, NULL, '1.00', '0.00', '0.00', 0, 1, 1, 2, 1, 0, 0, NULL, '2021-09-29 06:21:31', 1, NULL, 0, '0.00', NULL, '0', '0', '0', 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, 0, 0),
@@ -2456,6 +2456,7 @@ INSERT INTO `promocode_details` (`id`, `promocode_id`, `refrence_id`, `created_a
 (69, 1, 5, '2022-02-21 11:09:23', '2022-02-21 11:09:23'),
 (70, 1, 6, '2022-02-21 11:09:23', '2022-02-21 11:09:23');
 
+Truncate `promo_types`;
 
 INSERT INTO `promo_types` (`id`, `title`, `status`, `created_at`, `updated_at`) VALUES
 (1, 'Percentage Discount', 1, NULL, NULL),
@@ -2481,7 +2482,6 @@ INSERT INTO `page_translations` (`id`, `title`, `description`, `page_id`, `langu
 
 
 
-
 INSERT INTO `faq_translations` (`id`, `page_id`, `language_id`, `question`, `answer`, `status`, `order_by`, `created_at`, `updated_at`) VALUES
 (1, 10, 1, 'What’s Grub.com?', 'It’s all in the name. At grub.com, you can order delivery online from your favorite local restaurants, liquor stores, grocery stores and dry cleaners.', 0, NULL, '2022-02-18 09:21:14', '2022-02-18 09:23:36'),
 (2, 10, 1, 'How do I use Grub.com?', 'Enter your address in the search bar on the home page, select the category that you’d like to browse (i.e. Food), and press the orange Search button. On the results page, you can switch between categories by clicking the tabs at the top of the page.  If you know exactly what you’re looking for (e.g. “Pinkberry”) or just have a general idea (e.g. “frozen yogurt” or “banana split”), you can also enter keywords into the second search bar.', 0, NULL, '2022-02-18 09:23:36', '2022-02-18 09:23:36'),
@@ -2491,3 +2491,5 @@ INSERT INTO `faq_translations` (`id`, `page_id`, `language_id`, `question`, `ans
 (6, 10, 1, 'How do I change or cancel my order?', 'If your order is scheduled for ASAP delivery or pickup, the merchant will already be in the process of preparing the order. For that reason, any changes or cancellations are best sent directly to the merchant.  If your order is scheduled for delivery or pickup at some point in the future, you can cancel or change the order up to one hour before the scheduled time. Go into your Order History, locate the “Awaiting order” and click the “Cancel order” button.', 0, NULL, '2022-02-18 09:26:07', '2022-02-18 09:26:07');
 
 
+Update `web_styling_options` set `is_selected` = 0;
+Update `web_styling_options` set `is_selected` = 1 where image = 'template-three.png';
