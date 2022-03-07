@@ -10,11 +10,13 @@ use App\Http\Controllers\Controller;
 
 class EasypaisaController extends Controller
 {
-  // Sandbox Url's
-    protected $transaction_url_1 = 'https://easypaystg.easypaisa.com.pk/easypay/Index.jsf';
-    protected $transaction_url_2 = 'https://easypaystg.easypaisa.com.pk/easypay/Confirm.jsf';
+  // for Sandbox Url's  change https://easypaystg.easypaisa.com.pk
+    protected $transaction_url_1 = 'https://easypay.easypaisa.com.pk/easypay/Index.jsf';
+    protected $transaction_url_2 = 'https://easypay.easypaisa.com.pk/easypay/Confirm.jsf';
 
-    protected $storeId = '256003'; // Your store Id provided by Easypaisa merchant account
+
+
+    protected $storeId = '17514'; // go merchent id ( 17514 ) Your store Id provided by Easypaisa merchant account //256003
     protected $hashKey = 'W867WNCYCISAXGTV'; // hashKey generated from Easypaisa merchant account portal
 
     public function testpayment(){
@@ -24,19 +26,20 @@ class EasypaisaController extends Controller
         $expiryDate = $date->addHour()->format('Ymd His');  //YYYYMMDD HHMMSS
         $post_data = array(
               "storeId" => $this->storeId,
-              "amount" =>  '1033.1',
+              "amount" =>  '1033.10',
               'postBackURL' => $post_back_url_1,
               'orderRefNum' => rand(10,100),
               'expiryDate' => $expiryDate,
               'merchantHashedReq' => '',
-              'autoRedirect' => '1',
-              'paymentMethod' => 'OTC_PAYMENT_METHOD',
-              'mobileNum' => '+917508983302',
+              'autoRedirect' => '0',
+              'paymentMethod' => 'CC_PAYMENT_METHOD',
+              'mobileNum' => '7508983302',
           );
           //payment method
           //MA_PAYMENT_METHOD
           //CC_PAYMENT_METHOD
           //OTC_PAYMENT_METHOD
+
           $sorted_string = "amount=" . $post_data['amount'] . "&";
           $sorted_string .= "autoRedirect=" . $post_data['autoRedirect'] . "&";
           $sorted_string .= "expiryDate=" . $post_data['expiryDate'] . "&";
@@ -45,20 +48,28 @@ class EasypaisaController extends Controller
           $sorted_string .= "paymentMethod=" . $post_data['paymentMethod'] . "&";
           $sorted_string .= "postBackURL=" . $post_data['postBackURL'] . "&";
           $sorted_string .= "storeId=" . $post_data['storeId'];
-  
+
           $cipher = "aes-128-ecb";
           $crypttext = openssl_encrypt($sorted_string, $cipher, $this->hashKey, OPENSSL_RAW_DATA);
           $hashRequest = base64_encode($crypttext);
-  
+
           $post_data['merchantHashedReq'] = $hashRequest;
-         
-          return view('frontend/easypaisa')->with('post_data' , (object)$post_data);
+
+          return view('frontend/easypaisa')->with(['post_data' =>(object)$post_data , 'url' =>$this->transaction_url_1 ]);
 
     }
     public function response(Request $request){
-        pr($request->all());
+     $auth_token =   $request->auth_token ;
+     $post_back_url_1 =route('responseConformation');
+//pr($request->all());
+        return view('frontend/easypaisaConf')->with(['auth_token' =>$auth_token,'post_back_url_1'=>$post_back_url_1,'url' =>$this->transaction_url_2 ]);
 
     }
+    public function responseConformation(Request $request){
+
+           pr($request->all());
+
+       }
     // This function will render view of checkout form
     public function checkoutIndex($uid, $transactionId, $mobileNo)
     {
