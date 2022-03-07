@@ -1,9 +1,5 @@
 @extends('layouts.store', ['title' => __('Home')])
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-  AOS.init();
-</script>
 @section('css')
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.shimmer_effect{overflow:hidden}.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(5,1fr);grid-gap:20px}.shimmer_effect .card_image{width:100%;height:100%}.shimmer_effect .card_image.loading{width:100%;height:180px}.shimmer_effect .card_title.loading{width:50%;height:1rem;margin:1rem 0;border-radius:3px;position:relative}.shimmer_effect .card_description{padding:8px;font-size:16px}.shimmer_effect .card_description.loading{height:1rem;margin:1rem 0;border-radius:3px}.shimmer_effect .loading{position:relative;background:#cccccc86}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}.no-store-wrapper{display:none}@keyframes loading{100%{transform:translateX(100%)}}
@@ -200,7 +196,7 @@
         <% subtotal_order_price = total_order_price = total_tax_order_price = 0; %>
         <% _.each(order.vendors, function(vendor, k){ %>
         <%   product_total_count = product_subtotal_amount = product_taxable_amount = 0; %>
-        <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0 ">
+        <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0">
             <% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){ %>
                 <div class="progress-order font-12">
                 <% if(order.scheduled_date_time){ %>
@@ -359,15 +355,15 @@
         @else
         <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
-                <div class="col-12">
+                <div class="col-12"  data-aos="zoom-in">
                     @if($homePageLabel->slug == 'vendors')
-                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @elseif($homePageLabel->slug == 'trending_vendors')
-                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @elseif($homePageLabel->slug == 'recent_orders')
                     <div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
                     @elseif($homePageLabel->slug == 'brands')
-                    <div class="brand-slider product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}"></div>
+                    <div class="brand-slider product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @else
                     <div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}"></div>
                     @endif
@@ -378,7 +374,6 @@
         @endforeach
     </div>
 </section>
-
 <section class="no-store-wrapper mb-3">
     <div class="container">
         @if(count($for_no_product_found_html))
@@ -422,6 +417,11 @@
 </div>
 @endsection
 @section('script')
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init();
+</script>
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script type="text/javascript">
