@@ -763,11 +763,12 @@ class OrderController extends FrontController
                     $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
                     $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
                     $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
-                    $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $quantity_container_charges;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
+                    $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
+                  
                    
                     if (isset($vendor_cart_product->product->taxCategory)) {
                         foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
