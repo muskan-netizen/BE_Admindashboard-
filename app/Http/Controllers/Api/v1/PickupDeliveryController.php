@@ -298,6 +298,7 @@ class PickupDeliveryController extends BaseController{
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
+                $order->scheduled_date_time = $request->schedule_time??NULL;
                 $order->save();
                 $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
@@ -669,7 +670,7 @@ class PickupDeliveryController extends BaseController{
     public function getOrderTrackingDetails(Request $request){
         $user = Auth::user();
         $langId = $user->language ?? 1;
-        $order = OrderVendor::where('order_id',$request->order_id)
+        $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)
         ->with(['products.productRating.reviewFiles', 'products.product.category.categoryDetail.translation' => function($q) use($langId){
             $q->where('category_translations.language_id', $langId);
         }])
