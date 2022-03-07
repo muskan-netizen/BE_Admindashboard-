@@ -253,10 +253,7 @@ window.initializeSlider = function initializeSlider() {
         slidesToShow: 2,
         slidesToScroll: 1,
         responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 2 } },
-            { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } },
-            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+            { breakpoint: 1199, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
     $(".brand-slider").slick({
@@ -1958,7 +1955,7 @@ $(document).ready(function() {
         }else if (payment_option_id == 22) {
             payWithCcAvenue('');
         }
-        
+
     });
     $(document).on("click", ".remove_promo_code_btn", function() {
         let cart_id = $(this).data('cart_id');
