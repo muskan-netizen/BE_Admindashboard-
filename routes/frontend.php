@@ -147,8 +147,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//ccavenue-pay
 	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
 	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
-	//Route::any('ccavenue/cancel', 'Front\CcavenueController@cancelForm')->name('ccavenue.cancel');
+	
+	Route::any('payment/ccavenue/api', 'Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
 
+	
 	//KongaPay routes
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
 	Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
