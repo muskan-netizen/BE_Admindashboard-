@@ -160,7 +160,7 @@
                                     </div>
                                     <div class="col-md-8 col-lg-6">
                                         <div class="row ">
-                                            <div class="col-6">
+                                            <div class="col">
                                                 @if (isset($tags) && !empty($tags))
                                                     @foreach ($tags as $key => $tag)
                                                         <label class="label-switch switch-primary product_tag_filter mr-2">
@@ -175,7 +175,7 @@
                                                     @endforeach
                                                 @endif
                                             </div>
-                                            <div class="col-6 text-right">{{__('Sort By')}} : 
+                                            <div class="col text-right">{{__('Sort By')}} :
                                                 <select name="order_type" id='order_type' class="product_tag_filter p-1">
                                                     <option value="featured">{{__('Featured')}}</option>
                                                     <option value="a_to_z">{{__('A to Z')}}</option>

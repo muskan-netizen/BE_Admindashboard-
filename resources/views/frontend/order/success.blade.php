@@ -4,7 +4,7 @@
 <section class="section-b-space light-layout">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12 mt-5 mb-5">
                 <div class="success-text">
                 	<i class="fa fa-check-circle" aria-hidden="true"></i>
                     <h2>{{__('Thank You')}}</h2>
