@@ -60,7 +60,6 @@
                     @endforeach
                     <div class="total-sec">
                         <ul>
-                            <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_amount * @$clientCurrency->doller_compare)}}</span></li>
                             @if($order->taxable_amount > 0)
                                 <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)}}</span></li>
                             @endif
@@ -79,6 +78,8 @@
                             @if($order->subscription_discount > 0)
                                 <li>{{__('Subscription Discount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)}}</span></li>
                             @endif
+                            <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_amount * @$clientCurrency->doller_compare)}}</span></li>
+                        
                             @if($order->loyalty_amount_saved > 0)
                                 <li>{{__('Loyalty Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->loyalty_amount_saved * @$clientCurrency->doller_compare)}}</span></li>
                             @endif
