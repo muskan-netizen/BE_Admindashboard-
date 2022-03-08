@@ -242,7 +242,7 @@
 <!-- products_template start -->
 <script type="text/template" id="products_template" >
 	<% _.each(products, function(product, k){ %>
-		<div class="product-card-box position-relative al" data-aos="zoom-in">
+		<div class="product-card-box position-relative al_box_third_template al" data-aos="zoom-in">
 			{{--<div class="add-to-fav 12">
 				<input id="fav_pro_one" type="checkbox">
 				<label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
@@ -399,7 +399,7 @@
 					</div>
 				</div>
 				<div class="row ">
-					<div class=" col-md-12 al_custom_brand">
+					<div class=" col-12 al_custom_brand p-0">
 					<div class=" brand-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>
 				</div>
@@ -407,10 +407,10 @@
 		</section> @elseif($homePageLabel->slug == 'vendors')
 		<section class="suppliers-section">
 			<div class="container mb-0" data-aos="zoom-in">
-				<div class="row">
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
 						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2> <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a> </div>
-					<div class="col-12">
+					<div class="row">
+						<div class="col-12 p-0">
 						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>
 				</div>
@@ -418,20 +418,21 @@
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
 		<section class="suppliers-section">
 			<div class="container" data-aos="zoom-in">
-				<div class="row">
+
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
 						<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
-					<div class="col-12">
+					<div class="row">
+						<div class="col-12 p-0">
 						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>
 				</div>
 			</div>
 		</section> @else
 		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" data-aos="zoom-in">
-			<div class="row">
-				<div class="col-12 top-heading d-flex align-items-center justify-content-between">
+
+				<div class="col-md-12 top-heading d-flex align-items-center justify-content-between">
 				<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
-			</div>
+
 			<div class="row">
 				<div class="col-12"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
 					<div class="product-5 product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@elseif($homePageLabel->slug=='recent_orders')
