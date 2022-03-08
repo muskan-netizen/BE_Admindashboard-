@@ -430,21 +430,7 @@ $pages = \App\Models\Page::with([
       <div class="container-fluid">
          <div class="row">
             <div class="col-12">
-               <div class="shimmer_effectx d-none">
-                  <ul class="sm pixelstrap sm-horizontal menu-slider">
-                     @foreach($navCategories as $cate)
-                     @if($cate['name'])
-                     <li>
-                        <a href="{{route('categoryDetail', $cate['slug'])}}">
-                           @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                           <div class="nav-cate-imgx loading"> </div>
-                           @endif <span><span class="loading"></span></span>
-                        </a>
-                     </li>
-                     @endif
-                     @endforeach
-                  </ul>
-               </div>
+
                <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
