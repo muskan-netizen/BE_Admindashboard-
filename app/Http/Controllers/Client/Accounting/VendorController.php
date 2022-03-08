@@ -85,7 +85,7 @@ class VendorController extends Controller{
             $vendor->cash_collected_amount = decimal_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount'));
             $vendor->admin_commission_amount = decimal_format($vendor->orders->sum('admin_commission_percentage_amount'));
             $admin_commission_amount = $vendor->orders->sum('admin_commission_percentage_amount');
-            $vendor->vendor_earning = decimal_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $admin_commission_amount));
+            $vendor->vendor_earning = decimal_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $admin_commission_amount - $vendor->delivery_fee ));
         }
         return Datatables::of($vendors)
             ->addIndexColumn()
