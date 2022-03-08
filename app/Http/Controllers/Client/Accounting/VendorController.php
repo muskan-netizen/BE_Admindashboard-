@@ -82,10 +82,11 @@ class VendorController extends Controller{
             $vendor->payment_method = decimal_format($vendor->orders->whereIn('payment_option_id', [2,3, 4])->sum('payable_amount'));
             $vendor->promo_admin_amount = decimal_format($vendor->orders->where('coupon_paid_by', 1)->sum('discount_amount'));
             $vendor->promo_vendor_amount = decimal_format($vendor->orders->where('coupon_paid_by', 0)->sum('discount_amount'));
+            $vendor->service_fee = decimal_format($vendor->orders->sum('service_fee_percentage_amount'));
             $vendor->cash_collected_amount = decimal_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount'));
             $vendor->admin_commission_amount = decimal_format($vendor->orders->sum('admin_commission_percentage_amount'));
-            $admin_commission_amount = $vendor->orders->sum('admin_commission_percentage_amount');
-            $vendor->vendor_earning = decimal_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $admin_commission_amount - $vendor->delivery_fee ));
+            $vendor->taxable_amount = decimal_format($vendor->orders->sum('taxable_amount'));
+            $vendor->vendor_earning = decimal_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $vendor->admin_commission_amount - $vendor->delivery_fee ));
         }
         return Datatables::of($vendors)
             ->addIndexColumn()

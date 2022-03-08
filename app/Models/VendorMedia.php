@@ -25,6 +25,7 @@ class VendorMedia extends Model
         $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       }
       $values['image_fit'] = \Config::get('app.FIT_URl');
+      $values['original_image'] = \Storage::disk('s3')->url($img);
       return $values;
     }
 }
