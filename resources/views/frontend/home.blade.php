@@ -266,15 +266,15 @@
                     <ul class="price_box_bottom m-0 p-0">
                         <li class="d-flex align-items-center justify-content-between">
                             <label class="m-0">{{__('Product Total')}}</label>
-                            <span>{{Session::get('currencySymbol')}} <%=(vendor.subtotal_amount)%></span>
+                            <span>{{Session::get('currencySymbol')}} <%=Helper.formatPrice(vendor.subtotal_amount)%></span>
                         </li>
                         <li class="d-flex align-items-center justify-content-between">
                             <label class="m-0">{{__('Coupon Discount')}}</label>
-                            <span>{{Session::get('currencySymbol')}} <%=(vendor.discount_amount)%></span>
+                            <span>{{Session::get('currencySymbol')}} <%=Helper.formatPrice(vendor.discount_amount)%></span>
                         </li>
                         <li class="d-flex align-items-center justify-content-between">
                             <label class="m-0">{{__('Delivery Fee')}}</label>
-                            <span>{{Session::get('currencySymbol')}} <%= (vendor.delivery_fee)%></span>
+                            <span>{{Session::get('currencySymbol')}} <%= Helper.formatPrice(vendor.delivery_fee)%></span>
                         </li>
                         <li class="grand_total d-flex align-items-center justify-content-between">
                             <label class="m-0">{{__('Amount')}}</label>
@@ -282,7 +282,7 @@
                                 product_subtotal_amount = product_total_count - vendor.discount_amount + vendor.delivery_fee;
                                 subtotal_order_price += product_subtotal_amount;
                             %>
-                            <span>{{Session::get('currencySymbol')}} <%=(vendor.payable_amount)%></span>
+                            <span>{{Session::get('currencySymbol')}} <%=Helper.formatPrice(vendor.payable_amount)%></span>
                         </li>
                     </ul>
                 </div>

@@ -88,7 +88,7 @@
            </tr>
 
            <tr>
-              <td style="text-align: left;"><b>{{__('SHIPPING Charge')}}:</b></td>
+              <td style="text-align: left;"><b>{{__('Delivery Fee')}}:</b></td>
               <td></td>
               <td style="text-align: right;">{{$currencySymbol . decimal_format($product['delivery_fee_charges'])}}</td>
            </tr>
