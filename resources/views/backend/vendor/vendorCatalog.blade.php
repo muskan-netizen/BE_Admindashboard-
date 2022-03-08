@@ -1,6 +1,7 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => getNomenclatureName('vendors', true)])
 
 @section('css')
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
     <link href="{{ asset('assets/libs/fullcalendar-list/fullcalendar-list.min.css') }}" rel="stylesheet" type="text/css" />
     <style type="text/css">
         .pac-container,
@@ -63,6 +64,9 @@
             border-top-color: #ffffff;
             border-radius: 50%;
             animation: button-loading-spinner 1s ease infinite;
+        }
+        .iti{
+            width: 100%; 
         }
 
         @keyframes button-loading-spinner {

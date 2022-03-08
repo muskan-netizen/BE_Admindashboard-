@@ -43,8 +43,8 @@
 
         @include('layouts.shared/right-sidebar')
 
-        @include('layouts.shared/footer-script')
-        
+        {{-- @include('layouts.shared/footer-script')
+         --}}
        
     <script src="{{asset('assets/js/app.min.js')}}"></script>
     </body>

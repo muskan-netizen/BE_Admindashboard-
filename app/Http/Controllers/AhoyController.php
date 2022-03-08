@@ -138,9 +138,9 @@ class AhoyController extends Controller
                 "temperatureTypeId"=> 0
             );
 
-
+            //\Log::info(json_encode($data));
     	    $orderSuc = $this->createPreOrder($data);
-            \Log::info(json_encode($orderSuc));
+            //\Log::info(json_encode($orderSuc));
             if(isset($orderSuc->preOrderId) && !empty($orderSuc->preOrderId)){
                 return $this->confirmOrderPreRequestAhoy($orderSuc);
             }else{
@@ -214,7 +214,7 @@ class AhoyController extends Controller
 				'customerLongitude' => $cus_address->longitude, //Required
                 "isCashPayment"=> true,
                 "isCardPayment"=> false,
-                "paymentAmount"=> 100,
+                "paymentAmount"=> 0,
                 "customerAddressTypeId"=> '2',
                 "customerAddressNote"=> null,
                 "area"=> null,
@@ -223,9 +223,11 @@ class AhoyController extends Controller
                 "unit"=> null,
                 "temperatureTypeId"=> 0
             );
+            //\Log::info(json_encode($data));
             $orderSuc = $this->createPreOrder($data);
-            \Log::info(json_encode($orderSuc));
+            //\Log::info(json_encode($orderSuc));
             if($orderSuc->preOrderId != ''){
+               // $this->confirmOrderPreRequestAhoy($orderSuc);
                 return $orderSuc->onDemand->price;
             }else{
                 return 0;

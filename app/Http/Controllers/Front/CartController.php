@@ -1434,9 +1434,10 @@ class CartController extends FrontController
                 if($vendorData->vendor_id)
                 {
                    Session()->put('vid',$vendorData->vendor_id);
-
+                   
             if($preferences->static_delivey_fee != 1)
             {
+               
                 //Dispatcher Delivery changes code
                 $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
                 if (!empty($deliver_charge)){
@@ -1533,7 +1534,6 @@ class CartController extends FrontController
 
         }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
              # for static fees
-
                 if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){
                     $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_maximum);
                 }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
@@ -1541,14 +1541,14 @@ class CartController extends FrontController
                 }
 
                 $option[] = array(
-                    'type'=>'S',
+                    'type'=>'D',
                     'courier_name'=>__('Static'),
                     'rate' => $deliveryCharges,
                     'courier_company_id' => 0,
                     'etd' => 0,
                     'etd_hours' => 0,
                     'estimated_delivery_days' => 0,
-                    'code' => 'S_0'
+                    'code' => 'D_0'
                 );
 
            }//End statis fe code

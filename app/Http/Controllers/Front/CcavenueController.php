@@ -102,6 +102,28 @@ class CcavenueController extends Controller
     return view('frontend.payment_gatway.ccavenue_view', compact('encrypted_data','access_code','url'));
    }
 
+   public function CcavenuePurchase(Request $request)
+   {
+       $amount = $request->amount;
+       $user = auth()->user();
+       $action = isset($request->action) ? $request->action : ''; 
+       $params = '?amount=' . $amount.'&auth_token='.$user->auth_token.'&from='.$action;
+       if($action == 'cart'){
+           $params = $params . '&order_no=' . $request->order_number.'&app=1';
+       }elseif($action == 'wallet'){
+         //app = 2 is for wallet
+        $params = $params .'&app=2&transaction_id=W_'.time();
+       }elseif($action == 'subscription'){
+        //app = 2 is for wallet
+       $params = $params .'&app=3&subscription_id='.'S_'.time().'_'.$request->subscription_id;
+      }elseif($action == 'tip'){
+        //app = 2 is for wallet
+       $params = $params .'&app=3&order_no='.$request->order_number;
+      }
+
+       return $this->successResponse(url($request->serverUrl.'payment/ccavenue/api/'.$params)); 
+   }
+
    public function successForm(Request $request)
    {
     $encResponse=$request->encResp;			//This is the response sent by the CCAvenue Server

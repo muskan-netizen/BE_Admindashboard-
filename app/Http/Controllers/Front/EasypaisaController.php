@@ -14,7 +14,7 @@ class EasypaisaController extends Controller
     protected $transaction_url_1 = 'https://easypaystg.easypaisa.com.pk/easypay/Index.jsf';
     protected $transaction_url_2 = 'https://easypaystg.easypaisa.com.pk/easypay/Confirm.jsf';
 
-    protected $storeId = '17514'; // Your store Id provided by Easypaisa merchant account
+    protected $storeId = '256003'; // Your store Id provided by Easypaisa merchant account
     protected $hashKey = 'W867WNCYCISAXGTV'; // hashKey generated from Easypaisa merchant account portal
 
     public function testpayment(){
