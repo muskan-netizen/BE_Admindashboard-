@@ -464,11 +464,25 @@ class PickupDeliveryController extends BaseController{
                     $payable_amount = 0.00;
                 }
 
+                // if(isset($request->task_type) && !empty($request->task_type))
+                // $request->task_type = $request->task_type;
+                // else{
+                //     $request->task_type = 'now';
+                //     $request->schedule_time = null;
+                // }
+
                 if(isset($request->task_type) && !empty($request->task_type))
-                $request->task_type = $request->task_type;
-                else{
-                    $request->task_type = 'now';
+                {
+                    $request->task_type = $request->task_type;
                     $request->schedule_time = null;
+
+                    // $tasktype = ($request->task_type=='later')?'schedule':$request->task_type;
+                    // $request->task_type = $tasktype;                    
+                    $request->order_time = $request->schedule_time;
+                }else{
+                    $request->task_type = 'schedule';
+                    $request->scheduled_date_time = $request->schedule_time;
+                    $request->order_time = $request->schedule_time;
                 }
 
                 $dynamic = uniqid($order->id.$vendor);
