@@ -1109,11 +1109,16 @@ $(document).ready(function() {
                 return false;
             }
         }
-
-            if (cartAmount == 0) {
-            placeOrder(address, 1, '', tip,delivery_type);
+        if (cartAmount == 0) {
+            var params = [specific_instructions,task_type,schedule_dropoff,schedule_pickup,schedule_dt,comment_for_pickup_driver,comment_for_dropoff_driver,comment_for_vendor, delivery_type,slot,address];
+            // Save Cart Page Detail Forcely If user is paying from his cart.
+            var checkParam = saveCartPageDetails(params);
             return false;
-        } else {
+                if(checkParam != false){
+                placeOrder(address, 1, '', tip,delivery_type); // Adready Added
+                return false;
+                }
+            } else {
             $.ajax({
                 type: "POST",
                 dataType: 'json',
@@ -1158,6 +1163,26 @@ $(document).ready(function() {
             });
         }
     });
+
+    function saveCartPageDetails(...params)
+    {
+    var param = params.toString().split(',');
+        $.ajax({
+        type: "POST",
+        dataType: 'json',
+        url: update_cart_schedule,
+        data: { specific_instructions:param[0],task_type:param[1],schedule_dropoff:param[2],schedule_pickup:param[3],schedule_dt:param[4],comment_for_pickup_driver: param[5] , comment_for_dropoff_driver: param[6] , comment_for_vendor: param[7] , delivery_type : param[8] ,slot:param[9],address : param[10]},
+        success: function(response) {
+        if (response.status == "Success") {
+        return false;
+        }else{
+        return false;
+        }
+        },
+        });
+
+    }
+
     $(document).delegate("#topup_wallet_btn", "click", function() {
         $.ajax({
             data: {},
