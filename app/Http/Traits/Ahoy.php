@@ -144,6 +144,7 @@ public function confirmPreOrder($data)
         $httpCode =  curl_error($ch);
     }
     curl_close($ch);
+    \Log::info($result);
     return json_decode($result);
 } 
 
