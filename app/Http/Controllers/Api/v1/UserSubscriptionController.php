@@ -88,7 +88,8 @@ class UserSubscriptionController extends BaseController
                 return response()->json(["status"=>"Error", "message" => "Invalid Data"]);
             }
 
-            $code = array('stripe', 'stripe_fpx', 'paystack', 'payfast', 'yoco', 'paylink', 'checkout','kongapay');
+            $code = array('stripe', 'stripe_fpx', 'paystack', 'payfast', 'yoco', 'paylink', 'checkout','kongapay','ccavenue');
+
             $ex_codes = array('cod');
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
             foreach ($payment_options as $k => $payment_option) {
@@ -96,8 +97,9 @@ class UserSubscriptionController extends BaseController
                     $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
                     if($payment_option->code == 'stripe'){
                         $payment_option->title = 'Credit/Debit Card (Stripe)';
-                    }
-                    if($payment_option->code == 'mobbex'){
+                    }elseif($payment_option->code == 'kongapay'){
+                        $payment_option->title = 'Pay Now (Kongapay)';
+                    }elseif($payment_option->code == 'mobbex'){
                         $payment_option->title = __('Mobbex');
                     }
                     $payment_option->title = __($payment_option->title);

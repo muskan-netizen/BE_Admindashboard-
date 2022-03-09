@@ -32,8 +32,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-sm-3 col-md-2">
-                    <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img height="60" alt=""
-                            src="{{ $urlImg }}"></a>
+                    <a class="navbar-brand mr-0" href="{{ route('userHome') }}">
+                        <img height="60" alt="" src="{{ $urlImg }}"></a>
                 </div>
                 <div class="col-sm-9 col-md-10 top-header bg-transparent">
                     <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
@@ -149,11 +149,11 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             <div class="container align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
                     <div class="row mobile-header align-items-center justify-content-between my-sm-2">
-                        <div class="logo ">
+                        <div class="logo col-2">
                             <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center"
                                 href="{{route('userHome')}}"><img height="60" alt="" src="{{$urlImg}}"></a>
                         </div>
-                        <div class="al_count_tabs">
+                        <div class="al_count_tabs my-1">
                             @if($mod_count > 1)
                             <ul class="nav nav-tabs navigation-tab nav-material tab-icons mr-md-3 vendor_mods"
                                 id="top-tab" role="tablist">
@@ -202,8 +202,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     <div class="down-icon"> <i class="fa fa-angle-down" aria-hidden="true"></i> </div>
                                 </div>
                                 @endif @endif
-                                <div class="radius-bar d-xl-inline al_custom_search mr-2">
-                                    <div class="search_form d-flex align-items-center justify-content-between"> <button
+                                <div class="radius-bar d-xl-inline al_custom_search mr-sm-2">
+                                    <div class="search_form d-flex align-items-start justify-content-start"> <button
                                             class="btn"><i class="fa fa-search" aria-hidden="true"></i></button> @php
                                         $searchPlaceholder=getNomenclatureName('Search', true);
                                         $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ?
@@ -247,7 +247,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                 <span id="cart_qty_span"></span>
                                             </a> @endif @endif
                                             <script type="text/template" id="header_cart_template">
-                                                <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a>
+                                                <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a>
                                             </script>
                                             <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul>
                                         </li>
@@ -381,7 +381,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                                 @endif
                                                                 @endif
                                                                 <script type="text/template" id="header_cart_template">
-                                                                    <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{ __('Subtotal') }}: <span id='totalCart'>{{ Session::get('currencySymbol') }}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{ __('View Cart') }}</a>
+                                                                    <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{ __('Subtotal') }}: <span id='totalCart'>{{ Session::get('currencySymbol') }}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{ __('View Cart') }}</a>
                                                                 </script>
                                                                 <ul class="show-div shopping-cart "
                                                                     id="header_cart_main_ul"></ul>
@@ -603,22 +603,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12">
-                                <div class="shimmer_effectx d-none">
-                                    <ul class="sm pixelstrap sm-horizontal menu-slider">
-                                        @foreach($navCategories as $cate)
-                                        @if($cate['name'])
-                                        <li>
-                                            <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                @if($client_preference_detail->show_icons==1 &&
-                                                \Request::route()->getName()=='userHome')
-                                                <div class="nav-cate-imgx loading"> </div>
-                                                @endif <span><span class="loading"></span></span>
-                                            </a>
-                                        </li>
-                                        @endif
-                                        @endforeach
-                                    </ul>
-                                </div>
+
                                 <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
                                     @foreach($navCategories as $cate)
                                     @if($cate['name'])

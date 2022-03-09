@@ -79,9 +79,11 @@
                                     <th>{{ __("Admin Commissions") }}</th>
                                     <th>{{ __("Promo [Vendor]") }}</th>
                                     <th>{{ __("Promo [Admin]") }}</th>
+                                    <th>{{ __("Service Fee") }}</th>
                                     <th>{{ __("Cash Collected") }}</th>
                                     <th>{{ __("Payment Gateway") }}</th>
                                     <th>{{ __("Vendor Earning") }}</th>
+                                    <th>{{ __("Tax") }}</th>
                                 </tr>
                             </thead>
                             <tbody id="accounting_vendor_tbody_list">
@@ -149,9 +151,11 @@
                     {data: 'admin_commission_amount', name: 'admin_commission_amount', orderable: false, searchable: false},
                     {data: 'promo_vendor_amount', name: 'promo_admin_amount', orderable: false, searchable: false},
                     {data: 'promo_admin_amount', name: 'promo_admin_amount', orderable: false, searchable: false},
+                    {data: 'service_fee', name: 'service_fee', orderable: false, searchable: false},
                     {data: 'cash_collected_amount', name: 'cash_collected_amount', orderable: false, searchable: false},
                     {data: 'payment_method', name: 'payment_method', orderable: false, searchable: false},
                     {data: 'vendor_earning', name: 'vendor_earning', orderable: false, searchable: false},
+                    {data: 'taxable_amount', name: 'taxable_amount', orderable: false, searchable: false},
                 ]
             });
 
