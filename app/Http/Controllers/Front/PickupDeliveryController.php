@@ -432,8 +432,8 @@ class PickupDeliveryController extends FrontController{
                 $product_taxable_amount = 0;
                 $product_payable_amount = 0;
                 $vendor_taxable_amount = 0;
-                if ($product['tax_category']) {
-                    foreach ($product['tax_category']['tax_rate'] as $tax_rate_detail) {
+                if ($product['taxCategory']) {
+                    foreach ($product['taxCategory']['taxRate'] as $tax_rate_detail) {
                         $rate = round($tax_rate_detail->tax_rate);
                         $tax_amount = ($price_in_dollar_compare * $rate) / 100;
                         $product_tax = $quantity_price * $rate / 100;
