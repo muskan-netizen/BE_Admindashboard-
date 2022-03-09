@@ -106,6 +106,7 @@ class StoreController extends BaseController{
 				$order->user_name = $order->user->name;
 				$order->user_image = $order->user->image;
 				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+				$order->date_time = date("d-M-Y h:i A", strtotime($order->date_time));
 				$order->payment_option_title = __($order->paymentOption->title);
 				foreach ($order->vendors as $vendor) {
 					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $is_selected_vendor_id)->orderBy('id', 'DESC')->first();

@@ -70,7 +70,7 @@
  @endif
 <script type="text/template" id="vendors_template">
 	<% _.each(vendors, function(vendor, k){%>
-		<div class="product-card-box position-relative">
+		<div class="product-card-box position-relative ">
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative">
 					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
@@ -104,7 +104,7 @@
 </script>
 <script type="text/template" id="products_template">
 	<% _.each(products, function(product, k){ %>
-		<div class="product-card-box position-relative al">
+		<div class="product-card-box al_box_third_template position-relative al">
 			<div class="add-to-fav 12">
 				<input id="fav_pro_one" type="checkbox">
 				<label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
