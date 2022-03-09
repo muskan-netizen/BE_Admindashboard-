@@ -120,7 +120,7 @@ class UserhomeController extends FrontController
 
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $endpoint =$url . "/api/send-documents";
-                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
 
                 $response = $client->post($endpoint);
                 $response = json_decode($response->getBody(), true);
@@ -246,7 +246,7 @@ class UserhomeController extends FrontController
             $tag = [];
             $showTag = implode(',', $tag);
             $client = Client::with('country')->first();
-            pr( $this->driverDocuments());
+           // pr( $this->driverDocuments());
             $driverDocs = json_decode($this->driverDocuments());
             $driver_registration_documents = $driverDocs->documents;
             foreach ($driverDocs->documents as $key => $doc) {
