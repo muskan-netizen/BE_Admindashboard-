@@ -143,7 +143,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <% }); %>
                             </div>
                             <div class="col-md-2 text-md-center order-1 mb-1 mb-md-0">
-                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price) %></div>
+                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></div>
                             </div>
                             <div class="col-8 col-md-4 text-md-center order-3 order-md-2">
                                 <div class="number d-flex justify-content-md-center">
@@ -189,7 +189,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                         <p class="p-0 m-0"><%= addon.option.title %></p>
                                     </div>
                                     <div class="col-md-2 col-sm-4 text-center">
-                                        <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart) %></div>
+                                        <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart * addon.option.multiplier) %></div>
                                     </div>
                                     <div class="col-md-7 col-sm-4 text-right">
                                         <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
@@ -1178,6 +1178,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+    var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";

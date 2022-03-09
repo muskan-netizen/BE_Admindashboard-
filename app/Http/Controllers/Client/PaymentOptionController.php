@@ -308,6 +308,16 @@ class PaymentOptionController extends BaseController
                         'easypaisa_store_id' => $request->easypaisa_store_id
                     ));
                 }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'cashfree')) {
+                    $validatedData = $request->validate([
+                        'cashfree_app_id' => 'required',
+                        'cashfree_secret_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'app_id' => $request->cashfree_app_id,
+                        'secret_key' => $request->cashfree_secret_key
+                    ));
+                }
             }
             PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
         }

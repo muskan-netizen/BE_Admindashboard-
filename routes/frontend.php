@@ -14,10 +14,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('response', 'Front\EasypaisaControllertest@response')->name('response_payment');
     Route::get('responseConf', 'Front\EasypaisaControllertest@responseConformation')->name('responseConformation');
 
-	Route::post('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
-	Route::post('webhook/ship-rocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
-	Route::post('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
-	Route::post('webhook/ahoy','AhoyController@ahoyWebhook')->name('ahoyWebhook');
+	Route::any('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
+	Route::any('webhook/ship-rocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
+	Route::any('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
+	Route::any('webhook/ahoy','AhoyController@ahoyWebhook')->name('ahoyWebhook');
 
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
@@ -54,7 +54,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('edit-order/vendor/product/{id}', 'Front\TempCartController@getProductById');
 	// End edit order routes
 
-
+	// Initial route for all type of gateways
+	Route::post('post/payment/{gateway}', 'Front\PaymentController@postPayment')->name('payment.gateway.postPayment');
 
 	Route::get('payment/gateway/returnResponse', 'Front\PaymentController@getGatewayReturnResponse')->name('payment.gateway.return.response');
 
@@ -144,10 +145,10 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
+
 	//ccavenue-pay
 	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
 	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
-
 	Route::any('payment/ccavenue/api', 'Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
 
     // EasypaisaController routes
@@ -179,6 +180,13 @@ Route::group(['middleware' => ['domain']], function () {
 	//  })->name('razorpay.view');
 	Route::post('payment/razorpay/pay', 'Front\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
 	Route::get('payment/razorpay/notify', 'Front\RazorpayGatewayController@razorpayNotify')->name('payment.razorpayNotify');
+
+
+	//Cashfree
+	Route::get('payment/cashfree/return', 'Front\CashfreeGatewayController@cashfreeReturn')->name('payment.cashfree.return');
+	Route::post('payment/cashfree/notify', 'Front\CashfreeGatewayController@cashfreeNotify')->name('payment.cashfree.notify');
+
+
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');
