@@ -49,8 +49,8 @@ class AppServiceProvider extends ServiceProvider
         }
         $client_head = Client::where(['id' => 1])->first();
 
-        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout'];
-        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = '';
+        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree'];
+        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = '';
         $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
         if($payment_options){
             foreach($payment_options as $option){
@@ -66,6 +66,9 @@ class AppServiceProvider extends ServiceProvider
                 }
                 if($option->code == 'checkout'){
                     $checkout_public_key = (isset($creds->public_key) && (!empty($creds->public_key))) ? $creds->public_key : '';
+                }
+                if($option->code == 'cashfree'){
+                    $cashfree_test_mode = ($option->test_mode == 0) ? false : true;
                 }
             }
         }
@@ -94,6 +97,7 @@ class AppServiceProvider extends ServiceProvider
         view()->share('checkout_public_key', $checkout_public_key);
         view()->share('client_preference_detail', $client_preference_detail);
         view()->share('client_payment_options', $client_payment_options);
+        view()->share('cashfree_test_mode', $cashfree_test_mode);
         // view()->share('set_template', $set_template);
        
        
