@@ -14,6 +14,7 @@ use App\Models\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Stmt\TryCatch;
+use Log;
 
 class LalaMovesController extends Controller
 {
@@ -144,6 +145,7 @@ class LalaMovesController extends Controller
                 $response = json_decode($quotation['response']);
                 if($quotation['code']=='200'){
                         $response = $this->placeOrders($data,$response);
+                    \Log::info(json_encode($response));
                         if($response['code']=='200'){
                             $response = json_decode($response['response']);
                         }else{
@@ -189,12 +191,12 @@ class LalaMovesController extends Controller
                         'drop_address' => $cus_address->address,
                         'user_name' => $customer->name,
                         'user_phone' => $customer->phone_number,
-                        'remarks' => 'Delivery vendor message remarks',
+                        'remarks' => orderProductDetails($order_id),
                         'schedule_time' => $scheduledAt
                     );
         
                 $quotation = $this->getQuotations($data);
-            
+                \Log::info(json_encode($quotation));
                 $response = json_decode($quotation['response']);
                 if($quotation['code']=='200'){
                         $response = $this->placeOrders($data,$response);
