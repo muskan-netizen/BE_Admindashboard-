@@ -91,23 +91,59 @@ class UserhomeController extends FrontController
     public function checkIfLastMileDeliveryOn()
     {
         $preference = ClientPreference::first();
-        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
-            return $preference;
-        else
-            return false;
+
+        if($preference->business_type == 'texi'){
+            if ($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
+                return $preference;
+            else
+                return false;
+        }elseif($preference->business_type == 'laundry'){
+            if ($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
+                return $preference;
+            else
+                return false;
+        } else{
+            if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+                return $preference;
+            else
+                return false;
+        }
+
     }
 
     public function driverDocuments()
     {
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-            $url = $dispatch_domain->delivery_service_key_url;
-            $endpoint =$url . "/api/send-documents";
-             $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
 
-            $response = $client->post($endpoint);
-            $response = json_decode($response->getBody(), true);
-            return json_encode($response['data']);
+             if($dispatch_domain->business_type == 'texi'){
+
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $endpoint =$url . "/api/send-documents";
+                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+
+                $response = $client->post($endpoint);
+                $response = json_decode($response->getBody(), true);
+                return json_encode($response['data']);
+            } elseif($dispatch_domain->business_type == 'laundry'){
+                    $url = $dispatch_domain->laundry_service_key_url;
+                    $endpoint =$url . "/api/send-documents";
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key, 'shortcode' => $dispatch_domain->laundry_service_key_code]]);
+
+                    $response = $client->post($endpoint);
+                    $response = json_decode($response->getBody(), true);
+                    return json_encode($response['data']);
+            } else{
+
+                $url = $dispatch_domain->delivery_service_key_url;
+                $endpoint =$url . "/api/send-documents";
+                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
+
+                $response = $client->post($endpoint);
+                $response = json_decode($response->getBody(), true);
+                return json_encode($response['data']);
+            }
+
         } catch (\Exception $e) {
             $data = [];
             $data['status'] = 400;
@@ -210,6 +246,7 @@ class UserhomeController extends FrontController
             $tag = [];
             $showTag = implode(',', $tag);
             $client = Client::with('country')->first();
+           // pr( $this->driverDocuments());
             $driverDocs = json_decode($this->driverDocuments());
             $driver_registration_documents = $driverDocs->documents;
             foreach ($driverDocs->documents as $key => $doc) {
@@ -267,14 +304,14 @@ class UserhomeController extends FrontController
                         $q2->whereDate('start_date_time', '<=', Carbon::now())
                             ->whereDate('end_date_time', '>=', Carbon::now());
                     });
-                })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get(); 
+                })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
             $mobile_banners = MobileBanner::where('status', 1)->where('validity_on', 1)
                 ->where(function ($q) {
                     $q->whereNull('start_date_time')->orWhere(function ($q2) {
                         $q2->whereDate('start_date_time', '<=', Carbon::now())
                             ->whereDate('end_date_time', '>=', Carbon::now());
                     });
-                })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get(); 
+                })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
 
 
             $home_page_labels = CabBookingLayout::where('is_active', 1)->where('for_no_product_found_html',0)->orderBy('order_by');
