@@ -26,7 +26,7 @@ class CategoryController extends FrontController{
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0)
     {
-        //dd($request->pickup_location);
+
         $preferences = Session::get('preferences');
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -60,7 +60,7 @@ class CategoryController extends FrontController{
             $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
 
             if( is_array($vendors) &&  (count($vendors) > 0) ){
-               
+
                 Session::put('vendors', $vendors);
                 Log::info($vendors);
                 //remake child categories array
@@ -283,10 +283,10 @@ class CategoryController extends FrontController{
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
             $vendors = array();
             if(Session::has('vendors')){
-                
+
                 $vendors = Session::get('vendors');
              //   $vendors = $vendors->toArray();
-                
+
             }
             // pr($vendors);
             $products = Product::with(['vendor', 'media.image', 'category',
@@ -406,7 +406,9 @@ class CategoryController extends FrontController{
             }
         }
         $listData = $products;
-        return view('frontend/cate-products')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets]);
+
+
+        return view('frontend/cate-products')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets,"vendor_id"=>$vendor->id]);
     }
 
     /**
@@ -417,6 +419,7 @@ class CategoryController extends FrontController{
     {
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
+        $vendor_id = $request->has('vendor_id') ? $request->vendor_id : '';
         $setArray = $optionArray = array();
         $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
 
@@ -483,7 +486,7 @@ class CategoryController extends FrontController{
             $productIds[] = $value->product_id;
         }*/
        // print_r($variantIds);die;
-        $order_type = $request->has('order_type') ? $request->order_type : '';  
+        $order_type = $request->has('order_type') ? $request->order_type : '';
         $products = Product::with(['media.image',
                         'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
@@ -501,38 +504,43 @@ class CategoryController extends FrontController{
                     // ->where('vendor_id', $vid)
                     ->where('products.category_id', $cid)
                     ->where('products.is_live', 1)
-                     ->whereIn('products.id', function ($qr) use ($startRange, $endRange) {
+                    ->whereHas('vendor',function($q){
+                        $q->where('status',1);
+                    })
+                    ->whereIn('products.id', function ($qr) use ($startRange, $endRange) {
                         $qr->select('product_id')->from('product_variants')
                             ->where('price', '>=', $startRange)
                             ->where('price', '<=', $endRange);
                     });
-                   
-        if(!empty($productIds)){
-            $products = $products->whereIn('id', $productIds);
-        }
+            if( $vendor_id ){
+                $products = $products->where('vendor_id', $vendor_id);
+            }
+            if(!empty($productIds)){
+                $products = $products->whereIn('id', $productIds);
+            }
 
-        if($request->has('brands') && !empty($request->brands)){
-            $products = $products->whereIn('products.brand_id', $request->brands);
-        }
-        //sorting
-        if (!empty($order_type) && $request->order_type == 'rating') {
-            $products = $products->orderBy('products.averageRating', 'desc');
-        }elseif (!empty($order_type) && $order_type == 'low_to_high') {
-            $products = $products->orderBy('product_variants.price', 'asc');
-        }elseif (!empty($order_type) && $order_type == 'high_to_low') {
-            $products = $products->orderBy('product_variants.price', 'desc'); 
-        }elseif (!empty($order_type) && $order_type == 'newly_added') {
-            $products = $products->orderBy('products.id', 'desc');
-        }elseif (!empty($order_type) && $order_type == 'a_to_z') {
-            $products = $products->orderBy('product_translations.title', 'asc');
-        }elseif (!empty($order_type) && $order_type == 'z_to_a') {
-            $products = $products->orderBy('product_translations.title', 'desc');
-        }else{
-            //
-        }
-        $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
+            if($request->has('brands') && !empty($request->brands)){
+                $products = $products->whereIn('products.brand_id', $request->brands);
+            }
+            //sorting
+            if (!empty($order_type) && $request->order_type == 'rating') {
+                $products = $products->orderBy('products.averageRating', 'desc');
+            }elseif (!empty($order_type) && $order_type == 'low_to_high') {
+                $products = $products->orderBy('product_variants.price', 'asc');
+            }elseif (!empty($order_type) && $order_type == 'high_to_low') {
+                $products = $products->orderBy('product_variants.price', 'desc');
+            }elseif (!empty($order_type) && $order_type == 'newly_added') {
+                $products = $products->orderBy('products.id', 'desc');
+            }elseif (!empty($order_type) && $order_type == 'a_to_z') {
+                $products = $products->orderBy('product_translations.title', 'asc');
+            }elseif (!empty($order_type) && $order_type == 'z_to_a') {
+                $products = $products->orderBy('product_translations.title', 'desc');
+            }else{
+                //
+            }
+            $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
 
-        $products = $products->groupBy('products.id')->paginate($pagiNate);
+            $products = $products->groupBy('products.id')->paginate($pagiNate);
 
         if(!empty($products)){
             foreach ($products as $key => $value) {
