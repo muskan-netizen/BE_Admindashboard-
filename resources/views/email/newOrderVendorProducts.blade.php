@@ -34,9 +34,11 @@
                         @php
                         $img = '';
                         if(isset($vendor_product['product']['media'][0])){
-                           $img = $vendor_product['product']['media'][0]['image']['path']['image_fit'].'100/100'.$vendor_product['product']['media'][0]['image']['path']['image_path'];
+                           $imga = $vendor_product['product']['media'][0]['image']['path']['image_fit'].'100/100'.$vendor_product['product']['media'][0]['image']['path']['image_path'];
+                           $img = $vendor_product['product']['media'][0]['image']['path']['original_image']
                         }
                         @endphp
+                        {{-- <img style="width: 100%;height: 100%;border-radius: 3px;object-fit: cover;" src="{{ $img }}" alt=""> --}}
                         <img style="width: 100%;height: 100%;border-radius: 3px;object-fit: cover;" src="{{ $img }}" alt="">
                      </div>
                      <div style="padding: 0 0 0 15px;">
@@ -88,9 +90,9 @@
            </tr>
 
            <tr>
-              <td style="text-align: left;"><b>{{__('Delivery Fee')}}:</b></td>
-              <td></td>
-              <td style="text-align: right;">{{$currencySymbol . decimal_format($product['delivery_fee_charges'])}}</td>
+              <td style="text-align: left;"><b>{{__('SHIPPING Charge')}}:</b></td>
+<b>{{__('Delivery Fee')}}:</b></td>
+imal_format($product['delivery_fee_charges'])}}</td>
            </tr>
 
            <tr>
@@ -110,4 +112,5 @@
        @endif
        @endforeach
    </td>
+
 </tr>

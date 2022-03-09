@@ -1113,7 +1113,6 @@ $(document).ready(function() {
             var params = [specific_instructions,task_type,schedule_dropoff,schedule_pickup,schedule_dt,comment_for_pickup_driver,comment_for_dropoff_driver,comment_for_vendor, delivery_type,slot,address];
             // Save Cart Page Detail Forcely If user is paying from his cart.
             var checkParam = saveCartPageDetails(params);
-            return false;
                 if(checkParam != false){
                 placeOrder(address, 1, '', tip,delivery_type); // Adready Added
                 return false;

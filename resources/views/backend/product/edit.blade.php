@@ -373,13 +373,13 @@
                                         </td>
                                         <td>{{rtrim($vsets, ', ')}}</td>
                                         <td>
-                                            <input type="text" style="width: 70px;" name="variant_price[]" value="{{$varnt->price}}" onkeypress="return isNumberKey(event)">
+                                            <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
                                         </td>
                                         <td>
-                                            <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{$varnt->compare_at_price}}" onkeypress="return isNumberKey(event)">
+                                            <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{decimal_format($varnt->compare_at_price)}}" onkeypress="return isNumberKey(event)">
                                         </td>
                                         <td>
-                                            <input type="text" style="width: 70px;" name="variant_cost_price[]" value="{{$varnt->cost_price}}" onkeypress="return isNumberKey(event)">
+                                            <input type="text" style="width: 70px;" name="variant_cost_price[]" value="{{decimal_format($varnt->cost_price)}}" onkeypress="return isNumberKey(event)">
                                         </td>
                                         <td class="check_inventory">
                                             <input type="text" style="width: 70px;" name="variant_quantity[]" value="{{$varnt->quantity}}" onkeypress="return isNumberKey(event)">
@@ -654,7 +654,9 @@
                             }
                             ?>
                             <div class="product-action">
+                                @if(isset($media->image))
                                 <a href="{{route('product.deleteImg',[$product->id, $media->image->id])}}" class="btn btn-danger btn-xs waves-effect waves-light" onclick="return confirm('Are you sure? You want to delete the image.')"><i class="mdi mdi-close" {{$media->image}}></i></a>
+                                @endif
                             </div>
                             <div class="bg-light">
                                 <img src="{{$mediaPath}}" style="width:100%;" class="vimg_{{$media->id}}" />

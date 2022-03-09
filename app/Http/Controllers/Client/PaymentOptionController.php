@@ -29,7 +29,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa');
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -72,7 +72,7 @@ class PaymentOptionController extends BaseController
                         'api_key' => $request->stripe_api_key
                     ));
                 }
-                
+
             }
         }
 
@@ -135,7 +135,7 @@ class PaymentOptionController extends BaseController
                         }
                         $json_creds = json_encode($stripe_arr);
                     }
-                   
+
                 }
                 else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe_fpx')) {
                     $validatedData = $request->validate([
@@ -298,6 +298,14 @@ class PaymentOptionController extends BaseController
                         'enc_key' => $request->ccavenue_enc_key,
                         'access_code' => $request->ccavenue_access_code,
                         'merchant_id' => $request->ccavenue_merchant_id
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'easypaisa')) {
+                    $validatedData = $request->validate([
+                        'easypaisa_store_id' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'easypaisa_store_id' => $request->easypaisa_store_id
                     ));
                 }
                 else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'cashfree')) {
