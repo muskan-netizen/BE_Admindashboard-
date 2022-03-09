@@ -330,7 +330,7 @@ class OrderController extends BaseController
         ))->findOrFail($order_id);
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
-                $product->image_path  = $product->media->first() ? $product->media->first()->image->path : '';
+                $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
                 foreach ($product->addon as $ck => $addons) {
