@@ -25,7 +25,7 @@
                             <div class="col-6 col-md-3 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
-                                        <i class="mdi mdi-currency-usd text-primary mdi-24px"></i>
+                                        <i class="mdi mdi-cash-multiple text-primary mdi-24px"></i>
                                         <span data-plugin="counterup" id="total_earnings_by_vendors">{{$total_earnings_by_vendors}}</span>
                                     </h3>
                                     <p class="text-muted font-15 mb-0">{{ __('Total Order Value') }}</p>
