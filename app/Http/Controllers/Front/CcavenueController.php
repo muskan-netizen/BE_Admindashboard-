@@ -18,6 +18,7 @@ use App\Models\UserAddress;
 use App\Models\UserVendor;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
+use JWT\Token;
 use Log;
 
 class CcavenueController extends Controller
@@ -70,16 +71,35 @@ class CcavenueController extends Controller
         return $time;
    }
 
+   public function createUserToken()
+   {
+    $user = auth()->user();
+    $token1 = new Token;
+    $token = $token1->make([
+        'key' => 'royoorders-jwt',
+        'issuer' => 'royoorders.com',
+        'expiry' => strtotime('+1 month'),
+        'issuedAt' => time(),
+        'algorithm' => 'HS256',
+    ])->get();
+    $token1->setClaim('user_id', $user->id);
+    $this->token = $token;
+    $user->auth_token = $token;
+    $user->save();
+    return $user;
+   }
+
    public function payForm(Request $request)
    {
+    $user = $this->createUserToken();
     $merchant_data='';
     $number = $this->orderNumber($request); // order no
 	$working_key=$this->access_key;//Shared by CCAVENUES
 	$access_code=$this->access_code;//Shared by CCAVENUES
 	$url=$this->url;//Shared by CCAVENUES
-	$user = auth()->user();
+	
     $address = UserAddress::where('is_primary','1')->first();
-    $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.$address->city.'&billing_state='.$address->state.'&billing_zip='.$address->pincode.'&billing_country='.$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.$address->address.'&delivery_city='.$address->city.'&delivery_state='.$address->state.'&delivery_zip='.$address->pincode.'&delivery_country='.$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=web&merchant_param4='.auth()->id().'&merchant_param5=&promo_code=&customer_identifier=&';
+    $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.$address->city.'&billing_state='.$address->state.'&billing_zip='.$address->pincode.'&billing_country='.$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.$address->address.'&delivery_city='.$address->city.'&delivery_state='.$address->state.'&delivery_zip='.$address->pincode.'&delivery_country='.$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=web&merchant_param4='.auth()->id().'&merchant_param5='.$this->token.'&promo_code=&customer_identifier=&';
     $encrypted_data=$this->encrypt($merchant_data,$working_key); // Method for encrypting the data.
 
 
@@ -88,6 +108,14 @@ class CcavenueController extends Controller
 
    public function payFormWebView(Request $request)
    {
+    if(isset($request->auth_token) && !empty($request->auth_token)){
+        $user = User::where('auth_token', $request->auth_token)->first();
+        Auth::login($user);
+        $user->auth_token = $request->auth_token;
+        $user->save();
+     }
+     //eyJ0eXAiOiJqd3QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDY3NDQ0OTgsImV4cCI6MTY0OTQyMjg5OCwiaXNzIjoicm95b29yZGVycy5jb20ifQ.60ADhLV0rlRHQjWtGUD1xgW6Eezs3DIwjyZoV4jILhI
+     
     $merchant_data='';
     $number = $this->orderNumber($request); // order no
 	$working_key=$this->access_key;//Shared by CCAVENUES
@@ -95,7 +123,7 @@ class CcavenueController extends Controller
 	$url=$this->url;//Shared by CCAVENUES
 	$user = auth()->user();
     $address = UserAddress::where('is_primary','1')->first();
-    $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.$address->city.'&billing_state='.$address->state.'&billing_zip='.$address->pincode.'&billing_country='.$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.$address->address.'&delivery_city='.$address->city.'&delivery_state='.$address->state.'&delivery_zip='.$address->pincode.'&delivery_country='.$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=mob&merchant_param4=&merchant_param5=&promo_code=&customer_identifier=&';
+    $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.$address->city.'&billing_state='.$address->state.'&billing_zip='.$address->pincode.'&billing_country='.$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.$address->address.'&delivery_city='.$address->city.'&delivery_state='.$address->state.'&delivery_zip='.$address->pincode.'&delivery_country='.$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=mob&merchant_param4=&merchant_param5='.$user->auth_token.'&promo_code=&customer_identifier=&';
     $encrypted_data=$this->encrypt($merchant_data,$working_key); // Method for encrypting the data.
 
 
@@ -107,9 +135,9 @@ class CcavenueController extends Controller
        $amount = $request->amount;
        $user = auth()->user();
        $action = isset($request->action) ? $request->action : ''; 
-       $params = '?amount=' . $amount.'&auth_token='.$user->auth_token.'&from='.$action;
+       $params = '?amt=' . $amount.'&auth_token='.$user->auth_token.'&from='.$action;
        if($action == 'cart'){
-           $params = $params . '&order_no=' . $request->order_number.'&app=1';
+           $params = $params . '&order_number=' . $request->order_number.'&app=1';
        }elseif($action == 'wallet'){
          //app = 2 is for wallet
         $params = $params .'&app=2&transaction_id=W_'.time();
@@ -118,7 +146,7 @@ class CcavenueController extends Controller
        $params = $params .'&app=3&subscription_id='.'S_'.time().'_'.$request->subscription_id;
       }elseif($action == 'tip'){
         //app = 2 is for wallet
-       $params = $params .'&app=3&order_no='.$request->order_number;
+       $params = $params .'&app=3&order_number='.$request->order_number;
       }
 
        return $this->successResponse(url($request->serverUrl.'payment/ccavenue/api/'.$params)); 
@@ -138,6 +166,12 @@ class CcavenueController extends Controller
 		$information=explode('=',$decryptValues[$i]);
         $request->request->add([$information[0] => $information[1]]);
 	}
+    //eyJ0eXAiOiJqd3QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDY3NDQyODMsImV4cCI6MTY0OTQyMjY4MywiaXNzIjoicm95b29yZGVycy5jb20ifQ.oWt1RdwKc8ejQ1u6vgxK4WYFyZn3FSIiOYfF4YULsDU
+    
+    if(isset($request->merchant_param5) && !empty($request->merchant_param5)){
+        $user = User::where('auth_token',$request->merchant_param5)->first();
+        Auth::login($user);
+     }
   
         if($request->merchant_param2=='cart'){
             return $this->completeOrderCart($request);
