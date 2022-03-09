@@ -186,8 +186,10 @@ class ShiprocketController extends Controller
     {
 		$this->configuration();
     	$token = $this->getAuthToken();
+		
 		if(isset($token->token)){
 			$address = $this->addAddress($token->token,$vendor,$name);
+			//dd($address);
 			return $address; 
 		}
 		return 0;
@@ -260,6 +262,7 @@ class ShiprocketController extends Controller
 				'weight' => ($weightSum>0)? $weightSum : $this->weight,
 			  );
 		}
+		
     	$orderSuc = $this->createOrder($token->token,$data);
 		if($orderSuc->status_code == 1)
 		{

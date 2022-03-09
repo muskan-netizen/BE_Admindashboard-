@@ -84,6 +84,7 @@
                 $client_key = (isset($creds->client_key)) ? $creds->client_key : '';
                 $access_code = (isset($creds->access_code)) ? $creds->access_code : '';
                 $enc_key = (isset($creds->enc_key)) ? $creds->enc_key : '';
+                $easypaisa_store_id = (isset($creds->easypaisa_store_id)) ? $creds->easypaisa_store_id : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -107,6 +108,20 @@
                         @endif
                     </div>
 
+                    @if ( (strtolower($opt->code) == 'easypaisa') )
+                    <div class="mt-2" id="easypaisa_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="easypaisa_merchant" class="mr-3">{{ __("Store Id") }}</label>
+                                    <input type="text" name="easypaisa_store_id" id="easypaisa_store_id" class="form-control" value="{{$easypaisa_store_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    @endif
+
                     @if ( (strtolower($opt->code) == 'ccavenue') )
                     <div class="mt-2" id="ccavenue_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
@@ -122,7 +137,7 @@
                                     <input type="text" name="ccavenue_access_code" id="ccavenue_access_code" class="form-control" value="{{$access_code}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
-                           
+
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="ccavenue_merchant" class="mr-3">{{ __("Encryption Key") }}</label>

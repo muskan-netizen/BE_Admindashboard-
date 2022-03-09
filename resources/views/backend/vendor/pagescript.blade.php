@@ -1,4 +1,13 @@
+<script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script>
+
+    $(document).on('click', ' .iti__country', function() {
+        var code = $(this).attr('data-country-code');
+        $('#editCardBox #vendorCountryCode').val(code);
+        var dial_code = $(this).attr('data-dial-code');
+        $('#editCardBox #vendorDialCode').val(dial_code);
+    });
+
     var section_id = 0
     $('.openAddModal').click(function() {
         $('#add-form').modal({
@@ -258,6 +267,16 @@
                 // },
                 // complete: function(){
                 //     $(".loader_box").hide();
+                var input = document.querySelector("#editCardBox #vendor_phone_number");
+                console.log(input);
+                if(input){
+                    window.intlTelInput(input, {
+                        separateDialCode: true,
+                        hiddenInput: "contact",
+                        utilsScript: "{{asset('assets/js/utils.js')}}",
+                        initialCountry: "{{ Session::get('default_country_code','US') }}",
+                    });
+                }
             }
         });
     });

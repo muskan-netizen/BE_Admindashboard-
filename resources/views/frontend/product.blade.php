@@ -15,51 +15,13 @@
     <link rel="stylesheet" href="https://www.jqueryscript.net/demo/Product-Carousel-Magnifying-Effect-exzoom/jquery.exzoom.css">
     <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style type="text/css">
-    .main-menu .brand-logo {
-        display: inline-block;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-    .btn-disabled{
-        opacity:0.5;
-        pointer-events: none;
-    }
-    .fab {
-        font: normal normal normal 14px/1 FontAwesome;
-        font-size: inherit;
-    }
-    #number{
-        display:block;
-    }
-    #exzoom{
-        display:none;
-    }
-    .exzoom .exzoom_btn a.exzoom_next_btn{
-        right: -12px;
-    }
-    .exzoom .exzoom_nav .exzoom_nav_inner{
-        -webkit-transition: all 0.5s;
-        -moz-transition: all 0.5s;
-        transition: all 0.5s;
-    }
-    @media screen and (max-width: 768px) {
-        .exzoom .exzoom_zoom_outer {
-            display: none;
+    .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
+    #number{display:block}#exzoom{display:none}.exzoom .exzoom_btn a.exzoom_next_btn{right:-12px} .exzoom .exzoom_nav .exzoom_nav_inner{-webkit-transition:all .5s;-moz-transition:all .5s;transition:all .5s}
+
+    @media screen and (max-width:768px){
+        .exzoom .exzoom_zoom_outer{display:none}
         }
-    }
-    .border-product.al_disc ul, .border-product.al_disc ol {
-        padding-left: 30px;
-    }
-    .border-product.al_disc ul li,.border-product.al_disc ol li {
-        display: list-item;
-        padding-left: 0;
-        padding-top: 8px;
-        list-style-type: disc;
-        font-size: 14px;
-    }
-    .border-product.al_disc ol li {
-        list-style-type: decimal;
-    }
+    .border-product.al_disc ol,.border-product.al_disc ul{padding-left:30px}.border-product.al_disc ol li,.border-product.al_disc ul li{display:list-item;padding-left:0;padding-top:8px;list-style-type:disc;font-size:14px}.border-product.al_disc ol li{list-style-type:decimal}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}
 </style>
 
 @endsection
@@ -69,40 +31,17 @@
 @if(!empty($category))
 @include('frontend.included_files.products_breadcrumb')
 @endif
-<style type="text/css">
-    .productVariants .firstChild {
-        min-width: 150px;
-        text-align: left !important;
-        border-radius: 0% !important;
-        margin-right: 10px;
-        cursor: default;
-        border: none !important;
-    }
+<!-- <div class="toast">
+    <div class="toast-header">
+      Toast Header
+    </div>
+    <div class="toast-body">
+      Some text inside the toast body
+    </div>
+  </div> -->
 
-    .product-right .color-variant li,
-    .productVariants .otherChild {
-        height: 35px;
-        width: 35px;
-        border-radius: 50%;
-        margin-right: 10px;
-        cursor: pointer;
-        border: 1px solid #f7f7f7;
-        text-align: center;
-    }
-
-    .productVariants .otherSize {
-        height: auto !important;
-        width: auto !important;
-        border: none !important;
-        border-radius: 0%;
-    }
-
-    .product-right .size-box ul li.active {
-        background-color: inherit;
-    }
-</style>
 <section class="section-b-space">
-    <div class="collection-wrapper">
+    <div class="collection-wrapper al">
         <div class="container">
             <div class="row">
                 <div class="col-sm-12">
@@ -211,7 +150,9 @@
                                                             $img = $image->image;
                                                         }
                                                     @endphp
+                                            @if(!is_null($img))
                                             <li><img class="" src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" /></li>
+                                            @endif
                                         @endforeach
                                         @endif
                                         </ul>
@@ -360,9 +301,9 @@
                                                     <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
                                                         @foreach($addon->setoptions as $k => $option)
                                                         <div class="checkbox checkbox-success form-check-inline mb-1">
-                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
+                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
                                                             <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
-                                                                {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}</label>
+                                                                {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
                                                         </div>
                                                         @endforeach
                                                     </div>
@@ -570,11 +511,13 @@
         <div class="swiper-container gallery-top">
             <div class="swiper-wrapper">
                 <% _.each(variant.product.media, function(img, key){ %>
-                    <div class="swiper-slide easyzoom easyzoom--overlay">
-                        <a href="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>">
-                        <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>" alt="">
-                        </a>
-                    </div>
+                    <% if(img.image != null) {%>
+                        <div class="swiper-slide easyzoom easyzoom--overlay">
+                            <a href="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>">
+                            <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>" alt="">
+                            </a>
+                        </div>
+                    <% }; %>
                 <% }); %>
             </div>
             <!-- Add Arrows -->
@@ -584,9 +527,11 @@
         <div class="swiper-container gallery-thumbs">
             <div class="swiper-wrapper">
                 <% _.each(variant.product.media, function(img, key){ %>
-                    <div class="swiper-slide">
-                        <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>300/300<%= img.image.path['image_path'] %>" alt="">
-                    </div>
+                    <% if(img.image != null) {%>
+                        <div class="swiper-slide">
+                            <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>300/300<%= img.image.path['image_path'] %>" alt="">
+                        </div>
+                    <% }; %>
                 <% }); %>
             </div>
         </div>
@@ -901,10 +846,9 @@
                     if(response.variant != ''){
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
-                        response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(2);
-                        response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(2);
-                        $("#product_variant_wrapper").append(variant_template({variant:response.variant}));
-
+                        response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count); 
+                        response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
+                        $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant}));
                         $('#product_variant_quantity_wrapper').html('');
                         let variant_quantity_template = _.template($('#variant_quantity_template').html());
                         $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
@@ -914,12 +858,11 @@
                         }else{
                             $(".addToCart, #addon-table").show();
                         }
-
                         let variant_image_template = _.template($('#variant_image_template').html());
                         $(".product__carousel .gallery-parent").html('');
                         $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));
-                        easyZoomInitialize();
-                        $('.easyzoom').easyZoom();
+                        // easyZoomInitialize();
+                        // $('.easyzoom').easyZoom();
 
                         if(response.variant.media != ''){
                             $(".product-slick").slick({ slidesToShow: 1, slidesToScroll: 1, arrows: !0, fade: !0, asNavFor: ".slider-nav" });
@@ -975,8 +918,8 @@
                     addOnPrice = parseFloat(checkAddOnPrice());
                     org_price = parseFloat($(this).data('original_price')) + addOnPrice;
                     fixed_price = parseFloat($(this).data('fixed_price')) + addOnPrice;
-                    $('.product_fixed_price').html(fixed_price.toFixed(2));
-                    $('.product_original_price').html(org_price.toFixed(2));
+                    $('.product_fixed_price').html(fixed_price.toFixed(digit_count));
+                    $('.product_original_price').html(org_price.toFixed(digit_count));
                 }
             }
         });

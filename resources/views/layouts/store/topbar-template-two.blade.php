@@ -19,7 +19,7 @@ $preference = $client_preference_detail;
 
                 <div class="col-lg-6 d-md-flex align-items-center justify-content-start"  data-aos="zoom-in">
 
-                    <a class="navbar-brand mr-xl-3 mr-0" style="min-width:150px;" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}" height="60"></a>
+                    <a class="navbar-brand mr-xl-3 mr-0" style="max-width:150px;" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
@@ -39,7 +39,7 @@ $preference = $client_preference_detail;
                     </div>
                 </div>
 
-                <div class="col-2 col-lg-6 text-right ml-auto al_z_index p-0" data-aos="zoom-in">
+                <div class="col-2 col-lg-6 text-right ml-auto al_z_index" data-aos="zoom-in">
 
 
                     <ul class="header-dropdown ml-auto">
