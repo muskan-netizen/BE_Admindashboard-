@@ -189,7 +189,7 @@ class LalaMovesController extends Controller
                         'drop_address' => $cus_address->address,
                         'user_name' => $customer->name,
                         'user_phone' => $customer->phone_number,
-                        'remarks' => 'Delivery vendor message remarks',
+                        'remarks' => orderProductDetails($order_id),
                         'schedule_time' => $scheduledAt
                     );
         
