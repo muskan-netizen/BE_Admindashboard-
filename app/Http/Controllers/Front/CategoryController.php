@@ -60,7 +60,7 @@ class CategoryController extends FrontController{
             $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
 
             if( is_array($vendors) &&  (count($vendors) > 0) ){
-               
+
                 Session::put('vendors', $vendors);
                 Log::info($vendors);
                 //remake child categories array
@@ -283,10 +283,10 @@ class CategoryController extends FrontController{
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
             $vendors = array();
             if(Session::has('vendors')){
-                
+
                 $vendors = Session::get('vendors');
              //   $vendors = $vendors->toArray();
-                
+
             }
             // pr($vendors);
             $products = Product::with(['vendor', 'media.image', 'category',
@@ -483,7 +483,7 @@ class CategoryController extends FrontController{
             $productIds[] = $value->product_id;
         }*/
        // print_r($variantIds);die;
-        $order_type = $request->has('order_type') ? $request->order_type : '';  
+        $order_type = $request->has('order_type') ? $request->order_type : '';
         $products = Product::with(['media.image',
                         'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
@@ -506,7 +506,7 @@ class CategoryController extends FrontController{
                             ->where('price', '>=', $startRange)
                             ->where('price', '<=', $endRange);
                     });
-                   
+
         if(!empty($productIds)){
             $products = $products->whereIn('id', $productIds);
         }
@@ -520,7 +520,7 @@ class CategoryController extends FrontController{
         }elseif (!empty($order_type) && $order_type == 'low_to_high') {
             $products = $products->orderBy('product_variants.price', 'asc');
         }elseif (!empty($order_type) && $order_type == 'high_to_low') {
-            $products = $products->orderBy('product_variants.price', 'desc'); 
+            $products = $products->orderBy('product_variants.price', 'desc');
         }elseif (!empty($order_type) && $order_type == 'newly_added') {
             $products = $products->orderBy('products.id', 'desc');
         }elseif (!empty($order_type) && $order_type == 'a_to_z') {
