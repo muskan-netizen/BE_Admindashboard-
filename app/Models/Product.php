@@ -269,4 +269,12 @@ class Product extends Model{
 
 
 
+
+    public function productTranslation(){
+   
+        return $this->hasMany('App\Models\ProductTranslation');
+    }
+
+
+
 }
