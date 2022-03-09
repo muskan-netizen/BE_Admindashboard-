@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -19,17 +18,18 @@
     </head>
     <body>
         <div class="font-sans text-gray-900 antialiased">
+            <form action="{{$url}}" method="POST" target="_blank">
+              <div>
+                <input id="auth_token" name="auth_token" type="hidden" value="{{ $auth_token }}" />
+                <input id="postBackURL" name="postBackURL" type="hidden" value="{{ $post_back_url_1 }}" />
+            </div>
 
-
-        <form action="{{$url}}" method="POST" target="_blank">
-            <input name="storeId" value="{{ $post_data->storeId }}" hidden = "true"/>
-            <input name="amount" value="10" hidden = "true"/>
-            <input name="postBackURL" value="{{ $post_data->postBackURL }}" hidden = "true"/>
-            <input name="orderRefNum" value="{{ $post_data->orderRefNum }}" hidden = "true"/>
+          <div class="flex items-center justify-end mt-4">
             <button class="btn btn-primary" type="submit">
-                Pay 2
-              </button>
-            </form>
+              Confirm
+            </button>
+          </div>
+        </form>
       </div>
     </body>
 </html>

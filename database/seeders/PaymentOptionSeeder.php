@@ -10,7 +10,7 @@ class PaymentOptionSeeder extends Seeder
      *
      * @return void
      */
-    public function run(){ 
+    public function run(){
 
       $option_count = DB::table('payment_options')->count();
 
@@ -36,8 +36,9 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '20', 'path' => 'kongapay/pay', 'code' => 'kongapay', 'title' => 'KongaPay', 'off_site' => '1', 'status' => '0'),
         array('id' => '21', 'path' => 'vivawallet/pay', 'code' => 'viva_wallet', 'title' => 'Viva Wallet', 'off_site' => '1', 'status' => '0'),
         array('id' => '22', 'path' => 'ccavenue/pay', 'code' => 'ccavenue', 'title' => 'CCAvenue', 'off_site' => '1', 'status' => '0'),
-      ); 
- 
+        array('id' => '23', 'path' => 'easypaisa/pay', 'code' => 'easypaisa', 'title' => 'Easypaisa', 'off_site' => '1', 'status' => '0'),
+      );
+
       if($option_count == 0)
       {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
@@ -49,7 +50,7 @@ class PaymentOptionSeeder extends Seeder
       else{
           foreach ($payment_options as $option) {
               $payop = PaymentOption::where('code', $option['code'])->first();
- 
+
               if ($payop !== null) {
                   $payop->update(['id' => $option['id'], 'title' => $option['title'],'off_site' => $option['off_site']]);
               } else {
@@ -64,8 +65,8 @@ class PaymentOptionSeeder extends Seeder
               }
           }
       }
-     
-     
-      
+
+
+
     }
 }
