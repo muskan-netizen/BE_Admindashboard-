@@ -98,7 +98,7 @@ class UserSubscriptionController extends BaseController
                     if($payment_option->code == 'stripe'){
                         $payment_option->title = 'Credit/Debit Card (Stripe)';
                     }elseif($payment_option->code == 'kongapay'){
-                        $payment_option->title = 'Pay Now (Kongapay)';
+                        $payment_option->title = 'Pay Now';
                     }elseif($payment_option->code == 'mobbex'){
                         $payment_option->title = __('Mobbex');
                     }
