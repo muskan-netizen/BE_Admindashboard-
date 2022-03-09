@@ -2187,7 +2187,7 @@ class VendorController extends BaseController{
                         'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
-                        'media.image',
+                        'media.image', 
                         // 'addOn' => function ($q1) use ($langId) {
                         //     $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                         //     $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
@@ -2222,7 +2222,12 @@ class VendorController extends BaseController{
 
                     ->select('*',DB::raw("'$multipli' as variant_multiplier"))->withCount(['variantSet','addOn']);
                     }])
-                    ->where('status', 1)->get();
+                    ->where('status', 1);
+                    
+                    if(isset($request->category_id))
+                    $vendor_categories = $vendor_categories->where('category_id',$request->category_id);
+
+                    $vendor_categories = $vendor_categories->get();
                
                 $listData =  array_values($vendor_categories->toArray());
             }
@@ -2551,6 +2556,10 @@ class VendorController extends BaseController{
                     } else {
                         $vendor_categories = $vendor_categories->where('status', 1)->get();
                     }
+
+
+                    if(isset($request->category_id))
+                    $vendor_categories = $vendor_categories->where('category_id',$request->category_id);
                 
 
                   
