@@ -10,9 +10,9 @@ Route::get('/debug-sentry', function () {
 
 Route::group(['middleware' => ['domain']], function () {
 	//easypay test
-	Route::get('testpayment', 'Front\EasypaisaController@testpayment')->name('testpayment');
-	Route::get('response', 'Front\EasypaisaController@response')->name('response_payment');
-    Route::get('responseConf', 'Front\EasypaisaController@responseConformation')->name('responseConformation');
+	Route::get('testpayment', 'Front\EasypaisaControllertest@testpayment')->name('testpayment');
+	Route::get('response', 'Front\EasypaisaControllertest@response')->name('response_payment');
+    Route::get('responseConf', 'Front\EasypaisaControllertest@responseConformation')->name('responseConformation');
 
 	Route::post('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
 	Route::post('webhook/ship-rocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
@@ -149,6 +149,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
 	//Route::any('ccavenue/cancel', 'Front\CcavenueController@cancelForm')->name('ccavenue.cancel');
 
+    // EasypaisaController routes
+    Route::get('easypaisa/pay', 'Front\EasypaisaController@create_token')->name('easypaisa.create.token');
+	Route::any('easypaisa/success', 'Front\EasypaisaController@get_token_view_payment')->name('easypaisa.gettoken');
+
 	//KongaPay routes
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
 	Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
@@ -269,6 +273,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('firebase-messaging-sw.js', 'Front\FirebaseController@service_worker');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
+
 	Route::get('user/orders', 'Front\OrderController@orders')->name('user.orders');
 	Route::post('user/orders/tip-after-order', 'Front\OrderController@tipAfterOrder')->name('user.tip_after_order');
 	Route::post('user/store', 'Front\AddressController@store')->name('address.store');

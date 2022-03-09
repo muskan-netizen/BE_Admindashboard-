@@ -330,18 +330,18 @@ class OrderController extends FrontController
                     } else {
                         $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     }
-                    //pr($returnHTML);
+
 
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
                     $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
                 }
-
+//pr( $returnHTML);
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
-                    'email' => $sendto,
+                    'email' => 'harbans.singh@codebrewinnovations.com' ,// $sendto,
                     'mail_from' => $mail_from,
                     'client_name' => $client_name,
                     'logo' => $client->logo['original'],
@@ -359,8 +359,8 @@ class OrderController extends FrontController
                 }else{
                     $email_data['send_to_cc'] = 0;
                 }
-                // $res = $this->testOrderMail($email_data);
-                // dd($res);
+                 $res = $this->testOrderMail($email_data);
+                 dd($res);
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
@@ -732,7 +732,7 @@ class OrderController extends FrontController
             $total_service_fee = 0;
             $total_delivery_fee = 0;
             $total_subscription_discount = 0;
-           
+
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
                 $delivery_fee = 0;
@@ -768,7 +768,7 @@ class OrderController extends FrontController
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $quantity_container_charges;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                   
+
                     if (isset($vendor_cart_product->product->taxCategory)) {
                         foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
                             if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
@@ -859,7 +859,7 @@ class OrderController extends FrontController
                     $order_product->product_variant_sets = $product_variant_sets;
                     if (!empty($vendor_cart_product->product->title)) {
                         $vendor_cart_product->product->title = $vendor_cart_product->product->title;
-                    } elseif (empty($vendor_cart_product->product->title)  && !empty($vendor_cart_product->product->translation)) {
+                    } elseif (empty($vendor_cart_product->product->title)  && ( $vendor_cart_product->product->translation->isNotEmpty() ) ) {
                         $vendor_cart_product->product->title = $vendor_cart_product->product->translation[0]->title;
                     } else {
                         $vendor_cart_product->product->title = $vendor_cart_product->product->sku;
@@ -1019,8 +1019,8 @@ class OrderController extends FrontController
             }
             $order->save();
 
-          
-              
+
+
 
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $this->sendSuccessEmail($request, $order, $vendor_id);

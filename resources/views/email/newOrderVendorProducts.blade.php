@@ -32,8 +32,9 @@
                   <div style="display: flex;">
                      <div style=" height: 60px;width: 60px;background-color: #D8D8D8;">
                         @php
-                        $img = '';
+                        $img = 'https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/default/default_image.png';
                         if(isset($vendor_product['product']['media'][0])){
+
                            $img = $vendor_product['product']['media'][0]['image']['path']['image_fit'].'100/100'.$vendor_product['product']['media'][0]['image']['path']['image_path'];
                         }
                         @endphp
