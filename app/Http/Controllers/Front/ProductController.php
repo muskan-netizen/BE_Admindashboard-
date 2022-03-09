@@ -362,7 +362,7 @@ class ProductController extends FrontController{
                     if(!empty($variantData['media'])){
                         $image_fit = $variantData['media'][0]['pimage']['image']['path']['image_fit'];
                         $image_path = $variantData['media'][0]['pimage']['image']['path']['image_path'];
-                    }else if(!is_null($variantData['product']['media'][0]['image'])){
+                    }else if(!is_null($variantData['product']['media']) && !empty($variantData['product']['media']) && !is_null($variantData['product']['media'][0]['image'])){
                         $image_fit = $variantData['product']['media'][0]['image']['path']['image_fit'];
                         $image_path = $variantData['product']['media'][0]['image']['path']['image_path'];
                     }
