@@ -150,7 +150,9 @@
                                                             $img = $image->image;
                                                         }
                                                     @endphp
+                                            @if(!is_null($img))
                                             <li><img class="" src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" /></li>
+                                            @endif
                                         @endforeach
                                         @endif
                                         </ul>
@@ -509,11 +511,13 @@
         <div class="swiper-container gallery-top">
             <div class="swiper-wrapper">
                 <% _.each(variant.product.media, function(img, key){ %>
-                    <div class="swiper-slide easyzoom easyzoom--overlay">
-                        <a href="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>">
-                        <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>" alt="">
-                        </a>
-                    </div>
+                    <% if(img.image != null) {%>
+                        <div class="swiper-slide easyzoom easyzoom--overlay">
+                            <a href="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>">
+                            <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>" alt="">
+                            </a>
+                        </div>
+                    <% }; %>
                 <% }); %>
             </div>
             <!-- Add Arrows -->
@@ -523,9 +527,11 @@
         <div class="swiper-container gallery-thumbs">
             <div class="swiper-wrapper">
                 <% _.each(variant.product.media, function(img, key){ %>
-                    <div class="swiper-slide">
-                        <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>300/300<%= img.image.path['image_path'] %>" alt="">
-                    </div>
+                    <% if(img.image != null) {%>
+                        <div class="swiper-slide">
+                            <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>300/300<%= img.image.path['image_path'] %>" alt="">
+                        </div>
+                    <% }; %>
                 <% }); %>
             </div>
         </div>
@@ -843,7 +849,6 @@
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(2);
                         response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(2);
                         $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant}));
-
                         $('#product_variant_quantity_wrapper').html('');
                         let variant_quantity_template = _.template($('#variant_quantity_template').html());
                         $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
@@ -853,7 +858,6 @@
                         }else{
                             $(".addToCart, #addon-table").show();
                         }
-
                         let variant_image_template = _.template($('#variant_image_template').html());
                         $(".product__carousel .gallery-parent").html('');
                         $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));

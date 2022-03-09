@@ -126,7 +126,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="product-img col-4 col-md-2 pr-0 al">
                         <% if(vendor_product.pvariant.media_one) { %>
                             <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
-                        <% }else if(vendor_product.pvariant.media_second){ %>
+                        <% }else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){ %>
                             <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_second.image.path.image_path %>">
                         <% }else{ %>
                             <img class='blur-up lazyload w-100' data-src="<%= vendor_product.image_url %>">

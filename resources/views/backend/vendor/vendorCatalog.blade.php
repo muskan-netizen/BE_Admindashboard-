@@ -286,7 +286,7 @@
                                                                     name="product_id[]" id="single_product"
                                                                     value="{{ $product->id }}"></td>
                                                             <td>
-                                                                @if (isset($product->media[0]))
+                                                                @if (isset($product->media[0]) && isset($product->media[0]->image))
                                                                     <img alt="{{ $product->id }}" class="rounded-circle"
                                                                         src="{{ $product->media[0]->image->path['proxy_url'] . '30/30' . $product->media[0]->image->path['image_path'] }}">
                                                                 @else
