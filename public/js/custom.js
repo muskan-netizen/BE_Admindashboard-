@@ -1793,6 +1793,14 @@ $(document).ready(function() {
             else{
                 return false;
             }
+        }else if (payment_option_id == 24) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaCashfree(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
         }
     });
 

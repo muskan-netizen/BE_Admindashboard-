@@ -36,6 +36,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '20', 'path' => 'kongapay/pay', 'code' => 'kongapay', 'title' => 'KongaPay', 'off_site' => '1', 'status' => '0'),
         array('id' => '21', 'path' => 'vivawallet/pay', 'code' => 'viva_wallet', 'title' => 'Viva Wallet', 'off_site' => '1', 'status' => '0'),
         array('id' => '22', 'path' => 'ccavenue/pay', 'code' => 'ccavenue', 'title' => 'CCAvenue', 'off_site' => '1', 'status' => '0'),
+        array('id' => '24', 'path' => 'cashfree', 'code' => 'cashfree', 'title' => 'Cashfree', 'off_site' => '1', 'status' => '0')
       ); 
  
       if($option_count == 0)

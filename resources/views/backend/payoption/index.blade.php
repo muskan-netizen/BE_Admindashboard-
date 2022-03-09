@@ -64,6 +64,7 @@
                 $username = (isset($creds->username)) ? $creds->username : '';
                 $password = (isset($creds->password)) ? $creds->password : '';
                 $signature = (isset($creds->signature)) ? $creds->signature : '';
+                $app_id = (isset($creds->app_id)) ? $creds->app_id : '';
                 $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                 $location_id= (isset($creds->location_id)) ? $creds->location_id : '';
                 $application_id = (isset($creds->application_id)) ? $creds->application_id : '';
@@ -490,6 +491,25 @@
                                 <div class="form-group mb-2">
                                     <label for="authorize_net_client_key" class="mr-3">{{ __("Public Client Key") }}</label>
                                     <input type="text" name="authorize_net_client_key" id="authorize_net_client_key" class="form-control" value="{{$client_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'cashfree') )
+                    <div class="mt-2" id="cashfree_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="cashfree_app_id" class="mr-3">{{ __("App ID") }}</label>
+                                    <input type="password" name="cashfree_app_id" id="cashfree_app_id" class="form-control" value="{{$app_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="cashfree_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="cashfree_secret_key" id="cashfree_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>
