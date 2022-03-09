@@ -225,6 +225,8 @@ class LalaMovesController extends Controller
     {
            $trackingId = '';
            $json = json_decode($request->getContent());
+           \Log::info($request->getContent());
+
            if(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'ASSIGNING_DRIVER')
         {
             $trackingId = $json->data->order->id;
