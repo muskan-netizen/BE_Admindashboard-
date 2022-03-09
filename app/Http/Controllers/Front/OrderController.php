@@ -341,7 +341,7 @@ class OrderController extends FrontController
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
-                    'email' => 'harbans.singh@codebrewinnovations.com' ,// $sendto,
+                    'email' =>  $sendto, //'harbans.singh@codebrewinnovations.com' ,//
                     'mail_from' => $mail_from,
                     'client_name' => $client_name,
                     'logo' => $client->logo['original'],
@@ -359,8 +359,8 @@ class OrderController extends FrontController
                 }else{
                     $email_data['send_to_cc'] = 0;
                 }
-                 $res = $this->testOrderMail($email_data);
-                 dd($res);
+                //  $res = $this->testOrderMail($email_data);
+                //  dd($res);
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
