@@ -50,8 +50,27 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group" id="phone_noInput">
-                    <label for="">{{ __('Phone Number') }}</label>
-                    {!! Form::text('phone_no', $vendor->phone_no, ['class'=>'form-control']) !!}
+                    @php
+                     if($vendor){
+                        if($vendor->dial_code){
+                            $phn = '+'.$vendor->dial_code.$vendor->phone_no;
+                        }
+                        else if($vendor->phone_no){
+                            $phn = $vendor->phone_no;
+                        }
+                        else{
+                            $phn = ' ';
+                        }
+                     }
+                     else{
+                         $phn = ' ';
+                     }
+                    @endphp
+                    <label class="w-100" for="">{{ __('Phone Number') }}</label>
+                    <!-- {!! Form::text('phone_no', $vendor->phone_no, ['class'=>'form-control']) !!} -->
+                    <input type="tel" class="form-control phone" id="vendor_phone_number" placeholder={{ __("Phone Number") }} name="phone_no" value="{{ $phn }}">
+                    <input type="hidden" id="vendorCountryCode" name="vendor_country" value="{{ old('vendor_country') ? old('vendor_country') : 'us'}}">
+                    <input type="hidden" id="vendorDialCode" name="vendor_dial_code" value="{{ old('vendor_dial_code') ? old('vendor_dial_code') : Session::get('default_country_phonecode',1) }}">
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>

@@ -763,11 +763,12 @@ class OrderController extends FrontController
                     $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
                     $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
                     $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
-                    $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $quantity_container_charges;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
+                    $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
+
 
                     if (isset($vendor_cart_product->product->taxCategory)) {
                         foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
@@ -1021,10 +1022,12 @@ class OrderController extends FrontController
 
 
 
+            // Commented By Sujata
+            // foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+            //     $this->sendSuccessEmail($request, $order, $vendor_id);
+            // }
+            //End
 
-            foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-                $this->sendSuccessEmail($request, $order, $vendor_id);
-            }
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
             $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay

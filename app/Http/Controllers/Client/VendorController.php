@@ -249,6 +249,7 @@ class VendorController extends BaseController
         }
         $vendor->email = $request->email;
         $vendor->website = $request->website;
+        $vendor->dial_code = $request->vendor_dial_code;
         $vendor->phone_no = $request->phone_no;
         $vendor->pincode = $request->pincode;
         $vendor->city = $request->city;

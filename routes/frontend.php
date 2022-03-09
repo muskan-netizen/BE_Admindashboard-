@@ -147,7 +147,8 @@ Route::group(['middleware' => ['domain']], function () {
 	//ccavenue-pay
 	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
 	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
-	//Route::any('ccavenue/cancel', 'Front\CcavenueController@cancelForm')->name('ccavenue.cancel');
+
+	Route::any('payment/ccavenue/api', 'Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
 
     // EasypaisaController routes
     Route::get('easypaisa/pay', 'Front\EasypaisaController@create_token')->name('easypaisa.create.token');

@@ -9,7 +9,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
 <div class="top-header site-topbar al_template_one">
     <div class="container">
         <div class="row align-items-center justify-content-center">
-            <div class="col-5">
+            <div class="col-sm-4">
                 <div class="d-flex align-items-center justify-content-start">
                     <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}" height="60"></a>
                     @if( (Session::get('preferences')))
@@ -34,7 +34,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     </ul>
                 </div>
             </div>
-            <div class="col-6 text-right d-sm-inline d-none">
+            <div class="col-sm-8 text-right d-sm-inline d-none">
             @php
             $applocale = 'en';
             if(session()->has('applocale')){
