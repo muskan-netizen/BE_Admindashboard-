@@ -34,11 +34,12 @@
                         @php
                         $img = '';
                         if(isset($vendor_product['product']['media'][0])){
-                           $img = $vendor_product['product']['media'][0]['image']['path']['image_fit'].'100/100'.$vendor_product['product']['media'][0]['image']['path']['image_path'];
+                           $imga = $vendor_product['product']['media'][0]['image']['path']['image_fit'].'100/100'.$vendor_product['product']['media'][0]['image']['path']['image_path'];
+                           $img = $vendor_product['product']['media'][0]['image']['path']['original_image']
                         }
                         @endphp
                         {{-- <img style="width: 100%;height: 100%;border-radius: 3px;object-fit: cover;" src="{{ $img }}" alt=""> --}}
-                        <img style="width: 100%;height: 100%;border-radius: 3px;object-fit: cover;" src="{{ $vendor_product['product']['media'][0]['image']['path']['original_image'] }}" alt="">
+                        <img style="width: 100%;height: 100%;border-radius: 3px;object-fit: cover;" src="{{ $img }}" alt="">
                      </div>
                      <div style="padding: 0 0 0 15px;">
                         <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{ ($vendor_product['product']['translation_one']['title'] ?? false) ? $vendor_product['product']['translation_one']['title'] : "" }}</h3>
