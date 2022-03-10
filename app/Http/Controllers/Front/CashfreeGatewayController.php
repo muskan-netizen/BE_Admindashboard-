@@ -226,17 +226,15 @@ class CashfreeGatewayController extends FrontController
     {
         // Notify cashfree that information has been received
         //dd('sad');
-        http_response_code(200);
-        // \Log::info($request->all());
+        
+        \Log::info($request->all());
 
         try{
             // \Log::info($response);
             // \Log::info($request->txStatus);
-            $response = $request->data;
             
             if($request->txStatus == 'SUCCESS') {
-                \Log::info($request->all());
-                \Log::info($response);
+                $response = $request->data;
                 $transactionId = $response['payment']['cf_payment_id'];
                 $user_id = $cart_id = $payment_form = $order_number = '';
                 $amount = $response['order']['order_amount'];
@@ -362,6 +360,7 @@ class CashfreeGatewayController extends FrontController
         catch(Exception $ex){
             \Log::info($ex->getMessage());
         }
+        http_response_code(200);
     }
 
     public function getPaymentURL(){
