@@ -63,7 +63,7 @@
                 $pricevalue = (isset($promo->id) && $promo->id > 0 && $promo->promo_type_id == 1) ? (int)$promo->amount : $promo->amount; ?>
                 <div class="form-group" id="amountInput">
                     {!! Form::label('title', __('Amount'),['class' => 'control-label']) !!}
-                    {!! Form::number('amount', $pricevalue, ['class' => 'form-control amountInputField', 'id' => 'amountInputField', 'placeholder'=> __('Enter total amount'), 'max' => "10000", 'min' => "1", "onKeyPress" => "return check(event,value)", "onInput" => "checkLength()"]) !!}
+                    {!! Form::number('amount', decimal_format($pricevalue), ['class' => 'form-control amountInputField', 'id' => 'amountInputField', 'placeholder'=> __('Enter total amount'), 'max' => "10000", 'min' => "1", "onKeyPress" => "return check(event,value)", "onInput" => "checkLength()"]) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>
@@ -125,7 +125,7 @@
             <div class="col-md-6">
                 <div class="form-group" id="minimum_spendInput">
                     {!! Form::label('minimum_spend', __('Minimum Amount'),['class' => 'control-label']) !!}
-                    {!! Form::text('minimum_spend', $promo->minimum_spend, ['class' => 'form-control']) !!}
+                    {!! Form::text('minimum_spend', decimal_format($promo->minimum_spend), ['class' => 'form-control']) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>
@@ -134,7 +134,7 @@
             <div class="col-md-6">
                 <div class="form-group" id="maximum_spendInput">
                     {!! Form::label('maximum_spend', __('Maximum Amount'),['class' => 'control-label']) !!}
-                    {!! Form::text('maximum_spend', $promo->maximum_spend, ['class' => 'form-control']) !!}
+                    {!! Form::text('maximum_spend', decimal_format($promo->maximum_spend), ['class' => 'form-control']) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>

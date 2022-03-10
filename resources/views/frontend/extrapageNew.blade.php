@@ -34,7 +34,7 @@
 
             <form class="vendor-signup col-md-12" id="vendor_signup_form">
                 <!-- al_new_vendor_form -->
-               
+
                 <!-- al_new_vendor_form -->
 
                 <!-- vendor_form other form-->
@@ -42,7 +42,7 @@
                     <div class="col-lg-10">
                         <div class="alert alert-success" role="alert" id="success_msg" style="display: none;"></div>
                         <h2 class="mb-0">{{__('Personal Details')}}</h2>
-                        <div class="needs-validation vendor-signup ">
+                        {{--<div class="needs-validation vendor-signup ">
                             <div class="al_vendor_signup col-md-12 p-3 mb-3">
                                 <input type="hidden" name="user_id" value="{{$user ? $user->id : ''}}">
                                 <div class="form-row">
@@ -86,7 +86,7 @@
                                 </div>
                             </div>
 
-                        </div>
+                        </div>--}}
                         <div class="needs-validation vendor-signup ">
                             <div class="al_vendor_signup col-md-12 p-3 mb-3">
                                 <input type="hidden" name="user_id" value="{{$user ? $user->id : ''}}">
@@ -188,12 +188,12 @@
                                         <span class="invalid-feedback"></span>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <div class="col-md-12 mb-1">
+                                        <div class="col-md-12 mb-1 p-0">
                                             <label for="validationCustom02">{{__('Website')}}</label>
                                             <input type="text" class="form-control" name="website" value="">
                                             <span class="valid-feedback"></span>
                                         </div>
-                                        <div class="col-md-12 " id="addressInput">
+                                        <div class="col-md-12 p-0" id="addressInput">
                                             <label for="validationCustom01">{{__('Address')}}</label>
                                             <input type="text" class="form-control" name="address" value="" id="vendor_address">
                                             <input type="hidden" class="form-control" name="longitude" value="" id="vendor_longitude">

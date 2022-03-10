@@ -96,12 +96,14 @@ class PromoCodeController extends Controller{
                 $order_status = '';
                 $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);
                 $vendor_order->user_name = $vendor_order->user ? $vendor_order->user->name : '';
+                $vendor_order->subtotal_amount = decimal_format($vendor_order->subtotal_amount) ;
+                $vendor_order->payable_amount = decimal_format($vendor_order->payable_amount) ;
                 $vendor_order->view_url = route('order.show.detail', [$vendor_order->order_id, $vendor_order->vendor_id]);
                 if($vendor_order->coupon_paid_by == 0){
-                    $vendor_order->vendor_paid_promo = $vendor_order->discount_amount ?  $vendor_order->discount_amount : '0.00';
+                    $vendor_order->vendor_paid_promo = decimal_format($vendor_order->discount_amount) ?? '0.00';
                     $vendor_order->admin_paid_promo = '0.00';
                 }else{
-                    $vendor_order->admin_paid_promo = $vendor_order->discount_amount ?  $vendor_order->discount_amount : '0.00';
+                    $vendor_order->admin_paid_promo = decimal_format($vendor_order->discount_amount) ?? '0.00';
                     $vendor_order->vendor_paid_promo = '0.00';
                 }
                 if($vendor_order->orderstatus){

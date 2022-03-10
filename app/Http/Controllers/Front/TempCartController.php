@@ -297,7 +297,7 @@ class TempCartController extends FrontController
                                     $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
                                     if (!empty($deliver_charge) && $delivery_count == 0) {
                                         $delivery_count = 1;
-                                        $prod->deliver_charge = number_format($deliver_charge, 2, '.', '');
+                                        $prod->deliver_charge = decimal_format($deliver_charge);
                                         $payable_amount = $payable_amount + $deliver_charge;
                                         $order_sub_total = $order_sub_total + $deliver_charge;
                                         $delivery_fee_charges = $deliver_charge;
@@ -396,7 +396,7 @@ class TempCartController extends FrontController
                      $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
-                $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
+                $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
                 $vendorData->vendor_gross_total = $payable_amount;
                 $vendorData->discount_amount = $discount_amount;
                 $vendorData->discount_percent = $discount_percent;
@@ -482,7 +482,7 @@ class TempCartController extends FrontController
             //$cart->vendor_id =  0;
         }
 
-        $cart->total_service_fee = number_format($total_service_fee, 2, '.', '');
+        $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
         // $cart->gross_paybale_amount = $total_paying;
@@ -517,9 +517,9 @@ class TempCartController extends FrontController
         $cart->deliver_status = $delivery_status;
         $cart->loyalty_amount = $loyalty_amount_saved;
         $cart->tip = array(
-            ['label' => '5%', 'value' => number_format((0.05 * $cart->total_payable_amount), 2, '.', '')],
-            ['label' => '10%', 'value' => number_format((0.1 * $cart->total_payable_amount), 2, '.', '')],
-            ['label' => '15%', 'value' => number_format((0.15 * $cart->total_payable_amount), 2, '.', '')]
+            ['label' => '5%', 'value' => decimal_format(0.05 * $cart->total_payable_amount)],
+            ['label' => '10%', 'value' => decimal_format(0.1 * $cart->total_payable_amount)],
+            ['label' => '15%', 'value' => decimal_format(0.15 * $cart->total_payable_amount)]
         );
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;
@@ -1692,7 +1692,7 @@ class TempCartController extends FrontController
                                     $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
                                     if (!empty($deliver_charge) && $delivery_count == 0) {
                                         $delivery_count = 1;
-                                        $prod->deliver_charge = number_format($deliver_charge, 2, '.', '');
+                                        $prod->deliver_charge = decimal_format($deliver_charge);
                                         $payable_amount = $payable_amount + $deliver_charge;
                                         $order_sub_total = $order_sub_total + $deliver_charge;
                                         $delivery_fee_charges = $deliver_charge;
@@ -1791,7 +1791,7 @@ class TempCartController extends FrontController
                      $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
-                $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
+                $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
                 $vendorData->vendor_gross_total = $payable_amount;
                 $vendorData->discount_amount = $discount_amount;
                 $vendorData->discount_percent = $discount_percent;
@@ -1877,7 +1877,7 @@ class TempCartController extends FrontController
             //$cart->vendor_id =  0;
         }
 
-        $cart->total_service_fee = number_format($total_service_fee, 2, '.', '');
+        $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
         // $cart->gross_paybale_amount = $total_paying;
@@ -1915,9 +1915,9 @@ class TempCartController extends FrontController
         $cart->deliver_status = $delivery_status;
         $cart->loyalty_amount = $loyalty_amount_saved;
         $cart->tip = array(
-            ['label' => '5%', 'value' => number_format((0.05 * $cart->difference_to_be_paid), 2, '.', '')],
-            ['label' => '10%', 'value' => number_format((0.1 * $cart->difference_to_be_paid), 2, '.', '')],
-            ['label' => '15%', 'value' => number_format((0.15 * $cart->difference_to_be_paid), 2, '.', '')]
+            ['label' => '5%', 'value' => decimal_format(0.05 * $cart->difference_to_be_paid)],
+            ['label' => '10%', 'value' => decimal_format(0.1 * $cart->difference_to_be_paid)],
+            ['label' => '15%', 'value' => decimal_format(0.15 * $cart->difference_to_be_paid)]
         );
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;

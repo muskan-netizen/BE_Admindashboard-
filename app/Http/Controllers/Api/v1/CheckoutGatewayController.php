@@ -93,7 +93,7 @@ class CheckoutGatewayController extends BaseController
                     'token' => $request->token
                 ),
                 'amount' => $amount * 100,
-                'currency' => 'USD', //$this->currency
+                'currency' => $this->currency,
                 'payment_type' => 'Regular',
                 'reference' => $reference_number,
                 'description' => $description,

@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency};
+use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -193,7 +193,7 @@ class OrderController extends BaseController
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    });
+                    })->with('vendors.acceptedBy');
 
                     break;
                 case 'orders_history':
@@ -205,7 +205,7 @@ class OrderController extends BaseController
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    })->with('vendors.cancelledBy');
+                    })->with('vendors.cancelledBy','vendors.acceptedBy');
 
                     break;
             }
@@ -251,11 +251,11 @@ class OrderController extends BaseController
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
-                $vendor->vendor_name = $vendor ? $vendor->vendor->name : '';
+                $vendor->vendor_name = $vendor->vendor->name ?? '';
                 $product_total_count = 0;
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
-                    $product->image_path  = $product->media->first() ? $product->media->first()->image->path : getDefaultImagePath();
+                    $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
                 }
 
                 if ($vendor->delivery_fee > 0) {
@@ -325,11 +325,12 @@ class OrderController extends BaseController
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
-            'vendors.dineInTable.category'
+            'vendors.dineInTable.category',
+            'vendors.cancel_request'
         ))->findOrFail($order_id);
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
-                $product->image_path  = $product->media->first() ? $product->media->first()->image->path : '';
+                $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
                 foreach ($product->addon as $ck => $addons) {
@@ -339,10 +340,10 @@ class OrderController extends BaseController
                         $opt_price_in_currency = $addons->option->price / $divider;
                         $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                     }
-                    $opt_quantity_price = number_format($opt_price_in_doller_compare * $product->quantity, 2, '.', '');
+                    $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
                     $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
                     $addons->option->price_in_cart = $addons->option->price;
-                    $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
+                    $addons->option->price = decimal_format($opt_price_in_currency);
                     $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
                     $addons->option->quantity_price = $opt_quantity_price;
                     $total_amount = $total_amount + $opt_quantity_price;
@@ -378,6 +379,9 @@ class OrderController extends BaseController
             $vendor_order_status_option_ids[] = $vendor_order_status->order_status_option_id;
         }
 
+        $user_docs = UserDocs::where('user_id', $order->user_id)->get();
+        $user_registration_documents = UserRegistrationDocuments::get();
+        //pr($user_docs->toArray() );
         $vendor_data = Vendor::where('id',$vendor_id)->first();
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 'order' => $order,
@@ -385,7 +389,11 @@ class OrderController extends BaseController
             'vendor_order_status_option_ids' => $vendor_order_status_option_ids,
             'order_status_options' => $order_status_options,
             'dispatcher_status_options' => $dispatcher_status_options,
-            'vendor_order_status_created_dates' => $vendor_order_status_created_dates, 'clientCurrency' => $clientCurrency,'vendor_data' => $vendor_data
+            'vendor_order_status_created_dates' => $vendor_order_status_created_dates,
+            'user_registration_documents' => $user_registration_documents,
+            'clientCurrency' => $clientCurrency,
+            'user_docs' => $user_docs,
+            'vendor_data' => $vendor_data
         ]);
     }
 
@@ -395,7 +403,7 @@ class OrderController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function changeStatus(Request $request, $domain = '')
+    public function changeStatus(Request $request, $domain = '') 
     {
 
         DB::beginTransaction();
@@ -444,6 +452,10 @@ class OrderController extends BaseController
                         //Create Shipping place order request for Ahoy Masa
                         $order_dunzo = $this->placeOrderRequestAhoy($request);
                     }
+                    $orderData->accepted_by = Auth::user()->id;
+                    $orderData->save();
+
+
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
 
@@ -1377,10 +1389,10 @@ class OrderController extends BaseController
                         $opt_price_in_currency = $addons->option->price / $divider;
                         $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                     }
-                    $opt_quantity_price = number_format($opt_price_in_doller_compare * $product->quantity, 2, '.', '');
+                    $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
                     $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
                     $addons->option->price_in_cart = $addons->option->price;
-                    $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
+                    $addons->option->price = decimal_format($opt_price_in_currency);
                     $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
                     $addons->option->quantity_price = $opt_quantity_price;
                     $total_amount = $total_amount + $opt_quantity_price;

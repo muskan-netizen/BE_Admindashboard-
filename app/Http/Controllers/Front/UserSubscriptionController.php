@@ -97,7 +97,7 @@ class UserSubscriptionController extends FrontController
         else{
             return response()->json(["status"=>"Error", "message" => __("Subscription plan not active")]);
         }
-        $code = array('stripe', 'stripe_fpx', 'yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay');
+        $code = array('stripe', 'stripe_fpx', 'yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue');
         $ex_codes = array('cod');
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {
@@ -105,6 +105,8 @@ class UserSubscriptionController extends FrontController
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
                 if($payment_option->code == 'stripe'){
                     $payment_option->title = 'Credit/Debit Card (Stripe)';
+                }elseif($payment_option->code == 'kongapay'){
+                    $payment_option->title = 'Pay Now';
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);

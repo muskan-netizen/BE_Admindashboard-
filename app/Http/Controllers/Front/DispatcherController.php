@@ -10,7 +10,7 @@ use Auth;
 use Session;
 use DB;
 use App\Http\Traits\ApiResponser;
-use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate,ProductVariantSet};
+use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate,ProductVariantSet};
 
 class DispatcherController extends FrontController
 {
@@ -151,6 +151,7 @@ class DispatcherController extends FrontController
                     'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
                     'type' =>  $request->task_type??1]);
+                $this->sendOrderNotification($update->id);
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
             {
@@ -206,7 +207,8 @@ class DispatcherController extends FrontController
                             $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $language_id);
                         },
-                        'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus'
+                        'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus',
+                        'vendors.cancel_request'
                     ])
                     ->where(function ($q1) {
                         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -226,7 +228,9 @@ class DispatcherController extends FrontController
                             'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating',
                             'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
                                 $qry->where('language_id', $language_id);
-                            }, 'vendors.dineInTable.category'
+                            }, 
+                            'vendors.dineInTable.category',
+                            'vendors.cancel_request'
                         ]
                     )
                     ->where(function ($q1) {
@@ -245,9 +249,9 @@ class DispatcherController extends FrontController
                     $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
                     $order->tip_amount = $order->tip_amount;
                     $order->tip = array(
-                        ['label' => '5%', 'value' => number_format((0.05 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')],
-                        ['label' => '10%', 'value' => number_format((0.1 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')],
-                        ['label' => '15%', 'value' => number_format((0.15 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')]
+                        ['label' => '5%', 'value' => decimal_format(0.05 * ($order->payable_amount - $order->total_discount_calculate))],
+                        ['label' => '10%', 'value' => decimal_format(0.1 * ($order->payable_amount - $order->total_discount_calculate))],
+                        ['label' => '15%', 'value' => decimal_format(0.15 * ($order->payable_amount - $order->total_discount_calculate))]
                     );
                     foreach ($order->vendors as $vendor) {
                         $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order_id)->where('vendor_id', $vendor->vendor->id)->orderBy('id', 'DESC')->first();
@@ -451,6 +455,103 @@ class DispatcherController extends FrontController
             }
         }
 
+    }
+
+    /******************    ---- create order cancel request from dispatch (Need to dispatcher_status_option_id ) -----   ******************/
+    public function dispatchOrderCancelRequest(Request $request, $domain = '', $web_hook_code){
+        try{
+            DB::beginTransaction();
+            $checkiftokenExist = OrderVendor::with('cancel_request')->where('web_hook_code', $web_hook_code)->first();
+            
+            if($checkiftokenExist){
+                $user = Auth::user();
+                
+                if($checkiftokenExist->dispatcher_status_option_id == 5){
+                    return response()->json(['status' => 'Error', 'message' => __('Order has already been delivered')]);
+                }
+                if($checkiftokenExist->order_status_option_id == 3){
+                    return response()->json(['status' => 'Error', 'message' => __('Order has already been rejected by vendor')]);
+                }
+                if($checkiftokenExist->cancel_request && $checkiftokenExist->cancel_request->status == 0){
+                    return response()->json(['status' => 'Error', 'message' => __('Cancel request has already been submitted')]);
+                }
+                if($checkiftokenExist->cancel_request && $checkiftokenExist->cancel_request->status == 1){
+                    return response()->json(['status' => 'Error', 'message' => __('Cancel request has already been processed')]);
+                }
+                
+                $reject_reason = urldecode($request->reject_reason);
+
+                $order_cancel_request = new OrderCancelRequest();
+                $order_cancel_request->order_id = $checkiftokenExist->order_id;
+                $order_cancel_request->order_vendor_id = $checkiftokenExist->id;
+                $order_cancel_request->vendor_id = $checkiftokenExist->vendor_id;
+                $order_cancel_request->reject_reason = $reject_reason;
+                $order_cancel_request->status = 0;
+                $order_cancel_request->save();
+                DB::commit();
+                
+                $order = Order::select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount', 'created_at')->find($checkiftokenExist->order_id);
+                $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                // $user_vendors = UserVendor::where(['vendor_id' => $checkiftokenExist->vendor_id])->pluck('user_id');
+                $this->sendOrderCancelRequestNotification($super_admin, $order);
+
+                return $this->successResponse('', __('Request for order cancellation has been submitted'));
+            }
+            else{
+                DB::rollback();
+                return response()->json(['status' => 'Error', 'message' => __('Invalid Order Token')]);
+            }
+        }
+        catch(\Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
+    }
+
+    public function sendOrderCancelRequestNotification($user_ids, $orderData)
+    {
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        //    Log::info($devices);
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            $from = $client_preferences->fcm_server_key;
+            $notification_content = NotificationTemplate::where('id', 13)->first();
+            if ($notification_content) {
+                $headers = [
+                    'Authorization: key=' . $from,
+                    'Content-Type: application/json',
+                ];
+                $body =  str_replace('{order_id}', $orderData->order_number, $notification_content->content);
+                $data = [
+                    "registration_ids" => $devices,
+                    "notification" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $body,
+                        'sound' => "notification.wav",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                        'click_action' => route('cancel-order.requests'),
+                        "android_channel_id" => "sound-channel-id"
+                    ],
+                    "data" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $body,
+                        'data' => $orderData,
+                        'type' => "order_cancellation_request"
+                    ],
+                    "priority" => "high"
+                ];
+                //    Log::info(json_encode($data));
+                $dataString = $data;
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
+                $result = curl_exec($ch);
+                curl_close($ch);
+            }
+        }
     }
 
 }

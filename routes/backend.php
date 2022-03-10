@@ -13,6 +13,7 @@ use App\Http\Controllers\Client\Accounting\OrderController;
 use App\Http\Controllers\Client\Accounting\VendorController;
 use App\Http\Controllers\Client\Accounting\LoyaltyController;
 use App\Http\Controllers\Client\Accounting\PromoCodeController;
+use App\Http\Controllers\Client\UserRegistrationDocumentController;
 use App\Http\Controllers\Client\VendorRegistrationDocumentController;
 use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\ClientSlotController;
@@ -142,6 +143,15 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendorregistrationdocument/update', [VendorRegistrationDocumentController::class, 'update'])->name('vendor.registration.document.update');
         Route::post('vendor/registration/document/delete', [VendorRegistrationDocumentController::class, 'destroy'])->name('vendor.registration.document.delete');
 
+
+        // user registreation document 
+        Route::resource('userregistrationdocument', 'Client\UserRegistrationDocumentController');
+        Route::get('user/registration/document/edit', [UserRegistrationDocumentController::class, 'show'])->name('user.registration.document.edit');
+        Route::post('userregistrationdocument/create', [UserRegistrationDocumentController::class, 'store'])->name('user.registration.document.create');
+        Route::post('userregistrationdocument/update', [UserRegistrationDocumentController::class, 'update'])->name('user.registration.document.update');
+        Route::post('user/registration/document/delete', [UserRegistrationDocumentController::class, 'destroy'])->name('user.registration.document.delete');
+
+
         Route::resource('tag', 'Client\TagController');
 
         Route::get('tag/edit', [TagController::class, 'show'])->name('tag.edit');
@@ -237,7 +247,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::put('newUpdate/edit/{id}', 'Client\UserController@newUpdate')->name('customer.new.update');
         Route::put('profile/{id}', 'Client\UserController@updateProfile')->name('client.profile.update');
-        Route::post('password/update', 'Client\UserController@changePassword')->name('client.password.update');
+        Route::post('password/update', 'Client\UserController@changePassword')->name('cl.password.update');
         Route::post('customer/change/status', 'Client\UserController@changeStatus')->name('customer.changeStatus');
         Route::get('customer/wallet/transactions', 'Client\UserController@filterWalletTransactions')->name('customer.filterWalletTransactions');
         Route::get('customer/export/export', 'Client\UserController@export')->name('customer.export');
@@ -321,12 +331,19 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('review', 'Client\ReviewController');
 
         Route::resource('campaign', 'Client\CampaignController');
+        Route::get('campaign-push-option', 'Client\CampaignController@GetPushOptions')->name('campaign.pushoptions');
+        //Route::get('test-notification', 'Client\CampaignController@testnotification');
         // Route::post('celebrity/changeStatus', 'Client\CelebrityController@changeStatus')->name('celebrity.changeStatus');
         // Route::post('celebrity/getBrands', 'Client\CelebrityController@getBrandList')->name('celebrity.getBrands');
 
         Route::get('notification', 'Client\UserController@customNotification')->name('customer.notification');
         Route::post('sendnotification', 'Client\UserController@sendNotification')->name('send.notification');
         Route::get('/review/delect/{id}', 'Client\ReviewController@destroy')->name('review.delete');
+
+        // Cancel order requests routes
+        Route::get('cancel-order/requests', 'Client\OrderCancelRequestsController@index')->name('cancel-order.requests');
+        Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');
+        Route::post('cancel-order/request/status/update', 'Client\OrderCancelRequestsController@updateStatus')->name('cancel-order.request.status.update');
     });
 });
 

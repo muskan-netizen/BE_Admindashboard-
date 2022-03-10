@@ -45,7 +45,8 @@ class RazorpayGatewayController extends FrontController
             $user = Auth::user();
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $amount = $this->getDollarCompareAmount($request->amount);
-            $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_INT);
+            $amount = (int)($amount*100);
+            // $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_INT);
             $order_number = $request->order_number;
             if (!isset($order_number)) {
                 $order_number = 0;
@@ -73,8 +74,8 @@ class RazorpayGatewayController extends FrontController
             $user = Auth::user();
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $amount = $this->getDollarCompareAmount($request->amount);
-            $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_INT);
-            $amount = $amount/100;
+            // $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_INT);
+            // $amount = $amount/100;
             $returnUrl = route('order.return.success');
             if ($request->payment_from == 'wallet') {
                 $returnUrl = route('user.wallet');

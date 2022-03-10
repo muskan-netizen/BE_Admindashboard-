@@ -297,9 +297,24 @@ $server = env('APP_ENV', 'development');
         initialCountry: "{{ Session::get('default_country_code','US') }}",
     });
     }
+    var input = document.querySelector("#vendor_phone_number");
+    if(input){
+        window.intlTelInput(input, {
+        separateDialCode: true,
+        hiddenInput: "contact",
+        utilsScript: "{{asset('assets/js/utils.js')}}",
+        initialCountry: "{{ Session::get('default_country_code','US') }}",
+    });
+    }
 
     $(document).ready(function() {
         $("#new_user_phone_number").keypress(function(e) {
+            if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                return false;
+            }
+            return true;
+        });
+        $("#vendor_phone_number").keypress(function(e) {
             if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
                 return false;
             }
@@ -309,11 +324,17 @@ $server = env('APP_ENV', 'development');
             vendorOrderTime();
         @endif
     });
-    $('.iti__country').click(function() {
+    $('#phone_numberInput .iti__country').click(function() {
         var code = $(this).attr('data-country-code');
         $('#countryData').val(code);
         var dial_code = $(this).attr('data-dial-code');
         $('#dialCode').val(dial_code);
+    });
+    $(document).on('click', '#phone_noInput .iti__country', function() {
+        var code = $(this).attr('data-country-code');
+        $('#vendorCountryCode').val(code);
+        var dial_code = $(this).attr('data-dial-code');
+        $('#vendorDialCode').val(dial_code);
     });
     $(document).on('change', '#Vendor_order_pre_time', function(){
         vendorOrderTime();

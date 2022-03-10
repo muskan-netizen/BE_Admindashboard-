@@ -4,14 +4,14 @@
             $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
             $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
             if($clientData){
-                $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'];
+                $urlImg = $clientData ? $clientData->logo['original'] : ' ';
             }
             $marketing_permissions = array("banner", "promocode", "loyalty_cards");
             $subscription_permissions = array("subscription_plans_customers", "subscription_plans_vendors");
             $extra_permissions = array("celebrity", "inquiries");
             $setting_permissions = array("profile", "customize", "app_styling", "web_styling", "catalog", "configurations", "tax", "payment");
             $styling_permissions = array("app_styling", "web_styling");
-            $order_permissions = array("dashboard", "orders", "vendors", "accounting_orders","accounting_loyality", "accounting_promo_codes", "accounting_taxes","accounting_vendors", "subscriptions_customers", "subscriptions_vendors", "customers");
+            $order_permissions = array("dashboard", "orders", "order_cancel_requests", "vendors", "accounting_orders","accounting_loyality", "accounting_promo_codes", "accounting_taxes","accounting_vendors", "subscriptions_customers", "subscriptions_vendors", "customers");
             $accounting_permissions = array("accounting_orders", "accounting_loyality", "accounting_promo_codes", "accounting_taxes", "accounting_vendors");
         @endphp
         <a href="{{route('client.dashboard')}}" class="logo logo-dark text-center">
@@ -87,6 +87,14 @@
                                     <a href="{{route('order.index')}}">
                                         <span class="icon-orders"></span>
                                         <span> {{ __('Orders') }} </span>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(in_array('order_cancel_requests',$allowed) || Auth::user()->is_superadmin == 1)
+                                <li>
+                                    <a href="{{route('cancel-order.requests')}}">
+                                        <span class="icon-extra"></span>
+                                        <span> {{ __('Cancel Order Requests') }} </span>
                                     </a>
                                 </li>
                             @endif
@@ -207,7 +215,7 @@
                         <!-- <span class="icon-settings-1-1"></span> -->
                         <span>{{ __('SETTINGS') }}</span>
                     </a>
-                    <ul class="nav-second-level">
+                    <ul class="nav-second-level p-0 mx-2">
                         @if(in_array('profile',$allowed) || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('client.profile')}}">
@@ -334,7 +342,7 @@
                         <!-- <span class="icon-marketing"></span> -->
                         <span>{{ __('MARKETING') }}</span>
                     </a>
-                    <ul class="nav-second-level">
+                    <ul class="nav-second-level p-0 mx-2">
 
                         @if(Auth::user()->is_superadmin == 1)
                         <li>
@@ -389,7 +397,7 @@
                             <!-- <span class="icon-extra"></span> -->
                             <span>{{ __("EXTRA") }}</span>
                         </a>
-                        <ul class="nav-second-level">
+                        <ul class="nav-second-level p-0 mx-2">
                             @if(Auth::user()->is_superadmin == 1 && $client_preference->celebrity_check == 1)
                                 @if(in_array('celebrity',$allowed) || Auth::user()->is_superadmin == 1)
                                     <li>

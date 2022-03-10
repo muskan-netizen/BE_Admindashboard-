@@ -105,7 +105,7 @@
                                                     @endforeach
                                                 </ul><?php */ ?>
                                             </div>
-                                            
+
                                             <div class="col-sm-6 form-group mb-0">
                                                 <b class="mr-2">
                                                     @if(!empty($subscription->cancelled_at))
@@ -146,10 +146,10 @@
                             </div>
                         @endif
                     </div>
-                    
+
                     @if($subscription_plans->isNotEmpty())
                         @foreach($subscription_plans as $plan)
-                            <div class="col-md-4 col-sm-6 mb-3 mb-md-4">
+                            <div class="col-md-3 col-sm-6 mb-3 mb-md-2">
                                 <div class="pricingtable">
                                     <div class="gold-icon position-relative">
                                         <img src="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}">
@@ -180,7 +180,7 @@
                         @endforeach
                     @endif
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -286,7 +286,7 @@
         <% _.each(payment_options, function(payment_option, k){%>
             <% if( (payment_option.slug != 'cash_on_delivery') && (payment_option.slug != 'loyalty_points') ) { %>
                 <label class="radio mt-2">
-                    <%= payment_option.title %> 
+                    <%= payment_option.title %>
                     <input type="radio" name="subscription_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.slug %>" data-payment_option_id="<%= payment_option.id %>">
                     <span class="checkround"></span>
                 </label>
@@ -339,13 +339,13 @@
 @endsection
 
 @section('script')
-@if(in_array('razorpay',$client_payment_options)) 
+@if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options)) 
+@if(in_array('stripe',$client_payment_options))
 <script src="https://js.stripe.com/v3/"></script>
 @endif
-@if(in_array('yoco',$client_payment_options)) 
+@if(in_array('yoco',$client_payment_options))
 <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <script type="text/javascript">
     var sdk = new window.YocoSDK({
@@ -353,14 +353,15 @@
     });
     var inline='';
 </script>
-@endif 
-@if(in_array('checkout',$client_payment_options)) 
+@endif
+@if(in_array('checkout',$client_payment_options))
 <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
-@endif 
+@endif
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var subscription_payment_options_url = "{{route('user.subscription.plan.select', ':id')}}";
     var user_subscription_purchase_url = "{{route('user.subscription.plan.purchase', ':id')}}";
     var user_subscription_cancel_url = "{{route('user.subscription.plan.cancel', ':id')}}";
@@ -371,7 +372,7 @@
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
-    
+
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();
@@ -383,7 +384,7 @@
         } else {
             $("#subscription_payment_methods .option-wrapper").addClass('d-none');
         }
-        
+
         if (code == 'yoco') {
             // $("#subscription_payment_methods .yoco_element_wrapper").removeClass('d-none');
             // Create a new dropin form instance
