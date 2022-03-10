@@ -153,7 +153,7 @@ class OrderController extends FrontController
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
                 foreach ($vendor->products as $product) {
-                    if ( isset($product->pvariant) &&  isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
+                    if ($product->pvariant->media->isNotEmpty()) {
                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
                     } elseif ($product->media->isNotEmpty()) {
                         $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
@@ -330,18 +330,17 @@ class OrderController extends FrontController
                     } else {
                         $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     }
-
+                    //pr($returnHTML);
 
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
                     $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
                 }
-//pr( $returnHTML);
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
-                    'email' =>  $sendto, //'harbans.singh@codebrewinnovations.com' ,//
+                    'email' => $sendto,
                     'mail_from' => $mail_from,
                     'client_name' => $client_name,
                     'logo' => $client->logo['original'],
@@ -359,8 +358,8 @@ class OrderController extends FrontController
                 }else{
                     $email_data['send_to_cc'] = 0;
                 }
-                //  $res = $this->testOrderMail($email_data);
-                //  dd($res);
+                // $res = $this->testOrderMail($email_data);
+                // dd($res);
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
@@ -383,7 +382,7 @@ class OrderController extends FrontController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
+                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
             //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                 if (!empty($prefer->sms_provider)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
@@ -479,7 +478,6 @@ class OrderController extends FrontController
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price / $divider;
-                    $price_container_charges = $prod->pvariant->container_charges;
                     $price_in_doller_compare = $price_in_currency * $customerCurrency->doller_compare;
                     $quantity_price = $price_in_doller_compare * $prod->quantity;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price;
@@ -487,8 +485,8 @@ class OrderController extends FrontController
                     $prod->pvariant->media_one = $prod->pvariant->media ? $prod->pvariant->media->first() : [];
                     $prod->pvariant->media_second = $prod->product->media ? $prod->product->media->first() : [];
                     $prod->pvariant->multiplier = $customerCurrency->doller_compare;
-                    $prod->pvariant->quantity_price = decimal_format($quantity_price);
-                    $payable_amount = $payable_amount + $quantity_price + $price_container_charges;
+                    $prod->pvariant->quantity_price = number_format($quantity_price, 2);
+                    $payable_amount = $payable_amount + $quantity_price;
                     $taxData = array();
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
@@ -497,8 +495,8 @@ class OrderController extends FrontController
                             $product_tax = $quantity_price * $rate / 100;
                             $taxData[$tckey]['identifier'] = $tax_value->identifier;
                             $taxData[$tckey]['rate'] = $rate;
-                            $taxData[$tckey]['tax_amount'] = decimal_format($tax_amount);
-                            $taxData[$tckey]['product_tax'] = decimal_format($product_tax);
+                            $taxData[$tckey]['tax_amount'] = number_format($tax_amount, 2);
+                            $taxData[$tckey]['product_tax'] = number_format($product_tax, 2);
                             $taxable_amount = $taxable_amount + $product_tax;
                             $payable_amount = $payable_amount + $product_tax;
                         }
@@ -508,7 +506,7 @@ class OrderController extends FrontController
                     foreach ($prod->addon as $ck => $addons) {
                         $opt_price_in_currency = $addons->option->price / $divider;
                         $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
-                        $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);
+                        $opt_quantity_price = number_format($opt_price_in_doller_compare * $prod->quantity, 2);
                         $addons->option->price_in_cart = $addons->option->price;
                         $addons->option->price = $opt_price_in_currency;
                         $addons->option->multiplier = $customerCurrency->doller_compare;
@@ -524,7 +522,7 @@ class OrderController extends FrontController
                         $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $user->id);
                         if (!empty($deliver_charge) && $delivery_count == 0) {
                             $delivery_count = 1;
-                            $prod->deliver_charge = decimal_format($deliver_charge);
+                            $prod->deliver_charge = number_format($deliver_charge, 2);
                             $payable_amount = $payable_amount + $deliver_charge;
                             $delivery_fee_charges = $deliver_charge;
                         }
@@ -535,7 +533,7 @@ class OrderController extends FrontController
                         $total_discount_percent = $vendorData->coupon->promo->amount;
                         $payable_amount -= $total_discount_percent;
                     } else {
-                        $gross_amount = decimal_format($payable_amount - $taxable_amount);
+                        $gross_amount = number_format(($payable_amount - $taxable_amount), 2);
                         $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
                         $payable_amount -= $percentage_amount;
                     }
@@ -551,14 +549,14 @@ class OrderController extends FrontController
                         $vendorData->isDeliverable = 1;
                     }
                 }
-                $vendorData->delivery_fee_charges = decimal_format($delivery_fee_charges);
-                $vendorData->payable_amount = decimal_format($payable_amount);
-                $vendorData->discount_amount = decimal_format($discount_amount);
-                $vendorData->discount_percent = decimal_format($discount_percent);
-                $vendorData->taxable_amount = decimal_format($taxable_amount);
-                $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
+                $vendorData->delivery_fee_charges = number_format($delivery_fee_charges, 2);
+                $vendorData->payable_amount = number_format($payable_amount, 2);
+                $vendorData->discount_amount = number_format($discount_amount, 2);
+                $vendorData->discount_percent = number_format($discount_percent, 2);
+                $vendorData->taxable_amount = number_format($taxable_amount, 2);
+                $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount), 2);
                 if (!empty($subscription_features)) {
-                    $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount - $subscription_discount);
+                    $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount - $subscription_discount), 2);
                 }
                 $total_payable_amount = $total_payable_amount + $payable_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
@@ -588,7 +586,7 @@ class OrderController extends FrontController
             }
             if (!empty($subscription_features)) {
                 $total_discount_amount = $total_discount_amount + $total_subscription_discount;
-                $cart->total_subscription_discount = decimal_format($total_subscription_discount);
+                $cart->total_subscription_discount = number_format($total_subscription_discount, 2);
             }
             $total_payable_amount = $total_payable_amount - $total_discount_amount;
             if ($loyalty_amount_saved > 0) {
@@ -598,15 +596,15 @@ class OrderController extends FrontController
                 $total_payable_amount = $total_payable_amount - $loyalty_amount_saved;
             }
 
-            $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
-            $cart->gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved - $total_taxable_amount);
-            $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
-            $cart->total_payable_amount = decimal_format($total_payable_amount);
-            $cart->total_discount_amount = decimal_format($total_discount_amount);
-            $cart->total_taxable_amount = decimal_format($total_taxable_amount);
-            $cart->tip_5_percent = decimal_format(0.05 * $total_payable_amount);
-            $cart->tip_10_percent = decimal_format(0.1 * $total_payable_amount);
-            $cart->tip_15_percent = decimal_format(0.15 * $total_payable_amount);
+            $cart->loyalty_amount = number_format($loyalty_amount_saved, 2);
+            $cart->gross_amount = number_format(($total_payable_amount + $total_discount_amount + $loyalty_amount_saved - $total_taxable_amount), 2);
+            $cart->new_gross_amount = number_format(($total_payable_amount + $total_discount_amount), 2);
+            $cart->total_payable_amount = number_format($total_payable_amount, 2);
+            $cart->total_discount_amount = number_format($total_discount_amount, 2);
+            $cart->total_taxable_amount = number_format($total_taxable_amount, 2);
+            $cart->tip_5_percent = number_format((0.05 * $total_payable_amount), 2);
+            $cart->tip_10_percent = number_format((0.1 * $total_payable_amount), 2);
+            $cart->tip_15_percent = number_format((0.15 * $total_payable_amount), 2);
             $cart->deliver_status = $delivery_status;
             $cart->products = $cartData->toArray();
         }
@@ -726,20 +724,17 @@ class OrderController extends FrontController
             $total_discount = 0;
             $taxable_amount = 0;
             $payable_amount = 0;
-            $total_container_charges = 0;
             $tax_category_ids = [];
             $vendor_ids = [];
             $total_service_fee = 0;
             $total_delivery_fee = 0;
             $total_subscription_discount = 0;
-
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
                 $delivery_fee = 0;
                 $deliver_charge = $ptaxable_amount =$total_taxable_amount = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
                 $vendor_payable_amount = 0;
-                $vendor_total_container_charges = 0;
                 $vendor_discount_amount = 0;
                 $product_taxable_amount = 0;
                 $vendor_products_total_amount = 0;
@@ -757,18 +752,11 @@ class OrderController extends FrontController
                     $quantity_price = 0;
                     $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                     $price_in_currency = $variant->price / $divider;
-                    $container_charges_in_currency = $variant->container_charges / $divider;
-                    $container_charges = $variant->container_charges ;
                     $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
-                    $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
                     $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
-                    $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
-                    $total_container_charges = $total_container_charges + $quantity_container_charges;
-                    $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $quantity_container_charges;
-                    $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
-                    $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                    $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
-
+                    $payable_amount = $payable_amount + $quantity_price;
+                    $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
+                    $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
 
                     if (isset($vendor_cart_product->product->taxCategory)) {
                         foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
@@ -797,7 +785,7 @@ class OrderController extends FrontController
 
                             if (!empty($delivery_fee) && $delivery_count == 0) {
                                 $delivery_count = 1;
-                                $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
+                                $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2);
                                 // $payable_amount = $payable_amount + $delivery_fee;
                                 $delivery_fee_charges = $delivery_fee;
 
@@ -820,11 +808,10 @@ class OrderController extends FrontController
                     $vendor_taxable_amount = $taxable_amount;
 
                   //  pr($vendor_taxable_amount);
-                    $total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
+                    $total_amount += $vendor_cart_product->quantity * $variant->price;
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
                     $order_product->price = $variant->price;
-                    $order_product->container_charges = $variant->container_charges;
                     $order_product->order_vendor_id = $OrderVendor->id;
                     $order_product->taxable_amount = $product_taxable_amount;
                     $order_product->quantity = $vendor_cart_product->quantity;
@@ -860,7 +847,7 @@ class OrderController extends FrontController
                     $order_product->product_variant_sets = $product_variant_sets;
                     if (!empty($vendor_cart_product->product->title)) {
                         $vendor_cart_product->product->title = $vendor_cart_product->product->title;
-                    } elseif (empty($vendor_cart_product->product->title)  && ( $vendor_cart_product->product->translation->isNotEmpty() ) ) {
+                    } elseif (empty($vendor_cart_product->product->title)  && !empty($vendor_cart_product->product->translation)) {
                         $vendor_cart_product->product->title = $vendor_cart_product->product->translation[0]->title;
                     } else {
                         $vendor_cart_product->product->title = $vendor_cart_product->product->sku;
@@ -912,7 +899,7 @@ class OrderController extends FrontController
                         $vendor_payable_amount -= $amount;
                         $vendor_discount_amount += $amount;
                     } else {
-                        $gross_amount = decimal_format($payable_amount - $taxable_amount);
+                        $gross_amount = number_format(($payable_amount - $taxable_amount), 2);
                         $percentage_amount = ($gross_amount * $vendor_cart_product->coupon->promo->amount / 100);
                         $total_discount += $percentage_amount;
                         $vendor_payable_amount -= $percentage_amount;
@@ -943,7 +930,6 @@ class OrderController extends FrontController
                 $OrderVendor->taxable_amount   = $vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
-                $OrderVendor->total_container_charges = $vendor_total_container_charges;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -1014,23 +1000,16 @@ class OrderController extends FrontController
             $order->scheduled_slot = (($cart->scheduled_slot)?$cart->scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
             $order->payable_amount = $payable_amount;
-            $order->total_container_charges = $total_container_charges;
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status = 1;
             }
             $order->save();
-
-
-
-            // Commented By Sujata
-            // foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-            //     $this->sendSuccessEmail($request, $order, $vendor_id);
-            // }
-            //End
-
+            foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                $this->sendSuccessEmail($request, $order, $vendor_id);
+            }
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
-            $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20,24]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay,Cashfree
+            $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20,24]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree
             if (!in_array($request->payment_option_id, $ex_gateways)) {
                 Cart::where('id', $cart->id)->update([
                     'schedule_type' => null, 'scheduled_date_time' => null,
@@ -1058,12 +1037,17 @@ class OrderController extends FrontController
                     'type' => 'cart'
                 ]);
             }
+            \Log::info('done order');
             $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
             if (!in_array($request->payment_option_id, $ex_gateways)) {
+                \Log::info('In order');
                 if (!empty($order->vendors)) {
+                 \Log::info('In order 1');
                     foreach ($order->vendors as $vendor_value) {
+                        \Log::info('In order 2');
                         $vendorDetail = $vendor_value->vendor;
                         if ($vendorDetail->auto_accept_order == 0 && $vendorDetail->auto_reject_time > 0) {
+                        \Log::info('In order 3');
                             $clientDetail = CP::on('mysql')->where(['code' => $preferences->client_code])->first();
                             AutoRejectOrderCron::on('mysql')->create(['database_host' => $clientDetail->database_path, 'database_name' => $clientDetail->database_name, 'database_username' => $clientDetail->database_username, 'database_password' => $clientDetail->database_password, 'order_vendor_id' => $vendor_value->id, 'auto_reject_time' => Carbon::now()->addMinute($vendorDetail->auto_reject_time)]);
                         }

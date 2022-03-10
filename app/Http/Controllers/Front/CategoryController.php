@@ -330,6 +330,7 @@ class CategoryController extends FrontController{
      */
     public function categoryVendorProducts(Request $request, $domain = '', $slug1 = 0, $slug2 = 0)
     {
+
         // slug1 => category slug
         // slug2 => vendor slug
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
@@ -355,12 +356,19 @@ class CategoryController extends FrontController{
         'allParentsAccount'])
         ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id')
         ->where('slug', $slug1)->firstOrFail();
+
         $category->translation_name = ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
         foreach($category->childs as $key => $child){
             $child->translation_name = ($child->translation->first()) ? $child->translation->first()->name : $child->slug;
         }
         $vendor = Vendor::select('id', 'name')->where('slug', $slug2)->where('status', 1)->firstOrFail();
-
+        if($category && $request->ajax() )
+        {
+            $vendor_id = isset($vendor) ?  $vendor->id : '';
+            $request->merge(['vendor_id'=>$vendor_id]);
+            $returnHTML = $this->categoryFilters($request,'',$category->id);
+            return response()->json(array('success' => true, 'html'=>$returnHTML));
+        }
         $variantSets = ProductVariantSet::with(['options' => function($zx) use($langId){
             $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
             $zx->select('variant_options.*', 'vt.title');
@@ -498,7 +506,7 @@ class CategoryController extends FrontController{
                             }
                             $q->groupBy('product_id');
                         },
-                    ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
+                    ])->select('products.id', 'products.sku', 'products.brand_id', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count', 'products.is_featured','products.batch_count')
                             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                             ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                     // ->where('vendor_id', $vid)
@@ -535,6 +543,8 @@ class CategoryController extends FrontController{
                 $products = $products->orderBy('product_translations.title', 'asc');
             }elseif (!empty($order_type) && $order_type == 'z_to_a') {
                 $products = $products->orderBy('product_translations.title', 'desc');
+            }elseif (!empty($order_type) && $order_type == 'featured') {
+                $products = $products->where('products.is_featured', 1);
             }else{
                 //
             }
