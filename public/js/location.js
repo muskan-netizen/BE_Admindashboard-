@@ -467,6 +467,7 @@ $(document).ready(function () {
                             case 'vendors':
                                 if($('.suppliers-slider-vendors').hasClass('slick-initialized')){
                                     $(".suppliers-slider-vendors").slick('destroy');
+                                    $(".render_vendors").html('');
                                 }
                                 let vendors_template = _.template($('#vendors_template').html());
                                 $(".render_vendors").append(vendors_template({ vendors: response.data.vendors , type: vendor_language}));
@@ -493,7 +494,7 @@ $(document).ready(function () {
                                 if($('.product-4-featured_products').hasClass('slick-initialized')){
                                     $(".product-4-featured_products").slick('destroy');
                                     $("#featured_products").html('');
-
+                                    $(".render_featured_products").html('');
                                 }
                                 $(".render_featured_products").append(products_template({ products: response.data.feature_products, type: featured_product_language }));
                                 $(".product-4-featured_products").slick({
@@ -520,6 +521,7 @@ $(document).ready(function () {
                             case 'new_products':
                                 if($('.product-4-new_products').hasClass('slick-initialized')){
                                     $(".product-4-new_products").slick('destroy');
+                                    $(".render_new_products").html('');
                                 }
                                 $(".render_new_products").append(products_template({ products: response.data.new_products, type: new_product_language }));
                                 if (response.data.new_products.length > 0) {
@@ -545,7 +547,8 @@ $(document).ready(function () {
                               break;
                             case 'on_sale':
                                 if($('.product-4-on_sale').hasClass('slick-initialized')){
-                                $(".product-4-on_sale").slick('destroy');
+                                    $(".product-4-on_sale").slick('destroy');
+                                    $(".render_on_sale").html('');
                                 }
                                 $(".render_on_sale").append(products_template({ products: response.data.on_sale_products, type: on_sale_product_language }));
                                 $(".product-4-on_sale").slick({
@@ -572,6 +575,7 @@ $(document).ready(function () {
                             case 'best_sellers':
                                 if($('.product-4-best_sellers').hasClass('slick-initialized')){
                                      $("#best_sellers").html('');
+                                     $(".render_best_sellers").html('');
                                 }
                                 $(".render_best_sellers").append(products_template({ products: response.data.new_products, type: best_seller_product_language}));
 
@@ -605,7 +609,8 @@ $(document).ready(function () {
                                break;
                             case 'recent_orders':
                                 if($('.recent-orders').hasClass('slick-initialized')){
-                                $(".recent-orders").slick('destroy');
+                                 $(".recent-orders").slick('destroy');
+                                 $(".render_recent_orders").html('');
                                 }
                                 let recent_orders_template = _.template($('#recent_orders_template').html());
                                 $(".render_recent_orders").append(recent_orders_template({ Helper: NumberFormatHelper, recent_orders: response.data.active_orders}));

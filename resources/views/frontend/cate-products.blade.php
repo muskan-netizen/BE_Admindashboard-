@@ -254,13 +254,14 @@
                                     <div class="displayProducts">
                                         <div class="col-12 text-right mt-2">Sort By :
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
-                                                <option value="featured">Featured</option>
-                                                <option value="a_to_z">A to Z</option>
-                                                <option value="z_to_a">Z to A</option>
-                                                <option value="low_to_high">Cost : Low to High</option>
-                                                <option value="high_to_low">Cost : High to Low</option>
-                                                <option value="rating">Avg. Customer Review</option>
-                                                <option value="newly_added">Newest Arrivals</option>
+                                                <option value="">{{__('Please Select')}}</option>
+                                                <option value="featured">{{_('Featured')}}</option>
+                                                <option value="a_to_z">{{_('A to Z')}}</option>
+                                                <option value="z_to_a">{{_('Z to A')}}</option>
+                                                <option value="low_to_high">{{_('Cost : Low to High')}}</option>
+                                                <option value="high_to_low">{{_('Cost : High to Low')}}</option>
+                                                <option value="rating">{{_('Avg. Customer Review')}}</option>
+                                                <option value="newly_added">{{_('Newest Arrivals')}}</option>
                                             </select>
                                         </div>
                                         <div class="product-wrapper-grid">
@@ -325,6 +326,7 @@
             </div>
         </div>
     </div>
+    <input type="hidden" id="vendor_id" value="{{ isset($vendor_id) ? $vendor_id : ''}}">
 </section>
 @endsection
 @section('script')
@@ -347,13 +349,19 @@
     $('.productFilter').click(function(){
         filterProducts();
     });
-    $('.sortingFilter').click(function(){
+
+    $(document).on('change','.sortingFilter',function(){
         filterProducts();
     });
+    $('.js-range-slider').change(function(){
+        filterProducts();
+    });
+
     function filterProducts(){
         var brands = [];
         var variants = [];
         var options = [];
+        var vendor_id =$("#vendor_id").val();
         $('.productFilter').each(function () {
             var that = this;
             if(this.checked == true){
@@ -376,6 +384,7 @@
             data: {
                 "_token": "{{ csrf_token() }}",
                 "brands": brands,
+                "vendor_id": vendor_id,
                 "variants": variants,
                 "options": options,
                 "range": range,

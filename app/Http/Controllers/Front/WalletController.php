@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Front;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{User, Transaction, ClientCurrency, PaymentOption};
+use App\Models\{User, Transaction, ClientCurrency, Payment, PaymentOption};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use Session;
@@ -63,6 +63,16 @@ class WalletController extends FrontController
                 }
 
                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
+
+                $payment = new Payment();
+                $payment->date = date('Y-m-d');
+                $payment->user_id = $user->id;
+                $payment->transaction_id = $request->transaction_id;
+                $payment->payment_option_id = $request->payment_option_id ?? null;
+                $payment->balance_transaction = $credit_amount;
+                $payment->type = 'wallet_topup';
+                $payment->save();
+
                 $transactions = Transaction::where('payable_id', $user->id)->get();
                 $response['wallet_balance'] = $wallet->balanceFloat;
                 $response['transactions'] = $transactions;

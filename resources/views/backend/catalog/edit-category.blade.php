@@ -1,13 +1,23 @@
 
-<div class="row ">
+<div class="row ">    
     <div class="col-md-12">
         <div class="row mb-6">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <label>{{ __("Upload Category Icon") }}</label>
-                <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify" data-default-file="{{$category->icon['proxy_url'].'400/400'.$category->icon['image_path']}}" />
-                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify" data-default-file="{{$category->icon['proxy_url'].'400/400'.$category->icon['image_path']}}" />
+                        <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="file" accept="image/*" data-plugins="dropify" name="icon_2" class="dropify" data-default-file="{{$category->icon_2['proxy_url'].'400/400'.$category->icon_2['image_path']}}" />
+                        <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
+                    </div>
+                </div>
+                {{-- <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify" data-default-file="{{$category->icon['proxy_url'].'400/400'.$category->icon['image_path']}}" />
+                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label> --}}
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label>Upload Category image</label>
                 <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$category->image['proxy_url'].'1000/200'.$category->image['image_path']}}" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>

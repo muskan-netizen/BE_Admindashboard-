@@ -24,7 +24,7 @@ if (!function_exists('changeDateFormate')) {
 function orderProductDetails($order_id)
 {
     $order = Order::find($order_id);
-    $itemsDetails = 'Order No : '.$order_id;
+    $itemsDetails = 'Order No : '.$order->order_number;
     foreach($order->products as $items){
        $itemsDetails .=  ', Item Name : '.$items->product_name.', '.$items->product_variant_sets;
     }
@@ -100,15 +100,6 @@ function generateOrderNo($length = 8){
             $number .= mt_rand(0,9);
         }
     } while (!empty(\DB::table('orders')->where('order_number', $number)->first(['order_number'])) );
-    return $number;
-}
-function generateUniqueSlug($table='', $column='', $prefix='', $length = 8){
-    $number = $prefix;
-    do {
-        for ($i=$length; $i--; $i>0) {
-            $number .= mt_rand(0,9);
-        }
-    } while (!empty(\DB::table($table)->where($column, $number)->first([$column])) );
     return $number;
 }
 function generateWalletTransactionReference($length = 8){

@@ -188,17 +188,21 @@ class HomeController extends BaseController
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
+            $type = $request->has('type') ? $request->type : 'delivery';
+
+            if (empty($type))
             $type = 'delivery';
-            if ($request->has('type')) {
-                if (empty($request->type)) {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
-                } else {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($request->type, 1);
-                    $type = $request->type;
-                }
-            } else {
-                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','closed_store_order_scheduled')->withAvg('product', 'averageRating');
-            }
+
+            // if ($request->has('type')) {
+            //     if (empty($request->type)) {
+            //         $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
+            //     } else {
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+
+            //     }
+            // } else {
+            //     $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','closed_store_order_scheduled')->withAvg('product', 'averageRating');
+            // }
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
 
@@ -285,7 +289,7 @@ class HomeController extends BaseController
                 $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
             }
 
-            //pr($vendorData);
+
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
             //     $vendorData = $vendorData->sortBy('lineOfSightDistance')->values()->all();
@@ -344,6 +348,7 @@ class HomeController extends BaseController
             }
 
             $isVendorArea = 0;
+
             $categories = $this->categoryNav($langId,  $venderIds);
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
@@ -371,7 +376,7 @@ class HomeController extends BaseController
         }
     }
 
-    //git user registration document 
+    //git user registration document
      public function UserRegistrationDocument(){
         $user = Auth::user();
         $langId = $user->language;
@@ -380,11 +385,11 @@ class HomeController extends BaseController
             $user_registration_documents = UserRegistrationDocuments::with(['translations' => function ($q) use ($langId) {
                 $q->where('language_id', $langId);
             }])->get();
-           
+
         }
         return $this->successResponse($user_registration_documents);
      }
-  
+
     public function getEditedOrders(Request $request){
         // Get user Edited Orders from Temp Cart
         $user = Auth::user();

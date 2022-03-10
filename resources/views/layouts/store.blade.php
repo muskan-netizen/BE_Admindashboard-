@@ -56,7 +56,7 @@ else if($client_preference_detail->show_dark_mode == 2){
  </style>
 @endif
 @php
-$body_class = ""; 
+$body_class = "";
 if(isset($set_template))
 {
   if($set_template->template_id == 1)
@@ -83,9 +83,9 @@ if(isset($set_template))
     @if(isset($set_template)  && $set_template->template_id == 1)
     @include('layouts.store/left-sidebar-template-one')
     @elseif(isset($set_template)  && $set_template->template_id == 2)
-    @include('layouts.store/left-sidebar')
-    @elseif(isset($set_template)  && $set_template->template_id == 3)
     @include('layouts.store/left-sidebar-template-two')
+    @elseif(isset($set_template)  && $set_template->template_id == 3)
+    @include('layouts.store/left-sidebar-template-three')
     @else
     @include('layouts.store/left-sidebar-template-one')
     @endif
@@ -94,23 +94,12 @@ if(isset($set_template))
   @if(isset($set_template)  && $set_template->template_id == 1)
   @include('layouts.store/footer-content-template-one')
   @elseif(isset($set_template)  && $set_template->template_id == 2)
-  @include('layouts.store/footer-content')
-  @elseif(isset($set_template)  && $set_template->template_id == 3)
-
   @include('layouts.store/footer-content-template-two')
+  @elseif(isset($set_template)  && $set_template->template_id == 3)
+  @include('layouts.store/footer-content-template-three')
   @else
   @endif
   @include('layouts.store/footer')
-  <div class="loader_box" style="display: none;">
-    <div class="spinner-border text-danger m-2 showLoader" role="status"></div>
-  </div>
-  <div class="spinner-overlay">
-    <div class="page-spinner">
-        <div class="circle-border">
-            <div class="circle-core"></div>
-        </div>
-    </div>
-  </div>
   @yield('script')
   @if($client_preference_detail->hide_nav_bar == 1 || $set_common_business_type == 'taxi')
   <script>
@@ -129,11 +118,6 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
-// $(document).ready(function() {
-//   alert($('.site-header').innerHeight());
-//   $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
-//   $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
-// });
 </script>
 
 </body>
