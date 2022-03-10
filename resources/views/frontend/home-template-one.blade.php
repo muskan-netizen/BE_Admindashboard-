@@ -1,11 +1,18 @@
 @extends('layouts.store', ['title' => __('Home')]) @section('content')
+@section('css')
+<link rel="stylesheet/less" type="text/css" href="{{ asset('front-assets/css/shimmer-less.less') }}">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+@endsection
+
 <!-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> -->
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
-<section class="home-slider-wrapper pt-md-3">
+<section class="home-slider-wrapper py-sm-3 ">
 	<div class="container">
-		<div id="myCarousel" class="carousel slide" data-ride="carousel">
+		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<div class="carousel-inner">
 
 				@foreach($banners as $key => $banner)
@@ -27,6 +34,31 @@
 				<span class="sr-only">Next</span>
 			</a>
 		</div>
+
+		<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel" style="display:none;">
+			<div class="carousel-inner">
+
+				@foreach($mobile_banners as $key => $banner)
+					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+					<div class="carousel-item @if($key == 0) active @endif">
+					 <a class="banner-img-outer" href="{{$url??'#'}}">
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+					</a>
+					</div>
+				@endforeach
+
+			</div>
+			<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="sr-only">Previous</span>
+			</a>
+			<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="sr-only">Next</span>
+			</a>
+		</div>
+
+
       <!-- <div class="shimmer_effect">
          <div class="loading"></div>
       </div>
@@ -38,7 +70,7 @@
  @endif
 <script type="text/template" id="vendors_template">
 	<% _.each(vendors, function(vendor, k){%>
-		<div class="product-card-box position-relative">
+		<div class="product-card-box position-relative ">
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative">
 					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
@@ -72,7 +104,7 @@
 </script>
 <script type="text/template" id="products_template">
 	<% _.each(products, function(product, k){ %>
-		<div class="product-card-box position-relative al">
+		<div class="product-card-box al_box_third_template position-relative al">
 			<div class="add-to-fav 12">
 				<input id="fav_pro_one" type="checkbox">
 				<label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
@@ -136,7 +168,7 @@
 		<% subtotal_order_price = total_order_price = total_tax_order_price = 0; %>
 			<% _.each(order.vendors, function(vendor, k){ %>
 				<%   product_total_count = product_subtotal_amount = product_taxable_amount = 0; %>
-					<div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0 mt-3">
+					<div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-2">
 						<% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){%>
 							<div class="progress-order font-12">
 								<% if(order.scheduled_slot==null){%>
@@ -180,7 +212,7 @@
 												<% if(vendor.vendor_id==product.vendor_id){%>
 													<li class="text-center"> <img class="blur-up lazyload" data-src="<%=product.image_url %>" alt="" title=""> <span class="item_no position-absolute">x <%=product.quantity %></span>
 														<label class="items_price">{{Session::get('currencySymbol')}}
-															<%=product.price * product.pricedoller_compare %>
+															<%= Helper.formatPrice(product.price * product.pricedoller_compare) %>
 														</label>
 													</li>
 													<% product_total_price=product.price * product.doller_compare; product_total_count +=product.quantity * product_total_price; product_taxable_amount +=product.taxable_amount; total_tax_order_price +=product.taxable_amount; %>
@@ -191,14 +223,14 @@
 									<div class="col-md-5 mt-md-0 mt-sm-2">
 										<ul class="price_box_bottom m-0 p-0">
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Product Total')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.subtotal_amount)%></span> </li>
+												<label class="m-0">{{__('Product Total')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.subtotal_amount) %></span> </li>
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Coupon Discount')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.discount_amount)%></span> </li>
+												<label class="m-0">{{__('Coupon Discount')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.discount_amount) %></span> </li>
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Delivery Fee')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.delivery_fee)%></span> </li>
+												<label class="m-0">{{__('Delivery Fee')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.delivery_fee) %></span> </li>
 											<li class="grand_total d-flex align-items-center justify-content-between">
 												<label class="m-0">{{__('Amount')}}</label>
-												<% product_subtotal_amount=product_total_count - vendor.discount_amount + vendor.delivery_fee; subtotal_order_price +=product_subtotal_amount; %> <span>{{Session::get('currencySymbol')}}<%=(vendor.payable_amount)%></span> </li>
+												<% product_subtotal_amount=product_total_count - vendor.discount_amount + vendor.delivery_fee; subtotal_order_price +=product_subtotal_amount; %> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.payable_amount) %></span> </li>
 										</ul>
 									</div>
 								</div>
@@ -206,8 +238,8 @@
 					<% }); %>
 						<% }); %>
 </script>
-<section class="section-b-space p-t-0 pt-4 ratio_asos shimmer_effect">
-	<div class="container mb-5">
+<section class="section-b-space p-t-0 pt-4 ratio_asos  shimmer_effect">
+	<div class="container mb-5 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">
 				<h2 class="h2-heading loading mb-3"></h2> </div>
@@ -269,12 +301,7 @@
 				<div class="card_price loading"></div>
 			</div>
 		</div>
-	</div>
-	<div class="container mb-5">
-		<div class="row">
-			<div class="col-12 cards">
-				<h2 class="h2-heading loading mb-3" style="width: 150px;"></h2> </div>
-		</div>
+
 		<div class="grid-row grid-4-4">
 			<div class="cards">
 				<div class="card_image loading"></div>
@@ -332,74 +359,27 @@
 				<div class="card_price loading"></div>
 			</div>
 		</div>
+
 	</div>
-	<div class="container mb-5">
-		<div class="row">
-			<div class="col-12 cards">
-				<h2 class="h2-heading loading mb-3" style="width: 200px"></h2> </div>
-		</div>
-		<div class="grid-row grid-4-4">
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-		</div>
-	</div>
+
+
 	</div>
 </section>
-<section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div">
-	<div class="vendors"> @foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') @elseif($homePageLabel->slug == 'brands')
+
+
+
+
+
+
+
+
+<section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0 mt-0" id="our_vendor_main_div">
+	<div class="vendors">
+		@foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery')
+		@if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
+		 @include('frontend.booking.cabbooking-single-module') @endif
+		 @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page')
+		 @elseif($homePageLabel->slug == 'brands')
 		<section class="popular-brands left-shape_ position-relative">
 			<!-- <div class="container ">
 				<div class="row align-items-center">
@@ -410,7 +390,7 @@
 					</div>
 				</div>
 			</div> -->
-			<div class="container ">
+			<div class="container " data-aos="zoom-in">
 				<div class="al_top_heading col-md-12">
 					<div class="row d-flex justify-content-between">
 						<h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
@@ -425,41 +405,47 @@
 			</div>
 		</section> @elseif($homePageLabel->slug == 'vendors')
 		<section class="suppliers-section">
-			<div class="container mb-0">
+			<div class="container" data-aos="zoom-in">
 				<div class="row">
-					<div class="col-12 top-heading d-flex align-items-center justify-content-between mb-2">
+					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
 						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2> <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a> </div>
 					<div class="col-12">
-						<div class="suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
+						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>
 				</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
 		<section class="suppliers-section">
-			<div class="container">
+			<div class="container" data-aos="zoom-in">
 				<div class="row">
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
 						<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
 					<div class="col-12">
-						<div class="suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
+						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
 					</div>
 				</div>
 			</div>
 		</section> @else
-		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-			<div class="row">
+		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" data-aos="zoom-in">
+			<div class="row" >
 				<div class="col-12 top-heading d-flex align-items-center justify-content-between">
 					<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
 			</div>
 			<div class="row">
-				<div class="col-12"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
-					<div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@elseif($homePageLabel->slug=='recent_orders')
-					<div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@else
-					<div class="product-4 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif </div>
+				<div class="col-12">
+					@if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
+					<div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+					@elseif($homePageLabel->slug=='recent_orders')
+					<div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+					@else
+					<div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+					@endif
+				</div>
 			</div>
 		</section> @endif @endforeach </div>
 </section>
-<section class="no-store-wrapper mb-3">
+
+<section class="no-store-wrapper mb-3" style="display: none;" data-aos="zoom-in">
 	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
 		<div class="row">
 			<div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur-up lazyload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>
@@ -492,4 +478,35 @@
 @endsection @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script src="https://cdn.jsdelivr.net/npm/less@4"></script>
+<script>
+	$('.center').slick({
+  centerMode: true,
+  centerPadding: '60px',
+  slidesToShow: 2,
+  responsive: [
+    {
+      breakpoint: 768,
+      settings: {
+        arrows: false,
+        centerMode: true,
+        centerPadding: '40px',
+        slidesToShow: 2
+      }
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        arrows: false,
+        centerMode: true,
+        centerPadding: '40px',
+        slidesToShow: 1
+      }
+    }
+  ]
+});
+</script>
+<script>
+  AOS.init();
+</script>
 @endsection

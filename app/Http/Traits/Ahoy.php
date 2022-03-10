@@ -144,6 +144,7 @@ public function confirmPreOrder($data)
         $httpCode =  curl_error($ch);
     }
     curl_close($ch);
+    \Log::info($result);
     return json_decode($result);
 } 
 
@@ -245,7 +246,7 @@ public function confirmPreOrder($data)
     $resp = curl_exec($curl);
     $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     $err = curl_error($curl);
-
+    \Log::info($err);
     curl_close($curl);
     if($httpCode == '200'){
         return response()->json(['code'=>'200','msg'=>'Webhook url is set.']);

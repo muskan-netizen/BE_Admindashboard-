@@ -87,7 +87,7 @@ class FrontController extends Controller
        $preferences = Session::get('preferences');
        $primary = ClientLanguage::orderBy('is_primary','desc')->first();
        $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-       ->select('categories.id', 'categories.icon', 'categories.slug', 'categories.parent_id', 'cts.name')->distinct('categories.id');
+       ->select('categories.id', 'categories.icon', 'categories.icon_2', 'categories.slug', 'categories.parent_id', 'cts.name')->distinct('categories.id');
         $status = $this->field_status;
         if ($preferences) {
             if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
@@ -201,7 +201,9 @@ class FrontController extends Controller
                 $vendors[] = $value->id;
             }
         }
+
         Session::put('vendors', $vendors);
+
         return $vendors;
     }
 
@@ -252,9 +254,9 @@ class FrontController extends Controller
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
                 $value->variant_multiplier = $multiplier;
-                $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.',',') : 0;
+                $value->variant_price = (!empty($value->variant->first())) ? decimal_format(($value->variant->first()->price * $multiplier),',') : 0;
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
-                $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                $value->image_url = ($value->media->first() && !is_null($value->media->first()->image))  ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $value->category_name = ($value->category->categoryDetail->translation->first()) ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
             }
         }
@@ -309,10 +311,10 @@ class FrontController extends Controller
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
                 $value->variant_multiplier = $multiplier ? $multiplier : 1;
-                $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.',',') : 0;
+                $value->variant_price = (!empty($value->variant->first())) ? decimal_format(($value->variant->first()->price * $multiplier),',') : 0;
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
                 $value->category_name = $value->category->categoryDetail->translation->first() ? $value->category->categoryDetail->translation->first()->name : '';
-                $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '600/600' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                $value->image_url = $value->media->first() && !is_null($value->media->first()->image) ? $value->media->first()->image->path['image_fit'] . '600/600' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 // foreach ($value->variant as $k => $v) {
                 //     $value->variant[$k]->multiplier = $multiplier;
                 // }
@@ -555,7 +557,7 @@ class FrontController extends Controller
         }
         $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
         $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
-        $amount = number_format($amount, 2,'.','');
+        $amount = decimal_format($amount);
         return $amount;
     }
 

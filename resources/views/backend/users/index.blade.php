@@ -96,6 +96,8 @@
                                     <th>{{ __('Image')}}</th>
                                     <th>{{ __('Name')}}</th>
                                     <th>{{ __('Login Type') }}</th>
+                                    <th>{{ __('Signup Date')}}</th>
+                                    <th>{{ __('Last Login') }}</th>
                                     <th>{{ __('Email/Auth-id')}}</th>
                                     <th>{{ __('Phone')}}</th>
                                     <th>{{ __("Email OTP") }}</th>
@@ -104,6 +106,8 @@
                                     <th>{{ __('Orders')}}</th>
                                     <th>{{ __('Loyalty Card')}}</th>
                                     <th>{{ __('Active Orders') }}</th>
+                                    <th>{{ __('Total Order Value') }}</th>
+                                    <th>{{ __('Total Order Discount') }}</th>
                                     <th>{{ __('Status')}}</th>
                                     <th>{{ __('Action')}}</th>
                                 </tr>
@@ -236,6 +240,18 @@
                             searchable: false
                         },
                         {
+                            data: 'signup_date',
+                            name: 'signup_date',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'last_login',
+                            name: 'last_login',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
                             data: 'login_type_value',
                             name: 'login_type_value',
                             orderable: false,
@@ -315,6 +331,18 @@
                         {
                             data: 'currently_working_orders_count',
                             name: 'currently_working_orders_count',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'total_order_value',
+                            name: 'total_order_value',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'total_discount_value',
+                            name: 'total_discount_value',
                             orderable: false,
                             searchable: false
                         },

@@ -61,6 +61,11 @@ class ProductController extends FrontController{
                 $productVendorId = $product->vendor_id;
                 if(Session::has('vendors')){
                     $vendors = Session::get('vendors');
+                    if(is_array($vendors))
+                    $vendors = $vendors;
+                    else
+                    $vendors = $vendors->toArray();
+
                     if(!in_array($productVendorId, $vendors)){
                         $is_available = false;
                         // abort(404);
@@ -337,7 +342,7 @@ class ProductController extends FrontController{
                 ->whereIn('id', $pv_ids)->get();
             if ($variantData) {
                 foreach($variantData as $variant){
-                    $variant->productPrice =  number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
+                    $variant->productPrice =  decimal_format(($variant->price * $clientCurrency->doller_compare));
                     // $variant->productPrice = Session::get('currencySymbol') . number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
                     // $sets[] = $availableSet->toArray();
                     // foreach($availableSet->groupBy('product_variant_id') as $avSets){
@@ -351,11 +356,13 @@ class ProductController extends FrontController{
                     // }
                 }
                 if(count($variantData) <= 1){
+                    $image_fit = "";
+                    $image_path = "";
                     $variantData = $variantData->first()->toArray();
                     if(!empty($variantData['media'])){
                         $image_fit = $variantData['media'][0]['pimage']['image']['path']['image_fit'];
                         $image_path = $variantData['media'][0]['pimage']['image']['path']['image_path'];
-                    }else{
+                    }else if(!is_null($variantData['product']['media']) && !empty($variantData['product']['media']) && !is_null($variantData['product']['media'][0]['image'])){
                         $image_fit = $variantData['product']['media'][0]['image']['path']['image_fit'];
                         $image_path = $variantData['product']['media'][0]['image']['path']['image_path'];
                     }

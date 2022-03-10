@@ -186,8 +186,10 @@ class ShiprocketController extends Controller
     {
 		$this->configuration();
     	$token = $this->getAuthToken();
+		
 		if(isset($token->token)){
 			$address = $this->addAddress($token->token,$vendor,$name);
+			//dd($address);
 			return $address; 
 		}
 		return 0;
@@ -212,9 +214,9 @@ class ShiprocketController extends Controller
 					'name' => $items->product_name, //Required
 					'sku' => $items->product->sku ?? $items->id, //Required
 					'units' => $items->quantity,
-					'selling_price' => helper_number_formet($items->price),
+					'selling_price' => decimal_format($items->price),
 					'discount' => '',
-					'tax' => helper_number_formet($items->taxable_amount),
+					'tax' => decimal_format($items->taxable_amount),
 					'hsn' => '',
 					);
 					$weight[] = $items->product->weight;
@@ -260,6 +262,7 @@ class ShiprocketController extends Controller
 				'weight' => ($weightSum>0)? $weightSum : $this->weight,
 			  );
 		}
+		
     	$orderSuc = $this->createOrder($token->token,$data);
 		if($orderSuc->status_code == 1)
 		{

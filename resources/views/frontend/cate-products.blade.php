@@ -1,4 +1,4 @@
-@extends('layouts.store', [ 
+@extends('layouts.store', [
 'title' => (!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->name : $category->slug,
 'meta_title'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_title:'',
 'meta_keyword'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_keyword:'',
@@ -7,17 +7,7 @@
 
 @section('css')
 <style type="text/css">
-    .main-menu .brand-logo {
-        display: inline-block;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-    .slick-track{
-        margin-left: 0px;
-    }
-    .product-box .product-detail h4, .product-box .product-info h4{
-        font-size: 16px;
-    }
+.main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}.slick-track{margin-left: 0px;}.product-box .product-detail h4, .product-box .product-info h4{font-size: 16px;}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
@@ -139,7 +129,7 @@
                                         }*/ ?>
 
                                         <a class="row common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                            <div class="img-outer-box position-relative col-sm-4">
+                                            <div class="img-outer-box position-relative col-sm-4 pr-0">
                                                 <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
                                                 <div class="pref-timing">
                                                     <!--<span>5-10 min</span>-->
@@ -160,7 +150,7 @@
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
                                                                     <?php $multiply = $new['variant_multiplier']; ?>
-                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                    {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                 @endif
                                                             </b>
 
@@ -198,7 +188,7 @@
                                                         @if($new['inquiry_only'] == 0)
                                                             <h4 class="mt-1">
                                                                 <//?php $multiply = $new['variant_multiplier']; ?>
-                                                                {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                             </h4>
                                                         @endif
                                                     </a>
@@ -262,6 +252,17 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts">
+                                        <div class="col-12 text-right mt-2">Sort By :
+                                            <select name="order_type" id='order_type' class="sortingFilter p-1">
+                                                <option value="featured">Featured</option>
+                                                <option value="a_to_z">A to Z</option>
+                                                <option value="z_to_a">Z to A</option>
+                                                <option value="low_to_high">Cost : Low to High</option>
+                                                <option value="high_to_low">Cost : High to Low</option>
+                                                <option value="rating">Avg. Customer Review</option>
+                                                <option value="newly_added">Newest Arrivals</option>
+                                            </select>
+                                        </div>
                                         <div class="product-wrapper-grid">
                                             <div class="row margin-res">
                                               @if($listData->isNotEmpty())
@@ -274,7 +275,7 @@
                                                     }
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 }*/ ?>
-                                                <div class="col-xl-3 col-6 col-grid-box mt-3">
+                                                <div class="col-xl-3 col-md-4 col-grid-box mt-3">
                                                     <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="product-box scale-effect mt-0">
                                                         <div class="product-image p-0">
                                                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
@@ -298,7 +299,7 @@
                                                                     <p>{{ $data->translation_description }}</p>
                                                                 @endif
                                                                 @if($data->inquiry_only == 0)
-                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                 @endif
                                                             </div>
                                                         </div>
@@ -324,6 +325,7 @@
             </div>
         </div>
     </div>
+    <input type="hidden" id="vendor_id" value="{{ isset($vendor_id) ? $vendor_id : ''}}">
 </section>
 @endsection
 @section('script')
@@ -346,10 +348,15 @@
     $('.productFilter').click(function(){
         filterProducts();
     });
+    $('.sortingFilter').click(function(){
+        filterProducts();
+    });
+
     function filterProducts(){
         var brands = [];
         var variants = [];
         var options = [];
+        var vendor_id =$("#vendor_id").val();
         $('.productFilter').each(function () {
             var that = this;
             if(this.checked == true){
@@ -363,6 +370,7 @@
             }
         });
         var range = $('.rangeSliderPrice').val();
+        var order_type = $('.sortingFilter').val();
 
         ajaxCall = $.ajax({
             type: "post",
@@ -371,9 +379,11 @@
             data: {
                 "_token": "{{ csrf_token() }}",
                 "brands": brands,
+                "vendor_id": vendor_id,
                 "variants": variants,
                 "options": options,
-                "range": range
+                "range": range,
+                "order_type" : order_type,
             },
             beforeSend : function() {
                 if(ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {

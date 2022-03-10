@@ -30,7 +30,7 @@ $timezone = Auth::user()->timezone;
 $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
 }
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
-$urlImg =  $clientData ? $clientData->logo['image_fit'].'150/92'.$clientData->logo['image_path'] : " ";
+$urlImg = $clientData ? $clientData->logo['original'] : ' ';
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
@@ -63,7 +63,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h3 class="page-title text-uppercase">{{__('Cart')}}</h3>
+                <h3 class="page-title text-uppercase mt-4">{{__('Cart')}}</h3>
             </div>
             <div class="cart_response mt-3 mb-3 d-none">
                 <div class="alert p-0" role="alert"></div>
@@ -126,7 +126,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="product-img col-4 col-md-2 pr-0 al">
                         <% if(vendor_product.pvariant.media_one) { %>
                             <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
-                        <% }else if(vendor_product.pvariant.media_second){ %>
+                        <% }else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){ %>
                             <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_second.image.path.image_path %>">
                         <% }else{ %>
                             <img class='blur-up lazyload w-100' data-src="<%= vendor_product.image_url %>">
@@ -143,7 +143,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <% }); %>
                             </div>
                             <div class="col-md-2 text-md-center order-1 mb-1 mb-md-0">
-                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price) %></div>
+                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></div>
                             </div>
                             <div class="col-8 col-md-4 text-md-center order-3 order-md-2">
                                 <div class="number d-flex justify-content-md-center">
@@ -189,7 +189,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                         <p class="p-0 m-0"><%= addon.option.title %></p>
                                     </div>
                                     <div class="col-md-2 col-sm-4 text-center">
-                                        <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart) %></div>
+                                        <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart * addon.option.multiplier) %></div>
                                     </div>
                                     <div class="col-md-7 col-sm-4 text-right">
                                         <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
@@ -197,6 +197,20 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 </div>
                             <% } %>
                             <% }); %>
+                        <% } %>
+
+                        <% if(vendor_product.pvariant.container_charges > 0){%>
+                            <div class="row">
+                                <div class="col-md-3 col-sm-4 items-details text-left">
+                                    <p class="p-0 m-0 alert-danger">{{ __('Container Charges') }} *</p>
+                                </div>
+                                <div class="col-md-2 col-sm-4 text-center">
+                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.container_charges) %></div>
+                                </div>
+                                <div class="col-md-7 col-sm-4 text-right">
+                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_container_charges) %></div>
+                                </div>
+                            </div>
                         <% } %>
                     </div>
 
@@ -336,16 +350,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
         </div>
         <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
-            <div class="row">
-                <div class="col-6">{{__('Total')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
-            </div>
-            <hr class="my-2">
-            <div class="row">
-                <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_taxable_amount) %></div>
-            </div>
-            <hr class="my-2">
             <% if(cart_details.total_service_fee > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>
@@ -353,6 +357,25 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <hr class="my-2">
             <% } %>
+            
+            <% if(cart_details.total_container_charges > 0) { %>
+                <div class="row">
+                    <div class="col-6">{{__('Total Container Charges')}}</div>
+                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_container_charges) %></div>
+                </div>
+                <hr class="my-2">
+            <% } %>
+            <div class="row">
+                <div class="col-6">{{__('Tax')}}</div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_taxable_amount) %></div>
+            </div>
+            <hr class="my-2">
+            <div class="row">
+                <div class="col-6">{{__('Total')}}</div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
+            </div>
+            <hr class="my-2">
+           
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
@@ -1154,6 +1177,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+    var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";

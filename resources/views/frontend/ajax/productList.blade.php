@@ -1,4 +1,4 @@
-<div class="col-12 text-right">Sort By : 
+<div class="col-12 text-right mt-2">Sort By : 
     <select name="order_type" id='order_type' class="sortingFilter p-1">
         <option value="featured" {{isset($data['order_type']) && $data['order_type'] == "featured" ? 'selected' : ''}}>Featured</option>
         <option value="a_to_z" {{isset($data['order_type']) && $data['order_type'] == "a_to_z" ? 'selected' : ''}}>A to Z</option>
@@ -37,7 +37,7 @@
                             <p>{{ $data->translation_description }}</p>
                         @endif
                         @if($data->inquiry_only == 0)
-                            <h4 class="mt-1">{{Session::get('currencySymbol').' '.(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                            <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                         @endif
                     </div>
                 </div>

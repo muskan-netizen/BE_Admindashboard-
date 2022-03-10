@@ -1,14 +1,7 @@
 @extends('layouts.store', ['title' => $vendor->name])
 @section('css')
 <style type="text/css">
-    .main-menu .brand-logo {
-        display: inline-block;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-    .slick-track{
-        margin-left: 0px;
-    }
+.main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.slick-track{margin-left:0}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
@@ -85,26 +78,29 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
                         </h5>
-                        <div class="offer-slider">
+                        <div class="offer-slider ">
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
                                     @foreach($newProds as $new)
-                                    <div>
-                                        <?php $imagePath = '';
-                                        foreach ($new['media'] as $k => $v) {
-                                            $imagePath = $v['image']['path']['proxy_url'].'300/300'.$v['image']['path']['image_path'];
-                                        } ?>
+                                    <div class="col-md-12">
+                                    <?php /*$imagePath = '';
+                                    foreach ($new['media'] as $k => $v) {
+                                        $imagePath = $v['image']['path']['image_fit'] . '300/300' . $v['image']['path']['image_path'];
+                                    }*/ ?>
 
 
-                                        <a class="common-product-box scale-effect border-bottom pb-2 mt-2 text-center" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                    <a class="row common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                        <div class="col-sm-3">
                                             <div class="img-outer-box position-relative">
-                                                <img class="img-fluid blur-up lazyload" data-src="{{$imagePath}}" alt="">
-                                                <div class="pref-timing">
-                                                    <!--<span>5-10 min</span>-->
+                                                    <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
+                                                    <div class="pref-timing">
+                                                        <!--<span>5-10 min</span>-->
+                                                    </div>
+                                                    {{-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> --}}
                                                 </div>
-                                                <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="media-body align-self-center">
+                                        </div>
+                                        <div class="col-sm-9 p-0">
+                                            <div class="media-body align-self-center ">
                                                 <div class="inner_spacing px-0">
                                                     <div class="product-description">
                                                         <div class="d-flex align-items-center justify-content-between">
@@ -118,7 +114,7 @@
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
                                                                     <?php $multiply = $new['variant_multiplier']; ?>
-                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                    {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                 @endif
                                                             </b>
 
@@ -136,34 +132,9 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </a>
-
-
-                                        <!-- <div class="media">
-                                            <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt="" ></a>
-                                            <div class="media-body align-self-center">
-                                                <div class="inner_spacing">
-                                                    <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                                        <h3>{{ $new['translation_title'] }}</h3>
-                                                        <h6><b>{{$new['vendor']['name']}}</b></h6>
-                                                        @if($new['inquiry_only'] == 0)
-                                                            <h4 class="mt-1">
-                                                                <//?php $multiply = $new['variant_multiplier']; ?>
-                                                                {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
-                                                            </h4>
-                                                        @endif
-                                                        @if($client_preference_detail)
-                                                            @if($client_preference_detail->rating_check == 1)
-                                                                @if($new['averageRating'] > 0)
-                                                                    <span class="rating">{{ $new['averageRating'] }} <i class="fa fa-star text-white p-0"></i></span>
-                                                                @endif
-                                                            @endif
-                                                        @endif
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div> -->
-                                    </div>
+                                        </div>
+                                    </a>
+                                </div>
                                     @endforeach
                                 @endforeach
                             @endif

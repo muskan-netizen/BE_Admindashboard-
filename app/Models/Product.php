@@ -24,7 +24,7 @@ class Product extends Model{
     }
 
     public function vendor(){
-       return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled');
+       return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges');
     }
 
     public function related(){
@@ -44,7 +44,7 @@ class Product extends Model{
     }
 
     public function variant(){
-      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id')->where('status', 1);
+      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges')->where('status', 1);
     }
 
     public function translation($langId = 0){
@@ -100,7 +100,7 @@ class Product extends Model{
     /* for app */
 
     public function variants(){
-      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode');
+      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode','container_charges');
     }
 
     public function reviews(){
@@ -251,11 +251,28 @@ class Product extends Model{
     {
       return self::where('category_id',$category_id)->get();
     }
+
+
+
+    public function variantPrice(){
+      return $this->hasOne('App\Models\ProductVariant')->select('*','price as variant_price')->first(); 
+    }
+
+
+    
     public function OrderProduct(){
         return $this->hasMany('App\Models\OrderProduct')->where(function($q){
             $q->groupBy('order_id ');
         });
 
+    }
+
+
+
+
+    public function productTranslation(){
+   
+        return $this->hasMany('App\Models\ProductTranslation');
     }
 
 

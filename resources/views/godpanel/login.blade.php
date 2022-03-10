@@ -83,7 +83,7 @@
             document.write(new Date().getFullYear())
         </script> &copy; {{__("All rights reserved")}} by <a href="https://royoapps.com/" class="text-white-50">Royo Apps</a>
     </footer>
-    @include('layouts.shared.footer-script')
+    
     <script src="{{asset('assets/js/app.min.js')}}"></script>
 </body>
 </html>

@@ -95,6 +95,8 @@
                         <input type="checkbox" data-plugin="switchery" name="closed_store_order_scheduled" class="form-control" data-color="#43bee1" @if($vendor->closed_store_order_scheduled == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
 
+                    
+
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                     <div class="form-group w-100">
                      {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
@@ -115,6 +117,10 @@
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="need_container_charges" class="form-control" data-color="#43bee1" @if($vendor->need_container_charges == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
@@ -245,10 +251,10 @@
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        <input type="text" name="shiprocket_pickup_name" class="form-control" value="{{@$vendor->shiprocket_pickup_name}}" {{(($vendor->shiprocket_pickup_name)? 'disabled' :'')}} placeholder="{{__('Pickup Location Name')}}" required>
+                        <input type="text" name="shiprocket_pickup_name" class="form-control" value="{{@$vendor->shiprocket_pickup_name}}" {{(($vendor->shiprocket_pickup_name)? '' :'')}} placeholder="{{__('Pickup Location Name')}}" required>
                     </div>
                     <div class="col-12">
-                        <button class="btn btn-info waves-effect waves-light w-100" {{(($vendor->shiprocket_pickup_name)? 'disabled' :'')}}>{{ __("Save") }}</button>
+                        <button class="btn btn-info waves-effect waves-light w-100" {{(($vendor->shiprocket_pickup_name)? '' :'')}}>{{ __("Save") }}</button>
                     </div>
                 </div>
             </form>
@@ -703,6 +709,14 @@ $( document ).ready(function() {
             $("#sch_vendor_close").css("display", "none");
         } else {
             $("#sch_vendor_close").css("display", "block");
+        }
+    })
+
+    $("input[name='need_container_charges']").change(function() {
+        if($(this).prop('checked')){
+            $("#need_container_charges").css("display", "none");
+        } else {
+            $("#need_container_charges").css("display", "block");
         }
     })
 </script>

@@ -55,7 +55,23 @@ else if($client_preference_detail->show_dark_mode == 2){
     .cab-booking-header{display: none;}
  </style>
 @endif
-<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
+@php
+$body_class = ""; 
+if(isset($set_template))
+{
+  if($set_template->template_id == 1)
+    $body_class = "al_body_template_one";
+  elseif($set_template->template_id == 2)
+    $body_class = "al_body_template_two";
+  elseif($set_template->template_id == 3)
+    $body_class = "al_body_template_three";
+}
+@endphp
+
+
+<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
+<article id="page-container">
+   <article id="content-wrap">
 @if(isset($set_template)  && $set_template->template_id == 3)
 
   <article class="al_new_wrapper_design">
@@ -63,13 +79,13 @@ else if($client_preference_detail->show_dark_mode == 2){
 
   @endif
 <header>
-    <div class="mobile-fix-option"></div>
+    <div class="mobile-fix-option_al"></div>
     @if(isset($set_template)  && $set_template->template_id == 1)
     @include('layouts.store/left-sidebar-template-one')
     @elseif(isset($set_template)  && $set_template->template_id == 2)
-    @include('layouts.store/left-sidebar')
-    @elseif(isset($set_template)  && $set_template->template_id == 3)
     @include('layouts.store/left-sidebar-template-two')
+    @elseif(isset($set_template)  && $set_template->template_id == 3)
+    @include('layouts.store/left-sidebar-template-three')
     @else
     @include('layouts.store/left-sidebar-template-one')
     @endif
@@ -78,10 +94,9 @@ else if($client_preference_detail->show_dark_mode == 2){
   @if(isset($set_template)  && $set_template->template_id == 1)
   @include('layouts.store/footer-content-template-one')
   @elseif(isset($set_template)  && $set_template->template_id == 2)
-  @include('layouts.store/footer-content')
-  @elseif(isset($set_template)  && $set_template->template_id == 3)
-
   @include('layouts.store/footer-content-template-two')
+  @elseif(isset($set_template)  && $set_template->template_id == 3)
+  @include('layouts.store/footer-content-template-three')
   @else
   @endif
   @include('layouts.store/footer')

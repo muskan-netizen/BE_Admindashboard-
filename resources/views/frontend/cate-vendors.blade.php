@@ -7,14 +7,7 @@
 
 @section('css')
 <style type="text/css">
-    .main-menu .brand-logo {
-        display: inline-block;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-    .slick-track{
-        margin-left: 0px;
-    }
+.main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}.slick-track{margin-left: 0px;}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
@@ -83,14 +76,14 @@
 
 
                                         <a class="row common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                            <div class="img-outer-box position-relative col-sm-3">
+                                            <div class="img-outer-box position-relative col-sm-4 pr-0">
                                                 <img  class="blur-up lazyload w-100" data-src="{{$imagePath}}" alt="">
                                                 <div class="pref-timing">
                                                     <!--<span>5-10 min</span>-->
                                                 </div>
                                                 {{-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> --}}
                                             </div>
-                                            <div class="media-body align-self-center col-sm-9">
+                                            <div class="media-body align-self-center col-sm-8">
                                                 <div class="inner_spacing px-0">
                                                     <div class="product-description">
                                                         <div class="d-flex align-items-center justify-content-between">
@@ -104,7 +97,7 @@
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
                                                                     <?php $multiply = $new['variant_multiplier']; ?>
-                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                    {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                 @endif
                                                             </b>
 
@@ -199,7 +192,7 @@
                                                         $vendor_url = route('vendorDetail', $data->slug);
                                                     }
                                                     @endphp
-                                                    <div class="col-lg-3 col-md-6 col-grid-box mt-3 " >
+                                                    <div class="col-xl-3 col-md-4 col-grid-box mt-3 " >
                                                         <div class="product-card-box position-relative">
                                                             <div class="add-to-fav">
                                                                 <input id="fav_pro_one" type="checkbox">
@@ -214,7 +207,7 @@
                                                                     @if($client_preference_detail && $client_preference_detail->rating_check == 1 && $data->vendorRating > 0)
                                                                     <span class="rating-number">{{$data->vendorRating}}</span>
                                                                     @endif
-                                                                    
+
                                                                     <p title="{{$data->categoriesList}}" class="vendor-cate {{ (($client_preference_detail->rating_check ==1) || ($data->is_show_vendor_details == 1) ) ? 'border-bottom' : '' }} pb-1 mb-1 ellips">{{$data->categoriesList}}</p>
                                                                     <!-- <h6 class="mb-1">{{$data->name}}</h6> -->
                                                                     <div class="product-timing">
@@ -292,7 +285,7 @@
                                 </svg></span> {{$data->timeofLineOfSightDistance}}</small>
                                                                                 </li>
                                                                             </ul>
-                                                                            @if($client_preference_detail->max_safety_mod == 1) 
+                                                                            @if($client_preference_detail->max_safety_mod == 1)
                      <div class="mt-2">
                         <ul class="timing-box_al">
                           <li><img height="30px" src="{{asset('images/max-safety.png')}}" alt=""></li>

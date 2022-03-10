@@ -130,7 +130,7 @@ $timezone = Auth::user()->timezone;
                                                         <h4 class="m-0">{{ $wish['product']['translation_title'] }}</h4>
                                                     </div>
                                                 </td>
-                                                <td>{{ Session::get('currencySymbol') }}@money($wish['product']['variant_price'])</td>
+                                                <td>{{ Session::get('currencySymbol') }}{{decimal_format($wish['product']['variant_price'])}}</td>
                                                 <td>{{ dateTimeInUserTimeZone($wish['added_on'], $timezone, true, false) }}</td>
                                                 <td>
                                                     @if(empty($wish['product']['deleted_at']))
