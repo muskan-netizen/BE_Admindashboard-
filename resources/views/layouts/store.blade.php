@@ -100,16 +100,6 @@ if(isset($set_template))
   @else
   @endif
   @include('layouts.store/footer')
-  <div class="loader_box" style="display: none;">
-    <div class="spinner-border text-danger m-2 showLoader" role="status"></div>
-  </div>
-  <div class="spinner-overlay">
-    <div class="page-spinner">
-        <div class="circle-border">
-            <div class="circle-core"></div>
-        </div>
-    </div>
-  </div>
   @yield('script')
   @if($client_preference_detail->hide_nav_bar == 1 || $set_common_business_type == 'taxi')
   <script>
@@ -128,11 +118,6 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
-// $(document).ready(function() {
-//   alert($('.site-header').innerHeight());
-//   $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
-//   $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
-// });
 </script>
 
 </body>

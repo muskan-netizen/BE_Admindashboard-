@@ -5,6 +5,16 @@
 </div>
 <div class="d-none" id ="nearmap">
 </div>
+  <div class="loader_box" style="display: none;">
+    <div class="spinner-border text-danger m-2 showLoader" role="status"></div>
+  </div>
+  <div class="spinner-overlay">
+    <div class="page-spinner">
+        <div class="circle-border">
+            <div class="circle-core"></div>
+        </div>
+    </div>
+  </div>
 
 @php
     $mapKey = '1234';
@@ -134,20 +144,9 @@
         userLatitude = "76.7794";
     }
 
-
-    // if((home_page_url != window.location.href) && (home_page_url2 != window.location.href)){
-    //     $('.vendor_mods').hide();}
-    // else{
-    //     $('.vendor_mods').show();}
-
     @if(Session::has('selectedAddress'))
         selected_address = 1;
     @endif
-    // @if( Session::has('preferences') )
-    //     @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
-    //         is_hyperlocal = 1;
-    //     @endif;
-    // @endif;
 
     @if($client_preference_detail->is_hyperlocal == 1)
         is_hyperlocal = 1;
@@ -166,7 +165,6 @@
             {
                 var parts = x.split(".");
                 return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ((parts[1] !== undefined) ? "." + parts[1] : "");
-                // return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
         return x;
@@ -201,14 +199,21 @@
 <script type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
+
+{{--
+<!-- shift to product detail page -->
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script> 
+<!-- duplicate script -->
+<script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
+--}}
+
 @if(isset($set_template)  && $set_template->template_id ==3)
 <script src="{{asset('js/aos.js')}}"></script>
 <script type="text/javascript">
-     AOS.init();
+    AOS.init();
 </script>
 @endif
 <script type="text/javascript" src="{{asset('js/location.js')}}"></script>
@@ -222,19 +227,17 @@
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <!--WaitMe Loader Script -->
 
-<!-- SweetAlert Script -->
-<script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 <script>
-        $(function() {
-            $(".al_toggle-menu").click(function() {
-                $(this).toggleClass("active");
-                $('.al_menu-drawer').toggleClass("open");
-                $('#page-container').toggleClass("al_fixed");
-            });
+    $(function() {
+        $(".al_toggle-menu").click(function() {
+            $(this).toggleClass("active");
+            $('.al_menu-drawer').toggleClass("open");
+            $('#page-container').toggleClass("al_fixed");
         });
-    </script>
+    });
+</script>
 @if (Auth::check())
 @if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
