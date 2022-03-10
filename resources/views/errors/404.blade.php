@@ -176,7 +176,7 @@ h1, h2, h3, h4, h5, h6 {
 .page-section .content-detail .sub-title,
 .page-section .content-detail .detail-text {
     display: block;
-    color: {{getClientPreferenceDetail()->web_color}};
+    color: {{ getClientPreferenceDetail()->web_color }};
     text-align: center;
 }
 .page-section .content-detail .sub-title {
@@ -222,14 +222,14 @@ animation-delay: 3s; }
 }
 .page-section .content-detail .back-btn .btn {
     padding: 8px 15px;
-    color: {{getClientPreferenceDetail()->web_color}};
-    border: 1px solid {{getClientPreferenceDetail()->web_color}};
+    color: #f55d42;
+    border: 1px solid #f55d42;
     border-radius: 30px;
     font-size: 14px;
     text-decoration: none;
 }
 .page-section .content-detail .back-btn .btn:hover {
-    background-color: {{getClientPreferenceDetail()->web_color}};
+    background-color: #f55d42;
     color: #fff;
 }
 .background_color {
