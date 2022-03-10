@@ -196,19 +196,19 @@ class CashfreeGatewayController extends FrontController
             }
             else{
                 if($request->payment_form == 'cart'){
-                    $order = Order::where('order_number', $request->order_id)->first();
-                    if($order){
-                        $wallet_amount_used = $order->wallet_amount_used;
-                        if($wallet_amount_used > 0){
-                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                            if(!$transaction){
-                                $wallet = $user->wallet;
-                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
-                            }else{
-                                return Redirect::to(route('showCart'))->with('error', 'Your order has already been cancelled');
-                            }
-                        }
-                    }
+                    // $order = Order::where('order_number', $request->order_id)->first();
+                    // if($order){
+                    //     $wallet_amount_used = $order->wallet_amount_used;
+                    //     if($wallet_amount_used > 0){
+                    //         $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                    //         if(!$transaction){
+                    //             $wallet = $user->wallet;
+                    //             $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                    //         }else{
+                    //             return Redirect::to(route('showCart'))->with('error', 'Your order has already been cancelled');
+                    //         }
+                    //     }
+                    // }
                     
                     return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled');
                 } elseif($request->payment_form == 'wallet'){
@@ -227,11 +227,11 @@ class CashfreeGatewayController extends FrontController
         // Notify cashfree that information has been received
         //dd('sad');
         http_response_code(200);
-        \Log::info($request->all());
+        // \Log::info($request->all());
 
         try{
             // \Log::info($response);
-            \Log::info($request->txStatus);
+            // \Log::info($request->txStatus);
             
             if($request->txStatus == 'SUCCESS') {
                 $response = $request->data;
@@ -330,10 +330,9 @@ class CashfreeGatewayController extends FrontController
                 $err = curl_error($curl);
                 curl_close($curl);
                 $response = json_decode($response);
-                \Log::info($response);
+                // \Log::info($response);
 
                 if(!$err && $response){
-                    // $order_status = strtolower($response['order_status']);
                     $user_id = $payment_form = $order_number = '';
                     if($response->order_tags){
                         $tags = $response->order_tags;
