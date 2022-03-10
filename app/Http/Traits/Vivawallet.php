@@ -30,11 +30,8 @@ trait Vivawallet{
    
     public function getAuthToken():object{
         $this->credentials();
-        $endpoint='/auth/login';
-        $data=[
-           'email'=>$this->email,
-           'password'=>$this->password
-        ];
+        $endpoint='/connect/token';
+        $data=[];
         $response=$this->postCurl($endpoint,$data);
         return $response;
     }
@@ -168,14 +165,17 @@ trait Vivawallet{
                 curl_setopt($ch, CURLOPT_URL, $this->api_url.''.$endpoint);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($data));
+                if(is_null($token)){
+                    curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($data));
+                }else{
+                    curl_setopt($ch, CURLOPT_POSTFIELDS,"grant_type=client_credentials");
+                }
                 $headers = array();
                 $headers[] = 'Accept: */*';
                 if(!is_null($token)){
-
-                   $headers[] = "Authorization: Bearer ${token}";
-                    // dd( $headers);
+                   $headers[] = "Authorization: Basic ${token}";
                 }
+
               $headers[] = 'Content-Type: application/json';
                  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
                 $result = curl_exec($ch);
