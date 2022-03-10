@@ -165,7 +165,7 @@ class CashfreeGatewayController extends FrontController
         $err = curl_error($curl);
         curl_close($curl);
         $response = json_decode($response);
-        dd($response);
+        // dd($response);
 
         if(!$err && $response){
             $order_status = strtolower($response->order_status);
