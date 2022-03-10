@@ -212,7 +212,7 @@ class CashfreeGatewayController extends FrontController
     {
         // Notify PayFast that information has been received
         //dd('sad');
-        // \Log::info($request->all());
+        \Log::info($request->all());
 
         try{
             $response = $request->data;
