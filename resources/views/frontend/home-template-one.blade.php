@@ -2,10 +2,6 @@
 @section('css')
 <link rel="stylesheet/less" type="text/css" href="{{ asset('front-assets/css/shimmer-less.less') }}">
 <link rel="stylesheet"  href="{{asset('css/aos.css')}}">
-<script src="{{asset('js/aos.js')}}"></script>
-<script type="text/javascript">
-     AOS.init();
-</script>
 
 @endsection
 
@@ -482,7 +478,9 @@
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/less@4"></script>
-<script>
+<script src="{{asset('js/aos.js')}}"></script>
+<script type="text/javascript">
+     AOS.init();
 	$('.center').slick({
   centerMode: true,
   centerPadding: '60px',
