@@ -212,25 +212,27 @@ class CashfreeGatewayController extends FrontController
     {
         // Notify PayFast that information has been received
         //dd('sad');
-        // \Log::info($request->all());
+        http_response_code(200);
+        \Log::info($request->all());
 
         try{
             $response = $request->data;
-
-            switch ($response->payment->payment_status) {
+            \Log::info($response);
+            // \Log::info($response->payment);
+            switch ($response['payment']['payment_status']) {
                 case 'SUCCESS':
-                    $transactionId = $response->payment->cf_payment_id;
+                    $transactionId = $response['payment']['cf_payment_id'];
                     $user_id = $cart_id = $payment_form = $order_number = '';
-                    $amount = $response->order->order_amount;
-                    if($response->order->order_tags){
-                        $tags = $response->order->order_tags;
-                        $payment_form = $tags->payment_form;
-                        $user_id = $tags->user_id;
+                    $amount = $response['order']['order_amount'];
+                    if($response['order']['order_tags']){
+                        $tags = $response['order']['order_tags'];
+                        $payment_form = $tags['payment_form'];
+                        $user_id = intval($tags['user_id']);
                     }
 
                     if($payment_form == 'cart'){
-                        $order_number = $response->order->order_id;
-                        $cart_id = $response->order->order_tags->cart_id ?? '';
+                        $order_number = $response['order']['order_id'];
+                        $cart_id = intval($response['order']['order_tags']['cart_id']) ?? '';
                         $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                         if ($order) {
                             $order->payment_status = 1;
@@ -291,22 +293,17 @@ class CashfreeGatewayController extends FrontController
                     }
                     break;
                 
-                case 'payment_intent.payment_failed':
-                    $paymentIntent = $event->data->object;
-                    // \Log::info($paymentIntent);
-
-                    $meta = $paymentIntent->metadata;
-                    // \Log::info($meta);
+                case 'FAILED':
                     $user_id = $payment_form = $order_number = '';
-                    // $amount = $paymentIntent->amount / 100;
-                    if($meta){
-                        $payment_form = $meta->payment_form;
-                        $user_id = $meta->user_id;
+                    if($response['order']['order_tags']){
+                        $tags = $response['order']['order_tags'];
+                        $payment_form = $tags['payment_form'];
+                        $user_id = intval($tags['user_id']);
                     }
                     $user = User::find($user_id);
 
                     if($payment_form == 'cart'){
-                        $order_number = $meta->order_number;
+                        $order_number = $response['order']['order_id'];
                         $order = Order::where('order_number', $order_number)->first();
                         if($order){
                             $wallet_amount_used = $order->wallet_amount_used;
@@ -314,17 +311,6 @@ class CashfreeGatewayController extends FrontController
                                 $wallet = $user->wallet;
                                 $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
                             }
-
-                            // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-                            // foreach($order_products as $order_prod){
-                            //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
-                            // }
-                            // OrderProduct::where('order_id', $order->id)->delete();
-                            // OrderProductPrescription::where('order_id', $order->id)->delete();
-                            // VendorOrderStatus::where('order_id', $order->id)->delete();
-                            // OrderVendor::where('order_id', $order->id)->delete();
-                            // OrderTax::where('order_id', $order->id)->delete();
-                            // $order->delete();
                         }
                     }
                     break;
@@ -337,7 +323,6 @@ class CashfreeGatewayController extends FrontController
         catch(Exception $ex){
             \Log::info($ex->getMessage());
         }
-        http_response_code(200);
     }
 
     public function getPaymentURL(){
