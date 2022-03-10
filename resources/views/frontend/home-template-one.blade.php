@@ -1,8 +1,11 @@
 @extends('layouts.store', ['title' => __('Home')]) @section('content')
 @section('css')
 <link rel="stylesheet/less" type="text/css" href="{{ asset('front-assets/css/shimmer-less.less') }}">
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<link rel="stylesheet"  href="{{asset('css/aos.css')}}">
+<script src="{{asset('js/aos.js')}}"></script>
+<script type="text/javascript">
+     AOS.init();
+</script>
 
 @endsection
 
@@ -485,28 +488,9 @@
   centerPadding: '60px',
   slidesToShow: 2,
   responsive: [
-    {
-      breakpoint: 768,
-      settings: {
-        arrows: false,
-        centerMode: true,
-        centerPadding: '40px',
-        slidesToShow: 2
-      }
-    },
-    {
-      breakpoint: 480,
-      settings: {
-        arrows: false,
-        centerMode: true,
-        centerPadding: '40px',
-        slidesToShow: 1
-      }
-    }
+    {breakpoint: 768, settings: { arrows: false, centerMode: true, centerPadding: '40px', slidesToShow: 2}},
+    {breakpoint: 480, settings: { arrows: false, centerMode: true, centerPadding: '40px', slidesToShow: 1}}
   ]
 });
-</script>
-<script>
-  AOS.init();
 </script>
 @endsection
