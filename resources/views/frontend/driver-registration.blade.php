@@ -82,7 +82,7 @@
                                         <option value="{{ $team->id }}">{{ ucfirst($team->name) }}</option>
                                         @endforeach
                                     @endif
-                                </select> 
+                                </select>
                                 <span class="invalid-feedback" id="team_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -104,7 +104,7 @@
                             </div>
                         </div>
 
-                       
+
                     </div>
                     <div class="row ">
                         <div class="col-md-6" id="make_modelInput">
@@ -157,7 +157,15 @@
                                     <strong></strong>
                                 </span>
                             </div>
+                            @elseif (strtolower($driver_registration_document->file_type) == 'date')
+                            <div class="form-group" id="{{$driver_registration_document->slug}}InputEdit" >
+                                <input type="date" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}" id="input_file_logo_{{$driver_registration_document->id}}" name="{{$driver_registration_document->slug}}" placeholder="Enter Text" value="">
+                                <span class="invalid-feedback" id="{{$driver_registration_document->slug}}_error" role="alert">
+                                    <strong></strong>
+                                </span>
+                            </div>
                             @else
+
                             <div class="file file--upload">
                                 <label for="input_file_logo_{{$driver_registration_document->id}}">
                                     <span class="update_pic pdf-icon">
@@ -168,9 +176,9 @@
                                     </span>
                                 </label>
                                 @if(strtolower($driver_registration_document->file_type) == 'image')
-                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->slug}}" accept="image/*" data-rel="{{$driver_registration_document->id}}" class="{{ (!empty($driver_registration_document->is_required))?'required':''}}">
+                                    <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->slug}}" accept="image/*" data-rel="{{$driver_registration_document->id}}" class="{{ (!empty($driver_registration_document->is_required))?'required':''}}">
                                 @elseif(strtolower($driver_registration_document->file_type) == 'pdf')
-                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->slug}}" accept=".pdf" data-rel="{{$driver_registration_document->id}}" class="{{ (!empty($driver_registration_document->is_required))?'required':''}}">
+                                    <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->slug}}" accept=".pdf" data-rel="{{$driver_registration_document->id}}" class="{{ (!empty($driver_registration_document->is_required))?'required':''}}">
                                 @endif
                                 <span class="invalid-feedback" id="{{$driver_registration_document->slug}}_error">
                                     <strong></strong>
@@ -215,7 +223,7 @@
         });
     }
     var mobile_number = '';
-    // $('#add-agent-modal .xyz').val(mobile_number.getSelectedCountryData().dialCode); 
+    // $('#add-agent-modal .xyz').val(mobile_number.getSelectedCountryData().dialCode);
     $('#add-agent-modal .xyz').change(function() {
         var phonevalue = $('.xyz').val();
         $("#countryCode").val(mobile_number.getSelectedCountryData().dialCode);
@@ -317,7 +325,7 @@
     // });
     $("#submitAgent").submit(function(e) {
         e.preventDefault();
-        // $(document).on('click', '.submitAgentForm', function() { 
+        // $(document).on('click', '.submitAgentForm', function() {
         var form = document.getElementById('submitAgent');
         var formData = new FormData(form);
         var urls = "{{URL::route('page.driverSignup')}}";
@@ -541,7 +549,7 @@
                 }, 1000);
                 return false;
             }
-            
+
             $(this).attr('disabled', true);
             $('#register_btn_loader').show();
             $('.form-control').removeClass("is-invalid");
