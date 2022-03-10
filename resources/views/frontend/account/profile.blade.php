@@ -77,7 +77,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row my-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
                 @include('layouts.store/profile-sidebar')

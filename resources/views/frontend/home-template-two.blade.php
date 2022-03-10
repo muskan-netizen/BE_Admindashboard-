@@ -1,5 +1,5 @@
 @extends('layouts.store', ['title' => __('Home')])
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link href="{{asset('css/aos.css')}}" rel="stylesheet">
 @section('css')
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.shimmer_effect{overflow:hidden}.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(5,1fr);grid-gap:20px}.shimmer_effect .card_image{width:100%;height:100%}.shimmer_effect .card_image.loading{width:100%;height:180px}.shimmer_effect .card_title.loading{width:50%;height:1rem;margin:1rem 0;border-radius:3px;position:relative}.shimmer_effect .card_description{padding:8px;font-size:16px}.shimmer_effect .card_description.loading{height:1rem;margin:1rem 0;border-radius:3px}.shimmer_effect .loading{position:relative;background:#cccccc86}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}.no-store-wrapper{display:none}@keyframes loading{100%{transform:translateX(100%)}}
@@ -418,7 +418,7 @@
 @endsection
 @section('script')
 
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="{{asset('js/aos.js')}}"></script>
 <script>
   AOS.init();
 </script>
