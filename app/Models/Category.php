@@ -9,7 +9,7 @@ class Category extends Model
 {
   use SoftDeletes;
 
-    protected $fillable = ['slug','icon', 'image', 'is_visible', 'status', 'position', 'is_core', 'can_add_products', 'parent_id', 'vendor_id', 'client_code', 'display_mode', 'type_id','warning_page_id', 'template_type_id', 'warning_page_design'];
+    protected $fillable = ['slug','icon','icon_2', 'image', 'is_visible', 'status', 'position', 'is_core', 'can_add_products', 'parent_id', 'vendor_id', 'client_code', 'display_mode', 'type_id','warning_page_id', 'template_type_id', 'warning_page_design'];
     public $timestamps = true;
 
     public function translation(){
@@ -66,7 +66,7 @@ class Category extends Model
 
     public function childs()
     {
-        return $this->hasMany(Category::class, 'parent_id', 'id')->select('id', 'slug', 'parent_id', 'icon','image','type_id');
+        return $this->hasMany(Category::class, 'parent_id', 'id')->select('id', 'slug', 'parent_id', 'icon', 'icon_2','image','type_id');
     }
     public function products()
     {
@@ -108,6 +108,25 @@ class Category extends Model
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
       $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
       $values['image_fit'] = \Config::get('app.FIT_URl');
+      return $values;
+    }
+
+    public function getIcon2Attribute($value)
+    {
+      $values = array();
+      $img = 'default/default_image.png';
+      if(!empty($value)){
+        $img = $value;
+      }
+      $values['proxy_url'] = \Config::get('app.IMG_URL1');
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_fit'] = \Config::get('app.FIT_URl');
+      if(!empty($value)){
+        $values['image_name'] = true;
+      }else{
+        $values['image_name'] = false;
+      }
+      
       return $values;
     }
 
