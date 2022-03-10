@@ -28,7 +28,7 @@
     @php
     $timezone = Auth::user()->timezone;
     @endphp
-    
+
     <style type="text/css">
         .productVariants .firstChild {
             min-width: 150px;
@@ -725,8 +725,8 @@
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
-                                                                                           
-                                                                                            @if (isset($hidereturn) && $hidereturn != 1 && $vendor->vendor->return_request)
+
+                                                                                            @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
                                                                                                 <button
                                                                                                     class="return-order-product btn btn-solid"
                                                                                                     data-id="{{ $order->id ?? 0 }}"
