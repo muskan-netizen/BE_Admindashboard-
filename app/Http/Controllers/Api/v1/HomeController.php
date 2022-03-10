@@ -188,17 +188,21 @@ class HomeController extends BaseController
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
+            $type = $request->has('type') ? $request->type : 'delivery';
+
+            if (empty($type))
             $type = 'delivery';
-            if ($request->has('type')) {
-                if (empty($request->type)) {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
-                } else {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($request->type, 1);
-                    $type = $request->type;
-                }
-            } else {
-                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','closed_store_order_scheduled')->withAvg('product', 'averageRating');
-            }
+
+            // if ($request->has('type')) {
+            //     if (empty($request->type)) {
+            //         $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
+            //     } else {
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+
+            //     }
+            // } else {
+            //     $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','closed_store_order_scheduled')->withAvg('product', 'averageRating');
+            // }
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
 
@@ -285,7 +289,7 @@ class HomeController extends BaseController
                 $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
             }
 
-            //pr($vendorData);
+
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
             //     $vendorData = $vendorData->sortBy('lineOfSightDistance')->values()->all();
@@ -297,7 +301,7 @@ class HomeController extends BaseController
             foreach ($new_product_details as  $new_product_detail) {
                 $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
                 $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-                $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : '';
+                $image_url = $new_product_detail->media->first() && !is_null($new_product_detail->media->first()->image) ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : '';
                 $new_products[] = array(
                     'image_url' => $image_url,
                     'sku' => $new_product_detail->sku,
@@ -313,7 +317,7 @@ class HomeController extends BaseController
             foreach ($feature_product_details as  $feature_product_detail) {
                 $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
                 $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-                $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : '';
+                $image_url = $feature_product_detail->media->first() &&  !is_null($feature_product_detail->media->first()->image)? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : '';
                 $feature_products[] = array(
                     'image_url' => $image_url,
                     'sku' => $feature_product_detail->sku,
@@ -329,7 +333,7 @@ class HomeController extends BaseController
             foreach ($on_sale_product_details as  $on_sale_product_detail) {
                 $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
                 $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
-                $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : '';
+                $image_url = $on_sale_product_detail->media->first() && !is_null($on_sale_product_detail->media->first()->image) ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : '';
                 $on_sale_products[] = array(
                     'image_url' => $image_url,
                     'sku' => $on_sale_product_detail->sku,
@@ -344,6 +348,7 @@ class HomeController extends BaseController
             }
 
             $isVendorArea = 0;
+
             $categories = $this->categoryNav($langId,  $venderIds);
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
@@ -371,7 +376,7 @@ class HomeController extends BaseController
         }
     }
 
-    //git user registration document 
+    //git user registration document
      public function UserRegistrationDocument(){
         $user = Auth::user();
         $langId = $user->language;
@@ -380,11 +385,11 @@ class HomeController extends BaseController
             $user_registration_documents = UserRegistrationDocuments::with(['translations' => function ($q) use ($langId) {
                 $q->where('language_id', $langId);
             }])->get();
-           
+
         }
         return $this->successResponse($user_registration_documents);
      }
-  
+
     public function getEditedOrders(Request $request){
         // Get user Edited Orders from Temp Cart
         $user = Auth::user();

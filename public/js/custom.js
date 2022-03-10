@@ -1792,6 +1792,14 @@ $(document).ready(function() {
             else{
                 return false;
             }
+        }else if (payment_option_id == 24) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaCashfree(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
         }
     });
 
@@ -1978,6 +1986,8 @@ $(document).ready(function() {
             payWithKPG('');
         }else if (payment_option_id == 22) {
             payWithCcAvenue('');
+        }else if (payment_option_id == 24) {
+            paymentViaCashfree('', payment_option_id, '');
         }
 
     });

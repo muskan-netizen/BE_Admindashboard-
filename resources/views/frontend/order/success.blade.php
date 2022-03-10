@@ -104,10 +104,12 @@
                         </ul>
                     </div>
                     <div class="col-sm-6 Shipping">
-                        <h4>{{__('Pickup Address')}}</h4>
+                        @if($order->luxury_option_id == 1)
+                        <h4>{{__('Delivery Address')}}</h4>
                         <ul class="order-detail">
                             <li> {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{$order->address ? $order->address->address : ''}}</li>
                         </ul>
+                        @endif
                     </div>
                     <div class="col-sm-12 payment-mode">
                         <h4>{{__('Payment Method')}}</h4>

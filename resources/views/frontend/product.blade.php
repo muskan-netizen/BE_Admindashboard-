@@ -301,9 +301,9 @@
                                                     <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
                                                         @foreach($addon->setoptions as $k => $option)
                                                         <div class="checkbox checkbox-success form-check-inline mb-1">
-                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
+                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
                                                             <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
-                                                                {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}</label>
+                                                                {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
                                                         </div>
                                                         @endforeach
                                                     </div>
@@ -719,9 +719,9 @@
 @endsection
 @section('script')
 
-
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 
 
 <script>
@@ -846,8 +846,8 @@
                     if(response.variant != ''){
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
-                        response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(2);
-                        response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(2);
+                        response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count); 
+                        response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
                         $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant}));
                         $('#product_variant_quantity_wrapper').html('');
                         let variant_quantity_template = _.template($('#variant_quantity_template').html());
@@ -918,8 +918,8 @@
                     addOnPrice = parseFloat(checkAddOnPrice());
                     org_price = parseFloat($(this).data('original_price')) + addOnPrice;
                     fixed_price = parseFloat($(this).data('fixed_price')) + addOnPrice;
-                    $('.product_fixed_price').html(fixed_price.toFixed(2));
-                    $('.product_original_price').html(org_price.toFixed(2));
+                    $('.product_fixed_price').html(fixed_price.toFixed(digit_count));
+                    $('.product_original_price').html(org_price.toFixed(digit_count));
                 }
             }
         });
