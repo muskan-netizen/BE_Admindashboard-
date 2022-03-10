@@ -232,9 +232,10 @@ class CashfreeGatewayController extends FrontController
         try{
             // \Log::info($response);
             // \Log::info($request->txStatus);
+            $response = $request->has('data') ? $request->data : [];
             
             if($request->txStatus == 'SUCCESS') {
-                $response = $request->data;
+                
                 $transactionId = $response['payment']['cf_payment_id'];
                 $user_id = $cart_id = $payment_form = $order_number = '';
                 $amount = $response['order']['order_amount'];
