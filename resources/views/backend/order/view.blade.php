@@ -261,7 +261,7 @@ $timezone = Auth::user()->timezone;
                                     @php
                                     $sub_total = 0;
                                     $taxable_amount = 0;
-                                    $revenue = 0;
+                                    $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     @foreach($vendor->products as $product)
                                     @if($product->order_id == $order->id)
@@ -270,7 +270,6 @@ $timezone = Auth::user()->timezone;
                                     $vendor_service_fee = $vendor->service_fee_percentage_amount;
                                     $container_charges = $vendor->total_container_charges;
                                     $sub_total += $product->total_amount;
-                                    $revenue += ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     <tr>
                                         <th scope="row">
