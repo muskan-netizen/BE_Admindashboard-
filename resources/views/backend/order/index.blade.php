@@ -172,7 +172,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.payable_amount) %></span>
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.payable_amount) %></span>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -449,7 +449,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             },
             success: function(response) {
                 // reload after 10 sec
-
 
                 $('#order_list_order').hide();
                 if (response.status == 'Success') {
