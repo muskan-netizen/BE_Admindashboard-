@@ -226,7 +226,7 @@ class CashfreeGatewayController extends FrontController
     {
         // Notify cashfree that information has been received
         //dd('sad');
-        http_response_code(200);
+        
         // \Log::info($request->all());
 
         try{
@@ -362,6 +362,7 @@ class CashfreeGatewayController extends FrontController
         catch(Exception $ex){
             \Log::info($ex->getMessage());
         }
+        http_response_code(200);
     }
 
     public function getPaymentURL(){
