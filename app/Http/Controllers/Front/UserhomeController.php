@@ -92,7 +92,7 @@ class UserhomeController extends FrontController
     {
         $preference = ClientPreference::first();
 
-        if($preference->business_type == 'texi'){
+        if($preference->business_type == 'taxi'){
             if ($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
                 return $preference;
             else
@@ -116,7 +116,7 @@ class UserhomeController extends FrontController
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
 
-             if($dispatch_domain->business_type == 'texi'){
+             if($dispatch_domain->business_type == 'taxi'){
 
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $endpoint =$url . "/api/send-documents";
@@ -874,7 +874,7 @@ class UserhomeController extends FrontController
 
     public function homePageDataCategoryMenu(Request $request)
     {
-          if ($request->has('latitude')) {
+        if ($request->has('latitude')) {
             $latitude = $request->latitude;
             Session::put('latitude', $latitude);
         } else {
