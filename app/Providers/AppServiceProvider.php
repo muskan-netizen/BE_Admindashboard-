@@ -49,8 +49,8 @@ class AppServiceProvider extends ServiceProvider
         }
         $client_head = Client::where(['id' => 1])->first();
 
-        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout'];
-        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = '';
+        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree'];
+        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = '';
         $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
         if($payment_options){
             foreach($payment_options as $option){
@@ -67,6 +67,9 @@ class AppServiceProvider extends ServiceProvider
                 if($option->code == 'checkout'){
                     $checkout_public_key = (isset($creds->public_key) && (!empty($creds->public_key))) ? $creds->public_key : '';
                 }
+                if($option->code == 'cashfree'){
+                    $cashfree_test_mode = ($option->test_mode == 0) ? false : true;
+                }
             }
         }
 
@@ -76,14 +79,15 @@ class AppServiceProvider extends ServiceProvider
             if($client_preference_detail->takeaway_check == 1){$count++;}
             if($client_preference_detail->delivery_check == 1){$count++;}
         }
-        
+
         $last_mile_common_set = $this->checkIfLastMileDeliveryOn();
+
         $client_payment_options = PaymentOption::where('status', 1)->pluck('code')->toArray();
         // $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
 
 
         view()->share('last_mile_common_set', $last_mile_common_set);
-       
+
         view()->share('favicon', $favicon_url);
         view()->share('client_head', $client_head);
         view()->share('mod_count', $count);
@@ -94,9 +98,10 @@ class AppServiceProvider extends ServiceProvider
         view()->share('checkout_public_key', $checkout_public_key);
         view()->share('client_preference_detail', $client_preference_detail);
         view()->share('client_payment_options', $client_payment_options);
+        view()->share('cashfree_test_mode', $cashfree_test_mode);
         // view()->share('set_template', $set_template);
-       
-       
+
+
     }
 
     public function connectDynamicDb($request)
@@ -107,9 +112,9 @@ class AppServiceProvider extends ServiceProvider
             $domain = str_replace(array('http://', '.test.com/login'), '', $domain);
             $subDomain = explode('.', $domain);
             $existRedis = Redis::get($domain);
-            
+
             if ($domain != env('Main_Domain')) {
-                
+
                 if (!$existRedis) {
                     $client = Client::select('name', 'email', 'phone_number', 'is_deleted', 'is_blocked', 'logo', 'company_name', 'company_address', 'status', 'code', 'database_name', 'database_host', 'database_port', 'database_username', 'database_password', 'custom_domain', 'sub_domain')
                         ->where(function ($q) use ($domain, $subDomain) {
@@ -161,21 +166,49 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
 
-               
-            }   
+
+            }
         }
     }
 
     public function checkIfLastMileDeliveryOn()
     {
+        // $preference = ClientPreference::first();
+        // if (isset($preference) && Schema::hasColumn('client_preferences', 'need_delivery_service') && Schema::hasColumn('client_preferences', 'delivery_service_key_url')  && Schema::hasColumn('client_preferences', 'delivery_service_key_code')  ) {
+        //     if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+        //     return $preference;
+        //     else
+        //     return false;
+        // }
+        // return false;
+
         $preference = ClientPreference::first();
-        if (isset($preference) && Schema::hasColumn('client_preferences', 'need_delivery_service') && Schema::hasColumn('client_preferences', 'delivery_service_key_url')  && Schema::hasColumn('client_preferences', 'delivery_service_key_code')  ) {
-            if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
-            return $preference;
-            else
+        if( isset($preference) && Schema::hasColumn('client_preferences', 'business_type') && $preference->business_type == 'taxi'){
+            if ( Schema::hasColumn('client_preferences', 'need_dispacher_ride') && Schema::hasColumn('client_preferences', 'pickup_delivery_service_key')  && Schema::hasColumn('client_preferences', 'pickup_delivery_service_key_code')  ) {
+                if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
+                return $preference;
+                else
+                return false;
+            }
             return false;
+        }elseif(  isset($preference)  && Schema::hasColumn('client_preferences', 'business_type') &&  $preference->business_type == 'laundry'){
+            if ( Schema::hasColumn('client_preferences', 'need_laundry_service') && Schema::hasColumn('client_preferences', 'laundry_service_key')  && Schema::hasColumn('client_preferences', 'laundry_service_key_code')  ) {
+                if($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
+                return $preference;
+                else
+                return false;
+            }
+            return false;
+
+        } else{
+            if (isset($preference) && Schema::hasColumn('client_preferences', 'need_delivery_service') && Schema::hasColumn('client_preferences', 'delivery_service_key_url')  && Schema::hasColumn('client_preferences', 'delivery_service_key_code')  ) {
+                if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+                return $preference;
+                else
+                return false;
+            }
         }
         return false;
-       
+
     }
 }
