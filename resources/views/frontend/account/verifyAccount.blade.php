@@ -55,7 +55,7 @@
 </style>
 <section class="login-page section-b-space">
     <div class="container">
-        <div class="row">
+        <div class="row my-3">
             <h3>Verify Account</h3>
             <div class="col-lg-12">
                 <div class="dashboard-right">
@@ -188,7 +188,7 @@
     }
 
     $("#verifyToken").submit(function(event) {
-        event.preventDefault();  
+        event.preventDefault();
        console.log("fregwr");
        var form = document.getElementById('verifyToken');
         var formData = new FormData(form);
@@ -197,7 +197,7 @@
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
         });
-        
+
         $.ajax({
             type: "post",
             dataType: "json",
