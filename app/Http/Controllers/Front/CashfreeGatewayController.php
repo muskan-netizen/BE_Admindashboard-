@@ -13,7 +13,7 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController};
 use App\Models\Client as CP;
-use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor};
+use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, Transaction};
 
 class CashfreeGatewayController extends FrontController
 {
@@ -99,11 +99,9 @@ class CashfreeGatewayController extends FrontController
                 'order_tags' => $order_tags,
                 'order_meta' => array(
                     'return_url' => url('payment/cashfree/return' . $returnUrlParams),
-                    'notify_url' => url("payment/cashfree/notify")
+                    'notify_url' => url("https://4cfc-103-72-170-243.ngrok.io/payment/cashfree/notify")
                 )
             );
-
-            // return '{"cf_order_id":2229268,"order_id":"72372814","entity":"order","order_currency":"INR","order_amount":40698.89,"order_expiry_time":"2022-04-08T12:44:30+05:30","customer_details":{"customer_id":"customer_2","customer_name":null,"customer_email":"newclient@gmail.com","customer_phone":"7672507360"},"order_meta":{"return_url":"http://local.myorder.com/payment/cashfree/return?order_id={order_id}\u0026order_token={order_token}\u0026gateway=cashfree\u0026amount=40698.89\u0026payment_form=cart\u0026cart_id=819","notify_url":"http://local.myorder.com/payment/cashfree/notify","payment_methods":null},"settlements":{"url":"https://sandbox.cashfree.com/pg/orders/72372814/settlements"},"payments":{"url":"https://sandbox.cashfree.com/pg/orders/72372814/payments"},"refunds":{"url":"https://sandbox.cashfree.com/pg/orders/72372814/refunds"},"order_status":"ACTIVE","order_token":"pv7oxeu7iNTv34hiiRUt","order_note":null,"payment_link":"https://payments-test.cashfree.com/order/#pv7oxeu7iNTv34hiiRUt","order_tags":null,"order_splits":[]}';
 
             $curl = curl_init();
 
@@ -143,9 +141,10 @@ class CashfreeGatewayController extends FrontController
 
     public function cashfreeReturn(Request $request, $domain = '')
     {
+        $user = Auth::user();
         $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_URL => $this->getPaymentURL() . "/orders/" .$request->order_id. "/payments",
+            CURLOPT_URL => $this->getPaymentURL() . "/orders/" .$request->order_id,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -166,11 +165,11 @@ class CashfreeGatewayController extends FrontController
         $err = curl_error($curl);
         curl_close($curl);
         $response = json_decode($response);
+        dd($response);
 
-        if(!$err){
-            $response = $response[0];
-            $payment_status = strtolower($response->payment_status);
-            if($payment_status == 'success'){
+        if(!$err && $response){
+            $order_status = strtolower($response->order_status);
+            if($order_status == 'paid'){
                 if($request->payment_form == 'cart'){
                     $order_number = $request->order_id;
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
@@ -195,22 +194,37 @@ class CashfreeGatewayController extends FrontController
                     return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
                 }
             }
-        }
-
-        if($request->payment_form == 'cart'){
-            return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled');
-        } elseif($request->payment_form == 'wallet'){
-            return Redirect::to(route('user.wallet'))->with('error', 'Transaction has been cancelled');
-        } elseif($request->payment_form == 'tip'){
-            return Redirect::to(route('user.orders'))->with('error', 'Transaction has been cancelled');
-        } elseif($request->payment_form == 'subscription'){
-            return Redirect::to(route('user.subscription.plans'))->with('error', 'Transaction has been cancelled');
+            else{
+                if($request->payment_form == 'cart'){
+                    $order = Order::where('order_number', $request->order_id)->first();
+                    if($order){
+                        $wallet_amount_used = $order->wallet_amount_used;
+                        if($wallet_amount_used > 0){
+                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                            if(!$transaction){
+                                $wallet = $user->wallet;
+                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                            }else{
+                                return Redirect::to(route('showCart'))->with('error', 'Your order has already been cancelled');
+                            }
+                        }
+                    }
+                    
+                    return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled');
+                } elseif($request->payment_form == 'wallet'){
+                    return Redirect::to(route('user.wallet'))->with('error', 'Transaction has been cancelled');
+                } elseif($request->payment_form == 'tip'){
+                    return Redirect::to(route('user.orders'))->with('error', 'Transaction has been cancelled');
+                } elseif($request->payment_form == 'subscription'){
+                    return Redirect::to(route('user.subscription.plans'))->with('error', 'Transaction has been cancelled');
+                }
+            }
         }
     }
 
     public function cashfreeNotify(Request $request, $domain = '')
     {
-        // Notify PayFast that information has been received
+        // Notify cashfree that information has been received
         //dd('sad');
         http_response_code(200);
         \Log::info($request->all());
@@ -308,8 +322,11 @@ class CashfreeGatewayController extends FrontController
                         if($order){
                             $wallet_amount_used = $order->wallet_amount_used;
                             if($wallet_amount_used > 0){
-                                $wallet = $user->wallet;
-                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                                $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                                if(!$transaction){
+                                    $wallet = $user->wallet;
+                                    $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                                }
                             }
                         }
                     }
@@ -317,7 +334,7 @@ class CashfreeGatewayController extends FrontController
                 
                 // ... handle other event types
                 default:
-                    echo 'Received unknown event type ' . $event->type;
+                    echo 'Received unknown event type';
             }
         }
         catch(Exception $ex){
