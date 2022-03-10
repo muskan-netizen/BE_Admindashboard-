@@ -1652,12 +1652,12 @@ class CartController extends FrontController
     }
 
     public function updateSchedule(Request $request, $domain = '')
-    {
+    {        
         DB::beginTransaction();
         try{
             $user = Auth::user();
             $new_session_token = session()->get('_token');
-            if ($user || $new_session_token) {
+            if ($user || $new_session_token) {                
                 if($request->task_type == 'now'){
                     $time = Carbon::now()->format('Y-m-d H:i:s');
                 }else{
@@ -1698,6 +1698,27 @@ class CartController extends FrontController
                 'schedule_pickup' => $request->schedule_pickup??null,
                 'schedule_dropoff' => $request->schedule_dropoff??null]);
                 DB::commit();
+                if ($user) {            
+                    $checkpreference = ClientPreference::select('verify_email','verify_phone')->first();
+                    if($checkpreference->verify_email == 1 || $checkpreference->verify_phone == 1)
+                    {             
+                        if($checkpreference->verify_email == 1)
+                        { 
+                            
+                            if($user->is_email_verified == 0)
+                            {                        
+                                return response()->json(['status'=>'Pending', 'message'=>'Verify your account first']);
+                            }                        
+                        }
+                        if($checkpreference->verify_phone == 1)
+                        {                     
+                            if($user->is_phone_verified == 0)
+                            {                        
+                                return response()->json(['status'=>'Pending', 'message'=>'Verify your account first']);
+                            }
+                        }
+                    }
+                }
                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
             }
             else{
