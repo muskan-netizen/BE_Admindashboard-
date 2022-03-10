@@ -99,7 +99,7 @@ class CashfreeGatewayController extends FrontController
                 'order_tags' => $order_tags,
                 'order_meta' => array(
                     'return_url' => url('payment/cashfree/return' . $returnUrlParams),
-                    'notify_url' => url("https://4cfc-103-72-170-243.ngrok.io/payment/cashfree/notify")
+                    'notify_url' => url("payment/cashfree/notify")
                 )
             );
 
