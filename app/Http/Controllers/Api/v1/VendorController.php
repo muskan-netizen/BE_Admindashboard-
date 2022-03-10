@@ -2187,7 +2187,7 @@ class VendorController extends BaseController{
                         'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
-                        'media.image',
+                        'media.image', 
                         // 'addOn' => function ($q1) use ($langId) {
                         //     $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                         //     $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
@@ -2200,7 +2200,7 @@ class VendorController extends BaseController{
                         //     $q2->where('apt.language_id', $langId);
                         // },
                         'translation' => function($q) use($langId){
-                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id')->where('language_id', $langId)->take(1);
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id')->where('language_id', $langId)->orderBy('id','desc');
                         },
                         'variant' => function($q) use($langId, $multipli){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
@@ -2222,7 +2222,12 @@ class VendorController extends BaseController{
 
                     ->select('*',DB::raw("'$multipli' as variant_multiplier"))->withCount(['variantSet','addOn']);
                     }])
-                    ->where('status', 1)->get();
+                    ->where('status', 1);
+                    
+                    if(isset($request->category_id))
+                    $vendor_categories = $vendor_categories->where('category_id',$request->category_id);
+
+                    $vendor_categories = $vendor_categories->get();
                
                 $listData =  array_values($vendor_categories->toArray());
             }
@@ -2482,7 +2487,7 @@ class VendorController extends BaseController{
                 $vendor_categories = VendorCategory::where('vendor_id', $vid)->with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
                 }])->whereHas('category.products')->with(['category.products' => function ($products)use($order_type,$request,$langId,$userid, $multipli,$variantIds,$vid,$startRange, $endRange){
-                        $products->where('is_live', 1)->join('product_translations', 'product_translations.product_id', '=', 'products.id');
+                        $products->where('is_live', 1)->select('*',DB::raw("'$multipli' as variant_multiplier"))->withCount('OrderProduct');
                         
                         
                         if ($request->has('brands') && !empty($request->brands)) {
@@ -2492,16 +2497,26 @@ class VendorController extends BaseController{
                             $products = $products->orderBy('products.averageRating', 'desc');
                         }
                         if (!empty($order_type) && $order_type == 'low_to_high') {
-                            $products = $products->join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'asc');
+                            $products = $products->with(['variant' => function ($qs){
+                                $qs->orderBy('product_variants.price', 'asc');
+                            }]);
                         }
-                        if (!empty($order_type) && $order_type == 'high_to_low') {
-                            $products = $products->join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc');
+                        if (!empty($order_type) && $order_type == 'high_to_low') { 
+                            $products = $products->with(['variant' => function ($qs){
+                                $qs->orderBy('product_variants.price', 'desc');
+                            }]);
                         }
                         if (!empty($order_type) && $order_type == 'a_to_z') {
-                            $products = $products->orderBy('product_translations.title', 'asc');
+
+                            $products = $products->with(['translation' => function($q) use($langId){
+                                $q->where('language_id',$langId)->orderBy('product_translations.title', 'asc');
+                            }]);
                         }
                         if (!empty($order_type) && $order_type == 'z_to_a') {
-                            $products = $products->orderBy('product_translations.title', 'desc');
+
+                            $products = $products->with(['translation' => function($q) use($langId){
+                                $q->where('language_id',$langId)->orderBy('product_translations.title', 'desc');
+                            }]);
                         }
                         if (!empty($order_type) && $order_type == 'newly_added') {
                             $products = $products->orderBy('products.id', 'desc');
@@ -2517,8 +2532,8 @@ class VendorController extends BaseController{
                             $qry->where('user_id', $userid);
                         },
                         'media.image',
-                          'translation' => function($q) use($langId){
-                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id')->where('language_id', $langId)->take(1);
+                        'translation' => function($q) use($langId){ 
+                            $q->select('id','product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id')->where('language_id',$langId)->orderBy('id','desc');
                         },
                         'variant' => function($q) use($langId, $multipli,$variantIds){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
@@ -2529,7 +2544,7 @@ class VendorController extends BaseController{
                          'tags.tag.translations' => function ($q) use ($langId) {
                             $q->where('language_id', $langId);
                         }
-                    ])->select('*',DB::raw("'$multipli' as variant_multiplier"))->withCount(['variantSet','addOn']);
+                    ])->withCount(['variantSet','addOn']);
                     }])
                     ->where('status', 1);
                     
@@ -2541,10 +2556,16 @@ class VendorController extends BaseController{
                     } else {
                         $vendor_categories = $vendor_categories->where('status', 1)->get();
                     }
+
+
+                    if(isset($request->category_id))
+                    $vendor_categories = $vendor_categories->where('category_id',$request->category_id);
                 
 
                   
                     $listData =  array_values($vendor_categories->toArray());
+                    
+                   
                    
                 } else {
                     $vendorCategories = VendorCategory::with(['category.translation' => function ($q) use ($langId) {

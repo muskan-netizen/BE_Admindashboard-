@@ -102,6 +102,15 @@ function generateOrderNo($length = 8){
     } while (!empty(\DB::table('orders')->where('order_number', $number)->first(['order_number'])) );
     return $number;
 }
+function generateUniqueSlug($table='', $column='', $prefix='', $length = 8){
+    $number = $prefix;
+    do {
+        for ($i=$length; $i--; $i>0) {
+            $number .= mt_rand(0,9);
+        }
+    } while (!empty(\DB::table($table)->where($column, $number)->first([$column])) );
+    return $number;
+}
 function generateWalletTransactionReference($length = 8){
     $number = '';
     do {

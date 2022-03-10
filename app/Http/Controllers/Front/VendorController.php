@@ -169,8 +169,8 @@ class VendorController extends FrontController
 
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if(Session::has('vendors')){
-                $vendors = $this->getServiceAreaVendors();
-                // $vendors = $vendors->toArray();
+                $vendors = Session::get('vendors');
+                $vendors = $vendors->toArray();
                 if(isset($vendor) && isset($vendor->id)){
                     if(!in_array($vendor->id, $vendors)){
                         $listData =collect();
