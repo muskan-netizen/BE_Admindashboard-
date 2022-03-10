@@ -233,7 +233,7 @@ class CashfreeGatewayController extends FrontController
             // \Log::info($response);
             // \Log::info($response->payment);
             
-            if($request['txStatus'] == 'SUCCESS') {
+            if($request->txStatus == 'SUCCESS') {
                 $response = $request->data;
                 $transactionId = $response['payment']['cf_payment_id'];
                 $user_id = $cart_id = $payment_form = $order_number = '';
@@ -306,7 +306,7 @@ class CashfreeGatewayController extends FrontController
                     $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
                 }
             }
-            else{
+            elseif($request->txStatus == 'FAILED'){
                 $curl = curl_init();
                 curl_setopt_array($curl, [
                     CURLOPT_URL => $this->getPaymentURL() . "/orders/" .$request->orderId,
@@ -333,26 +333,25 @@ class CashfreeGatewayController extends FrontController
                 \Log::info($response);
 
                 if(!$err && $response){
-                    $order_status = strtolower($response->order_status);
+                    // $order_status = strtolower($response['order_status']);
                     $user_id = $payment_form = $order_number = '';
-                    if($response['order']['order_tags']){
-                        $tags = $response['order']['order_tags'];
-                        $payment_form = $tags['payment_form'];
-                        $user_id = intval($tags['user_id']);
+                    if($response->order_tags){
+                        $tags = $response->order_tags;
+                        $payment_form = $tags->payment_form;
+                        $user_id = intval($tags->user_id);
                     }
-                }
-                $user = User::find($user_id);
-
-                if($payment_form == 'cart'){
-                    $order_number = $response['order']['order_id'];
-                    $order = Order::where('order_number', $order_number)->first();
-                    if($order){
-                        $wallet_amount_used = $order->wallet_amount_used;
-                        if($wallet_amount_used > 0){
-                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                            if(!$transaction){
-                                $wallet = $user->wallet;
-                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                    $user = User::find($user_id);
+                    if($payment_form == 'cart'){
+                        $order_number = $request->orderId;
+                        $order = Order::where('order_number', $order_number)->first();
+                        if($order){
+                            $wallet_amount_used = $order->wallet_amount_used;
+                            if($wallet_amount_used > 0){
+                                $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                                if(!$transaction){
+                                    $wallet = $user->wallet;
+                                    $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                                }
                             }
                         }
                     }
