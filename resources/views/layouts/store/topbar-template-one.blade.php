@@ -274,12 +274,6 @@ $preference = $client_preference_detail;
                     </li>
                 @endforeach
             </ul>
-            <!-- <h6>Change Theme</h6>
-            @if($client_preference_detail->show_dark_mode == 1)
-            <ul class="list-inline">
-                <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
-            </ul>
-            @endif -->
         </div>
       </div>
     </div>
