@@ -426,6 +426,12 @@
                                 </a>
                             </li>
                             @endif
+                            <li>
+                                <a href="{{route('databaseAuditingLogs')}}">
+                                    <span class="icon-tax"></span>
+                                    <span> {{ __('DB Audit Logs') }} </span>
+                                </a>
+                            </li>
 
                             @if(Auth::user()->is_superadmin == 1)
                                 {{-- <li>

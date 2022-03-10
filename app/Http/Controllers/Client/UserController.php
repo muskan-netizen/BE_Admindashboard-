@@ -437,7 +437,8 @@ class UserController extends BaseController
         } else {
             $data['logo'] = $client->getRawOriginal('logo');
         }
-        $client = Client::where('code', $user->code)->update($data);
+        $client = Client::where('code', $user->code)->first();
+        $client->update($data);
         $userdata = array();
         foreach ($request->only('name', 'phone_number', 'timezone') as $key => $value) {
             $userdata[$key] = $value;
