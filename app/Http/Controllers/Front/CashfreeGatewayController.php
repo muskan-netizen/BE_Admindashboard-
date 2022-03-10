@@ -203,7 +203,7 @@ class CashfreeGatewayController extends FrontController
                             $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
                             if(!$transaction){
                                 $wallet = $user->wallet;
-                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
                             }else{
                                 return Redirect::to(route('showCart'))->with('error', 'Your order has already been cancelled');
                             }
@@ -349,7 +349,7 @@ class CashfreeGatewayController extends FrontController
                                 $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
                                 if(!$transaction){
                                     $wallet = $user->wallet;
-                                    $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                                    $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number]. '</b>');
                                 }
                             }
                         }
