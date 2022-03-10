@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page};
+use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs};
 use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
 use Math;
@@ -102,8 +102,6 @@ class CustomerAuthController extends FrontController
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
 
-
-
         $privacy = Page::with(['translations' => function ($q) use($langId) {
             $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
         }])->whereHas('translations', function ($q) use($langId) {
@@ -115,12 +113,12 @@ class CustomerAuthController extends FrontController
         }])->whereHas('translations', function ($q) use($langId) {
             $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
         })->first();
-
-
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+            //pr($user_registration_documents);
         if (!Session::get('referrer')) {
-            return view('frontend.account.registernew')->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms]);
+            return view('frontend.account.registernew')->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
         } else {
-            return view('frontend.account.registernew')->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms]);
+            return view('frontend.account.registernew')->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
         }
     }
 
@@ -256,6 +254,32 @@ class CustomerAuthController extends FrontController
             }
             $userRefferal->user_id = $user->id;
             $userRefferal->save();
+            $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+            if ($user_registration_documents->count() > 0) {
+                foreach ($user_registration_documents as $user_registration_document) {
+                    $doc_name = str_replace(" ", "_", $user_registration_document->primary->slug);
+                    if ($user_registration_document->file_type != "Text" && $user_registration_document->file_type != "selector") {
+                        if ($req->hasFile($doc_name)) {
+                            $vendor_docs =  new UserDocs();
+                            $vendor_docs->user_id = $user->id;
+                            $vendor_docs->user_registration_document_id = $user_registration_document->id;
+                            $filePath = $this->folderName . '/' . Str::random(40);
+                            $file = $req->file($doc_name);
+                            $vendor_docs->file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                            $vendor_docs->save();
+                        }
+                    } else {
+                        if (!empty($req->$doc_name)) {
+                            $vendor_docs =  new UserDocs();
+                            $vendor_docs->user_id = $user->id;
+                            $vendor_docs->user_registration_document_id = $user_registration_document->id;
+                            $vendor_docs->file_name = $req->$doc_name;
+                            $vendor_docs->save();
+                        }
+                    }
+                }
+            }
+
             if ($user->id > 0) {
                 if ($req->refferal_code != null) {
                     $refferal_amounts = ClientPreference::first();
@@ -425,8 +449,8 @@ class CustomerAuthController extends FrontController
 
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
                 if(!$user){
-                    // $errors['error'] = __('Your phone number is not registered');
-                    // return response()->json($errors, 422);
+                    return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
+
                     $registerUser = $this->registerViaPhone($request)->getData();
                     if($registerUser->status == 'Success'){
                         $user = $registerUser->data;
@@ -481,6 +505,7 @@ class CustomerAuthController extends FrontController
                 if (Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1])) {
                     $userid = Auth::id();
                     $Authuser = Auth::user();
+                    $update_last_login = User::where('id',$userid)->update(['last_login_at' => Carbon::now()->toDateTimeString()]);
                     if($request->has('access_token')){
                         if($request->access_token){
                             $user_device = UserDevice::where('user_id', $userid)->where('device_token', $request->access_token)->first();
@@ -790,7 +815,11 @@ class CustomerAuthController extends FrontController
             $vendor->status = 0;
             $vendor->name = $request->name;
             $vendor->email = $request->email;
-            $vendor->phone_no = $user->phone_no;
+            $vendor->phone_no = $user->phone_number;
+            $vendor->city = $request->city;
+            $vendor->state = $request->state;
+            $vendor->country = $request->country;
+            $vendor->pincode = $request->pincode;
             $vendor->address = $request->address;
             $vendor->website = $request->website;
             $vendor->latitude = $request->latitude;

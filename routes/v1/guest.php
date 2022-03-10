@@ -4,6 +4,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('sendTestMail', 'Api\v1\BaseController@sendTestMail');
 
+        Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
+
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::get('cart/list', 'Api\v1\CartController@index');
         Route::get('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
@@ -26,9 +28,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('vendor/all', 'Api\v1\VendorController@viewAll');
         Route::get('vendor/{id?}', 'Api\v1\VendorController@productsByVendor');
         Route::get('vendor-optimize/{id?}', 'Api\v1\VendorController@productsByVendorOptimize');   
+        Route::get('vendor-optimize-filters/{id?}', 'Api\v1\VendorController@productsByVendorOptimizeFilterList');   
         Route::post('vendor/filters/{id?}', 'Api\v1\VendorController@vendorFilters');
         Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
         Route::post('vendor/vendorProductsFilter', 'Api\v1\VendorController@vendorProductsFilter');
+        Route::post('vendor/vendorProductsFilterOptimize', 'Api\v1\VendorController@vendorProductsFilterOptimize');
         // Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
         Route::get('vendor/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProducts');
         // Route::get('vendor/category/productsFilter/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProductsFilter');

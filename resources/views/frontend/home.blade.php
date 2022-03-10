@@ -1,76 +1,8 @@
 @extends('layouts.store', ['title' => __('Home')])
-
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 @section('css')
 <style type="text/css">
-    .main-menu .brand-logo {
-        display: inline-block;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-
-    .shimmer_effect {
-        overflow: hidden;
-    }
-
-    .grid-row.grid-4-4 {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        grid-gap: 20px;
-    }
-
-    .shimmer_effect .card_image {
-        width: 100%;
-        height: 100%;
-    }
-
-    .shimmer_effect .card_image.loading {
-        width: 100%;
-        height: 180px;
-    }
-
-    .shimmer_effect .card_title.loading {
-        width: 50%;
-        height: 1rem;
-        margin: 1rem 0;
-        border-radius: 3px;
-        position: relative;
-    }
-
-    .shimmer_effect .card_description {
-        padding: 8px;
-        font-size: 16px;
-    }
-
-    .shimmer_effect .card_description.loading {
-        height: 1rem;
-        margin: 1rem 0;
-        border-radius: 3px;
-    }
-
-    .shimmer_effect .loading {
-        position: relative;
-        background: #cccccc86;
-    }
-
-    .shimmer_effect .loading:after {
-        content: "";
-        display: block;
-        position: absolute;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        transform: translateX(-100px);
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        animation: loading 0.8s infinite;
-    }
-    .no-store-wrapper{
-        display: none;
-    }
-    @keyframes loading {
-        100% {
-            transform: translateX(100%);
-        }
-    }
+.main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.shimmer_effect{overflow:hidden}.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(5,1fr);grid-gap:20px}.shimmer_effect .card_image{width:100%;height:100%}.shimmer_effect .card_image.loading{width:100%;height:180px}.shimmer_effect .card_title.loading{width:50%;height:1rem;margin:1rem 0;border-radius:3px;position:relative}.shimmer_effect .card_description{padding:8px;font-size:16px}.shimmer_effect .card_description.loading{height:1rem;margin:1rem 0;border-radius:3px}.shimmer_effect .loading{position:relative;background:#cccccc86}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}.no-store-wrapper{display:none}@keyframes loading{100%{transform:translateX(100%)}}
 </style>
 @endsection
 @section('content')
@@ -78,8 +10,8 @@
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
 
 @if(count($banners))
-<section class="p-0 small-slider">
-    <div class="slide-1 home-slider mb-md-4 mb-4">
+<section class="p-0 small-slider al_desktop_banner">
+    <div class="slide-1 home-slider mb-sm-2 ">
         @foreach($banners as $banner)
         @php
         $url = '';
@@ -99,7 +31,39 @@
             <a href="{{$url}}">
                 @endif
                 <div class="home text-center">
-                    <img src="{{$banner->image['image_fit'] . '1920/1080' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
+                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
+                </div>
+                @if($url)
+            </a>
+            @endif
+        </div>
+        @endforeach
+    </div>
+</section>
+@endif
+@if(count($banners))
+<section class="p-0 small-slider al_mobile_banner" style="display:none;">
+    <div class="slide-1 home-slider mb-sm-2">
+        @foreach($banners as $banner)
+        @php
+        $url = '';
+        if($banner->link == 'category'){
+        if($banner->category != null){
+        $url = route('categoryDetail', $banner->category->slug);
+        }
+        }
+        else if($banner->link == 'vendor'){
+        if($banner->vendor != null){
+        $url = route('vendorDetail', $banner->vendor->slug);
+        }
+        }
+        @endphp
+        <div>
+            @if($url)
+            <a href="{{$url}}">
+                @endif
+                <div class="home text-center">
+                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
                 </div>
                 @if($url)
             </a>
@@ -232,7 +196,7 @@
         <% subtotal_order_price = total_order_price = total_tax_order_price = 0; %>
         <% _.each(order.vendors, function(vendor, k){ %>
         <%   product_total_count = product_subtotal_amount = product_taxable_amount = 0; %>
-        <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0 mt-3">
+        <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0">
             <% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){ %>
                 <div class="progress-order font-12">
                 <% if(order.scheduled_date_time){ %>
@@ -302,15 +266,15 @@
                     <ul class="price_box_bottom m-0 p-0">
                         <li class="d-flex align-items-center justify-content-between">
                             <label class="m-0">{{__('Product Total')}}</label>
-                            <span>{{Session::get('currencySymbol')}} <%=(vendor.subtotal_amount)%></span>
+                            <span>{{Session::get('currencySymbol')}} <%=Helper.formatPrice(vendor.subtotal_amount)%></span>
                         </li>
                         <li class="d-flex align-items-center justify-content-between">
                             <label class="m-0">{{__('Coupon Discount')}}</label>
-                            <span>{{Session::get('currencySymbol')}} <%=(vendor.discount_amount)%></span>
+                            <span>{{Session::get('currencySymbol')}} <%=Helper.formatPrice(vendor.discount_amount)%></span>
                         </li>
                         <li class="d-flex align-items-center justify-content-between">
                             <label class="m-0">{{__('Delivery Fee')}}</label>
-                            <span>{{Session::get('currencySymbol')}} <%= (vendor.delivery_fee)%></span>
+                            <span>{{Session::get('currencySymbol')}} <%= Helper.formatPrice(vendor.delivery_fee)%></span>
                         </li>
                         <li class="grand_total d-flex align-items-center justify-content-between">
                             <label class="m-0">{{__('Amount')}}</label>
@@ -318,7 +282,7 @@
                                 product_subtotal_amount = product_total_count - vendor.discount_amount + vendor.delivery_fee;
                                 subtotal_order_price += product_subtotal_amount;
                             %>
-                            <span>{{Session::get('currencySymbol')}} <%=(vendor.payable_amount)%></span>
+                            <span>{{Session::get('currencySymbol')}} <%=Helper.formatPrice(vendor.payable_amount)%></span>
                         </li>
                     </ul>
                 </div>
@@ -379,7 +343,7 @@
     </div>
 </section>
 
-<section class="section-b-space ratio_asos d-none pb-0 pt-0" id="our_vendor_main_div">
+<section class="section-b-space ratio_asos d-none pb-0 pt-0 mt-0 al_template_two_content" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
         @if($homePageLabel->slug == 'pickup_delivery')
@@ -391,13 +355,17 @@
         @else
         <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
-                <div class="col-12">
-                    @if($homePageLabel->slug == 'vendors' || $homePageLabel->slug == 'trending_vendors')
-                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+                <div class="col-12"  data-aos="zoom-in">
+                    @if($homePageLabel->slug == 'vendors')
+                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
+                    @elseif($homePageLabel->slug == 'trending_vendors')
+                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @elseif($homePageLabel->slug == 'recent_orders')
                     <div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+                    @elseif($homePageLabel->slug == 'brands')
+                    <div class="brand-slider product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @else
-                    <div class="product-4 product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}"></div>
+                    <div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}"></div>
                     @endif
                 </div>
             </div>
@@ -432,7 +400,7 @@
             <div class="modal-body text-center">
                 <img class="img-fluid blur-up lazyload" data-src="{{asset('assets/images/18.png')}}" alt="">
                 <p class="mb-0 mt-3">{{ $client_preference_detail ? $client_preference_detail->age_restriction_title : 'Are you 18 or older?' }}</p>
-                <p class="mb-0">Are you sure you want to continue?</p>
+                <p class="mb-0">{{__('Are you sure you want to continue?')}}</p>
             </div>
             <div class="modal-footer d-block">
                 <div class="row no-gutters">
@@ -449,10 +417,16 @@
 </div>
 @endsection
 @section('script')
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init();
+</script>
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+        
         $("#doneeee").click(function() {
             console.log("nejhbfe");
             // $(".hide_div").hide();

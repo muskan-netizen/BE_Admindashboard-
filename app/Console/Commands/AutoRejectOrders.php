@@ -2,20 +2,23 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Client;
-use Config;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
-use App\Models\ClientPreference;
-use App\Models\OrderVendor;
-use App\Models\Vendor;
-use App\Models\UserDevice;
+use Illuminate\Support\Facades\DB;
+
 use App\Models\User;
-use App\Models\NotificationTemplate;
-use App\Models\AutoRejectOrderCron;
-use Log;
-use Carbon\Carbon;
 use App\Models\Order;
+use App\Models\Vendor;
+use App\Models\Client;
+use App\Models\OrderVendor;
+use App\Models\UserDevice;
+use App\Models\ClientPreference;
+use App\Models\VendorOrderStatus;
+use App\Models\AutoRejectOrderCron;
+use App\Models\NotificationTemplate;
+
+use Log;
+use Config;
+use Carbon\Carbon;
 
 class AutoRejectOrders extends Command
 {
@@ -73,6 +76,7 @@ class AutoRejectOrders extends Command
                 ];
                 Config::set("database.connections.$database_name", $default);
                 // DB::setDefaultConnection($database_name);
+                Log::info($database_name);
                 $client_preferences = ClientPreference::on($database_name)->first();
                 $notification_content = NotificationTemplate::on($database_name)->where(['id' => 6])->first();
                 $selected_database_orders = AutoRejectOrderCron::where('auto_reject_time', '<=', $intervalTime)->where(['database_name' => $client->database_name])->get();
@@ -80,6 +84,19 @@ class AutoRejectOrders extends Command
                     $orderVendorDetail = OrderVendor::on($database_name)->find($order_value->order_vendor_id);
                     $orderVendorDetail->order_status_option_id = 3;
                     $orderVendorDetail->save();
+                    $order_status_check = VendorOrderStatus::on($database_name)->where('order_id',$orderVendorDetail->order_id)->where('vendor_id', $orderVendorDetail->vendor_id)->where('order_status_option_id', 3)->first();
+                    
+                    if(!$order_status_check){
+                        $dataStatus = [
+                            "order_id" => $orderVendorDetail->order_id,
+                            "vendor_id" => $orderVendorDetail->vendor_id,
+                            "order_vendor_id" => $order_value->order_vendor_id,
+                            "order_status_option_id" => 3,
+                            "created_at" => Carbon::now(),
+                            "updated_at" => Carbon::now(),
+                        ];
+                        VendorOrderStatus::on($database_name)->insert($dataStatus);
+                    }
                     $orderDetail = Order::on($database_name)->find($orderVendorDetail->order_id);
                     AutoRejectOrderCron::where(['order_vendor_id' => $order_value->order_vendor_id, 'database_name' => $client->database_name])->delete();
                     if ($orderVendorDetail->payment_option_id != 1) {

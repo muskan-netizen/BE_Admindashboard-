@@ -25,7 +25,7 @@ public function boot(Request $request)
 	$clientCode = $header['code'][0];
 
 	$client = Client::where('code',$clientCode)->first();
-	Log::info($client);
+	
 	if($client){
 
 		$schemaName = 'royo_' . $client->database_name;

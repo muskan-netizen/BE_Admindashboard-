@@ -3,18 +3,15 @@
 namespace App\Console\Commands;
 
 use App\Models\Client;
+use App\Mail\OrderSuccessEmail;
 use Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 use App\Models\ClientPreference;
 use App\Models\Campaign;
 use App\Models\CampaignRoster;
-// use App\Models\OrderVendor;
-// use App\Models\Vendor;
 use App\Models\UserDevice;
 use App\Models\User;
-// use App\Models\NotificationTemplate;
-// use App\Models\AutoRejectOrderCron;
 use Log;
 use Carbon\Carbon;
 use Twilio\Rest\Client as TwilioClient;
@@ -82,19 +79,45 @@ class SendCampaignNotification extends Command
                 $headers = [
                     'Authorization: key=' . $from,
                     'Content-Type: application/json',
-                ];             
+                ];  
+                // CampaignRoster::where('id',6287)->delete();
                 $notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status',0)->with('campaign','user')->get();
                 if($notifications)
                 {
+                    // //test sms
+                    // $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+                    //     $to = '+919996687653';
+                    //     $provider = $client_preferences->sms_provider;
+                    //     $body = "Hi ".$client_preferences->sms_key;
+                        
+                    //     $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
+                        
+
+                    // //test email
+                    // $sendto = "testu00091@gmail.com";
+                    // $subject = "Test subject for email notification";
+                    // $body = "test body message from notification";
+
+                    // $email_data = [
+                    //     'email' => $sendto,
+                    //     'mail_from' => $client_preferences->mail_from,                        
+                    //     'subject' => $subject,
+                    //     'email_template_content' => $body,
+                    //     'send_to_cc' => 0
+                    // ];
+                    // dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                    // //$this->sendEmail($client_preferences,$sendto,$subject,$body);
+                    CampaignRoster::where('id',6290)->delete();
                     foreach($notifications as $singlenotification)
                     {
+                        //CampaignRoster::where('id',6290)->delete();
                         $type = $singlenotification->notofication_type;
                         //	type => 1 sms, 2 email, 3 push notification
                         switch ($type) {
                             case '1':
                                 //send sms
                                 try {
-                                    $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+                                   // $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
                                     if ($singlenotification->user->dial_code == "971") {
                                         $to = '+' . $singlenotification->user->dial_code . "0" . $singlenotification->user->phone_number;
                                     } else {
@@ -104,6 +127,20 @@ class SendCampaignNotification extends Command
                                     $body = "Hi " . $singlenotification->user->name . ", " . $singlenotification->campaign->sms_text;
                                     if (!empty($client_preferences->sms_provider)) {
                                         $send = $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
+                                        if($send)
+                                        {
+                                            if($send==2)
+                                            {
+                                                //change status if failed
+                                                CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                            }else{
+                                                //remove notification if success
+                                                CampaignRoster::where('id',$singlenotification->id)->delete();
+                                            } 
+                                        }else{
+                                            //change status if failed
+                                            CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                        }    
                                     }
                                     
                                 } catch (\Exception $ex) {
@@ -111,13 +148,39 @@ class SendCampaignNotification extends Command
                                 break;
                             case '2':
                                 //send email
+                                try {
+                                    if (!empty($client_preferences->mail_driver) && !empty($client_preferences->mail_host) && !empty($client_preferences->mail_port) && !empty($client_preferences->mail_password) && !empty($client_preferences->mail_encryption)) {
+                                        $useremail = $singlenotification->user->email;
+                                        $email_subject = $singlenotification->campaign->email_subject;
+                                        $email_body = $singlenotification->campaign->email_body;
+                                        
+                                        $email_data = [
+                                            'email' => $useremail,
+                                            'mail_from' => $client_preferences->mail_from,                        
+                                            'subject' => $email_subject,
+                                            'email_template_content' => $email_body,
+                                            'send_to_cc' => 0
+                                        ];
+                                        $sendemail = dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                                        if($sendemail)
+                                        {
+                                            //remove notification if success
+                                            CampaignRoster::where('id',$singlenotification->id)->delete();
+                                        }else{
+                                           //change status if failed
+                                            CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                        }
+                                        //$this->sendEmail($client_preferences,$useremail,$email_subject,$email_body);
+                                    }
+                                } catch (\Exception $ex) {
+                                }
                                 break;
                             case '3':
                                 //send push                                
                                 //$redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/viewcart";
                                 $redirect_URL = $singlenotification->campaign->push_url_option_value;
                                 $data = [
-                                    "registration_ids" => $singlenotification->device_token,
+                                    "registration_ids" => [$singlenotification->device_token],
                                     "notification" => [
                                         'title' => $singlenotification->campaign->push_title,
                                         'body'  => $singlenotification->campaign->push_message_body,
@@ -144,16 +207,16 @@ class SendCampaignNotification extends Command
                                 $result = curl_exec($ch);
                                 // Log::info($result);
                                 curl_close($ch);
-
-                                //change status if failed
-                                CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-
-                                //remove notification if success
-                                CampaignRoster::where('id',$singlenotification->id)->delete();
-                            
+                                if($result)
+                                {
+                                    //remove notification if success
+                                    CampaignRoster::where('id',$singlenotification->id)->delete();
+                                }else{
+                                    //change status if failed
+                                    CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                }                            
                             break;
                         }
-
                     }
                 }               
                 
@@ -196,4 +259,48 @@ class SendCampaignNotification extends Command
         }
         return '1';
 	}
+
+    // protected function sendEmail($client_preferences,$sendto,$subject,$body){
+        
+    //     $mailfrom = $client_preferences->mail_from;
+    //     $confirured = $this->setMailDetail($client_preferences->mail_driver, $client_preferences->mail_host, $client_preferences->mail_port, $client_preferences->mail_username, $client_preferences->mail_password, $client_preferences->mail_encryption);
+    //     // Mail::to($this->details['email'])->send($data);
+        
+            
+    //         //$sendto =  $user->email;
+    //         //$client_name = 'Sales';
+    //         //$mail_from = $data->mail_from;
+    //         try {                
+    //             $data = [
+    //                 'link' => "link",
+    //                 'email' => $sendto,
+    //                 'mail_from' => $client_preferences->mail_from,
+    //                 // 'client_name' => $client_name,
+    //                 // 'logo' => $client->logo['original'],
+    //                 'subject' => $subject,
+    //                 //'customer_name' => $name,
+    //                 'email_template_content' => $body,
+    //             ];
+    //             Mail::to($sendto)->send($data);
+    //         } catch (\Exception $e) {
+    //         }
+        
+    // }
+
+    // public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
+    //     $config = array(
+    //         'pretend' => false,
+    //         'host' => $mail_host,
+    //         'port' => $mail_port,
+    //         'driver' => $mail_driver,
+    //         'username' => $mail_username,
+    //         'password' => $mail_password,
+    //         'encryption' => $mail_encryption,
+    //         'sendmail' => '/usr/sbin/sendmail -bs',
+    //     );
+    //     Config::set('mail', $config);
+    //     $app = App::getInstance();
+    //     $app->register('Illuminate\Mail\MailServiceProvider');
+    //     return true;
+    // }
 }

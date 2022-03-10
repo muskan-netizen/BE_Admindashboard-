@@ -323,7 +323,7 @@
                                                                                                         <span
                                                                                                             class="item_no position-absolute">x{{ $product->quantity }}</span>
                                                                                                         <label
-                                                                                                            class="items_price">{{ Session::get('currencySymbol') }}{{ helper_number_formet($product->price * $clientCurrency->doller_compare, 2) }}</label>
+                                                                                                            class="items_price">{{ Session::get('currencySymbol') }}{{ decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                                                     </li>
                                                                                                     @php
                                                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;
@@ -341,18 +341,18 @@
                                                                                                 class="d-flex align-items-center justify-content-between">
                                                                                                 <label
                                                                                                     class="m-0">{{ __('Product Total') }}</label>
-                                                                                                <span>{{ Session::get('currencySymbol') }}@money($vendor->subtotal_amount
+                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->subtotal_amount
                                                                                                     *
-                                                                                                    $clientCurrency->doller_compare)</span>
+                                                                                                    $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
                                                                                             @if ($vendor->discount_amount > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __('Coupon Discount') }}</label>
-                                                                                                    <span>{{ Session::get('currencySymbol') }}@money($vendor->discount_amount
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->discount_amount
                                                                                                         *
-                                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
                                                                                             @if ($vendor->delivery_fee > 0)
@@ -360,9 +360,9 @@
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                                                    <span>{{ Session::get('currencySymbol') }}@money($vendor->delivery_fee
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->delivery_fee
                                                                                                         *
-                                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
                                                                                             <li
@@ -373,9 +373,9 @@
                                                                                                     $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
                                                                                                     $subtotal_order_price += $product_subtotal_amount;
                                                                                                 @endphp
-                                                                                                <span>{{ Session::get('currencySymbol') }}@money($vendor->payable_amount
+                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount
                                                                                                     *
-                                                                                                    $clientCurrency->doller_compare)</span>
+                                                                                                    $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
 
 
@@ -430,18 +430,18 @@
                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Sub Total') }}</label>
-                                                                                    <span>{{ Session::get('currencySymbol') }}@money($order->total_amount
+                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_amount
                                                                                         *
-                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                 </li>
                                                                                 @if ($order->wallet_amount_used > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Wallet') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->wallet_amount_used
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->wallet_amount_used
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->loyalty_amount_saved > 0)
@@ -449,9 +449,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Loyalty Used') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->loyalty_amount_saved
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->loyalty_amount_saved
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->taxable_amount > 0)
@@ -459,9 +459,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tax') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->taxable_amount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->taxable_amount
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->total_service_fee > 0)
@@ -469,9 +469,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Service Fee') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->total_service_fee
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_service_fee
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->tip_amount > 0)
@@ -479,9 +479,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tip Amount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->tip_amount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->tip_amount
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->subscription_discount > 0)
@@ -489,9 +489,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Subscription Discount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->subscription_discount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->subscription_discount
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->total_discount_calculate > 0)
@@ -499,9 +499,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Discount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->total_discount_calculate
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_discount_calculate
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->total_delivery_fee > 0)
@@ -509,16 +509,16 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->total_delivery_fee
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 <li
                                                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
-                                                                                    <span>{{ Session::get('currencySymbol') }}@money($order->payable_amount)</span>
+                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount)}}</span>
                                                                                 </li>
                                                                             </ul>
                                                                         </div>
@@ -689,18 +689,18 @@
                                                                                                 class="d-flex align-items-center justify-content-between">
                                                                                                 <label
                                                                                                     class="m-0">{{ __('Product Total') }}</label>
-                                                                                                <span>{{ Session::get('currencySymbol') }}@money($product_total_count
+                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($product_total_count
                                                                                                     *
-                                                                                                    $clientCurrency->doller_compare)</span>
+                                                                                                    $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
                                                                                             @if ($vendor->discount_amount > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __('Coupon Discount') }}</label>
-                                                                                                    <span>{{ Session::get('currencySymbol') }}@money($vendor->discount_amount
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->discount_amount
                                                                                                         *
-                                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
                                                                                             @if ($vendor->delivery_fee > 0)
@@ -708,9 +708,9 @@
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                                                    <span>{{ Session::get('currencySymbol') }}@money($vendor->delivery_fee
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->delivery_fee
                                                                                                         *
-                                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
                                                                                             <li
@@ -721,9 +721,9 @@
                                                                                                     $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
                                                                                                     $subtotal_order_price += $product_subtotal_amount;
                                                                                                 @endphp
-                                                                                                <span>{{ Session::get('currencySymbol') }}@money($product_subtotal_amount
+                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($product_subtotal_amount
                                                                                                     *
-                                                                                                    $clientCurrency->doller_compare)</span>
+                                                                                                    $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
                                                                                            
                                                                                             @if (isset($hidereturn) && $hidereturn != 1 && $vendor->vendor->return_request)
@@ -756,18 +756,18 @@
                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Sub Total') }}</label>
-                                                                                    <span>{{ Session::get('currencySymbol') }}@money($order->total_amount
+                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_amount
                                                                                         + $order->total_delivery_fee *
-                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                 </li>
                                                                                 @if ($order->wallet_amount_used > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Wallet') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->wallet_amount_used
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->wallet_amount_used
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->loyalty_amount_saved > 0)
@@ -775,9 +775,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Loyalty Used') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->loyalty_amount_saved
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->loyalty_amount_saved
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->taxable_amount > 0)
@@ -785,9 +785,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tax') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->taxable_amount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->taxable_amount
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->total_service_fee > 0)
@@ -795,9 +795,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Service Fee') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->total_service_fee
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_service_fee
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->tip_amount > 0)
@@ -805,9 +805,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tip Amount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->tip_amount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->tip_amount
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->subscription_discount > 0)
@@ -815,9 +815,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Subscription Discount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->subscription_discount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->subscription_discount
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->total_discount_calculate > 0)
@@ -825,9 +825,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Discount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->total_discount_calculate
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_discount_calculate
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->total_delivery_fee > 0)
@@ -835,18 +835,18 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->total_delivery_fee
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 <li
                                                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
-                                                                                    <span>{{ Session::get('currencySymbol') }}@money($order->payable_amount-$order->total_discount_calculate
+                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount-$order->total_discount_calculate
                                                                                         *
-                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                 </li>
                                                                             </ul>
 
@@ -868,7 +868,7 @@
                                                                                                     for="control_01">
                                                                                                     <h5 class="m-0"
                                                                                                         id="tip_5">
-                                                                                                        {{ Session::get('currencySymbol') }}{{ helper_number_formet(round($order->payable_amount * 0.05, 2), 2) }}
+                                                                                                        {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.05) }}
                                                                                                     </h5>
                                                                                                     <p class="m-0">
                                                                                                         5%</p>
@@ -883,7 +883,7 @@
                                                                                                     for="control_02">
                                                                                                     <h5 class="m-0"
                                                                                                         id="tip_10">
-                                                                                                        {{ Session::get('currencySymbol') }}{{ helper_number_formet(round($order->payable_amount * 0.1, 2, 2)) }}
+                                                                                                        {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.1) }}
                                                                                                     </h5>
                                                                                                     <p class="m-0">
                                                                                                         10%</p>
@@ -898,7 +898,7 @@
                                                                                                     for="control_03">
                                                                                                     <h5 class="m-0"
                                                                                                         id="tip_15">
-                                                                                                        {{ Session::get('currencySymbol') }}{{ helper_number_formet(round($order->payable_amount * 0.15, 2), 2) }}
+                                                                                                        {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.15) }}
                                                                                                     </h5>
                                                                                                     <p class="m-0">
                                                                                                         15%</p>
@@ -1103,18 +1103,18 @@
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __('Product Total') }}</label>
-                                                                                                    <span>{{ Session::get('currencySymbol') }}@money($vendor->subtotal_amount
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->subtotal_amount
                                                                                                         *
-                                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                                 @if ($vendor->discount_amount > 0)
                                                                                                     <li
                                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                                         <label
                                                                                                             class="m-0">{{ __('Coupon Discount') }}</label>
-                                                                                                        <span>{{ Session::get('currencySymbol') }}@money($vendor->discount_amount
+                                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->discount_amount
                                                                                                             *
-                                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                                     </li>
                                                                                                 @endif
                                                                                                 @if ($vendor->delivery_fee > 0)
@@ -1122,9 +1122,9 @@
                                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                                         <label
                                                                                                             class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                                                        <span>{{ Session::get('currencySymbol') }}@money($vendor->delivery_fee
+                                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->delivery_fee
                                                                                                             *
-                                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                                     </li>
                                                                                                 @endif
                                                                                                 <li
@@ -1136,9 +1136,9 @@
                                                                                                         $subtotal_order_price += $product_subtotal_amount;
                                                                                                         $total_order_price += $product_subtotal_amount + $total_tax_order_price;
                                                                                                     @endphp
-                                                                                                    <span>{{ Session::get('currencySymbol') }}@money($vendor->payable_amount
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount
                                                                                                         *
-                                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
 
 
@@ -1155,18 +1155,18 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ 'Sub Total' }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->total_amount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_amount
                                                                                             + $order->total_delivery_fee *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                     @if ($order->wallet_amount_used > 0)
                                                                                         <li
                                                                                             class="d-flex align-items-center justify-content-between">
                                                                                             <label
                                                                                                 class="m-0">{{ __('Wallet') }}</label>
-                                                                                            <span>{{ Session::get('currencySymbol') }}@money($order->wallet_amount_used
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->wallet_amount_used
                                                                                                 *
-                                                                                                $clientCurrency->doller_compare)</span>
+                                                                                                $clientCurrency->doller_compare)}}</span>
                                                                                         </li>
                                                                                     @endif
                                                                                     @if ($order->loyalty_amount_saved > 0)
@@ -1174,9 +1174,9 @@
                                                                                             class="d-flex align-items-center justify-content-between">
                                                                                             <label
                                                                                                 class="m-0">{{ __('Loyalty Used') }}</label>
-                                                                                            <span>{{ Session::get('currencySymbol') }}@money($order->loyalty_amount_saved
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->loyalty_amount_saved
                                                                                                 *
-                                                                                                $clientCurrency->doller_compare)</span>
+                                                                                                $clientCurrency->doller_compare)}}</span>
                                                                                         </li>
                                                                                     @endif
                                                                                     @if ($order->taxable_amount > 0)
@@ -1184,9 +1184,9 @@
                                                                                             class="d-flex align-items-center justify-content-between">
                                                                                             <label
                                                                                                 class="m-0">{{ __('Tax') }}</label>
-                                                                                            <span>{{ Session::get('currencySymbol') }}@money($order->taxable_amount
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->taxable_amount
                                                                                                 *
-                                                                                                $clientCurrency->doller_compare)</span>
+                                                                                                $clientCurrency->doller_compare)}}</span>
                                                                                         </li>
                                                                                     @endif
                                                                                     @if ($order->total_service_fee > 0)
@@ -1194,9 +1194,9 @@
                                                                                             class="d-flex align-items-center justify-content-between">
                                                                                             <label
                                                                                                 class="m-0">{{ __('Service Fee') }}</label>
-                                                                                            <span>{{ Session::get('currencySymbol') }}@money($order->total_service_fee
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_service_fee
                                                                                                 *
-                                                                                                $clientCurrency->doller_compare)</span>
+                                                                                                $clientCurrency->doller_compare)}}</span>
                                                                                         </li>
                                                                                     @endif
                                                                                     @if ($order->tip_amount > 0)
@@ -1204,9 +1204,9 @@
                                                                                             class="d-flex align-items-center justify-content-between">
                                                                                             <label
                                                                                                 class="m-0">{{ __('Tip Amount') }}</label>
-                                                                                            <span>{{ Session::get('currencySymbol') }}@money($order->tip_amount
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->tip_amount
                                                                                                 *
-                                                                                                $clientCurrency->doller_compare)</span>
+                                                                                                $clientCurrency->doller_compare)}}</span>
                                                                                         </li>
                                                                                     @endif
                                                                                     @if ($order->subscription_discount > 0)
@@ -1214,9 +1214,9 @@
                                                                                             class="d-flex align-items-center justify-content-between">
                                                                                             <label
                                                                                                 class="m-0">{{ __('Subscription Discount') }}</label>
-                                                                                            <span>{{ Session::get('currencySymbol') }}@money($order->subscription_discount
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->subscription_discount
                                                                                                 *
-                                                                                                $clientCurrency->doller_compare)</span>
+                                                                                                $clientCurrency->doller_compare)}}</span>
                                                                                         </li>
                                                                                     @endif
                                                                                     @if ($order->total_delivery_fee > 0)
@@ -1224,18 +1224,18 @@
                                                                                             class="d-flex align-items-center justify-content-between">
                                                                                             <label
                                                                                                 class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                                            <span>{{ Session::get('currencySymbol') }}@money($order->total_delivery_fee
+                                                                                            <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
                                                                                                 *
-                                                                                                $clientCurrency->doller_compare)</span>
+                                                                                                $clientCurrency->doller_compare)}}</span>
                                                                                         </li>
                                                                                     @endif
                                                                                     <li
                                                                                         class="grand_total d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Total Payable') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->payable_amount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 </ul>
                                                                             </div>
@@ -1372,7 +1372,7 @@
                                                                                                         <span
                                                                                                             class="item_no position-absolute">x{{ $product->quantity }}</span>
                                                                                                         <label
-                                                                                                            class="items_price">{{ Session::get('currencySymbol') }}{{ helper_number_formet($product->price * $clientCurrency->doller_compare, 2) }}</label>
+                                                                                                            class="items_price">{{ Session::get('currencySymbol') }}{{ decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                                                     </li>
                                                                                                     @php
                                                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;
@@ -1390,18 +1390,18 @@
                                                                                                 class="d-flex align-items-center justify-content-between">
                                                                                                 <label
                                                                                                     class="m-0">{{ __('Product Total') }}</label>
-                                                                                                <span>{{ Session::get('currencySymbol') }}@money($vendor->subtotal_amount
+                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->subtotal_amount
                                                                                                     *
-                                                                                                    $clientCurrency->doller_compare)</span>
+                                                                                                    $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
                                                                                             @if ($vendor->discount_amount > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __('Coupon Discount') }}</label>
-                                                                                                    <span>{{ Session::get('currencySymbol') }}@money($vendor->discount_amount
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->discount_amount
                                                                                                         *
-                                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
                                                                                             @if ($vendor->delivery_fee > 0)
@@ -1409,9 +1409,9 @@
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                                                    <span>{{ Session::get('currencySymbol') }}@money($vendor->delivery_fee
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->delivery_fee
                                                                                                         *
-                                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
                                                                                             <li
@@ -1422,9 +1422,9 @@
                                                                                                     $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
                                                                                                     $subtotal_order_price += $product_subtotal_amount;
                                                                                                 @endphp
-                                                                                                <span>{{ Session::get('currencySymbol') }}@money($vendor->payable_amount
+                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount
                                                                                                     *
-                                                                                                    $clientCurrency->doller_compare)</span>
+                                                                                                    $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
                                                                                         </ul>
                                                                                     </div>
@@ -1439,18 +1439,18 @@
                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Sub Total') }}</label>
-                                                                                    <span>{{ Session::get('currencySymbol') }}@money($order->total_amount
+                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_amount
                                                                                         *
-                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                 </li>
                                                                                 @if ($order->wallet_amount_used > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Wallet') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->wallet_amount_used
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->wallet_amount_used
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->loyalty_amount_saved > 0)
@@ -1458,9 +1458,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Loyalty Used') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->loyalty_amount_saved
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->loyalty_amount_saved
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->taxable_amount > 0)
@@ -1468,9 +1468,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tax') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->taxable_amount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->taxable_amount
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->total_service_fee > 0)
@@ -1478,9 +1478,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Service Fee') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->total_service_fee
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_service_fee
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->tip_amount > 0)
@@ -1488,9 +1488,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tip Amount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->tip_amount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->tip_amount
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->subscription_discount > 0)
@@ -1498,9 +1498,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Subscription Discount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->subscription_discount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->subscription_discount
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->total_discount_calculate > 0)
@@ -1508,9 +1508,9 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Discount') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->total_discount_calculate
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_discount_calculate
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->total_delivery_fee > 0)
@@ -1518,18 +1518,18 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Delivery Fee') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}@money($order->total_delivery_fee
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->total_delivery_fee
                                                                                             *
-                                                                                            $clientCurrency->doller_compare)</span>
+                                                                                            $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 <li
                                                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
-                                                                                    <span>{{ Session::get('currencySymbol') }}@money($order->payable_amount
+                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount
                                                                                         - $order->total_discount_calculate *
-                                                                                        $clientCurrency->doller_compare)</span>
+                                                                                        $clientCurrency->doller_compare)}}</span>
                                                                                 </li>
                                                                             </ul>
                                                                         </div>
@@ -1686,6 +1686,7 @@
         var credit_tip_url = "{{ route('user.tip_after_order') }}";
         var payment_stripe_url = "{{ route('payment.stripe') }}";
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+        var create_ccavenue_url = "{{route('ccavenue.pay')}}";
         var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
         var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
         var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";

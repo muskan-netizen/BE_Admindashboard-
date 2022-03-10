@@ -35,7 +35,7 @@ class CartProduct extends Model{
      }
 
     public function pvariant(){
-    	return $this->belongsTo('App\Models\ProductVariant', 'variant_id', 'id')->select('id', 'sku', 'product_id', 'title', 'price', 'tax_category_id', 'barcode');
+    	return $this->belongsTo('App\Models\ProductVariant', 'variant_id', 'id')->select('id', 'sku', 'product_id', 'title', 'price', 'tax_category_id', 'barcode','container_charges');
     }
 
     public function coupon(){

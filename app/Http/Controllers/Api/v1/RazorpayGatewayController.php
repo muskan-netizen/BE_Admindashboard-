@@ -46,7 +46,7 @@ class RazorpayGatewayController extends BaseController
             $user = Auth::user();
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $amount = $this->getDollarCompareAmount($request->amount);
-            $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_INT);
+            $amount = (int)($amount * 100);
             $order_number = $request->order_number;
             if (!isset($order_number)) {
                 $order_number = 0;
@@ -65,7 +65,6 @@ class RazorpayGatewayController extends BaseController
             $user = Auth::user();
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $amount = $this->getDollarCompareAmount($amount);
-            $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_INT);
 
             // $returnUrlParams = '?gateway=razorpay&order=' . $request->order_number;
 

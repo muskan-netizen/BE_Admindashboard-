@@ -406,7 +406,7 @@
         @method('POST')
         <div class="modal-body pb-0">
             <div class="form-group">
-                <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">@money(Auth::user()->balanceFloat * (isset($clientCurrency->doller_compare)?$clientCurrency->doller_compare:1))</span></div>
+                <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format(Auth::user()->balanceFloat * (isset($clientCurrency->doller_compare)?$clientCurrency->doller_compare:1))}}</span></div>
             </div>
             <div class="form-group">
                 <h5 class="text-17 mb-2">{{__('Topup Wallet')}}</h5>
@@ -500,6 +500,7 @@
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";

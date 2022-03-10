@@ -61,10 +61,10 @@
                         </div>
                         <div class="d-flex align-items-start justify-content-between">
                             <p class="mb-1 product_price">
-                                {{Session::get('currencySymbol').(number_format($variant_price, 2, '.', ''))}}
+                                {{Session::get('currencySymbol').(decimal_format($variant_price))}}
                             </p>
                             <p class="mb-1">
-                                {{Session::get('currencySymbol')}}<span class="total_product_price">{{(number_format($total_variant_price, 2, '.', ''))}}</span>
+                                {{Session::get('currencySymbol')}}<span class="total_product_price">{{(decimal_format($total_variant_price))}}</span>
                             </p>
                         </div>
                         <div style="line-height:15px">

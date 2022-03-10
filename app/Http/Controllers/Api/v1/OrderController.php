@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
+use App\Models\{Order, OrderProduct,UserDocs, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
 use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\OrderTrait;
 
@@ -165,7 +165,10 @@ class OrderController extends BaseController
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                     $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
-                    $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
+                    $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0; 
+                    $total_subscription_discount = 0;
+                    $total_container_charges = 0;
+                    $vendor_total_container_charges = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $delivery_fee = 0;
                         $deliver_charge = $delivery_fee_charges = 0.00;
@@ -186,11 +189,18 @@ class OrderController extends BaseController
                             $quantity_price = 0;
                             $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                             $price_in_currency = $variant->price / $divider;
+                            $container_charges_in_currency = $variant->container_charges / $divider;
+                            $price_container_charges = $variant->container_charges;
                             $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
+                            $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
                             $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
-                            $payable_amount = $payable_amount + $quantity_price;
-                            $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
-                            $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
+                            $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
+                            
+                            $total_container_charges = $total_container_charges + $quantity_container_charges;
+                            $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
+                            $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
+                            $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
+                            $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
                             $product_payable_amount = 0;
                             $vendor_taxable_amount = 0;
                             if (isset($vendor_cart_product->product->taxCategory)) {
@@ -207,11 +217,17 @@ class OrderController extends BaseController
                                 }
                             }
                             if ($action == 'delivery') {
-                                if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) {
-                                    $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
+                                $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
+                                if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1) || isset($deliver_fee_data)) {
+                                    $order_vendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type??'D';
+                                    $order_vendor->courier_id = $deliver_fee_data->courier_id??0;
+
+                                    if($deliver_fee_data)
+                                    $delivery_fee  = $deliver_fee_data->delivery_fee??0.00;
+
                                     if (!empty($delivery_fee) && $delivery_count == 0) {
                                         $delivery_count = 1;
-                                        $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2, '.', '');
+                                        $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
                                         // $payable_amount = $payable_amount + $delivery_fee;
                                         $delivery_fee_charges = $delivery_fee;
                                         $latitude = $request->header('latitude');
@@ -226,11 +242,12 @@ class OrderController extends BaseController
                             }
                             $taxable_amount += $product_taxable_amount;
                             $vendor_taxable_amount += $taxable_amount;
-                            $total_amount += $vendor_cart_product->quantity * $variant->price;
+                            $total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);;
                             $order_product = new OrderProduct;
                             $order_product->order_vendor_id = $order_vendor->id;
                             $order_product->order_id = $order->id;
                             $order_product->price = $variant->price;
+                            $order_product->container_charges = $variant->container_charges;
                             $order_product->taxable_amount = $product_taxable_amount;
                             $order_product->quantity = $vendor_cart_product->quantity;
                             $order_product->vendor_id = $vendor_cart_product->vendor_id;
@@ -342,6 +359,7 @@ class OrderController extends BaseController
                         $order_vendor->taxable_amount = $vendor_taxable_amount;
                         $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
+                        $order_vendor->total_container_charges = $vendor_total_container_charges;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
                             if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -392,7 +410,7 @@ class OrderController extends BaseController
                     if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
                         $tip_amount = $request->tip;
                         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
-                        $order->tip_amount = number_format($tip_amount, 2);
+                        $order->tip_amount = decimal_format($tip_amount);
                     }
                     $payable_amount = $payable_amount + $tip_amount ;
                     $order->total_service_fee = $total_service_fee;
@@ -406,6 +424,7 @@ class OrderController extends BaseController
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
                     $order->payable_amount = $payable_amount;
+                    $order->total_container_charges = $total_container_charges;
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                         $order->payment_status = 1;
                     }
@@ -416,7 +435,7 @@ class OrderController extends BaseController
                     $res = $this->sendSuccessEmail($request, $order);
                     // pr($res);
                     // exit();
-                    $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
+                    $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 19]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, stripe_fpx
                     if (!in_array($request->payment_option_id, $ex_gateways)) {
 
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
@@ -937,7 +956,7 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
+                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
                 if (!empty($prefer->sms_provider)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 }
@@ -1095,7 +1114,7 @@ class OrderController extends BaseController
                     'vendors.tempCart.cartProducts.pvariant.media.pimage.image',
                     'vendors.tempCart.cartProducts.product.translation' => function ($q) use ($language_id) {
                         $q->where('language_id', $language_id)->groupBy('product_id');
-                    },
+                    }, 
                     'vendors.tempCart.cartProducts.addon.set' => function ($qry) use ($language_id) {
                         $qry->where('language_id', $language_id);
                     },
@@ -1155,9 +1174,9 @@ class OrderController extends BaseController
                 $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
                 $order->tip_amount = $order->tip_amount;
                 $order->tip = array(
-                    ['label' => '5%', 'value' => number_format((0.05 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')],
-                    ['label' => '10%', 'value' => number_format((0.1 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')],
-                    ['label' => '15%', 'value' => number_format((0.15 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')]
+                    ['label' => '5%', 'value' => decimal_format(0.05 * ($order->payable_amount - $order->total_discount_calculate))],
+                    ['label' => '10%', 'value' => decimal_format(0.1 * ($order->payable_amount - $order->total_discount_calculate))],
+                    ['label' => '15%', 'value' => decimal_format(0.15 * ($order->payable_amount - $order->total_discount_calculate))]
                 );
                 foreach ($order->vendors as $vendor) {
                     $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order_id)->where('vendor_id', $vendor->vendor->id)->orderBy('id', 'DESC')->first();
@@ -1168,12 +1187,14 @@ class OrderController extends BaseController
                     }
                     $couponData = [];
                     $payable_amount = 0;
+                    $total_container_charges = 0;
                     $discount_amount = 0;
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
                         $product_addons = [];
                         $variant_options = [];
+                        $vendor_total_container_charges = 0;
                         $order_item_count += $product->quantity;
                         $product->image_path = $product->media->first() ? $product->media->first()->image->path : $product->image;
                         if ($product->pvariant) {
@@ -1269,7 +1290,16 @@ class OrderController extends BaseController
                     $order['order_data'] = $response;
                 }
             }
+            $user_id = $order->user_id ?? '';
 
+            //$user_docs = UserDocs::where('user_id', $order->user_id)->get();
+            $user_registration_documents = UserRegistrationDocuments::with('user_document','primary')
+            ->whereHas('user_document', function($q) use($user_id){
+                $q->where('user_id', $user_id);
+            })->get();
+
+           // $order['user_document_value'] =  $user_docs;
+            $order['user_document_list'] =  $user_registration_documents;
 
             return $this->successResponse($order, null, 201);
         } catch (Exception $e) {
@@ -1458,7 +1488,7 @@ class OrderController extends BaseController
                                         $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
                                         if (!empty($delivery_fee) && $delivery_count == 0) {
                                             $delivery_count = 1;
-                                            $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2, '.', '');
+                                            $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
                                             // $payable_amount = $payable_amount + $delivery_fee;
                                             $delivery_fee_charges = $delivery_fee;
                                             $latitude = $request->header('latitude');

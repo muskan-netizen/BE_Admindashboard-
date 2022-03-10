@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout};
-
+use Log;
 class VendorController extends FrontController
 {
     use ApiResponser;
@@ -170,12 +170,15 @@ class VendorController extends FrontController
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if(Session::has('vendors')){
                 $vendors = Session::get('vendors');
-                if(!in_array($vendor->id, $vendors)){
-                    $listData =collect();
-                    return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
-                //  return view('frontend.vendor-not-in-location')->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
-                    abort(404);
+                $vendors = $vendors->toArray();
+                if(isset($vendor) && isset($vendor->id)){
+                    if(!in_array($vendor->id, $vendors)){
+                        $listData =collect();
+                        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
+                       
+                    }
                 }
+                
             }else{
                 // abort(404);
             }
@@ -192,8 +195,7 @@ class VendorController extends FrontController
 
         $tags = Tag::with('primary')->get();
         //dd($page);
-
-        // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
+         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
         return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed]);
     }
 
@@ -287,6 +289,10 @@ class VendorController extends FrontController
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if(Session::has('vendors')){
                 $vendors = Session::get('vendors');
+                if(is_array($vendors))
+                $vendors = $vendors;
+                else
+                $vendors = $vendors->toArray();
                 if(!in_array($vendor->id, $vendors)){
                     $listData = collect();
                     return view('frontend/vendor-'.$page)->with(['vendor' => $vendor, 'show_range' => $show_range, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products, 'vendor_category' => $slug2]);
@@ -511,11 +517,12 @@ class VendorController extends FrontController
                 $image_path = ($AddonData->media->isNotEmpty()) ? $AddonData->media->first()->image->path['image_path'] : '';
             }
             $AddonData->product_image = $image_fit . '800/800' . $image_path;
+            $AddonData->averageRating = number_format($AddonData->averageRating,1);
             $AddonData->translation_title = ($AddonData->translation->isNotEmpty()) ? $AddonData->translation->first()->title : $AddonData->title;
             $AddonData->translation_description = ($AddonData->translation->isNotEmpty()) ? strip_tags($AddonData->translation->first()->body_html) : '';
             $AddonData->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
             $variant_price = ($AddonData->variant->isNotEmpty()) ? $AddonData->variant->first()->price : 0;
-            $AddonData->variant_price = number_format(($variant_price * $AddonData->variant_multiplier), 2, '.', '');
+            $AddonData->variant_price = decimal_format(($variant_price * $AddonData->variant_multiplier));
         }
             // dd($AddonData);
         return response()->json(array('status' => 'Success', 'data' => $AddonData));

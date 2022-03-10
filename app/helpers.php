@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{User, TempCartProduct, Vendor};
+use App\Models\{Currency, User, TempCartProduct, Vendor};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -11,7 +11,7 @@ use App\Models\ClientPreference;
 use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
-use App\Models\{VendorSlot, ClientCurrency};
+use App\Models\{VendorSlot, ClientCurrency, Order};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,6 +20,17 @@ if (!function_exists('changeDateFormate')) {
         return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
     }
 }
+
+function orderProductDetails($order_id)
+{
+    $order = Order::find($order_id);
+    $itemsDetails = 'Order No : '.$order->order_number;
+    foreach($order->products as $items){
+       $itemsDetails .=  ', Item Name : '.$items->product_name.', '.$items->product_variant_sets;
+    }
+    return $itemsDetails;
+}
+
 
 if (!function_exists('pr')) {
     function pr($var) {
@@ -91,6 +102,15 @@ function generateOrderNo($length = 8){
     } while (!empty(\DB::table('orders')->where('order_number', $number)->first(['order_number'])) );
     return $number;
 }
+function generateUniqueSlug($table='', $column='', $prefix='', $length = 8){
+    $number = $prefix;
+    do {
+        for ($i=$length; $i--; $i>0) {
+            $number .= mt_rand(0,9);
+        }
+    } while (!empty(\DB::table($table)->where($column, $number)->first([$column])) );
+    return $number;
+}
 function generateWalletTransactionReference($length = 8){
     $number = '';
     do {
@@ -123,7 +143,7 @@ function getClientPreferenceDetail()
 function getClientDetail()
 {
     $clientData = ClientData::first();
-    $clientData->logo_image_url = $clientData ? $clientData->logo['image_fit'].'150/92'.$clientData->logo['image_path'] : " ";
+    $clientData->logo_image_url = $clientData ? $clientData->logo['original'] : ' ';
     return $clientData;
 }
 function getRazorPayApiKey()
@@ -191,9 +211,6 @@ function dateTimeInUserTimeZone24($date, $timezone, $showDate=true, $showTime=tr
     return $date->isoFormat($format);
     }
 
-function helper_number_formet($number){
-    return number_format($number,2);
-}
 function productvariantQuantity($variantId ,$type=1){
     if($type==1){
         $ProductVariant =  ProductVariant::where('id',$variantId)
@@ -694,4 +711,22 @@ function getDollarCompareAmount($amount, $customerCurrency='')
     $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
     $amount = number_format($amount, 2,'.','');
     return $amount;
+}
+
+/* doller compare amount */
+function getPrimaryCurrencyName()
+{
+    $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+    $currencyName = Currency::find($primaryCurrency->currency_id);
+
+    $currencyName = $currencyName->iso_code;
+    return $currencyName;
+}
+
+// Number Format according to Client preferences
+function decimal_format($number,$format="")
+{
+    $preference = session()->get('preferences');
+    $digits = $preference['digit_after_decimal'] ?? 2;
+    return number_format($number,$digits,'.',$format);
 }

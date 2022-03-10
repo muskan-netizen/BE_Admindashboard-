@@ -29,7 +29,7 @@
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-success"></i>
-                                        <span data-plugin="counterup">{{$admin_paid_total_amt}}</span>
+                                        <span data-plugin="counterup">{{decimal_format($admin_paid_total_amt)}}</span>
                                     </h3>
                                     <p class="text-muted font-15 mb-0">{{ __('Admin Paid Total') }}</p>
                                 </div>
@@ -38,7 +38,7 @@
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-success"></i>
-                                        <span data-plugin="counterup">{{$vendor_paid_total_amt}}</span>
+                                        <span data-plugin="counterup">{{decimal_format($vendor_paid_total_amt)}}</span>
                                     </h3>
                                     <p class="text-muted font-15 mb-0">{{ __('Vendor Paid Total') }}</p>
                                 </div>

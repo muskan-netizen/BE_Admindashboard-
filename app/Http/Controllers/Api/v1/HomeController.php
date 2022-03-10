@@ -15,6 +15,7 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart};
@@ -134,13 +135,16 @@ class HomeController extends BaseController
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
-            $payment_codes = ['stripe', 'razorpay', 'checkout'];
+            $payment_codes = ['stripe', 'stripe_fpx', 'razorpay', 'checkout'];
             $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
                 foreach ($payment_creds as $creds) {
                     $creds_arr = json_decode($creds->credentials);
                     if ($creds->code == 'stripe') {
                         $homeData['profile']->preferences->stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
+                    }
+                    if ($creds->code == 'stripe_fpx') {
+                        $homeData['profile']->preferences->stripe_fpx_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
                     }
                     if ($creds->code == 'razorpay') {
                         $homeData['profile']->preferences->razorpay_api_key = (isset($creds_arr->api_key) && (!empty($creds_arr->api_key))) ? $creds_arr->api_key : '';
@@ -168,7 +172,7 @@ class HomeController extends BaseController
     {
         try {
             $vends = [];
-            $vends = [];
+            $venderIds = [];
             $homeData = [];
             $user = Auth::user();
             $langId = $user->language;
@@ -219,7 +223,9 @@ class HomeController extends BaseController
             if($venderFilterbest && ($venderFilterbest == 1) ){
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
+            $allVendorData = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
+            $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
 
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
@@ -291,7 +297,7 @@ class HomeController extends BaseController
             foreach ($new_product_details as  $new_product_detail) {
                 $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
                 $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-                $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : '';
+                $image_url = $new_product_detail->media->first() && !is_null($new_product_detail->media->first()->image) ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : '';
                 $new_products[] = array(
                     'image_url' => $image_url,
                     'sku' => $new_product_detail->sku,
@@ -300,14 +306,14 @@ class HomeController extends BaseController
                     'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
                     'inquiry_only' => $new_product_detail->inquiry_only,
                     'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
-                    'price' => number_format($new_product_detail->variant->first()->price * $multiply, 2, '.', ''),
+                    'price' => decimal_format($new_product_detail->variant->first()->price * $multiply),
                     'category' => ($new_product_detail->category->categoryDetail->translation->first()) ? $new_product_detail->category->categoryDetail->translation->first()->name : $new_product_detail->category->categoryDetail->slug
                 );
             }
             foreach ($feature_product_details as  $feature_product_detail) {
                 $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
                 $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-                $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : '';
+                $image_url = $feature_product_detail->media->first() &&  !is_null($feature_product_detail->media->first()->image)? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : '';
                 $feature_products[] = array(
                     'image_url' => $image_url,
                     'sku' => $feature_product_detail->sku,
@@ -316,14 +322,14 @@ class HomeController extends BaseController
                     'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
                     'inquiry_only' => $feature_product_detail->inquiry_only,
                     'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
-                    'price' => number_format($feature_product_detail->variant->first()->price * $multiply, 2, '.', ''),
+                    'price' => decimal_format($feature_product_detail->variant->first()->price * $multiply),
                     'category' => ($feature_product_detail->category->categoryDetail->translation->first()) ? $feature_product_detail->category->categoryDetail->translation->first()->name : $feature_product_detail->category->categoryDetail->slug
                 );
             }
             foreach ($on_sale_product_details as  $on_sale_product_detail) {
                 $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
                 $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
-                $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : '';
+                $image_url = $on_sale_product_detail->media->first() && !is_null($on_sale_product_detail->media->first()->image) ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : '';
                 $on_sale_products[] = array(
                     'image_url' => $image_url,
                     'sku' => $on_sale_product_detail->sku,
@@ -332,13 +338,13 @@ class HomeController extends BaseController
                     'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
                     'inquiry_only' => $on_sale_product_detail->inquiry_only,
                     'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
-                    'price' => number_format($on_sale_product_detail->variant->first()->price * $multiply, 2, '.', ''),
+                    'price' => decimal_format($on_sale_product_detail->variant->first()->price * $multiply),
                     'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
                 );
             }
 
             $isVendorArea = 0;
-            $categories = $this->categoryNav($langId, $vends);
+            $categories = $this->categoryNav($langId,  $venderIds);
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             $homeData['reqData'] = $request->all();
@@ -365,6 +371,20 @@ class HomeController extends BaseController
         }
     }
 
+    //git user registration document 
+     public function UserRegistrationDocument(){
+        $user = Auth::user();
+        $langId = $user->language;
+        //$user_registration_documents = UserRegistrationDocuments::with(['primary'])->get();
+        if( $langId){
+            $user_registration_documents = UserRegistrationDocuments::with(['translations' => function ($q) use ($langId) {
+                $q->where('language_id', $langId);
+            }])->get();
+           
+        }
+        return $this->successResponse($user_registration_documents);
+     }
+  
     public function getEditedOrders(Request $request){
         // Get user Edited Orders from Temp Cart
         $user = Auth::user();
@@ -491,11 +511,12 @@ class HomeController extends BaseController
                     ->where('categories.is_core', 1)
                     ->where('cts.language_id', $langId)
                     ->where(function ($q) use ($keyword) {
-                        $q->where('cts.name', ' LIKE', '%' . $keyword . '%')
+                        $q->where('cts.name', 'LIKE', '%' . $keyword . '%')
                             ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
                             ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
                     })->orderBy('categories.parent_id', 'asc')
-                    ->orderBy('categories.position', 'asc')->paginate($limit, $page);
+                    ->orderBy('categories.position', 'asc')
+                    ->groupBy('cts.category_id')->paginate($limit, $page);
                 foreach ($categories as $category) {
                     $category->response_type = 'category';
                     $category->image_url = $category->image['proxy_url'] . '80/80' . $category->image['image_path'];
@@ -527,7 +548,7 @@ class HomeController extends BaseController
 
 
                 $vendors = $vendors->where(function ($q) use ($keyword) {
-                    $q->where('name', 'LIKE', "%$keyword%")->orWhere('address', 'LIKE', '%' . $keyword . '%');
+                    $q->where('name', 'LIKE', '%'. $keyword .'%')->orWhere('address', 'LIKE', '%' . $keyword . '%');
                 })->where('status', 1)->paginate($limit, $page);
 
 

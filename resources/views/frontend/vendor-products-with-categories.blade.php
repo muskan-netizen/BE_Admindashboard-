@@ -1,383 +1,12 @@
 @extends('layouts.store', ['title' => $vendor->name])
 @section('css')
     <style type="text/css">
-        .main-menu .brand-logo {
-            display: inline-block;
-            padding-top: 20px;
-            padding-bottom: 20px;
-        }
-        .productVariants .firstChild {
-            min-width: 150px;
-            text-align: left !important;
-            border-radius: 0% !important;
-            margin-right: 10px;
-            cursor: default;
-            border: none !important;
-        }
-
-        .product-right .color-variant li,
-        .productVariants .otherChild {
-            height: 35px;
-            width: 35px;
-            border-radius: 50%;
-            margin-right: 10px;
-            cursor: pointer;
-            border: 1px solid #f7f7f7;
-            text-align: center;
-        }
-        .productVariants .otherSize {
-            height: auto !important;
-            width: auto !important;
-            border: none !important;
-            border-radius: 0%;
-        }
-
-        .product-right .size-box ul li.active {
-            background-color: inherit;
-        }
-
-        .product-box .product-detail h4,
-        .product-box .product-info h4 {
-            font-size: 16px;
-        }
-
-        select.changeVariant {
-            color: #343a40;
-            border: 1px solid #bbb;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .counter-container {
-            border: 1px solid var(--theme-deafult);
-            border-radius: 5px;
-            padding: 2px;
-        }
-
-        .switch {
-            opacity: 0;
-            position: absolute;
-            z-index: 1;
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .switch+.lable {
-            position: relative;
-            display: inline-block;
-            margin: 0;
-            line-height: 20px;
-            min-height: 18px;
-            min-width: 18px;
-            font-weight: normal;
-            cursor: pointer;
-        }
-
-        .switch+.lable::before {
-            cursor: pointer;
-            font-family: fontAwesome;
-            font-weight: normal;
-            font-size: 12px;
-            color: #32a3ce;
-            content: "\a0";
-            background-color: #FAFAFA;
-            border: 1px solid #c8c8c8;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            border-radius: 0;
-            display: inline-block;
-            text-align: center;
-            height: 16px;
-            line-height: 14px;
-            min-width: 16px;
-            margin-right: 1px;
-            position: relative;
-            top: -1px;
-        }
-
-        .switch:checked+.lable::before {
-            display: inline-block;
-            content: '\f00c';
-            background-color: #F5F8FC;
-            border-color: #adb8c0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05), inset 15px 10px -12px rgba(255, 255, 255, 0.1);
-        }
-
-        /* CSS3 on/off switches */
-        .switch+.lable {
-            margin: 0 4px;
-            min-height: 24px;
-        }
-
-        .switch+.lable::before {
-            font-weight: normal;
-            font-size: 11px;
-            line-height: 17px;
-            height: 20px;
-            overflow: hidden;
-            border-radius: 12px;
-            background-color: #F5F5F5;
-            -webkit-box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.15);
-            box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.15);
-            border: 1px solid #CCC;
-            text-align: left;
-            float: left;
-            padding: 0;
-            width: 52px;
-            text-indent: -21px;
-            margin-right: 0;
-            -webkit-transition: text-indent .3s ease;
-            -o-transition: text-indent .3s ease;
-            transition: text-indent .3s ease;
-            top: auto;
-        }
-
-        .switch.switch-bootstrap+.lable::before {
-            font-family: FontAwesome;
-            content: "\f00d";
-            box-shadow: none;
-            border-width: 0;
-            font-size: 16px;
-            background-color: #a9a9a9;
-            color: #F2F2F2;
-            width: 52px;
-            height: 22px;
-            line-height: 21px;
-            text-indent: 32px;
-            -webkit-transition: background 0.1s ease;
-            -o-transition: background 0.1s ease;
-            transition: background 0.1s ease;
-        }
-
-        .switch.switch-bootstrap+.lable::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 3px;
-            border-radius: 12px;
-            box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-            width: 18px;
-            height: 18px;
-            text-align: center;
-            background-color: #F2F2F2;
-            border: 4px solid #F2F2F2;
-            -webkit-transition: left 0.2s ease;
-            -o-transition: left 0.2s ease;
-            transition: left 0.2s ease;
-        }
-
-        .switch.switch-bootstrap:checked+.lable::before {
-            content: "\f00c";
-            text-indent: 6px;
-            color: #FFF;
-            border-color: #b7d3e5;
-
-        }
-
-        .switch-primary>.switch.switch-bootstrap:checked+.lable::before {
-            background-color: #337ab7;
-        }
-
-        .switch-success>.switch.switch-bootstrap:checked+.lable::before {
-            background-color: #5cb85c;
-        }
-
-        .switch-danger>.switch.switch-bootstrap:checked+.lable::before {
-            background-color: #d9534f;
-        }
-
-        .switch-info>.switch.switch-bootstrap:checked+.lable::before {
-            background-color: #5bc0de;
-        }
-
-        .switch-warning>.switch.switch-bootstrap:checked+.lable::before {
-            background-color: #f0ad4e;
-        }
-
-        .switch.switch-bootstrap:checked+.lable::after {
-            left: 32px;
-            background-color: #FFF;
-            border: 4px solid #FFF;
-            text-shadow: 0 -1px 0 rgba(0, 200, 0, 0.25);
-        }
-
-        /* square */
-        .switch-square {
-            opacity: 0;
-            position: absolute;
-            z-index: 1;
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .switch-square+.lable {
-            position: relative;
-            display: inline-block;
-            margin: 0;
-            line-height: 20px;
-            min-height: 18px;
-            min-width: 18px;
-            font-weight: normal;
-            cursor: pointer;
-        }
-
-        .switch-square+.lable::before {
-            cursor: pointer;
-            font-family: fontAwesome;
-            font-weight: normal;
-            font-size: 12px;
-            color: #32a3ce;
-            content: "\a0";
-            background-color: #FAFAFA;
-            border: 1px solid #c8c8c8;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            border-radius: 0;
-            display: inline-block;
-            text-align: center;
-            height: 16px;
-            line-height: 14px;
-            min-width: 16px;
-            margin-right: 1px;
-            position: relative;
-            top: -1px;
-        }
-
-        .switch-square:checked+.lable::before {
-            display: inline-block;
-            /* content: '\f00c'; */
-            background-color: #F5F8FC;
-            border-color: #adb8c0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05), inset 15px 10px -12px rgba(255, 255, 255, 0.1);
-        }
-
-        /* CSS3 on/off switches */
-        .switch-square+.lable {
-            margin: 0 4px;
-            min-height: 24px;
-        }
-
-        .switch.switch-bootstrap:checked+.lable::before,
-        .switch.switch-bootstrap+.lable::before {
-            content: "";
-            width: 40px;
-            height: 18px;
-            line-height: 21px;
-        }
-
-        .switch.switch-bootstrap+.lable::after {
-            width: 14px;
-            height: 14px;
-        }
-
-        .switch+.lable {
-            line-height: 14px;
-        }
-
-        .switch.switch-bootstrap:checked+.lable::after {
-            left: 23px;
-        }
-
-        .switch-square+.lable::before {
-            font-weight: normal;
-            font-size: 11px;
-            line-height: 17px;
-            height: 20px;
-            overflow: hidden;
-            border-radius: 2px;
-            background-color: #F5F5F5;
-            -webkit-box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.15);
-            box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.15);
-            border: 1px solid #CCC;
-            text-align: left;
-            float: left;
-            padding: 0;
-            width: 52px;
-            text-indent: -21px;
-            margin-right: 0;
-            -webkit-transition: text-indent .3s ease;
-            -o-transition: text-indent .3s ease;
-            transition: text-indent .3s ease;
-            top: auto;
-        }
-
-        .switch-square.switch-bootstrap+.lable::before {
-            font-family: FontAwesome;
-            /* content: "\f00d"; */
-            box-shadow: none;
-            border-width: 0;
-            font-size: 16px;
-            background-color: #a9a9a9;
-            color: #F2F2F2;
-            width: 52px;
-            height: 22px;
-            line-height: 21px;
-            text-indent: 32px;
-            -webkit-transition: background 0.1s ease;
-            -o-transition: background 0.1s ease;
-            transition: background 0.1s ease;
-        }
-
-        .switch-square.switch-bootstrap+.lable::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 3px;
-            border-radius: 12px;
-            box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-            width: 18px;
-            height: 18px;
-            text-align: center;
-            background-color: #F2F2F2;
-            border: 4px solid #F2F2F2;
-            -webkit-transition: left 0.2s ease;
-            -o-transition: left 0.2s ease;
-            transition: left 0.2s ease;
-        }
-
-        .switch-square.switch-bootstrap:checked+.lable::before {
-            /* content: "\f00c";*/
-            text-indent: 6px;
-            color: #FFF;
-            border-color: #b7d3e5;
-
-        }
-
-        .switch-primary>.switch-square.switch-bootstrap:checked+.lable::before {
-            background-color: #337ab7;
-        }
-
-        .switch-success>.switch-square.switch-bootstrap:checked+.lable::before {
-            background-color: #5cb85c;
-        }
-
-        .switch-danger>.switch-square.switch-bootstrap:checked+.lable::before {
-            background-color: #d9534f;
-        }
-
-        .switch-info>.switch-square.switch-bootstrap:checked+.lable::before {
-            background-color: #5bc0de;
-        }
-
-        .switch-warning>.switch-square.switch-bootstrap:checked+.lable::before {
-            background-color: #f0ad4e;
-        }
-
-        .switch-square.switch-bootstrap:checked+.lable::after {
-            left: 32px;
-            background-color: #FFF;
-            border: 4px solid #FFF;
-            text-shadow: 0 -1px 0 rgba(0, 200, 0, 0.25);
-        }
-
-        .switch-square.switch-bootstrap+.lable::after {
-            border-radius: 2px;
-        }
+        .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}.product-box .product-detail h4,.product-box .product-info h4{font-size:16px}select.changeVariant{color:#343a40;border:1px solid #bbb;border-radius:5px;font-size:14px}.counter-container{border:1px solid var(--theme-deafult);border-radius:5px;padding:2px}.switch{opacity:0;position:absolute;z-index:1;width:18px;height:18px;cursor:pointer}.switch+.lable{position:relative;display:inline-block;margin:0;line-height:20px;min-height:18px;min-width:18px;font-weight:400;cursor:pointer}.switch+.lable::before{cursor:pointer;font-family:fontAwesome;font-weight:400;font-size:12px;color:#32a3ce;content:"\a0";background-color:#fafafa;border:1px solid #c8c8c8;box-shadow:0 1px 2px rgba(0,0,0,.05);border-radius:0;display:inline-block;text-align:center;height:16px;line-height:14px;min-width:16px;margin-right:1px;position:relative;top:-1px}.switch:checked+.lable::before{display:inline-block;content:'\f00c';background-color:#f5f8fc;border-color:#adb8c0;box-shadow:0 1px 2px rgba(0,0,0,.05),inset 0 -15px 10px -12px rgba(0,0,0,.05),inset 15px 10px -12px rgba(255,255,255,.1)}.switch+.lable{margin:0 4px;min-height:24px}.switch+.lable::before{font-weight:400;font-size:11px;line-height:17px;height:20px;overflow:hidden;border-radius:12px;background-color:#f5f5f5;-webkit-box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);border:1px solid #ccc;text-align:left;float:left;padding:0;width:52px;text-indent:-21px;margin-right:0;-webkit-transition:text-indent .3s ease;-o-transition:text-indent .3s ease;transition:text-indent .3s ease;top:auto}.switch.switch-bootstrap+.lable::before{font-family:FontAwesome;content:"\f00d";box-shadow:none;border-width:0;font-size:16px;background-color:#a9a9a9;color:#f2f2f2;width:52px;height:22px;line-height:21px;text-indent:32px;-webkit-transition:background .1s ease;-o-transition:background .1s ease;transition:background .1s ease}.switch.switch-bootstrap+.lable::after{content:'';position:absolute;top:2px;left:3px;border-radius:12px;box-shadow:0 -1px 0 rgba(0,0,0,.25);width:18px;height:18px;text-align:center;background-color:#f2f2f2;border:4px solid #f2f2f2;-webkit-transition:left .2s ease;-o-transition:left .2s ease;transition:left .2s ease}.switch.switch-bootstrap:checked+.lable::before{content:"\f00c";text-indent:6px;color:#fff;border-color:#b7d3e5}.switch-primary>.switch.switch-bootstrap:checked+.lable::before{background-color:#337ab7}.switch-success>.switch.switch-bootstrap:checked+.lable::before{background-color:#5cb85c}.switch-danger>.switch.switch-bootstrap:checked+.lable::before{background-color:#d9534f}.switch-info>.switch.switch-bootstrap:checked+.lable::before{background-color:#5bc0de}.switch-warning>.switch.switch-bootstrap:checked+.lable::before{background-color:#f0ad4e}.switch.switch-bootstrap:checked+.lable::after{left:32px;background-color:#fff;border:4px solid #fff;text-shadow:0 -1px 0 rgba(0,200,0,.25)}.switch-square{opacity:0;position:absolute;z-index:1;width:18px;height:18px;cursor:pointer}.switch-square+.lable{position:relative;display:inline-block;margin:0;line-height:20px;min-height:18px;min-width:18px;font-weight:400;cursor:pointer}.switch-square+.lable::before{cursor:pointer;font-family:fontAwesome;font-weight:400;font-size:12px;color:#32a3ce;content:"\a0";background-color:#fafafa;border:1px solid #c8c8c8;box-shadow:0 1px 2px rgba(0,0,0,.05);border-radius:0;display:inline-block;text-align:center;height:16px;line-height:14px;min-width:16px;margin-right:1px;position:relative;top:-1px}.switch-square:checked+.lable::before{display:inline-block;background-color:#f5f8fc;border-color:#adb8c0;box-shadow:0 1px 2px rgba(0,0,0,.05),inset 0 -15px 10px -12px rgba(0,0,0,.05),inset 15px 10px -12px rgba(255,255,255,.1)}.switch-square+.lable{margin:0 4px;min-height:24px}.switch.switch-bootstrap+.lable::before,.switch.switch-bootstrap:checked+.lable::before{content:"";width:40px;height:18px;line-height:21px}.switch.switch-bootstrap+.lable::after{width:14px;height:14px}.switch+.lable{line-height:14px}.switch.switch-bootstrap:checked+.lable::after{left:23px}.switch-square+.lable::before{font-weight:400;font-size:11px;line-height:17px;height:20px;overflow:hidden;border-radius:2px;background-color:#f5f5f5;-webkit-box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);border:1px solid #ccc;text-align:left;float:left;padding:0;width:52px;text-indent:-21px;margin-right:0;-webkit-transition:text-indent .3s ease;-o-transition:text-indent .3s ease;transition:text-indent .3s ease;top:auto}.switch-square.switch-bootstrap+.lable::before{font-family:FontAwesome;box-shadow:none;border-width:0;font-size:16px;background-color:#a9a9a9;color:#f2f2f2;width:52px;height:22px;line-height:21px;text-indent:32px;-webkit-transition:background .1s ease;-o-transition:background .1s ease;transition:background .1s ease}.switch-square.switch-bootstrap+.lable::after{content:'';position:absolute;top:2px;left:3px;border-radius:12px;box-shadow:0 -1px 0 rgba(0,0,0,.25);width:18px;height:18px;text-align:center;background-color:#f2f2f2;border:4px solid #f2f2f2;-webkit-transition:left .2s ease;-o-transition:left .2s ease;transition:left .2s ease}.switch-square.switch-bootstrap:checked+.lable::before{text-indent:6px;color:#fff;border-color:#b7d3e5}.switch-primary>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#337ab7}.switch-success>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#5cb85c}.switch-danger>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#d9534f}.switch-info>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#5bc0de}.switch-warning>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#f0ad4e}.switch-square.switch-bootstrap:checked+.lable::after{left:32px;background-color:#fff;border:4px solid #fff;text-shadow:0 -1px 0 rgba(0,200,0,.25)}.switch-square.switch-bootstrap+.lable::after{border-radius:2px}
 
     </style>
 @endsection
 @section('css-links')
-<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}"> 
+<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}">
 @endsection
 @section('content')
     <!-- section start -->
@@ -445,11 +74,11 @@
                                                         @elseif($vendor->is_vendor_closed == 0 && $vendor->show_slot == 1)
                                                             24 x 7 <span class="badge badge-success">Open</span>
                                                         @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
-                                                        <span class="badge badge-danger">Closed</span>
+                                                        <span class="badge badge-danger">{{__('Closed')}}</span>
                                                         {{__('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.
 
                                                         @else
-                                                            <span class="badge badge-danger">Closed</span>
+                                                            <span class="badge badge-danger">{{__('Closed')}}</span>
                                                         @endif
                                                         </span>
                                                         {{-- <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></span>
@@ -459,7 +88,7 @@
                                                     </li>
                                                     @if ($vendor->order_min_amount > 0)
                                                         <span class="badge badge-danger">{{ __('Minimum order value') }}
-                                                            {{ Session::get('currencySymbol') . number_format($vendor->order_min_amount, 2, '.', '') }}</span>
+                                                            {{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
                                                     @endif
                                                 </ul>
                                             </div>
@@ -531,7 +160,7 @@
                                     </div>
                                     <div class="col-md-8 col-lg-6">
                                         <div class="row ">
-                                            <div class="col-6">
+                                            <div class="col">
                                                 @if (isset($tags) && !empty($tags))
                                                     @foreach ($tags as $key => $tag)
                                                         <label class="label-switch switch-primary product_tag_filter mr-2">
@@ -546,15 +175,15 @@
                                                     @endforeach
                                                 @endif
                                             </div>
-                                            <div class="col-6 text-right">Sort By : 
+                                            <div class="col text-right">{{__('Sort By')}} :
                                                 <select name="order_type" id='order_type' class="product_tag_filter p-1">
-                                                    <option value="featured">Featured</option>
-                                                    <option value="a_to_z">A to Z</option>
-                                                    <option value="z_to_a">Z to A</option>
-                                                    <option value="low_to_high">Cost : Low to High</option>
-                                                    <option value="high_to_low">Cost : High to Low</option>
-                                                    <option value="rating">Avg. Customer Review</option>
-                                                    <option value="newly_added">Newest Arrivals</option>
+                                                    <option value="featured">{{__('Featured')}}</option>
+                                                    <option value="a_to_z">{{__('A to Z')}}</option>
+                                                    <option value="z_to_a">{{__('Z to A')}}</option>
+                                                    <option value="low_to_high">{{__('Cost : Low to High')}}</option>
+                                                    <option value="high_to_low">{{__('Cost : High to Low')}}</option>
+                                                    <option value="rating">{{__('Avg. Customer Review')}}</option>
+                                                    <option value="newly_added">{{__('Newest Arrivals')}}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -620,7 +249,7 @@
                                                                                             $vendor_id = $data->vendor_id;
                                                                                             $product_id = $data->id;
                                                                                             $batch_count = $data->batch_count;
-                                                                                            $variant_price = $var->price * $data->variant_multiplier;
+                                                                                            $variant_price = decimal_format($var->price * $data->variant_multiplier);
                                                                                             if (count($var->checkIfInCart) > 1) {
                                                                                                 $productVariantInCartWithDifferentAddons = 1;
                                                                                             }
@@ -707,7 +336,7 @@
                                                                     <span class="minus qty-minus-product"
                                                                         data-parent_div_id="show_plus_minus{{ $data->id }}"
                                                                         data-id="{{ $data->id }}"
-                                                                        data-base_price="{{ $data->variant_price * $data->variant_multiplier }}"
+                                                                        data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
                                                                         data-vendor_id="{{ $data->vendor_id }}"
                                                                         data-batch_count="{{ $batch_count }}"
                                                                         data-minimum_order_count="{{ $minimum_order_count }}">
@@ -720,7 +349,7 @@
                                                                         type="text" value="{{ $minimum_order_count }}"
                                                                         class="input-number input_qty" step="0.01">
                                                                     <span class="plus qty-plus-product" data-id=""
-                                                                        data-base_price="{{ $data->variant_price * $data->variant_multiplier }}"
+                                                                        data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
                                                                         data-vendor_id="{{ $data->vendor_id }}"
                                                                         data-batch_count="{{ $batch_count }}"
                                                                         data-minimum_order_count="{{ $minimum_order_count }}">
@@ -751,10 +380,10 @@
                                 @endif
 
                                 <p class="mb-1 product_price">
-                                    {{ Session::get('currencySymbol') . number_format($prod->variant_price * $prod->variant_multiplier, 2, '.', '') }}
+                                    {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier) }}
                                     @if ($prod->variant[0]->compare_at_price > 0)
                                         <span
-                                            class="org_price ml-1 font-14">{{ Session::get('currencySymbol') . number_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier, 2, '.', '') }}</span>
+                                            class="org_price ml-1 font-14">{{ Session::get('currencySymbol') . decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
                                     @endif
                                 </p>
                                 <div class="member_no d-block mb-0">
@@ -1068,7 +697,7 @@
                                                                 <%= option.title %>
                                                             </label>
                                                             <div>
-                                                                <span class="addon_price mr-1 font-14">{{ Session::get('currencySymbol') }}<%= option.price %></span>
+                                                                <span class="addon_price mr-1 font-14">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(option.price) %></span>
                                                                 <input type="checkbox" id="inlineCheckbox_<%= key1 %>_<%= key2 %>" class="product_addon_option" name="addonData[<%= key1 %>][]" addonId="<%= addon.addon_id %>" addonOptId="<%= option.id %>" addonPrice="<%= option.price %>">
                                                             </div>
                                                         </div>

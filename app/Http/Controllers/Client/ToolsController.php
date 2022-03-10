@@ -464,6 +464,8 @@ class ToolsController extends BaseController
             $data['image_url'] = \Config::get('app.IMG_URL1').'30/30'.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($data['image_path']).'@webp';
             $data['show_image_url'] = \Storage::disk('s3')->url($data['image_path']);
             $data['image_id'] = uniqid();
+            $data['pdf_url'] = url('file-download' . '/pdf.png');
+            $data['ext'] = $file->getClientOriginalExtension();
             return response()->json(['data' => $data]);
         } else {
             return response()->json(['data' => $data,'error' => 'No file']);

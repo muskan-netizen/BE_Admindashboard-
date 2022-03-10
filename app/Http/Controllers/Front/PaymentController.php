@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\{Order, User, Cart, ClientCurrency, CartProduct};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Front\{FrontController, PaystackGatewayController};
+use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController};
 
 class PaymentController extends FrontController{
 
@@ -77,6 +77,10 @@ class PaymentController extends FrontController{
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
                 if($payment_option->code == 'stripe'){
                     $payment_option->title = 'Credit/Debit Card (Stripe)';
+                }elseif($payment_option->code == 'kongapay'){
+                    $payment_option->title = 'Pay Now';
+                }elseif($payment_option->code == 'mobbex'){
+                    $payment_option->title = __('Mobbex');
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -106,5 +110,27 @@ class PaymentController extends FrontController{
     public function getGatewayReturnResponse(Request $request)
     {
         return view('frontend.account.gatewayReturnResponse');
+    }
+
+    public function postPayment(Request $request, $domain='', $gateway = ''){
+        if(!empty($gateway)){
+            $function = 'postPaymentVia_'.$gateway;
+            if(method_exists($this, $function)) {
+                if(!empty($request->payment_form)){
+                    $response = $this->$function($request); // call related gateway for payment processing
+                    return $response;
+                }
+            }
+            else{
+                return $this->errorResponse("Invalid Gateway Request", 400);
+            }
+        }else{
+            return $this->errorResponse("Invalid Gateway Request", 400);
+        }
+    }
+
+    public function postPaymentVia_cashfree(Request $request){
+        $gateway = new CashfreeGatewayController();
+        return $gateway->createOrder($request);
     }
 }
