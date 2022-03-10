@@ -68,7 +68,7 @@ class CashfreeGatewayController extends FrontController
             }
             elseif($payment_form == 'wallet'){
                 $description = 'Wallet Checkout';
-                $reference_number = 'wallet_'.$user->id;
+                // $reference_number = $user->id;
             }
             if($payment_form == 'tip'){
                 $description = 'Tip Checkout';
@@ -232,10 +232,10 @@ class CashfreeGatewayController extends FrontController
         try{
             // \Log::info($response);
             // \Log::info($request->txStatus);
+            $response = $request->data;
             
             if($request->txStatus == 'SUCCESS') {
                 \Log::info($request->all());
-                $response = $request->data;
                 \Log::info($response);
                 $transactionId = $response['payment']['cf_payment_id'];
                 $user_id = $cart_id = $payment_form = $order_number = '';
