@@ -1048,7 +1048,7 @@ class OrderController extends FrontController
                         \Log::info('In order 2');
                         $vendorDetail = $vendor_value->vendor;
                         if ($vendorDetail->auto_accept_order == 0 && $vendorDetail->auto_reject_time > 0) {
-                        \Log::info('In order 2');
+                        \Log::info('In order 3');
                             $clientDetail = CP::on('mysql')->where(['code' => $preferences->client_code])->first();
                             AutoRejectOrderCron::on('mysql')->create(['database_host' => $clientDetail->database_path, 'database_name' => $clientDetail->database_name, 'database_username' => $clientDetail->database_username, 'database_password' => $clientDetail->database_password, 'order_vendor_id' => $vendor_value->id, 'auto_reject_time' => Carbon::now()->addMinute($vendorDetail->auto_reject_time)]);
                         }
