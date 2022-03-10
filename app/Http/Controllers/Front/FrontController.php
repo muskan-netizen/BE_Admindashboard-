@@ -87,7 +87,7 @@ class FrontController extends Controller
        $preferences = Session::get('preferences');
        $primary = ClientLanguage::orderBy('is_primary','desc')->first();
        $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-       ->select('categories.id', 'categories.icon', 'categories.slug', 'categories.parent_id', 'cts.name')->distinct('categories.id');
+       ->select('categories.id', 'categories.icon', 'categories.icon_2', 'categories.slug', 'categories.parent_id', 'cts.name')->distinct('categories.id');
         $status = $this->field_status;
         if ($preferences) {
             if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
