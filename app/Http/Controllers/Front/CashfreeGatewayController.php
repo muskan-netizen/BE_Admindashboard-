@@ -213,26 +213,26 @@ class CashfreeGatewayController extends FrontController
         // Notify PayFast that information has been received
         //dd('sad');
         http_response_code(200);
-        \Log::info($request->all());
+        // \Log::info($request->all());
 
         try{
             $response = $request->data;
             \Log::info($response);
-            \Log::info($response->payment);
-            switch ($response->payment->payment_status) {
+            // \Log::info($response->payment);
+            switch ($response['payment']['payment_status']) {
                 case 'SUCCESS':
-                    $transactionId = $response->payment->cf_payment_id;
+                    $transactionId = $response['payment']['cf_payment_id'];
                     $user_id = $cart_id = $payment_form = $order_number = '';
-                    $amount = $response->order->order_amount;
-                    if($response->order->order_tags){
-                        $tags = $response->order->order_tags;
-                        $payment_form = $tags->payment_form;
-                        $user_id = $tags->user_id;
+                    $amount = $response['order']['order_amount'];
+                    if($response['order']['order_tags']){
+                        $tags = $response['order']['order_tags'];
+                        $payment_form = $tags['payment_form'];
+                        $user_id = intval($tags['user_id']);
                     }
 
                     if($payment_form == 'cart'){
-                        $order_number = $response->order->order_id;
-                        $cart_id = $response->order->order_tags->cart_id ?? '';
+                        $order_number = $response['order']['order_id'];
+                        $cart_id = $response['order']['order_tags']['cart_id'] ?? '';
                         $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                         if ($order) {
                             $order->payment_status = 1;
