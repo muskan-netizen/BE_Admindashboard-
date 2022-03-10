@@ -227,7 +227,7 @@ class CashfreeGatewayController extends FrontController
         // Notify cashfree that information has been received
         //dd('sad');
         
-        // \Log::info($request->all());
+        \Log::info($request->all());
 
         try{
             // \Log::info($response);
