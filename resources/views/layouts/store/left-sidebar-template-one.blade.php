@@ -22,11 +22,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 ->get();
 @endphp
 <header class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
-    @if (Auth::check())
-    @include('layouts.store/topbar-auth-template-one')
-    @else
-    @include('layouts.store/topbar-guest-template-one')
-    @endif
+    @include('layouts.store/topbar-template-one')
     <!-- Start Cab Booking Header From Here -->
     <div class="cab-booking-header">
         <div class="container">

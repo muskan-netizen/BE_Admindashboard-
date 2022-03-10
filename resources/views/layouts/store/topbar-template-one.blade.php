@@ -134,6 +134,7 @@ $preference = $client_preference_detail;
                     <li class="onhover-dropdown mobile-account"> <i class="fa fa-user" aria-hidden="true"></i>
                         {{__('My Account')}}
                         <ul class="onhover-show-div">
+                        @if(Auth::user())
                             @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                 <li>
                                     <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
@@ -145,6 +146,14 @@ $preference = $client_preference_detail;
                             <li>
                                 <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
                             </li>
+                        @else
+                        <li>
+                            <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
+                        </li>
+                        <li>
+                            <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
+                        </li>
+                        @endif
                         </ul>
                     </li>
                 </ul>
@@ -274,12 +283,6 @@ $preference = $client_preference_detail;
                     </li>
                 @endforeach
             </ul>
-            <!-- <h6>Change Theme</h6>
-            @if($client_preference_detail->show_dark_mode == 1)
-            <ul class="list-inline">
-                <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
-            </ul>
-            @endif -->
         </div>
       </div>
     </div>
