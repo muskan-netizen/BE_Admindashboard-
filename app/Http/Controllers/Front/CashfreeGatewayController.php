@@ -231,7 +231,7 @@ class CashfreeGatewayController extends FrontController
 
         try{
             // \Log::info($response);
-            // \Log::info($response->payment);
+            \Log::info($request->txStatus);
             
             if($request->txStatus == 'SUCCESS') {
                 $response = $request->data;
