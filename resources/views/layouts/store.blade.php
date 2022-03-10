@@ -56,7 +56,7 @@ else if($client_preference_detail->show_dark_mode == 2){
  </style>
 @endif
 @php
-$body_class = ""; 
+$body_class = "";
 if(isset($set_template))
 {
   if($set_template->template_id == 1)
@@ -80,7 +80,7 @@ if(isset($set_template))
   @endif
 <header>
     <div class="mobile-fix-option_al"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
+    {{--@if(isset($set_template)  && $set_template->template_id == 1)
     @include('layouts.store/left-sidebar-template-one')
     @elseif(isset($set_template)  && $set_template->template_id == 2)
     @include('layouts.store/left-sidebar')
@@ -88,10 +88,10 @@ if(isset($set_template))
     @include('layouts.store/left-sidebar-template-two')
     @else
     @include('layouts.store/left-sidebar-template-one')
-    @endif
+    @endif--}}
 </header>
 @yield('content')
-  @if(isset($set_template)  && $set_template->template_id == 1)
+  {{--@if(isset($set_template)  && $set_template->template_id == 1)
   @include('layouts.store/footer-content-template-one')
   @elseif(isset($set_template)  && $set_template->template_id == 2)
   @include('layouts.store/footer-content')
@@ -99,7 +99,7 @@ if(isset($set_template))
 
   @include('layouts.store/footer-content-template-two')
   @else
-  @endif
+  @endif--}}
   @include('layouts.store/footer')
   <div class="loader_box" style="display: none;">
     <div class="spinner-border text-danger m-2 showLoader" role="status"></div>

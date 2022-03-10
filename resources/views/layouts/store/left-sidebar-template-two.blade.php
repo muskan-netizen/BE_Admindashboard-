@@ -26,7 +26,8 @@ $pages = \App\Models\Page::with([
 @endsection
 
 <header id="al_new_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
-    @include('layouts.store/topbar-template-two')
+    {{--@include('layouts.store/topbar-template-two')--}}
+    @include('layouts.store/topbar-template-mobile-two')
     <!-- Start Cab Booking Header From Here -->
     <div class="cab-booking-header">
         <div class="container">

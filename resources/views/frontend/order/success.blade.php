@@ -4,7 +4,7 @@
 <section class="section-b-space light-layout">
     <div class="container">
         <div class="row">
-            <div class="col-md-12 mt-5 mb-5">
+            <div class="col-md-12 my-1">
                 <div class="success-text">
                 	<i class="fa fa-check-circle" aria-hidden="true"></i>
                     <h2>{{__('Thank You')}}</h2>
@@ -18,9 +18,9 @@
         </div>
     </div>
 </section>
-<section class="section-b-space">
+<section class="section-b-space_al p-0 mt-2">
     <div class="container position-relative">
-        <div class="error_msg">{{__('You have earned')}} {{ (int)$order->loyalty_points_earned }} {{__('points with this order.')}}</div>
+        <div class="error_msg mb-2">{{__('You have earned')}} {{ (int)$order->loyalty_points_earned }} {{__('points with this order.')}}</div>
         <div class="row">
             <div class="col-lg-6">
                 <div class="product-order">
@@ -79,7 +79,7 @@
                                 <li>{{__('Subscription Discount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)}}</span></li>
                             @endif
                             <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_amount * @$clientCurrency->doller_compare)}}</span></li>
-                        
+
                             @if($order->loyalty_amount_saved > 0)
                                 <li>{{__('Loyalty Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->loyalty_amount_saved * @$clientCurrency->doller_compare)}}</span></li>
                             @endif

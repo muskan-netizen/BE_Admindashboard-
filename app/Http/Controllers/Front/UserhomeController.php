@@ -267,14 +267,14 @@ class UserhomeController extends FrontController
                         $q2->whereDate('start_date_time', '<=', Carbon::now())
                             ->whereDate('end_date_time', '>=', Carbon::now());
                     });
-                })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get(); 
+                })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
             $mobile_banners = MobileBanner::where('status', 1)->where('validity_on', 1)
                 ->where(function ($q) {
                     $q->whereNull('start_date_time')->orWhere(function ($q2) {
                         $q2->whereDate('start_date_time', '<=', Carbon::now())
                             ->whereDate('end_date_time', '>=', Carbon::now());
                     });
-                })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get(); 
+                })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
 
 
             $home_page_labels = CabBookingLayout::where('is_active', 1)->where('for_no_product_found_html',0)->orderBy('order_by');
@@ -307,7 +307,7 @@ class UserhomeController extends FrontController
             }elseif(isset($set_template)  && $set_template->template_id == 2){
                 $view_page = "home";
             }elseif(isset($set_template)  && $set_template->template_id == 3){
-                 $view_page = "home-template-two";
+                 $view_page = "home-template-two-mobile";
             }
             return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
 
