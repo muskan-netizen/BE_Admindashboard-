@@ -216,7 +216,7 @@ class CashfreeGatewayController extends FrontController
 
         try{
             $response = $request->data;
-
+            \Log::info($request->data);
             switch ($response->payment->payment_status) {
                 case 'SUCCESS':
                     $transactionId = $response->payment->cf_payment_id;
