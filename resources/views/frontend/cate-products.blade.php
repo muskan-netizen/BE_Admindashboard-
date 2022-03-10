@@ -325,6 +325,7 @@
             </div>
         </div>
     </div>
+    <input type="hidden" id="vendor_id" value="{{ isset($vendor_id) ? $vendor_id : ''}}">
 </section>
 @endsection
 @section('script')
@@ -350,10 +351,12 @@
     $('.sortingFilter').click(function(){
         filterProducts();
     });
+
     function filterProducts(){
         var brands = [];
         var variants = [];
         var options = [];
+        var vendor_id =$("#vendor_id").val();
         $('.productFilter').each(function () {
             var that = this;
             if(this.checked == true){
@@ -376,6 +379,7 @@
             data: {
                 "_token": "{{ csrf_token() }}",
                 "brands": brands,
+                "vendor_id": vendor_id,
                 "variants": variants,
                 "options": options,
                 "range": range,
