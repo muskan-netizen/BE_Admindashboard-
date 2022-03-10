@@ -198,16 +198,16 @@ class CashfreeGatewayController extends FrontController
                 if($request->payment_form == 'cart'){
                     $order = Order::where('order_number', $request->order_id)->first();
                     if($order){
-                        // $wallet_amount_used = $order->wallet_amount_used;
-                        // if($wallet_amount_used > 0){
-                        //     $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                        //     if(!$transaction){
-                        //         $wallet = $user->wallet;
-                        //         $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
-                        //     }else{
-                        //         return Redirect::to(route('showCart'))->with('error', 'Your order has already been cancelled');
-                        //     }
-                        // }
+                        $wallet_amount_used = $order->wallet_amount_used;
+                        if($wallet_amount_used > 0){
+                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                            if(!$transaction){
+                                $wallet = $user->wallet;
+                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                            }else{
+                                return Redirect::to(route('showCart'))->with('error', 'Your order has already been cancelled');
+                            }
+                        }
                     }
                     
                     return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled');
