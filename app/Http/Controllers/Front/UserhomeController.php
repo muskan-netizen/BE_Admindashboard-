@@ -258,7 +258,7 @@ class UserhomeController extends FrontController
             return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
         }
     }
-    public function index(Request $request)
+    public function index(Request $request, $domain='')
     {
         try {
             $home = array();
@@ -732,14 +732,15 @@ class UserhomeController extends FrontController
             $products = $products->where($where, 1);
         }
         $pndCategories = Category::where('type_id', 7)->pluck('id');
-        if (is_array($venderIds)) {
-            $products = $products->whereIn('vendor_id', $venderIds);
-        }
+        // if (is_array($venderIds)) {
+        //     $products = $products->whereIn('vendor_id', $venderIds);
+        // }
         if ($pndCategories) {
             $products = $products->whereNotIn('category_id', $pndCategories);
         }
-        $products = $products->whereHas('vendor', function($q) use ($type){
+        $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
                     $q->where('status',1);
+                    $q->whereIn('id',$venderIds);
                     $q->where($type, 1);
                 })->where('is_live', 1)->take(10)->inRandomOrder()->get();
         if (!empty($products)) {
@@ -749,7 +750,7 @@ class UserhomeController extends FrontController
                 }
             }
         }
-        return $products;
+       return $products;
         //pr( $products->toArray());
     }
 
@@ -1033,6 +1034,7 @@ class UserhomeController extends FrontController
             $vendors = $vendors->take(25)->get();
             $vendor_ids = $vendor_set->pluck('id');
 
+
             foreach ($vendors as $key => $value) {
                 $value->vendorRating = $this->vendorRating($value->products);
                 // $value->name = Str::limit($value->name, 15, '..');
@@ -1230,7 +1232,9 @@ class UserhomeController extends FrontController
         else
         $new_product_detail  = [];
         if (isset($slug) && $slug == 'featured_products'){
+
             $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
+
             foreach ($feature_product_details as  $feature_product_detail) {
                 $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
                 $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
