@@ -215,8 +215,9 @@ class CashfreeGatewayController extends FrontController
         \Log::info($request->all());
 
         try{
-            $response = json_encode($request->data);
+            $response = $request->data;
             \Log::info($response);
+            \Log::info($response->payment);
             switch ($response->payment->payment_status) {
                 case 'SUCCESS':
                     $transactionId = $response->payment->cf_payment_id;
