@@ -236,8 +236,7 @@ class CashfreeGatewayController extends FrontController
             \Log::info($response);
             \Log::info($response['payment']);
             
-            if($request->txStatus == 'SUCCESS') {
-                
+            if(!empty($response) && ($response['payment']['payment_status'] == 'SUCCESS')) {
                 $transactionId = $response['payment']['cf_payment_id'];
                 $user_id = $cart_id = $payment_form = $order_number = '';
                 $amount = $response['order']['order_amount'];
