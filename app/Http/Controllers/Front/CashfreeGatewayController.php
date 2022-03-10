@@ -51,7 +51,7 @@ class CashfreeGatewayController extends FrontController
                 'customer_email' => $user->email,
                 'customer_phone' => $user->phone_number
             );
-            $order_tags = ['user_id' => $user->id, 'payment_form' => $payment_form];
+            $order_tags = ['user_id' => strval($user->id), 'payment_form' => $payment_form];
             $reference_number = $description = '';
             $returnUrlParams = '?order_id={order_id}&order_token={order_token}&gateway=cashfree&amount=' . $request->amount . '&payment_form=' . $payment_form;
 
@@ -60,7 +60,7 @@ class CashfreeGatewayController extends FrontController
                 $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
                 $request->request->add(['cart_id' => $cart->id]);
                 $reference_number = $request->order_number;
-                $order_tags['cart_id'] = $cart->id;
+                $order_tags['cart_id'] = strval($cart->id);
                 $order_tags['order_number'] = $reference_number;
 
                 $order = Order::where('order_number', $reference_number)->first();
