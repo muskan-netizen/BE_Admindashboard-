@@ -130,9 +130,8 @@ class FrontController extends Controller
                               //  ->orderBy('categories.position', 'asc')
                                 ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
         if ($categories) {
-            $categories = $this->buildTree($categories->toArray());
+            $categories = $this->buildTree($categories); 
         }
-
 
         return $categories;
     }
