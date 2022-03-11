@@ -6,7 +6,7 @@ use Auth, Log, Redirect, Session;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Client\{BaseController};
-use App\Models\{ClientCurrency, PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProductAddon, OrderProduct, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, VendorConnectedAccount};
+use App\Models\{ClientCurrency, PaymentOption, PayoutOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProductAddon, OrderProduct, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, VendorConnectedAccount};
 
 class PagarmeController extends BaseController
 {
@@ -21,7 +21,7 @@ class PagarmeController extends BaseController
 
 	public function __construct()
   	{
-		$pagarme_creds = PaymentOption::getCredentials('pagarme');
+		$pagarme_creds = PayoutOption::getCredentials('pagarme');
 	    $creds_arr = json_decode($pagarme_creds->credentials);
 	    $this->api_key = $creds_arr->api_key??'';
 	    $this->secret_key = $creds_arr->secret_key??'';
