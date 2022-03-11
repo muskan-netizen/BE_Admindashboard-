@@ -66,7 +66,7 @@ class CartController extends FrontController
         $guest_user = true;
         if ($user) {
             $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
-            $addresses = UserAddress::where('user_id', $user->id)->get();
+            $addresses = UserAddress::where('user_id', $user->id)->where('status',1)->get();
             $guest_user = false;
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
@@ -526,11 +526,11 @@ class CartController extends FrontController
         $upSell_products = collect();
         $crossSell_products = collect();
         if($user){
-            $user_allAddresses = UserAddress::where('user_id', $user->id)->get();
+            $user_allAddresses = UserAddress::where('user_id', $user->id)->where('status',1)->get();
             if($address_id > 0){
                 $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->first();
             }else{
-                $address = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->first();
+                $address = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->where('status',1)->first();
                 $address_id = ($address) ? $address->id : 0;
             }
         }
@@ -1569,7 +1569,7 @@ class CartController extends FrontController
             $dispatch_domain = $this->checkIfLastMileOn();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $customer = User::find(Auth::id());
-                $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
+                $cus_address = UserAddress::where('user_id', Auth::id())->where('status',1)->orderBy('is_primary', 'desc')->first();
                 if ($cus_address) {
                     $tasks = array();
                     $vendor_details = Vendor::find($vendor_id);
