@@ -3,54 +3,57 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\AhoyController;
+
 use DB;
 use Log;
 use Auth;
+use Redirect;
 use Carbon\Carbon;
 use Omnipay\Omnipay;
-use Illuminate\Support\Facades\Validator;
-use GuzzleHttp\Client;
-use Illuminate\Http\Request;
-use App\Models\ClientPreference;
-use App\Models\Client as CP;
-use App\Http\Traits\ApiResponser;
-use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Front\FrontController;
+use App\Models\Cart;
+use App\Models\User;
+use App\Models\Page;
 use App\Models\Order;
+use GuzzleHttp\Client;
+use App\Models\Payment;
+use App\Models\Vendor;
+use App\Models\Product;
+use App\Models\OrderTax;
+use App\Models\CartAddon;
+use App\Models\UserVendor;
+use App\Models\UserDevice;
+use App\Models\CartCoupon;
+use App\Models\OrderVendor;
+use App\Models\LoyaltyCard;
+use App\Models\UserAddress;
+use App\Models\CartProduct;
+use App\Models\Client as CP;
 use App\Models\OrderProduct;
 use App\Models\EmailTemplate;
-use App\Models\Cart;
-use App\Models\CartAddon;
-use App\Models\OrderProductPrescription;
-use App\Models\CartProduct;
-use App\Models\User;
-use App\Models\Product;
-use App\Models\OrderProductAddon;
-use App\Models\Payment;
 use App\Models\ClientCurrency;
-use App\Models\OrderVendor;
-use App\Models\UserAddress;
-use App\Models\Vendor;
-use App\Models\CartCoupon;
-use App\Models\CartProductPrescription;
-use App\Models\LoyaltyCard;
-use App\Models\NotificationTemplate;
 use App\Models\VendorOrderStatus;
-use App\Models\OrderTax;
+use App\Models\OrderProductAddon;
+use App\Models\NotificationTemplate;
+use App\Models\CartProductPrescription;
+use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
-use App\Models\UserDevice;
-use App\Models\UserVendor;
-use App\Models\VendorOrderDispatcherStatus;
-use App\Models\Page;
+use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
+use App\Models\VendorOrderDispatcherStatus;
+
+use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
 use App\Models\PaymentOption;
+use App\Models\CartDeliveryFee;
+use App\Models\ClientPreference;
+use App\Http\Traits\ApiResponser;
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Models\AutoRejectOrderCron;
-use App\Models\CartDeliveryFee;
-use Redirect;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\LalaMovesController;
 
 
@@ -337,6 +340,7 @@ class OrderController extends FrontController
 
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
+                    $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
                     $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
                 }
@@ -1040,17 +1044,12 @@ class OrderController extends FrontController
                     'type' => 'cart'
                 ]);
             }
-            \Log::info('done order');
             $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
             if (!in_array($request->payment_option_id, $ex_gateways)) {
-                \Log::info('In order');
                 if (!empty($order->vendors)) {
-                 \Log::info('In order 1');
                     foreach ($order->vendors as $vendor_value) {
-                        \Log::info('In order 2');
                         $vendorDetail = $vendor_value->vendor;
                         if ($vendorDetail->auto_accept_order == 0 && $vendorDetail->auto_reject_time > 0) {
-                        \Log::info('In order 3');
                             $clientDetail = CP::on('mysql')->where(['code' => $preferences->client_code])->first();
                             AutoRejectOrderCron::on('mysql')->create(['database_host' => $clientDetail->database_path, 'database_name' => $clientDetail->database_name, 'database_username' => $clientDetail->database_username, 'database_password' => $clientDetail->database_password, 'order_vendor_id' => $vendor_value->id, 'auto_reject_time' => Carbon::now()->addMinute($vendorDetail->auto_reject_time)]);
                         }
