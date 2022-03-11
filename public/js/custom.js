@@ -3657,8 +3657,7 @@ $(document).ready(function() {
         var quan = $(this).val();
         var str = $('#instock').val();
 
-
-        if (quan > str) {
+        if (parseInt(quan) > parseInt(str)) {
             Swal.fire({
                 // title: "Warning!",
                 text: "Quantity is not available in stock",
@@ -3669,6 +3668,7 @@ $(document).ready(function() {
             $('.quantity_count').val(str);
         }
     });
+
 
     window.success_error_alert = function success_error_alert(responseClass, message, element) {
         $(element).find(".alert").html('');

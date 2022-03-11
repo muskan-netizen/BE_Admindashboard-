@@ -3,54 +3,57 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\AhoyController;
+
 use DB;
 use Log;
 use Auth;
+use Redirect;
 use Carbon\Carbon;
 use Omnipay\Omnipay;
-use Illuminate\Support\Facades\Validator;
-use GuzzleHttp\Client;
-use Illuminate\Http\Request;
-use App\Models\ClientPreference;
-use App\Models\Client as CP;
-use App\Http\Traits\ApiResponser;
-use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Front\FrontController;
+use App\Models\Cart;
+use App\Models\User;
+use App\Models\Page;
 use App\Models\Order;
+use GuzzleHttp\Client;
+use App\Models\Payment;
+use App\Models\Vendor;
+use App\Models\Product;
+use App\Models\OrderTax;
+use App\Models\CartAddon;
+use App\Models\UserVendor;
+use App\Models\UserDevice;
+use App\Models\CartCoupon;
+use App\Models\OrderVendor;
+use App\Models\LoyaltyCard;
+use App\Models\UserAddress;
+use App\Models\CartProduct;
+use App\Models\Client as CP;
 use App\Models\OrderProduct;
 use App\Models\EmailTemplate;
-use App\Models\Cart;
-use App\Models\CartAddon;
-use App\Models\OrderProductPrescription;
-use App\Models\CartProduct;
-use App\Models\User;
-use App\Models\Product;
-use App\Models\OrderProductAddon;
-use App\Models\Payment;
 use App\Models\ClientCurrency;
-use App\Models\OrderVendor;
-use App\Models\UserAddress;
-use App\Models\Vendor;
-use App\Models\CartCoupon;
-use App\Models\CartProductPrescription;
-use App\Models\LoyaltyCard;
-use App\Models\NotificationTemplate;
 use App\Models\VendorOrderStatus;
-use App\Models\OrderTax;
+use App\Models\OrderProductAddon;
+use App\Models\NotificationTemplate;
+use App\Models\CartProductPrescription;
+use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
-use App\Models\UserDevice;
-use App\Models\UserVendor;
-use App\Models\VendorOrderDispatcherStatus;
-use App\Models\Page;
+use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
+use App\Models\VendorOrderDispatcherStatus;
+
+use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
 use App\Models\PaymentOption;
+use App\Models\CartDeliveryFee;
+use App\Models\ClientPreference;
+use App\Http\Traits\ApiResponser;
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Models\AutoRejectOrderCron;
-use App\Models\CartDeliveryFee;
-use Redirect;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\LalaMovesController;
 
 
@@ -337,6 +340,7 @@ class OrderController extends FrontController
 
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
+                    $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
                     $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
                 }
