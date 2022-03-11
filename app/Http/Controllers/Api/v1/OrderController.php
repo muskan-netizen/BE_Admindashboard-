@@ -165,7 +165,7 @@ class OrderController extends BaseController
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                     $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
-                    $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0; 
+                    $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
                     $total_container_charges = 0;
                     $vendor_total_container_charges = 0;
@@ -195,7 +195,7 @@ class OrderController extends BaseController
                             $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
                             $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
                             $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
-                            
+
                             $total_container_charges = $total_container_charges + $quantity_container_charges;
                             $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
                             $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
@@ -898,7 +898,7 @@ class OrderController extends BaseController
                     } else {
                         $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     }
-
+                    $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
@@ -1113,7 +1113,7 @@ class OrderController extends BaseController
                     'vendors.tempCart.cartProducts.pvariant.media.pimage.image',
                     'vendors.tempCart.cartProducts.product.translation' => function ($q) use ($language_id) {
                         $q->where('language_id', $language_id)->groupBy('product_id');
-                    }, 
+                    },
                     'vendors.tempCart.cartProducts.addon.set' => function ($qry) use ($language_id) {
                         $qry->where('language_id', $language_id);
                     },

@@ -1199,6 +1199,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var update_cart_slot = "{{ route('updateCartSlot') }}";
     var apply_promocode_coupon_url = "{{ route('verify.promocode') }}";
     var update_cart_schedule = "{{route('cart.updateSchedule')}}";
+    var verifyaccounturl = "{{route('user.verify')}}";
     var check_schedule_slots = "{{route('cart.check_schedule_slots')}}";
     var login_via_username_url = "{{route('customer.loginViaUsername')}}";
     var forgot_password_url = "{{route('customer.forgotPass')}}";
