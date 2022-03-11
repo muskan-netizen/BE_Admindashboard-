@@ -1687,6 +1687,7 @@
         var payment_stripe_url = "{{ route('payment.stripe') }}";
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
         var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+        var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
         var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
         var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
         var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";
