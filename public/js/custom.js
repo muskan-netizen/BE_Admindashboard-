@@ -910,6 +910,8 @@ $(document).ready(function() {
                 payWithKPG('');
             }else if(payment_option_id == 22) {
                 payWithCcAvenue('');
+            }else if(payment_option_id == 24) {
+                paymentViaCashfree('');
             }
         } else {
             _this.attr("disabled", false);
@@ -1989,6 +1991,8 @@ $(document).ready(function() {
             payWithKPG('');
         }else if (payment_option_id == 22) {
             payWithCcAvenue('');
+        }else if (payment_option_id == 24) {
+            paymentViaCashfree('', payment_option_id, '');
         }
 
     });
@@ -3658,8 +3662,7 @@ $(document).ready(function() {
         var quan = $(this).val();
         var str = $('#instock').val();
 
-
-        if (quan > str) {
+        if (parseInt(quan) > parseInt(str)) {
             Swal.fire({
                 // title: "Warning!",
                 text: "Quantity is not available in stock",
@@ -3670,6 +3673,7 @@ $(document).ready(function() {
             $('.quantity_count').val(str);
         }
     });
+
 
     window.success_error_alert = function success_error_alert(responseClass, message, element) {
         $(element).find(".alert").html('');

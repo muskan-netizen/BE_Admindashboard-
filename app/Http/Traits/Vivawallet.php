@@ -11,172 +11,105 @@ trait Vivawallet{
     private $api_key;
     private $merchant_id;
     private $url;
-
-    public function __construct()
-   {
-      $konga = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'vivawallet')->where('status', 1)->first();
-      $json = json_decode($konga->credentials);
-      $this->api_key = $json->api_key;
-      $this->merchant_id = $json->merchant_id;
-   }
+    private $tokenUrl;
 
     public function credentials()
     {
-        $pay = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'vivawallet')->where('status', 1)->first();
-        $json = json_decode($pay->credentials);
-        $this->api_key = $json->api_key;
-        $this->merchant_id = $json->merchant_id;
-    }
-   
-    public function getAuthToken():object{
-        $this->credentials();
-        $endpoint='/connect/token';
-        $data=[];
-        $response=$this->postCurl($endpoint,$data);
-        return $response;
-    }
-
-    public function createOrder($token,$data){
-        $endpoint="/orders/create/adhoc";
-        $response=$this->postCurl($endpoint,$data,trim($token));
-        return $response;
-    }
-
-    public function generateAWBForShipment($token,$data){
-        $endpoint="/courier/assign/awb";
-        $response=$this->postCurl($endpoint,$data,$token);
-        return $response;
-    }
-
-    public function returnOrder($token,$data){
-        $endpoint='/orders/create/return';
-        $response=$this->postCurl($endpoint,$data,trim($token));
-        return $response;
+        // $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'vivawallet')->where('status', 1)->first();
+        // $json = json_decode($viva->credentials);
+        $this->api_key = 'mo8qAqP740h172MMV8RakEepVr5PuO';
+        $this->merchant_id = '8d527m2ndy9nnbmhgqgtxv7frma27e444hwdnwzipw804.apps.vivapayments.com';
         
     }
-
-    public function cancelOrder($token,$ids){
-        $endpoint="orders/cancel";
-        $data = [
-            'ids' => $ids
-        ];
-        // dd($data);
-        $response=$this->postCurl($endpoint,$data,$token);
-        return $response;
-    }
-
-    public function trackingThroughAWB($token,$awbCode){
-        $endpoint="/courier/track/awb/$awbCode";
-        $response=$this->getCurl($endpoint,'',$token);
-        return $response;
-    }
-
-    public function trackingThroughShipmentId($token,$shipmentId){
-        $endpoint="/shipments/$shipmentId";
-        $response=$this->getCurl($endpoint,'',$token);
-        return $response;
-    }
-
-    
-
-    public function updateOrderPickupAddress($token,$data)
-    {
-        $endpoint="orders/address/pickup";
-        $response=$this->patchCurl($endpoint,$data,$token);
-        return $response;
-    }
-
-    public function updateOrderDeliveryAddress($token,$data){
-        $endpoint="orders/address/update";
-        $response=$this->postCurl($endpoint,$data,$token);
-        return $response;
-    }
-
-
-    public function addAddress($token,$vid,$name){
-        $endpoint='/settings/company/addpickup';
-        $data = array (
-              'pickup_location' => $name,
-              'name' => $vid->name,
-              'email' => $vid->email,
-              'phone' => $vid->phone_no,
-              'address' => $vid->address,
-              'address_2' => '',
-              'city' => $vid->city,
-              'state' => $vid->state,
-              'country' => $vid->country,
-              'pin_code' => $vid->pincode,
-            );
-        $response=$this->postCurl($endpoint,$data,trim($token));
-        return $response;
-    //   "success": true
-    //   "address": {
-    //   "company_id": 2001023
-    //   "pickup_code": "Inderjit_1642589053"
-    //      }
-
-    }
-
-    public function checkCourierService($token,$vid,$weight = null)
-    {
-        $vendors = array();
-        $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
-        $vendor_details = Vendor::find($vid);
-        if($cus_address->pincode!='')
-        {
+   
+    public function getAuthTokenViva():object{
         $this->credentials();
-        $endpoint='/courier/serviceability';
-        $data = array (
-          'pickup_postcode' => ($vendor_details->pincode) ?? null,
-          'delivery_postcode' => ($cus_address->pincode)?? null,
-          'cod' => 0,
-          'weight' => (($weight)?$weight:$this->weight),
-          //'length' => 15,
-          //'breadth' => 10,
-          //'height' => 5,
-          //'declared_value' => 50,
-        );
-        $result = $this->getCurl($endpoint,$data,trim($token));
-        //courier_name , rate, courier_company_id , etd , etd_hours , estimated_delivery_days
-        if($result->status == '200'){
-          $result = $result->data->available_courier_companies;
-          foreach($result as $key => $data)
-          {
-              $vendors[] = array(
-                'type'=>'SR',
-                'courier_name' => $data->courier_name,
-                'rate' => number_format(round($data->rate), 2, '.', ''),
-                'courier_company_id' => $data->courier_company_id,
-                'etd' => $data->etd,
-                'etd_hours' => $data->etd_hours,
-                'estimated_delivery_days' => $data->estimated_delivery_days,
-                'code' => 'SR_'.$data->courier_company_id
-            );
-          }
-        }
-        }
-        return $vendors;
+            // if($this->test_mode=='1'){
+            //     $this->tokenUrl = 'https://demo-accounts.vivapayments.com/connect/token';            
+            //     }else{
+            //     $this->tokenUrl = 'https://accounts.vivapayments.com/connect/token';
+            // }
+        $this->tokenUrl = 'https://demo-accounts.vivapayments.com/connect/token';    
+        $token = base64_encode($this->merchant_id.':'.$this->api_key);
+        $response = $this->postCurlToken($token);
+        return $response;
     }
 
+
+    private function postCurlToken($token):object{
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->tokenUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,"grant_type=client_credentials");
+        $headers = array();
+        $headers[] = 'Accept: */*';
+        $headers[] = "Authorization: Basic ${token}";
+         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+        return json_decode($result); 
+    }
+
+
+    public function createOrderPaymentLink($data = ''){
+        $this->credentials();
+        $token = $this->getAuthTokenViva();
+            // if($this->test_mode=='1'){
+            //     $this->payUrl = 'https://demo-api.vivapayments.com/checkout/v2/orders';            
+            //     }else{
+            //     $this->payUrl = 'https://api.vivapayments.com/checkout/v2/orders';
+            // }
+        $this->payUrl = 'https://demo-api.vivapayments.com/checkout/v2/orders'; 
+
+
+        $postFields  = [
+            'amount'              => 10000,
+            'customerTrns'        => 'This is a description displayed to the customer',
+            'customer'            => [
+                'email'       => 'test@vivawallet.com',
+                'fullName'    => 'George Seferis',
+                'phone'       => '697845125',
+                'countryCode' => 'GR',
+                'requestLang' => 'el-GR'
+            ],
+            'paymentTimeout'      => 0,
+            'preauth'             => false,
+            'allowRecurring'      => false,
+            'maxInstallments'     => 0,
+            'paymentNotification' => true,
+            'tipAmount'           => 0,
+            'disableExactAmount'  => false,
+            'disableCash'         => false,
+            'disableWallet'       => false,
+            'sourceCode'          => 'Default',
+            'merchantTrns'        => 'This is a short description that helps you uniquely identify the transaction'
+        ];
+
+        $response=$this->postCurl($this->payUrl,$postFields,$token->access_token);
+        return $response;
+    }
 
 
     private function postCurl($endpoint,$data,$token=null):object{
                 $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $this->api_url.''.$endpoint);
+                curl_setopt($ch, CURLOPT_URL, $endpoint);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_ENCODING, '');
+                curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 0);
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION,true);
+                curl_setopt($ch, CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST,'POST');
                 curl_setopt($ch, CURLOPT_POST, 1);
-                if(is_null($token)){
-                    curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($data));
-                }else{
-                    curl_setopt($ch, CURLOPT_POSTFIELDS,"grant_type=client_credentials");
-                }
+                curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($data));
                 $headers = array();
                 $headers[] = 'Accept: */*';
-                if(!is_null($token)){
-                   $headers[] = "Authorization: Basic ${token}";
-                }
-
-              $headers[] = 'Content-Type: application/json';
+                $headers[] = "Authorization: Bearer ${token}";
+                $headers[] = 'Content-Type: application/json';
                  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
                 $result = curl_exec($ch);
                 if (curl_errno($ch)) {
@@ -215,26 +148,6 @@ trait Vivawallet{
             return json_decode($result); 
     }
 
-    private function patchCurl($endpoint,$data,$token=null):object{
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $this->api_url.''.$endpoint);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$data);
-        $headers = array();
-        $headers[] = 'Accept: */*';
-        if(!is_null($token)){
-            $headers[] = "Authorization: Bearer $token";
-        }
-        $headers[] = 'Content-Type: application/json';
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
-        }
-        curl_close($ch);
-        return json_decode($result); 
-
-    }
+   
 
 }

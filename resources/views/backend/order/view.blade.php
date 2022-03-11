@@ -115,7 +115,7 @@ $timezone = Auth::user()->timezone;
                                     else
                                     $open_option = [$order->vendors->first()->order_status_option_id + 1];
                                     @endphp
-
+                                    
                                     <!-- List of completed order status -->
                                 @if(count($vendor_order_statuses))
                                     @foreach ($vendor_order_statuses as $key => $vendor_order_status)
@@ -394,7 +394,7 @@ $timezone = Auth::user()->timezone;
 
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0 h-100">
-                    <div class="card-body">
+                    <div class="col-lg-6 card-body">
                         <h4 class="header-title mb-3">{{ __("Delivery Information") }}</h4>
                         <h5 class="font-family-primary fw-semibold">{{$order->user->name}}</h5>
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Email") }}:</span> {{ $order->user->email ? $order->user->email : ''}}</p>
@@ -411,6 +411,13 @@ $timezone = Auth::user()->timezone;
                         @endif
                         <p class="mb-0"><span class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
                     </div>
+                    @if(isset($driver_data->name))
+                    <div class="col-lg-6 card-body">
+                        <h4 class="header-title mb-3">{{ __("Driver Information") }}</h4>
+                        <p class="mb-2"><span class="fw-semibold me-2">{{ __("Name") }}:</span> {{ $driver_data->name ? $driver_data->name : ''}}</p>
+                        <p class="mb-2"><span class="fw-semibold me-2">{{ __("Contact Number") }}:</span> {{ $driver_data->phone ? $driver_data->phone : ''}}</p>
+                    </div>
+                    @endif
                 </div>
             </div>
 

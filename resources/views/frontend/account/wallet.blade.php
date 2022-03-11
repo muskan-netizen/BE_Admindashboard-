@@ -83,10 +83,10 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row my-3">
             <div class="col-lg-3 profile-sidebar">
                 <div class="account-sidebar"><a class="popup-btn">{{__('My Account')}}</a></div>
-                <div class="dashboard-left">
+                <div class="dashboard-left mb-3">
                     <div class="collection-mobile-back">
                         <span class="filter-back d-lg-none d-inline-block">
                             <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
@@ -395,6 +395,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+    var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";

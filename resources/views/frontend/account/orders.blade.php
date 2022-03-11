@@ -28,7 +28,7 @@
     @php
     $timezone = Auth::user()->timezone;
     @endphp
-    
+
     <style type="text/css">
         .productVariants .firstChild {
             min-width: 150px;
@@ -97,10 +97,10 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row my-3">
                 <div class="col-lg-3">
                     <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
-                    <div class="dashboard-left">
+                    <div class="dashboard-left mb-3">
                         <div class="collection-mobile-back"><span class="filter-back d-lg-none d-inline-block"><i
                                     class="fa fa-angle-left" aria-hidden="true"></i>{{ __('Back') }}</span></div>
                         @include('layouts.store/profile-sidebar')
@@ -143,7 +143,7 @@
                                                 </li>
                                             @endif
                                             <li class="nav-item">
-                                                <a class="nav-link {{ Request::query('pageType') == 'pastOrders' ? 'active show' : '' }}"
+                                                <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
                                                         class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . $ordertitle) }}</a>
@@ -725,8 +725,8 @@
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
-                                                                                           
-                                                                                            @if (isset($hidereturn) && $hidereturn != 1 && $vendor->vendor->return_request)
+
+                                                                                            @if (isset($hidereturn) && $hidereturn != 1 && isset($vendor->vendor->return_request) && $vendor->vendor->return_request)
                                                                                                 <button
                                                                                                     class="return-order-product btn btn-solid"
                                                                                                     data-id="{{ $order->id ?? 0 }}"
@@ -1687,6 +1687,7 @@
         var payment_stripe_url = "{{ route('payment.stripe') }}";
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
         var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+        var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
         var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
         var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
         var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";
