@@ -86,6 +86,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         </ul>
                     </li>
                     @endif
+                    @if(count($languageList) > 1)
                     <li class="onhover-dropdown change-language">
                         <a href="javascript:void(0)">{{$applocale}}
                         <span class="icon-ic_lang align-middle"></span>
@@ -98,15 +99,10 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 </li>
                             @endforeach
 
-                            {{-- language switch --}}
-                            {{-- <li class={{ $applocale === 'en' ? "active" : "" }} > <a href="/switch/language?lang=en" class="customerLang" langid="1">English</a> </li>
-                            <li class={{ $applocale === 'ar' ? "active" : "" }} > <a href="/switch/language?lang=ar" class="customerLang" langid="1">Arabic</a> </li>
-                            <li class={{ $applocale === 'fr' ? "active" : "" }} > <a href="/switch/language?lang=fr" class="customerLang" langid="1">French</a> </li>
-                            <li class={{ $applocale === 'de' ? "active" : "" }} > <a href="/switch/language?lang=de" class="customerLang" langid="1">Germany</a> </li>
-                            <li class={{ $applocale === 'es' ? "active" : "" }} > <a href="/switch/language?lang=es" class="customerLang" langid="1">Spanish</a> </li> --}}
-                            {{-- language switch --}}
                         </ul>
                     </li>
+                    @endif
+                    @if(count($currencyList) > 1)
                     <li class="onhover-dropdown change-currency">
                         <a href="javascript:void(0)">{{session()->get('iso_code')}}
                         <span class="icon-ic_currency align-middle"></span>
@@ -120,9 +116,9 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 </a>
                             </li>
                             @endforeach
-
                         </ul>
                     </li>
+                    @endif
                     <li class="onhover-dropdown mobile-account">
                         <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
                         <ul class="onhover-show-div">
