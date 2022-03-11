@@ -383,6 +383,13 @@ class OrderController extends BaseController
         $user_registration_documents = UserRegistrationDocuments::get();
         //pr($user_docs->toArray() );
         $vendor_data = Vendor::where('id',$vendor_id)->first();
+        
+        $driver_data = '';
+        if($order->vendors[0]->shipping_delivery_type == 'L'){
+            $lala = new LalaMovesController();
+            $driver_data = $lala->getDeriverDetails($order->vendors[0]); 
+        }
+
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 'order' => $order,
             'vendor_order_statuses' => $vendor_order_statuses,
@@ -393,7 +400,8 @@ class OrderController extends BaseController
             'user_registration_documents' => $user_registration_documents,
             'clientCurrency' => $clientCurrency,
             'user_docs' => $user_docs,
-            'vendor_data' => $vendor_data
+            'vendor_data' => $vendor_data,
+            'driver_data' => (($driver_data)?json_decode($driver_data):'')
         ]);
     }
 

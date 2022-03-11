@@ -24,17 +24,17 @@ trait LalaMoves{
  * Country Locale Keys : Local Language type en_MY, ms_MY
  */
 
-  public function __construct()
-  {
-    $simp_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'lalamove')->where('status', 1)->first();
-    $creds_arr = json_decode($simp_creds->credentials);
-    $this->api_key = $creds_arr->api_key??'';
-    $this->secret_key = $creds_arr->secret_key ?? '';
-    $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
-    $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
-    $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
-    $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
-  }
+  // public function __construct()
+  // {
+  //   $simp_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'lalamove')->where('status', 1)->first();
+  //   $creds_arr = json_decode($simp_creds->credentials);
+  //   $this->api_key = $creds_arr->api_key??'';
+  //   $this->secret_key = $creds_arr->secret_key ?? '';
+  //   $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
+  //   $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
+  //   $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
+  //   $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
+  // }
 
   public function configDetails()
   {
@@ -349,15 +349,14 @@ public function orderDetails($orderReff)
 
   }
 
-  public function orderDriverDetail($driverId)
+  public function orderDriverDetail($orderid,$driverId)
   {
 
     $this->configDetails();
 
     $method = 'GET';
-    $path = '/v2/orders/drivers/'.$driverId;
+    $path = '/v2/orders/'.$orderid.'/drivers/'.$driverId;
     $token = $this->token($method,$path);
-
     $curl = curl_init();
     curl_setopt_array($curl, array(
       CURLOPT_URL => $this->base_url.$path,
