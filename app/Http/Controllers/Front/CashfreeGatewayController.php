@@ -238,10 +238,12 @@ class CashfreeGatewayController extends FrontController
             
             if(!empty($response) && ($response['payment']['payment_status'] == 'SUCCESS')) {
                 $transactionId = $response['payment']['cf_payment_id'];
-                $user_id = $cart_id = $payment_form = $order_number = '';
+                $user_id = $cart_id = $payment_form = $order_number = $subscription_id = '';
                 $amount = $response['order']['order_amount'];
                 if($response['order']['order_tags']){
                     $tags = $response['order']['order_tags'];
+                    $subscription_id = $tags['subscription_id'] ?? '';
+                    $order_number = $tags['order_number'] ?? '';
                     $payment_form = $tags['payment_form'];
                     $user_id = intval($tags['user_id']);
                 }
@@ -296,13 +298,11 @@ class CashfreeGatewayController extends FrontController
                     $walletController->creditWallet($request);
                 }
                 elseif($payment_form == 'tip'){
-                    $order_number = $charges[0]->metadata->order_number;
                     $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                     $orderController = new OrderController();
                     $orderController->tipAfterOrder($request);
                 }
                 elseif($payment_form == 'subscription'){
-                    $subscription = $charges[0]->metadata->subscription_id;
                     $request->request->add(['user_id' => $user_id, 'payment_option_id' => 24, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
                     $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
