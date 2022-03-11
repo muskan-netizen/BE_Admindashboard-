@@ -305,7 +305,7 @@ class CashfreeGatewayController extends FrontController
                 elseif($payment_form == 'subscription'){
                     $request->request->add(['user_id' => $user_id, 'payment_option_id' => 24, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
-                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
+                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription_id);
                 }
             }
             elseif($request->txStatus == 'FAILED'){
