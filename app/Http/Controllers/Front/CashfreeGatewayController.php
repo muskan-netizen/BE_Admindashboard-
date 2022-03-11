@@ -75,7 +75,7 @@ class CashfreeGatewayController extends FrontController
                 $order_tags['order_number'] = $request->order_number;
                 
                 $order = Order::where('order_number', $reference_number)->first();
-                $reference_number = $request->order_number;
+                // $reference_number = $request->order_number;
                 // $returnUrlParams = $returnUrlParams . '&order_id=' .$reference_number. '&order_token=' .$reference_number;
             }
             elseif($payment_form == 'subscription'){
