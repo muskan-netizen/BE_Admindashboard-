@@ -68,6 +68,7 @@ $pages = \App\Models\Page::with([
                                 </ul>
                             </li>
                         @endif
+                        @if(count($languageList) > 1)
                         <li class="onhover-dropdown change-language">
                             <a href="javascript:void(0)">{{ session()->get('locale') }}
                                 <span class="icon-ic_lang align-middle"></span>
@@ -83,6 +84,8 @@ $pages = \App\Models\Page::with([
                                 @endforeach
                             </ul>
                         </li>
+                        @endif
+                        @if(count($currencyList) > 1)
                         <li class="onhover-dropdown change-currency">
                             <a href="javascript:void(0)">{{ session()->get('iso_code') }}
                                 <span class="icon-ic_currency align-middle"></span>
@@ -100,6 +103,7 @@ $pages = \App\Models\Page::with([
                                 @endforeach
                             </ul>
                         </li>
+                        @endif
                         @if (Auth::guest())
                             <li class="onhover-dropdown mobile-account d-block">
                                 <i class="fa fa-user mr-1" aria-hidden="true"></i>{{ __('Account') }}

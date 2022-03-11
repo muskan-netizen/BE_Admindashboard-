@@ -53,11 +53,13 @@ body[dir=rtl] .vendors .slick-slider {direction: ltr;}
 /* mobile or desktop banner css start */
 .al_desktop_banner{display: block;}.al_mobile_banner{display: none;}
 @media (max-width: 767px){
-    .al_desktop_banner{display: none;}.al_mobile_banner{display: block !important;}
-    .sm.slick-initialized .slick-slide div {
-        width: max-content;
-    }
-
+.al_desktop_banner{display: none;}.al_mobile_banner{display: block !important;}
+.sm.slick-initialized .slick-slide div {width: max-content;}
+.al_menu-drawer.open li.onhover-dropdown ul.onhover-show-div li {display: block;padding: 10px 30px;}
+.al_menu-drawer.open li.onhover-dropdown ul.onhover-show-div li a{font-size: 12px;}
+#al_new_design .pixelstrap a, #al_new_design .pixelstrap a:active, #al_new_design .pixelstrap a:hover, #al_new_design .pixelstrap li a{
+    font-size: 12px;
+}
 }
 /* mobile or desktop banner css end */
 
