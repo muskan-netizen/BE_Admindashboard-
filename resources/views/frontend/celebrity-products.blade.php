@@ -22,7 +22,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-5">
                 <div class="collection-filter col-lg-3">
                     <div class="collection-filter-block bg-transparent p-0">
                         <!-- <div class="collection-mobile-back">
