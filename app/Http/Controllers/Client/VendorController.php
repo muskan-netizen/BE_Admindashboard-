@@ -353,6 +353,8 @@ class VendorController extends BaseController
             'address' => 'required',
         //    'name' => 'required|string|max:150|unique:vendors,name,' . $id,
             'name' => 'required|string|max:150',
+            'phone_no' => 'nullable|digits_between:7,12',
+            'email' => 'nullable|email',
         );
         //dd($request->all());
         $validation  = Validator::make($request->all(), $rules)->validate();

@@ -129,7 +129,9 @@ class ProfileController extends FrontController
             $user->timezone = $request->timezone;
             $user->dial_code = $request->dialCode;
             $user->description = $request->description;
-            $user->phone_number = str_replace('-', '', $request->phone_number);
+            $phonenumber = str_replace('-', '', $request->phone_number);
+            $phonenumber = str_replace(' ', '', $phonenumber);
+            $user->phone_number = $phonenumber;
             $user->save();
 
             $user_registration_documents = UserRegistrationDocuments::with('primary')->get();

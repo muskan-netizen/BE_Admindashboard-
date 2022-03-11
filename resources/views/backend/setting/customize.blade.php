@@ -1114,8 +1114,8 @@
                                         <tr>
                                         @foreach($client_languages as $key => $langs)
                                             <td>
-                                                <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
-                                                <input class="form-control" name="name[{{$k}}]" type="text" id="product_tag_name_{{$client_language->langId}}">
+                                                <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$client_language->langId}}">
+                                                <input class="form-control" name="name[{{$key}}]" type="text" id="product_tag_name_{{$client_language->langId}}">
                                             </td>
                                             @if($key == 0)
                                             <span class="text-danger error-text product_tag_err"></span>
