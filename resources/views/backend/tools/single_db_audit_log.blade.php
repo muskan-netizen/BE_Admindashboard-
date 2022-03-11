@@ -58,8 +58,10 @@
                                     <th scope="row">{{$logCount}}</th>
                                     <td>{{$audit->user->name}}</td>
                                     <td>{{$audit->event}}</td>
-                                    <td>{{ json_encode($audit->old_values, JSON_PRETTY_PRINT) }}</td>
-                                    <td> {{ json_encode($audit->new_values, JSON_PRETTY_PRINT) }} </td>
+                                   <td>
+                                       {{ json_encode($audit->old_values,JSON_PRETTY_PRINT) }}
+                                    </td>
+                                     <td> {{ json_encode($audit->new_values,JSON_PRETTY_PRINT) }} </td>
                                     <td> {{$audit->url}} </td>
                                     <td> {{$audit->ip_address}} </td>
                                     <td> {{$audit->user_agent}} </td>
