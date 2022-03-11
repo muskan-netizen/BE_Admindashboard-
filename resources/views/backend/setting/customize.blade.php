@@ -316,7 +316,7 @@
                 </div>
             </div>
             <!-- User Authentication end -->
-            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+            {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
             <!-- EDIT ORDER BY start -->
             <div class="card-box mb-0">
                 <div class="d-flex align-items-center justify-content-between mb-3">
@@ -344,8 +344,29 @@
                 </form>
             </div>
             <!-- EDIT ORDER BY start -->
-            @endif
+            @endif --}}            
         </form>
+        <!-- CANCEL ORDER BY start -->
+        <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+            <div class="card-box mb-0">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h4 class="header-title mb-0">{{ __("Cancel Order By") }}</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                </div>
+                <input type="hidden" name="send_to" value="customize">
+                <input type="hidden" name="cancel_order_modes" id="cancel_order_modes" value="1">
+                @csrf
+                <div class="row align-items-start">
+                    <div class="col-md-12">
+                        <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="is_cancel_order_user" class="mr-2 mb-0">{{ __("User") }}</label>
+                        <input type="checkbox" data-plugin="switchery" name="is_cancel_order_user" id="is_cancel_order_user" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_cancel_order_user == '1')) checked='checked' @endif>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+        </form>
+        <!-- CANCEL ORDER BY start -->
     </div><!-- User Authentication end-->
     <div class="col-md-5">
         <!-- Vendor Registration Documents start -->
@@ -1093,8 +1114,8 @@
                                         <tr>
                                         @foreach($client_languages as $key => $langs)
                                             <td>
-                                                <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
-                                                <input class="form-control" name="name[{{$k}}]" type="text" id="product_tag_name_{{$client_language->langId}}">
+                                                <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$client_language->langId}}">
+                                                <input class="form-control" name="name[{{$key}}]" type="text" id="product_tag_name_{{$client_language->langId}}">
                                             </td>
                                             @if($key == 0)
                                             <span class="text-danger error-text product_tag_err"></span>
