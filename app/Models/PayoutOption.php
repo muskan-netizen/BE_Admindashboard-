@@ -9,4 +9,9 @@ class PayoutOption extends Model
 {
     use HasFactory;
 
+    public function getCredentials($code)
+    {
+    	return self::select('credentials', 'test_mode')->where('code', $code)->where('status', 1)->first();
+    }
+
 }
