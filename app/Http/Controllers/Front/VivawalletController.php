@@ -29,16 +29,16 @@ class KongapayController extends Controller
 
    public function __construct()
    {
-      $konga = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'vivawallet')->where('status', 1)->first();
-      $json = json_decode($konga->credentials);
-      $this->api_key = $json->api_key;
-      $this->merchant_id = $json->merchant_id;
+        $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'vivawallet')->where('status', 1)->first();
+        $json = json_decode($viva->credentials);
+        $this->api_key = $json->api_key;
+        $this->merchant_id = $json->merchant_id;
    }
 
    public function createToken(Request $request)
    {
 
-        
+
 
    }
 

@@ -1040,17 +1040,12 @@ class OrderController extends FrontController
                     'type' => 'cart'
                 ]);
             }
-            \Log::info('done order');
             $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
             if (!in_array($request->payment_option_id, $ex_gateways)) {
-                \Log::info('In order');
                 if (!empty($order->vendors)) {
-                 \Log::info('In order 1');
                     foreach ($order->vendors as $vendor_value) {
-                        \Log::info('In order 2');
                         $vendorDetail = $vendor_value->vendor;
                         if ($vendorDetail->auto_accept_order == 0 && $vendorDetail->auto_reject_time > 0) {
-                        \Log::info('In order 3');
                             $clientDetail = CP::on('mysql')->where(['code' => $preferences->client_code])->first();
                             AutoRejectOrderCron::on('mysql')->create(['database_host' => $clientDetail->database_path, 'database_name' => $clientDetail->database_name, 'database_username' => $clientDetail->database_username, 'database_password' => $clientDetail->database_password, 'order_vendor_id' => $vendor_value->id, 'auto_reject_time' => Carbon::now()->addMinute($vendorDetail->auto_reject_time)]);
                         }
