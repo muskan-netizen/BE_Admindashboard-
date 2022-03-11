@@ -441,7 +441,7 @@ $pages = \App\Models\Page::with([
                   <li class="al_main_category" data-aos="zoom-in">
                      <a href="{{route('categoryDetail', $cate['slug'])}}">
                         @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                        <div class="nav-cate-img" > <img style="height:150px;width:150px;" class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
+                        <div class="nav-cate-img" > <img style="height:100px;width:100px;" class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
                         @endif
                         {{$cate['name']}}
                      </a>
@@ -485,7 +485,7 @@ $pages = \App\Models\Page::with([
         <a href="{{route('categoryDetail')}}/<%=category.slug %>">
             @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
             <div class="nav-cate-img">
-                <img style="height:150px;width:150px;" class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
+                <img style="height:100px;width:100px;" class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
             </div>
             @endif
             <%=category.name %>
