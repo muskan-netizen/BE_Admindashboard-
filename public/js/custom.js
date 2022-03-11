@@ -910,6 +910,8 @@ $(document).ready(function() {
                 payWithKPG('');
             }else if(payment_option_id == 22) {
                 payWithCcAvenue('');
+            }else if(payment_option_id == 24) {
+                paymentViaCashfree('');
             }
         } else {
             _this.attr("disabled", false);
@@ -1986,6 +1988,8 @@ $(document).ready(function() {
             payWithKPG('');
         }else if (payment_option_id == 22) {
             payWithCcAvenue('');
+        }else if (payment_option_id == 24) {
+            paymentViaCashfree('', payment_option_id, '');
         }
 
     });

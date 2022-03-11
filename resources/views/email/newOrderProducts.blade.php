@@ -56,11 +56,11 @@ $timezone = Auth::user()->timezone;
                        $img = $vendor_product['product']['media'][0]['image']['path']['image_fit'].'100/100'.$vendor_product['product']['media'][0]['image']['path']['image_path'];
                     }
                     @endphp
-                     <div style=" height: 60px;width: 60px;background-color: #D8D8D8;">
+                     <div style=" height:auto;width: 60px;background-color: #D8D8D8;">
                        <!--  <img style="width: 100px;height: 100px;border-radius: 3px;object-fit: cover;" src="{{$img}}" alt=""> -->
                         <img style="width: 100px;height: 100px;border-radius: 3px;object-fit: cover;" src="{{$vendor_product['product']['media'][0]['image']['path']['original_image']}}" alt="">
                      </div>
-                     <div style="padding: 0 0 0 15px;">
+                     <div style="padding: 0 0 0 45px;">
                         <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{ ($vendor_product['product']['translation_one']['title'] ?? false) ? $vendor_product['product']['translation_one']['title'] : "" }}</h3>
                         @if(count($vendor_product['addon']))
                         @foreach ($vendor_product['addon'] as $addon)
@@ -166,7 +166,7 @@ $timezone = Auth::user()->timezone;
                </td>
             </tr>
             <tr style=" color: #308FE4;font-size: 15px;font-weight: 600;line-height: 19px;">
-               <td style="text-transform: uppercase;">{{__('Amount paid')}}:</td>
+               <td style="text-transform: uppercase;">{{ ($order->payment_option_id == 1) ? __('Cash to be collected') : __('Amount paid')}}:</td>
                <td style="text-align: right;">{{$currencySymbol . decimal_format($order->payable_amount)}}</td>
             </tr>
          </tbody>

@@ -42,7 +42,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row my-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">my account</a></div>
                 @include('layouts.store/profile-sidebar')
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="row mt-4" id="subscription_payment_methods">
                 @if($payment_options == '')
                     <div class="col-md-12">

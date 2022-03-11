@@ -29,27 +29,7 @@
 
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
-                            {{-- @if(!empty($category->childs) && count($category->childs) > 0)
-                                <div class="row">
-                                    <div class="col-12">
-
-                                        <div class="slide-6 no-arrow">
-                                            @foreach($category->childs->toArray() as $cate)
-                                            <div class="category-block">
-                                                <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                    <div class="category-image"><img alt="" class="blur-up lazyload" data-src="{{$cate['icon']['proxy_url'] . '100/80' . $cate['icon']['image_path']}}" ></div>
-                                                </a>
-                                                <div class="category-details">
-                                                    <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                        <h5>{{$cate['translation_name']}}</h5>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif --}}
+<!-- deleted code -->
                         </div>
                     </div>
                 </div>
@@ -64,17 +44,15 @@
                             </span>
                         </h5>
                         <div class="offer-slider">
-                            @if(!empty($newProducts) && count($newProducts) > 0)
+                            @if( !empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
-
                                 <div class="col-12">
                                     @foreach($newProds as $new)
                                         <?php $imagePath = '';
                                         foreach ($new['media'] as $k => $v) {
+                                            if(!is_null($v['image']))
                                             $imagePath = $v['image']['path']['proxy_url'].'300/300'.$v['image']['path']['image_path'];
                                         } ?>
-
-
                                         <a class="row common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                             <div class="img-outer-box position-relative col-sm-4 pr-0">
                                                 <img  class="blur-up lazyload w-100" data-src="{{$imagePath}}" alt="">
