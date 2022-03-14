@@ -488,6 +488,9 @@ class OrderController extends BaseController
 
                         // // $this->sendOrderNotification($user->id);
                         // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
+                        $this->sendSuccessSMS($request, $order);
+
+                        return $this->successResponse($order, __('Order placed successfully.'), 201);
                     }
 
                     DB::commit();
@@ -498,9 +501,6 @@ class OrderController extends BaseController
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
 
-                    $this->sendSuccessSMS($request, $order);
-
-                    return $this->successResponse($order, __('Order placed successfully.'), 201);
                 }
             } else {
                 return $this->errorResponse(['error' => __('Empty cart.')], 404);
