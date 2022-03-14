@@ -281,6 +281,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('delivery/ahoy', 'Client\DeliveryOptionController@ahoy')->name('delivery.ahoy');
         Route::post('delivery/last_mile_delivery','Client\DeliveryOptionController@last_mile_delivery')->name('delivery.last_mile_delivery');
         Route::resource('tools','Client\ToolsController');
+        Route::get('database-logs','Client\ToolsController@databaseAuditingLogs')->name('databaseAuditingLogs'); // Added By Ovi
+        Route::get('database-log/{table_name}','Client\ToolsController@singleDatabaseAuditingLogs')->name('singleDatabaseAuditingLogs'); // Added By Ovi
         Route::post('tools/tax','Client\ToolsController@taxCopy')->name('tools.taxCopy');
         Route::post('tool/uploadImage','Client\ToolsController@uploadImage')->name('tools.uploadImage');
         Route::post('updateAll', 'Client\PaymentOptionController@updateAll')->name('payoption.updateAll');
