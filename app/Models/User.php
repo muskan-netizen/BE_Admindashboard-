@@ -14,7 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 {
-    use Notifiable,AuthenticationLogable;
+    use Notifiable;
     use \OwenIt\Auditing\Auditable;
     use HasWallet;
     use HasWalletFloat;
