@@ -56,7 +56,13 @@
                             @foreach ($audits as $audit)
                                 <tr>
                                     <th scope="row">{{$logCount}}</th>
-                                    <td>{{$audit->user->name}}</td>
+                                    <td>
+                                        @if ($audit->user)
+                                            {{$audit->user->name}}
+                                        @else
+                                             N/A
+                                        @endif
+                                    </td>
                                     <td>{{$audit->event}}</td>
                                    <td>
                                        {{ json_encode($audit->old_values,JSON_PRETTY_PRINT) }}

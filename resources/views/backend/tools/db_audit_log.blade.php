@@ -90,7 +90,13 @@
                             @foreach ($authenticationLogs as $authenticationLog)
                                 <tr>
                                     <th scope="row">{{$logCount}}</th>
-                                    <td>{{$authenticationLog->user->name}}</td>
+                                    <td>
+                                        @if($authenticationLog->user)
+                                             {{$authenticationLog->user->name}}
+                                        @else
+                                             N/A
+                                        @endif
+                                    </td>
                                     <td>{{$authenticationLog->ip_address}}</td>
                                     <td>{!! $authenticationLog->user_agent !!}</td>
                                     <td>
