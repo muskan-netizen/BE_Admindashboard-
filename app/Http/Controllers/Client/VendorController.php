@@ -353,7 +353,7 @@ class VendorController extends BaseController
             'address' => 'required',
         //    'name' => 'required|string|max:150|unique:vendors,name,' . $id,
             'name' => 'required|string|max:150',
-            'phone_no' => 'nullable|regex:/(01)[0-9]{9}/',
+            'phone_no' => 'nullable|digits_between:7,12',
             'email' => 'nullable|email',
         );
         //dd($request->all());
