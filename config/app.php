@@ -200,7 +200,8 @@ return [
         Spatie\Geocoder\GeocoderServiceProvider::class,
         Jackiedo\Timezonelist\TimezonelistServiceProvider::class,
         // HTMLMin\HTMLMin\HTMLMinServiceProvider::class,
-        App\Providers\MailConfigServiceProvider::class
+        App\Providers\MailConfigServiceProvider::class,
+        OwenIt\Auditing\AuditingServiceProvider::class,
     ],
 
     /*
