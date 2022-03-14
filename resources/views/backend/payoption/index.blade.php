@@ -123,6 +123,26 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'viva_wallet') )
+                    <div class="mt-2" id="viva_wallet_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="viva_wallet_merchant" class="mr-3">{{ __("Merchant Id") }}</label>
+                                    <input type="text" name="viva_wallet_merchant_id" id="viva_wallet_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="viva_wallet_merchant" class="mr-3">{{ __("Encryption Key") }}</label>
+                                    <input type="text" name="viva_wallet_enc_key" id="viva_wallet_enc_key" class="form-control" value="{{$enc_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     @if ( (strtolower($opt->code) == 'ccavenue') )
                     <div class="mt-2" id="ccavenue_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">

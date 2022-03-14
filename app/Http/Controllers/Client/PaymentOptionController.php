@@ -29,7 +29,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet');
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -298,6 +298,15 @@ class PaymentOptionController extends BaseController
                         'enc_key' => $request->ccavenue_enc_key,
                         'access_code' => $request->ccavenue_access_code,
                         'merchant_id' => $request->ccavenue_merchant_id
+                    ));
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'viva_wallet')) {
+                    $validatedData = $request->validate([
+                        'viva_wallet_enc_key' => 'required',
+                        'viva_wallet_merchant_id' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'enc_key' => $request->viva_wallet_enc_key,
+                        'merchant_id' => $request->viva_wallet_merchant_id
                     ));
                 }
                 else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'easypaisa')) {

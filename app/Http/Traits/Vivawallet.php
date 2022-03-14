@@ -15,20 +15,20 @@ trait Vivawallet{
 
     public function credentials()
     {
-        // $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'vivawallet')->where('status', 1)->first();
-        // $json = json_decode($viva->credentials);
-        $this->api_key = 'mo8qAqP740h172MMV8RakEepVr5PuO';
-        $this->merchant_id = '8d527m2ndy9nnbmhgqgtxv7frma27e444hwdnwzipw804.apps.vivapayments.com';
+         $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'viva_wallet')->where('status', 1)->first();
+         $json = json_decode($viva->credentials);
+         $this->api_key = $json->api_key;
+         $this->merchant_id = $json->merchant_id;
         
     }
    
     public function getAuthTokenViva():object{
         $this->credentials();
-            // if($this->test_mode=='1'){
-            //     $this->tokenUrl = 'https://demo-accounts.vivapayments.com/connect/token';            
-            //     }else{
-            //     $this->tokenUrl = 'https://accounts.vivapayments.com/connect/token';
-            // }
+            if($viva->test_mode=='1'){
+                $this->tokenUrl = 'https://demo-accounts.vivapayments.com/connect/token';            
+                }else{
+                $this->tokenUrl = 'https://accounts.vivapayments.com/connect/token';
+            }
         $this->tokenUrl = 'https://demo-accounts.vivapayments.com/connect/token';    
         $token = base64_encode($this->merchant_id.':'.$this->api_key);
         $response = $this->postCurlToken($token);
