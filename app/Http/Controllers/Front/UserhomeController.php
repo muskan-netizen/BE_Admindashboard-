@@ -907,11 +907,9 @@ class UserhomeController extends FrontController
 
         $user = Auth::user();
 
-
-
         $data = [
            'navCategories' => $navCategories,
-             ];
+        ];
         return $this->successResponse($data);
     }
 
