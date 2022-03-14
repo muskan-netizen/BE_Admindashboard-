@@ -201,7 +201,7 @@ return [
         Jackiedo\Timezonelist\TimezonelistServiceProvider::class,
         // HTMLMin\HTMLMin\HTMLMinServiceProvider::class,
         App\Providers\MailConfigServiceProvider::class,
-        OwenIt\Auditing\AuditingServiceProvider::class,
+        // OwenIt\Auditing\AuditingServiceProvider::class,
     ],
 
     /*
