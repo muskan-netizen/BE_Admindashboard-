@@ -143,7 +143,7 @@
                                                 </li>
                                             @endif
                                             <li class="nav-item">
-                                                <a class="nav-link {{ Request::query('pageType') == 'pastOrders' ? 'active show' : '' }}"
+                                                <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
                                                         class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . $ordertitle) }}</a>
@@ -284,7 +284,7 @@
                                                                                                 <a href="{{ route('front.booking.details', $order->order_number) }}"
                                                                                                     target="_blank">{{ __('Details') }}</a>
                                                                                             @endif
-                                                                                            @if ($vendor->order_status_option_id==1)
+                                                                                            @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
                                                                                             <h6 class="m-0">
                                                                                                 <label class="rating-star cancel_order"  data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
                                                                                                     {{ __('Cancel Order') }}
