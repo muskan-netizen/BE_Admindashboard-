@@ -30,7 +30,7 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
                             </span>
                         </div> -->
-                        <div class="collection-collapse-block open">
+                        <div class="collection-collapse-block open mb-2">
                             @if(!empty($category->brands) && count($category->brands) > 0)
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
                             <div class="collection-collapse-block-content">
