@@ -301,12 +301,16 @@ class PaymentOptionController extends BaseController
                     ));
                 }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'viva_wallet')) {
                     $validatedData = $request->validate([
-                        'viva_wallet_enc_key' => 'required',
+                        'viva_wallet_client_id' => 'required',
+                        'viva_wallet_client_key' => 'required',
                         'viva_wallet_merchant_id' => 'required',
+                        'viva_wallet_merchant_key' => 'required',
                     ]);
                     $json_creds = json_encode(array(
-                        'enc_key' => $request->viva_wallet_enc_key,
-                        'merchant_id' => $request->viva_wallet_merchant_id
+                        'client_id' => $request->viva_wallet_client_id,
+                        'client_key' => $request->viva_wallet_client_key,
+                        'merchant_id' => $request->viva_wallet_merchant_id,
+                        'merchant_key' => $request->viva_wallet_merchant_key
                     ));
                 }
                 else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'easypaisa')) {

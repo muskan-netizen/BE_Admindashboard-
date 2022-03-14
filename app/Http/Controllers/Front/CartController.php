@@ -8,7 +8,7 @@ use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
-use App\Http\Traits\{ApiResponser,CartManager};
+use App\Http\Traits\{ApiResponser,CartManager,Vivawallet};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\PromoCodeController;
