@@ -15,6 +15,7 @@ use App\Models\CartProductPrescription;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
+use App\Models\UserAddress;
 use App\Models\UserVendor;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
@@ -60,17 +61,49 @@ class VivawalletController extends Controller
     return $this->getAuthTokenViva();
    }
 
-
-   public function createPayLink()
+   public function orderNumber($request)
    {
+        if($request->from == 'cart')
+        {
+            $time = $request->order_number;
+
+        }elseif($request->from == 'wallet')
+        {
+            $time = ($request->transaction_id)??'W_'.time();
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d')]);
+
+        }elseif($request->from == 'tip')
+        {
+             $time = 'T_'.time().'_'.$request->order_number;
+             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d')]);
+
+        }elseif($request->from == 'subscription')
+        {
+            $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
+            
+        }
+        return $time;
+   }
+
+  //  public function payForm(Request $request)
+  //  {
+  //   $number = $this->orderNumber($request); // order no
+  //   return $this->createPayLink($request); 
+  //  }
+
+   public function createPayLink(Request $request)
+   {
+    $number =  $this->orderNumber($request);
+    $user = auth()->user();
     $this->credentials();
             $data  = [
-              'amount'              => 1000,
+              'amount'              => $request->amount,
               'customerTrns'        => 'Testing... This is a description displayed to the customer',
               'customer'            => [
-                  'email'         => 'test@vivawallet.com',
-                  'fullName'      => 'Testing User',
-                  'phone'         => '697845125',
+                  'email'         => $user->email,
+                  'fullName'      => $user->name,
+                  'phone'         => $user->phone_no,
                   'countryCode'   => 'EN',
                   'requestLang'   => 'el-EN'
               ],
