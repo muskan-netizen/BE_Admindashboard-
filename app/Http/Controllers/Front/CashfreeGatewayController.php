@@ -296,7 +296,7 @@ class CashfreeGatewayController extends FrontController
                                 $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
                             }
                         }
-                        $returnUrlParams = $returnUrlParams . '&order=' . $order_number;
+                        $returnUrlParams = $returnUrlParams . '&order=' . $order->order_number;
                     }
                 }
 
