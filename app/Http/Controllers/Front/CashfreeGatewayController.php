@@ -294,8 +294,6 @@ class CashfreeGatewayController extends FrontController
                             if(!$transaction){
                                 $wallet = $user->wallet;
                                 $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
-                            }else{
-                                return Redirect::to(route('showCart'))->with('error', 'Your order has already been cancelled');
                             }
                         }
                     }
