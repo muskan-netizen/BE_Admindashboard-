@@ -372,7 +372,7 @@ class VendorController extends FrontController
                 // $vendor_categories = $vendor_categories->whereHas('category', function($query) {
                 //     $query->whereIn('type_id', [1]);
                 // });
-                $vendor_categories = $vendor_categories->where('status', 1)->get();
+                $vendor_categories = $vendor_categories->where('status', 1)->groupBy('category_id')->get();
             }
 
             foreach($vendor_categories as $ckey => $category) {
