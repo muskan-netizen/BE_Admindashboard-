@@ -208,7 +208,6 @@ class PickupDeliveryController extends BaseController{
 
         DB::beginTransaction();
         try {
-
             $order_place = $this->orderPlaceForPickupDelivery($request);
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
@@ -223,7 +222,7 @@ class PickupDeliveryController extends BaseController{
                         return $request_to_dispatch;
                     }
             }else{
-                DB::rollback();
+                DB::commit();
                 return $order_place;
             }
 
@@ -451,6 +450,8 @@ class PickupDeliveryController extends BaseController{
 
      // order update for pickup delivery
      public function orderUpdateAfterPaymentPickupDelivery($request){
+      
+            //echo $request->order_number;
             $order = Order::where('order_number',$request->order_number)->first();
             if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                 $order->payment_status = 1;
@@ -549,7 +550,7 @@ class PickupDeliveryController extends BaseController{
                                                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                     'content-type' => 'application/json']
                                                         ]);
-
+                //pr($postdata);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post(
                     $url.'/api/task/create',

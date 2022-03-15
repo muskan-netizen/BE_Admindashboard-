@@ -37,7 +37,7 @@ class StripeGatewayController extends BaseController
 
     public function stripePurchase(request $request)
     {
-        try {
+        // try {
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -116,6 +116,7 @@ class StripeGatewayController extends BaseController
                 // ])->send();
                 if ($response->isSuccessful()) {
                 // $this->successMail();
+               
                 $request->request->add(['transaction_id' => $response->getTransactionReference()]);
                     if($request->action == 'cart'){
                         $orderController = new OrderController();
@@ -128,11 +129,12 @@ class StripeGatewayController extends BaseController
                     }
                     else if($request->action == 'pickup_delivery'){
                         $request->request->add(['payment_option_id' => 4, 'amount' => $amount]);
-                        $walletController = new PickupDeliveryController();
-                        $walletController->orderUpdateAfterPaymentPickupDelivery($request);
+                        $PickupDeliveryController = new PickupDeliveryController();
+                        $delivery_response =  $PickupDeliveryController->orderUpdateAfterPaymentPickupDelivery($request);
+                        $responseData=$delivery_response;
                     }
-
-                    return $this->successResponse($response->getTransactionReference());
+                    $responseData['transaction_id']=$response->getTransactionReference();
+                    return $this->successResponse($responseData);
                 }
                 else {
                     // $this->failMail();
@@ -141,10 +143,10 @@ class StripeGatewayController extends BaseController
             }else {
                 return $this->errorResponse($authorizeResponse->getMessage(), 400);
             }
-        } catch (\Exception $ex) {
-            // $this->failMail();
-            return $this->errorResponse($ex->getMessage(), 400);
-        }
+        // } catch (\Exception $ex) {
+        //     // $this->failMail();
+        //     return $this->errorResponse($ex->getMessage(), 400);
+        // }
     }
 
     public function subscriptionPaymentViaStripe(request $request)
