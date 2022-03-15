@@ -38,9 +38,18 @@ class CashfreeGatewayController extends BaseController
 
     public function createOrder(Request $request, $domain = ''){
         try{
+            $rules = [
+                'amount'   => 'required',
+                'action'   => 'required'
+            ];
+
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
             $payment_form = $request->action;
+
+            if(empty($user->phone_number)){
+                $rules['phone_number'] = 'required';
+            }
 
             $customer_data = array(
                 'customer_id' => 'customer_'.$user->id,
@@ -87,6 +96,15 @@ class CashfreeGatewayController extends BaseController
                 }
             }
 
+            $validator = Validator::make($request->all(), $rules, [
+                'amount.required' => 'Amount is required',
+                'action.required' => 'Action is required',
+                'phone_number.required' => 'Phone number is required'
+            ]);
+            if ($validator->fails()) {
+                return $this->errorResponse(__($validator->errors()->first()), 422);
+            }
+
             $data = array(
                 'order_id' => $reference_number,
                 'order_amount' => $amount,
@@ -129,7 +147,7 @@ class CashfreeGatewayController extends BaseController
                 return $this->errorResponse($err->message, 400);
             } else {
                 $response = json_decode($response);
-                return $this->successResponse($response['payment_link'], 'Order has been created successfully');
+                return $this->successResponse($response->payment_link, 'Order has been created successfully');
             }
         }
         catch(\Exception $ex){
