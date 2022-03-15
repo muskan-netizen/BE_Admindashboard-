@@ -230,6 +230,7 @@
                 </h4>
                 <div class="row">
                     <div class="col-12">
+                    <input type="hidden" id="stripe_token" name="stripe_token" value="">
                         <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Pickup')}}</button>
                     </div>
                     <!--<div class="col-6">
@@ -251,7 +252,7 @@
                                 <input type="radio" class="select_cab_payment_method" name="select_cab_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.id %>" data-payment_method="<%= payment_option.id %>">
                                 <span class="checkround"></span>
                             </label>
-                            <% if(payment_option.slug == 'stripe') { %>
+                            <% if(payment_option.code == 'stripe') { %>
                                 <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
                                     <div class="form-control">
                                         <label class="d-flex flex-row pt-1 pb-1 mb-0">
@@ -280,6 +281,13 @@
                             <span class="checkround"></span>
                         </label>
                     </div> --}}
+                    <div class="modal-footer d-block text-center">
+                        <div class="row">
+                            <div class="col-sm-12 p-0 d-flex flex-fill">
+                                <button type="button" class="btn btn-solid ml-1 select_payment_option_done">{{__('Done')}}</button>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             <% } %>
         </script>
@@ -357,7 +365,7 @@
 
 </section>
 
-<!-- Payment Modal -->
+<!-- Paymentoption Modal -->
 <div class="modal fade payment-modal payment-modal-width" id="payment_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="payment_modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -367,7 +375,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body booking_mayment_method">
                 {{-- <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="1"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Cash')}}</span></h4>
                 <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="2"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Wallet/Card')}}</span></h4> --}}
             </div>
@@ -460,7 +468,7 @@
                     <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
                         <div class="form-control">
                             <label class="d-flex flex-row pt-1 pb-1 mb-0">
-                                <div id="stripe-card-element"></div>
+                                <div id="stripe-card-element2"></div>
                             </label>
                         </div>
                         <span class="error text-danger" id="stripe_card_error"></span>
@@ -494,9 +502,11 @@
 @endsection
 
 @section('script')
+@if(in_array('stripe',$client_payment_options))
+<script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+@endif
 
-
-<script src="https://js.stripe.com/v3/"></script>
+<!-- <script src="https://js.stripe.com/v3/"></script> -->
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
@@ -580,6 +590,7 @@ var routeset = "{{route('pickup-delivery-route',':category_id')}}";
 
 var autocomplete_urls = routeset.replace(":category_id", category_id);
 var wallet_balance = {{ $wallet_balance}}
+var payment_stripe_url = "{{route('payment.stripe')}}";
 var get_product_detail = "{{url('looking/product-detail')}}";
 var get_payment_options = "{{url('looking/payment/options')}}";
 var promo_code_list_url = "{{route('verify.promocode.list')}}";

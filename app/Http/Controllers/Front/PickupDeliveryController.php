@@ -24,7 +24,7 @@ class PickupDeliveryController extends FrontController{
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'razorpay');
+        $code = array('cod', 'razorpay','stripe');
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
@@ -316,7 +316,7 @@ class PickupDeliveryController extends FrontController{
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
 
-           if($order_place && $order_place['status'] == 200){
+            if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
                 $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
@@ -331,7 +331,8 @@ class PickupDeliveryController extends FrontController{
                     return $request_to_dispatch;
                 }
             }else{
-                DB::rollback();
+                DB::commit();
+                //DB::rollback();
                 return $order_place;
             }
         }catch(\Exception $e){
@@ -342,8 +343,48 @@ class PickupDeliveryController extends FrontController{
             ]);
         }
     }
+    // order update for pickup delivery
+    public function orderUpdateAfterPaymentPickupDelivery($request){
 
-
+       
+        // try {
+           
+            $order = Order::where('order_number',$request->order_number)->first();
+           
+            if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
+                $order->payment_status = 1;
+            }
+            $order->save();
+          
+    
+            if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
+                $payment = new Payment();
+                $payment->date = date('Y-m-d');
+                $payment->order_id = $order->id;
+                $payment->transaction_id = $request->transaction_id;
+                $payment->balance_transaction = $order->payable_amount;
+                $payment->type = 'pickup/delivery';
+                $payment->save();
+            }
+            $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
+            if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
+                $user = Auth::user();
+                $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+                $order_place['data']['user_name'] = $user->email;
+                $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
+                return  $order_place;
+            }else{
+                return $request_to_dispatch;
+            }
+        // }catch(\Exception $e){
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
+        
+        
+    }
     // order place for pickup delivery
 
     public function orderPlaceForPickupDelivery($request){
@@ -572,8 +613,8 @@ class PickupDeliveryController extends FrontController{
                 $unique = Auth::user()->code;
                 $team_tag = $unique."_".$vendor;
                 $dynamic = uniqid($order->id.$vendor);
-                $order_agent_tag = $product->tags??'';
                 $product = Product::find($request->product_id);
+                $order_agent_tag = $product->tags??'';
                 $client_do = Client::where('code',$unique)->first();
                 $call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
 
@@ -595,6 +636,7 @@ class PickupDeliveryController extends FrontController{
                     'recipient_phone' => $request->phone_number ?? $customer->phone_number,
                     'customer_phone_number' => $customer->phone_number ?? rand(111111,11111)
                 ];
+                
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);

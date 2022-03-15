@@ -26,7 +26,7 @@ class PaymentOptionController extends BaseController{
             $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue');
         }
         elseif($page == 'pickup_delivery'){
-            $code = array('cod', 'razorpay');
+            $code = array('cod', 'razorpay','stripe');
         }
         else{
             $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue');
