@@ -82,6 +82,7 @@
                 $multiplier = (isset($creds->multiplier)) ? $creds->multiplier : '';
                 $login_id = (isset($creds->login_id)) ? $creds->login_id : '';
                 $transaction_key = (isset($creds->transaction_key)) ? $creds->transaction_key : '';
+                $client_id = (isset($creds->client_id)) ? $creds->client_id : '';
                 $client_key = (isset($creds->client_key)) ? $creds->client_key : '';
                 $access_code = (isset($creds->access_code)) ? $creds->access_code : '';
                 $enc_key = (isset($creds->enc_key)) ? $creds->enc_key : '';
@@ -116,6 +117,41 @@
                                 <div class="form-group mb-2">
                                     <label for="easypaisa_merchant" class="mr-3">{{ __("Store Id") }}</label>
                                     <input type="text" name="easypaisa_store_id" id="easypaisa_store_id" class="form-control" value="{{$easypaisa_store_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'viva_wallet') )
+                    <div class="mt-2" id="viva_wallet_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="viva_wallet_merchant" class="mr-3">{{ __("Merchant Id") }}</label>
+                                    <input type="text" name="viva_wallet_merchant_id" id="viva_wallet_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="viva_wallet_merchant" class="mr-3">{{ __("Encryption Key") }}</label>
+                                    <input type="text" name="viva_wallet_merchant_key" class="form-control" value="{{$merchant_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <h6 class="ml-2"><u>{{__('Smart Checkout Credentials')}}</u></h6>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="viva_wallet_merchant" class="mr-3">{{ __("Client Id") }}</label>
+                                    <input type="text" name="viva_wallet_client_id" class="form-control" value="{{$client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="viva_wallet_merchant" class="mr-3">{{ __("Client Key") }}</label>
+                                    <input type="text" name="viva_wallet_client_key" class="form-control" value="{{$client_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
 

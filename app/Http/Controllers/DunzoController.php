@@ -250,22 +250,35 @@ class DunzoController extends Controller
         {
             $awb = $json->order_uuid;
             $details = OrderVendor::where('web_hook_code',$awb)->first();
+
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);
         }elseif(isset($json->order_status_id) && $json->order_status_id == '4')
         {
 			$awb = $json->order_uuid;
             $details = OrderVendor::where('web_hook_code',$awb)->first();
+
+              //Update in vendor status
+              VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'4']);
+
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
         }elseif(isset($json->order_status_id) && $json->order_status_id == '8')
         {
 			$awb = $json->order_uuid;
             $details = OrderVendor::where('web_hook_code',$awb)->first();
+
+              //Update in vendor status
+              VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'5']);
+              
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
         }elseif(isset($json->order_status_id) && $json->order_status_id == '5')
         {
             $awb = $json->order_uuid;
             $details = OrderVendor::where('web_hook_code',$awb)->first();
+
+            //Update in vendor status
+            VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'6']);
+
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
         }
 
