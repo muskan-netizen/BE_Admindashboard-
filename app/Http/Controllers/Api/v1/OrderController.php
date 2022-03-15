@@ -489,7 +489,6 @@ class OrderController extends BaseController
                         // // $this->sendOrderNotification($user->id);
                         // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
                         $this->sendSuccessSMS($request, $order);
-
                     }
 
                     DB::commit();
