@@ -149,6 +149,7 @@ class VendorController extends FrontController
                 $inqury_count++;
             }
         }
+        // dd($listData);
         if($listData->count() == $inqury_count){
             $show_range = 0;
         }
@@ -372,9 +373,9 @@ class VendorController extends FrontController
                 // $vendor_categories = $vendor_categories->whereHas('category', function($query) {
                 //     $query->whereIn('type_id', [1]);
                 // });
-                $vendor_categories = $vendor_categories->where('status', 1)->get();
+                $vendor_categories = $vendor_categories->where('status', 1)->groupBy('category_id')->get();
+                //dd($vendor_categories);
             }
-
             foreach($vendor_categories as $ckey => $category) {
                 $products = Product::with(['media.image',
                         'translation' => function($q) use($langId){
@@ -444,7 +445,7 @@ class VendorController extends FrontController
                     // }
                 }
             }
-            //  dd($vendor_categories->toArray());
+            //   dd($vendor_categories->toArray());
             $listData = $vendor_categories;
             return $listData;
         }
