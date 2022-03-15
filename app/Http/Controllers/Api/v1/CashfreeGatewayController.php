@@ -40,7 +40,7 @@ class CashfreeGatewayController extends BaseController
         try{
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
-            $payment_form = $request->payment_form;
+            $payment_form = $request->action;
 
             $returnUrl = route('order.return.success');
             $customer_data = array(
