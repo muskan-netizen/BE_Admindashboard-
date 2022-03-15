@@ -222,6 +222,74 @@ class CashfreeGatewayController extends FrontController
         }
     }
 
+    public function cashfreeReturnApp(Request $request, $domain = '')
+    {
+        $user = Auth::user();
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $this->getPaymentURL() . "/orders/" .$request->order_id,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            // CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_HTTPHEADER => [
+                "Accept: application/json",
+                "Content-Type: application/json",
+                "x-api-version: 2022-01-01",
+                "x-client-id: ". $this->APP_ID,
+                "x-client-secret: ". $this->SECRET_KEY
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        $response = json_decode($response);
+        // dd($response);
+
+        if(!$err && $response){
+            $order_status = strtolower($response->order_status);
+            $returnUrl = url('payment/gateway/returnResponse');
+            if($order_status == 'paid'){
+                $returnUrlParams = '?status=200&gateway=cashfree&action=' . $request->payment_form;
+                if($request->payment_form == 'cart'){
+                    $order_number = $request->order_id;
+                    $order = Order::where('order_number', $order_number)->first();
+                    if ($order) {
+                        $returnUrlParams = $returnUrlParams . '&order=' . $order_number;
+                    }
+                }
+
+                return Redirect::to(url($returnUrl . $returnUrlParams));
+            }
+            else{
+                $returnUrlParams = '?status=0&gateway=cashfree&action=' .$request->payment_form;
+                if($request->payment_form == 'cart'){
+                    $order = Order::where('order_number', $request->order_id)->first();
+                    if($order){
+                        $wallet_amount_used = $order->wallet_amount_used;
+                        if($wallet_amount_used > 0){
+                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                            if(!$transaction){
+                                $wallet = $user->wallet;
+                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                            }else{
+                                return Redirect::to(route('showCart'))->with('error', 'Your order has already been cancelled');
+                            }
+                        }
+                    }
+                    
+                    $returnUrlParams = $returnUrlParams . '&order=' . $order_number;
+                }
+
+                return Redirect::to(url($returnUrl . $returnUrlParams));
+            }
+        }
+    }
+
     public function cashfreeNotify(Request $request, $domain = '')
     {
         // Notify cashfree that information has been received
