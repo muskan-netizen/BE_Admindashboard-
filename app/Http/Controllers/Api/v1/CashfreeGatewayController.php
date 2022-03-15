@@ -96,8 +96,8 @@ class CashfreeGatewayController extends BaseController
                 'order_note' => $description,
                 'order_tags' => $order_tags,
                 'order_meta' => array(
-                    'return_url' => url('payment/cashfree/return/app' . $returnUrlParams),
-                    'notify_url' => url("payment/cashfree/notify")
+                    'return_url' => url($request->serverUrl.'payment/cashfree/return/app' . $returnUrlParams),
+                    'notify_url' => url($request->serverUrl.'payment/cashfree/notify')
                 )
             );
 
