@@ -229,7 +229,6 @@ class ReturnOrderController extends BaseController{
      */
     public function vendorOrderForCancel(Request $request, $domain = '')
     {
-       // return $request->all();
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
         try {
