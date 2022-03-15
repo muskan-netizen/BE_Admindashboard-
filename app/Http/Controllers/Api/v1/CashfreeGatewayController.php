@@ -41,7 +41,7 @@ class CashfreeGatewayController extends BaseController
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
             $payment_form = $request->action;
-            
+
             $customer_data = array(
                 'customer_id' => 'customer_'.$user->id,
                 'customer_name' => $user->name,
@@ -129,7 +129,7 @@ class CashfreeGatewayController extends BaseController
                 return $this->errorResponse($err->message, 400);
             } else {
                 $response = json_decode($response);
-                return $this->successResponse($response->payment_link, 'Order has been created successfully');
+                return $this->successResponse($response['payment_link'], 'Order has been created successfully');
             }
         }
         catch(\Exception $ex){
