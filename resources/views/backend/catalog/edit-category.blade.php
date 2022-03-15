@@ -10,7 +10,7 @@
                         <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
                     </div>
                     <div class="col-sm-6">
-                        <input type="file" accept="image/*" data-plugins="dropify" name="icon_2" class="dropify" data-default-file="{{$category->icon_2['proxy_url'].'400/400'.$category->icon_2['image_path']}}" />
+                        <input type="file" accept="image/*" data-plugins="dropify" name="icon_2" class="dropify" data-default-file="{{ !is_null($category->icon_2 ) ? $category->icon_2['proxy_url'].'400/400'.$category->icon_2['image_path'] : ''}}" />
                         <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
                     </div>
                 </div>
