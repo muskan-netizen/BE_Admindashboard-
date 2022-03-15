@@ -92,7 +92,7 @@
            <tr>
               <td style="text-align: left;"><b>{{__('SHIPPING Charge')}}:</b></td>
 <b>{{__('Delivery Fee')}}:</b></td>
-imal_format($product['delivery_fee_charges'])}}</td>
+{{$currencySymbol . decimal_format(($product['delivery_fee_charges'])}}</td>
            </tr>
 
            <tr>
