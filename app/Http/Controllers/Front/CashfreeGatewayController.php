@@ -40,9 +40,18 @@ class CashfreeGatewayController extends FrontController
 
     public function createOrder(Request $request, $domain = ''){
         try{
+            $rules = [
+                'amount'   => 'required',
+                'payment_form'   => 'required'
+            ];
+
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
             $payment_form = $request->payment_form;
+
+            if(empty($user->phone_number)){
+                $rules['phone_number'] = 'required';
+            }
 
             $returnUrl = route('order.return.success');
             $customer_data = array(
@@ -88,6 +97,15 @@ class CashfreeGatewayController extends FrontController
                     $returnUrlParams = $returnUrlParams . '&subscription=' . $request->subscription_id;
                     $order_tags['subscription_id'] = $request->subscription_id;
                 }
+            }
+
+            $validator = Validator::make($request->all(), $rules, [
+                'amount.required' => 'Amount is required',
+                'payment_form.required' => 'Action is required',
+                'phone_number.required' => 'Phone number is required'
+            ]);
+            if ($validator->fails()) {
+                return $this->errorResponse(__($validator->errors()->first()), 422);
             }
 
             $data = array(
