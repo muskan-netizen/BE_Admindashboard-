@@ -1044,5 +1044,6 @@
    " is not accepting orders right now." : " no recibe pedidos",
    "Mobbex" : "Tarjeta de Débito o Crédito",
    "Mexican Peso" : "Peso",
-   "Details" : "Datos"
+   "Details" : "Datos",
+   "Credit/Debit Card (Stripe)"  :  "Tarjeta de crédito/débito (Stripe)"
 }
