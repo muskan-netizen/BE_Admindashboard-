@@ -8,14 +8,10 @@ use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
-use App\Http\Traits\{ApiResponser,CartManager};
+use App\Http\Traits\{ApiResponser,CartManager,Vivawallet};
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Front\FrontController;
-use App\Http\Controllers\Front\PromoCodeController;
-use App\Http\Controllers\Front\LalaMovesController;
-use App\Http\Controllers\DunzoController;
-use App\Http\Controllers\AhoyController;
-use App\Http\Controllers\ShiprocketController;
+use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController};
+use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot};
 use Log;
 class CartController extends FrontController

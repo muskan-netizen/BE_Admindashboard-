@@ -312,11 +312,18 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between">
                 <h4 class="page-title">{{ __('Orders') }}</h4>
-                <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
-                    <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
-                        <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
-                    </b>
-                </a>
+                <div>
+                    <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
+                        <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
+                            <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                        </b>
+                    </a>
+                    <a class="return-btn ml-3" href="{{route('cancel-order.requests')}}">
+                        <b>{{ __("Cancel Order Request") }} <sup class="total-items">({{$cancel_order_requests}})</sup>
+                            <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                        </b>
+                    </a>
+                </div>
             </div>
         </div>
 

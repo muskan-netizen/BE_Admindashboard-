@@ -1,14 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-   <!--  <script
-      type="text/javascript"
-      src="https://unpkg.com/@passbase/button@v3/button.js"
-    ></script> -->
-    <script
-     type="text/javascript"
-     src="https://unpkg.com/@passbase/button"
-    ></script>
+    <script type="text/javascript" src="https://unpkg.com/@passbase/button"></script>
     <link rel="stylesheet" href="index.css" />
     <title>Verify your Identity</title> 
   </head>
@@ -22,10 +15,7 @@
 
     <div class="container">
       <p class="title">Verify your identity now</p>
-      <p class="subtitle">
-        You can verify your identity in this Demo by clicking the verification
-        button below
-      </p>
+      <p class="subtitle">You can verify your identity by clicking the verification button below.</p>
 
       <!-- 1. This is the Passbase Component -->
       <div id="passbase-button"></div>
@@ -70,7 +60,7 @@
           },
           body: JSON.stringify(body),
         };
-        fetch("{{route('passbase.store')}}", requestOptions) 
+        fetch("{{route('passbase.store')}}", requestOptions)   
           .then((response) => {
             console.log("Success");
             console.log(response);
