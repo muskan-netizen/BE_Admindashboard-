@@ -490,7 +490,6 @@ class OrderController extends BaseController
                         // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
                         $this->sendSuccessSMS($request, $order);
 
-                        return $this->successResponse($order, __('Order placed successfully.'), 201);
                     }
 
                     DB::commit();
@@ -500,6 +499,7 @@ class OrderController extends BaseController
                         # if vendor selected auto accept
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
+                    return $this->successResponse($order, __('Order placed successfully.'), 201);
 
                 }
             } else {
