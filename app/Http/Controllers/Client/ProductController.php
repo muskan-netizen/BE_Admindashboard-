@@ -937,6 +937,7 @@ class ProductController extends BaseController
                     $update_product = Product::whereIn('id',$request->product_id)->update(['sell_when_out_of_stock' => $sell_when_out_of_stock]);
                 break;
                 case "delete":
+                    // delete product harrry
                     $products = Product::whereIn('id',$request->product_id)->get();
                     foreach($products as $product){
                         DB::beginTransaction();
