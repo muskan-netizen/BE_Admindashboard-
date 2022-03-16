@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script type="text/javascript" src="https://unpkg.com/@passbase/button"></script>
-    <link rel="stylesheet" href="index.css" />
+    <script type="text/javascript" src="https://unpkg.com/@passbase/button"></script> 
+    <!-- <link rel="stylesheet" href="index.css" /> -->
     <title>Verify your Identity</title> 
   </head>
 
@@ -25,7 +25,7 @@
       // This is the logic for the Passbase component
       const element = document.getElementById("passbase-button");
       // update the below variable with your own publishable API key**your, which you can find in the [API settings](https://app.passbase.com/settings/api) section.
-      const apiKey = "ILVcVB4OWqBus0Clk4bC2PJhpQArmUQ3LVHB2L1iD4YQxB7gxlngCebUakHoZA9o";
+      const apiKey = "{{$data['publish_key']}}";
       Passbase.renderButton(element, apiKey, {
         // Speed up the verification flow by providing some information you might already have like the user's email to skip the email step
         prefillAttributes: {
