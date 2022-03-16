@@ -312,6 +312,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::any('vendor/subscriptions/filterData', 'Client\VendorSubscriptionController@getSubscriptionsFilterData')->name('vendor.subscriptions.filterData');
         Route::post('vendor/subscription/status/update/{slug}', 'Client\VendorSubscriptionController@updateSubscriptionStatus')->name('vendor.subscription.status.update');
 
+        Route::post('vendor/update_all', 'Client\VendorController@updateActions')->name('vendor.updateall');
 
         Route::post('subscription/payment/stripe', 'Client\StripeGatewayController@subscriptionPaymentViaStripe')->name('subscription.payment.stripe');
 

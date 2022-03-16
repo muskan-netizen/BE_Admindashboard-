@@ -26,6 +26,7 @@ class NomenclatureController extends BaseController
         $dinein_names = $request->dinein_names;
         $delivery_names = $request->delivery_names;
         $zipCode_names = $request->zipCode_name;
+        $wantToTip_names = $request->wantToTip_name;
         NomenClature::updateOrCreate(['id' => 1], ['label' => 'vendors']);
         NomenClature::updateOrCreate(['id' => 2], ['label' => 'Loyalty Cards']);
         NomenClature::updateOrCreate(['id' => 3], ['label' => 'Takeaway']);
@@ -210,6 +211,30 @@ class NomenclatureController extends BaseController
                 }
             } else {
                 NomenclatureTranslation::where('nomenclature_id', 8)->delete();
+            }
+        }
+        if (count($wantToTip_names) > 0) {
+            $names_value_exists = [];
+            foreach ($wantToTip_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'wantToTip_name.0' => 'required|string',
+                ]);
+                $wantToTip_language_ids = $request->wantToTip_language_ids;
+                foreach ($wantToTip_names as $wantToTip_key => $wantToTip_name) {
+                    if ($wantToTip_name) {
+                        $nomenclature = NomenClature::where('label', 'Want To Tip')->first();
+                        //echo $wantToTip_name;
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $wantToTip_language_ids[$wantToTip_key], 'nomenclature_id' => $nomenclature->id], ['name' => $wantToTip_name]);
+                    }
+                }
+                //dd("reached");
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', 9)->delete();
             }
         }
         return redirect()->route('configure.customize')->with('success', 'Nomenclature Saved Successfully!');
