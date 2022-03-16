@@ -401,7 +401,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(client_preference_detail.tip_before_order == 1) { %>
             <div class="row">
                 <div class="col-12">
-                    <div class="mb-2">{{__('Do you want to give a tip?')}}</div>
+                    <div class="mb-2">@if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif</div> 
                     <div class="tip_radio_controls">
                         <% if(cart_details.total_payable_amount > 0) { %>
                             <input type="radio" class="tip_radio" id="control_01" name="select" value="<%= cart_details.tip_5_percent %>">
