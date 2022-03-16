@@ -7,13 +7,15 @@ use Bavix\Wallet\Traits\HasWalletFloat;
 use Bavix\Wallet\Interfaces\WalletFloat;
 use App\Notifications\PasswordReset;
 use Illuminate\Notifications\Notifiable;
+use Yadahan\AuthenticationLog\AuthenticationLogable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-
+use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable implements Wallet, WalletFloat
+class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 {
-    use Notifiable;
+    use Notifiable, AuthenticationLogable;
+    use \OwenIt\Auditing\Auditable;
     use HasWallet;
     use HasWalletFloat;
 
@@ -150,5 +152,9 @@ class User extends Authenticatable implements Wallet, WalletFloat
         print_r(LoyaltyCard::getLoyaltyName($count_loyalty_points_earned));
         exit();
         //return $count_loyalty_points_earned;
+    }
+
+    public function authentication_logs(){
+        return $this->hasMany('Yadahan\AuthenticationLog\AuthenticationLog', 'authenticatable_id');
     }
 }

@@ -90,6 +90,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                             </ul>
                         </li>
                         @endif
+                        @if(count($languageList) > 1)
                         <li class="onhover-dropdown change-language slected-language">
                             <a href="javascript:void(0)">{{ $applocale }}
                             <span class="icon-ic_lang align-middle"></span>
@@ -101,16 +102,10 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                         <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
                                     </li>
                                 @endforeach
-
-                                {{-- language switch --}}
-                                {{-- <li class={{ $applocale === 'en' ? "active" : "" }} > <a href="/switch/language?lang=en" class="customerLang" langid="1">English</a> </li>
-                                <li class={{ $applocale === 'ar' ? "active" : "" }} > <a href="/switch/language?lang=ar" class="customerLang" langid="1">Arabic</a> </li>
-                                <li class={{ $applocale === 'fr' ? "active" : "" }} > <a href="/switch/language?lang=fr" class="customerLang" langid="1">{{ __("French") }}</a> </li>
-                                <li class={{ $applocale === 'de' ? "active" : "" }} > <a href="/switch/language?lang=de" class="customerLang" langid="1">Germany</a> </li>
-                                <li class={{ $applocale === 'es' ? "active" : "" }} > <a href="/switch/language?lang=es" class="customerLang" langid="1">Spanish</a> </li> --}}
-                                {{-- language switch --}}
                             </ul>
                         </li>
+                        @endif
+                        @if(count($currencyList) > 1)
                         <li class="onhover-dropdown change-currency slected-language">
                             <a href="#">{{session()->get('iso_code')}} <span class="icon-ic_currency align-middle"></span>
                             <span class="currency ml-1 align-middle">{{ __("currency") }}</span> </a>
@@ -122,6 +117,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 @endforeach
                             </ul>
                         </li>
+                        @endif
                         <li class="onhover-dropdown mobile-account"> <i class="fa fa-user" aria-hidden="true"></i>
                             {{__('My Account')}}
                             <ul class="onhover-show-div">

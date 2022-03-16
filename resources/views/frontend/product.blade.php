@@ -151,7 +151,7 @@
                                                         }
                                                     @endphp
                                             @if(!is_null($img))
-                                            <li><img class="" src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" /></li>
+                                            <li><img class="" src="{{$img->path['image_fit'].'1000/1000'.$img->path['image_path']}}" /></li>
                                             @endif
                                         @endforeach
                                         @endif
@@ -719,9 +719,9 @@
 @endsection
 @section('script')
 
-
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 
 
 <script>
