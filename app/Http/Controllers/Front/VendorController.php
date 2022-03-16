@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout};
+use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag};
 use Log;
 class VendorController extends FrontController
 {
@@ -149,13 +149,14 @@ class VendorController extends FrontController
                 $inqury_count++;
             }
         }
+        // dd($listData);
         if($listData->count() == $inqury_count){
             $show_range = 0;
         }
         else{
             $show_range = 1;
         }
-        $range_products = Product::join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
+        $range_products = Product::with('tags')->join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get(); 
 
         if($vendor->vendor_templete_id == 2){
             $page = 'categories';
@@ -192,9 +193,10 @@ class VendorController extends FrontController
                 $is_vendor_closed = 0;
             }
         }
+        $product_tag_ids = Product::where('vendor_id', $vendor->id)->where('is_live', 1)->pluck('id')->toArray();
+        $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
+        $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
 
-        $tags = Tag::with('primary')->get();
-        //dd($page);
          // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
         return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed]);
     }
@@ -268,8 +270,7 @@ class VendorController extends FrontController
                 $inqury_count++;
             }
         }
-        if($listData->count() == $inqury_count){
-            $show_range = 0;
+        if($listData->count() == $inqury_count){ 
         }
         else{
             $show_range = 1;
@@ -285,6 +286,7 @@ class VendorController extends FrontController
         }
         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
         $range_products = Product::join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
+
 
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if(Session::has('vendors')){
@@ -371,9 +373,9 @@ class VendorController extends FrontController
                 // $vendor_categories = $vendor_categories->whereHas('category', function($query) {
                 //     $query->whereIn('type_id', [1]);
                 // });
-                $vendor_categories = $vendor_categories->where('status', 1)->get();
+                $vendor_categories = $vendor_categories->where('status', 1)->groupBy('category_id')->get();
+                //dd($vendor_categories);
             }
-
             foreach($vendor_categories as $ckey => $category) {
                 $products = Product::with(['media.image',
                         'translation' => function($q) use($langId){
@@ -443,7 +445,7 @@ class VendorController extends FrontController
                     // }
                 }
             }
-            //  dd($vendor_categories->toArray());
+            //   dd($vendor_categories->toArray());
             $listData = $vendor_categories;
             return $listData;
         }
@@ -721,7 +723,7 @@ class VendorController extends FrontController
                     $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
                     $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                     $q2->where('apt.language_id', $langId);
-                }
+                },'tags'
             ])->select('products.id', 'products.sku','products.title', 'products.url_slug','products.weight_unit','products.category_id', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
             ->join('product_translations', 'product_translations.product_id', '=', 'products.id');
@@ -770,7 +772,6 @@ class VendorController extends FrontController
         ->groupBy('products.id')
         ->where('vendor_id', $vid)->get();
 
-
         $vendor_categories = collect();
         $category_list = [];
         if($products->isNotEmpty()){
@@ -783,8 +784,11 @@ class VendorController extends FrontController
                             $v->is_free = false;
                         }
                         $v->multiplier = $clientCurrency->doller_compare;
-                    }
+                    } 
                 }
+                
+
+
 
                 $p_id = $value->id;
                 $variantData = $value->with(['variantSet' => function ($z) use ($langId, $p_id) {
@@ -831,7 +835,9 @@ class VendorController extends FrontController
                 }
             }
         }
-        $tags = Tag::with('primary')->get();
+        $product_tag_ids = Product::where('vendor_id', $vid)->where('is_live', 1)->pluck('id')->toArray();
+        $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
+        $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
         $listData = $vendor_categories;
         $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData,'tagId'=>$tagId, 'input'=>$request->all()])->render();
         return response()->json(array('status'=>'Success', 'html'=>$returnHTML));

@@ -22,11 +22,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 ->get();
 @endphp
 <header class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
-    @if (Auth::check())
-    @include('layouts.store/topbar-auth-template-one')
-    @else
-    @include('layouts.store/topbar-guest-template-one')
-    @endif
+    @include('layouts.store/topbar-template-one')
     <!-- Start Cab Booking Header From Here -->
     <div class="cab-booking-header">
         <div class="container">
@@ -608,12 +604,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     @foreach($navCategories as $cate)
                                     @if($cate['name'])
                                     <li class="al_main_category">
-                                        <a href="{{route('categoryDetail', $cate['slug'])}}">
+                                        <a href="{{route('categoryDetail', $cate['slug'])}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
                                             @if($client_preference_detail->show_icons==1 &&
                                             \Request::route()->getName()=='userHome')
-                                            <div class="nav-cate-img"> <img class="blur-up lazyload"
-                                                    data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}"
-                                                    alt=""> </div>
+                                            <div class="nav-cate-img"> <img class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
                                             @endif{{$cate['name']}}
                                         </a>
                                         @if(!empty($cate['children']))
@@ -655,9 +649,16 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
        <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
    </li> -->
     <% _.each(nav_categories, function(category, key){ %>
-    <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>">
+     <% var icon_2_url = null;
+      if(category.icon_two != null){
+         icon_2_url =  category.icon_two.image_fit + '200/200' + category.icon_two.image_path;
+      }else{
+         icon_2_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
+      }
+   %>
+    <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
             @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div
-                class="nav-cate-img"> <img class="blur-up lazyload"
+                class="nav-cate-img"> <img class="blur-up lazyload" data-icon_two="<%=icon_2_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>"
                     data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif
             <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list">
             <% _.each(category.children, function(childs, key1){%> <li> <a

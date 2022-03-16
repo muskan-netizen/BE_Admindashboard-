@@ -23,13 +23,13 @@ class PaymentOptionController extends BaseController{
 
     public function getPaymentOptions(Request $request, $page = ''){
         if($page == 'wallet'){
-            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue');
+            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree');
         }
         elseif($page == 'pickup_delivery'){
-            $code = array('cod', 'razorpay');
+            $code = array('cod', 'razorpay','stripe');
         }
         else{
-            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue');
+            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree');
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'title', 'off_site']);
         foreach($payment_options as $option){
@@ -143,6 +143,11 @@ class PaymentOptionController extends BaseController{
     public function postPaymentVia_authorize_net(Request $request){
         $gateway = new AuthorizeGatewayController();
         return $gateway->authorizePurchase($request); 
+    }
+
+    public function postPaymentVia_cashfree(Request $request){
+        $gateway = new CashfreeGatewayController();
+        return $gateway->createOrder($request);
     }
 
     public function postPaymentVia_paypal(Request $request){

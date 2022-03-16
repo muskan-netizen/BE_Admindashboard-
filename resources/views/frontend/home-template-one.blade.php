@@ -1,8 +1,7 @@
 @extends('layouts.store', ['title' => __('Home')]) @section('content')
 @section('css')
 <link rel="stylesheet/less" type="text/css" href="{{ asset('front-assets/css/shimmer-less.less') }}">
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<link rel="stylesheet"  href="{{asset('css/aos.css')}}">
 
 @endsection
 
@@ -479,34 +478,35 @@
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/less@4"></script>
-<script>
+<script src="{{asset('js/aos.js')}}"></script>
+<script type="text/javascript">
+     AOS.init();
 	$('.center').slick({
   centerMode: true,
   centerPadding: '60px',
   slidesToShow: 2,
   responsive: [
-    {
-      breakpoint: 768,
-      settings: {
-        arrows: false,
-        centerMode: true,
-        centerPadding: '40px',
-        slidesToShow: 2
-      }
-    },
-    {
-      breakpoint: 480,
-      settings: {
-        arrows: false,
-        centerMode: true,
-        centerPadding: '40px',
-        slidesToShow: 1
-      }
-    }
+    {breakpoint: 768, settings: { arrows: false, centerMode: true, centerPadding: '40px', slidesToShow: 2}},
+    {breakpoint: 480, settings: { arrows: false, centerMode: true, centerPadding: '40px', slidesToShow: 1}}
   ]
 });
-</script>
-<script>
-  AOS.init();
+	function changeImage(image2, check) {
+       var image = $(image2).children('.nav-cate-img').children("img");
+       var  icon = image.attr('data-icon');
+       var  icon_two = image.attr('data-icon_two');
+       if(check == 1)
+       {
+	        setTimeout(function () {
+	            image.attr('data-src',icon_two);
+	            image.attr('src',icon_two);
+	        },200);
+       }else if(check == 0){
+            setTimeout(function () {
+                image.attr('data-src',icon);
+                image.attr('src',icon);
+            },200);
+       
+       }
+    }
 </script>
 @endsection

@@ -18,5 +18,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 $prefix = 'v1';
+$prefix_v = 'v2';
 require_once $prefix."/auth.php";
 require_once $prefix."/guest.php";
+require_once $prefix_v."/auth.php";
+require_once $prefix_v."/guest.php";

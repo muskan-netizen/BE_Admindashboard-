@@ -126,12 +126,9 @@
                     <img src="<%= product_image %>" alt="">
                 </div>
                 <div class="cab-location-details mt-2" id="searching_main_div">
-                    <% if(result.user_name !== null) { %>
-                    <h4><b></b></h4>
-                    <% }else { %>
-                    <h4><b>Searching For Nearby Drivers</b></h4>
-                    <% } %>
-                    <div class="new-loader"></div>
+                    <h6 class="text-center"><b>{{__('Searching For Nearby Drivers')}}</b></h6>
+                    <div class="new-loader">
+                    </div>
                 </div>
                 <div class="cab-location-details mt-2" id="driver_details_main_div" style="display:none;">
                    <div class="row align-items-center">

@@ -208,7 +208,7 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-3 mb-3" >
-                                        <label for="validationCustom01">{{getNomenclatureName('Zip Code', true) }}</label>
+                                        <label for="validationCustom01">{{getNomenclatureName('Zip Code', true) }} / PO Box</label>
                                         <input type="text" class="form-control" id="pincode" name="pincode" value="">
                                         <span class="invalid-feedback" id="pincode_error"><strong></strong></span>
                                     </div>
