@@ -435,7 +435,7 @@ class OrderController extends BaseController
                     $res = $this->sendSuccessEmail($request, $order);
                     // pr($res);
                     // exit();
-                    $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx
+                    $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree
                     if (!in_array($request->payment_option_id, $ex_gateways)) {
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
@@ -489,7 +489,6 @@ class OrderController extends BaseController
                         // // $this->sendOrderNotification($user->id);
                         // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
                         $this->sendSuccessSMS($request, $order);
-
                     }
 
                     DB::commit();

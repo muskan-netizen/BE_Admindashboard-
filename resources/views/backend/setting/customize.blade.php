@@ -424,7 +424,7 @@
     </div>
 
     
-    <div class="col-md-4">
+    <div class="col-md-4"> 
         <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
             @csrf
             <div class="card-box product-tags mb-0 pb-1">
@@ -996,10 +996,11 @@
                                 </tr>
                                 <tbody id="table_body">
                                         <tr>
-                                    @foreach($client_languages as $key => $langs)
+                                    @foreach($client_languages as $key => $vendor_langs)
+                                  
                                         <td>
-                                            <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
-                                            <input class="form-control" name="name[{{$k}}]" type="text" id="vendor_registration_document_name_{{$client_language->langId}}">
+                                            <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$vendor_langs->langId}}">
+                                            <input class="form-control" name="name[{{$key}}]" type="text" id="vendor_registration_document_name_{{$vendor_langs->langId}}">
                                         </td>
                                     @endforeach
                                     <td class="lasttd"></td>
@@ -1114,8 +1115,8 @@
                                         <tr>
                                         @foreach($client_languages as $key => $langs)
                                             <td>
-                                                <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$client_language->langId}}">
-                                                <input class="form-control" name="name[{{$key}}]" type="text" id="product_tag_name_{{$client_language->langId}}">
+                                                <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$langs->langId}}">
+                                                <input class="form-control" name="name[{{$key}}]" type="text" id="product_tag_name_{{$langs->langId}}">
                                             </td>
                                             @if($key == 0)
                                             <span class="text-danger error-text product_tag_err"></span>

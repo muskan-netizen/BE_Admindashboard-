@@ -8,29 +8,45 @@ use Illuminate\Support\Facades\Auth;
 
 trait Vivawallet{
 
-    private $api_key;
+    private $merchant_key;
     private $merchant_id;
+    private $client_key;
+    private $client_id;
     private $url;
     private $tokenUrl;
+    private $test_mode;
+
+
+    public function __construct()
+   {
+        $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'viva_wallet')->where('status', 1)->first();
+        $json = json_decode($viva->credentials);
+        $this->client_key = $json->client_key;
+        $this->client_id = $json->client_id;
+        $this->merchant_key = $json->merchant_key;
+        $this->merchant_id = $json->merchant_id;
+        $this->test_mode = $viva->test_mode;
+   }
 
     public function credentials()
     {
-        // $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'vivawallet')->where('status', 1)->first();
-        // $json = json_decode($viva->credentials);
-        $this->api_key = 'mo8qAqP740h172MMV8RakEepVr5PuO';
-        $this->merchant_id = '8d527m2ndy9nnbmhgqgtxv7frma27e444hwdnwzipw804.apps.vivapayments.com';
-        
+         $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'viva_wallet')->where('status', 1)->first();
+         $json = json_decode($viva->credentials);
+         $this->client_key = $json->client_key;
+         $this->client_id = $json->client_id;
+         $this->merchant_key = $json->merchant_key;
+         $this->merchant_id = $json->merchant_id;
+         $this->test_mode = $viva->test_mode;
     }
    
     public function getAuthTokenViva():object{
         $this->credentials();
-            // if($this->test_mode=='1'){
-            //     $this->tokenUrl = 'https://demo-accounts.vivapayments.com/connect/token';            
-            //     }else{
-            //     $this->tokenUrl = 'https://accounts.vivapayments.com/connect/token';
-            // }
-        $this->tokenUrl = 'https://demo-accounts.vivapayments.com/connect/token';    
-        $token = base64_encode($this->merchant_id.':'.$this->api_key);
+            if($this->test_mode=='1'){
+                $this->tokenUrl = 'https://demo-accounts.vivapayments.com/connect/token';            
+                }else{
+                $this->tokenUrl = 'https://accounts.vivapayments.com/connect/token';
+            }
+        $token = base64_encode($this->client_id.':'.$this->client_key);
         $response = $this->postCurlToken($token);
         return $response;
     }
@@ -55,41 +71,28 @@ trait Vivawallet{
     }
 
 
-    public function createOrderPaymentLink($data = ''){
-        $this->credentials();
+    public function createOrderPaymentLink($data = null){
         $token = $this->getAuthTokenViva();
-            // if($this->test_mode=='1'){
-            //     $this->payUrl = 'https://demo-api.vivapayments.com/checkout/v2/orders';            
-            //     }else{
-            //     $this->payUrl = 'https://api.vivapayments.com/checkout/v2/orders';
-            // }
-        $this->payUrl = 'https://demo-api.vivapayments.com/checkout/v2/orders'; 
+            if($this->test_mode=='1'){
+                $this->payUrl = 'https://demo-api.vivapayments.com/checkout/v2/orders';            
+                }else{
+                $this->payUrl = 'https://api.vivapayments.com/checkout/v2/orders';
+            }
+
+        $response=$this->postCurl($this->payUrl,$data,$token->access_token);
+        return $response;
+    }
 
 
-        $postFields  = [
-            'amount'              => 10000,
-            'customerTrns'        => 'This is a description displayed to the customer',
-            'customer'            => [
-                'email'       => 'test@vivawallet.com',
-                'fullName'    => 'George Seferis',
-                'phone'       => '697845125',
-                'countryCode' => 'GR',
-                'requestLang' => 'el-GR'
-            ],
-            'paymentTimeout'      => 0,
-            'preauth'             => false,
-            'allowRecurring'      => false,
-            'maxInstallments'     => 0,
-            'paymentNotification' => true,
-            'tipAmount'           => 0,
-            'disableExactAmount'  => false,
-            'disableCash'         => false,
-            'disableWallet'       => false,
-            'sourceCode'          => 'Default',
-            'merchantTrns'        => 'This is a short description that helps you uniquely identify the transaction'
-        ];
-
-        $response=$this->postCurl($this->payUrl,$postFields,$token->access_token);
+    public function verificationWebhookKey():object{
+        $this->credentials();
+        $token = base64_encode($this->merchant_id.':'.$this->merchant_key);
+            if($this->test_mode=='1'){
+                $this->api_url = 'https://demo.vivapayments.com/api/messages/config/token';            
+                }else{
+                $this->api_url = 'https://vivapayments.com/api/messages/config/token';
+            }
+        $response=$this->getCurl('','',$token);
         return $response;
     }
 
