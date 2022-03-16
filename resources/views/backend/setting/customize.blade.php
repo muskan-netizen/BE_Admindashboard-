@@ -424,7 +424,7 @@
     </div>
 
     
-    <div class="col-md-4">
+    <div class="col-md-4"> 
         <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
             @csrf
             <div class="card-box product-tags mb-0 pb-1">
@@ -1115,8 +1115,8 @@
                                         <tr>
                                         @foreach($client_languages as $key => $langs)
                                             <td>
-                                                <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$client_language->langId}}">
-                                                <input class="form-control" name="name[{{$key}}]" type="text" id="product_tag_name_{{$client_language->langId}}">
+                                                <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$langs->langId}}">
+                                                <input class="form-control" name="name[{{$key}}]" type="text" id="product_tag_name_{{$langs->langId}}">
                                             </td>
                                             @if($key == 0)
                                             <span class="text-danger error-text product_tag_err"></span>
