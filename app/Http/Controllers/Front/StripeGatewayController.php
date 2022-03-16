@@ -14,6 +14,7 @@ use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
+use App\Http\Controllers\Front\PickupDeliveryController;
 use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
 
 class StripeGatewayController extends FrontController
@@ -39,15 +40,18 @@ class StripeGatewayController extends FrontController
 
     public function postPaymentViaStripe(request $request)
     {
+     
         try {
+           
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
             $amount = $this->getDollarCompareAmount($request->amount);
             $token = $request->input('stripe_token');
-
+           
             $payment_form = $request->payment_form;
-
+           
             $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+           
             if (!$saved_payment_method) {
                 $customerResponse = $this->gateway->createCustomer(array(
                     'description' => 'Creating Customer',
@@ -69,6 +73,7 @@ class StripeGatewayController extends FrontController
             }else {
                 $customer_id = $saved_payment_method->customerReference;
             }
+            
 
             $postdata = [
                 'currency' => $this->currency,
@@ -82,7 +87,7 @@ class StripeGatewayController extends FrontController
                 ],
                 'customerReference' => $customer_id
             ];
-
+          
             if($payment_form == 'cart'){
                 $address_id = $request->address_id;
                 $user_address = UserAddress::where('id', $address_id)->first();
@@ -105,17 +110,24 @@ class StripeGatewayController extends FrontController
                 $postdata['description'] = 'Subscription Checkout';
                 $postdata['metadata']['subscription_id'] = $request->subscription_id;
             }
+            elseif($payment_form == 'pickup_delivery'){
+                $order_number = $request->order_number;
+                $postdata['description'] = 'Pickup Delivery ';
+                $postdata['metadata']['order_number'] = $order_number;
+               
+            }
 
             $authorizeResponse = $this->gateway->authorize($postdata)->send();
 
             // dd($authorizeResponse->isSuccessful());
             if ($authorizeResponse->isSuccessful()) {
                 $response = $this->gateway->purchase($postdata)->send();
-                
+                 
                 if ($response->isSuccessful()) {
                 // $this->successMail();
                 // return $this->successResponse($response->getData());
                     $transactionId = $response->getTransactionReference();
+                   
                     $returnUrl = '';
 
                     if($payment_form == 'cart'){
@@ -181,6 +193,16 @@ class StripeGatewayController extends FrontController
                         $subscriptionController = new UserSubscriptionController();
                         $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
                         $returnUrl = route('user.subscription.plans');
+                    }
+                    elseif($payment_form == 'pickup_delivery'){
+                      
+                        $request->request->add(['payment_option_id' => 4, 'amount' => $amount, 'transaction_id' => $transactionId]);
+                      
+                        $plaseOrderForPickup = new PickupDeliveryController();
+                        $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+                      
+                      
+                        $returnUrl = $request->reload_route;
                     }
                     return $this->successResponse($returnUrl, __('Payment has been completed successfully'), 200);
                 }

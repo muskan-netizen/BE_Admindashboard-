@@ -162,7 +162,6 @@ class FrontController extends Controller
             ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id')
             ->where('parent_id', $category_id)->where('status', 1)->get();
         if($categories){
-            foreach($categories as $cate){
                 if($cate->childs){
                     foreach($cate->childs as $child){
                         $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
@@ -183,7 +182,7 @@ class FrontController extends Controller
                 }
                 $this->getChildCategoriesForVendor($cate->id, $langId, $vid);
             }
-        }
+        
         return $category_list;
     }
 

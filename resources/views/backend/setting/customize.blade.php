@@ -996,10 +996,11 @@
                                 </tr>
                                 <tbody id="table_body">
                                         <tr>
-                                    @foreach($client_languages as $key => $langs)
+                                    @foreach($client_languages as $key => $vendor_langs)
+                                  
                                         <td>
-                                            <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
-                                            <input class="form-control" name="name[{{$k}}]" type="text" id="vendor_registration_document_name_{{$client_language->langId}}">
+                                            <input class="form-control" name="language_id[{{$key}}]" type="hidden" value="{{$vendor_langs->langId}}">
+                                            <input class="form-control" name="name[{{$key}}]" type="text" id="vendor_registration_document_name_{{$vendor_langs->langId}}">
                                         </td>
                                     @endforeach
                                     <td class="lasttd"></td>

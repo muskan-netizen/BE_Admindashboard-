@@ -64,6 +64,7 @@
     var check_isolate_single_vendor_url = "{{ route('checkIsolateSingleVendor') }}";
     let empty_cart_url = "{{route('emptyCartData')}}";
     var cart_details_url = "{{ route('cartDetails') }}";
+    var session_vendor_type = "{{Session::get('vendorType')}}";
     var delete_cart_url = "{{ route('emptyCartData') }}";
     var user_checkout_url= "{{ route('user.checkout') }}";
     var cart_product_url= "{{ route('getCartProducts') }}";

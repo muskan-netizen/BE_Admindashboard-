@@ -6,6 +6,7 @@ use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use Auth;
 use App\Http\Traits\ApiResponser;
+use App\Http\Traits\Vivawallet;
 use App\Models\Cart;
 use App\Models\CartAddon;
 use App\Models\CartCoupon;
@@ -19,118 +20,99 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
 use Log;
 
-class KongapayController extends Controller
+class VivawalletController extends Controller
 {
-   use ApiResponser;
+   use ApiResponser, Vivawallet;
 
-   private $api_key;
-   private $merchant_id;
-   private $url;
+    private $merchant_key;
+    private $merchant_id;
+    private $client_key;
+    private $client_id;
+    private $url;
+    private $tokenUrl;
+    private $test_mode;
 
    public function __construct()
    {
-        $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'vivawallet')->where('status', 1)->first();
+        $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'viva_wallet')->where('status', 1)->first();
         $json = json_decode($viva->credentials);
-        $this->api_key = $json->api_key;
+        $this->client_key = $json->client_key;
+        $this->client_id = $json->client_id;
+        $this->merchant_key = $json->merchant_key;
         $this->merchant_id = $json->merchant_id;
+        $this->test_mode = $viva->test_mode;
    }
 
-   public function createToken(Request $request)
-   {
-
-
-
-   }
-
-
-   public function createHash(Request $request)
-   {
-     $time = '';
-    if(isset($request->auth_token) && !empty($request->auth_token)){
-      $user = User::where('auth_token', $request->auth_token)->first();
-      Auth::login($user);
-    }else{
-      $user = auth()->user();
+   public function credentials()
+    {
+         $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'viva_wallet')->where('status', 1)->first();
+         $json = json_decode($viva->credentials);
+         $this->client_key = $json->client_key;
+         $this->client_id = $json->client_id;
+         $this->merchant_key = $json->merchant_key;
+         $this->merchant_id = $json->merchant_id;
+         $this->test_mode = $viva->test_mode;
     }
-     $name = explode(' ',$user->name);
-     $returnUrl = '';
-     if($request->from == 'cart')
-     {
-      $request->amt = $request->amt*100;
-      $time = $request->order_number;
 
-      if(isset($request->app) && !empty($request->app))
-      {
-        $returnUrl = route('kongapay.successCart',['from'=>'?auth_token='.$request->auth_token]);
-      }else{ 
-        $returnUrl = route('kongapay.successCart');
-      }
-
-     }elseif($request->from == 'wallet')
-     {
-      $time = ($request->transaction_id)??'W_'.time();
-      //Save transaction before payment success for get information only
-      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d')]);
-      $request->amt = $request->amt*100;
-
-      if(isset($request->app) && !empty($request->app))
-      {
-        $returnUrl = route('kongapay.successWallet',['transaction_id='.$time]);
-      }else{ 
-        $returnUrl = route('kongapay.successWallet');
-      }
-
-     }elseif($request->from == 'tip')
-     {
-      $time = 'T_'.time().'_'.$request->order_number;
-      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d')]);
-     
-      $request->amt = $request->amt*100;
-      if(isset($request->app) && !empty($request->app))
-      {
-        $returnUrl = route('kongapay.successTip',['order_no='.$time]);
-      }else{ 
-        $returnUrl = route('kongapay.successTip');
-      }
-      
-     }elseif($request->from == 'subscription')
-     {
-      $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
-      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
-
-      $request->amt = number_format($request->amt,2)*100;
-      
-      if(isset($request->app) && !empty($request->app))
-      {
-        $returnUrl = route('kongapay.successSubs',['subscription_id='.$time]);
-      }else{ 
-        $returnUrl = route('kongapay.successSubs');
-      }
+   public function createToken()
+   {
+    $this->credentials();
+    return $this->getAuthTokenViva();
+   }
 
 
-     
-     }
-       
-     $key = $request->amt.'|'.$this->api_key.'|'.$time;
-
-     //Need to save entry in payment table
-
-     $data = (object)array(
-            "hash"=> hash('Sha512',$key),
-            "amount"=> $request->amt??0,
-            "description"=> "web payment",
-            "email"=> $user->email??'',
-            "merchantId"=> $this->merchant_id,
-            "reference"=> $time,
-            "firstname" => $name[0]??'',
-            "lastname" => $name[1]??'last name',
-            "phone" => $user->phone_number,
-            "enableFrame"=> true,
-            "callback" => $returnUrl,
-            "customerId" => $user->email
-        );
-      return json_encode($data);
+   public function createPayLink()
+   {
+    $this->credentials();
+            $data  = [
+              'amount'              => 1000,
+              'customerTrns'        => 'Testing... This is a description displayed to the customer',
+              'customer'            => [
+                  'email'         => 'test@vivawallet.com',
+                  'fullName'      => 'Testing User',
+                  'phone'         => '697845125',
+                  'countryCode'   => 'EN',
+                  'requestLang'   => 'el-EN'
+              ],
+              'paymentTimeout'      => 0,
+              'preauth'             => false,
+              'allowRecurring'      => false,
+              'maxInstallments'     => 0,
+              'paymentNotification' => true,
+              'tipAmount'           => 0,
+              'disableExactAmount'  => false,
+              'disableCash'         => false,
+              'disableWallet'       => false,
+              'sourceCode'          => 'Default',
+              'merchantTrns'        => 'Payment Api using smart checkout api'
+          ];
+      $response = $this->createOrderPaymentLink($data);
+      $this->sendResponse($response);
    }  
+
+   public function sendResponse($response)
+   {
+    $this->credentials();
+        if($this->test_mode=='1'){
+          $this->api_url = 'https://demo.vivapayments.com/web/checkout?ref='.$response->orderCode;            
+          }else{
+          $this->api_url = 'https://vivapayments.com/web/checkout?ref='.$response->orderCode;
+          }
+        header('Location: '.$this->api_url);
+        exit;
+   }
+
+   public function verifyWebhookUrl($response)
+   {
+      $key = $this->verificationWebhookKey();
+      // $key =  json_encode($key);
+       echo $key->Key;
+   }
+
+   public function success(Request $request)
+   {
+      dd($request->all());
+   }
 
 
    public function webViewPay(Request $request)
@@ -350,5 +332,6 @@ class KongapayController extends Controller
         return $this->successResponse($request->getTransactionReference());
 
     }
+
 
 }

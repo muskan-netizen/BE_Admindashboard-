@@ -11,7 +11,7 @@
             $extra_permissions = array("celebrity", "inquiries");
             $setting_permissions = array("profile", "customize", "app_styling", "web_styling", "catalog", "configurations", "tax", "payment");
             $styling_permissions = array("app_styling", "web_styling");
-            $order_permissions = array("dashboard", "orders", "order_cancel_requests", "vendors", "accounting_orders","accounting_loyality", "accounting_promo_codes", "accounting_taxes","accounting_vendors", "subscriptions_customers", "subscriptions_vendors", "customers");
+            $order_permissions = array("dashboard", "orders", "vendors", "accounting_orders","accounting_loyality", "accounting_promo_codes", "accounting_taxes","accounting_vendors", "subscriptions_customers", "subscriptions_vendors", "customers");
             $accounting_permissions = array("accounting_orders", "accounting_loyality", "accounting_promo_codes", "accounting_taxes", "accounting_vendors");
         @endphp
         <a href="{{route('client.dashboard')}}" class="logo logo-dark text-center">
@@ -87,14 +87,6 @@
                                     <a href="{{route('order.index')}}">
                                         <span class="icon-orders"></span>
                                         <span> {{ __('Orders') }} </span>
-                                    </a>
-                                </li>
-                            @endif
-                            @if(in_array('order_cancel_requests',$allowed) || Auth::user()->is_superadmin == 1)
-                                <li>
-                                    <a href="{{route('cancel-order.requests')}}">
-                                        <span class="icon-extra"></span>
-                                        <span> {{ __('Cancel Order Requests') }} </span>
                                     </a>
                                 </li>
                             @endif
