@@ -35,7 +35,7 @@ if(session()->has('applocale')){
                     </div>
                     @endif
                     @if(count($pages))
-                    <div class="col-lg-3 col-md-6 col-5 pt-md-4 pt-lg-0">
+                    <div class="col-lg-3 col-md-6 pt-md-4 pt-lg-0">
                         <div class="sub-title">
                             <div class="footer-title mt-0">
                                 <h4 class="mt-0">{{ __('Quick Links') }}</h4>
@@ -74,7 +74,7 @@ if(session()->has('applocale')){
                     @endif
                     {{-- Contact Us details --}}
                         @if($client_preference_detail->show_contact_us == 1)
-                            <div class="col-lg-3 col-md-6 col-7">
+                            <div class="col-lg-3 col-md-6">
                                 <div class="sub-title">
                                     <div class="footer-title mt-0">
                                         <h4 class="mt-0">{{ __('Contact Us') }}</h4>
@@ -152,7 +152,7 @@ if(session()->has('applocale')){
                         </div>
                     </div>
                     @if($client_preference_detail->show_payment_icons == 1)
-                    <div class="col-lg-3 col-md-6 col-7 payment-card mobile-border">
+                    <div class="col-lg-3 col-md-6 payment-card mobile-border">
                         <div class="sub-title">
                             <div class="footer-title mt-0">
                                 <h4 class="mt-0">{{ __('Payment Method') }}</h4>
