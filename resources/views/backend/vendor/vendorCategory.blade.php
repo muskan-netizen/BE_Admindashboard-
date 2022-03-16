@@ -268,7 +268,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group" style="display:none;">
                                         {!! Form::label('title', __('Min Select'),['class' => 'control-label']) !!}
-                                        {!! Form::text('min_select', 1, ['class' => 'form-control', 'id' => 'min', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                        {!! Form::text('min_select', 0, ['class' => 'form-control', 'id' => 'min', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
