@@ -87,37 +87,51 @@ class FrontController extends Controller
        $preferences = Session::get('preferences');
        $primary = ClientLanguage::orderBy('is_primary','desc')->first();
        $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-       ->select('categories.id', 'categories.icon', 'categories.slug', 'categories.parent_id', 'cts.name')->distinct('categories.id');
+       ->select('categories.id', 'categories.icon', 'categories.icon_2 as icon_two' , 'categories.slug', 'categories.parent_id', 'cts.name')->orderBy('position')->distinct('categories.slug');
         $status = $this->field_status;
+        $include_categories = [4,8]; // type 4 for brands
+        $celebrity_check = 0;
         if ($preferences) {
             if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
+
+                if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
+                    $celebrity_check = 1;
+                    $include_categories[] = 5; // type 5 for celebrity
+                }
                 $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
+
                 $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
-                    ->where(function ($q1) use ($vendors, $status, $lang_id) {
+                    ->where(function ($q1) use ($vendors , $include_categories) {
                         $q1->whereIn('vct.vendor_id', $vendors)
                             ->where('vct.status', 1)
-                            ->orWhere(function ($q2) {
-                                $q2->whereIn('categories.type_id', [4,5,8]);
+                            ->orWhere(function ($q2) use($include_categories) {
+                                $q2->whereIn('categories.type_id', $include_categories);
                             });
                     });
             }
         }
-        $categories = $categories->where('categories.id', '>', '1')
-            ->whereNotNull('categories.type_id')
-            ->whereNotIn('categories.type_id', [7])
-            ->where('categories.is_visible', 1)
-            ->where('categories.status', '!=', $status)
-            ->where('cts.language_id', $lang_id)
-            ->where(function ($qrt) use($lang_id,$primary){
-                $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
-             })
-            ->whereNull('categories.vendor_id')
-            ->orderBy('categories.position', 'asc')
-            ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
-        if ($categories) {
-            $categories = $this->buildTree($categories->toArray());
+        $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
+                                ->where('categories.id', '>', '1')
+                                ->whereNotNull('categories.type_id');
+         if($celebrity_check == 0){
+            $categories = $categories->where('categories.type_id', '!=', 5);
         }
-
+        $categories = $categories->where('categories.id', '>', '1')
+                               // ->whereNotNull('categories.type_id')
+                                //->whereNotIn('categories.type_id', [7])
+                                ->where('categories.is_visible', 1)
+                                ->where('categories.is_core', 1)
+                                ->where('categories.status', '!=', $status)
+                                ->where('cts.language_id', $lang_id)
+                                ->where(function ($qrt) use($lang_id,$primary){
+                                    $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
+                                })
+                                ->whereNull('categories.vendor_id')
+                              //  ->orderBy('categories.position', 'asc')
+                                ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
+        if ($categories) {
+            $categories = $this->buildTree($categories); 
+        }
 
         return $categories;
     }
@@ -148,7 +162,6 @@ class FrontController extends Controller
             ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id')
             ->where('parent_id', $category_id)->where('status', 1)->get();
         if($categories){
-            foreach($categories as $cate){
                 if($cate->childs){
                     foreach($cate->childs as $child){
                         $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
@@ -169,7 +182,7 @@ class FrontController extends Controller
                 }
                 $this->getChildCategoriesForVendor($cate->id, $langId, $vid);
             }
-        }
+        
         return $category_list;
     }
 

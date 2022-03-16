@@ -107,6 +107,7 @@ $preference = $client_preference_detail;
                         </ul>
                     </li>
                     @endif
+                    @if(count($languageList) > 1)
                     <li class="onhover-dropdown change-language slected-language">
                         <a href="javascript:void(0)">{{$applocale}}
                         <span class="icon-ic_lang align-middle"></span>
@@ -120,6 +121,8 @@ $preference = $client_preference_detail;
                             @endforeach
                         </ul>
                     </li>
+                    @endif
+                    @if(count($currencyList) > 1)
                     <li class="onhover-dropdown change-currency slected-language">
                         <a href="#">{{session()->get('iso_code')}} <span class="icon-ic_currency align-middle"></span>
                         <span class="currency ml-1">{{ __('currency') }}</span> </a>
@@ -131,9 +134,11 @@ $preference = $client_preference_detail;
                             @endforeach
                         </ul>
                     </li>
+                    @endif
                     <li class="onhover-dropdown mobile-account"> <i class="fa fa-user" aria-hidden="true"></i>
                         {{__('My Account')}}
                         <ul class="onhover-show-div">
+                        @if(Auth::user())
                             @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                 <li>
                                     <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
@@ -145,6 +150,14 @@ $preference = $client_preference_detail;
                             <li>
                                 <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
                             </li>
+                        @else
+                        <li>
+                            <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
+                        </li>
+                        <li>
+                            <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
+                        </li>
+                        @endif
                         </ul>
                     </li>
                 </ul>
@@ -274,12 +287,6 @@ $preference = $client_preference_detail;
                     </li>
                 @endforeach
             </ul>
-            <!-- <h6>Change Theme</h6>
-            @if($client_preference_detail->show_dark_mode == 1)
-            <ul class="list-inline">
-                <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
-            </ul>
-            @endif -->
         </div>
       </div>
     </div>

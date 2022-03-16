@@ -910,6 +910,8 @@ $(document).ready(function() {
                 payWithKPG('');
             }else if(payment_option_id == 22) {
                 payWithCcAvenue('');
+            }else if(payment_option_id == 24) {
+                paymentViaCashfree('');
             }
         } else {
             _this.attr("disabled", false);
@@ -1123,7 +1125,10 @@ $(document).ready(function() {
                 dataType: 'json',
                 url: update_cart_schedule,
                 data: { specific_instructions:specific_instructions,task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor , delivery_type : delivery_type ,slot:slot,address : address},
-                success: function(response) {
+                success: function(response) {                    
+                    if (response.status == "Pending") {  
+                        window.location.replace(verifyaccounturl);
+                    }
                     if (response.status == "Success") {
                         $.ajax({
                             data: {},
@@ -1986,6 +1991,8 @@ $(document).ready(function() {
             payWithKPG('');
         }else if (payment_option_id == 22) {
             payWithCcAvenue('');
+        }else if (payment_option_id == 24) {
+            paymentViaCashfree('', payment_option_id, '');
         }
 
     });
@@ -3655,8 +3662,7 @@ $(document).ready(function() {
         var quan = $(this).val();
         var str = $('#instock').val();
 
-
-        if (quan > str) {
+        if (parseInt(quan) > parseInt(str)) {
             Swal.fire({
                 // title: "Warning!",
                 text: "Quantity is not available in stock",
@@ -3667,6 +3673,7 @@ $(document).ready(function() {
             $('.quantity_count').val(str);
         }
     });
+
 
     window.success_error_alert = function success_error_alert(responseClass, message, element) {
         $(element).find(".alert").html('');

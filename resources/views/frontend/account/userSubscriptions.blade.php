@@ -3,13 +3,6 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
-<style type="text/css">
-    .main-menu .brand-logo {
-        display: inline-block;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-</style>
 
 @endsection
 
@@ -21,13 +14,9 @@
 @endphp
 
 <style type="text/css">
-    .invalid-feedback {
-        display: block;
-    }
-    ul li {
-        margin: 0 0 10px;
-        color: #6c757d;
-    }
+.invalid-feedback {display: block;}
+ul li {margin: 0 0 10px;color: #6c757d;}
+.main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}
 </style>
 
 <section class="section-b-space">
@@ -66,7 +55,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row my-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">my account</a></div>
                 @include('layouts.store/profile-sidebar')
@@ -362,6 +351,7 @@
     var fpxBank = '';
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+    var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var subscription_payment_options_url = "{{route('user.subscription.plan.select', ':id')}}";
     var user_subscription_purchase_url = "{{route('user.subscription.plan.purchase', ':id')}}";
     var user_subscription_cancel_url = "{{route('user.subscription.plan.cancel', ':id')}}";

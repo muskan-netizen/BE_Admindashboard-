@@ -35,7 +35,7 @@
                         $img = '';
                         if(isset($vendor_product['product']['media'][0])){
                            $imga = $vendor_product['product']['media'][0]['image']['path']['image_fit'].'100/100'.$vendor_product['product']['media'][0]['image']['path']['image_path'];
-                           $img = $vendor_product['product']['media'][0]['image']['path']['original_image']
+                           $img = $vendor_product['product']['media'][0]['image']['path']['original_image'];
                         }
                         @endphp
                         {{-- <img style="width: 100%;height: 100%;border-radius: 3px;object-fit: cover;" src="{{ $img }}" alt=""> --}}
@@ -63,7 +63,7 @@
                   @if(count($vendor_product['addon']))
                      @foreach ($vendor_product['addon'] as $addon)
                      @php
-                        $vendor_product['pvariant']['price'] = $vendor_product['pvariant']['price'] + $addon['option']['price_in_cart']
+                        $vendor_product['pvariant']['price'] = $vendor_product['pvariant']['price'] + $addon['option']['price_in_cart'];
                      @endphp
                      {{-- <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p>
                      <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p> --}}
@@ -92,7 +92,7 @@
            <tr>
               <td style="text-align: left;"><b>{{__('SHIPPING Charge')}}:</b></td>
 <b>{{__('Delivery Fee')}}:</b></td>
-imal_format($product['delivery_fee_charges'])}}</td>
+{{$currencySymbol . decimal_format(($product['delivery_fee_charges'])}}</td>
            </tr>
 
            <tr>
