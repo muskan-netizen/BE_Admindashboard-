@@ -38,11 +38,19 @@ class CashfreeGatewayController extends BaseController
 
     public function createOrder(Request $request, $domain = ''){
         try{
+            $rules = [
+                'amount'   => 'required',
+                'action'   => 'required'
+            ];
+
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
-            $payment_form = $request->payment_form;
+            $payment_form = $request->action;
 
-            $returnUrl = route('order.return.success');
+            if(empty($user->phone_number)){
+                $rules['phone_number'] = 'required';
+            }
+
             $customer_data = array(
                 'customer_id' => 'customer_'.$user->id,
                 'customer_name' => $user->name,
@@ -88,6 +96,15 @@ class CashfreeGatewayController extends BaseController
                 }
             }
 
+            $validator = Validator::make($request->all(), $rules, [
+                'amount.required' => 'Amount is required',
+                'action.required' => 'Action is required',
+                'phone_number.required' => 'Phone number is required'
+            ]);
+            if ($validator->fails()) {
+                return $this->errorResponse(__($validator->errors()->first()), 422);
+            }
+
             $data = array(
                 'order_id' => $reference_number,
                 'order_amount' => $amount,
@@ -96,8 +113,8 @@ class CashfreeGatewayController extends BaseController
                 'order_note' => $description,
                 'order_tags' => $order_tags,
                 'order_meta' => array(
-                    'return_url' => url('payment/cashfree/return/app' . $returnUrlParams),
-                    'notify_url' => url("payment/cashfree/notify")
+                    'return_url' => url($request->serverUrl.'payment/cashfree/return/app' . $returnUrlParams),
+                    'notify_url' => url($request->serverUrl.'payment/cashfree/notify')
                 )
             );
 

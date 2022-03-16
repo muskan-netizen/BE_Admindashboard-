@@ -16,9 +16,26 @@
             }
         });
    });
-
+   var card = '';
+   var stripe = '';
+   function stripeInitialize() {
+        stripe = Stripe(stripe_publishable_key);
+        var elements = stripe.elements();
+        var style = {
+            base: { fontSize: '16px', color: '#32325d', borderColor: '#ced4da' },
+        };
+        card = elements.create('card', { hidePostalCode: true, style: style });
+        card.mount('#stripe-card-element');
+    }
    $(document).on("click", ".select_cab_payment_method",function() {
        var payment_method = $(this).attr('data-payment_method');
+    
+            if (payment_method == 4) {
+                stripeInitialize();
+                $("#cab_payment_method_form .stripe_element_wrapper").removeClass('d-none');
+            }else {
+                $("#cab_payment_method_form .stripe_element_wrapper").addClass('d-none');
+            }
     //    if(payment_method == 2)
     //    $('#payment_type').html('<i class="fa fa-money" aria-hidden="true"></i> Wallet');
     //    else
@@ -29,9 +46,34 @@
        $('#pickup_now').attr("data-payment_method",payment_method);
        $('#pickup_later').attr("data-payment_method",payment_method);
 
-       $("#payment_modal").modal('toggle');
+        //$("#payment_modal").modal('toggle');
    });
-
+    $(document).on("click", ".select_payment_option_done",function() {
+        $("#cab_payment_method_form, .select_payment_option_done").attr("disabled", true);
+         
+        let payment_option_id = $("#cab_payment_method_form input[name='select_cab_payment_method']:checked").val();
+       
+        if (payment_option_id == 4) {
+            stripe.createToken(card).then(function(result) {
+                //card error case
+                if (result.error) {
+                    $('#stripe_card_error').html(result.error.message);
+                    $("#cab_payment_method_form .select_payment_option_done").attr("disabled", false);
+                } else {
+                    //
+                    $('#stripe_card_error').html('');
+                     //card token in input case
+                   $('#stripe_token').val(result.token.id);
+                     //hide model
+                   $("#payment_modal").modal('toggle');
+                }
+            });
+        }else{
+            //hide model  
+             $('#stripe_card_error').html('');
+            $("#payment_modal").modal('toggle');
+        }
+    });
 
    function setOrderDetailsPage() {
     $('.address-form').addClass('d-none');
@@ -97,6 +139,7 @@ $(document).ready(function () {
     $(document).on("click","#show_dir",function() {
         initMap2();
     });
+    // please order dispatcher
     $(document).on("click", "#pickup_now, #pickup_later",function() {
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
@@ -109,6 +152,7 @@ $(document).ready(function () {
             schedule_datetime = moment(temp_schedule_datetime).format('YYYY-MM-DD HH:mm');
         }
         var tasks = [];
+        var tasks2 = [];
 
         let schedule_datetimeset = $('#schedule_date').val();
         if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
@@ -142,7 +186,9 @@ $(document).ready(function () {
             sample_array.address = pickup_location_names[index];
             sample_array.longitude = pickup_location_longitudes[index];
             tasks.push(sample_array);
+            tasks2.push(sample_array);
         });
+        
         $(destination_location_latitudes).each(function(index, latitude) {
             var sample_array = {};
             sample_array.barcode = null;
@@ -155,22 +201,25 @@ $(document).ready(function () {
             sample_array.longitude = destination_location_longitudes[index];
             tasks.push(sample_array);
         });
+       
         let amount = $(this).attr('data-amount');
         let product_image = $(this).attr('data-image');
         let vendor_id = $(this).attr('data-vendor_id');
         let coupon_id = $(this).attr('data-coupon_id');
         let product_id = $(this).attr('data-product_id');
         let payment_option_id = $(this).attr('data-payment_method');
-
+       
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: {user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
                 if(response.status == '200'){
+                    let order_number = response.data.order_number;
+                    let reload_route = response.data.route;
                     if((payment_option_id == 1) || (payment_option_id == 2)){
                         window.location.replace(response.data.route);
                         
@@ -182,6 +231,32 @@ $(document).ready(function () {
                         //     getDriverDetails(response.data.dispatch_traking_url)
                         // },3000);
                     }
+                    else if(payment_option_id == 4){
+                        var stripe_token = $('#stripe_token').val();
+                        let payment_form = "pickup_delivery";
+
+                          //  console.log(ajaxData);
+                        $.ajax({
+                            type: "POST",
+                            dataType: 'json',
+                            url: payment_stripe_url,
+                            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,stripe_token: stripe_token , payment_form : payment_form,reload_route: reload_route,order_number:order_number },
+                            success: function(resp) {
+                                if (resp.status == 'Success') {
+                                    window.location.replace(resp.data);
+                                } else {
+                                    alert(resp.message);
+                                }
+                            },
+                            error: function(f) {
+                                alert(error);
+                                //var response = $.parseJSON(error.responseText);
+                               
+                            }
+                        });
+                        //var stripe_token = $('#stripe_token').val();
+                       // paymentViaStripe(stripe_token,order_id, payment_option_id,vendor_id);
+                    }
                     else if(payment_option_id == 10){
                         paymentViaRazorpay('', response.data, 'pickup_delivery');
                     }
@@ -192,6 +267,83 @@ $(document).ready(function () {
         });
     });
 
+    function paymentViaStripe(stripe_token, order_id, payment_option_id,) {
+        let total_amount = 0;
+        let tip = 0;
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_form = '';
+
+        let ajaxData = [];
+        // cab booking only
+        ajaxData.push(
+            { name: 'payment_form', value: payment_form },
+            { name: 'stripe_token', value: stripe_token },
+            { name: 'amount', value: total_amount },
+            { name: 'order_id', value: order_id },
+            { name: 'vendor_id', value: vendor_id },
+            { name: 'payment_option_id', value: payment_option_id }
+        );
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: payment_stripe_url,
+            data: ajaxData,
+            success: function(resp) {
+                if (resp.status == 'Success') {
+                    if (path.indexOf("cart") !== -1) {
+                        // placeOrder(address_id, payment_option_id, resp.data.id, tip,delivery_type);
+                    } else if (path.indexOf("wallet") !== -1) {
+                        // creditWallet(total_amount, payment_option_id, resp.data.id);
+                    } else if (path.indexOf("subscription") !== -1) {
+                        // userSubscriptionPurchase(total_amount, payment_option_id, resp.data.id);
+                    } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+
+                        // let order_number = $("#order_number").val();
+                        // if (order_number.length > 0) {
+                        //     order_number = order_number;
+                        // }
+                        // creditTipAfterOrder(total_amount, payment_option_id, resp.data.id, order_number);
+                    } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
+                        // creditWallet(total_amount, payment_option_id, resp.data.id);
+                    }
+                    window.location.href = resp.data;
+                } else {
+                    if (path.indexOf("cart") !== -1) {
+                        success_error_alert('error', resp.message, ".payment_response");
+                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                    } else if (path.indexOf("wallet") !== -1) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    } else if (path.indexOf("subscription") !== -1) {
+                        success_error_alert('error', resp.message, "#subscription_payment_form .payment_response");
+                        $(".subscription_confirm_btn").removeAttr("disabled");
+                    } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    }
+                }
+            },
+            error: function(error) {
+                var response = $.parseJSON(error.responseText);
+                if (path.indexOf("cart") !== -1) {
+                    success_error_alert('error', response.message, ".payment_response");
+                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                } else if (path.indexOf("wallet") !== -1) {
+                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                    $(".topup_wallet_confirm").removeAttr("disabled");
+                } else if (path.indexOf("subscription") !== -1) {
+                    success_error_alert('error', response.message, "#subscription_payment_form .payment_response");
+                    $(".subscription_confirm_btn").removeAttr("disabled");
+                }
+            }
+        });
+    }
 
 
 

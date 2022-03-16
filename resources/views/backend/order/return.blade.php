@@ -30,7 +30,7 @@ $timezone = Auth::user()->timezone;
                     </li>
                     <li class="nav-item"><a class="nav-link @if($status == 'Accepted') active @endif" id="processed-tab" 
                             href="{{route('backend.order.returns',['Accepted'])}}" role="tab" aria-selected="false"><i
-                                class="icofont icofont-man-in-glasses"></i>{{__('Active Requests')}}</a>
+                                class="icofont icofont-man-in-glasses"></i>{{__('Accepted Requests')}}</a>
                         <div class="material-border"></div>
                     </li>
                     <li class="nav-item"><a class="nav-link @if($status == 'Rejected') active @endif" id="rejected-tab" 

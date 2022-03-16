@@ -220,10 +220,27 @@ $(document).ready(function () {
         }else{
             type = "delivery";
         }
-        if(!$.hasAjaxRunning()){
+        if(!$.hasAjaxRunning()){            
             vendorType(latitude, longitude, type);
         }
     });
+
+    $('#remove_cart_modal').on("hide.bs.modal", function() {
+        $('#delivery_tab,#dinein_tab,#takeaway_tab').removeClass('active');  
+        // location.reload();.
+        if(session_vendor_type=="delivery")
+        {
+            $('#delivery_tab').addClass('active');
+        }
+        if(session_vendor_type=="dine_in")
+        {
+            $('#dinein_tab').addClass('active');
+        }
+        if(session_vendor_type=="takeaway")
+        {
+            $('#takeaway_tab').addClass('active');
+        }        
+    })
 
     function vendorType(latitude, longitude, type = "delivery"){
         $.ajax({
