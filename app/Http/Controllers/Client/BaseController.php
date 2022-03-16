@@ -31,8 +31,6 @@ class BaseController extends Controller
                     $branch[] = $element;
                 }
             }   
-            
-
         }
         return $branch;
     }

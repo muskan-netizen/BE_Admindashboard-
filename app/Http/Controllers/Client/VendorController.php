@@ -89,17 +89,23 @@ class VendorController extends BaseController
             $vendor->offers = $offers;
         }
         return Datatables::of($vendors)
-        ->addIndexColumn()
-        ->filter(function ($instance) use ($request) {
-            if (!empty($request->get('search'))) {
-                $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                    if (Str::contains(Str::lower($row['name']), Str::lower($request->get('search')))){
-                        return true;
-                    }
-                    return false;
-                });
-            }
-        })->make(true);
+            ->addColumn('checkbox', function($row){
+                $btn = '<input type="checkbox" class="single_vendor_check" name="vendor_id[]" id="single_vendor" value="'.$row->id.'"></a>';
+                return $btn;
+            })
+            ->addIndexColumn()
+            ->filter(function ($instance) use ($request) {
+                if (!empty($request->get('search'))) {
+                    $instance->collection = $instance->collection->filter(function ($row) use ($request){
+                        if (Str::contains(Str::lower($row['name']), Str::lower($request->get('search')))){
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+            })
+            ->rawColumns(['checkbox'])
+            ->make(true);
     }
     public function index(){
         $user = Auth::user();
@@ -1544,4 +1550,16 @@ class VendorController extends BaseController
         public function export() {
             return Excel::download(new VendorSimpelExport, 'vendor_simpel.xlsx');
         }
+   
+        # update all vendor action
+    public function updateActions(Request $request){
+        $vendor_ids = $request->vendor_id;
+        if($request->action == "delete"){
+             Vendor::whereIn('id', $vendor_ids)->update(['status'=>2]);
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Vendor action Submitted successfully!')
+        ]);
+    }
 }
