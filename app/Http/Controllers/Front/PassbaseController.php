@@ -24,8 +24,6 @@ class PassbaseController extends Controller
 	}
 	public function index(Request $request)
 	{
-		// $response = $this->getIdentity('7bcbb1ee-8d8e-4bee-93d4-3df9d7740335');
-
 		$data = $request->all();
 		$data['publish_key'] = $this->publish_key;
 		return view('frontend.passbase')->with('data',$data);
@@ -46,11 +44,14 @@ class PassbaseController extends Controller
     	$events = $request->all();
     	foreach($events  as $event)
     	{
-    		$update_status = $this->userVerificationObj->updateStatus([
-    			'verification_option_id' => 1,
-    			'response_id' => $event['key'],
-    			'status' => $event['status']
-    		]);
+    		if($event['event'] == "VERIFICATION_REVIEWED")
+    		{
+    			$update_status = $this->userVerificationObj->updateStatus([
+	    			'verification_option_id' => 1,
+	    			'response_id' => $event['key'],
+	    			'status' => $event['status']
+	    		]);
+    		}
     	}
     	Log::info($request->all());
     } 
