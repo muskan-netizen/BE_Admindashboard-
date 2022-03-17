@@ -1,4 +1,4 @@
-@extends('layouts.store', ['title' => __('Home')])
+@extends('layouts.store', ['title' => __('Home')]) 
 <link href="{{asset('css/aos.css')}}" rel="stylesheet">
 @section('css')
 <style type="text/css">
@@ -435,5 +435,26 @@
     // $(".mobile-back").on("click", function() {
     //     $(".sm-horizontal").css("right", "-410px");
     // });
+    //alert();
+
+    function changeImage(image2, check) {
+        var image = $(image2).children("img");
+       var  icon = image.attr('data-icon');
+       var  icon_two = image.attr('data-icon_two');
+       if(check == 1)
+       {
+        setTimeout(function () {
+            image.attr('data-src',icon_two);
+            image.attr('src',icon_two);
+        },200);
+       }else if(check == 0){
+            setTimeout(function () {
+                console.log(icon);
+                image.attr('data-src',icon);
+                image.attr('src',icon);
+            },200);
+       
+       }
+    }
 </script>
 @endsection

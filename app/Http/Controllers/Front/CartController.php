@@ -8,14 +8,10 @@ use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
-use App\Http\Traits\{ApiResponser,CartManager};
+use App\Http\Traits\{ApiResponser,CartManager,Vivawallet};
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Front\FrontController;
-use App\Http\Controllers\Front\PromoCodeController;
-use App\Http\Controllers\Front\LalaMovesController;
-use App\Http\Controllers\DunzoController;
-use App\Http\Controllers\AhoyController;
-use App\Http\Controllers\ShiprocketController;
+use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController};
+use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot};
 use Log;
 class CartController extends FrontController
@@ -66,7 +62,7 @@ class CartController extends FrontController
         $guest_user = true;
         if ($user) {
             $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
-            $addresses = UserAddress::where('user_id', $user->id)->get();
+            $addresses = UserAddress::where('user_id', $user->id)->where('status',1)->get();
             $guest_user = false;
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
@@ -526,11 +522,11 @@ class CartController extends FrontController
         $upSell_products = collect();
         $crossSell_products = collect();
         if($user){
-            $user_allAddresses = UserAddress::where('user_id', $user->id)->get();
+            $user_allAddresses = UserAddress::where('user_id', $user->id)->where('status',1)->get();
             if($address_id > 0){
                 $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->first();
             }else{
-                $address = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->first();
+                $address = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->where('status',1)->first();
                 $address_id = ($address) ? $address->id : 0;
             }
         }
@@ -1569,7 +1565,7 @@ class CartController extends FrontController
             $dispatch_domain = $this->checkIfLastMileOn();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $customer = User::find(Auth::id());
-                $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
+                $cus_address = UserAddress::where('user_id', Auth::id())->where('status',1)->orderBy('is_primary', 'desc')->first();
                 if ($cus_address) {
                     $tasks = array();
                     $vendor_details = Vendor::find($vendor_id);
@@ -1652,12 +1648,12 @@ class CartController extends FrontController
     }
 
     public function updateSchedule(Request $request, $domain = '')
-    {
+    {        
         DB::beginTransaction();
         try{
             $user = Auth::user();
             $new_session_token = session()->get('_token');
-            if ($user || $new_session_token) {
+            if ($user || $new_session_token) {                
                 if($request->task_type == 'now'){
                     $time = Carbon::now()->format('Y-m-d H:i:s');
                 }else{
@@ -1698,6 +1694,27 @@ class CartController extends FrontController
                 'schedule_pickup' => $request->schedule_pickup??null,
                 'schedule_dropoff' => $request->schedule_dropoff??null]);
                 DB::commit();
+                if ($user) {            
+                    $checkpreference = ClientPreference::select('verify_email','verify_phone')->first();
+                    if($checkpreference->verify_email == 1 || $checkpreference->verify_phone == 1)
+                    {             
+                        if($checkpreference->verify_email == 1)
+                        { 
+                            
+                            if($user->is_email_verified == 0)
+                            {                        
+                                return response()->json(['status'=>'Pending', 'message'=>'Verify your account first']);
+                            }                        
+                        }
+                        if($checkpreference->verify_phone == 1)
+                        {                     
+                            if($user->is_phone_verified == 0)
+                            {                        
+                                return response()->json(['status'=>'Pending', 'message'=>'Verify your account first']);
+                            }
+                        }
+                    }
+                }
                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
             }
             else{

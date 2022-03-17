@@ -137,14 +137,16 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/checkout/notify', 'Front\CheckoutGatewayController@checkoutNotify')->name('payment.checkoutNotify');
 
 	//Passbase
-	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
-	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 	Route::any('passbase/webhook','Front\PassbaseController@webhook')->name('passbase.webhook');
 
 
 
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
+
+	//VivaWallet routes
+	Route::any('viva/result', 'Front\VivawalletController@success')->name('viva.success');
+	Route::any('viva/webhook/success', 'Front\VivawalletController@verifyWebhookUrl')->name('viva.webhook');
 
 	//ccavenue-pay
 	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
@@ -184,6 +186,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Cashfree
 	Route::get('payment/cashfree/return', 'Front\CashfreeGatewayController@cashfreeReturn')->name('payment.cashfree.return');
+	Route::get('payment/cashfree/return/app', 'Front\CashfreeGatewayController@cashfreeReturnApp')->name('payment.cashfree.return.app');
 	Route::post('payment/cashfree/notify', 'Front\CashfreeGatewayController@cashfreeNotify')->name('payment.cashfree.notify');
 
 
@@ -370,4 +373,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('get-product-order-form', 'Front\PickupDeliveryController@getProductOrderForm')->name('get-product-order-form');
 	});
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
+	//Passbase
+	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
+	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 });

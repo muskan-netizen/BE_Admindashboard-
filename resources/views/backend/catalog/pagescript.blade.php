@@ -313,4 +313,47 @@
             }
         });
     });
+
+    function deleteCategory(catid)
+    {
+        Swal.fire({  
+        title: 'Are you sure? You want to delete category.',    
+        showCancelButton: true,  
+        confirmButtonText: `Ok`,    
+        }).then((result) => {  
+            if (result.value) {    
+                $.ajax({
+                    url: '{{ url("client/category/delete" ) }}/'+catid,
+                    type: "GET",
+                    data: {},
+                    success: function(response) {
+                        $('.catid'+catid).remove();
+                        $('.deletecategorymsg span').text('Category deleted successfully!');
+                        $('.deletecategorymsg').css('display','');
+                        setTimeout(function(){
+                            location.reload();
+                        }, 1500);
+                            
+                        },
+                    });
+                
+            } 
+        });
+
+
+    //     // url("client/category/delete/" . $node["id"])
+    //     Swal.fire({
+    //         title: 'Are you sure? You want to delete category.', 
+    //         showCancelButton:true,
+    //         confirmButtonText: 'Ok',
+    // }).then((result) => {
+    //     if (result.isConfirmed) {
+            
+    //     }
+            
+   // });
+
+    }
+
+    
 </script>

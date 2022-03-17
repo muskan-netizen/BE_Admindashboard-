@@ -87,7 +87,7 @@ class FrontController extends Controller
        $preferences = Session::get('preferences');
        $primary = ClientLanguage::orderBy('is_primary','desc')->first();
        $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-       ->select('categories.id', 'categories.icon', 'categories.icon_2', 'categories.slug', 'categories.parent_id', 'cts.name')->distinct('categories.slug');
+       ->select('categories.id', 'categories.icon', 'categories.icon_2 as icon_two' , 'categories.slug', 'categories.parent_id', 'cts.name')->orderBy('position')->distinct('categories.slug');
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;
@@ -174,6 +174,7 @@ class FrontController extends Controller
                         $this->getChildCategoriesForVendor($child->id, $langId, $vid);
                     }
                 }
+            
 
                 $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
@@ -183,7 +184,11 @@ class FrontController extends Controller
                 }
                 $this->getChildCategoriesForVendor($cate->id, $langId, $vid);
             }
-        }
+               
+
+
+            }
+        
         return $category_list;
     }
 

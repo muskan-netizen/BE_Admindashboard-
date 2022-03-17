@@ -151,7 +151,7 @@
                                                         }
                                                     @endphp
                                             @if(!is_null($img))
-                                            <li><img class="" src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" /></li>
+                                            <li><img class="" src="{{$img->path['image_fit'].'1000/1000'.$img->path['image_path']}}" /></li>
                                             @endif
                                         @endforeach
                                         @endif

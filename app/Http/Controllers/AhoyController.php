@@ -305,16 +305,26 @@ class AhoyController extends Controller
         {
 			$awb = $json->awb;
             $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            //Update in vendor status
+            VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'4']);
+            
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
         }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '42')
         {
 			$awb = $json->awb;
             $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            //Update in vendor status
+            VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'5']);
+
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
         }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '7')
         {
             $awb = $json->awb;
             $details = OrderVendor::where('ship_awb_id',$awb)->first();
+           
+            //Update in vendor status
+            VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'6']);
+
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
         }
 

@@ -111,24 +111,32 @@ class Category extends Model
       return $values;
     }
 
+    public function getIconTwoAttribute($value)
+    {
+      $values = array();
+      if(!empty($value)){
+        $img = $value;
+        $values['proxy_url'] = \Config::get('app.IMG_URL1');
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+        $values['image_fit'] = \Config::get('app.FIT_URl');
+        return $values;
+      }
+      return $value;
+    }
     public function getIcon2Attribute($value)
     {
       $values = array();
-      $img = 'default/default_image.png';
       if(!empty($value)){
         $img = $value;
+        $values['proxy_url'] = \Config::get('app.IMG_URL1');
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+        $values['image_fit'] = \Config::get('app.FIT_URl');
+        return $values;
       }
-      $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
-      $values['image_fit'] = \Config::get('app.FIT_URl');
-      if(!empty($value)){
-        $values['image_name'] = true;
-      }else{
-        $values['image_name'] = false;
-      }
+      return $value;
       
-      return $values;
     }
+
 
     public function parent(){
       return $this->belongsTo('App\Models\Category','parent_id','id');

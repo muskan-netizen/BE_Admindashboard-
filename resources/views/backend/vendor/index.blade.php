@@ -113,12 +113,20 @@
                     </a>
                     <div class="material-border"></div>
                 </li>
+                <li class="nav-item">
+                    <a class="btn btn-info  waves-effect waves-light text-sm-right action_vendor_button" dataid="0"
+                                                id="action_vendor_button" href="javascript:void(0);"
+                                                style="display: none;"><i class="mdi mdi-plus-circle mr-1"></i>
+                                                {{ __('Action') }}
+                                            </a>
+                    <div class="material-border"></div>
+                </li>
             </ul>
             <div class="tab-content nav-material pt-0" id="top-tabContent">
                 <div class="tab-pane fade past-order show active" id="active_vendor" role="tabpanel" aria-labelledby="active-vendor">
                     <div class="row">
                         <div class="col-12">
-
+                       
                             <div class="card">
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -127,6 +135,8 @@
                                         <table class="table table-centered table-nowrap table-striped" id="vendor_active_datatable" width="100%">
                                             <thead>
                                                 <tr>
+                                                    <th><input type="checkbox" class="all-vendor_check"
+                                                                name="all_vendor_id" id="all-vendor_check"></th>
                                                     <th>{{ __('Icon') }}</th>
                                                     <th>{{ __('Name') }}</th>
                                                     <th>{{ _('Status') }}</th>
@@ -242,16 +252,52 @@
         </div>
     </div>
 </div>
-@php
-$server = env('APP_ENV', 'development');
-// if($server == 'local')
-// {
-    $file = 'backend.vendor.modals';
-// }else{
-//     $file = 'backend.vendor.modals2';
-// }
-@endphp
-@include($file)
+<!-- start product action popup -->
+<div id="action-vendor-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h4 class="modal-title">{{ __('Vendor Action') }}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+
+                <div class="modal-body">
+
+                        <div class="card-box">
+                            <form id="save_product_action_modal" method="post" enctype="multipart/form-data"
+                            action="#">
+                            @csrf
+
+                            <div class="row mb-2">
+                                <div class="col-md-6 mb-2">
+                                    {!! Form::label('title', __('Action For '), ['class' => 'control-label']) !!}
+                                    <select class="form-control" id="action_for" name="action_for" required>
+                                        <option value="">{{__('Select')}}</option>
+                                        <option value="delete">{{__('Delete')}}</option>
+                                    </select>
+                                </div>
+
+
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button"
+                                    class="btn btn-info waves-effect waves-light submitVendorAction">{{ __('Submit') }}</button>
+                            </div>
+
+                            </form>
+
+
+                        </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+@include('backend.vendor.modals')
 <script type="text/template" id="user_id_section">
     <li class="d-flex justify-content-start align-items-center position-relative" id ="user_selected_<%= id %>" data-section_number="<%= id %>">
         <p class="al_checkbox m-0 py-2 ">
@@ -271,6 +317,7 @@ $server = env('APP_ENV', 'development');
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript">
     var mobile_number = '';
+    var updateVendorAll = '{{route("vendor.updateall")}}';
     // $('#add-agent-modal .xyz').val(mobile_number.getSelectedCountryData().dialCode);
     $('#add-agent-modal .xyz').change(function() {
         var phonevalue = $('.xyz').val();
