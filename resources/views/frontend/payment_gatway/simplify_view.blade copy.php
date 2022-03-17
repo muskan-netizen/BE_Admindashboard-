@@ -10,8 +10,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/font-awesome.min.css')}}">
     <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
-    <link rel="stylesheet" type="text/css" href="{{asset('css/payment.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{asset('front-asset/css/payment.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom.css')}}">
     <style>
         .spinner-overlay .page-spinner .circle-border {
             background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 33%, rgba(255, 255, 255, 1) 100%);
@@ -25,14 +24,14 @@
             }
         }
         .payment-top-haeder{
-            background: '{{getClientPreferenceDetail()->web_color}}';
+            background: {{getClientPreferenceDetail()->web_color}}; 
         }
         .btn-solid{
             padding: 13px 29px;
             color: #ffffff !important;
             letter-spacing: 0.05em;
             border: 2px solid var(--theme-deafult);
-            background: '{{getClientPreferenceDetail()->web_color}}';
+            background: {{getClientPreferenceDetail()->web_color}};
             -webkit-transition: background 300ms ease-in-out;
             transition: background 300ms ease-in-out;
         }
@@ -105,16 +104,16 @@
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
-                <img src="{{ getClientDetail()->logo_image_url }}" alt="" height="50">
+                <img src="{{ getClientDetail()->logo_image_url }}" alt="" height="50"> 
             </div>
         </div>
     </div>
 </div>
 
-<div class="container al_payment_gateway">
+<div class="container">
     <div class="row">
         <div class="offset-lg-3 col-lg-6">
-            <form class="al_payment_gatewayForm" id="simplify-payment-form" action="{{route('payment.simplify.createPayment')}}" method="POST">
+            <form id="simplify-payment-form" action="{{route('payment.simplify.createPayment')}}" method="POST">
                 <!-- The $10 amount is set on the server side -->
                 <div class="form-group">
                     <label>{{__('Credit Card Number')}}: </label>
@@ -157,7 +156,7 @@
                 @empty
                 @endforelse
                 @csrf
-                <button id="process-payment-btn" class="btn btn-solid w-100 mt-3" type="submit">{{__('Process Payment')}}</button>
+                <button id="process-payment-btn" class="btn btn-solid w-100 mt-4" type="submit">{{__('Process Payment')}}</button>
             </form>
         </div>
     </div>

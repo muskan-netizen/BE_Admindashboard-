@@ -185,13 +185,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <% _.each(vendor_product.addon, function(addon, ad){%>
                             <% if(addon.option){%>
                                 <div class="row">
-                                    <div class="col-md-3 col-sm-4 items-details text-left">
+                                    <div class="col-md-3 col col-sm-4 items-details text-left">
                                         <p class="p-0 m-0"><%= addon.option.title %></p>
                                     </div>
-                                    <div class="col-md-2 col-sm-4 text-center">
+                                    <div class="col-md-2 col col-sm-4 text-center">
                                         <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart * addon.option.multiplier) %></div>
                                     </div>
-                                    <div class="col-md-7 col-sm-4 text-right">
+                                    <div class="col-md-7 col col-sm-4 text-right">
                                         <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
                                     </div>
                                 </div>
@@ -357,7 +357,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <hr class="my-2">
             <% } %>
-            
+
             <% if(cart_details.total_container_charges > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Total Container Charges')}}</div>
@@ -375,7 +375,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
             </div>
             <hr class="my-2">
-           
+
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
