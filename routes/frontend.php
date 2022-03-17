@@ -344,6 +344,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::group(['prefix' => 'rating'], function () {
 		Route::post('update-product-rating', 'Front\RatingController@updateProductRating')->name('update.order.rating');
 		Route::get('get-product-rating', 'Front\RatingController@getProductRating')->name('get-product-rating-details');
+		
+		Route::post('update-driver-rating', 'Front\RatingController@updateDriverRating')->name('update.driver.rating');
+		Route::get('get-driver-rating', 'Front\RatingController@getDriverRating')->name('get-driver-rating-details');
 	});
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
