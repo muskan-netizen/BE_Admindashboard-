@@ -76,7 +76,10 @@ class OrderController extends Controller{
         foreach ($vendor_orders as $vendor_order) {
             $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);
             $vendor_order->user_name = $vendor_order->user ? $vendor_order->user->name : '';
-            $vendor_order->view_url = route('order.show.detail', [$vendor_order->order_id, $vendor_order->vendor_id]);
+            $vendor_order->view_url = '';
+            if(!empty($vendor_order->order_id) && !empty($vendor_order->vendor_id)){
+                $vendor_order->view_url = route('order.show.detail', [$vendor_order->order_id, $vendor_order->vendor_id]);
+            }
             $order_status = '';
             if($vendor_order->orderstatus){
                 $order_status_detail = $vendor_order->orderstatus->where('order_id', $vendor_order->order_id)->orderBy('id', 'DESC')->first();
@@ -91,6 +94,9 @@ class OrderController extends Controller{
         }
         return Datatables::of($vendor_orders)
             ->addIndexColumn()
+            ->addColumn('vendor_name',function($row){
+                return $row->vendor ? __($row->vendor->name) : '';
+            })
             ->addColumn('payment_option_title',function($row){
                 return __($row->orderDetail->paymentOption->title);
             })
