@@ -1063,11 +1063,10 @@ $(document).ready(function() {
         }
         $.ajax({
             type: "POST",
-            dataType: 'json',
             url: create_viva_wallet_pay_url,
             data: rowData,
             success: function(resp) {
-                window.location=resp;
+                window.location.href = resp;
           },
           error: function(error) {
               console.log(error);

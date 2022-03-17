@@ -258,7 +258,10 @@ $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 curl_close($curl);
 
 // echo "Total elapsed http request/response time in milliseconds: ".floor((microtime(true) - $this->startTime)*1000)."\r\n";
-
+\Log::info('Place Order response Mail');
+\Log::info('orderRef = '.json_decode($response)->orderRef);
+\Log::info(json_decode($response));
+\Log::info('End Place Order response Mail');
 return array('code'=>$httpCode,'response'=>$response,'totalTime'=>floor((microtime(true) - $this->startTime)*1000));
 // Response
 // {

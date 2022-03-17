@@ -8,9 +8,9 @@ use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
-use App\Http\Traits\{ApiResponser,CartManager,Vivawallet};
+use App\Http\Traits\{ApiResponser,CartManager};
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController};
+use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot};
 use Log;
@@ -26,10 +26,14 @@ class CartController extends FrontController
             $random_string = substr(md5(microtime()), 0, 32);
         }
         return $random_string;
-    }
+    } 
 
     public function showCart(Request $request, $domain = '')
     {
+        // dd(json_decode("{\"customerOrderId\":\"000004F0-F54E-8FED-8093-3A5CD8C3AEC4\",\"orderRef\":\"145293819687\",\"totalFee\":\"28\",\"totalFeeCurrency\":\"MYR\",\"distance\":{\"text\":\"31.7 km\",\"value\":31702}}\n"));
+        //  $viva = new VivawalletController();
+        //  $pay = $viva->fetchTransactionDetails('8903797304456875');
+        //  dd($pay);
         if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
                 $order = Order::where('order_number', $request->order)->first();
