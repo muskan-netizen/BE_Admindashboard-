@@ -68,6 +68,7 @@ $pages = \App\Models\Page::with([
                                 </ul>
                             </li>
                         @endif
+                        @if(count($languageList) > 1)
                         <li class="onhover-dropdown change-language">
                             <a href="javascript:void(0)">{{ session()->get('locale') }}
                                 <span class="icon-ic_lang align-middle"></span>
@@ -83,6 +84,8 @@ $pages = \App\Models\Page::with([
                                 @endforeach
                             </ul>
                         </li>
+                        @endif
+                        @if(count($currencyList) > 1)
                         <li class="onhover-dropdown change-currency">
                             <a href="javascript:void(0)">{{ session()->get('iso_code') }}
                                 <span class="icon-ic_currency align-middle"></span>
@@ -100,6 +103,7 @@ $pages = \App\Models\Page::with([
                                 @endforeach
                             </ul>
                         </li>
+                        @endif
                         @if (Auth::guest())
                             <li class="onhover-dropdown mobile-account d-block">
                                 <i class="fa fa-user mr-1" aria-hidden="true"></i>{{ __('Account') }}
@@ -437,7 +441,7 @@ $pages = \App\Models\Page::with([
                   <li class="al_main_category" data-aos="zoom-in">
                      <a href="{{route('categoryDetail', $cate['slug'])}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
                         @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                        <div class="nav-cate-img" > <img style="height:150px;width:150px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
+                        <div class="nav-cate-img" > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
                         @endif
                         {{$cate['name']}}
                      </a>
@@ -488,7 +492,7 @@ $pages = \App\Models\Page::with([
         <a href="{{route('categoryDetail')}}/<%=category.slug %>" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
             @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
             <div class="nav-cate-img">
-                <img style="height:150px;width:150px;" class="blur-up lazyload" data-icon_two="<%=icon_2_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
+                <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="<%=icon_2_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
             </div>
             @endif
             <%=category.name %>
