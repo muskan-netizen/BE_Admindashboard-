@@ -479,8 +479,12 @@ class CartController extends FrontController
      *
      * @return \Illuminate\Http\Response
      */
-    public function getCartProducts($domain = '')
+    public function getCartProducts(Request $request,$domain = '')
     {
+
+        Session()->forget('vendorType');
+        Session()->put('vendorType', $request->type);
+       
         $cart_details = [];
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
@@ -498,6 +502,8 @@ class CartController extends FrontController
                 'data' => $cart_details,
             ]);
         }
+       
+        
         return response()->json([
             'message' => "No product found in cart",
             'data' => $cart_details,
