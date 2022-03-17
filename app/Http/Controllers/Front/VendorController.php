@@ -376,7 +376,6 @@ class VendorController extends FrontController
                 //     $query->whereIn('type_id', [1]);
                 // });
                 $vendor_categories = $vendor_categories->where('status', 1)->groupBy('category_id')->get();
-                //dd($vendor_categories);
             }
             foreach($vendor_categories as $ckey => $category) {
                 $products = Product::with(['media.image',
