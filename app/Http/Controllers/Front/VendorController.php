@@ -150,6 +150,7 @@ class VendorController extends FrontController
             }
         }
         // dd($listData);
+        
         if($listData->count() == $inqury_count){
             $show_range = 0;
         }
@@ -271,6 +272,7 @@ class VendorController extends FrontController
             }
         }
         if($listData->count() == $inqury_count){ 
+            $show_range = 0;
         }
         else{
             $show_range = 1;

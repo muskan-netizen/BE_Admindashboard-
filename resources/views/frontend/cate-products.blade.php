@@ -51,7 +51,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-5">
                 <div class="collection-filter col-lg-3">
                     <!-- side-bar colleps block stat -->
                     <div class="collection-filter-block bg-transparent p-0 m-0">
@@ -61,7 +61,7 @@
                             </span>
                         </div> -->
                         @if(!empty($category->brands) && count($category->brands) > 0)
-                        <div class="collection-collapse-block open">
+                        <div class="collection-collapse-block open mb-2">
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
                             <div class="collection-collapse-block-content">
                                 <div class="collection-brand-filter">
