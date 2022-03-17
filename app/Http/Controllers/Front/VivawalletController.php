@@ -15,6 +15,7 @@ use App\Models\CartProductPrescription;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
+use App\Models\UserAddress;
 use App\Models\UserVendor;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
@@ -34,13 +35,13 @@ class VivawalletController extends Controller
 
    public function __construct()
    {
-        $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'viva_wallet')->where('status', 1)->first();
-        $json = json_decode($viva->credentials);
-        $this->client_key = $json->client_key;
-        $this->client_id = $json->client_id;
-        $this->merchant_key = $json->merchant_key;
-        $this->merchant_id = $json->merchant_id;
-        $this->test_mode = $viva->test_mode;
+        // $viva = PaymentOption::select('credentials','test_mode','status')->where('code', 'viva_wallet')->where('status', 1)->first();
+        // $json = json_decode($viva->credentials);
+        // $this->client_key = $json->client_key;
+        // $this->client_id = $json->client_id;
+        // $this->merchant_key = $json->merchant_key;
+        // $this->merchant_id = $json->merchant_id;
+        // $this->test_mode = $viva->test_mode;
    }
 
    public function credentials()
@@ -60,17 +61,50 @@ class VivawalletController extends Controller
     return $this->getAuthTokenViva();
    }
 
-
-   public function createPayLink()
+   public function orderNumber($request)
    {
+        if($request->from == 'cart')
+        {
+            $time = $request->order_number;
+
+        }elseif($request->from == 'wallet')
+        {
+            $time = ($request->transaction_id)??'W_'.time();
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d')]);
+
+        }elseif($request->from == 'tip')
+        {
+             $time = 'T_'.time().'_'.$request->order_number;
+             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d')]);
+
+        }elseif($request->from == 'subscription')
+        {
+            $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
+            
+        }
+        return $time;
+   }
+
+  //  public function payForm(Request $request)
+  //  {
+  //   $number = $this->orderNumber($request); // order no
+  //   return $this->createPayLink($request); 
+  //  }
+
+   public function createPayLink(Request $request)
+   {
+    // \Log::info($request->all());
+    $number =  $this->orderNumber($request);
+    $user = auth()->user();
     $this->credentials();
             $data  = [
-              'amount'              => 1000,
-              'customerTrns'        => 'Testing... This is a description displayed to the customer',
+              'amount'              => intval($request->amt),
+              'customerTrns'        => $number,
               'customer'            => [
-                  'email'         => 'test@vivawallet.com',
-                  'fullName'      => 'Testing User',
-                  'phone'         => '697845125',
+                  'email'         => $user->email,
+                  'fullName'      => $user->name,
+                  'phone'         => $user->phone_number,
                   'countryCode'   => 'EN',
                   'requestLang'   => 'el-EN'
               ],
@@ -84,10 +118,16 @@ class VivawalletController extends Controller
               'disableCash'         => false,
               'disableWallet'       => false,
               'sourceCode'          => 'Default',
-              'merchantTrns'        => 'Payment Api using smart checkout api'
+              'merchantTrns'        => time().'_'.$number
           ];
       $response = $this->createOrderPaymentLink($data);
-      $this->sendResponse($response);
+      if($response->orderCode){
+        $orderId = Order::where('order_number',$number)->first();
+        $orderId->viva_order_id = $response->orderCode;
+        $orderId->save();
+      }
+
+      return $this->sendResponse($response);
    }  
 
    public function sendResponse($response)
@@ -98,8 +138,9 @@ class VivawalletController extends Controller
           }else{
           $this->api_url = 'https://vivapayments.com/web/checkout?ref='.$response->orderCode;
           }
-        header('Location: '.$this->api_url);
-        exit;
+         return $this->api_url;
+        // header('Location: '.$this->api_url);
+        //exit;
    }
 
    public function verifyWebhookUrl($response)
@@ -107,11 +148,6 @@ class VivawalletController extends Controller
       $key = $this->verificationWebhookKey();
       // $key =  json_encode($key);
        echo $key->Key;
-   }
-
-   public function success(Request $request)
-   {
-      dd($request->all());
    }
 
 
@@ -160,11 +196,33 @@ class VivawalletController extends Controller
        return $this->successResponse(url($request->serverUrl.'payment/kongapay/api/'.$params)); 
    }
 
-   public function completeOrderCart(Request $request)
+
+   public function successPage(Request $request)
+   {
+    
+        if($request->merchant_param2=='cart'){
+          return $this->completeOrderCart($request);
+        }elseif($request->merchant_param2=='wallet'){
+            return $this->completeOrderWallet($request);
+        }elseif($request->merchant_param2=='tip'){
+            return $this->completeOrderTip($request);
+        }elseif($request->merchant_param2=='subscription'){
+            return $this->completeOrderSubs($request);
+        }
+   }
+
+   public function fetchTransactionDetails($tid)
+   {
+      return $this->getTransactionDetails($tid);
+   }
+
+
+   public function completeOrderCart($request)
     {
 
-      $order = Order::where('order_number',$request->merchant_reference)->first();
-          if(isset($request->merchant_reference) && $request->status == 'success')
+      $order = Order::where('viva_order_id',$request->s)->first();
+      dd($order);
+          if(isset($request->s) && $request->s != '')
           {
            
             $order->payment_status = '1';
@@ -185,7 +243,7 @@ class VivawalletController extends Controller
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
 
-            Payment::create(['amount'=>0,'transaction_id'=>$request->merchant_reference,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id]);
+            Payment::create(['amount'=>0,'transaction_id'=>$request->s,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id]);
 
              // Send Notification
              if (!empty($order->vendors)) {
@@ -201,7 +259,7 @@ class VivawalletController extends Controller
 
           if(isset($request->auth_token) && !empty($request->auth_token))
           {
-            $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order->order_number;
+            $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&order='.$order->order_number;
             return Redirect::to($returnUrl); 
           }else{
             return Redirect::to(route('order.success',[$order->id]));

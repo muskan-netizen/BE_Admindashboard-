@@ -1805,7 +1805,18 @@ $(document).ready(function() {
             else{
                 return false;
             }
+        }else if (payment_option_id == 21) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //Viva Wallet
+                payWithVivaWallet(order);
+            }
+            else{
+                return false;
+            }
         }
+
+
     });
 
 
