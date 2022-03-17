@@ -122,6 +122,10 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
        return $this->hasMany('App\Models\Order', 'user_id', 'id')->select('id', 'user_id')
               ->where('is_deleted', '!=', 1);
     }
+    public function passbase_verification()
+    {
+      return $this->hasOne('App\Models\UserVerification', 'user_id', 'id')->where('verification_option_id',1);
+    }
 
     /**
      * Get All permisions

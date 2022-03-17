@@ -71,7 +71,7 @@
                 <div class="collection-filter col-md-3">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">
                         <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
-                        <div class="collection-collapse-block open">
+                        <div class="collection-collapse-block open mb-2">
                             @if(!empty($brands) && count($brands) > 0)
                             <h3 class="collapse-block-title">brand</h3>
                             <div class="collection-collapse-block-content pb-0">
