@@ -79,6 +79,7 @@ class ClientPreferenceController extends BaseController{
         $currencies = Currency::where('id', '>', '0')->get();
         $curtableData = array_chunk($currencies->toArray(), 2);
         $primaryCurrency = ClientCurrency::where('is_primary', 1)->first();
+        $want_to_tip_nomenclature=Nomenclature::where('label','Want To Tip')->first();
         $ClientPreference = ClientPreference::where('client_code', $client->code)
         // ->with('language', 'primarylang', 'domain', 'currency.currency', 'primary.currency')->select('client_code', 'theme_admin', 'distance_unit', 'date_format', 'time_format', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'verify_email', 'verify_phone', 'web_template_id', 'app_template_id', 'primary_color', 'secondary_color', 'reffered_by_amount', 'reffered_to_amount')
         ->first();
@@ -111,7 +112,7 @@ class ClientPreferenceController extends BaseController{
                     ->where('client_languages.client_code', Auth::user()->code)
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
-        return view('backend.setting.customize', compact('client','nomenclature_value','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to'));
     }
 
     public function referandearnUpdate(Request $request, $code){
@@ -242,6 +243,7 @@ class ClientPreferenceController extends BaseController{
             $preference->max_safety_mod = ($request->has('max_safety_mod') && $request->max_safety_mod == 'on') ? 1 : 0;
             $preference->address_is_car = ($request->has('address_is_car') && $request->address_is_car == 'on') ? 1 : 0;
             $preference->hide_order_address = ($request->has('hide_order_address') && $request->hide_order_address == 'on') ? 1 : 0;
+            $preference->age_restriction_on_product_mode = ($request->has('age_restriction_on_product_mode') && $request->age_restriction_on_product_mode == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){

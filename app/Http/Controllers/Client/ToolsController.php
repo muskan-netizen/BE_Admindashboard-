@@ -483,7 +483,8 @@ class ToolsController extends BaseController
     public function databaseAuditingLogs()
     {
         $audits = Audit::orderBy('id', 'ASC')->groupBy('auditable_type')->get();
-        $authenticationLogs = AuthenticationLog::orderBy('id', 'DESC')->paginate(500);
+        $authenticationLogs = AuthenticationLog::where('authenticatable_id', '!=', '')->orderBy('id', 'DESC')->paginate(500);
+        AuthenticationLog::where('authenticatable_id', NULL)->delete();
         return view('backend.tools.db_audit_log')->with([
             'audits' => $audits,
             'authenticationLogs' => $authenticationLogs

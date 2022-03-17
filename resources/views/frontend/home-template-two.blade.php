@@ -1,4 +1,4 @@
-@extends('layouts.store', ['title' => __('Home')])
+@extends('layouts.store', ['title' => __('Home')]) 
 <link href="{{asset('css/aos.css')}}" rel="stylesheet">
 @section('css')
 <style type="text/css">

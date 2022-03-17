@@ -12,6 +12,9 @@
             </div>
         </div>
         <div class="col-sm-12 text-sm-left">
+            <div class="alert alert-success deletecategorymsg" style="display:none">
+                <span></span>
+            </div>
             @if (\Session::has('success'))
             <div class="alert alert-success">
                 <span>{!! \Session::get('success') !!}</span>
