@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\{VerificationOption, UserVerfication};  
-use Log;
+use Log, Auth;
 
 class PassbaseController extends Controller
 {
@@ -33,7 +33,7 @@ class PassbaseController extends Controller
     	$response = $this->getIdentity($request->identityAccessKey);
     	$add = $this->userVerificationObj->addVerification([
     		'verification_option_id' => 1,
-    		'user_id' => 1,
+    		'user_id' => Auth::user()->id,
     		'response_id' => $response['id'],
     		'status' => $response['status']
     	]);
@@ -41,9 +41,10 @@ class PassbaseController extends Controller
     }
     public function webhook(Request $request)
     {
-    	$events = $request->all();
-    	foreach($events  as $event)
-    	{
+    	Log::info($request->all());
+    	$event = $request->all();
+    	// foreach($events  as $event)
+    	// {
     		if($event['event'] == "VERIFICATION_REVIEWED")
     		{
     			$update_status = $this->userVerificationObj->updateStatus([
@@ -52,7 +53,7 @@ class PassbaseController extends Controller
 	    			'status' => $event['status']
 	    		]);
     		}
-    	}
+    	// }
     	Log::info($request->all());
     } 
 }
