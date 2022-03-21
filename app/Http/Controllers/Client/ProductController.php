@@ -973,5 +973,11 @@ class ProductController extends BaseController
         ]);
     }
 
+    # check if last mile delivery on
+    public function getProductFaq(Request $request){
+        pr($request->all());
+        
+    }
+
 
 }

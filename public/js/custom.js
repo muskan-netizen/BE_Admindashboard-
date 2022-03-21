@@ -996,6 +996,26 @@ $(document).ready(function() {
         }
     });
 
+    $(document).on("click", ".clproduct_cart_order_form", function(e) {
+        e.preventDefault();
+        let cart_product_id = $(this).attr("data-product_id");
+        let cart_vendor_id = $(this).attr("data-vendor_id");
+        var href = get_product_faq+"/"+cart_product_id;
+        $.get(href, function(response) {
+            //console.log(response);
+            $('#cart_product_order_form').modal('show');
+            $('#cart_product-order-form-modal').html(response);
+
+            // var response_data = response.data;
+            // $('#language_iso_code').val(response_data.language_iso_code);
+            // $('#country_iso_code').val(response_data.country_iso_code);
+            // $('#country_code').val(response_data.country_code);
+            // $('#currency').val(response_data.currency);
+            // $('#language').val(response_data.languages);
+            // $('#language_iso_code').val(response_data.language_iso_code);
+         });
+    });
+
     $(document).on("change", ".schedule_datetime", function() {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
@@ -1036,12 +1056,19 @@ $(document).ready(function() {
     });
 
     $(document).on("click", "#order_placed_btn", function() {
+        
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if(selected){
              delivery_type = selected.value;
         }
-
+        console.log($("input[name='product_faq_ids']").length);
+        if($("input[name='product_faq_ids']").length > 0){
+            success_error_alert('error', 'Please fill all the product order form!', ".cart_response");
+            return false;
+        
+        }
+       
         $('.alert-danger').html('');
         if ((typeof guest_cart != undefined) && (guest_cart == 1)) {
             // window.location.href = login_url;
@@ -1116,10 +1143,10 @@ $(document).ready(function() {
             // Save Cart Page Detail Forcely If user is paying from his cart.
             var checkParam = saveCartPageDetails(params);
                 if(checkParam != false){
-                placeOrder(address, 1, '', tip,delivery_type); // Adready Added
-                return false;
+                    placeOrder(address, 1, '', tip,delivery_type); // Adready Added
+                    return false;
                 }
-            } else {
+        } else {
             $.ajax({
                 type: "POST",
                 dataType: 'json',
@@ -2326,6 +2353,7 @@ $(document).ready(function() {
 
 
     function cartHeaderDilivery(address_id,code) {
+       
         $(".shopping-cart").html("");
         $(".spinner-box").show();
         $.ajax({

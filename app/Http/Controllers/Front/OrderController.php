@@ -824,6 +824,7 @@ class OrderController extends FrontController
                     $order_product->quantity = $vendor_cart_product->quantity;
                     $order_product->vendor_id = $vendor_cart_product->vendor_id;
                     $order_product->product_id = $vendor_cart_product->product_id;
+                    $order_product->user_product_order_form = $vendor_cart_product->user_product_order_form;
                     $product_category = Product::where('id', $vendor_cart_product->product_id)->first();
                     if ($product_category) {
                         $order_product->category_id = $product_category->category_id;

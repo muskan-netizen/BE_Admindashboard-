@@ -9,7 +9,7 @@ use Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage};
 class ProductController extends FrontController{
     private $field_status = 2;
 
@@ -391,4 +391,28 @@ class ProductController extends FrontController{
         }
         return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'availableSets' => $availableSets->variantSet));
     }
+    # get product faq 
+    public function getProductFaq(Request $request,$domain = '',$product_id){
+            $langId = Session::get('customerLanguage');
+            
+            if(empty($langId))
+            $langId = ClientLanguage::orderBy('is_primary','desc')->value('language_id');
+
+            $product_faqs = ProductFaq::where('product_id',$product_id)->with(['translations' => function ($qs) use($langId){
+                $qs->where('language_id',$langId);
+            }])->get();
+            if(isset($product_faqs)){
+
+                if ($request->ajax()) {
+                 return \Response::json(\View::make('frontend.modals.product-order-form', array('product_faqs'=>  $product_faqs))->render());
+                }
+
+            }
+            return \Response::json(\View::make('frontend.modals.product-order-form', array('product_faqs'=>  $product_faqs))->render());
+
+            //return $this->errorResponse('Invalid product form ', 404);
+
+        
+    }
+
 }
