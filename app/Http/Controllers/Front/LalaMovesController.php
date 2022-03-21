@@ -201,8 +201,8 @@ class LalaMovesController extends Controller
                 $response = json_decode($quotation['response']);
                 if($quotation['code']=='200'){
                         $response = $this->placeOrders($data,$response);
-                        if($response['code']=='200'){
-                            $response = json_decode($response['response']);
+                        if(isset($response->orderRef)){
+                            $response = $response;
                         }else{
                             $response = 2;
                         }
@@ -234,10 +234,12 @@ class LalaMovesController extends Controller
            $json = json_decode($request->getContent());
            \Log::info($request->getContent());
            $driverId = $json->data->order->driverId??'';
-
+           $trackingId = $json->data->order->id;
+           \Log::info('Got Id =');
+           \Log::info($trackingId);
            if(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'ASSIGNING_DRIVER')
         {
-            $trackingId = $json->data->order->id;
+           // $trackingId = $json->data->order->id;
 
             // ASSIGNING_DRIVER means Order is placed and assigning drivers
             OrderVendor::where('web_hook_code',$trackingId)
@@ -248,7 +250,7 @@ class LalaMovesController extends Controller
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
         }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'ON_GOING')
         {
-            $trackingId = $json->data->order->id;
+            //$trackingId = $json->data->order->id;
             // ON_GOING means driver assigned and start drive
             OrderVendor::where('web_hook_code',$trackingId)
             ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId]);
@@ -260,7 +262,7 @@ class LalaMovesController extends Controller
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
         }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'PICKED_UP')
         {
-            $trackingId = $json->data->order->id;
+            //$trackingId = $json->data->order->id;
             // PICKED_UP means driver picked order and out for delivery
             OrderVendor::where('web_hook_code',$trackingId)
             ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId]);
@@ -271,7 +273,7 @@ class LalaMovesController extends Controller
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
         }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'COMPLETED')
         {
-            $trackingId = $json->data->order->id;
+            //$trackingId = $json->data->order->id;
             // COMPLETED means driver complete the delivery
             OrderVendor::where('web_hook_code',$trackingId)
             ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId]);
