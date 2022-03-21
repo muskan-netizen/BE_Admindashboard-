@@ -74,6 +74,7 @@
         "stripe/stripe-php": "^7.100",
         "twilio/sdk": "^6.13",
         "webpatser/laravel-uuid": "^4.0",
+        "xeroapi/xero-php-oauth2": "^2.12",
         "yajra/laravel-datatables-oracle": "^9.18",
         "yoco/yoco-php-laravel": "^0.1.0@beta"
     },
