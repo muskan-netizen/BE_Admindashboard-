@@ -233,10 +233,10 @@ class LalaMovesController extends Controller
            $trackingId = '';
            $json = json_decode($request->getContent());
            \Log::info($request->getContent());
-           if(DB::connection()->getDatabaseName())
-                {
-                echo "Connected sucessfully to database ".DB::connection()->getDatabaseName().".";
-                }
+        //    if(DB::connection()->getDatabaseName())
+        //         {
+        //         echo "Connected sucessfully to database ".DB::connection()->getDatabaseName().".";
+        //         }
            $driverId = $json->data->order->driverId??'';
            $trackingId = $json->data->order->id;
            \Log::info('Got Id =');
