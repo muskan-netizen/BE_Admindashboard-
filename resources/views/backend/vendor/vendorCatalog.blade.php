@@ -520,6 +520,7 @@
                                     </thead>
                                     <tbody id="post_list">
                                         @foreach ($csvProducts as $csv)
+                                        
                                             <tr data-row-id="{{ $csv->id }}">
                                                 <td> {{ $loop->iteration }}</td>
                                                 <td> {{ $csv->name }}</td>
@@ -543,7 +544,7 @@
                                                         </ul>
                                                     </td>
                                                 @endif
-                                                <td> <a href="{{ $csv->path }}">{{ __('Download') }}</a> </td>
+                                                <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
