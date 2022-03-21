@@ -176,7 +176,7 @@ h1, h2, h3, h4, h5, h6 {
 .page-section .content-detail .sub-title,
 .page-section .content-detail .detail-text {
     display: block;
-    color: {{ getClientPreferenceDetail()->web_color }};
+    color: {{ getClientPreferenceDetail()->web_color??'' }};
     text-align: center;
 }
 .page-section .content-detail .sub-title {
