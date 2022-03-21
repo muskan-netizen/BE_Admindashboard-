@@ -41,6 +41,10 @@ Route::group(['middleware' => ['domain']], function () {
 	});
 
 
+
+	Route::get('zillow', 'Front\CustomerAuthController@zillowGetData');
+
+
 	// Start edit order routes
 	Route::post('edit-order/search/vendor/products', 'Front\TempCartController@vendorProductsSearchResults');
 	Route::post('edit-order/vendor/products/getProductsInCart', 'Front\TempCartController@getProductsInCart');
@@ -137,8 +141,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/checkout/notify', 'Front\CheckoutGatewayController@checkoutNotify')->name('payment.checkoutNotify');
 
 	//Passbase
-	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
-	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 	Route::any('passbase/webhook','Front\PassbaseController@webhook')->name('passbase.webhook');
 
 
@@ -146,8 +148,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
 
-	//VivaWallet routes
-	Route::any('viva/result', 'Front\VivawalletController@success')->name('viva.success');
+	//VivaWallet routes 
+	Route::match(['get','post'],'payment/vivawallet/pay', 'Front\VivawalletController@createPayLink')->name('vivawallet.pay');
+
+	Route::match(['get','post'],'viva/result', 'Front\VivawalletController@successPage')->name('viva.success');
 	Route::any('viva/webhook/success', 'Front\VivawalletController@verifyWebhookUrl')->name('viva.webhook');
 
 	//ccavenue-pay
@@ -378,4 +382,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('get-product-order-form', 'Front\PickupDeliveryController@getProductOrderForm')->name('get-product-order-form');
 	});
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
+	//Passbase
+	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
+	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 });

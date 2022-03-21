@@ -94,9 +94,9 @@ class CcavenueController extends Controller
     $user = $this->createUserToken();
     $merchant_data='';
     $number = $this->orderNumber($request); // order no
-	$working_key=$this->access_key;//Shared by CCAVENUES
-	$access_code=$this->access_code;//Shared by CCAVENUES
-	$url=$this->url;//Shared by CCAVENUES
+    $working_key=$this->access_key;//Shared by CCAVENUES
+    $access_code=$this->access_code;//Shared by CCAVENUES
+    $url=$this->url;//Shared by CCAVENUES
 	
     $address = UserAddress::where('is_primary','1')->first();
     $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.$address->city.'&billing_state='.$address->state.'&billing_zip='.$address->pincode.'&billing_country='.$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.$address->address.'&delivery_city='.$address->city.'&delivery_state='.$address->state.'&delivery_zip='.$address->pincode.'&delivery_country='.$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=web&merchant_param4='.auth()->id().'&merchant_param5='.$this->token.'&promo_code=&customer_identifier=&';
@@ -118,12 +118,13 @@ class CcavenueController extends Controller
      
     $merchant_data='';
     $number = $this->orderNumber($request); // order no
-	$working_key=$this->access_key;//Shared by CCAVENUES
-	$access_code=$this->access_code;//Shared by CCAVENUES
-	$url=$this->url;//Shared by CCAVENUES
-	$user = auth()->user();
+    $working_key=$this->access_key;//Shared by CCAVENUES
+    $access_code=$this->access_code;//Shared by CCAVENUES
+    $url=$this->url;//Shared by CCAVENUES
+    $user = auth()->user();
     $address = UserAddress::where('is_primary','1')->first();
     $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.$address->city.'&billing_state='.$address->state.'&billing_zip='.$address->pincode.'&billing_country='.$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.$address->address.'&delivery_city='.$address->city.'&delivery_state='.$address->state.'&delivery_zip='.$address->pincode.'&delivery_country='.$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=mob&merchant_param4=&merchant_param5='.$user->auth_token.'&promo_code=&customer_identifier=&';
+    //echo $merchant_data;die;
     $encrypted_data=$this->encrypt($merchant_data,$working_key); // Method for encrypting the data.
 
 
@@ -155,17 +156,17 @@ class CcavenueController extends Controller
    public function successForm(Request $request)
    {
     $encResponse=$request->encResp;			//This is the response sent by the CCAvenue Server
-	$rcvdString=$this->decrypt($encResponse,$this->access_key);		//Crypto Decryption used as per the specified working key.
-	$order_status="";
-	$decryptValues=explode('&', $rcvdString);
+	  $rcvdString=$this->decrypt($encResponse,$this->access_key);		//Crypto Decryption used as per the specified working key.
+	  $order_status="";
+	  $decryptValues=explode('&', $rcvdString);
 
-	$dataSize=sizeof($decryptValues);
+	  $dataSize=sizeof($decryptValues);
     $dataArray = array();
-	for($i = 0; $i < $dataSize; $i++) 
-	{
-		$information=explode('=',$decryptValues[$i]);
-        $request->request->add([$information[0] => $information[1]]);
-	}
+    for($i = 0; $i < $dataSize; $i++) 
+    {
+      $information=explode('=',$decryptValues[$i]);
+      $request->request->add([$information[0] => $information[1]]);
+    }
     //eyJ0eXAiOiJqd3QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDY3NDQyODMsImV4cCI6MTY0OTQyMjY4MywiaXNzIjoicm95b29yZGVycy5jb20ifQ.oWt1RdwKc8ejQ1u6vgxK4WYFyZn3FSIiOYfF4YULsDU
     
     if(isset($request->merchant_param5) && !empty($request->merchant_param5)){
