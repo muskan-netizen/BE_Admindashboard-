@@ -4,15 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterOrdersTableForScheduledDateTime extends Migration{
+class AddVivaOrderIdToOrdersTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up(){
+    public function up()
+    {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dateTimeTz('scheduled_date_time')->after('order_number')->nullable();
+            $table->string('viva_order_id')->nullable();
         });
     }
 
@@ -24,8 +26,7 @@ class AlterOrdersTableForScheduledDateTime extends Migration{
     public function down()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('scheduled_date_time');
+            //
         });
-        
     }
 }

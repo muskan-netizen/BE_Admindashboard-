@@ -654,7 +654,6 @@ class OrderController extends BaseController
 
     public function placeOrderRequestlalamove($request)
     {
-
         $lala = new LalaMovesController();
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
@@ -662,12 +661,13 @@ class OrderController extends BaseController
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
             $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id,$checkOrder->user_id,$checkOrder->id);
             }
-
-            if ($order_lalamove->totalFee >0){
+            if (isset($order_lalamove->orderRef)){
                 $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
 
                 return 1;
+            }else{
+                //return false;
             }
 
         return 2;

@@ -202,6 +202,7 @@ return [
         // HTMLMin\HTMLMin\HTMLMinServiceProvider::class,
         App\Providers\MailConfigServiceProvider::class,
         // OwenIt\Auditing\AuditingServiceProvider::class,
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class
     ],
 
     /*
@@ -263,6 +264,7 @@ return [
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
         'Share' => Jorenvh\Share\ShareFacade::class,
         // 'HTMLMin' => HTMLMin\HTMLMin\Facades\HTMLMin::class,
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class
     ],
 
 ];

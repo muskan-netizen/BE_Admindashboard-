@@ -409,10 +409,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(client_preference_detail.tip_before_order == 1) { %>
             <div class="row">
                 <div class="col-12">
-                    <div class="mb-2">{{__('Do you want to give a tip?')}}</div>
+                    <div class="mb-2">@if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif</div> 
                     <div class="tip_radio_controls">
                         <% if(cart_details.total_payable_amount > 0) { %>
-                            <input type="radio" class="tip_radio" id="control_01" name="select" value="<%= cart_details.tip_5_percent %>">
+                            <input type="radio" class="tip_radio" id="control_01" name="select" value="<%= cart_details.tip_5_percent %>" <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> checked <% } %>>
                             <label class="tip_label" for="control_01">
                                 <h5 class="m-0" id="tip_5">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.tip_5_percent) %></h5>
                                 <p class="m-0">5%</p>
@@ -463,10 +463,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <p class="total_amt m-0">{{__('Amount Payable')}}</p>
                 </div>
                 <div class="col-6 text-right">
-                    <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_payable_amount) %></p>
-                    <div>
-                        <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                        <input type="hidden" name="cart_total_payable_amount" value="<%= cart_details.total_payable_amount %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                    <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> 
+                        <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
+                        <% }else{ %>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_payable_amount) %></p>
+                            <%
+                        } %>
+                        <div>
+                            <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
+                            <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> 
+                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                <% }else{ %>
+                                    <input type="hidden" name="cart_total_payable_amount" value="<%= cart_details.total_payable_amount %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                <% } %>
                         <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= cart_details.total_payable_amount %>">
                     </div>
                 </div>
@@ -1200,6 +1209,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";

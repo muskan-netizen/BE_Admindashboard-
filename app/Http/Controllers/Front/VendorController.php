@@ -150,6 +150,7 @@ class VendorController extends FrontController
             }
         }
         // dd($listData);
+        
         if($listData->count() == $inqury_count){
             $show_range = 0;
         }
@@ -271,6 +272,7 @@ class VendorController extends FrontController
             }
         }
         if($listData->count() == $inqury_count){ 
+            $show_range = 0;
         }
         else{
             $show_range = 1;
@@ -374,7 +376,6 @@ class VendorController extends FrontController
                 //     $query->whereIn('type_id', [1]);
                 // });
                 $vendor_categories = $vendor_categories->where('status', 1)->groupBy('category_id')->get();
-                //dd($vendor_categories);
             }
             foreach($vendor_categories as $ckey => $category) {
                 $products = Product::with(['media.image',

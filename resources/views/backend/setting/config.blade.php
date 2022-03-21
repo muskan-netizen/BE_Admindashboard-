@@ -1071,6 +1071,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="auto_implement_5_percent_tip" class="mr-2 mb-0">{{__('Auto Implement Tip 5% ')}}<small class="d-block pr-5">{{__('Enable to apply auto implement 5 percent tip.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="auto_implement_5_percent_tip" id="auto_implement_5_percent_tip" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->auto_implement_5_percent_tip == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
+                  <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
                         <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="delay_order" id="delay_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delay_order == '1')) checked='checked' @endif>
@@ -1140,6 +1147,21 @@ $sms_crendential = json_decode($preference->sms_credentials);
                        </span>
                     </div>
                  </div>
+                 <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="age_restriction_on_product_mode" class="mr-2 mb-0">{{__('Age Restriction On Product')}}<small class="d-block pr-5">{{__('Enable to add age restriction on products.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="age_restriction_on_product_mode" id="age_restriction_on_product_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->age_restriction_on_product_mode == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
+                 <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Show Apps QR On Footer')}}<small class="d-block pr-5">{{__('Enable to show qr for Mobile apps in footer.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="show_qr_on_footer" id="show_qr_on_footer" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->show_qr_on_footer == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
+                
 
                </div>
             </div>
@@ -1399,7 +1421,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div id="save_product_tag">
                      <input type="hidden" name="slot_id" value="">
                      <div class="row">
-
 
                         <div class="col-md-12 mb-2">
                            <div class="row">
