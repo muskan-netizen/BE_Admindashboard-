@@ -985,7 +985,7 @@
         if (length < 6) {
             Swal.fire(
                 'Select Location?',
-                'Please Drow a Location On Map first',
+                'Please Draw a Location On Map first',
                 'question'
             )
             e.preventDefault();
