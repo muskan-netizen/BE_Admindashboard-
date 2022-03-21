@@ -15,7 +15,7 @@ use App\Models\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Stmt\TryCatch;
-use Log;
+use Log,DB;
 
 class LalaMovesController extends Controller
 {
@@ -233,6 +233,10 @@ class LalaMovesController extends Controller
            $trackingId = '';
            $json = json_decode($request->getContent());
            \Log::info($request->getContent());
+           if(DB::connection()->getDatabaseName())
+                {
+                echo "Connected sucessfully to database ".DB::connection()->getDatabaseName().".";
+                }
            $driverId = $json->data->order->driverId??'';
            $trackingId = $json->data->order->id;
            \Log::info('Got Id =');
@@ -244,7 +248,7 @@ class LalaMovesController extends Controller
             // ASSIGNING_DRIVER means Order is placed and assigning drivers
             OrderVendor::where('web_hook_code',$trackingId)
             ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId]);
-            $details = OrderVendor::where('web_hook_code',$trackingId)->first();
+            $details = OrderVendor::where('web_hook_code',$trackingId)  ->first();
             \Log::info('OrderVendor 1=');
             \Log::info($details->toArray());
 
