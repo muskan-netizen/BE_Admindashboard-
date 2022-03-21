@@ -118,13 +118,19 @@ class VivawalletController extends Controller
               'disableCash'         => false,
               'disableWallet'       => false,
               'sourceCode'          => 'Default',
-              'merchantTrns'        => time().'_'.$number
+              'merchantTrns'        => $number
           ];
       $response = $this->createOrderPaymentLink($data);
       if($response->orderCode){
-        $orderId = Order::where('order_number',$number)->first();
-        $orderId->viva_order_id = $response->orderCode;
-        $orderId->save();
+          if($request->from != 'cart'){
+            $payId = Payment::where('transaction_id',$number)->first();
+            $payId->viva_order_id = $response->orderCode;
+            $payId->save();
+          }else{
+            $orderId = Order::where('order_number',$number)->first();
+            $orderId->viva_order_id = $response->orderCode;
+            $orderId->save();
+          }
       }
 
       return $this->sendResponse($response);
@@ -199,16 +205,17 @@ class VivawalletController extends Controller
 
    public function successPage(Request $request)
    {
-    
-        if($request->merchant_param2=='cart'){
-          return $this->completeOrderCart($request);
-        }elseif($request->merchant_param2=='wallet'){
-            return $this->completeOrderWallet($request);
-        }elseif($request->merchant_param2=='tip'){
-            return $this->completeOrderTip($request);
-        }elseif($request->merchant_param2=='subscription'){
-            return $this->completeOrderSubs($request);
-        }
+    //dd($request->all());
+    return $this->completeOrderCart($request);
+        // if($request->merchant_param2=='cart'){
+        //   return $this->completeOrderCart($request);
+        // }elseif($request->merchant_param2=='wallet'){
+        //     return $this->completeOrderWallet($request);
+        // }elseif($request->merchant_param2=='tip'){
+        //     return $this->completeOrderTip($request);
+        // }elseif($request->merchant_param2=='subscription'){
+        //     return $this->completeOrderSubs($request);
+        // }
    }
 
    public function fetchTransactionDetails($tid)
@@ -221,7 +228,7 @@ class VivawalletController extends Controller
     {
 
       $order = Order::where('viva_order_id',$request->s)->first();
-      dd($order);
+      //dd($order);
           if(isset($request->s) && $request->s != '')
           {
            
