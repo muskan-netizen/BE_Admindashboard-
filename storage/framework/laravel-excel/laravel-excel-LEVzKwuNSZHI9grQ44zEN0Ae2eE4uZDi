@@ -1,6 +1,0 @@
-Handle,Title,Body (HTML),Published,Category,Option1 Name,Option1 Value,Option2 Name,Option2 Value,Option3 Name,Option3 Value,Variant SKU,Variant Price,Variant Compare At Price,Variant Taxable,Variant Barcode,Image Src,Image Position,Image Alt Text,Variant Image,Cost per item,Status
-example-t-shirt,Example T-Shirt,,TRUE,E-commerce,Size,small,Color,Red,,,Tshirt-small-red,25,23.99,TRUE,,https://burst.shopifycdn.com/photos/green-t-shirt.jpg,1,,https://burst.shopifycdn.com/photos/distressed-kids-jeans.jpg,,active
-example-t-shirt,,,,,Size,medium,Color,Blue,,,Tshirt-medium-blue,19.99,24.99,TRUE,,,,,https://burst.shopifycdn.com/photos/distressed-kids-jeans.jpg,,draft
-example-t-shirt,,,,,Size,medium,Color,Green,,,Tshirt-medium-green,19.99,24.99,TRUE,,,,,https://burst.shopifycdn.com/photos/distressed-kids-jeans.jpg,,draft
-example-pants,Example Pants,,FALSE,Fashion,Size,small,Color,Blue,,,Pants-medium-green,49.99,57.99,TRUE,,https://burst.shopifycdn.com/photos/distressed-kids-jeans.jpg,1,,https://burst.shopifycdn.com/photos/distressed-kids-jeans.jpg,,draft
-example-hat,Example Hat,,FALSE,Pharmacy,Size,medium,Color,Green,,,Tshirt-medium-green,17.99,22.99,TRUE,,https://burst.shopifycdn.com/photos/kids-beanie.jpg,1,,https://burst.shopifycdn.com/photos/distressed-kids-jeans.jpg,,archived

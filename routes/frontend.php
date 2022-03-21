@@ -148,12 +148,6 @@ Route::group(['middleware' => ['domain']], function () {
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
 
-	//VivaWallet routes 
-	Route::match(['get','post'],'payment/vivawallet/pay', 'Front\VivawalletController@createPayLink')->name('vivawallet.pay');
-
-	Route::match(['get','post'],'viva/result', 'Front\VivawalletController@successPage')->name('viva.success');
-	Route::any('viva/webhook/success', 'Front\VivawalletController@verifyWebhookUrl')->name('viva.webhook');
-
 	//ccavenue-pay
 	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
 	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
@@ -192,7 +186,6 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Cashfree
 	Route::get('payment/cashfree/return', 'Front\CashfreeGatewayController@cashfreeReturn')->name('payment.cashfree.return');
-	Route::get('payment/cashfree/return/app', 'Front\CashfreeGatewayController@cashfreeReturnApp')->name('payment.cashfree.return.app');
 	Route::post('payment/cashfree/notify', 'Front\CashfreeGatewayController@cashfreeNotify')->name('payment.cashfree.notify');
 
 
