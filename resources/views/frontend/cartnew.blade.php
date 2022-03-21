@@ -234,6 +234,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </div>
                         </div>
                     <% } %>
+                    <% if( (vendor_product.faq_count > 0 ) && (vendor_product.user_product_order_form == '' || vendor_product.user_product_order_form == null ) ) { %>
+                    <div class=" col-12 <%= vendor_product.faq_count %>  " id="product_faq_dev_<%= vendor_product.product_id %>">
+                        <input type="hidden" name="product_faq_ids" value="<%= vendor_product.product_id %>">
+                        <div class="text-center col-4 my-3 btn-product-order-form-div">
+                            <button class="clproduct_cart_order_form btn btn-solid w-100" id="add__cart_product_form" data-dev_remove_id="product_faq_dev_<%= vendor_product.product_id %>" data-product_id="<%= vendor_product.product_id %>"  data-vendor_id="<%= vendor_product.vendor_id %>">{{__('Product Order Form')}}</button>
+                        </div>
+                    </div>
+                    <% } %>
                 </div>
 
                 <hr>
@@ -1134,6 +1142,21 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     </div>
 
 </div>
+<!-- modal for product order form -->
+<div class="modal fade product-order-form
+" id="cart_product_order_form" tabindex="-1" aria-labelledby="cart_product_order_form" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div id="cart_product-order-form-modal">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 <?php ?>
 
 {{-- <form action="{{ route('payment.razorpayCompletePurchase',[app('request')->input('amount'),app('request')->input('order')]) }}" method="POST" id="razorpay_gateway">
@@ -1193,6 +1216,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var user_store_address_url = "{{route('address.store')}}";
+    var product_faq_update_url = "{{ route('cart.productfaq') }}";
     var promo_code_remove_url = "{{ route('remove.promocode') }}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
@@ -1204,6 +1228,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
+    var get_product_faq = "{{ url('product/faq') }}";
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";
     var update_cart_slot = "{{ route('updateCartSlot') }}";
@@ -1219,6 +1244,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var longitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
+    var product_order_form_element_data = [];
 
     if(!latitude){
         @if(!empty($client_preference_detail->Default_latitude))
@@ -1319,6 +1345,70 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             }
         });
     });
+
+
+    $(document).delegate('#submit_productfaq', 'click', function() {
+    var product_id = $(this).attr('data-product_id');
+    var form_class = $(this).attr('data-form_class');
+    var remove_div_id = $(this).attr('data-dev_remove_id');
+    var product_order_form_element = getFormData('.'+form_class);
+    
+  console.log(remove_div_id);
+    if(product_order_form_element == 0){
+        return false;
+    }
+  
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: product_faq_update_url,
+        data: {product_id:product_id,user_product_order_form:product_order_form_element},
+        success: function(response) {
+            $("#"+remove_div_id).remove();
+            //window.location.reload();
+        },
+        error: function(data) {
+            $(".product_order_form_error").html(data.responseJSON.message);
+            setTimeout(function() {
+                $('.product_order_form_error').html('').hide();
+            }, 5000);
+        },
+    });
+        $('#cart_product_order_form').modal('hide');
+    });
+
+
+    function getFormData(dom_query){
+        var product_order_form_element_data = [];
+        var out = {};
+        var s_data = $(dom_query).serializeArray();
+
+            //transform into simple data/value object
+            for(var i = 0; i < s_data.length; i++){
+                var record = s_data[i];
+                console.log(record);
+                out[record.name] = record.value;
+                var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
+                var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
+                console.log(is_required);
+
+                if((is_required)==1 && (record.value =='' )){
+                    var errorMsg ="The "+ record.name +" field is required.";
+                    $('.product_order_form_error').html(errorMsg);
+                    // errorMsg = document.querySelector(".product_order_form_error");
+                    // errorMsg.html = "error msg";
+                    // errorMsg.style.display = 'none';
+                    // alert("hello");
+                    return 0;
+                } else {
+                    $('.product_order_form_error').html('');
+                }
+                product_order_form_element_data.push({'question':record.name,'answer':record.value,'product_faq_id':product_faq_id})
+            }
+        return product_order_form_element_data;
+    }
+
+
 
     $(document).delegate('#cart_payment_form input[name="cart_payment_method"]', 'change', function() {
         var method = $(this).attr('id');

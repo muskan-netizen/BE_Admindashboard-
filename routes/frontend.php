@@ -247,6 +247,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('paginateValue', 'Front\UserhomeController@changePaginate')->name('changePaginate');
 	Route::get('{vendor?}/product/{id?}', 'Front\ProductController@index')->name('productDetail');
 	Route::post('/product/variant/{id}', 'Front\ProductController@getVariantData')->name('productVariant');
+	Route::get('product/faq/{id}', 'Front\ProductController@getProductFaq')->name('getProductFaq');
 	Route::post('cart/product/lastAdded', 'Front\CartController@getLastAddedProductVariant')->name('getLastAddedProductVariant');
 	Route::post('cart/product/variant/different-addons', 'Front\CartController@getProductVariantWithDifferentAddons')->name('getProductVariantWithDifferentAddons');
 	Route::post('add/product/cart', 'Front\CartController@postAddToCart')->name('addToCart');
@@ -255,6 +256,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('add/vendorTable/cart', 'Front\CartController@addVendorTableToCart')->name('addVendorTableToCart');
 	Route::post('add/product/prescription', 'Front\CartController@uploadPrescription')->name('cart.uploadPrescription');
 	Route::post('cart/schedule/update', 'Front\CartController@updateSchedule')->name('cart.updateSchedule');
+	Route::post('cart/productfaq/update', 'Front\CartController@updateCartProductFaq')->name('cart.productfaq');
 	Route::post('cart/schedule/slots', 'Front\CartController@checkScheduleSlots')->name('cart.check_schedule_slots');
 	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cart.updateProductSchedule');
 	Route::get('cartProducts', 'Front\CartController@getCartData')->name('getCartProducts');
