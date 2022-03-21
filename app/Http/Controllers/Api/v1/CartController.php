@@ -649,8 +649,8 @@ class CartController extends BaseController
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
                         $price_in_doller_compare = $price_in_currency * $clientCurrency->doller_compare;
-                        $container_charges_in_currency = $prod->pvariant->container_charges;
-                        $container_charges_in_doller_compare = $prod->pvariant->container_charges;
+                        $container_charges_in_currency = $prod->pvariant->container_charges??0.00;
+                        $container_charges_in_doller_compare = $prod->pvariant->container_charges??0.00;
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
                         $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                         $quantity_container_charges = decimal_format($quantity_container_charges);
