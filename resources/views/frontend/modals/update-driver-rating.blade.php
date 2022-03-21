@@ -134,22 +134,10 @@ cache:false,
 
 success: (data) => {
 if(data.status == 'Success')
-    {
-        if(TotalImages == 0  && review.length == 0){
-            $("#review_form_button").html('Submit Your Review').prop('disabled', false);
-        }
-        else
-        {
-           $("#review_form_button").html('Submit Your Review');
-           var set_rating = $('#only_set_radio').val();
-           if(set_rating == 1){
-
-           }else{
-            var url = "{{route('user.orders',['pageType' => 'pastOrders'])}}";
-            $(location).prop('href', url);
-           }
-        }
-        $('#success-msg').text(data.message);
+    {   
+        $('#success-msg').text(data.message);  
+        var url = "{{route('user.orders',['pageType' => 'pastOrders'])}}";
+        $(location).prop('href', url);           
     }else{
         $('#error-msg').text(data.message);
         $("#review_form_button").html('Submit Your Review').prop('disabled', false);

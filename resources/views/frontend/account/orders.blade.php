@@ -683,16 +683,17 @@
                                                                                                 @endforeach
                                                                                             </ul>
                                                                                         </div>
+                                                                                        @if($order->vendors[0]->dispatch_traking_url!=null && $order->vendors[0]->dispatch_traking_url!="")
                                                                                         <div class="col-6 col-sm-6">
                                                                                             <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
                                                                                                 @php
-                                                                                                $driverrating = 0;
+                                                                                                $driverrating = $order->driver_rating->rating ?? 0;
                                                                                                 @endphp
                                                                                                 <li class="text-center">
                                                                                                     {{-- <img src="#" alt=""> --}}
                                                                                                     <label class="items_price">Rate Your Driver</label>
                                                                                                     <label class="rating-star add_edit_driver_review"
-                                                                                                        data-id="{{ $product->productRating->id ?? 0 }}"
+                                                                                                        data-id="{{ $order->driver_rating->id ?? 0 }}"
                                                                                                         data-order_vendor_product_id="{{ $product->id ?? 0 }}">
                                                                                                         <i
                                                                                                             class="fa fa-star{{ $driverrating >= 1 ? '' : '-o' }}"></i>
@@ -708,6 +709,7 @@
                                                                                                 </li>
                                                                                             </ul>
                                                                                         </div>
+                                                                                        @endif
 
                                                                                     </div>
                                                                                     <div class="col-md-5 mt-md-0 mt-sm-2">

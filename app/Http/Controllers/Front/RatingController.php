@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\Web\OrderProductRatingRequest;
 use App\Http\Requests\Web\OrderDriverRatingRequest;
 use App\Http\Requests\Web\CheckImageRequest;
-use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,OrderDriverRating};
+use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,OrderDriverRating,OrderVendor};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 class RatingController extends FrontController{
@@ -78,15 +78,21 @@ class RatingController extends FrontController{
              $order_deliver = VendorOrderStatus::where(['order_id' => $order_details->order_id,'vendor_id' => $order_details->vendor_id,'order_status_option_id' => 6])->count();
  
              if($order_deliver > 0){
-                 $ratings = OrderDriverRating::updateOrCreate([
-                 'order_id' => $order_details->order_id,                 
-                 'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??$request->hidden_review]);
-             }
- 
-             if(isset($request->rating_for_dispatch) && !empty($request->rating_for_dispatch))
-             {
-                 $staus = $this->setDriverRatingOnDispatch($request); 
-             }
+                 $checkdriverdetail = OrderVendor::where('order_id',$order_details->order_id)->first();
+                 if(isset($checkdriverdetail->dispatch_traking_url) && $checkdriverdetail->dispatch_traking_url!=NULL)
+                 {
+                    $ratings = OrderDriverRating::updateOrCreate([
+                        'order_id' => $order_details->order_id,                 
+                        'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??$request->hidden_review]);
+                    
+                    $split_trcking_url = explode('/',$checkdriverdetail->dispatch_traking_url);
+                    $driverclientcode = $split_trcking_url[count($split_trcking_url)-2];
+                    $unique_order_code = $split_trcking_url[count($split_trcking_url)-1];
+                    $request->client_id = $driverclientcode;
+                    $request->order_unique_id = $unique_order_code;
+                    $staus = $this->setDriverRatingOnDispatch($request); 
+                 }                 
+             }          
  
              if(isset($ratings)) {
                  return $this->successResponse($ratings,'Rating Submitted.');
@@ -133,13 +139,17 @@ class RatingController extends FrontController{
             if ($dispatch_domain && $dispatch_domain != false) {
                 $all_location = array();
                 $postdata =  [ 'order_id' => $request->rating_for_dispatch??'',
+                                'client_id' =>$request->client_id,
+                                'order_unique_id' => $request->order_unique_id,
                                 'rating' => $request->rating??'',
                                 'review' => $request->review??''];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
-                $res = $client->post($url.'/api/update-driver-rating',
-                    ['form_params' => ($postdata)]
-                );
+                // $res = $client->post($url.'/api/update-driver-rating',                
+                //     ['form_params' => ($postdata)]
+                // ); 
+                //$url = "http://127.0.0.1:8002";
+                $res = $client->get($url.'/order/driver-rating/'.$request->client_id.'/'.$request->order_unique_id.'?review='.$request->review.'&rating='.$request->rating);
 
                 $response = json_decode($res->getBody(), true);
                 if($response && $response['message'] == 'success'){
@@ -179,6 +189,7 @@ class RatingController extends FrontController{
     */
     public function getDriverRating(Request $request){
         try {
+            //dd($request->all());
             $rating_details = OrderDriverRating::where('id',$request->id)->first();
             if(isset($rating_details)){
 
