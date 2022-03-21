@@ -19,7 +19,8 @@ $url = "http://www.zillow.com/webservice/GetDeepSearchResults.htm?zws-id=$zillow
 
 $result = file_get_contents($url);
 $data = simplexml_load_string($result);
-
+echo $url;
+echo $data;
 echo $data->response->results->result->lotSizeSqFt . "<br>";
 
 ?>

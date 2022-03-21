@@ -41,6 +41,10 @@ Route::group(['middleware' => ['domain']], function () {
 	});
 
 
+
+	Route::get('zillow', 'Front\CustomerAuthController@zillowGetData');
+
+
 	// Start edit order routes
 	Route::post('edit-order/search/vendor/products', 'Front\TempCartController@vendorProductsSearchResults');
 	Route::post('edit-order/vendor/products/getProductsInCart', 'Front\TempCartController@getProductsInCart');
