@@ -79,13 +79,21 @@ class OrderCancelRequestsController extends BaseController
                 return $req->order ? $req->order->order_number : '';
             })
             ->addColumn('show_vendor_url', function($req) {
-                return route('vendor.catalogs', $req->vendor_id);
+                if($req->vendor_id){
+                    return route('vendor.catalogs', $req->vendor_id);
+                }else{
+                    return '';
+                }
             })
             ->addColumn('order_detail_url', function($req) {
-                return route('order.show.detail', [$req->order_id, $req->vendor_id]);
+                if($req->vendor_id){
+                    return route('order.show.detail', [$req->order_id, $req->vendor_id]);
+                }else{
+                    return '';
+                }
             })
             ->addColumn('vendor', function($req) {
-                return $req->order_vendor->vendor->name;
+                return ($req->order_vendor->vendor) ? $req->order_vendor->vendor->name : '';
             })
             ->addColumn('reject_reason', function($req) {
                 return $req->reject_reason;
