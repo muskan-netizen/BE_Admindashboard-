@@ -62,7 +62,7 @@ class CategoryController extends FrontController{
             if( is_array($vendors) &&  (count($vendors) > 0) ){
 
                 Session::put('vendors', $vendors);
-                Log::info($vendors);
+                
                 //remake child categories array
                 if($category->childs->isNotEmpty()){
                     $childArray = array();
