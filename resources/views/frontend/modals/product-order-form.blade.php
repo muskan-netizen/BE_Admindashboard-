@@ -3,7 +3,7 @@
             @foreach($product_faqs as $key => $qs)
                 @if(!$qs->translations->isEmpty())
                     <div class="col-md-12 mb-3">
-                        <label for="review">{{$qs->translations->first()->name}}</label>
+                        <label for="review"><b>{{$qs->translations->first()->name}}</b></label>
                         {{-- <input type="hidden" name="product_order_form[{{$key}}]['question']" value="{{$qs->translations->first()->name}}"> --}}
                         <input type="text" class="form-control mb-0"  name="{{$qs->translations->first()->name}}" data-product_faq_id="{{$qs->translations->first()->product_faq_id}}" data-required={{$qs->is_required}} >
                     

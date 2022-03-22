@@ -1064,7 +1064,7 @@ $(document).ready(function() {
         }
         console.log($("input[name='product_faq_ids']").length);
         if($("input[name='product_faq_ids']").length > 0){
-            success_error_alert('error', 'Please fill all the product order form!', ".cart_response");
+            success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
             return false;
         
         }
