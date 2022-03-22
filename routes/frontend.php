@@ -1,11 +1,10 @@
 <?php
-
-Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
-Route::get('/debug-sentry', function () {
+	Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
+	Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
+	Route::get('/debug-sentry', function () {
 	throw new Exception('My first Sentry error!');
 });
-
 
 
 Route::group(['middleware' => ['domain']], function () {
@@ -39,10 +38,6 @@ Route::group(['middleware' => ['domain']], function () {
 
 		dd('send mail successfully !!');
 	});
-
-
-
-	Route::get('zillow', 'Front\CustomerAuthController@zillowGetData');
 
 
 	// Start edit order routes
@@ -141,6 +136,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/checkout/notify', 'Front\CheckoutGatewayController@checkoutNotify')->name('payment.checkoutNotify');
 
 	//Passbase
+	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
+	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 	Route::any('passbase/webhook','Front\PassbaseController@webhook')->name('passbase.webhook');
 
 
@@ -150,6 +147,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//VivaWallet routes 
 	Route::match(['get','post'],'payment/vivawallet/pay', 'Front\VivawalletController@createPayLink')->name('vivawallet.pay');
+	
 
 	Route::match(['get','post'],'viva/result', 'Front\VivawalletController@successPage')->name('viva.success');
 	Route::any('viva/webhook/success', 'Front\VivawalletController@verifyWebhookUrl')->name('viva.webhook');
@@ -385,5 +383,5 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
 	//Passbase
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
-	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
+	Route::match(['get','post'],'passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 });

@@ -69,9 +69,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="alert p-0" role="alert"></div>
             </div>
             @if (\Session::has('error'))
-                        <div class="alert alert-danger">
-                            <span>{!! \Session::get('error') !!}</span>
-                        </div>
+                <div class="alert alert-danger">
+                    <span>{!! \Session::get('error') !!}</span>
+                </div>
             @endif
         </div>
     </div>
@@ -101,7 +101,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                 <% } %>
 
-                <% if( (parseFloat(product.vendor.order_min_amount) > 0) &&  (product.product_sub_total_amount < parseFloat(product.vendor.order_min_amount)) ) { %>
+                <% if( (parseFloat(product.vendor.order_min_amount) > 0) &&  (product.product_total_amount < parseFloat(product.vendor.order_min_amount)) ) { %>
                     <div class="col-12">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then ')}} {{Session::get('currencySymbol')}}<%= Helper.formatPrice(product.vendor.order_min_amount) %>
@@ -1148,10 +1148,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-body">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <div id="cart_product-order-form-modal">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <div id="cart_product-order-form-modal" style="padding-top: 30px;">
           </div>
         </div>
       </div>
@@ -1352,8 +1350,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var form_class = $(this).attr('data-form_class');
     var remove_div_id = $(this).attr('data-dev_remove_id');
     var product_order_form_element = getFormData('.'+form_class);
-    
-  console.log(remove_div_id);
     if(product_order_form_element == 0){
         return false;
     }

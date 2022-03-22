@@ -15,6 +15,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
         Route::post('get-products', 'Api\v1\ProductController@productList');
+        Route::get('products_faq/{id}', 'Api\v1\ProductController@getProductFaq');
         Route::get('cms/page/list', 'Api\v1\CMSPageController@getPageList');
         Route::get('brand/{id?}', 'Api\v1\BrandController@productsByBrand');
         Route::get('category/{id?}', 'Api\v1\CategoryController@categoryData');
@@ -62,5 +63,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('promo-code/validate_promo_code', 'Api\v1\PromoCodeController@validate_promo_code');
         Route::post('promo-code/vendor_promo_code', 'Api\v1\PromoCodeController@vendorPromoCodeList');
         Route::post('cart/product-schedule/update', 'Api\v1\CartController@updateProductSchedule');
+        Route::post('cart/productfaq/update', 'Api\v1\CartController@updateCartProductFaq');
     });
 });
