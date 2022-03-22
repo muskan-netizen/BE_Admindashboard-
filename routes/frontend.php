@@ -150,6 +150,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//VivaWallet routes 
 	Route::match(['get','post'],'payment/vivawallet/pay', 'Front\VivawalletController@createPayLink')->name('vivawallet.pay');
+	
 
 	Route::match(['get','post'],'viva/result', 'Front\VivawalletController@successPage')->name('viva.success');
 	Route::any('viva/webhook/success', 'Front\VivawalletController@verifyWebhookUrl')->name('viva.webhook');
