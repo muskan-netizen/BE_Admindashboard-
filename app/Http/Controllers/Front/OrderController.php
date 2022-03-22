@@ -79,7 +79,7 @@ class OrderController extends FrontController
             },'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address'
+            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating'
         ])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', 6);
@@ -153,7 +153,7 @@ class OrderController extends FrontController
 
             }
         }
-
+       // return $pastOrders;
         foreach ($pastOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();

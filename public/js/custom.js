@@ -3282,36 +3282,74 @@ $(document).ready(function() {
     // **********************************************   all function for ondemand services   *****************************************  ////////////////////////
 
     $(document).on("click", "#next-button-ondemand-3", function() {
+       // alert(4321);    
         $('.alert-danger').html('');
-        window.location.href = showCart;
+       // window.location.href = showCart;
 
-        // var task_type = 'schedule';
-        // var schedule_date = $("input[name='booking_date']:checked").val();
-        // var schedule_time = $("input[name='booking_time']:checked").val();
-        // var specific_instructions = $("#specific_instructions").val();
+        var task_type = 'schedule';
+        var schedule_date = $("input[name='booking_slot']:checked").val();
+        //var schedule_time = $("input[name='booking_time']:checked").val();
+        var specific_instructions = $("#specific_instructions").val();
 
-        // var schedule_dt = schedule_date +' '+schedule_time;
-        // if( (task_type == 'schedule') && (schedule_dt == '') ){
-        //     success_error_alert('error', 'Schedule date time is required', ".cart_response");
-        //     return false;
-        // }
+        var selectedArr = JSON.stringify($("input[type='radio'][name='booking_slot']:checked"));
+    
 
-        // $.ajax({
-        //     type: "POST",
-        //     dataType: 'json',
-        //     url: update_cart_schedule,
-        //     data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions},
-        //     success: function (response) {
-        //         if (response.status == "Success") {
-        //             window.location.href = showCart;
-        //         }
-        //     },
-        //     error: function (error) {
-        //         var response = $.parseJSON(error.responseText);
-        //         success_error_alert('error', response.message, ".cart_response");
 
+        //var elems = $("input[name='booking_slot']:checked").val();
+       // var arrayString = jQuery.makeArray(elems);
+
+       // var elems = $('input:radio[name=booking_slot]:checked').val();
+        //var arrayString = jQuery.makeArray(elems);
+       // console.log(selectedArr);
+       // alert(selectedArr);
+
+
+
+        // var data_array = $("input[name='booking_slot']").map(function(idx, elem) {
+        //     console.log(elem);
+        //     alert(elem.value);
+        //     if (elem.type === 'radio' || elem.type === 'checkbox') {
+        //         return elem.checked && elem.value;
+        //     } else {
+        //         return elem.value.trim(); 
         //     }
-        // });
+        //  }).get()
+
+        //alert(JSON.stringify($("input[name='booking_slot']:checked").val()));
+        //alert($("input[name='booking_slot']:checked"));
+
+        //console.log(arrayString);
+       // alert(12);
+       // alert(arrayString);
+        //alert(schedule_time);
+
+       // var schedule_dt = schedule_date +' '+schedule_time;
+       var schedule_dt = schedule_date;
+        //alert(schedule_dt);
+        if( (task_type == 'schedule') && (schedule_dt == '') ){
+            success_error_alert('error', 'Schedule date time is required', ".cart_response");
+            return false;
+        }
+
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: update_cart_schedule,
+            data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions},
+            success: function (response) {
+                alert(response.status);
+                if (response.status == "Success") {
+                    window.location.href = showCart;
+                }
+            },
+            error: function (error) {
+                console.log(error);
+                var response = $.parseJSON(error.responseText);
+                alert(response.message);
+                success_error_alert('error', response.message, ".cart_response");
+
+            }
+        });
     });
 
 

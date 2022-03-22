@@ -99,7 +99,7 @@ svg {
   <div class="buttons-con">
     <div class="action-link-wrap">
       <a onclick="history.back(-1)" class="link-button link-back-button">Go Back</a>
-      {{-- <a href="{{route('userHome')}}" class="link-button">Go to Home Page</a> --}}
+     
     </div>
   </div>
 </div> -->
@@ -176,7 +176,7 @@ h1, h2, h3, h4, h5, h6 {
 .page-section .content-detail .sub-title,
 .page-section .content-detail .detail-text {
     display: block;
-    color: {{getClientPreferenceDetail()->web_color}};
+    color: {{ getClientPreferenceDetail()->web_color }};
     text-align: center;
 }
 .page-section .content-detail .sub-title {
@@ -222,14 +222,14 @@ animation-delay: 3s; }
 }
 .page-section .content-detail .back-btn .btn {
     padding: 8px 15px;
-    color: {{getClientPreferenceDetail()->web_color}};
-    border: 1px solid {{getClientPreferenceDetail()->web_color}};
+    color: #f55d42;
+    border: 1px solid #f55d42;
     border-radius: 30px;
     font-size: 14px;
     text-decoration: none;
 }
 .page-section .content-detail .back-btn .btn:hover {
-    background-color: {{getClientPreferenceDetail()->web_color}};
+    background-color: #f55d42;
     color: #fff;
 }
 .background_color {
@@ -292,7 +292,7 @@ animation-delay: 3s; }
                     <p class="detail-text">We're sorry,<br> The page you were looking for doesn't exist anymore.</p>
 
                     <div class="back-btn">
-                        <a href="{{route('userHome')}}" class="btn">Back to Home</a>
+                        
                     </div>
                 </div>
             </div>

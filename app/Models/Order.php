@@ -90,4 +90,9 @@ class Order extends Model implements Auditable
         }
         return 0;
     }
+
+    public function driver_rating()
+    {
+        return $this->hasOne('App\Models\OrderDriverRating', 'order_id', 'id');
+    }
 }
