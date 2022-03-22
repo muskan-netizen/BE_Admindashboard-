@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Front\FrontController;
 use Illuminate\Http\Request;
 use App\Models\{VerificationOption, UserVerfication};  
 use Log, Auth;
 
-class PassbaseController extends Controller
+class PassbaseController extends FrontController 
 {
 	use \App\Http\Traits\PassbaseManager;
 	use \App\Http\Traits\ApiResponser;
@@ -37,7 +37,7 @@ class PassbaseController extends Controller
     		'response_id' => $response['id'],
     		'status' => $response['status']
     	]);
-    	return $response;
+    	return $this->successResponse($response);
     }
     public function webhook(Request $request)
     {
