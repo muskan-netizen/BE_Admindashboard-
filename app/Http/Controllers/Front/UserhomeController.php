@@ -1328,4 +1328,8 @@ class UserhomeController extends FrontController
 
         return $this->successResponse($data);
     }
+
+    public function confirmation(){
+        return view('confirmatin');
+    }
 }
