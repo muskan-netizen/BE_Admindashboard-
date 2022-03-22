@@ -5,6 +5,7 @@
     <!-- <link rel="stylesheet" href="index.css" /> -->
     <title>Verify your Identity</title> 
     <meta charset="utf-8">
+     <meta name="_token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <style type="text/css">
 .al_heightBody{margin: 0 !important;}
@@ -133,27 +134,45 @@ margin: 10px auto 0;
 
       // Optional - Example to send identity access key to your backend
       const sendAuthKeyToBackend = (identityAccessKey) => {  
-        const body = {
-          identityAccessKey: identityAccessKey,
-        };
-        const requestOptions = {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        };
-        fetch("{{route('passbase.store')}}", requestOptions)
-          .then((response) => {
-            console.log("Success");
-            console.log(response);
-            window.location.replace("{{route('userHome')}}");
+        // const body = {
+        //   identityAccessKey: identityAccessKey,
+        // };
+        // const requestOptions = {
+        //   method: "GET",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify(body),
+        // };
+        // fetch("{{route('passbase.store')}}", requestOptions)
+        //   .then((response) => {
+        //     console.log("Success");
+        //     console.log(response);
+        //     window.location.replace("{{route('userHome')}}");
 
-          })
-          .catch((error) => {
-            console.log(error);
+        //   })
+        //   .catch((error) => {
+        //     console.log(error);
+        //   });
+
+        $.ajax({
+          url: "{{route('passbase.store')}}", 
+          type: "POST",
+          data: {
+              identityAccessKey: identityAccessKey,
+              "_token": "{{ csrf_token() }}",
+          },
+          success: function(response){
+            console.log(response);
+            if(response.status == 'Success')
+            {
+              console.log(response.data);
+              window.location.replace("{{route('userHome')}}");
+            }else{
+              console.log(error);
+            }
           });
-      };
+        };
     </script>
   </body>
 </html>
