@@ -177,6 +177,8 @@ class LalaMovesController extends Controller
             $time = date('H:i:s',strtotime($order->scheduled_date_time));
             $scheduledAt = $date.'T'.$time.'Z';
         }
+        if (empty($order->web_hook_code))
+        {
         $cus_address = UserAddress::find($order->address_id);
                 if ($cus_address && $this->lalamove_status==1){
 
@@ -210,6 +212,9 @@ class LalaMovesController extends Controller
                     $response = 2;
                 }
             }
+        }else{
+            $response = 2;
+        }
 
         return $response;
     	
@@ -282,7 +287,7 @@ class LalaMovesController extends Controller
             $trackingId = $json->data->order->id;
             // COMPLETED means driver complete the delivery
             OrderVendor::where('web_hook_code',$trackingId)
-            ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId]);
+            ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId,'order_status_option_id'=>'6']);
             $details = OrderVendor::where('web_hook_code',$trackingId)->first();
 
 
