@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class UserVerfication extends Model
 {
     use HasFactory;
-
+    protected $table = 'user_verification';
+    protected $fillable = ['verification_option_id', 'user_id', 'response_id', 'status'];
 
     public function addVerification($data)
     {

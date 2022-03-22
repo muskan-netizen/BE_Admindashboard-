@@ -11,8 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\Web\OrderProductRatingRequest;
+use App\Http\Requests\Web\OrderDriverRatingRequest;
 use App\Http\Requests\Web\CheckImageRequest;
-use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile};
+use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,OrderDriverRating,OrderVendor};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 class RatingController extends FrontController{
@@ -67,6 +68,42 @@ class RatingController extends FrontController{
         }
     }
 
+    public function updateDriverRating(OrderDriverRatingRequest $request){
+       // dd($request->all());
+        try {
+             $user = Auth::user();
+             $order_deliver = 0;
+             $order_details = OrderProduct::where('id',$request->order_vendor_product_id)->whereHas('order',function($q){$q->where('user_id',Auth::id());})->first();
+             if($order_details)
+             $order_deliver = VendorOrderStatus::where(['order_id' => $order_details->order_id,'vendor_id' => $order_details->vendor_id,'order_status_option_id' => 6])->count();
+ 
+             if($order_deliver > 0){
+                 $checkdriverdetail = OrderVendor::where('order_id',$order_details->order_id)->first();
+                 if(isset($checkdriverdetail->dispatch_traking_url) && $checkdriverdetail->dispatch_traking_url!=NULL)
+                 {
+                    $ratings = OrderDriverRating::updateOrCreate([
+                        'order_id' => $order_details->order_id,                 
+                        'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??$request->hidden_review]);
+                    
+                    $split_trcking_url = explode('/',$checkdriverdetail->dispatch_traking_url);
+                    $driverclientcode = $split_trcking_url[count($split_trcking_url)-2];
+                    $unique_order_code = $split_trcking_url[count($split_trcking_url)-1];
+                    $request->client_id = $driverclientcode;
+                    $request->order_unique_id = $unique_order_code;
+                    $staus = $this->setDriverRatingOnDispatch($request); 
+                 }                 
+             }          
+ 
+             if(isset($ratings)) {
+                 return $this->successResponse($ratings,'Rating Submitted.');
+             }
+             return $this->errorResponse('Invalid order', 200);
+ 
+         } catch (Exception $e) {
+             return $this->errorResponse($e->getMessage(), 400);
+         }
+     }
+
 
     # set rating at dispatch panel
     public function setRatingOnDispatch($request)
@@ -94,6 +131,36 @@ class RatingController extends FrontController{
         }
     }
 
+    # set Driver rating at dispatch panel
+    public function setDriverRatingOnDispatch($request)
+    {
+        try {
+            $dispatch_domain = $this->checkIfPickupDeliveryOnCommon();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $all_location = array();
+                $postdata =  [ 'order_id' => $request->rating_for_dispatch??'',
+                                'client_id' =>$request->client_id,
+                                'order_unique_id' => $request->order_unique_id,
+                                'rating' => $request->rating??'',
+                                'review' => $request->review??''];
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                // $res = $client->post($url.'/api/update-driver-rating',                
+                //     ['form_params' => ($postdata)]
+                // ); 
+                //$url = "http://127.0.0.1:8002";
+                $res = $client->get($url.'/order/driver-rating/'.$request->client_id.'/'.$request->order_unique_id.'?review='.$request->review.'&rating='.$request->rating);
+
+                $response = json_decode($res->getBody(), true);
+                if($response && $response['message'] == 'success'){
+
+                }
+            }
+        }catch(\Exception $e){
+              return $e->getMessage();
+        }
+    }
+
     /**
      * ratings details
     */
@@ -109,6 +176,30 @@ class RatingController extends FrontController{
                 return $this->successResponse($rating_details,'Rating Details.');
             }
             return \Response::json(\View::make('frontend.modals.update-review-rating', array('rating'=> 0 ,'order_vendor_product_id' => $request->order_vendor_product_id ,'rating_details' => $rating_details))->render());
+
+            return $this->errorResponse('Invalid rating', 404);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * driver ratings details
+    */
+    public function getDriverRating(Request $request){
+        try {
+            //dd($request->all());
+            $rating_details = OrderDriverRating::where('id',$request->id)->first();
+            if(isset($rating_details)){
+
+                if ($request->ajax()) {
+                 return \Response::json(\View::make('frontend.modals.update-driver-rating', array('rating'=>  $rating_details->rating,'order_vendor_product_id' => $request->order_vendor_product_id ,'rating_details' => $rating_details))->render());
+                }
+
+                return $this->successResponse($rating_details,'Rating Details.');
+            }
+            return \Response::json(\View::make('frontend.modals.update-driver-rating', array('rating'=> 0 ,'order_vendor_product_id' => $request->order_vendor_product_id ,'rating_details' => $rating_details))->render());
 
             return $this->errorResponse('Invalid rating', 404);
 

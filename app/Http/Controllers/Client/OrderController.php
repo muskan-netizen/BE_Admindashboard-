@@ -359,6 +359,7 @@ class OrderController extends BaseController
                     $total_amount = $total_amount + $opt_quantity_price;
                 }
                 $product->total_amount = $total_amount;
+                
             }
             if ($vendor->dineInTable) {
                 $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -653,7 +654,6 @@ class OrderController extends BaseController
 
     public function placeOrderRequestlalamove($request)
     {
-
         $lala = new LalaMovesController();
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
@@ -661,12 +661,13 @@ class OrderController extends BaseController
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
             $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id,$checkOrder->user_id,$checkOrder->id);
             }
-
-            if ($order_lalamove->totalFee >0){
+            if (isset($order_lalamove->orderRef)){
                 $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
 
                 return 1;
+            }else{
+                //return false;
             }
 
         return 2;
@@ -1455,5 +1456,20 @@ class OrderController extends BaseController
             'dispatcher_status_options' => $dispatcher_status_options,
             'vendor_order_status_created_dates' => $vendor_order_status_created_dates, 'clientCurrency' => $clientCurrency,'vendor_data' => $vendor_data
         ]);
+    }
+     # get product faq 
+    public function viewProductForm(Request $request,$domain = '',$product_id){
+       
+        $faq_data =  OrderProduct::where('id',$product_id)->select('id','user_product_order_form')->first();
+        //pr($faq_data->user_product_order_form);
+        if(isset($faq_data)){
+            $Product_faq =json_decode($faq_data->user_product_order_form);
+            //pr( $Product_faq );
+            if ($request->ajax()) {
+             return \Response::json(\View::make('backend.order.show_product_form', array('product_faqs'=>  $Product_faq))->render());
+            }
+
+        }
+        return $this->errorResponse('Invalid product form ', 404);
     }
 }
