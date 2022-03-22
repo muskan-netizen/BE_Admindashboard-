@@ -778,7 +778,8 @@ class CartController extends FrontController
                             $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                             foreach($deliveries as $k=> $opt)
                                 {
-                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                    //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
                                 }
                             $select .= '</select>';
                                 if($code){
@@ -973,7 +974,7 @@ class CartController extends FrontController
                     $delivery_status = 0;
                 }
 
-                if((float)($vendorData->vendor->order_min_amount) > $subtotal_amount){  # if any vendor total amount of order is less then minimum order amount
+                if((float)($vendorData->vendor->order_min_amount) > $payable_amount){  # if any vendor total amount of order is less then minimum order amount
                     $delivery_status = 0;
                 }
 
@@ -1667,19 +1668,24 @@ class CartController extends FrontController
             $new_session_token = session()->get('_token');
             if ($user || $new_session_token) {                
                 if($request->task_type == 'now'){
-                    $time = Carbon::now()->format('Y-m-d H:i:s');
+                    $time = Carbon::now()->format('Y-m-d H:i:s');                  
+                    
                 }else{
-
+                   
                     if(isset($request->slot))
-                    {
+                    { 
                         $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                        $slot = $request->slot;
-                    }else{
+                        $slot = $request->slot;                        
+                    }else{                       
+                     
                         if(isset($request->schedule_dt) && !empty($request->schedule_dt))
                         $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                      
                     }
 
                 }
+
+               
 
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
                 $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');

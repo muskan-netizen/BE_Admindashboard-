@@ -1,11 +1,10 @@
 <?php
-
-Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
-Route::get('/debug-sentry', function () {
+	Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
+	Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
+	Route::get('/debug-sentry', function () {
 	throw new Exception('My first Sentry error!');
 });
-
 
 
 Route::group(['middleware' => ['domain']], function () {
@@ -188,7 +187,6 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Cashfree
 	Route::get('payment/cashfree/return', 'Front\CashfreeGatewayController@cashfreeReturn')->name('payment.cashfree.return');
-	Route::get('payment/cashfree/return/app', 'Front\CashfreeGatewayController@cashfreeReturnApp')->name('payment.cashfree.return.app');
 	Route::post('payment/cashfree/notify', 'Front\CashfreeGatewayController@cashfreeNotify')->name('payment.cashfree.notify');
 
 
@@ -346,6 +344,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::group(['prefix' => 'rating'], function () {
 		Route::post('update-product-rating', 'Front\RatingController@updateProductRating')->name('update.order.rating');
 		Route::get('get-product-rating', 'Front\RatingController@getProductRating')->name('get-product-rating-details');
+		
+		Route::post('update-driver-rating', 'Front\RatingController@updateDriverRating')->name('update.driver.rating');
+		Route::get('get-driver-rating', 'Front\RatingController@getDriverRating')->name('get-driver-rating-details');
 	});
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
@@ -377,4 +378,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('get-product-order-form', 'Front\PickupDeliveryController@getProductOrderForm')->name('get-product-order-form');
 	});
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
+	//Passbase
+	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
+	Route::match(['get','post'],'passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 });
