@@ -29,7 +29,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet');
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -72,7 +72,7 @@ class PaymentOptionController extends BaseController
                         'api_key' => $request->stripe_api_key
                     ));
                 }
-                
+
             }
         }
 
@@ -135,7 +135,7 @@ class PaymentOptionController extends BaseController
                         }
                         $json_creds = json_encode($stripe_arr);
                     }
-                   
+
                 }
                 else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe_fpx')) {
                     $validatedData = $request->validate([
@@ -286,6 +286,49 @@ class PaymentOptionController extends BaseController
                     $json_creds = json_encode(array(
                         'api_key' => $request->kongapay_api_key,
                         'merchant_id' => $request->kongapay_merchant_id
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'ccavenue')) {
+                    $validatedData = $request->validate([
+                        'ccavenue_enc_key' => 'required',
+                        'ccavenue_access_code' => 'required',
+                        'ccavenue_merchant_id' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'enc_key' => $request->ccavenue_enc_key,
+                        'access_code' => $request->ccavenue_access_code,
+                        'merchant_id' => $request->ccavenue_merchant_id
+                    ));
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'viva_wallet')) {
+                    $validatedData = $request->validate([
+                        'viva_wallet_client_id' => 'required',
+                        'viva_wallet_client_key' => 'required',
+                        'viva_wallet_merchant_id' => 'required',
+                        'viva_wallet_merchant_key' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'client_id' => $request->viva_wallet_client_id,
+                        'client_key' => $request->viva_wallet_client_key,
+                        'merchant_id' => $request->viva_wallet_merchant_id,
+                        'merchant_key' => $request->viva_wallet_merchant_key
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'easypaisa')) {
+                    $validatedData = $request->validate([
+                        'easypaisa_store_id' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'easypaisa_store_id' => $request->easypaisa_store_id
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'cashfree')) {
+                    $validatedData = $request->validate([
+                        'cashfree_app_id' => 'required',
+                        'cashfree_secret_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'app_id' => $request->cashfree_app_id,
+                        'secret_key' => $request->cashfree_secret_key
                     ));
                 }
             }

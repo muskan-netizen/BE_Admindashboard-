@@ -87,37 +87,51 @@ class FrontController extends Controller
        $preferences = Session::get('preferences');
        $primary = ClientLanguage::orderBy('is_primary','desc')->first();
        $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-       ->select('categories.id', 'categories.icon', 'categories.slug', 'categories.parent_id', 'cts.name')->distinct('categories.id');
+       ->select('categories.id', 'categories.icon', 'categories.icon_2 as icon_two' , 'categories.slug', 'categories.parent_id', 'cts.name')->orderBy('position')->distinct('categories.slug');
         $status = $this->field_status;
+        $include_categories = [4,8]; // type 4 for brands
+        $celebrity_check = 0;
         if ($preferences) {
             if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
+
+                if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
+                    $celebrity_check = 1;
+                    $include_categories[] = 5; // type 5 for celebrity
+                }
                 $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
+
                 $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
-                    ->where(function ($q1) use ($vendors, $status, $lang_id) {
+                    ->where(function ($q1) use ($vendors , $include_categories) {
                         $q1->whereIn('vct.vendor_id', $vendors)
                             ->where('vct.status', 1)
-                            ->orWhere(function ($q2) {
-                                $q2->whereIn('categories.type_id', [4,5,8]);
+                            ->orWhere(function ($q2) use($include_categories) {
+                                $q2->whereIn('categories.type_id', $include_categories);
                             });
                     });
             }
         }
-        $categories = $categories->where('categories.id', '>', '1')
-            ->whereNotNull('categories.type_id')
-            ->whereNotIn('categories.type_id', [7])
-            ->where('categories.is_visible', 1)
-            ->where('categories.status', '!=', $status)
-            ->where('cts.language_id', $lang_id)
-            ->where(function ($qrt) use($lang_id,$primary){
-                $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
-             })
-            ->whereNull('categories.vendor_id')
-            ->orderBy('categories.position', 'asc')
-            ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
-        if ($categories) {
-            $categories = $this->buildTree($categories->toArray());
+        $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
+                                ->where('categories.id', '>', '1')
+                                ->whereNotNull('categories.type_id');
+         if($celebrity_check == 0){
+            $categories = $categories->where('categories.type_id', '!=', 5);
         }
-
+        $categories = $categories->where('categories.id', '>', '1')
+                               // ->whereNotNull('categories.type_id')
+                                //->whereNotIn('categories.type_id', [7])
+                                ->where('categories.is_visible', 1)
+                                ->where('categories.is_core', 1)
+                                ->where('categories.status', '!=', $status)
+                                ->where('cts.language_id', $lang_id)
+                                ->where(function ($qrt) use($lang_id,$primary){
+                                    $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
+                                })
+                                ->whereNull('categories.vendor_id')
+                              //  ->orderBy('categories.position', 'asc')
+                                ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
+        if ($categories) {
+            $categories = $this->buildTree($categories); 
+        }
 
         return $categories;
     }
@@ -160,6 +174,7 @@ class FrontController extends Controller
                         $this->getChildCategoriesForVendor($child->id, $langId, $vid);
                     }
                 }
+            
 
                 $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
@@ -169,7 +184,11 @@ class FrontController extends Controller
                 }
                 $this->getChildCategoriesForVendor($cate->id, $langId, $vid);
             }
-        }
+               
+
+
+            }
+        
         return $category_list;
     }
 
@@ -201,7 +220,9 @@ class FrontController extends Controller
                 $vendors[] = $value->id;
             }
         }
+
         Session::put('vendors', $vendors);
+
         return $vendors;
     }
 
@@ -252,9 +273,9 @@ class FrontController extends Controller
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
                 $value->variant_multiplier = $multiplier;
-                $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.',',') : 0;
+                $value->variant_price = (!empty($value->variant->first())) ? decimal_format(($value->variant->first()->price * $multiplier),',') : 0;
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
-                $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                $value->image_url = ($value->media->first() && !is_null($value->media->first()->image))  ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $value->category_name = ($value->category->categoryDetail->translation->first()) ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
             }
         }
@@ -309,10 +330,10 @@ class FrontController extends Controller
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
                 $value->variant_multiplier = $multiplier ? $multiplier : 1;
-                $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.',',') : 0;
+                $value->variant_price = (!empty($value->variant->first())) ? decimal_format(($value->variant->first()->price * $multiplier),',') : 0;
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
                 $value->category_name = $value->category->categoryDetail->translation->first() ? $value->category->categoryDetail->translation->first()->name : '';
-                $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '600/600' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                $value->image_url = $value->media->first() && !is_null($value->media->first()->image) ? $value->media->first()->image->path['image_fit'] . '600/600' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 // foreach ($value->variant as $k => $v) {
                 //     $value->variant[$k]->multiplier = $multiplier;
                 // }
@@ -555,7 +576,7 @@ class FrontController extends Controller
         }
         $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
         $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
-        $amount = number_format($amount, 2,'.','');
+        $amount = decimal_format($amount);
         return $amount;
     }
 
@@ -577,16 +598,17 @@ class FrontController extends Controller
         $langId = Session::get('customerLanguage');
         $guest_user = true;
         if ($user) {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count','scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
             $addresses = UserAddress::where('user_id', $user->id)->get();
             $guest_user = false;
         } else {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count','scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             $addresses = collect();
         }
         if ($cart) {
             $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
         }
+        
         $navCategories = $this->categoryNav($langId);
         $subscription_features = array();
         if ($user) {
@@ -615,6 +637,7 @@ class FrontController extends Controller
         $end_time = date('Y-m-d 23:59');
         $period = CarbonPeriod::create($start_date, $end_date);
         $time_slots = $this->SplitTime($start_time, $end_time, "60");
+        //dd($period);
         return ['time_slots' => $time_slots,'period' => $period,'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user];
     }
 

@@ -51,14 +51,16 @@
                             </div>
                             <div class="row">
 
-                                <div class="col-md-4">
-                                    <div class="form-group" id="phone_noInput">
-                                        <label for="">{{ __('Phone Number') }}</label>
-                                        {!! Form::tel('phone_no', null, ['class'=>'form-control']) !!}
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong></strong>
-                                        </span>
-                                    </div>
+                                
+                                <div class="col-md-4 form-group" id="phone_noInput">
+                                    {!! Form::label('title', __('Phone Number'),['class' => 'control-label']) !!}
+                                    <input type="tel" class="form-control phone" id="vendor_phone_number" placeholder={{ __("Phone Number") }} name="phone_no" value="{{ old('full_number')}}">
+                                    <input type="hidden" id="vendorCountryCode" name="vendor_country" value="{{ old('vendor_country') ? old('vendor_country') : 'us'}}">
+                                    <input type="hidden" id="vendorDialCode" name="vendor_dial_code" value="{{ old('vendor_dial_code') ? old('vendor_dial_code') : Session::get('default_country_phonecode',1) }}">
+
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong></strong>
+                                    </span>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -529,7 +531,7 @@
                                             </ul>
                                         </td>
                                         @endif
-                                        <td> <a href="{{ $csv->path }}">{{ __('Download') }}</a> </td>
+                                        <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
                                     </tr>
                                     @endforeach
                                 </tbody>

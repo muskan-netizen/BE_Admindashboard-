@@ -1,45 +1,12 @@
 @extends('layouts.store', ['title' => $brand->translation_title ])
 
 @section('css')
-<style type="text/css">
-    .main-menu .brand-logo {
-        display: inline-block;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-</style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 
 @section('content')
-
 <style type="text/css">
-    .productVariants .firstChild{
-        min-width: 150px;
-        text-align: left !important;
-        border-radius: 0% !important;
-        margin-right: 10px;
-        cursor: default;
-        border: none !important;
-    }
-    .product-right .color-variant li, .productVariants .otherChild{
-        height: 35px;
-        width: 35px;
-        border-radius: 50%;
-        margin-right: 10px;
-        cursor: pointer;
-        border: 1px solid #f7f7f7;
-        text-align: center;
-    }
-    .productVariants .otherSize{
-        height: auto !important;
-        width: auto !important;
-        border: none !important;
-        border-radius: 0%;
-    }
-    .product-right .size-box ul li.active {
-        background-color: inherit;
-        }
+    .main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}
 </style>
 <!-- section start -->
 <section class="section-b-space ratio_asos">
@@ -57,7 +24,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-5">
                 <div class="collection-filter col-lg-3">
                     <div class="collection-filter-block bg-transparent p-0">
                         <!-- <div class="collection-mobile-back">
@@ -131,14 +98,14 @@
                                         }*/ ?>
 
                                         <a class="row common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                            <div class="img-outer-box position-relative col-sm-3">
+                                            <div class="img-outer-box position-relative col-sm-4 pr-0">
                                                 <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
                                                 <div class="pref-timing">
                                                     <!--<span>5-10 min</span>-->
                                                 </div>
                                                 {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
                                             </div>
-                                            <div class="media-body align-self-center col-sm-9">
+                                            <div class="media-body align-self-center col-sm-8">
                                                 <div class="inner_spacing px-0">
                                                     <div class="product-description">
                                                         <div class="d-flex align-items-center justify-content-between">
@@ -151,7 +118,7 @@
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
                                                                     <?php $multiply = $new['variant_multiplier']; ?>
-                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                    {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                 @endif
                                                             </b>
 
@@ -182,7 +149,7 @@
                                                     @if($new['inquiry_only'] == 0)
                                                     <h4 class="mt-1">
                                                         <//?php $multiply = $new['variant_multiplier']; ?>
-                                                        {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}} </h4>
+                                                        {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}} </h4>
                                                     @endif
                                                     @if($client_preference_detail)
                                                         @if($client_preference_detail->rating_check == 1)
@@ -278,7 +245,7 @@
                                                                     <h3>{{ $data->translation_title }}</h3>
                                                                 </a>
                                                                 <h6 class="mt-0"><b>{{$data->vendor->name}}</b></h6>
-                                                                <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                <h4 class="mt-1">{{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                 @if($client_preference_detail && $client_preference_detail->rating_check == 1 && $data->averageRating > 0)
                                                                     <span class="rating-number">{{ number_format($data->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
                                                                 @endif
@@ -312,7 +279,7 @@
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 }*/ ?>
                                                 <div class="col-xl-3 col-6 col-grid-box mt-3">
-                                                    <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="product-box scale-effect mt-0">
+                                                    <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="product-box scale-effect mt-0 al_box_third_template ">
                                                         <div class="product-image p-0">
                                                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                                                         </div>
@@ -335,7 +302,7 @@
                                                                     <p>{{ $data->translation_description }}</p>
                                                                 @endif
                                                                 @if($data->inquiry_only == 0)
-                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                 @endif
                                                             </div>
                                                         </div>

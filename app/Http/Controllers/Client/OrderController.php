@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency};
+use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -57,19 +57,29 @@ class OrderController extends BaseController
         //     }
         // }
         $return_requests = OrderReturnRequest::where('status', 'Pending');
-        if (Auth::user()->is_superadmin == 0) {
-            $return_requests = $return_requests->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
+        if ($user->is_superadmin == 0) {
+            $return_requests = $return_requests->whereHas('order.vendors.vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
             });
         }
         $return_requests = $return_requests->count();
+
+        // cancel order requests
+        $cancel_order_requests = OrderCancelRequest::where('status', 0);
+        if ($user->is_superadmin == 0) {
+            $cancel_order_requests = $cancel_order_requests->whereHas('order.vendors.vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
+            });
+        }
+        $cancel_order_requests = $cancel_order_requests->count();
+
         // Pending counts
         $pending_order_count = Order::with('vendors')->whereHas('vendors', function ($query) {
             $query->where('order_status_option_id', 1);
         });
-        if (Auth::user()->is_superadmin == 0) {
-            $pending_order_count = $pending_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
+        if ($user->is_superadmin == 0) {
+            $pending_order_count = $pending_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
             });
         }
         $pending_order_count = $pending_order_count->where(function ($q1) {
@@ -83,9 +93,9 @@ class OrderController extends BaseController
         $past_order_count = Order::with('vendors')->whereHas('vendors', function ($query) {
             $query->whereIn('order_status_option_id', [6, 3]);
         });
-        if (Auth::user()->is_superadmin == 0) {
-            $past_order_count = $past_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
+        if ($user->is_superadmin == 0) {
+            $past_order_count = $past_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
             });
         }
         $past_order_count = $past_order_count->where(function ($q1) {
@@ -99,9 +109,9 @@ class OrderController extends BaseController
         $active_order_count = Order::with('vendors')->whereHas('vendors', function ($query) {
             $query->whereIn('order_status_option_id', [2, 4, 5]);
         });
-        if (Auth::user()->is_superadmin == 0) {
-            $active_order_count = $active_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
+        if ($user->is_superadmin == 0) {
+            $active_order_count = $active_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
             });
         }
         $active_order_count = $active_order_count->where(function ($q1) {
@@ -113,14 +123,14 @@ class OrderController extends BaseController
 
         // all vendors
         $vendors = Vendor::where('status', '!=', '2')->orderBy('id', 'desc');
-        if (Auth::user()->is_superadmin == 0) {
-            $vendors = $vendors->whereHas('permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
+        if ($user->is_superadmin == 0) {
+            $vendors = $vendors->whereHas('permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
             });
         }
         $vendors = $vendors->get();
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-        return view('backend.order.index', compact('return_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors'));
+        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors'));
     }
 
     public function postOrderFilter(Request $request, $domain = '')
@@ -193,7 +203,7 @@ class OrderController extends BaseController
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    });
+                    })->with('vendors.acceptedBy');
 
                     break;
                 case 'orders_history':
@@ -205,7 +215,7 @@ class OrderController extends BaseController
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    })->with('vendors.cancelledBy');
+                    })->with('vendors.cancelledBy','vendors.acceptedBy');
 
                     break;
             }
@@ -251,11 +261,11 @@ class OrderController extends BaseController
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
-                $vendor->vendor_name = $vendor ? $vendor->vendor->name : '';
+                $vendor->vendor_name = $vendor->vendor->name ?? '';
                 $product_total_count = 0;
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
-                    $product->image_path  = $product->media->first() ? $product->media->first()->image->path : getDefaultImagePath();
+                    $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
                 }
 
                 if ($vendor->delivery_fee > 0) {
@@ -325,11 +335,12 @@ class OrderController extends BaseController
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
-            'vendors.dineInTable.category'
+            'vendors.dineInTable.category',
+            'vendors.cancel_request'
         ))->findOrFail($order_id);
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
-                $product->image_path  = $product->media->first() ? $product->media->first()->image->path : '';
+                $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
                 foreach ($product->addon as $ck => $addons) {
@@ -339,15 +350,16 @@ class OrderController extends BaseController
                         $opt_price_in_currency = $addons->option->price / $divider;
                         $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                     }
-                    $opt_quantity_price = number_format($opt_price_in_doller_compare * $product->quantity, 2, '.', '');
+                    $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
                     $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
                     $addons->option->price_in_cart = $addons->option->price;
-                    $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
+                    $addons->option->price = decimal_format($opt_price_in_currency);
                     $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
                     $addons->option->quantity_price = $opt_quantity_price;
                     $total_amount = $total_amount + $opt_quantity_price;
                 }
                 $product->total_amount = $total_amount;
+                
             }
             if ($vendor->dineInTable) {
                 $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -378,14 +390,29 @@ class OrderController extends BaseController
             $vendor_order_status_option_ids[] = $vendor_order_status->order_status_option_id;
         }
 
+        $user_docs = UserDocs::where('user_id', $order->user_id)->get();
+        $user_registration_documents = UserRegistrationDocuments::get();
+        //pr($user_docs->toArray() );
         $vendor_data = Vendor::where('id',$vendor_id)->first();
+        
+        $driver_data = '';
+        if($order->vendors[0]->shipping_delivery_type == 'L'){
+            $lala = new LalaMovesController();
+            $driver_data = $lala->getDeriverDetails($order->vendors[0]); 
+        }
+
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 'order' => $order,
             'vendor_order_statuses' => $vendor_order_statuses,
             'vendor_order_status_option_ids' => $vendor_order_status_option_ids,
             'order_status_options' => $order_status_options,
             'dispatcher_status_options' => $dispatcher_status_options,
-            'vendor_order_status_created_dates' => $vendor_order_status_created_dates, 'clientCurrency' => $clientCurrency,'vendor_data' => $vendor_data
+            'vendor_order_status_created_dates' => $vendor_order_status_created_dates,
+            'user_registration_documents' => $user_registration_documents,
+            'clientCurrency' => $clientCurrency,
+            'user_docs' => $user_docs,
+            'vendor_data' => $vendor_data,
+            'driver_data' => (($driver_data)?json_decode($driver_data):'')
         ]);
     }
 
@@ -395,7 +422,7 @@ class OrderController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function changeStatus(Request $request, $domain = '')
+    public function changeStatus(Request $request, $domain = '') 
     {
 
         DB::beginTransaction();
@@ -444,6 +471,10 @@ class OrderController extends BaseController
                         //Create Shipping place order request for Ahoy Masa
                         $order_dunzo = $this->placeOrderRequestAhoy($request);
                     }
+                    $orderData->accepted_by = Auth::user()->id;
+                    $orderData->save();
+
+
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
 
@@ -623,7 +654,6 @@ class OrderController extends BaseController
 
     public function placeOrderRequestlalamove($request)
     {
-
         $lala = new LalaMovesController();
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
@@ -631,12 +661,13 @@ class OrderController extends BaseController
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
             $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id,$checkOrder->user_id,$checkOrder->id);
             }
-
-            if ($order_lalamove->totalFee >0){
+            if (isset($order_lalamove->orderRef)){
                 $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
 
                 return 1;
+            }else{
+                //return false;
             }
 
         return 2;
@@ -1377,10 +1408,10 @@ class OrderController extends BaseController
                         $opt_price_in_currency = $addons->option->price / $divider;
                         $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                     }
-                    $opt_quantity_price = number_format($opt_price_in_doller_compare * $product->quantity, 2, '.', '');
+                    $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
                     $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
                     $addons->option->price_in_cart = $addons->option->price;
-                    $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
+                    $addons->option->price = decimal_format($opt_price_in_currency);
                     $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
                     $addons->option->quantity_price = $opt_quantity_price;
                     $total_amount = $total_amount + $opt_quantity_price;
@@ -1425,5 +1456,20 @@ class OrderController extends BaseController
             'dispatcher_status_options' => $dispatcher_status_options,
             'vendor_order_status_created_dates' => $vendor_order_status_created_dates, 'clientCurrency' => $clientCurrency,'vendor_data' => $vendor_data
         ]);
+    }
+     # get product faq 
+    public function viewProductForm(Request $request,$domain = '',$product_id){
+       
+        $faq_data =  OrderProduct::where('id',$product_id)->select('id','user_product_order_form')->first();
+        //pr($faq_data->user_product_order_form);
+        if(isset($faq_data)){
+            $Product_faq =json_decode($faq_data->user_product_order_form);
+            //pr( $Product_faq );
+            if ($request->ajax()) {
+             return \Response::json(\View::make('backend.order.show_product_form', array('product_faqs'=>  $Product_faq))->render());
+            }
+
+        }
+        return $this->errorResponse('Invalid product form ', 404);
     }
 }

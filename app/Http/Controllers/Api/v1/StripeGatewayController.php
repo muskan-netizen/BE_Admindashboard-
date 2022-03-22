@@ -10,6 +10,7 @@ use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\OrderController;
 use App\Http\Controllers\Api\v1\WalletController;
+use App\Http\Controllers\Api\v1\PickupDeliveryController;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
 
@@ -36,51 +37,116 @@ class StripeGatewayController extends BaseController
 
     public function stripePurchase(request $request)
     {
-        try {
+        // try {
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
             $amount = $this->getDollarCompareAmount($request->amount);
             $token = $request->input('stripe_token');
-            $response = $this->gateway->purchase([
-                'currency' => $this->currency,
-                'token' => $token,
-                'amount' => $amount,
-                'metadata' => ['cart_id' => ($request->cart_id) ? $request->cart_id : 0],
-                'description' => 'This is a test purchase transaction.',
-            //     'name'=>Auth::user()->name,
-            //     'address' => [
-            //        'line1'       => '510 Townsend St',
-            //        'postal_code' => '98140',
-            //        'city'        => 'San Francisco',
-            //        'state'       => 'CA',
-            //        'country'     => 'US',
-            //    ],
-                // 'name' => Auth::user()->name,
-                // 'address' => $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode,
-            ])->send();
-            if ($response->isSuccessful()) {
-               // $this->successMail();
-               $request->request->add(['transaction_id' => $response->getTransactionReference()]);
-                if($request->action == 'cart'){
-                    $orderController = new OrderController();
-                    $orderResponse = $orderController->postPlaceOrder($request);
-                    return $orderResponse;
-                }
-                else if($request->action == 'wallet'){
-                    $walletController = new WalletController();
-                    $walletController->creditMyWallet($request);
-                }
 
-                return $this->successResponse($response->getTransactionReference());
+            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+           
+            if (!$saved_payment_method) {
+                $customerResponse = $this->gateway->createCustomer(array(
+                    'description' => 'Creating Customer',
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'source' => $token,
+                    'metadata' => [
+                        'user_id' => $user->id,
+                        'phone_number' => $user->phone_number
+                    ]
+                ))->send();
+
+                // Find the card ID
+                $customer_id = $customerResponse->getCustomerReference();
+                if ($customer_id) {
+                    $request->request->set('customerReference', $customer_id);
+                    $save_payment_method_response = $this->saveUserPaymentMethod($request);
+                }
+            }else {
+                $customer_id = $saved_payment_method->customerReference;
             }
-            else {
-                // $this->failMail();
-                return $this->errorResponse($response->getMessage(), 400);
+            $postdata = [
+                'currency' => $this->currency,
+                // 'token' => $token,
+                'amount' => $amount,
+                'metadata' => [
+                    'user_id' => $user->id,
+                    'name'=> $user->name,
+                    'email'=> $user->email,
+                    'phone_number'=> $user->phone_number
+                ],
+                'customerReference' => $customer_id
+            ];
+            if($request->action == 'cart'){
+                $address_id = $request->address_id;
+                $user_address = UserAddress::where('id', $address_id)->first();
+                $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                $order_number = $request->order_number;
+
+                $postdata['description'] = 'Order Checkout';
+                $postdata['metadata']['cart_id'] = $cart->id;
+                $postdata['metadata']['order_number'] = $order_number;
             }
-        } catch (\Exception $ex) {
-            // $this->failMail();
-            return $this->errorResponse($ex->getMessage(), 400);
-        }
+            elseif($request->action == 'pickup_delivery'){
+                $order_number = $request->order_number;
+                $postdata['description'] = 'Pickup Delivery ';
+                $postdata['metadata']['order_number'] = $order_number;
+               
+            } 
+            $authorizeResponse = $this->gateway->authorize($postdata)->send();
+            if ($authorizeResponse->isSuccessful()) {
+                $response = $this->gateway->purchase($postdata)->send();
+                // $response = $this->gateway->purchase([
+                //     'currency' => $this->currency,
+                //     'token' => $token,
+                //     'amount' => $amount,
+                //     'metadata' => ['cart_id' => ($request->cart_id) ? $request->cart_id : 0],
+                //     'description' => 'This is a test purchase transaction.',
+                // //     'name'=>Auth::user()->name,
+                // //     'address' => [
+                // //        'line1'       => '510 Townsend St',
+                // //        'postal_code' => '98140',
+                // //        'city'        => 'San Francisco',
+                // //        'state'       => 'CA',
+                // //        'country'     => 'US',
+                // //    ],
+                //     // 'name' => Auth::user()->name,
+                //     // 'address' => $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode,
+                // ])->send();
+                if ($response->isSuccessful()) {
+                // $this->successMail();
+               
+                $request->request->add(['transaction_id' => $response->getTransactionReference()]);
+                    if($request->action == 'cart'){
+                        $orderController = new OrderController();
+                        $orderResponse = $orderController->postPlaceOrder($request);
+                        return $orderResponse;
+                    }
+                    else if($request->action == 'wallet'){
+                        $walletController = new WalletController();
+                        $walletController->creditMyWallet($request);
+                    }
+                    else if($request->action == 'pickup_delivery'){
+                        $request->request->add(['payment_option_id' => 4, 'amount' => $amount]);
+                        $PickupDeliveryController = new PickupDeliveryController();
+                        $delivery_response =  $PickupDeliveryController->orderUpdateAfterPaymentPickupDelivery($request);
+                        $responseData=$delivery_response;
+                    }
+                    $responseData['transaction_id']=$response->getTransactionReference();
+                    return $this->successResponse($responseData);
+                }
+                else {
+                    // $this->failMail();
+                    return $this->errorResponse($response->getMessage(), 400);
+                }
+            }else {
+                return $this->errorResponse($authorizeResponse->getMessage(), 400);
+            }
+        // } catch (\Exception $ex) {
+        //     // $this->failMail();
+        //     return $this->errorResponse($ex->getMessage(), 400);
+        // }
     }
 
     public function subscriptionPaymentViaStripe(request $request)
@@ -244,5 +310,25 @@ class StripeGatewayController extends BaseController
         catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), $ex->getCode());
         }
+    }
+
+    public function paymentWebViewStripeFPX(Request $request, $domain='')
+    {
+        $user = Auth::user();
+        $payment_form = $request->action;
+        $returnParams = '?amount='. $request->amount .'&auth_token='.$user->auth_token. '&payment_form=' . $payment_form;
+        if($payment_form == 'cart'){
+            $returnParams .= '&order_number='.$request->order_number;
+            if($request->has('address_id')){
+                $returnParams .= '&address_id='.$request->address_id;
+            }
+        }
+        elseif($payment_form == 'tip'){
+            $returnParams .= '&order_number='.$request->order_number;
+        }
+        elseif($payment_form == 'subscription'){
+            $returnParams .= '&subscription_id='.$request->subscription_id;
+        }
+        return $this->successResponse(url($request->serverUrl.'payment/webview/stripe_fpx'.$returnParams)); 
     }
 }

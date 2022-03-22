@@ -1,6 +1,7 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => getNomenclatureName('vendors', true)])
 
 @section('css')
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
     <link href="{{ asset('assets/libs/fullcalendar-list/fullcalendar-list.min.css') }}" rel="stylesheet" type="text/css" />
     <style type="text/css">
         .pac-container,
@@ -63,6 +64,9 @@
             border-top-color: #ffffff;
             border-radius: 50%;
             animation: button-loading-spinner 1s ease infinite;
+        }
+        .iti{
+            width: 100%; 
         }
 
         @keyframes button-loading-spinner {
@@ -282,7 +286,7 @@
                                                                     name="product_id[]" id="single_product"
                                                                     value="{{ $product->id }}"></td>
                                                             <td>
-                                                                @if (isset($product->media[0]))
+                                                                @if (isset($product->media[0]) && isset($product->media[0]->image))
                                                                     <img alt="{{ $product->id }}" class="rounded-circle"
                                                                         src="{{ $product->media[0]->image->path['proxy_url'] . '30/30' . $product->media[0]->image->path['image_path'] }}">
                                                                 @else
@@ -299,7 +303,7 @@
                                                                 </td>
                                                                 <td> {{ $product->variant->first() ? $product->variant->first()->quantity : 0 }}
                                                                 </td>
-                                                                <td> {{ $product->variant->first() ? $product->variant->first()->price : 0 }}
+                                                                <td> {{ $product->variant->first() ? decimal_format($product->variant->first()->price) : 0 }}
                                                                 </td>
                                                             @endif
                                                             <td> {{ $product->is_live == 1 ? 'Published' : 'Draft' }}
@@ -461,7 +465,7 @@
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
                                         @csrf
                                         <a
-                                            href="{{ url('file-download' . '/sample_product_3.csv') }}">{{ __('Download Sample file here!') }}</a>
+                                            href="{{ url('file-download' . '/sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
                                         <input type="hidden" value="{{ $vendor->id }}" name="vendor_id" />
                                         <input type="file" accept=".csv" onchange="submitProductImportForm()"
                                             data-plugins="dropify" name="product_excel" class="dropify" />
@@ -516,6 +520,7 @@
                                     </thead>
                                     <tbody id="post_list">
                                         @foreach ($csvProducts as $csv)
+                                        
                                             <tr data-row-id="{{ $csv->id }}">
                                                 <td> {{ $loop->iteration }}</td>
                                                 <td> {{ $csv->name }}</td>
@@ -539,7 +544,7 @@
                                                         </ul>
                                                     </td>
                                                 @endif
-                                                <td> <a href="{{ $csv->path }}">{{ __('Download') }}</a> </td>
+                                                <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -585,6 +590,7 @@
                                          <option value="for_live">{{__('Draft/Published')}}</option>
                                          <option value="for_tax">{{__('Tax Category')}}</option>
                                          <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock ')}}</option>
+                                         <option value="delete">{{__('Delete')}}</option>
                                     </select>
                                 </div>
 

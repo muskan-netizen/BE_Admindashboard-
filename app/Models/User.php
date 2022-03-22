@@ -7,12 +7,15 @@ use Bavix\Wallet\Traits\HasWalletFloat;
 use Bavix\Wallet\Interfaces\WalletFloat;
 use App\Notifications\PasswordReset;
 use Illuminate\Notifications\Notifiable;
+use Yadahan\AuthenticationLog\AuthenticationLogable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable implements Wallet, WalletFloat
+class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 {
-    use Notifiable;
+    use Notifiable, AuthenticationLogable;
+    use \OwenIt\Auditing\Auditable;
     use HasWallet;
     use HasWalletFloat;
 
@@ -22,7 +25,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'description', 'phone_number', 'image', 'is_email_verified','email_verified_at', 'is_verified_phone', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id'
+        'name', 'email', 'password', 'description', 'phone_number', 'image', 'is_email_verified','email_verified_at', 'is_verified_phone', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id','last_login_at'
     ];
     protected $appends = ['loyalty_name'];
     /**
@@ -72,7 +75,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
     public function device(){
        return $this->hasMany('App\Models\UserDevice');
     }
-    
+
 
     public function getImageAttribute($value)
     {
@@ -97,6 +100,12 @@ class User extends Authenticatable implements Wallet, WalletFloat
             'password'      => 'required|string|min:6|max:50',
             'phone_number'  => 'required|string|min:8|max:15|unique:users',
         );
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+        foreach ($user_registration_documents as $user_registration_document) {
+            if($user_registration_document->is_required == 1){
+                $rules[$user_registration_document->primary->slug] = 'required';
+            }
+        }
 
         /*if(!empty($id)){
             $rule['email'] = 'email|max:60|unique:clients,email,'.$id;
@@ -106,12 +115,16 @@ class User extends Authenticatable implements Wallet, WalletFloat
     }
 
     public function orders(){
-       return $this->hasMany('App\Models\Order', 'user_id', 'id')->select('id', 'user_id');
+       return $this->hasMany('App\Models\Order', 'user_id', 'id')->select('id', 'user_id','total_amount','total_discount');
     }
 
     public function activeOrders(){
        return $this->hasMany('App\Models\Order', 'user_id', 'id')->select('id', 'user_id')
               ->where('is_deleted', '!=', 1);
+    }
+    public function passbase_verification()
+    {
+      return $this->hasOne('App\Models\UserVerification', 'user_id', 'id')->where('verification_option_id',1);
     }
 
     /**
@@ -143,5 +156,9 @@ class User extends Authenticatable implements Wallet, WalletFloat
         print_r(LoyaltyCard::getLoyaltyName($count_loyalty_points_earned));
         exit();
         //return $count_loyalty_points_earned;
+    }
+
+    public function authentication_logs(){
+        return $this->hasMany('Yadahan\AuthenticationLog\AuthenticationLog', 'authenticatable_id');
     }
 }

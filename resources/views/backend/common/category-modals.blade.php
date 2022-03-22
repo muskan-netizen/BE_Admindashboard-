@@ -10,7 +10,7 @@
                 <div class="modal-body" id="AddCategoryBox">
 
                 </div>
-                <div class="modal-footer justify-content-start mb-2">
+                <div class="modal-footer justify-content-start">
                     <p id="p-error" style="color:red;font-size:20px;text-align:left;justify-content: flex-start;"></p>
                     <button type="submit" class="btn btn-info waves-effect waves-light addCategorySubmit">{{ __("Submit") }}</button>
                 </div>
@@ -34,7 +34,7 @@
 
                 </div>
 
-                <div class="modal-footer justify-content-start mb-2">
+                <div class="modal-footer justify-content-start">
                     <p id="p-error1" style="color:red;font-size:20px;text-align:left;justify-content:flex-start;"></p>
                     <button type="button" class="btn btn-info waves-effect waves-light editCategorySubmit">{{ __("Submit") }}</button>
                 </div>

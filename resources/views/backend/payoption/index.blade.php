@@ -37,7 +37,6 @@
         </div>
     </div>
 
-
     <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}">
         @csrf
         @method('POST')
@@ -65,6 +64,7 @@
                 $username = (isset($creds->username)) ? $creds->username : '';
                 $password = (isset($creds->password)) ? $creds->password : '';
                 $signature = (isset($creds->signature)) ? $creds->signature : '';
+                $app_id = (isset($creds->app_id)) ? $creds->app_id : '';
                 $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                 $location_id= (isset($creds->location_id)) ? $creds->location_id : '';
                 $application_id = (isset($creds->application_id)) ? $creds->application_id : '';
@@ -82,7 +82,11 @@
                 $multiplier = (isset($creds->multiplier)) ? $creds->multiplier : '';
                 $login_id = (isset($creds->login_id)) ? $creds->login_id : '';
                 $transaction_key = (isset($creds->transaction_key)) ? $creds->transaction_key : '';
+                $client_id = (isset($creds->client_id)) ? $creds->client_id : '';
                 $client_key = (isset($creds->client_key)) ? $creds->client_key : '';
+                $access_code = (isset($creds->access_code)) ? $creds->access_code : '';
+                $enc_key = (isset($creds->enc_key)) ? $creds->enc_key : '';
+                $easypaisa_store_id = (isset($creds->easypaisa_store_id)) ? $creds->easypaisa_store_id : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -96,7 +100,7 @@
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
                             </div>
                         </div>
-                        @if ( (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify'))
+                        @if ( (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify') && (strtolower($opt->code)!= 'kongapay'))
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label>
@@ -105,6 +109,82 @@
                         </div>
                         @endif
                     </div>
+
+                    @if ( (strtolower($opt->code) == 'easypaisa') )
+                    <div class="mt-2" id="easypaisa_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="easypaisa_merchant" class="mr-3">{{ __("Store Id") }}</label>
+                                    <input type="text" name="easypaisa_store_id" id="easypaisa_store_id" class="form-control" value="{{$easypaisa_store_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'viva_wallet') )
+                    <div class="mt-2" id="viva_wallet_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="viva_wallet_merchant" class="mr-3">{{ __("Merchant Id") }}</label>
+                                    <input type="text" name="viva_wallet_merchant_id" id="viva_wallet_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="viva_wallet_merchant" class="mr-3">{{ __("Encryption Key") }}</label>
+                                    <input type="text" name="viva_wallet_merchant_key" class="form-control" value="{{$merchant_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <h6 class="ml-2"><u>{{__('Smart Checkout Credentials')}}</u></h6>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="viva_wallet_merchant" class="mr-3">{{ __("Client Id") }}</label>
+                                    <input type="text" name="viva_wallet_client_id" class="form-control" value="{{$client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="viva_wallet_merchant" class="mr-3">{{ __("Client Key") }}</label>
+                                    <input type="text" name="viva_wallet_client_key" class="form-control" value="{{$client_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'ccavenue') )
+                    <div class="mt-2" id="ccavenue_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="ccavenue_merchant" class="mr-3">{{ __("Merchant Id") }}</label>
+                                    <input type="text" name="ccavenue_merchant_id" id="ccavenue_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                             <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="ccavenue_access_code" class="mr-3">{{ __("Access Code") }}</label>
+                                    <input type="text" name="ccavenue_access_code" id="ccavenue_access_code" class="form-control" value="{{$access_code}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="ccavenue_merchant" class="mr-3">{{ __("Encryption Key") }}</label>
+                                    <input type="text" name="ccavenue_enc_key" id="ccavenue_enc_key" class="form-control" value="{{$enc_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
 
                     @if ( (strtolower($opt->code) == 'kongapay') )
                     <div class="mt-2" id="kongapay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
@@ -462,6 +542,25 @@
                                 <div class="form-group mb-2">
                                     <label for="authorize_net_client_key" class="mr-3">{{ __("Public Client Key") }}</label>
                                     <input type="text" name="authorize_net_client_key" id="authorize_net_client_key" class="form-control" value="{{$client_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'cashfree') )
+                    <div class="mt-2" id="cashfree_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="cashfree_app_id" class="mr-3">{{ __("App ID") }}</label>
+                                    <input type="password" name="cashfree_app_id" id="cashfree_app_id" class="form-control" value="{{$app_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="cashfree_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="cashfree_secret_key" id="cashfree_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

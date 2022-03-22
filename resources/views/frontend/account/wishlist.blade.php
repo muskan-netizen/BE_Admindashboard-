@@ -64,10 +64,10 @@ $timezone = Auth::user()->timezone;
                 </ul>
             </div>
         @endif
-        <div class="row">
+        <div class="row my-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{__('My Account')}}</a></div>
-                <div class="dashboard-left">
+                <div class="dashboard-left mb-3">
                     <div class="collection-mobile-back"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
                     @include('layouts.store/profile-sidebar')
                 </div>
@@ -91,7 +91,7 @@ $timezone = Auth::user()->timezone;
                                                             <input type="checkbox" class="custom-control-input" id="w-all">
                                                             <label class="custom-control-label" for="w-all"></label>
                                                         </div>
-                                                        @endif   
+                                                        @endif
                                                     </div>
                                                 </th>
                                                 <th scope="col">{{__('Image')}}</th>
@@ -130,7 +130,7 @@ $timezone = Auth::user()->timezone;
                                                         <h4 class="m-0">{{ $wish['product']['translation_title'] }}</h4>
                                                     </div>
                                                 </td>
-                                                <td>{{ Session::get('currencySymbol') }}@money($wish['product']['variant_price'])</td>
+                                                <td>{{ Session::get('currencySymbol') }}{{decimal_format($wish['product']['variant_price'])}}</td>
                                                 <td>{{ dateTimeInUserTimeZone($wish['added_on'], $timezone, true, false) }}</td>
                                                 <td>
                                                     @if(empty($wish['product']['deleted_at']))
@@ -149,7 +149,7 @@ $timezone = Auth::user()->timezone;
                                             @empty
                                             <tr><td align="center" colspan="6">{{__('No Item Exists In Your Wishlist')}}</td></tr>
                                             @endforelse
-                                           
+
                                         </tbody>
                                         @if(count($wishList))
                                             <tfoot class="border-top border-bottom">

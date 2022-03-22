@@ -1,40 +1,7 @@
 @extends('layouts.store', ['title' => $vendor->name])
 @section('css')
 <style type="text/css">
-.main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}
-.productVariants .firstChild {
-        min-width: 150px;
-        text-align: left !important;
-        border-radius: 0% !important;
-        margin-right: 10px;
-        cursor: default;
-        border: none !important;
-    }
-
-    .product-right .color-variant li,
-    .productVariants .otherChild {
-        height: 35px;
-        width: 35px;
-        border-radius: 50%;
-        margin-right: 10px;
-        cursor: pointer;
-        border: 1px solid #f7f7f7;
-        text-align: center;
-    }
-
-    .productVariants .otherSize {
-        height: auto !important;
-        width: auto !important;
-        border: none !important;
-        border-radius: 0%;
-    }
-
-    .product-right .size-box ul li.active {
-        background-color: inherit;
-    }
-    .product-box .product-detail h4, .product-box .product-info h4{
-        font-size: 16px;
-    }
+.main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}.product-box .product-detail h4,.product-box .product-info h4{font-size:16px}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
@@ -104,7 +71,7 @@
                 <div class="collection-filter col-md-3">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">
                         <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
-                        <div class="collection-collapse-block open">
+                        <div class="collection-collapse-block open mb-2">
                             @if(!empty($brands) && count($brands) > 0)
                             <h3 class="collapse-block-title">brand</h3>
                             <div class="collection-collapse-block-content pb-0">
@@ -215,7 +182,7 @@
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
                                                                     <?php $multiply = $new['variant_multiplier']; ?>
-                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                    {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                 @endif
                                                             </b>
 
@@ -288,15 +255,17 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts px-0">
-                                        <div class="col-12 text-right">Sort By : 
+                                        <div class="col-12 text-right">Sort By :
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
-                                                <option value="featured">Featured</option>
-                                                <option value="a_to_z">A to Z</option>
-                                                <option value="z_to_a">Z to A</option>
-                                                <option value="low_to_high">Cost : Low to High</option>
-                                                <option value="high_to_low">Cost : High to Low</option>
-                                                <option value="rating">Avg. Customer Review</option>
-                                                <option value="newly_added">Newest Arrivals</option>
+                                                <option value="">{{__('Please Select')}}</option>
+                                                <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
+                                                <option value="a_to_z" {{isset($input['order_type']) && $input['order_type'] == "a_to_z" ? 'selected' : ''}}>{{__('A to Z')}}</option>
+                                                <option value="z_to_a" {{isset($input['order_type']) && $input['order_type'] == "z_to_a" ? 'selected' : ''}}>{{__('Z to A')}}</option>
+                                                <option value="low_to_high" {{isset($input['order_type']) && $input['order_type'] == "low_to_high" ? 'selected' : ''}}>{{__('Cost : Low to High')}}</option>
+                                                <option value="high_to_low" {{isset($input['order_type']) && $input['order_type'] == "high_to_low" ? 'selected' : ''}}>{{__('Cost : High to Low')}}</option>
+                                                <option value="rating" {{isset($input['order_type']) && $input['order_type'] == "rating" ? 'selected' : ''}}>{{__('Avg. Customer Review')}}</option>
+                                                <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>{{__('Newest Arrivals')}}</option>
+
                                             </select>
                                         </div>
                                         <div class="product-wrapper-grid">
@@ -339,7 +308,7 @@
 
                                                                     <div class="d-flex align-items-center justify-content-between">
                                                                         @if($data['inquiry_only'] == 0)
-                                                                            <h4 class="mt-0">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                            <h4 class="mt-0">{{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                         @endif
                                                                       <!--   @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)

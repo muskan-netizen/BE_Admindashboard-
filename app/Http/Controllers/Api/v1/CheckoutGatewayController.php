@@ -93,7 +93,7 @@ class CheckoutGatewayController extends BaseController
                     'token' => $request->token
                 ),
                 'amount' => $amount * 100,
-                'currency' => 'USD', //$this->currency
+                'currency' => $this->currency,
                 'payment_type' => 'Regular',
                 'reference' => $reference_number,
                 'description' => $description,
@@ -102,7 +102,7 @@ class CheckoutGatewayController extends BaseController
                 'customer' => $customer_data,
                 'payment_ip' => getUserIP(),
                 'billing_descriptor' => array(
-                    'name' => $user->address->first()->address,
+                    'name' => $user->name,
                     'address' => $user->address->first()->address,
                     'street' =>  $user->address->first()->street,
                     'city' => $user->address->first()->city,
@@ -111,7 +111,7 @@ class CheckoutGatewayController extends BaseController
                 ),
                 'shipping' => array(
                     'address' => array(
-                        'name' => $user->address->first()->address,
+                        'name' => $user->name,
                         'address_line1' => $user->address->first()->address,
                         'address_line2' => $user->address->first()->address,
                         'street' =>  $user->address->first()->street,

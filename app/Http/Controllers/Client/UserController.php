@@ -27,10 +27,17 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
 use App\Models\UserDevice;
 use Session;
-use App\Models\{Payment, User, Client, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction};
+use App\Models\{Payment, User, Client, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction,UserDocs,UserRegistrationDocuments};
 
 class UserController extends BaseController
 {
+    private $folderName = '/profile/document';
+
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/user/document';
+    }
     use ToasterResponser;
     /**
      * Display a listing of the resource.
@@ -45,6 +52,7 @@ class UserController extends BaseController
         $active_users = User::where('status', 1)->where('is_superadmin', '!=', 1)->count();
         $inactive_users = User::where('status', 3)->count();
         $users = User::withCount(['orders', 'activeOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc')->paginate(10);
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
         $social_logins = 0;
         foreach ($users as  $user) {
             if (!empty($user->facebook_auth_id)) {
@@ -58,12 +66,12 @@ class UserController extends BaseController
             }
         }
         $csvCustomers = CsvCustomerImport::all();
-        return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries,'csvCustomers'=>$csvCustomers]);
+        return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries,'csvCustomers'=>$csvCustomers,'user_registration_documents'=>$user_registration_documents]);
     }
     public function getFilterData(Request $request)
     {
         $current_user = Auth::user();
-        $users = User::withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
+        $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
 
         return Datatables::of($users)
             ->addColumn('edit_url', function($users) {
@@ -94,6 +102,19 @@ class UserController extends BaseController
             ->addColumn('wallet', function($users) {
                 return $users->wallet;
             })
+            ->addColumn('signup_date', function($users) {
+                $date = dateTimeInUserTimeZone($users->created_at, $users->timezone);
+                return explode(' ',$date)[0] ; 
+            })
+            ->addColumn('last_login', function($users) {
+                return is_null($users->last_login_at) ? ' - ' : dateTimeInUserTimeZone($users->last_login_at, $users->timezone);
+            })
+            ->addColumn('total_order_value', function($users) {
+                return decimal_format($users->orders->sum('total_amount'));
+            })
+            ->addColumn('total_discount_value', function($users) {
+                return decimal_format($users->orders->sum('total_discount'));
+            })
             ->addColumn('login_type_value', function($users) {
                 if (!empty($users->facebook_auth_id)) {
                     return $users->facebook_auth_id;
@@ -108,7 +129,7 @@ class UserController extends BaseController
                 }
             })
             ->addColumn('balanceFloat', function($users) {
-                return $users->balanceFloat;
+                return decimal_format($users->balanceFloat);
             })
             ->addColumn('edit_url', function($users) {
                 return route('customer.new.edit', $users->id);
@@ -124,7 +145,7 @@ class UserController extends BaseController
                         ->orWhere('import_user_id', 'LIKE', '%'.$search.'%');
                     });
 
-                  
+
                 }
             }, true)
             ->make(true);
@@ -201,6 +222,7 @@ class UserController extends BaseController
     public function store(Request $request)
     {
         $customer = new User();
+
        $validation  = Validator::make($request->all(), $customer->rules())->validate();
        //$validator = $this->validator($request->all())->validate();
 
@@ -240,6 +262,24 @@ class UserController extends BaseController
             $user->image = Storage::disk('s3')->put('/profile', $file, 'public');
         }
         $user->save();
+
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+        if ($user_registration_documents->count() > 0) {
+            foreach ($user_registration_documents as $user_registration_document) {
+                $doc_name = str_replace(" ", "_", $user_registration_document->primary->slug);
+                if ($user_registration_document->file_type != "Text") {
+                    if ($request->hasFile($doc_name)) {
+                        $filePath = $this->folderName . '/' . Str::random(40);
+                        $file = $request->file($doc_name);
+                        $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                        UserDocs::updateOrCreate(['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $file_name]);
+                    }
+                } else {
+                    UserDocs::updateOrCreate(['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $request->$doc_name]);
+                }
+            }
+        }
+
         $wallet = $user->wallet;
         $userCustomData = $this->userMetaData($user->id, 'web', 'web');
         return $user->id;
@@ -297,8 +337,11 @@ class UserController extends BaseController
         $permissions = Permissions::where('status',1)->whereNotin('id',[4,5,6,7,8,9,10,11,14,15,16,22,23,24,25])->get();
         $user_permissions = UserPermissions::where('user_id', $id)->get();
         $vendor_permissions = UserVendor::where('user_id', $id)->pluck('vendor_id')->toArray();
+        $user_docs = UserDocs::where('user_id', $id)->get();
+        $user_registration_documents = UserRegistrationDocuments::get();
         $vendors = Vendor::where('status', 1)->get();
-        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions]);
+      //  pr($user_docs);
+        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents]);
     }
     /**
      * Update the specified resource in storage.
@@ -309,6 +352,7 @@ class UserController extends BaseController
      */
     public function newUpdate(Request $request, $domain = '', $id)
     {
+      
         $data = [
             'status' => $request->status,
             'is_admin' => $request->is_admin,
@@ -334,6 +378,22 @@ class UserController extends BaseController
                 $addteampermission[] =  array('user_id' => $id, 'vendor_id' => $teampermissions[$i]);
             }
             UserVendor::insert($addteampermission);
+        }
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+        if ($user_registration_documents->count() > 0) {
+            foreach ($user_registration_documents as $user_registration_document) {
+                $doc_name = str_replace(" ", "_", $user_registration_document->primary->slug);
+                if ($user_registration_document->file_type != "Text") {
+                    if ($request->hasFile($doc_name)) {
+                        $filePath = $this->folderName . '/' . Str::random(40);
+                        $file = $request->file($doc_name);
+                        $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                        UserDocs::updateOrCreate(['user_id' => $id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $file_name]);
+                    }
+                } else {
+                    UserDocs::updateOrCreate(['user_id' => $id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $request->$doc_name]);
+                }
+            }
         }
         return redirect()->route('customer.index')->with('success', 'Customer Updated successfully!');
     }
@@ -377,7 +437,8 @@ class UserController extends BaseController
         } else {
             $data['logo'] = $client->getRawOriginal('logo');
         }
-        $client = Client::where('code', $user->code)->update($data);
+        $client = Client::where('code', $user->code)->first();
+        $client->update($data);
         $userdata = array();
         foreach ($request->only('name', 'phone_number', 'timezone') as $key => $value) {
             $userdata[$key] = $value;
@@ -385,6 +446,27 @@ class UserController extends BaseController
         $user = $user->update($userdata);
         return redirect()->back()->with('success', 'Client Updated successfully!');
     }
+    // public function changePassword(Request $request)
+    // {
+    //     $client = User::where('id', Auth::id())->first();
+    //     $validator = Validator::make($request->all(), [
+    //         'old_password' => 'required',
+    //         'password' => 'required|confirmed|min:6',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return redirect()->back()->withErrors($validator);
+    //     }
+    //     if (Hash::check($request->old_password, $client->password)) {
+    //         $client->password = Hash::make($request->password);
+    //         $client->save();
+    //         $clientData = 'empty';
+    //         return redirect()->back()->with('success', 'Password Changed successfully!');
+    //     } else {
+    //         $request->session()->flash('error', 'Wrong Old Password');
+    //         return redirect()->back();
+    //     }
+    // }
+
     public function changePassword(Request $request)
     {
         $client = User::where('id', Auth::id())->first();
@@ -393,16 +475,23 @@ class UserController extends BaseController
             'password' => 'required|confirmed|min:6',
         ]);
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator);
+           $message = $validator->getMessageBag()->toArray();
+           $data = array('type'=>'error','message'=>$message['password'][0]);
+           return json_encode($data);
         }
         if (Hash::check($request->old_password, $client->password)) {
             $client->password = Hash::make($request->password);
             $client->save();
             $clientData = 'empty';
-            return redirect()->back()->with('success', 'Password Changed successfully!');
+            //return redirect()->back()->with('success', 'Password Changed successfully!');
+            $data = array('type'=>'success','message'=>'Password Changed successfully!');
+            return json_encode($data);
         } else {
-            $request->session()->flash('error', 'Wrong Old Password');
-            return redirect()->back();
+            $data = array('type'=>'error','message'=>'Wrong Old Password');
+            return json_encode($data);
+
+            // $request->session()->flash('error', 'Wrong Old Password');
+            // return redirect()->back();
         }
     }
 

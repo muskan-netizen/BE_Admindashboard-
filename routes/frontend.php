@@ -1,7 +1,7 @@
 <?php
 
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml'); 
+Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
 Route::get('/debug-sentry', function () {
 	throw new Exception('My first Sentry error!');
 });
@@ -9,16 +9,20 @@ Route::get('/debug-sentry', function () {
 
 
 Route::group(['middleware' => ['domain']], function () {
-	Route::post('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
-	Route::post('webhook/shiprocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
-	Route::post('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
-	Route::post('webhook/ahoy','AhoyController@ahoyWebhook')->name('ahoyWebhook');
+	//easypay test
+	Route::get('testpayment', 'Front\EasypaisaControllertest@testpayment')->name('testpayment');
+	Route::get('response', 'Front\EasypaisaControllertest@response')->name('response_payment');
+    Route::get('responseConf', 'Front\EasypaisaControllertest@responseConformation')->name('responseConformation');
+
+	Route::any('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
+	Route::any('webhook/ship-rocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
+	Route::any('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
+	Route::any('webhook/ahoy','AhoyController@ahoyWebhook')->name('ahoyWebhook');
 
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
-
-
 	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
+	Route::get('dispatch-order-cancel-request/{id?}', 'Front\DispatcherController@dispatchOrderCancelRequest')->name('dispatch-order-cancel-request'); // Order Status update Dispatch details
 
     Route::get('testsms', 'Front\FrontController@testsms');
 
@@ -37,6 +41,10 @@ Route::group(['middleware' => ['domain']], function () {
 	});
 
 
+
+	Route::get('zillow', 'Front\CustomerAuthController@zillowGetData');
+
+
 	// Start edit order routes
 	Route::post('edit-order/search/vendor/products', 'Front\TempCartController@vendorProductsSearchResults');
 	Route::post('edit-order/vendor/products/getProductsInCart', 'Front\TempCartController@getProductsInCart');
@@ -50,7 +58,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('edit-order/vendor/product/{id}', 'Front\TempCartController@getProductById');
 	// End edit order routes
 
-
+	// Initial route for all type of gateways
+	Route::post('post/payment/{gateway}', 'Front\PaymentController@postPayment')->name('payment.gateway.postPayment');
 
 	Route::get('payment/gateway/returnResponse', 'Front\PaymentController@getGatewayReturnResponse')->name('payment.gateway.return.response');
 
@@ -73,6 +82,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/create/stripe_fpx', 'Front\StripeGatewayController@createStripeFPXPaymentIntent')->name('payment.create.stripe_fpx');
 	Route::get('payment/retrieve/stripe_fpx', 'Front\StripeGatewayController@retrieveStripeFPXPaymentIntent')->name('payment.retrieve.stripe_fpx');
 	Route::post('payment/webhook/stripe_fpx', 'Front\StripeGatewayController@stripeFPXWebhook')->name('payment.webhook.stripe_fpx');
+	Route::get('payment/webview/stripe_fpx', 'Front\StripeGatewayController@paymentWebViewStripeFPX')->name('payment.webview.stripe_fpx');
+	Route::get('payment/webview/response/stripe_fpx', 'Front\StripeGatewayController@webViewResponseStripeFPX')->name('payment.webview.response.stripe_fpx');
 
 	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
@@ -129,9 +140,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/checkout', 'Front\CheckoutGatewayController@checkoutPurchase')->name('payment.checkoutPurchase');
 	Route::post('payment/checkout/notify', 'Front\CheckoutGatewayController@checkoutNotify')->name('payment.checkoutNotify');
 
-	//Passbase 
-	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
-	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
+	//Passbase
 	Route::any('passbase/webhook','Front\PassbaseController@webhook')->name('passbase.webhook');
 
 
@@ -139,9 +148,19 @@ Route::group(['middleware' => ['domain']], function () {
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
 
+	//ccavenue-pay
+	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
+	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
+	Route::any('payment/ccavenue/api', 'Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
+
+    // EasypaisaController routes
+    Route::get('easypaisa/pay', 'Front\EasypaisaController@create_token')->name('easypaisa.create.token');
+	Route::any('easypaisa/success', 'Front\EasypaisaController@get_token_view_payment')->name('easypaisa.gettoken');
+
 	//KongaPay routes
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
-	Route::match(['get','post'],'payment/kongapay/result', 'Front\KongapayController@completeOrderCart')->name('kongapay.successCart');
+	Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
+	Route::match(['get','post'],'payment/kongapay/result/{from?}', 'Front\KongapayController@completeOrderCart')->name('kongapay.successCart');
 	Route::match(['get','post'],'payment/kongapay/walletResult', 'Front\KongapayController@completeOrderWallet')->name('kongapay.successWallet');
 	Route::match(['get','post'],'payment/kongapay/tipResult', 'Front\KongapayController@completeOrderTip')->name('kongapay.successTip');
 	Route::match(['get','post'],'payment/kongapay/subsResult', 'Front\KongapayController@completeOrderSubs')->name('kongapay.successSubs');
@@ -163,6 +182,13 @@ Route::group(['middleware' => ['domain']], function () {
 	//  })->name('razorpay.view');
 	Route::post('payment/razorpay/pay', 'Front\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
 	Route::get('payment/razorpay/notify', 'Front\RazorpayGatewayController@razorpayNotify')->name('payment.razorpayNotify');
+
+
+	//Cashfree
+	Route::get('payment/cashfree/return', 'Front\CashfreeGatewayController@cashfreeReturn')->name('payment.cashfree.return');
+	Route::post('payment/cashfree/notify', 'Front\CashfreeGatewayController@cashfreeNotify')->name('payment.cashfree.notify');
+
+
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');
@@ -193,6 +219,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('page/{slug}', 'Front\UserhomeController@getExtraPage')->name('extrapage');
 
 	Route::post('/homePageData', 'Front\UserhomeController@postHomePageData')->name('homePageData');
+	Route::post('/postHomePageDataSingle', 'Front\UserhomeController@postHomePageDataSingle')->name('postHomePageDataSingle');
+	Route::post('/homePageDataNew', 'Front\UserhomeController@postHomePageDataNew')->name('homePageDataNew');
 	Route::post('/homePageDataCategoryMenu', 'Front\UserhomeController@homePageDataCategoryMenu')->name('homePageDataCategoryMenu');
 	Route::post('/theme', 'Front\UserhomeController@setTheme')->name('config.update');
 	Route::get('/getConfig', 'Front\UserhomeController@getConfig')->name('config.get');
@@ -212,6 +240,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('paginateValue', 'Front\UserhomeController@changePaginate')->name('changePaginate');
 	Route::get('{vendor?}/product/{id?}', 'Front\ProductController@index')->name('productDetail');
 	Route::post('/product/variant/{id}', 'Front\ProductController@getVariantData')->name('productVariant');
+	Route::get('product/faq/{id}', 'Front\ProductController@getProductFaq')->name('getProductFaq');
 	Route::post('cart/product/lastAdded', 'Front\CartController@getLastAddedProductVariant')->name('getLastAddedProductVariant');
 	Route::post('cart/product/variant/different-addons', 'Front\CartController@getProductVariantWithDifferentAddons')->name('getProductVariantWithDifferentAddons');
 	Route::post('add/product/cart', 'Front\CartController@postAddToCart')->name('addToCart');
@@ -220,6 +249,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('add/vendorTable/cart', 'Front\CartController@addVendorTableToCart')->name('addVendorTableToCart');
 	Route::post('add/product/prescription', 'Front\CartController@uploadPrescription')->name('cart.uploadPrescription');
 	Route::post('cart/schedule/update', 'Front\CartController@updateSchedule')->name('cart.updateSchedule');
+	Route::post('cart/productfaq/update', 'Front\CartController@updateCartProductFaq')->name('cart.productfaq');
 	Route::post('cart/schedule/slots', 'Front\CartController@checkScheduleSlots')->name('cart.check_schedule_slots');
 	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cart.updateProductSchedule');
 	Route::get('cartProducts', 'Front\CartController@getCartData')->name('getCartProducts');
@@ -236,7 +266,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'vendor/{id?}', 'Front\VendorController@vendorProducts')->name('vendorDetail');
 	Route::get('vendor/{slug1}/{slug2}', 'Front\VendorController@vendorCategoryProducts')->name('vendorCategoryProducts');
 	Route::post('vendor/filters/{id}', 'Front\VendorController@vendorFilters')->name('vendorProductFilters');
-	Route::post('vendor/products/searchResults', 'Front\VendorController@vendorProductsSearchResults')->name('vendorProductsSearchResults'); 
+	Route::post('vendor/products/searchResults', 'Front\VendorController@vendorProductsSearchResults')->name('vendorProductsSearchResults');
 	Route::post('vendor/product/addons', 'Front\VendorController@vendorProductAddons')->name('vendorProductAddons');
 	Route::get('brand/{id?}', 'Front\BrandController@brandProducts')->name('brandDetail');
 	Route::post('brand/filters/{id}', 'Front\BrandController@brandFilters')->name('brandProductFilters');
@@ -256,6 +286,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('firebase-messaging-sw.js', 'Front\FirebaseController@service_worker');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
+
 	Route::get('user/orders', 'Front\OrderController@orders')->name('user.orders');
 	Route::post('user/orders/tip-after-order', 'Front\OrderController@tipAfterOrder')->name('user.tip_after_order');
 	Route::post('user/store', 'Front\AddressController@store')->name('address.store');
@@ -312,6 +343,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::group(['prefix' => 'rating'], function () {
 		Route::post('update-product-rating', 'Front\RatingController@updateProductRating')->name('update.order.rating');
 		Route::get('get-product-rating', 'Front\RatingController@getProductRating')->name('get-product-rating-details');
+		
+		Route::post('update-driver-rating', 'Front\RatingController@updateDriverRating')->name('update.driver.rating');
+		Route::get('get-driver-rating', 'Front\RatingController@getDriverRating')->name('get-driver-rating-details');
 	});
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
@@ -343,4 +377,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('get-product-order-form', 'Front\PickupDeliveryController@getProductOrderForm')->name('get-product-order-form');
 	});
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
+	//Passbase
+	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
+	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 });

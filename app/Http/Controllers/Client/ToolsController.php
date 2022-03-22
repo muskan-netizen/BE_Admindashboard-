@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use OwenIt\Auditing\Models\Audit;
+use Yadahan\AuthenticationLog\AuthenticationLog;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\{Vendor,Product,Client,AddonSet,Category,ProductVariant,CartProduct,UserWishlist,TaxCategory,VendorCategory,VendorSlot,VendorSlotDate,VendorDineinCategory,VendorDineinTable};  
 use Auth,Carbon,DB,Storage,Session;
+
 
 class ToolsController extends BaseController
 {
@@ -464,9 +467,37 @@ class ToolsController extends BaseController
             $data['image_url'] = \Config::get('app.IMG_URL1').'30/30'.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($data['image_path']).'@webp';
             $data['show_image_url'] = \Storage::disk('s3')->url($data['image_path']);
             $data['image_id'] = uniqid();
+            $data['pdf_url'] = url('file-download' . '/pdf.png');
+            $data['ext'] = $file->getClientOriginalExtension();
             return response()->json(['data' => $data]);
         } else {
             return response()->json(['data' => $data,'error' => 'No file']);
         }
+    }
+
+     /**
+     * Get Request
+     * Get Database Auditing Logs
+     * Added By Ovi
+     */
+    public function databaseAuditingLogs()
+    {
+        $audits = Audit::orderBy('id', 'ASC')->groupBy('auditable_type')->get();
+        $authenticationLogs = AuthenticationLog::where('authenticatable_id', '!=', '')->orderBy('id', 'DESC')->paginate(500);
+        AuthenticationLog::where('authenticatable_id', NULL)->delete();
+        return view('backend.tools.db_audit_log')->with([
+            'audits' => $audits,
+            'authenticationLogs' => $authenticationLogs
+        ]);
+    }
+
+    public function singleDatabaseAuditingLogs(Request $request)
+    {
+        $auditable_type = ucfirst($request->table_name);
+        $audits = Audit::orderBy('id', 'DESC')->where('auditable_type', "App\\Models\\".$auditable_type )->paginate(500);
+        return view('backend.tools.single_db_audit_log')->with([
+            'audits' => $audits,
+            'auditable_type' => $auditable_type
+        ]);
     }
 }

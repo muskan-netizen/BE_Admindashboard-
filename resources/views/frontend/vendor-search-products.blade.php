@@ -26,15 +26,16 @@
                 @endforeach
             @endif
         </div>
-        <div class="col-6 text-right">Sort By : 
+        <div class="col-6 text-right">Sort By :
             <select name="order_type" id='order_type' class="product_tag_filter p-1">
-                <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>Featured</option>
-                <option value="a_to_z" {{isset($input['order_type']) && $input['order_type'] == "a_to_z" ? 'selected' : ''}}>A to Z</option>
-                <option value="z_to_a" {{isset($input['order_type']) && $input['order_type'] == "z_to_a" ? 'selected' : ''}}>Z to A</option>
-                <option value="low_to_high" {{isset($input['order_type']) && $input['order_type'] == "low_to_high" ? 'selected' : ''}}>Cost : Low to High</option>
-                <option value="high_to_low" {{isset($input['order_type']) && $input['order_type'] == "high_to_low" ? 'selected' : ''}}>Cost : High to Low</option>
-                <option value="rating" {{isset($input['order_type']) && $input['order_type'] == "rating" ? 'selected' : ''}}>Avg. Customer Review</option>
-                <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>Newest Arrivals</option>
+                <option value="">{{__('Please Select')}}</option>
+                <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
+                <option value="a_to_z" {{isset($input['order_type']) && $input['order_type'] == "a_to_z" ? 'selected' : ''}}>{{__('A to Z')}}</option>
+                <option value="z_to_a" {{isset($input['order_type']) && $input['order_type'] == "z_to_a" ? 'selected' : ''}}>{{__('Z to A')}}</option>
+                <option value="low_to_high" {{isset($input['order_type']) && $input['order_type'] == "low_to_high" ? 'selected' : ''}}>{{__('Cost : Low to High')}}</option>
+                <option value="high_to_low" {{isset($input['order_type']) && $input['order_type'] == "high_to_low" ? 'selected' : ''}}>{{__('Cost : High to Low')}}</option>
+                <option value="rating" {{isset($input['order_type']) && $input['order_type'] == "rating" ? 'selected' : ''}}>{{__('Avg. Customer Review')}}</option>
+                <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>{{__('Newest Arrivals')}}</option>
             </select>
         </div>
     </div>
@@ -224,10 +225,10 @@
                         @endif
 
                         <p class="mb-1 product_price">
-                            {{ Session::get('currencySymbol') . number_format($prod->variant_price * $prod->variant_multiplier, 2, '.', '') }}
+                            {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier) }}
                             @if ($prod->variant[0]->compare_at_price > 0)
                                 <span
-                                    class="org_price ml-1 font-14">{{ Session::get('currencySymbol') . number_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier, 2, '.', '') }}</span>
+                                    class="org_price ml-1 font-14">{{ Session::get('currencySymbol') . decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
                             @endif
                         </p>
                         <div class="member_no d-block mb-0">

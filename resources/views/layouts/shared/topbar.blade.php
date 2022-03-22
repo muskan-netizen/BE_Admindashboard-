@@ -52,10 +52,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <li class="m-hide"><a href="#" target="_blank"><i class="fab fa-android" aria-hidden="true"></i><span class="align-middle">Android App</span></a></li> -->
 
             @if(Auth::user()->is_superadmin == 1)
-            <!-- @if($clientData->getPreference->need_delivery_service  == 1 && isset($clientData->getPreference->delivery_service_key_url))
+            {{-- <!-- @if($clientData->getPreference->need_delivery_service  == 1 && isset($clientData->getPreference->delivery_service_key_url))
                 <li class="m-hide"><a href="{{ $clientData->getPreference->delivery_service_key_url }}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __('Last Mile Delivery Dashboard')}}</span></a></li>
-            @endif -->
-            @if($clientData->getPreference->need_dispacher_ride == 1 && isset($clientData->getPreference->pickup_delivery_service_key_url))
+            @endif --> --}}
+            @if(isset($clientData->getPreference->need_dispacher_ride) && $clientData->getPreference->need_dispacher_ride == 1 && isset($clientData->getPreference->pickup_delivery_service_key_url))
             <li class="m-hide"><a href="{{ $clientData->getPreference->pickup_delivery_service_key_url }}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __('Pickup & Delivery Dashboard')}}</span></a></li>
             @endif
             @endif
@@ -204,13 +204,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <form method="post" action="{{route('client.password.update')}}">
+                <form id="change_password_form" method="post" action="{{route('cl.password.update')}}">
                     @csrf
 
                     <h4 class="header-title">{{ __("Change Password") }}</h4>
                     <p class="sub-header">
                         {{-- <code>Organization details</code>/Change Password. --}}
                     </p>
+                    <div class="pwd-msg"></div>                    
                     <div class="row">
                         <div class="col">
                             <div class="form-group mb-2">

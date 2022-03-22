@@ -37,6 +37,10 @@ class OrderVendor extends Model{
 	{
 		return $this->belongsTo('App\Models\User','cancelled_by','id')->select('id','name');
 	}
+	public function acceptedBy()
+	{
+		return $this->belongsTo('App\Models\User','accepted_by','id')->select('id','name');
+	}
 	public function scopeBetween($query, $from, $to){
         $query->whereBetween('created_at', [$from, $to]);
     }
@@ -80,4 +84,8 @@ class OrderVendor extends Model{
 	public function tempCart(){
 	    return $this->hasOne('App\Models\TempCart' , 'order_vendor_id', 'id'); 
 	}
+
+	public function cancel_request(){
+        return $this->hasOne('App\Models\OrderCancelRequest', 'order_vendor_id', 'id')->select('*', 'status as status_id')->orderBy('updated_at', 'desc');
+    }
 }

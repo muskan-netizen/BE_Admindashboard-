@@ -13,6 +13,7 @@ use App\Models\VendorOrderDispatcherStatus;
 use App\Models\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Log;
 
 class AhoyController extends Controller
 {
@@ -119,28 +120,28 @@ class AhoyController extends Controller
                 "orderLargeBoxQuantity"=> '0',
                 "orderMidBoxQuantity"=> '1',
                 "orderSmallBoxQuantity"=> '0',
-                'customerName' => $customer->name,
-				'customerPhone' => '+97'.$customer->phone_number,
+                'customerName' => $customer->name,  //+97 code is only for dubai and it's required
+				'customerPhone' => ($customer->dial_code??'+97').$customer->phone_number,
 				'customerEmail' => $customer->email,
                 'customerAddress'=> $cus_address->address,
 				'customerLatitude' => $cus_address->latitude, //Required
 				'customerLongitude' => $cus_address->longitude, //Required
-
-                "isCashPayment"=> true,
+                "isCashPayment"=> ($order->payment_option_id==1)?true:false,
                 "isCardPayment"=> false,
                 "paymentAmount"=> ($order->payment_option_id==1)?$order->total_amount : 0,
                 "customerAddressTypeId"=> '2',
-                "customerAddressNote"=> '',
-                "area"=> 1,
-                "building"=> 1,
-                "floor"=> 1,
-                "unit"=> 1,
+                "customerAddressNote"=> null,
+                "area"=> null,
+                "building"=> null,
+                "floor"=> null,
+                "unit"=> null,
                 "temperatureTypeId"=> 0
             );
 
-
+            //\Log::info(json_encode($data));
     	    $orderSuc = $this->createPreOrder($data);
-            if($orderSuc->preOrderId != ''){
+            //\Log::info(json_encode($orderSuc));
+            if(isset($orderSuc->preOrderId) && !empty($orderSuc->preOrderId)){
                 return $this->confirmOrderPreRequestAhoy($orderSuc);
             }else{
                 return 0;
@@ -206,26 +207,27 @@ class AhoyController extends Controller
                 "orderMidBoxQuantity"=> '1',
                 "orderSmallBoxQuantity"=> '0',
                 'customerName' => $customer->name,
-				'customerPhone' => '+97'.$customer->phone_number,
+				'customerPhone' => ($customer->dial_code??'+97').$customer->phone_number,
 				'customerEmail' => $customer->email,
                 'customerAddress'=> $cus_address->address,
 				'customerLatitude' => $cus_address->latitude, //Required
 				'customerLongitude' => $cus_address->longitude, //Required
                 "isCashPayment"=> true,
                 "isCardPayment"=> false,
-                "paymentAmount"=> 100,
+                "paymentAmount"=> 0,
                 "customerAddressTypeId"=> '2',
-                "customerAddressNote"=> '',
-                "area"=> 1,
-                "building"=> 1,
-                "floor"=> 1,
-                "unit"=> 1,
+                "customerAddressNote"=> null,
+                "area"=> null,
+                "building"=> null,
+                "floor"=> null,
+                "unit"=> null,
                 "temperatureTypeId"=> 0
             );
-
+            //\Log::info(json_encode($data));
             $orderSuc = $this->createPreOrder($data);
-
+            //\Log::info(json_encode($orderSuc));
             if($orderSuc->preOrderId != ''){
+               // $this->confirmOrderPreRequestAhoy($orderSuc);
                 return $orderSuc->onDemand->price;
             }else{
                 return 0;
@@ -246,7 +248,7 @@ class AhoyController extends Controller
                 'latitude'=>$vendor_details->latitude ?? '',
                 'longitude'=>$vendor_details->longitude ?? '',
                 'locationType'=>$request->location_type??1,
-                'PhoneNumber'=>$vendor_details->phone_no ?? '',
+                'PhoneNumber'=>'97'.$vendor_details->phone_no ?? '',
                 'Email'=>$vendor_details->email ?? ''
             );
             //dd($data);
@@ -284,6 +286,11 @@ class AhoyController extends Controller
 
         $trackingId = '';
         $json = json_decode($request->getContent());
+
+        if($request){
+            Webhook::create(['tracking_order_id'=>(($json->awb)?$json->awb:''),'response'=>$request->getContent()]);
+           }
+           
         if(isset($json->shipment_status_id) && $json->shipment_status_id == '1')
         {
             $awb = $json->awb;
@@ -298,16 +305,26 @@ class AhoyController extends Controller
         {
 			$awb = $json->awb;
             $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            //Update in vendor status
+            VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'4']);
+            
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
         }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '42')
         {
 			$awb = $json->awb;
             $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            //Update in vendor status
+            VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'5']);
+
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
         }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '7')
         {
             $awb = $json->awb;
             $details = OrderVendor::where('ship_awb_id',$awb)->first();
+           
+            //Update in vendor status
+            VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'6']);
+
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
         }
 

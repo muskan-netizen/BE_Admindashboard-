@@ -1,14 +1,7 @@
 @extends('layouts.store', ['title' => 'Celebrity'])
 @section('css')
 <style type="text/css">
-    .main-menu .brand-logo {
-        display: inline-block;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-    .slick-track{
-        margin-left: 0px;
-    }
+.main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}.slick-track{margin-left: 0px;}
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
@@ -29,7 +22,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-5">
                 <div class="collection-filter col-lg-3">
                     <div class="collection-filter-block bg-transparent p-0">
                         <!-- <div class="collection-mobile-back">
@@ -37,7 +30,7 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
                             </span>
                         </div> -->
-                        <div class="collection-collapse-block open">
+                        <div class="collection-collapse-block open mb-2">
                             @if(!empty($category->brands) && count($category->brands) > 0)
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
                             <div class="collection-collapse-block-content">
@@ -138,7 +131,7 @@
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
                                                                     <?php $multiply = $new['variant_multiplier']; ?>
-                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                    {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                 @endif
                                                             </b>
 
@@ -169,7 +162,7 @@
                                                     @if($new['inquiry_only'] == 0)
                                                     <h4 class="mt-1">
                                                         <//?php $multiply = $new['variant_multiplier']; ?>
-                                                        {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}} </h4>
+                                                        {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}} </h4>
                                                     @endif
                                                     @if($client_preference_detail)
                                                         @if($client_preference_detail->rating_check == 1)
@@ -267,7 +260,7 @@
                                                                     <h3>{{ $data->translation_title }}</h3>
                                                                 </a>
                                                                 <h6 class="mt-0"><b>{{$data->vendor->name}}</b></h6>
-                                                                <h4 class="mt-1">{{Session::get('currencySymbol').' '.(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                 @if($client_preference_detail)
                                                                     @if($client_preference_detail->rating_check == 1)
                                                                         @if($data->averageRating > 0)

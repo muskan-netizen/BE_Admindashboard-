@@ -1,8 +1,47 @@
 @extends('layouts.vertical', ['title' => 'Order Detail'])
 @section('css')
-<!-- <style>
-td { white-space:pre-line; word-break:break-all}
-</style> -->
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<style>
+/* td { white-space:pre-line; word-break:break-all} */
+#cancel-request-card{
+    background: #ddd;
+}
+.royo-thumnail_img {
+    width: 100px;
+    height: auto;
+}
+.royo-ques h3 {
+    font-size: 15px;
+    font-weight: 600 !important;
+}
+.royo-ques h6 {
+    font-size: 14px;
+    padding: 5px 0px;
+}
+
+.custom-accordin1 .card-header {
+    padding: 0px 0px !important;
+    background-color: rgba(0,0,0,.03);
+    border: 1px solid#d5cece;
+    border-radius: 10px;
+}
+.custom-accordin1 .card-body {
+    padding: 10px 10px;
+    border-bottom: 1px solid#eee;
+    border-radius: 10px;
+}
+.custom-accordin1 .card:nth-child(1){
+    margin: 29px 0px;
+}
+.custom-accordin1 .card {
+    padding-bottom: 0px !important;
+    border-radius: 0px !important;
+    box-shadow: none !important;
+    border:1px solid#eee;
+    border-radius: 10px !important;
+}
+
+</style>
 @endsection
 @section('content')
 @php
@@ -22,6 +61,26 @@ $timezone = Auth::user()->timezone;
 
             </div>
         </div>
+
+        @if($order->vendors->first())
+            @if( ($order->vendors->first()->cancel_request) && ($order->vendors->first()->cancel_request->status == 'Pending') )
+            <div class="row">
+                <div class="col-lg-12 mb-3">
+                    <div class="card mb-0 h-100" id="cancel-request-card">
+                        <div class="card-body">
+                            <h4 class="header-title mb-3">{{__('Cancel Order Request')}}</h4>
+                            <button type="button" class="complete_request_btn btn btn-sm btn-info" title='Approve' data-status="1" data-id="{{$order->vendors->first()->cancel_request->id}}">
+                                <i class='fa fa-check mr-1'></i> Approve
+                            </button>
+                            <button type="button" class="complete_request_btn btn btn-sm btn-danger" title='Reject' data-status="2" data-id="{{$order->vendors->first()->cancel_request->id}}">
+                                <i class='fa fa-times mr-1'></i> Reject
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+        @endif
         <div class="row">
             <div class="col-lg-4 mb-3">
                 <div class="card mb-0 h-100">
@@ -233,29 +292,41 @@ $timezone = Auth::user()->timezone;
                                     @php
                                     $sub_total = 0;
                                     $taxable_amount = 0;
-                                    $revenue = 0;
+                                    $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     @foreach($vendor->products as $product)
                                     @if($product->order_id == $order->id)
                                     @php
                                     $taxable_amount = $vendor->taxable_amount;
                                     $vendor_service_fee = $vendor->service_fee_percentage_amount;
+                                    $container_charges = $vendor->total_container_charges;
                                     $sub_total += $product->total_amount;
-                                    $revenue += ($vendor->service_fee_percentage_amount + $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     <tr>
-                                        <th scope="row">
+                                        <th scope="row" class="product-modal2">
+
 
                                             <a href="{{ isset($product->product) ? route('product.edit', @$product->product->id) : '#'}}" target="_blank">
                                                 {{$product->product_name}}
                                             </a>
+
                                             @if(isset($product->product) && isset($product->product->category) && isset($product->product->category->categoryDetail) && $product->product->category->categoryDetail->translation_one) ( in {{$product->product->category->categoryDetail->translation_one->name}} ) @endif
+
+                                            @if (isset($product->user_product_order_form))
+                                            <a href="javascript:void(0)" class="Order_product_form float-right "  data-product_form_id="{{$product->id}}">
+                                                <span class="badge badge-info mr-2">
+                                                    {{__('Product form ')}}
+                                                </span>
+                                            </a>
+                                            @endif
+
                                             <p class="p-0 m-0">
                                                 @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
                                             </p>
-                                                @foreach($product->prescription as $pres)
-                                                <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
-                                                @endforeach
+
+                                            @foreach($product->prescription as $pres)
+                                            <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
+                                            @endforeach
 
                                                 <p class="p-0 m-0">{{ substr($product->product_variant_sets, 0, -2) }}</p>
                                             @if($product->addon && count($product->addon))
@@ -276,58 +347,66 @@ $timezone = Auth::user()->timezone;
                                         </td>
                                         <td>{{ $product->quantity }}</td>
                                         <td>
-                                            {{$clientCurrency->currency->symbol}}@money($product->price)
+                                            {{$clientCurrency->currency->symbol}}{{decimal_format($product->price)}}
                                             @if($product->addon->isNotEmpty())
                                                 <hr class="my-2">
                                                 @foreach($product->addon as $addon)
-                                                    <p class="p-0 m-0">{{$clientCurrency->currency->symbol}}{{ $addon->option->price_in_cart }}</p>
+                                                    <p class="p-0 m-0">{{$clientCurrency->currency->symbol}}{{ decimal_format($addon->option->price_in_cart) }}</p>
                                                 @endforeach
                                             @endif
                                         </td>
 
-                                        <td>{{$clientCurrency->currency->symbol}}@money($product->total_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($product->total_amount)}}</td>
                                     </tr>
                                     @endif
                                     @endforeach
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{__('Delivery Fee')}} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->delivery_fee)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->delivery_fee)}}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Sub Total") }} :</th>
                                         <td>
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}@money($sub_total)</div>
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($sub_total)}}</div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{__('Total Discount')}} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->discount_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->discount_amount)}}</td>
                                     </tr>
 
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Estimated Tax") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($taxable_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($taxable_amount)}}</td>
                                     </tr>
                                     @if($vendor_service_fee > 0)
                                         <tr>
                                             <th scope="row" colspan="4" class="text-end">{{ __("Service Fee") }} :</th>
-                                            <td>{{$clientCurrency->currency->symbol}}@money($vendor_service_fee)</td>
+                                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor_service_fee)}}</td>
                                         </tr>
                                     @endif
+
+                                    @if($container_charges > 0)
+                                        <tr>
+                                            <th scope="row" colspan="4" class="text-end">{{ __("Container Charges") }} :</th>
+                                            <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
+                                        </tr>
+                                    @endif
+
                                     @if(Auth::user()->is_superadmin)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($revenue)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($revenue)}}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)}}</td>
                                     </tr>
                                     @endif
                                     @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Redemmed Loyality Points") }} :</th>
-                                        <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}@money($vendor->orderDetail->loyalty_amount_saved??0.00))</td>
+                                        <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
                                     </tr>
                                     @endif
                                     @if($vendor->reject_reason)
@@ -339,7 +418,7 @@ $timezone = Auth::user()->timezone;
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare + $taxable_amount)</div>
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -357,7 +436,7 @@ $timezone = Auth::user()->timezone;
 
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0 h-100">
-                    <div class="card-body">
+                    <div class="col-lg-6 card-body">
                         <h4 class="header-title mb-3">{{ __("Delivery Information") }}</h4>
                         <h5 class="font-family-primary fw-semibold">{{$order->user->name}}</h5>
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Email") }}:</span> {{ $order->user->email ? $order->user->email : ''}}</p>
@@ -374,6 +453,13 @@ $timezone = Auth::user()->timezone;
                         @endif
                         <p class="mb-0"><span class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
                     </div>
+                    @if(isset($driver_data->name))
+                    <div class="col-lg-6 card-body">
+                        <h4 class="header-title mb-3">{{ __("Driver Information") }}</h4>
+                        <p class="mb-2"><span class="fw-semibold me-2">{{ __("Name") }}:</span> {{ $driver_data->name ? $driver_data->name : ''}}</p>
+                        <p class="mb-2"><span class="fw-semibold me-2">{{ __("Contact Number") }}:</span> {{ $driver_data->phone ? $driver_data->phone : ''}}</p>
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -442,11 +528,53 @@ $timezone = Auth::user()->timezone;
                 </div>
             </div>
 
+            @if(count($user_registration_documents) > 0)
+            <div class="col-lg-6 mb-3">
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <h4 class="header-title mb-3">{{ __('User Proof') }}</h4>
+                        @foreach($user_registration_documents as $user_registration_document)
+                            @php
+                            $field_value = "";
+                            if(!empty($user_docs) && count($user_docs) > 0){
+                                foreach($user_docs as $key => $user_doc){
+                                    if($user_registration_document->id == $user_doc->user_registration_document_id){
+                                        if($user_registration_document->file_type == 'Text' || $user_registration_document->file_type == 'selector' ){
+                                            $field_value = $user_doc->file_name;
+                                        } else {
+                                            $field_value = $user_doc->image_file['storage_url'];
+                                        }
+                                    }
+                                }
+                            }
+                            @endphp
+                            <div class="mb-2">
+                                @if($field_value)
+                                    <label class="mb-2"><b>{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}} : </b></label>
+                                    @if(strtolower($user_registration_document->file_type) == 'image')
+                                    <a href="{{$field_value}}" target="_blank">
+                                        <div class="border rounded-lg royo-thumnail_img text-center ">
+                                            <img src="{{$field_value}}" class="img-thumbnail fi">
+                                        </div>
+                                    </a>
+                                    @elseif(strtolower($user_registration_document->file_type) == 'pdf')
+                                        <div>
+                                            <a href="{{$field_value}}" target="_blank"><i class="fa fa-file-pdf fa-6x text-danger"></i></a>
+                                        </div>
+                                    @else
+                                        {{$field_value}}
+                                    @endif
+
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                </div>
+            </div>
+            @endif
 
         </div>
-
-
-
     </div>
 </div>
 <div id="delivery_info_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -466,6 +594,22 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 
+<!-- modal for product order form -->
+<div class="modal fade product-order-form" id="order_product_order_form" tabindex="-1" aria-labelledby="order_product_order_form" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div id="order_product-order-form-modal">
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <!-- Order Invoice Code -->
 <div style="display: none;">
 @include('backend.order.print')
@@ -473,6 +617,7 @@ $timezone = Auth::user()->timezone;
 <!--End Order Invoice Code -->
 @endsection
 @section('script')
+<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
     $("#order_statuses li").click(function() {
         Swal.fire({
@@ -565,15 +710,100 @@ $timezone = Auth::user()->timezone;
             }
         });
     });
+
+    $(document).on('click', '.complete_request_btn', function(e) {
+        let id = $(this).attr('data-id');
+        let status = $(this).attr('data-status');
+        let title = $(this).attr('title');
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You really want to "+ title +" this request?",
+            icon: 'warning',
+            iconColor: '{{getClientPreferenceDetail()->web_color}}',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, '+ title + ' it!',
+            confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
+        }).then((result) => {
+            if(result.value)
+            {
+                $.ajax({
+                    type: "POST",
+                    data: {id: id, status: status},
+                    url: "{{ route('cancel-order.request.status.update') }}",
+                    headers: {Accept: "application/json"},
+                    success: function(response) {
+                        if (response.status == 'Success') {
+                            $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                            setTimeout(function(){location.reload();}, 2500);
+                        } else {
+                            Swal.fire({
+                                text: response.message,
+                                icon : "error",
+                                button: "OK",
+                            });
+                            return false;
+                        }
+                    },
+                    beforeSend: function(){
+                        $(".loader_box").show();
+                    },
+                    complete: function(){
+                        $(".loader_box").hide();
+                    },
+                    error: function(response) {
+                        let error = response.responseJSON;
+                        Swal.fire({
+                            text: error.message,
+                            icon : "error",
+                            button: "OK",
+                        });
+                        return false;
+                    }
+                });
+            }
+        });
+    });
+    $(document).on('click', '.Order_product_form', function(e) {
+        var product_form_id = $(this).attr('data-product_form_id');
+
+        var href  = "{{ url('client/orders/product_faq')}}"+"/"+product_form_id;
+        $.ajax({
+            type: "GET",
+            url: href,
+            success: function(response) {
+                $('#order_product_order_form').modal('show');
+                $('#order_product-order-form-modal').html(response);
+                $('#order_product_order_form').modal('show');
+            },
+            error: function(error) {
+                Swal.fire({
+                    text: "{{ __('Something went wrong!')}}",
+                    icon : "error",
+                    button: "OK",
+                    });
+            }
+        });
+        // $.get(href, function(response) {
+        //     console.log(response);
+        //     $('#order_product-order-form-modal').html(response);
+        //     $('#order_product_order_form').modal('show');
+        //  });
+       // $('#order_product-order-form-modal').html(product_form_data);
+    });
     function printDiv()
     {
         var divToPrint=document.getElementById('al_print_area');
-        var newWin=window.open('','Print-Window');
-        newWin.document.open();
-        newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
+        var windowUrl = 'about:blank';
+        var windowName = 'Print Order Detail';
+        var newWin=window.open(windowUrl, windowName);
+        newWin.document.write(divToPrint.innerHTML);
         newWin.document.close();
+        newWin.focus();
+        newWin.print();
         setTimeout(function(){newWin.close();},10);
     }
 
+
 </script>
+
 @endsection

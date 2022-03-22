@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Order extends Model
+class Order extends Model implements Auditable
 {
 
     use HasFactory;
+    use \OwenIt\Auditing\Auditable;
+    
     protected $casts = ['total_amount' => 'float'];
 
     public function products()
@@ -86,5 +89,10 @@ class Order extends Model
             return 1;
         }
         return 0;
+    }
+
+    public function driver_rating()
+    {
+        return $this->hasOne('App\Models\OrderDriverRating', 'order_id', 'id');
     }
 }

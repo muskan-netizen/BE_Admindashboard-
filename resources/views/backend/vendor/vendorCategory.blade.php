@@ -167,7 +167,7 @@
                                                                 <td>{{$set->min_select}} - {{$set->max_select}}</td>
                                                                 <td>
                                                                     @foreach($set->option as $opt)
-                                                                    <span>{{$opt->title}} - {{$clientCurrency->currency->symbol}}{{$opt->price}}</span><br />
+                                                                    <span>{{$opt->title}} - {{$clientCurrency->currency->symbol}}{{decimal_format($opt->price)}}</span><br />
                                                                     <span></span>
                                                                     @endforeach
                                                                 </td>
@@ -268,7 +268,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group" style="display:none;">
                                         {!! Form::label('title', __('Min Select'),['class' => 'control-label']) !!}
-                                        {!! Form::text('min_select', 1, ['class' => 'form-control', 'id' => 'min', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                        {!! Form::text('min_select', 0, ['class' => 'form-control', 'id' => 'min', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>

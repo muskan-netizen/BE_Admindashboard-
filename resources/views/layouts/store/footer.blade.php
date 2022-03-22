@@ -5,6 +5,16 @@
 </div>
 <div class="d-none" id ="nearmap">
 </div>
+  <div class="loader_box" style="display: none;">
+    <div class="spinner-border text-danger m-2 showLoader" role="status"></div>
+  </div>
+  <div class="spinner-overlay">
+    <div class="page-spinner">
+        <div class="circle-border">
+            <div class="circle-core"></div>
+        </div>
+    </div>
+  </div>
 
 @php
     $mapKey = '1234';
@@ -47,11 +57,14 @@
     var add_to_whishlist_url = "{{ route('addWishlist') }}";
     var show_cart_url = "{{ route('showCart') }}";
     var home_page_data_url = "{{ route('homePageData') }}";
+    var home_page_data_url_new = "{{ route('homePageDataNew') }}";
+    var postHomePageDataSingle = "{{ route('postHomePageDataSingle') }}";
     var home_page_data_url_category_menu = "{{ route('homePageDataCategoryMenu') }}";
     var client_preferences_url = "{{ route('getClientPreferences') }}";
     var check_isolate_single_vendor_url = "{{ route('checkIsolateSingleVendor') }}";
     let empty_cart_url = "{{route('emptyCartData')}}";
     var cart_details_url = "{{ route('cartDetails') }}";
+    var session_vendor_type = "{{Session::get('vendorType')}}";
     var delete_cart_url = "{{ route('emptyCartData') }}";
     var user_checkout_url= "{{ route('user.checkout') }}";
     var cart_product_url= "{{ route('getCartProducts') }}";
@@ -105,6 +118,7 @@
 // Client Detail
     var client_company_name = "{{getClientDetail()->company_name}}";
     var client_logo_url = "{{getClientDetail()->logo_image_url}}";
+    var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
 
 // is restricted
     var is_age_restricted ="{{$client_preference_detail->age_restriction}}";
@@ -131,20 +145,9 @@
         userLatitude = "76.7794";
     }
 
-
-    // if((home_page_url != window.location.href) && (home_page_url2 != window.location.href)){
-    //     $('.vendor_mods').hide();}
-    // else{
-    //     $('.vendor_mods').show();}
-
     @if(Session::has('selectedAddress'))
         selected_address = 1;
     @endif
-    // @if( Session::has('preferences') )
-    //     @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
-    //         is_hyperlocal = 1;
-    //     @endif;
-    // @endif;
 
     @if($client_preference_detail->is_hyperlocal == 1)
         is_hyperlocal = 1;
@@ -153,9 +156,17 @@
         var defaultLocationName = "{{$client_preference_detail->Default_location_name}}";
     @endif
 
-    var NumberFormatHelper = { formatPrice: function(x){
+    var NumberFormatHelper = { formatPrice: function(x,format=1){
         if(x){
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            if(digit_count)
+            {
+                x = parseFloat(x).toFixed(digit_count);
+            }
+            if(format == 1)
+            {
+                var parts = x.split(".");
+                return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ((parts[1] !== undefined) ? "." + parts[1] : "");
+            }
         }
         return x;
         }
@@ -189,14 +200,21 @@
 <script type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
+
+{{--
+<!-- shift to product detail page -->
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script> 
+<!-- duplicate script -->
+<script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
+--}}
+
 @if(isset($set_template)  && $set_template->template_id ==3)
 <script src="{{asset('js/aos.js')}}"></script>
 <script type="text/javascript">
-     AOS.init();
+    AOS.init();
 </script>
 @endif
 <script type="text/javascript" src="{{asset('js/location.js')}}"></script>
@@ -210,22 +228,21 @@
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <!--WaitMe Loader Script -->
 
-<!-- SweetAlert Script -->
-<script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
+<script>
+    $(function() {
+        $(".al_toggle-menu").click(function() {
+            $(this).toggleClass("active");
+            $('.al_menu-drawer').toggleClass("open");
+            $('#page-container').toggleClass("al_fixed");
+        });
+    });
+</script>
 @if (Auth::check())
 @if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
-<script>
-        $(function() {
-            $(".al_toggle-menu").click(function() {
-                $(this).toggleClass("active");
-                $('.al_menu-drawer').toggleClass("open");
-            });
-        });
-    </script>
 <script>
 
     // var tag = document.createElement('script');

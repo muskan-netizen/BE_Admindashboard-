@@ -176,8 +176,10 @@ if (Session::has('toaster')) {
             success: function(response) {
                 if (response.status == 'Success') {
                     if (response.data.orders.data.length != 0) {
+                        $("#received_new_orders").find(".modal-body").html('');
                         let latest_order_template = _.template($('#latest_order_template').html());
                         $("#received_new_orders").find(".modal-body").append(latest_order_template({
+                            Helper: NumberFormatHelper,
                             orders: response.data.orders.data
                         }));
                         $("#received_new_orders").modal('show');
@@ -244,6 +246,22 @@ if (Session::has('toaster')) {
                     console.log('firepase msg order number');
                     console.log(payload_data.order_number);
                     get_latest_order_socket(payload_data.order_number);
+                }
+                else if(payload.data.type=="order_cancellation_request"){
+                    var notificationTitle = payload.notification.title;
+                    var notificationOptions = {
+                        body: payload.notification.body,
+                        icon: payload.notification.icon
+                    };
+                    var push_notification = new Notification(
+                        notificationTitle,
+                        notificationOptions
+                    );
+                    push_notification.onclick = function(event) {
+                        event.preventDefault();
+                        window.open(payload.notification.click_action, "_blank");
+                        push_notification.close();
+                    };
                 }
             }
         }
@@ -341,4 +359,38 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
-</script>
+
+
+$("#change_password").on("hidden.bs.modal", function(){
+    $('.pwd-msg').html("");
+    $('#change_password_form').trigger("reset");
+});
+
+
+$("#change_password_form").submit(function(e){
+   // return false;
+    e.preventDefault();
+    $('.pwd-msg').html("");
+    $.ajax({
+            url:"{{route('cl.password.update')}}",
+            type:'POST',
+            data:$(this).serialize(),
+            dataType:'JSON',
+            success:function(result){
+                if(result.type=="error")
+                {
+                    var pwderror = '<span class="text-danger" role="alert"><strong>'+result.message+'</strong></span>';
+                    $('.pwd-msg').html(pwderror);                    
+                }else{
+                    var pwderror = '<span class="text-success" role="alert"><strong>'+result.message+'</strong></span>';
+                    $('.pwd-msg').html(pwderror);
+                    $('#change_password_form').trigger("reset");
+                    setTimeout(function () {                        
+                        $('#change_password').modal('toggle');
+                    }, 1000);
+                }
+            }
+
+    });
+});
+</script> 

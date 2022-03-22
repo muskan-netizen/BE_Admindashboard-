@@ -160,6 +160,7 @@ class ProductController extends BaseController
     public function edit($domain = '', $id)
     {
         $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $id)->firstOrFail();
+       // dd($product);
         $type = Type::all();
         $countries = Country::all();
         $addons = AddonSet::with('option')->select('id', 'title')
@@ -211,7 +212,7 @@ class ProductController extends BaseController
             }
         }
         $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
-        $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch')->first();
+        $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode')->first();
         $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
 
         $agent_dispatcher_tags = [];
@@ -235,7 +236,7 @@ class ProductController extends BaseController
 
 
         $set_product_tags = ProductTag::where('product_id',$product->id)->pluck('tag_id')->toArray();
-
+        
         return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags,'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids]);
     }
 
@@ -295,6 +296,7 @@ class ProductController extends BaseController
         $product->requires_shipping         = ($request->has('require_ship') && $request->require_ship == 'on') ? 1 : 0;
         $product->Requires_last_mile        = ($request->has('last_mile') && $request->last_mile == 'on') ? 1 : 0;
         $product->need_price_from_dispatcher = ($request->has('need_price_from_dispatcher') && $request->need_price_from_dispatcher == 'on') ? 1 : 0;
+        $product->age_restriction = ($request->has('age_restriction') && $request->age_restriction == 'on') ? 1 : 0;
         $product->mode_of_service        = $request->mode_of_service??null;
         $product->delay_order_hrs        = $request->delay_order_hrs??0;
         $product->delay_order_min        = $request->delay_order_min??0;
@@ -423,6 +425,7 @@ class ProductController extends BaseController
                         $variantData->title             = $request->variant_titles[$key];
                         $variantData->price             = $request->variant_price[$key];
                         $variantData->compare_at_price  = $request->variant_compare_price[$key];
+                        $variantData->container_charges  = $request->container_charges[$key]??"";
                         $variantData->cost_price        = $request->variant_cost_price[$key];
                         $variantData->quantity          = $request->variant_quantity[$key];
                         $variantData->tax_category_id   = $request->tax_category;
@@ -441,12 +444,15 @@ class ProductController extends BaseController
                 }
                 $variantData->price             = $request->price;
                 $variantData->compare_at_price  = $request->compare_at_price;
+                $variantData->container_charges  = $request->container_charges;
                 $variantData->cost_price        = $request->cost_price;
                 $variantData->quantity          = $request->quantity;
                 $variantData->tax_category_id   = $request->tax_category;
                 $variantData->save();
             }
         }
+
+       
         $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
         // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
         return redirect()->back()->with('toaster', $toaster);
@@ -932,6 +938,30 @@ class ProductController extends BaseController
                 case "for_sell_when_out_of_stock":
                     $update_product = Product::whereIn('id',$request->product_id)->update(['sell_when_out_of_stock' => $sell_when_out_of_stock]);
                 break;
+                case "delete":
+                    // delete product harrry
+                    $products = Product::whereIn('id',$request->product_id)->get();
+                    foreach($products as $product){
+                        DB::beginTransaction();
+                        $dynamic = time();
+
+                        Product::where('id', $product->id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
+    
+                        $tot_var  = ProductVariant::where('product_id', $product->id)->get();
+                        foreach($tot_var as $varr)
+                        {
+                            $dynamic = time().substr(md5(mt_rand()), 0, 7);
+                            ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
+                        }
+    
+                        Product::where('id', $product->id)->delete();
+    
+                        CartProduct::where('product_id', $product->id)->delete();
+                        UserWishlist::where('product_id', $product->id)->delete();
+    
+                        DB::commit();
+                    }
+                break;
                 default:
                 '';
             }
@@ -943,6 +973,12 @@ class ProductController extends BaseController
             'status' => 'success',
             'message' => __('Product action Submitted successfully!')
         ]);
+    }
+
+    # check if last mile delivery on
+    public function getProductFaq(Request $request){
+        pr($request->all());
+        
     }
 
 

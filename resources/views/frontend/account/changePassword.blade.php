@@ -63,7 +63,7 @@
     }
 </style>
 @endsection
-@section('content') 
+@section('content')
 <section class="section-b-space">
     <div class="container">
         <div class="row">
@@ -74,6 +74,11 @@
                             <span>{!! \Session::get('success') !!}</span>
                         </div>
                     @endif
+                    @if (\Session::has('error'))
+                    <div class="alert alert-danger">
+                        <span>{!! \Session::get('error') !!}</span>
+                    </div>
+                @endif
                     @if ( ($errors) && (count($errors) > 0) )
                         <div class="alert alert-danger">
                             <ul class="m-0">
@@ -86,10 +91,10 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row my-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
-                <div class="dashboard-left">
+                <div class="dashboard-left mb-3">
                     <div class="collection-mobile-back">
                         <span class="filter-back d-lg-none d-inline-block">
                             <i class="fa fa-angle-left" aria-hidden="true"></i>{{ __('Back') }}
@@ -104,9 +109,18 @@
                         <div class="page-title">
                             <h2>{{__('Change Password')}}</h2>
                         </div>
-                        <div class="outer-box"> 
+                        <div class="outer-box">
                     <form name="register" id="register" action="{{route('user.submitChangePassword')}}" class="theme-form" method="post"> @csrf
                         <div class="form-row mb-2">
+                            <div class="col-md-12 mb-3">
+                                <label for="review">{{__('Old Password')}}</label>
+                                <input type="password" class="form-control mb-0" id="review" placeholder="{{__('Current Password')}}" name="old_password">
+                                @if($errors->has('old_password'))
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('old_password') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
                             <div class="col-md-12 mb-3">
                                 <label for="review">{{__('Password')}}</label>
                                 <input type="password" class="form-control mb-0" id="review" placeholder="{{__('Password')}}" name="new_password">

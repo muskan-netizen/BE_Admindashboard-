@@ -5,9 +5,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use Auth;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Product extends Model{
+class Product extends Model implements Auditable{
       use SoftDeletes;
+      use \OwenIt\Auditing\Auditable;
 
     protected $fillable = ['sku', 'title', 'url_slug', 'description', 'body_html', 'vendor_id', 'category_id', 'type_id', 'country_origin_id', 'is_new', 'is_featured', 'is_live', 'is_physical', 'weight', 'weight_unit', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'publish_at', 'inquiry_only','has_variant','averageRating','tags', 'pharmacy_check', 'deleted_at', 'celebrity_id', 'brand_id', 'tax_category_id','need_price_from_dispatcher','mode_of_service','delay_order_hrs','delay_order_min','pickup_delay_order_hrs','pickup_delay_order_min','dropoff_delay_order_hrs','dropoff_delay_order_min','minimum_order_count','batch_count'];
 
@@ -24,7 +26,7 @@ class Product extends Model{
     }
 
     public function vendor(){
-       return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled');
+       return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges');
     }
 
     public function related(){
@@ -44,7 +46,7 @@ class Product extends Model{
     }
 
     public function variant(){
-      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id')->where('status', 1);
+      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges')->where('status', 1);
     }
 
     public function translation($langId = 0){
@@ -100,7 +102,7 @@ class Product extends Model{
     /* for app */
 
     public function variants(){
-      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode');
+      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode','container_charges');
     }
 
     public function reviews(){
@@ -251,11 +253,28 @@ class Product extends Model{
     {
       return self::where('category_id',$category_id)->get();
     }
+
+
+
+    public function variantPrice(){
+      return $this->hasOne('App\Models\ProductVariant')->select('*','price as variant_price')->first(); 
+    }
+
+
+    
     public function OrderProduct(){
         return $this->hasMany('App\Models\OrderProduct')->where(function($q){
             $q->groupBy('order_id ');
         });
 
+    }
+
+
+
+
+    public function productTranslation(){
+   
+        return $this->hasMany('App\Models\ProductTranslation');
     }
 
 

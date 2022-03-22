@@ -423,7 +423,7 @@
                         <div class="row  <%= ve ==0 ? 'mt-0' : 'mt-2'%>" id="latest_single_order_div<%= k %><%= ve %>">
                             <div class="col-12 order-hover-btn">
 
-                                <div id="update-single-status">
+                                <div id="update-single-status" class="my-2">
                                     <% if(vendor.order_status_option_id == 1) { %>
                                         <button class="update_order_status btn-info" data-full_div="#latest_full_order_div<%= k %>"  data-single_div="#latest_single_order_div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Accept') }}</button>
                                         <button class="update_order_status btn-danger" data-full_div="#latest_full_order_div<%= k %>"  data-single_div="#latest_single_order_div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __("Reject") }}</button>
@@ -459,7 +459,7 @@
                                                         <span class="item_no position-absolute">x<%= product.quantity %></span>
                                                     </div>
                                                     <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
-                                                    <label class="items_price">$<%= product.price %></label>
+                                                    <label class="items_price">$<%= Helper.formatPrice(product.price) %></label>
                                                 </div>
                                             <% }); %>
                                         </div>
@@ -468,23 +468,23 @@
                                         <ul class="price_box_bottom m-0 p-0">
                                             <li class="d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Total</label>
-                                                <span>$<%= vendor.subtotal_amount %></span>
+                                                <span>$<%= Helper.formatPrice(vendor.subtotal_amount) %></span>
                                             </li>
                                             <li class="d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Promocode</label>
-                                                <span>$<%= vendor.discount_amount %></span>
+                                                <span>$<%= Helper.formatPrice(vendor.discount_amount) %></span>
                                             </li>
                                             <li class="d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Delivery</label>
                                                 <% if(vendor.delivery_fee !== null) { %>
-                                                <span>$<%= vendor.delivery_fee %></span>
+                                                <span>$<%= Helper.formatPrice(vendor.delivery_fee) %></span>
                                                 <% }else { %>
                                                     <span>$ 0.00</span>
                                                 <% } %>
                                             </li>
                                             <li class="grand_total d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Amount</label>
-                                                <span>$<%= vendor.payable_amount %></span>
+                                                <span>$<%= Helper.formatPrice(vendor.payable_amount) %></span> 
                                             </li>
                                         </ul>
                                     </div>

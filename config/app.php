@@ -62,7 +62,7 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
-    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi'],
+    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt'],
 
     /*
     |--------------------------------------------------------------------------
@@ -200,7 +200,9 @@ return [
         Spatie\Geocoder\GeocoderServiceProvider::class,
         Jackiedo\Timezonelist\TimezonelistServiceProvider::class,
         // HTMLMin\HTMLMin\HTMLMinServiceProvider::class,
-        App\Providers\MailConfigServiceProvider::class
+        App\Providers\MailConfigServiceProvider::class,
+        // OwenIt\Auditing\AuditingServiceProvider::class,
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class
     ],
 
     /*
@@ -262,6 +264,7 @@ return [
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
         'Share' => Jorenvh\Share\ShareFacade::class,
         // 'HTMLMin' => HTMLMin\HTMLMin\Facades\HTMLMin::class,
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class
     ],
 
 ];

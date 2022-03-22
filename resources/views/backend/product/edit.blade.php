@@ -196,7 +196,7 @@
                         </div>
                         <div class="col-12 mb-2">
                             {!! Form::label('title', __('Product Description'),['class' => 'control-label']) !!}
-                            {!! Form::textarea('body_html', $product->primary ? $product->primary->body_html : '', ['class'=>'form-control', 'id' => 'body_html', 'placeholder' => 'Description', 'rows' => '5']) !!}
+                            {!! Form::textarea('body_html', $product->primary ? $product->body_html : '', ['class'=>'form-control', 'id' => 'body_html', 'placeholder' => 'Description', 'rows' => '5']) !!}
                         </div>
                         <div class="col-12 mb-2">
                             {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!}
@@ -220,12 +220,19 @@
                     <div class="row mb-2">
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
-                            {!! Form::text('price', $product->variant[0]->price, ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            {!! Form::text('price', decimal_format($product->variant[0]->price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
-                            {!! Form::text('compare_at_price', $product->variant[0]->compare_at_price, ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
+                      
+                        @if($product->vendor->need_container_charges == 1)
+                        <div class="col-4 mb-2">
+                            {!! Form::label('title', __('Container Charges (Optional)'), ['class' => 'control-label']) !!}
+                            {!! Form::text('container_charges', $product->variant[0]->container_charges, ['class'=>'form-control', 'id' => 'container_charges', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
+                        @endif
                         {{-- <div class="col-4 mb-2">
                             {!! Form::label('title', 'Cost Price (Optional)', ['class' => 'control-label']) !!}
                             {!! Form::text('cost_price', $product->variant[0]->cost_price, ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
@@ -366,13 +373,13 @@
                                         </td>
                                         <td>{{rtrim($vsets, ', ')}}</td>
                                         <td>
-                                            <input type="text" style="width: 70px;" name="variant_price[]" value="{{$varnt->price}}" onkeypress="return isNumberKey(event)">
+                                            <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
                                         </td>
                                         <td>
-                                            <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{$varnt->compare_at_price}}" onkeypress="return isNumberKey(event)">
+                                            <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{decimal_format($varnt->compare_at_price)}}" onkeypress="return isNumberKey(event)">
                                         </td>
                                         <td>
-                                            <input type="text" style="width: 70px;" name="variant_cost_price[]" value="{{$varnt->cost_price}}" onkeypress="return isNumberKey(event)">
+                                            <input type="text" style="width: 70px;" name="variant_cost_price[]" value="{{decimal_format($varnt->cost_price)}}" onkeypress="return isNumberKey(event)">
                                         </td>
                                         <td class="check_inventory">
                                             <input type="text" style="width: 70px;" name="variant_quantity[]" value="{{$varnt->quantity}}" onkeypress="return isNumberKey(event)">
@@ -444,8 +451,6 @@
                             <input type="checkbox" bid="" id="inquiry_only" data-plugin="switchery" name="inquiry_only" class="chk_box" data-color="#43bee1" @if($product->inquiry_only == 1) checked @endif>
                         </div>
                         @endif
-
-
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
@@ -458,7 +463,6 @@
                             </select>
                         </div>
                         @endif
-
                         @if($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
@@ -471,7 +475,6 @@
                             </select>
                         </div>
                         @endif
-
                         @if($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Mode Of Service'),['class' => 'control-label']) !!}
@@ -481,6 +484,14 @@
                             </select>
                         </div>
                         @endif
+                        @if($configData->age_restriction_on_product_mode == 1)
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Age Restriction'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box" data-color="#43bee1" @if($product->age_restriction == 1) checked @endif>
+                        </div>
+                        @endif
+
+
 
 
 
@@ -647,7 +658,9 @@
                             }
                             ?>
                             <div class="product-action">
+                                @if(isset($media->image))
                                 <a href="{{route('product.deleteImg',[$product->id, $media->image->id])}}" class="btn btn-danger btn-xs waves-effect waves-light" onclick="return confirm('Are you sure? You want to delete the image.')"><i class="mdi mdi-close" {{$media->image}}></i></a>
+                                @endif
                             </div>
                             <div class="bg-light">
                                 <img src="{{$mediaPath}}" style="width:100%;" class="vimg_{{$media->id}}" />

@@ -61,7 +61,7 @@ class TaxController extends Controller{
         }
         if (!empty($request->get('tax_type_filter'))) {
             $tax_type_filter = $request->get('tax_type_filter');
-            $orders_query->whereHas('taxes', function($q) use($tax_type_filter){
+            $orders_query->whereHas('taxes', function($q) use($tax_type_filter){ 
                 if($tax_type_filter){
                     $q->where('tax_category_id', $tax_type_filter);
                 }
@@ -71,6 +71,8 @@ class TaxController extends Controller{
         foreach ($orders as $order) {
             $order->payment_method = $order->paymentOption ? $order->paymentOption->title : '';
             $order->customer_name = $order->user ? $order->user->name : '-';
+            $order->payable_amount = decimal_format($order->payable_amount);
+            $order->taxable_amount = decimal_format($order->taxable_amount);
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $timezone);
             $tax_types = [];
             foreach ($order->taxes as $tax) {

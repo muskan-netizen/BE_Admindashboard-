@@ -16,7 +16,7 @@ use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, Vendor, VendorCategory};
+use App\Models\{Client, Category, Product,UserSavedPaymentMethods, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, Vendor, VendorCategory};
 
 class BaseController extends Controller{
 
@@ -98,6 +98,26 @@ class BaseController extends Controller{
             }
         }
         return $this->categoryOptionData;
+    }
+    /* Save user payment method */
+    public function saveUserPaymentMethod($request)
+    {
+        $payment_method = new UserSavedPaymentMethods;
+        $payment_method->user_id = Auth::user()->id;
+        $payment_method->payment_option_id = $request->payment_option_id;
+        $payment_method->card_last_four_digit = $request->card_last_four_digit;
+        $payment_method->card_expiry_month = $request->card_expiry_month;
+        $payment_method->card_expiry_year = $request->card_expiry_year;
+        $payment_method->customerReference = ($request->has('customerReference')) ? $request->customerReference : NULL;
+        $payment_method->cardReference = ($request->has('cardReference')) ? $request->cardReference : NULL;
+        $payment_method->save();
+    }
+    /* Get Saved user payment method */
+    public function getSavedUserPaymentMethod($request)
+    {
+        $saved_payment_method = UserSavedPaymentMethods::where('user_id', Auth::user()->id)
+                        ->where('payment_option_id', $request->payment_option_id)->first();
+        return $saved_payment_method;
     }
 
 	public function buildTree($elements, $parentId = 1) {
@@ -183,9 +203,13 @@ class BaseController extends Controller{
         $categories = $categories->where('categories.is_visible', 1)
                         ->where('categories.status', '!=', $status)
                         ->where('categories.is_core', 1)
+                        ->where('categories.is_visible', 1)
                         ->where('cts.language_id', $lang_id)
                         ->orderBy('categories.parent_id', 'asc')
-                        ->withCount('products')->orderBy('categories.position', 'asc')->groupBy('id')->get();
+                        ->whereNull('categories.vendor_id')
+                        ->withCount('products')
+                        ->orderBy('categories.position', 'asc')
+                        ->groupBy('id')->get();
         if($categories){
             $categories = $this->buildTree($categories->toArray());
         }
@@ -239,7 +263,7 @@ class BaseController extends Controller{
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
                 $value->variant_multiplier = $multiplier ? $multiplier : 1;
-                $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.','') : 0;
+                $value->variant_price = (!empty($value->variant->first())) ? decimal_format(($value->variant->first()->price * $multiplier)) : 0;
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
                 $value->category_name = $value->category->categoryDetail->translation->first()->name??null;
                 // foreach ($value->variant as $k => $v) {
@@ -636,7 +660,7 @@ class BaseController extends Controller{
         }
         $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
         $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
-        $amount = number_format($amount, 2,'.','');
+        $amount = decimal_format($amount);
         return $amount;
     }
 

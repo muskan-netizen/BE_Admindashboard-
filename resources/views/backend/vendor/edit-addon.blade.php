@@ -41,7 +41,7 @@
                    @foreach($addon->option as $first => $opt)
                    <tr class="input_tr">
                         <td style="min-width: 100px;">
-                            {!! Form::text('price[]', $opt->price, ['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'min' => '1', 'required' => 'required']) !!}
+                            {!! Form::text('price[]', decimal_format($opt->price), ['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'min' => '1', 'required' => 'required']) !!}
                             {!! Form::hidden('option_id[]', $opt->id) !!}
                         </td>
                         @foreach($languages as $langs)

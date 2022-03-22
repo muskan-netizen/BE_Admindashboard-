@@ -3,11 +3,15 @@
 namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 //use Laravel\Scout\Searchable;
 
-class Vendor extends Model{
+class Vendor extends Model implements Auditable{
+  
+  use \OwenIt\Auditing\Auditable;
+
   //use Searchable;
-    protected $fillable = ['name','slug','desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location'];
+    protected $fillable = ['name','slug','desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode','return_request','ahoy_location','city','state','country'];
 
     public function serviceArea(){
        return $this->hasMany('App\Models\ServiceArea')->select('vendor_id', 'geo_array', 'name');
