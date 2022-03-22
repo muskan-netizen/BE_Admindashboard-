@@ -159,8 +159,8 @@ margin: 10px auto 0;
           url: "{{route('passbase.store')}}", 
           type: "POST",
           data: {
-              identityAccessKey: identityAccessKey,
-              "_token": "{{ csrf_token() }}",
+            identityAccessKey: identityAccessKey,
+            "_token": "{{ csrf_token() }}",
           },
           success: function(response){
             console.log(response);
@@ -171,7 +171,7 @@ margin: 10px auto 0;
             }else{
               console.log(error);
             }
-          });
+          }
         });
       };
     </script>
