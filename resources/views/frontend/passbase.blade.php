@@ -114,8 +114,8 @@ margin: 10px auto 0;
       Passbase.renderButton(element, apiKey, {
         // Speed up the verification flow by providing some information you might already have like the user's email to skip the email step
         prefillAttributes: {
-          email: "sujatacodebrew@gmail.com",
-          country: "in"
+          email: "{{Auth::user()->email}}"
+          // country: "in"
         },
         onSubmitted: (identityAccessKey) => {
           console.log('-----------------On Submit--------------------');
@@ -135,27 +135,6 @@ margin: 10px auto 0;
 
       // Optional - Example to send identity access key to your backend
       const sendAuthKeyToBackend = (identityAccessKey) => {  
-        // const body = {
-        //   identityAccessKey: identityAccessKey,
-        // };
-        // const requestOptions = {
-        //   method: "GET",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify(body),
-        // };
-        // fetch("{{route('passbase.store')}}", requestOptions)
-        //   .then((response) => {
-        //     console.log("Success");
-        //     console.log(response);
-        //     window.location.replace("{{route('userHome')}}");
-
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //   });
-
         $.ajax({
           url: "{{route('passbase.store')}}", 
           type: "POST",
@@ -168,7 +147,7 @@ margin: 10px auto 0;
             if(response.status == 'Success')
             {
               console.log(response.data);
-              window.location.replace("{{route('userHome')}}");
+              window.location.replace("{{$data['redirect_url']}}");
             }else{
               console.log(error);
             }

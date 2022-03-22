@@ -28,7 +28,7 @@ class UserController extends FrontController{
         $user = User::where('id', Auth::user()->id)->first();
         $preference = ClientPreference::select('verify_email', 'verify_phone')->where('id', '>', 0)->first();
         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
-        if($passbase_check)
+        if($passbase_check && is_null($user->passbase_verification))
         {
             return redirect()->route('passbase.page');
         }elseif ($preference->verify_email == 0 && $preference->verify_phone == 0) {
