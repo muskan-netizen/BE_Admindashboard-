@@ -37,23 +37,19 @@ class PassbaseController extends FrontController
     		'response_id' => $response['id'],
     		'status' => $response['status']
     	]);
-    	return $this->successResponse($response);
+    	return $this->successResponse($response); 
     }
     public function webhook(Request $request)
     {
     	Log::info($request->all());
-    	$event = $request->all();
-    	// foreach($events  as $event)
-    	// {
-    		if($event['event'] == "VERIFICATION_REVIEWED")
-    		{
-    			$update_status = $this->userVerificationObj->updateStatus([
-	    			'verification_option_id' => 1,
-	    			'response_id' => $event['key'],
-	    			'status' => $event['status']
-	    		]);
-    		}
-    	// }
-    	Log::info($request->all());
+    	$data = $request->all();
+		if($data['event'] == "VERIFICATION_REVIEWED")
+		{
+			$update_status = $this->userVerificationObj->updateStatus([
+    			'verification_option_id' => 1,
+    			'response_id' => $data['key'],
+    			'status' => $data['status']
+    		]);
+		}
     } 
 }

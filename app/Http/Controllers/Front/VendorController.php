@@ -172,7 +172,10 @@ class VendorController extends FrontController
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if(Session::has('vendors')){
                 $vendors = Session::get('vendors');
-                $vendors = $vendors->toArray();
+                if(!is_array($vendors))
+                {
+                    $vendors = $vendors->toArray();
+                }
                 if(isset($vendor) && isset($vendor->id)){
                     if(!in_array($vendor->id, $vendors)){
                         $listData =collect();
@@ -482,16 +485,19 @@ class VendorController extends FrontController
                     // }
                 }
             }
-            $listData = $products;
+            $listData = $products; 
             return $listData;
         }
     }
 
     public function vendorProductAddons(Request $request){
+        $vendor = $request->vendor;
         $langId = Session::get('customerLanguage');
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $variant_id = ($request->has('variant')) ? $request->variant : 0;
-        $AddonData = Product::with(['media.image', 'translation' => function($q) use($langId){
+        $AddonData = Product::with([
+                'media.image', 
+                'translation' => function($q) use($langId){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                 },
                 'variant' => function($q) use($langId, $variant_id){
@@ -510,9 +516,12 @@ class VendorController extends FrontController
                     $q2->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
                     $q2->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 }
-            ])->where('is_live', 1)->where('url_slug', $request->slug)->first();
+            ]);
+            $AddonData = $AddonData->whereHas('vendor',function($q) use($vendor){
+                $q->where('id',$vendor);
+            })->where('is_live', 1)->where('url_slug', $request->slug)->first();
         if(!empty($AddonData)){
-            if($AddonData->variant->first()->media->isNotEmpty()){
+            if(!is_null($AddonData->variant->first()) && $AddonData->variant->first()->media->isNotEmpty()){
                 $image_fit = $AddonData->variant->first()->media->first()->pimage->image->path['image_fit'];
                 $image_path = $AddonData->variant->first()->media->first()->pimage->image->path['image_path'];
             }else{
@@ -527,7 +536,6 @@ class VendorController extends FrontController
             $variant_price = ($AddonData->variant->isNotEmpty()) ? $AddonData->variant->first()->price : 0;
             $AddonData->variant_price = decimal_format(($variant_price * $AddonData->variant_multiplier));
         }
-            // dd($AddonData);
         return response()->json(array('status' => 'Success', 'data' => $AddonData));
     }
 
