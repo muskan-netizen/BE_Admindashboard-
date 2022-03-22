@@ -996,6 +996,26 @@ $(document).ready(function() {
         }
     });
 
+    $(document).on("click", ".clproduct_cart_order_form", function(e) {
+        e.preventDefault();
+        let cart_product_id = $(this).attr("data-product_id");
+        let cart_vendor_id = $(this).attr("data-vendor_id");
+        var href = get_product_faq+"/"+cart_product_id;
+        $.get(href, function(response) {
+            //console.log(response);
+            $('#cart_product_order_form').modal('show');
+            $('#cart_product-order-form-modal').html(response);
+
+            // var response_data = response.data;
+            // $('#language_iso_code').val(response_data.language_iso_code);
+            // $('#country_iso_code').val(response_data.country_iso_code);
+            // $('#country_code').val(response_data.country_code);
+            // $('#currency').val(response_data.currency);
+            // $('#language').val(response_data.languages);
+            // $('#language_iso_code').val(response_data.language_iso_code);
+         });
+    });
+
     $(document).on("change", ".schedule_datetime", function() {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
@@ -1036,12 +1056,19 @@ $(document).ready(function() {
     });
 
     $(document).on("click", "#order_placed_btn", function() {
+        
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if(selected){
              delivery_type = selected.value;
         }
-
+        console.log($("input[name='product_faq_ids']").length);
+        if($("input[name='product_faq_ids']").length > 0){
+            success_error_alert('error', 'Please fill all the product order form!', ".cart_response");
+            return false;
+        
+        }
+       
         $('.alert-danger').html('');
         if ((typeof guest_cart != undefined) && (guest_cart == 1)) {
             // window.location.href = login_url;
@@ -1116,10 +1143,10 @@ $(document).ready(function() {
             // Save Cart Page Detail Forcely If user is paying from his cart.
             var checkParam = saveCartPageDetails(params);
                 if(checkParam != false){
-                placeOrder(address, 1, '', tip,delivery_type); // Adready Added
-                return false;
+                    placeOrder(address, 1, '', tip,delivery_type); // Adready Added
+                    return false;
                 }
-            } else {
+        } else {
             $.ajax({
                 type: "POST",
                 dataType: 'json',
@@ -1805,7 +1832,18 @@ $(document).ready(function() {
             else{
                 return false;
             }
+        }else if (payment_option_id == 21) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //Viva Wallet
+                payWithVivaWallet(order);
+            }
+            else{
+                return false;
+            }
         }
+
+
     });
 
 
@@ -2326,6 +2364,7 @@ $(document).ready(function() {
 
 
     function cartHeaderDilivery(address_id,code) {
+       
         $(".shopping-cart").html("");
         $(".spinner-box").show();
         $.ajax({
@@ -3243,36 +3282,74 @@ $(document).ready(function() {
     // **********************************************   all function for ondemand services   *****************************************  ////////////////////////
 
     $(document).on("click", "#next-button-ondemand-3", function() {
+       // alert(4321);    
         $('.alert-danger').html('');
-        window.location.href = showCart;
+       // window.location.href = showCart;
 
-        // var task_type = 'schedule';
-        // var schedule_date = $("input[name='booking_date']:checked").val();
-        // var schedule_time = $("input[name='booking_time']:checked").val();
-        // var specific_instructions = $("#specific_instructions").val();
+        var task_type = 'schedule';
+        var schedule_date = $("input[name='booking_slot']:checked").val();
+        //var schedule_time = $("input[name='booking_time']:checked").val();
+        var specific_instructions = $("#specific_instructions").val();
 
-        // var schedule_dt = schedule_date +' '+schedule_time;
-        // if( (task_type == 'schedule') && (schedule_dt == '') ){
-        //     success_error_alert('error', 'Schedule date time is required', ".cart_response");
-        //     return false;
-        // }
+        var selectedArr = JSON.stringify($("input[type='radio'][name='booking_slot']:checked"));
+    
 
-        // $.ajax({
-        //     type: "POST",
-        //     dataType: 'json',
-        //     url: update_cart_schedule,
-        //     data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions},
-        //     success: function (response) {
-        //         if (response.status == "Success") {
-        //             window.location.href = showCart;
-        //         }
-        //     },
-        //     error: function (error) {
-        //         var response = $.parseJSON(error.responseText);
-        //         success_error_alert('error', response.message, ".cart_response");
 
+        //var elems = $("input[name='booking_slot']:checked").val();
+       // var arrayString = jQuery.makeArray(elems);
+
+       // var elems = $('input:radio[name=booking_slot]:checked').val();
+        //var arrayString = jQuery.makeArray(elems);
+       // console.log(selectedArr);
+       // alert(selectedArr);
+
+
+
+        // var data_array = $("input[name='booking_slot']").map(function(idx, elem) {
+        //     console.log(elem);
+        //     alert(elem.value);
+        //     if (elem.type === 'radio' || elem.type === 'checkbox') {
+        //         return elem.checked && elem.value;
+        //     } else {
+        //         return elem.value.trim(); 
         //     }
-        // });
+        //  }).get()
+
+        //alert(JSON.stringify($("input[name='booking_slot']:checked").val()));
+        //alert($("input[name='booking_slot']:checked"));
+
+        //console.log(arrayString);
+       // alert(12);
+       // alert(arrayString);
+        //alert(schedule_time);
+
+       // var schedule_dt = schedule_date +' '+schedule_time;
+       var schedule_dt = schedule_date;
+        //alert(schedule_dt);
+        if( (task_type == 'schedule') && (schedule_dt == '') ){
+            success_error_alert('error', 'Schedule date time is required', ".cart_response");
+            return false;
+        }
+
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: update_cart_schedule,
+            data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions},
+            success: function (response) {
+                alert(response.status);
+                if (response.status == "Success") {
+                    window.location.href = showCart;
+                }
+            },
+            error: function (error) {
+                console.log(error);
+                var response = $.parseJSON(error.responseText);
+                alert(response.message);
+                success_error_alert('error', response.message, ".cart_response");
+
+            }
+        });
     });
 
 

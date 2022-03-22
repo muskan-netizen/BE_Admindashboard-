@@ -7,6 +7,7 @@
 
 
 <?php
+error_reporting(0);
 $zillow_id = 'X1-ZWz1ip5o7rayob_a57uf';
 
 $search = '155 Demar Blvd';
@@ -18,7 +19,8 @@ $url = "http://www.zillow.com/webservice/GetDeepSearchResults.htm?zws-id=$zillow
 
 $result = file_get_contents($url);
 $data = simplexml_load_string($result);
-
+echo $url;
+echo $data;
 echo $data->response->results->result->lotSizeSqFt . "<br>";
 
 ?>

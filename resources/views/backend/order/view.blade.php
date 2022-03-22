@@ -10,6 +10,37 @@
     width: 100px;
     height: auto;
 }
+.royo-ques h3 {
+    font-size: 15px;
+    font-weight: 600 !important;
+}
+.royo-ques h6 {
+    font-size: 14px;
+    padding: 5px 0px;
+}
+
+.custom-accordin1 .card-header {
+    padding: 0px 0px !important;
+    background-color: rgba(0,0,0,.03);
+    border: 1px solid#d5cece;
+    border-radius: 10px;
+}
+.custom-accordin1 .card-body {
+    padding: 10px 10px;
+    border-bottom: 1px solid#eee;
+    border-radius: 10px;
+}
+.custom-accordin1 .card:nth-child(1){
+    margin: 29px 0px;
+}
+.custom-accordin1 .card {
+    padding-bottom: 0px !important;
+    border-radius: 0px !important;
+    box-shadow: none !important;
+    border:1px solid#eee;
+    border-radius: 10px !important;
+}
+
 </style>
 @endsection
 @section('content')
@@ -272,19 +303,30 @@ $timezone = Auth::user()->timezone;
                                     $sub_total += $product->total_amount;
                                     @endphp
                                     <tr>
-                                        <th scope="row">
+                                        <th scope="row" class="product-modal2">
 
 
                                             <a href="{{ isset($product->product) ? route('product.edit', @$product->product->id) : '#'}}" target="_blank">
                                                 {{$product->product_name}}
                                             </a>
+                                            
                                             @if(isset($product->product) && isset($product->product->category) && isset($product->product->category->categoryDetail) && $product->product->category->categoryDetail->translation_one) ( in {{$product->product->category->categoryDetail->translation_one->name}} ) @endif
+                                          
+                                            @if (isset($product->user_product_order_form))
+                                            <a href="javascript:void(0)" class="Order_product_form float-right "  data-product_form_id="{{$product->id}}">
+                                                <span class="badge badge-info mr-2">
+                                                    {{__('Product form ')}}
+                                                </span>
+                                            </a>
+                                            @endif
+
                                             <p class="p-0 m-0">
                                                 @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
                                             </p>
-                                                @foreach($product->prescription as $pres)
-                                                <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
-                                                @endforeach
+                                           
+                                            @foreach($product->prescription as $pres)
+                                            <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
+                                            @endforeach
 
                                                 <p class="p-0 m-0">{{ substr($product->product_variant_sets, 0, -2) }}</p>
                                             @if($product->addon && count($product->addon))
@@ -552,6 +594,22 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 
+<!-- modal for product order form -->
+<div class="modal fade product-order-form" id="order_product_order_form" tabindex="-1" aria-labelledby="order_product_order_form" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div id="order_product-order-form-modal">
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <!-- Order Invoice Code -->
 <div style="display: none;">
 @include('backend.order.print')
@@ -705,7 +763,33 @@ $timezone = Auth::user()->timezone;
             }
         });
     });
-
+    $(document).on('click', '.Order_product_form', function(e) {
+        var product_form_id = $(this).attr('data-product_form_id');
+        
+        var href  = "{{ url('client/orders/product_faq')}}"+"/"+product_form_id;
+        $.ajax({
+            type: "GET",
+            url: href,
+            success: function(response) {
+                $('#order_product_order_form').modal('show');
+                $('#order_product-order-form-modal').html(response);
+                $('#order_product_order_form').modal('show');
+            },
+            error: function(error) {
+                Swal.fire({
+                    text: "{{ __('Something went wrong!')}}",
+                    icon : "error",
+                    button: "OK",
+                    });
+            }
+        });
+        // $.get(href, function(response) {
+        //     console.log(response);
+        //     $('#order_product-order-form-modal').html(response);
+        //     $('#order_product_order_form').modal('show');
+        //  });
+       // $('#order_product-order-form-modal').html(product_form_data);
+    });
     function printDiv()
     {
         var divToPrint=document.getElementById('al_print_area');
