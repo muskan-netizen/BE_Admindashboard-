@@ -1488,7 +1488,7 @@ $(document).ready(function () {
             { name: 'returnUrl', value: path }
         );
         ajaxData.push({ name: 'payment_option_id', value: payment_option_id });
-
+           
         $.ajax({
             type: "POST",
             dataType: 'json',
