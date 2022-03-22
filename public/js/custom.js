@@ -908,6 +908,8 @@ $(document).ready(function() {
                 paymentViaStripeFPX('', 19, '');
             }else if (payment_option_id == 20) {
                 payWithKPG('');
+            }else if (payment_option_id == 21) {
+                payWithVivaWallet('');
             }else if(payment_option_id == 22) {
                 payWithCcAvenue('');
             }else if(payment_option_id == 24) {
@@ -2027,6 +2029,8 @@ $(document).ready(function() {
             paymentViaStripeFPX('', payment_option_id, '');
         }else if (payment_option_id == 20) {
             payWithKPG('');
+        }else if (payment_option_id == 21) {
+            payWithVivaWallet('');
         }else if (payment_option_id == 22) {
             payWithCcAvenue('');
         }else if (payment_option_id == 24) {
