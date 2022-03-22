@@ -527,6 +527,8 @@ $(document).ready(function() {
         // ajaxData.payment_from = 'cart';
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
+        // console.log(JSON.stringify(ajaxData));
+        // return false;
         $.ajax({
             type: "POST",
             dataType: 'json',
