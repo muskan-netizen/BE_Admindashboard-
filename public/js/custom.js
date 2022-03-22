@@ -908,9 +908,9 @@ $(document).ready(function () {
                 paymentViaStripeFPX('', 19, '');
             } else if (payment_option_id == 20) {
                 payWithKPG('');
-            } else if (payment_option_id == 21) {
-                paymentViaEasyPaisa();
-            } else if (payment_option_id == 22) {
+            }else if (payment_option_id == 21) {
+                payWithVivaWallet('');
+            }else if(payment_option_id == 22) {
                 payWithCcAvenue('');
             } else if (payment_option_id == 24) {
                 paymentViaCashfree('');
@@ -998,31 +998,7 @@ $(document).ready(function () {
         }
     });
 
-<<<<<<< HEAD
-    $(document).on("click", ".clproduct_cart_order_form", function(e) {
-        e.preventDefault();
-        let cart_product_id = $(this).attr("data-product_id");
-        let cart_vendor_id = $(this).attr("data-vendor_id");
-        var href = get_product_faq+"/"+cart_product_id;
-        $.get(href, function(response) {
-            //console.log(response);
-            $('#cart_product_order_form').modal('show');
-            $('#cart_product-order-form-modal').html(response);
-
-            // var response_data = response.data;
-            // $('#language_iso_code').val(response_data.language_iso_code);
-            // $('#country_iso_code').val(response_data.country_iso_code);
-            // $('#country_code').val(response_data.country_code);
-            // $('#currency').val(response_data.currency);
-            // $('#language').val(response_data.languages);
-            // $('#language_iso_code').val(response_data.language_iso_code);
-         });
-    });
-
-    $(document).on("change", ".schedule_datetime", function() {
-=======
     $(document).on("change", ".schedule_datetime", function () {
->>>>>>> 639a4a90eafd2eba7e3612f6d87fb009a0ac664d
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
 
@@ -1061,13 +1037,8 @@ $(document).ready(function () {
         $('#tasknow').val('now');
     });
 
-<<<<<<< HEAD
-    $(document).on("click", "#order_placed_btn", function() {
-        
-=======
     $(document).on("click", "#order_placed_btn", function () {
 
->>>>>>> 639a4a90eafd2eba7e3612f6d87fb009a0ac664d
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
@@ -1152,20 +1123,12 @@ $(document).ready(function () {
             var params = [specific_instructions, task_type, schedule_dropoff, schedule_pickup, schedule_dt, comment_for_pickup_driver, comment_for_dropoff_driver, comment_for_vendor, delivery_type, slot, address];
             // Save Cart Page Detail Forcely If user is paying from his cart.
             var checkParam = saveCartPageDetails(params);
-<<<<<<< HEAD
-                if(checkParam != false){
-                    placeOrder(address, 1, '', tip,delivery_type); // Adready Added
-                    return false;
-                }
-        } else {
-=======
             if (checkParam != false) {
                 placeOrder(address, 1, '', tip, delivery_type); // Adready Added
                 return false;
             }
         } else {
             //    alert("reached..");
->>>>>>> 639a4a90eafd2eba7e3612f6d87fb009a0ac664d
             $.ajax({
                 type: "POST",
                 dataType: 'json',
@@ -2090,7 +2053,9 @@ $(document).ready(function () {
             paymentViaStripeFPX('', payment_option_id, '');
         } else if (payment_option_id == 20) {
             payWithKPG('');
-        } else if (payment_option_id == 22) {
+        }else if (payment_option_id == 21) {
+            payWithVivaWallet('');
+        }else if (payment_option_id == 22) {
             payWithCcAvenue('');
         } else if (payment_option_id == 24) {
             paymentViaCashfree('', payment_option_id, '');
@@ -2426,12 +2391,7 @@ $(document).ready(function () {
 
 
 
-<<<<<<< HEAD
-    function cartHeaderDilivery(address_id,code) {
-       
-=======
     function cartHeaderDilivery(address_id, code) {
->>>>>>> 639a4a90eafd2eba7e3612f6d87fb009a0ac664d
         $(".shopping-cart").html("");
         $(".spinner-box").show();
         $.ajax({
@@ -3348,12 +3308,7 @@ $(document).ready(function () {
 
     // **********************************************   all function for ondemand services   *****************************************  ////////////////////////
 
-<<<<<<< HEAD
-    $(document).on("click", "#next-button-ondemand-3", function() {
-       // alert(4321);    
-=======
     $(document).on("click", "#next-button-ondemand-3", function () {
->>>>>>> 639a4a90eafd2eba7e3612f6d87fb009a0ac664d
         $('.alert-danger').html('');
        // window.location.href = showCart;
 
