@@ -172,7 +172,8 @@ margin: 10px auto 0;
               console.log(error);
             }
           });
-        };
+        });
+      };
     </script>
   </body>
 </html>
