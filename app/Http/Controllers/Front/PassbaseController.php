@@ -24,7 +24,12 @@ class PassbaseController extends FrontController
 	}
 	public function index(Request $request)
 	{
-		$data = $request->all();
+        $data = $request->all();
+        $data['redirect_url'] = route('userHome');
+        if(url()->previous() == route('showCart'))
+        {
+            $data['redirect_url'] = route('showCart');
+        }
 		$data['publish_key'] = $this->publish_key;
 		return view('frontend.passbase')->with('data',$data);
 	}

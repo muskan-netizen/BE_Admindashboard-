@@ -124,7 +124,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     }
     public function passbase_verification()
     {
-      return $this->hasOne('App\Models\UserVerification', 'user_id', 'id')->where('verification_option_id',1);
+      return $this->hasOne('App\Models\UserVerfication', 'user_id', 'id')->where('verification_option_id',1);
     }
 
     /**
