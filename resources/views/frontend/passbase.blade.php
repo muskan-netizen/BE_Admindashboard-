@@ -2,6 +2,7 @@
 <html>
   <head>
     <script type="text/javascript" src="https://unpkg.com/@passbase/button"></script> 
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- <link rel="stylesheet" href="index.css" /> -->
     <title>Verify your Identity</title> 
     <meta charset="utf-8">
