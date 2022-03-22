@@ -717,6 +717,7 @@ class VendorController extends FrontController
         
         // Check vendor service area on hyperlocal
         $check_service_area = false;
+        $vendors = [];
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             $check_service_area = true;
             $vendors = $this->getServiceAreaVendors();
