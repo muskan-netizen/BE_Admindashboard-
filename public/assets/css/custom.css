@@ -133,15 +133,11 @@ body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}.faq_
 @media(max-width:767px){.al_add_user{margin-top: 0;}}
 
 #sidebar-menu ul#side-menu li span svg {
-    vertical-align: top;
-    }
-
+vertical-align: top;
+}
 
 
 /* dashboard css */
 @media(max-width:767px){
-    .navbar-custom {
-        border-radius: 0 0 0 10px;
-        width: calc(100% - 0px);
-    }
-    }
+.navbar-custom {border-radius: 0 0 0 10px;width: calc(100% - 0px);}
+}

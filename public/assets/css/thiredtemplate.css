@@ -106,5 +106,26 @@ body .tap-top.top-cls { bottom: 11%;}
     a.navbar-brand.mr-xl-3.mr-0 {max-width: 110px !important;}
     .al_mobile_menu{display:block}.footer-title{border:0}.sub-title{margin-bottom:20px}footer#footer{position:relative;height:auto}article#content-wrap{padding-bottom:0}body .footer-theme .sub-title h4{font-size:16px;margin-bottom:10px}.container.al_mobile-header{max-width:100%}.al_new_wrapper_design #myCarousel{border-radius:20px}.al_new_wrapper_design .al_custom_brand .brand-box .brand-ing{height:80px;width:80px}.al_new_wrapper_design .top-header.site-topbar.al_custom_head{padding-bottom:0;height:auto}.location-bar.d-inline-flex.align-items-center.position-relative{border:none}.dark .al_custom_head_map_box{border:none;padding:0!important}.location-bar.d-inline-flex.align-items-center.position-relative{width:100%;border-right:none;max-width:240px}.al_count_tabs_new_design li a.nav-link img{width:100%}.footer-title .according-menu{display:none}section.home-slider-wrapper{padding-top:20px!important;padding-bottom:20px}.al_new_wrapper_design h2{font-size:20px}.footer-theme .sub-title .contact-list li{padding-left:0!important}.sub-footer{display:none}.menu-navigation_al li.al_main_category a .nav-cate-img img{height:50px!important;width:50px!important}.menu-navigation_al li.al_main_category a .nav-cate-img{height:50px;width:50px}.al_custom_head_map_box{margin-bottom:10px}.home-slider-wrapper .banner-img-outer img{border-radius:20px}
 }
-
+@media only screen and (max-width : 768px) {
+    .aos-animate {
+        /*CSS transitions*/
+        -o-transition-property: none !important;
+        -moz-transition-property: none !important;
+        -ms-transition-property: none !important;
+        -webkit-transition-property: none !important;
+        transition-property: none !important;
+        /*CSS transforms*/
+        -o-transform: none !important;
+        -moz-transform: none !important;
+        -ms-transform: none !important;
+        -webkit-transform: none !important;
+        transform: none !important;
+        /*CSS animations*/
+        -webkit-animation: none !important;
+        -moz-animation: none !important;
+        -o-animation: none !important;
+        -ms-animation: none !important;
+        animation: none !important;
+    }
+}
 
