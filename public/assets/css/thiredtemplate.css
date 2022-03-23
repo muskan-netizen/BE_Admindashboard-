@@ -67,7 +67,9 @@ body[dir="rtl"] .iti--separate-dial-code input[type=text], body[dir="rtl"] .iti-
 body[dir="rtl"] .al_new_wrapper_design .inner_spacing span.rating{right: auto;left: 0;}
 /* ltf to rtf */
 
+
 /* mobile or desktop banner css start */
+
 .al_desktop_banner{display: block;}.al_mobile_banner{display: none;}
 @media (max-width: 767px){
 .al_desktop_banner{display: none;}.al_mobile_banner{display: block !important;height: 80px;}
