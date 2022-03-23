@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Front\FrontController;
 use Illuminate\Http\Request;
 use App\Models\{VerificationOption, UserVerfication};  
 use Log, Auth;
 
-class PassbaseController extends Controller
+class PassbaseController extends FrontController 
 {
 	use \App\Http\Traits\PassbaseManager;
 	use \App\Http\Traits\ApiResponser;
@@ -24,7 +24,12 @@ class PassbaseController extends Controller
 	}
 	public function index(Request $request)
 	{
-		$data = $request->all();
+        $data = $request->all();
+        $data['redirect_url'] = route('userHome');
+        if(url()->previous() == route('showCart'))
+        {
+            $data['redirect_url'] = route('showCart');
+        }
 		$data['publish_key'] = $this->publish_key;
 		return view('frontend.passbase')->with('data',$data);
 	}
@@ -37,23 +42,19 @@ class PassbaseController extends Controller
     		'response_id' => $response['id'],
     		'status' => $response['status']
     	]);
-    	return $response;
+    	return $this->successResponse($response); 
     }
     public function webhook(Request $request)
     {
     	Log::info($request->all());
-    	$event = $request->all();
-    	// foreach($events  as $event)
-    	// {
-    		if($event['event'] == "VERIFICATION_REVIEWED")
-    		{
-    			$update_status = $this->userVerificationObj->updateStatus([
-	    			'verification_option_id' => 1,
-	    			'response_id' => $event['key'],
-	    			'status' => $event['status']
-	    		]);
-    		}
-    	// }
-    	Log::info($request->all());
+    	$data = $request->all();
+		if($data['event'] == "VERIFICATION_REVIEWED")
+		{
+			$update_status = $this->userVerificationObj->updateStatus([
+    			'verification_option_id' => 1,
+    			'response_id' => $data['key'],
+    			'status' => $data['status']
+    		]);
+		}
     } 
 }

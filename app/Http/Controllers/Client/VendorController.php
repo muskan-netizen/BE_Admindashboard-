@@ -609,6 +609,7 @@ class VendorController extends BaseController
             ->where('status', 1)
             ->orderBy('parent_id', 'asc')->get();
         $csvProducts = CsvProductImport::where('vendor_id', $id)->orderBy('id','DESC')->get();
+        //pr($csvProducts->toArray());
         $csvVendors = CsvVendorImport::all();
         /*    get active category list also with parent     */
         foreach ($categories as $category) {

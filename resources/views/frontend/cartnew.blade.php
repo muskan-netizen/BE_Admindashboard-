@@ -69,9 +69,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="alert p-0" role="alert"></div>
             </div>
             @if (\Session::has('error'))
-                        <div class="alert alert-danger">
-                            <span>{!! \Session::get('error') !!}</span>
-                        </div>
+                <div class="alert alert-danger">
+                    <span>{!! \Session::get('error') !!}</span>
+                </div>
             @endif
         </div>
     </div>
@@ -101,7 +101,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                 <% } %>
 
-                <% if( (parseFloat(product.vendor.order_min_amount) > 0) &&  (product.product_sub_total_amount < parseFloat(product.vendor.order_min_amount)) ) { %>
+                <% if( (parseFloat(product.vendor.order_min_amount) > 0) &&  (product.product_total_amount < parseFloat(product.vendor.order_min_amount)) ) { %>
                     <div class="col-12">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then ')}} {{Session::get('currencySymbol')}}<%= Helper.formatPrice(product.vendor.order_min_amount) %>
@@ -233,6 +233,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <i class="fa fa-exclamation-circle"></i>{{__("This Product is out of stock")}}
                             </div>
                         </div>
+                    <% } %>
+                    <% if( (vendor_product.faq_count > 0 ) && (vendor_product.user_product_order_form == '' || vendor_product.user_product_order_form == null ) ) { %>
+                    <div class=" col-12 <%= vendor_product.faq_count %>  " id="product_faq_dev_<%= vendor_product.product_id %>">
+                        <input type="hidden" name="product_faq_ids" value="<%= vendor_product.product_id %>">
+                        <div class="text-center col-4 my-3 btn-product-order-form-div">
+                            <button class="clproduct_cart_order_form btn btn-solid w-100" id="add__cart_product_form" data-dev_remove_id="product_faq_dev_<%= vendor_product.product_id %>" data-product_id="<%= vendor_product.product_id %>"  data-vendor_id="<%= vendor_product.vendor_id %>">{{__('Product Order Form')}}</button>
+                        </div>
+                    </div>
                     <% } %>
                 </div>
 
@@ -404,7 +412,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="mb-2">@if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif</div>
                     <div class="tip_radio_controls">
                         <% if(cart_details.total_payable_amount > 0) { %>
-                            <input type="radio" class="tip_radio" id="control_01" name="select" value="<%= cart_details.tip_5_percent %>">
+                            <input type="radio" class="tip_radio" id="control_01" name="select" value="<%= cart_details.tip_5_percent %>" <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> checked <% } %>>
                             <label class="tip_label" for="control_01">
                                 <h5 class="m-0" id="tip_5">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.tip_5_percent) %></h5>
                                 <p class="m-0">5%</p>
@@ -455,10 +463,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <p class="total_amt m-0">{{__('Amount Payable')}}</p>
                 </div>
                 <div class="col-6 text-right">
-                    <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_payable_amount) %></p>
-                    <div>
-                        <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                        <input type="hidden" name="cart_total_payable_amount" value="<%= cart_details.total_payable_amount %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                    <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> 
+                        <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
+                        <% }else{ %>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_payable_amount) %></p>
+                            <%
+                        } %>
+                        <div>
+                            <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
+                            <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> 
+                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                <% }else{ %>
+                                    <input type="hidden" name="cart_total_payable_amount" value="<%= cart_details.total_payable_amount %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                <% } %>
                         <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= cart_details.total_payable_amount %>">
                     </div>
                 </div>
@@ -1126,6 +1143,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     </div>
 
 </div>
+<!-- modal for product order form -->
+<div class="modal fade product-order-form
+" id="cart_product_order_form" tabindex="-1" aria-labelledby="cart_product_order_form" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <div id="cart_product-order-form-modal" style="padding-top: 30px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 <?php ?>
 
 {{-- <form action="{{ route('payment.razorpayCompletePurchase',[app('request')->input('amount'),app('request')->input('order')]) }}" method="POST" id="razorpay_gateway">
@@ -1178,12 +1208,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var user_store_address_url = "{{route('address.store')}}";
+    var product_faq_update_url = "{{ route('cart.productfaq') }}";
     var promo_code_remove_url = "{{ route('remove.promocode') }}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
@@ -1195,6 +1227,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
+    var get_product_faq = "{{ url('product/faq') }}";
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";
     var update_cart_slot = "{{ route('updateCartSlot') }}";
@@ -1210,6 +1243,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var longitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
+    var product_order_form_element_data = [];
 
     if(!latitude){
         @if(!empty($client_preference_detail->Default_latitude))
@@ -1310,6 +1344,68 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             }
         });
     });
+
+
+    $(document).delegate('#submit_productfaq', 'click', function() {
+    var product_id = $(this).attr('data-product_id');
+    var form_class = $(this).attr('data-form_class');
+    var remove_div_id = $(this).attr('data-dev_remove_id');
+    var product_order_form_element = getFormData('.'+form_class);
+    if(product_order_form_element == 0){
+        return false;
+    }
+  
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: product_faq_update_url,
+        data: {product_id:product_id,user_product_order_form:product_order_form_element},
+        success: function(response) {
+            $("#"+remove_div_id).remove();
+            //window.location.reload();
+        },
+        error: function(data) {
+            $(".product_order_form_error").html(data.responseJSON.message);
+            setTimeout(function() {
+                $('.product_order_form_error').html('').hide();
+            }, 5000);
+        },
+    });
+        $('#cart_product_order_form').modal('hide');
+    });
+
+
+    function getFormData(dom_query){
+        var product_order_form_element_data = [];
+        var out = {};
+        var s_data = $(dom_query).serializeArray();
+
+            //transform into simple data/value object
+            for(var i = 0; i < s_data.length; i++){
+                var record = s_data[i];
+                console.log(record);
+                out[record.name] = record.value;
+                var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
+                var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
+                console.log(is_required);
+
+                if((is_required)==1 && (record.value =='' )){
+                    var errorMsg ="The "+ record.name +" field is required.";
+                    $('.product_order_form_error').html(errorMsg);
+                    // errorMsg = document.querySelector(".product_order_form_error");
+                    // errorMsg.html = "error msg";
+                    // errorMsg.style.display = 'none';
+                    // alert("hello");
+                    return 0;
+                } else {
+                    $('.product_order_form_error').html('');
+                }
+                product_order_form_element_data.push({'question':record.name,'answer':record.value,'product_faq_id':product_faq_id})
+            }
+        return product_order_form_element_data;
+    }
+
+
 
     $(document).delegate('#cart_payment_form input[name="cart_payment_method"]', 'change', function() {
         var method = $(this).attr('id');
