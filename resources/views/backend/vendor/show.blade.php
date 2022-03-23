@@ -711,9 +711,17 @@
                         <button type="button"
                             class="btn btn-block btn-outline-blue waves-effect waves-light">Cancel</button>
                     </div> -->
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">{{ __("Save") }}</button>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-50">{{ __("Save") }}</button>
+                        </div>
+                        <div class="col-md-6">
+                        <input id="remove-line" class="btn btn-block btn-blue waves-effect waves-light w-50" type="button" value="Remove" />                       
+                        </div>
                     </div>
+                    
+
                 </div>
             </form>
         </div>
@@ -858,6 +866,7 @@
     var lat_longs = new Array();
     var markers = new Array();
     var drawingManager;
+    var _myPolygon;
     var no_parking_geofences_json = all_coordinates; //{all_coordinates};
     var newlocation = '<?php echo json_encode($co_ordinates); ?>';
     var first_location = JSON.parse(newlocation);
@@ -924,6 +933,13 @@
                 alert('You can draw only one zone at a time');
                 event.overlay.setMap(null);
             }
+            _myPolygon = event.overlay;
+        });
+
+        $('#remove-line').on('click', function() {
+            $('#latlongs').val('');
+            _myPolygon.setMap(null);
+            
         });
 
         searchBox.addListener("places_changed", () => {
