@@ -138,10 +138,12 @@ class OrderController extends BaseController
         $user = Auth::user();
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
-        $orders = Order::with(['vendors.products', 'vendors.status', 'orderStatusVendor', 'address', 'user'])->orderBy('id', 'DESC');
-        if (Auth::user()->is_superadmin == 0) {
-            $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
+        $orders = Order::with(['vendors.products'=>function($q){
+            $q->withoutAppends();
+        }, 'vendors.status', 'orderStatusVendor', 'address', 'user'])->orderBy('id', 'DESC');
+        if ($user->is_superadmin == 0) {
+            $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
             });
         }
         if (!empty($request->search_keyword)) {
@@ -155,9 +157,9 @@ class OrderController extends BaseController
                 $q2->where('payment_option_id', 1);
             });
         })->orderBy('id', 'asc');
-        if (Auth::user()->is_superadmin == 0) {
-            $order_count = $order_count->whereHas('vendors.vendor.permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
+        if ($user->is_superadmin == 0) {
+            $order_count = $order_count->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
             });
         }
         //filer bitween date
@@ -184,39 +186,57 @@ class OrderController extends BaseController
         if ($filter_order_status) {
             switch ($filter_order_status) {
                 case 'pending_orders':
-                    $orders = $orders->with('vendors', function ($query) {
+                    $orders = $orders->with('vendors', function ($query) use($user) {
                         $query->where('order_status_option_id', 1);
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
                     })->whereHas('vendors', function ($query) use ($request) {
                         $query->where('order_status_option_id', 1);
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
                     });
-
                     break;
+
+
                 case 'active_orders':
                     $order_status_options = [2, 4, 5];
-                    $orders = $orders->with('vendors', function ($query) use ($order_status_options) {
+                    $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
                         $query->whereIn('order_status_option_id', $order_status_options);
-                    })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
+                    }, 'vendors.acceptedBy'])
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    })->with('vendors.acceptedBy');
-
+                    });
                     break;
+
+
                 case 'orders_history':
                     $order_status_options = [6, 3];
-                    $orders = $orders->with('vendors', function ($query) use ($order_status_options) {
+                    $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
                         $query->whereIn('order_status_option_id', $order_status_options);
-                    })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
+                    }, 'vendors.cancelledBy','vendors.acceptedBy'])
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    })->with('vendors.cancelledBy','vendors.acceptedBy');
-
+                    });
                     break;
             }
         }
@@ -226,7 +246,7 @@ class OrderController extends BaseController
                 $q2->where('payment_option_id', 1);
             });
         })->select('*', 'id as total_discount_calculate')->paginate(30);
-
+        
 
         $pending_orders = $pending_orders->with('vendors', function ($query) {
             $query->where('order_status_option_id', 1);
