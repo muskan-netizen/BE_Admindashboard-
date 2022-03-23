@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 
 class DownloadFileController extends Controller
 {
-    public function index(Request $request, $domain = '', $file_name){		
-	
+    public function index(Request $request, $domain = '', $file_name){
+
 		if(session()->get("applocale_admin") == "ta"){
 		    $file_path = public_path($file_name);	
 		}elseif(session()->get("applocale_admin") == "am"){
@@ -19,7 +19,8 @@ class DownloadFileController extends Controller
 			$file_path = public_path($file_name);
 		}else{
 			$file_path = public_path($file_name);
-		}    	
+		}
+		    	
     	$headers = ['Content-Type: application/csv'];
     	return response()->download($file_path, $file_name, $headers);
     }

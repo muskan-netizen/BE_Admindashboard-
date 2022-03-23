@@ -120,7 +120,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                             <div class="list-img" style="height:50px;">
                                                                 <img style="height:50px;" data-placement="right" data-toggle="tooltip" title="<%= product.product_name %>" src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
                                                                 <span class="item_no position-absolute">x<%= product.quantity %></span>
-                                                                
+
                                                             </div>
                                                             <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
                                                             <label class="items_price">{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %></label>
@@ -309,23 +309,22 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 <div class="container-fluid order-page">
     <div class="row">
 
-        <div class="col-12">
-            <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="page-title">{{ __('Orders') }}</h4>
-                <div>
-                    <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
-                        <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
-                            <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-                        </b>
-                    </a>
-                    <a class="return-btn ml-3" href="{{route('cancel-order.requests')}}">
-                        <b>{{ __("Cancel Order Request") }} <sup class="total-items">({{$cancel_order_requests}})</sup>
-                            <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-                        </b>
-                    </a>
-                </div>
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">{{ __('Orders') }}</h4>
+            <div class="d-flex align-items-center">
+                <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
+                    <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
+                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                    </b>
+                </a>
+                <a class="return-btn ml-3" href="{{route('cancel-order.requests')}}">
+                    <b>{{ __("Cancel Order Request") }} <sup class="total-items">({{$cancel_order_requests}})</sup>
+                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                    </b>
+                </a>
             </div>
         </div>
+
 
         <div class="col-sm-12 mb-2 d-flex justify-content-end">
             <div class="row align-items-center ">
