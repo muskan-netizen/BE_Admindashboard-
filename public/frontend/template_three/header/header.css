@@ -1,0 +1,21 @@
+article#page-container .site-header {
+position: relative;
+width: 100%;
+top: 0;
+left: 0;
+background: #fff;
+-webkit-transition: all .5s ease-in-out;
+-moz-transition: all .5s ease-in-out;
+-ms-transition: all .5s ease-in-out;
+-o-transition: all .5s ease-in-out;
+transition: all .5s ease-in-out;
+z-index: 11;
+}
+.top-header.site-topbar.al_custom_head {
+    background-color: #fff;
+}
+.top-header.site-topbar {
+    background: var(--top-header-color);
+    padding: 5px 0;
+    display: list-item;
+}
