@@ -78,16 +78,34 @@ class LoyaltyController extends Controller{
             $from_date = $date_date_filter[0];
             $orders_query->between($from_date." 00:00:00", $to_date." 23:59:59");
         }
-        $orders = $orders_query->orderBy('id', 'desc')->get();
-        foreach ($orders as $order) {
-            $order->loyalty_membership = $order->loyaltyCard ? $order->loyaltyCard->name : '';
-            $order->loyalty_points_used = $order->loyalty_points_used ? $order->loyalty_points_used : '0.00';
-            $order->created_date = dateTimeInUserTimeZone($order->created_at, $timezone);
-            $order->loyalty_points_earned = $order->loyalty_points_earned ? $order->loyalty_points_earned : '0.00';
-            $order->payment_option_title =  __($order->paymentOption->title);
-            $order->payable_amount = decimal_format($order->payable_amount,",");
-        }
+        $orders = $orders_query->orderBy('id', 'desc');
+        // foreach ($orders as $order) {
+        //     $order->loyalty_membership = $order->loyaltyCard ? $order->loyaltyCard->name : '';
+        //     $order->loyalty_points_used = $order->loyalty_points_used ? $order->loyalty_points_used : '0.00';
+        //     $order->created_date = dateTimeInUserTimeZone($order->created_at, $timezone);
+        //     $order->loyalty_points_earned = $order->loyalty_points_earned ? $order->loyalty_points_earned : '0.00';
+        //     $order->payment_option_title =  __($order->paymentOption->title);
+        //     $order->payable_amount = decimal_format($order->payable_amount,",");
+        // }
         return Datatables::of($orders)
+                ->addColumn('loyalty_membership', function($orders) {
+                    return $orders->loyaltyCard ? $orders->loyaltyCard->name : '';
+                })
+                ->addColumn('loyalty_points_used', function($orders) {
+                    return $orders->loyalty_points_used ? $orders->loyalty_points_used : '0.00';
+                })
+                ->addColumn('created_date', function($orders) use($timezone) {
+                        return dateTimeInUserTimeZone($orders->created_at, $timezone);
+                })
+                ->addColumn('loyalty_points_earned',function($orders){
+                    return $orders->loyalty_points_earned ? $orders->loyalty_points_earned : '0.00';
+                })
+                ->addColumn('payment_option_title',function($orders){
+                    return __($orders->paymentOption->title);
+                })
+                ->addColumn('payable_amount',function($orders){
+                    return decimal_format($orders->payable_amount,",");
+                })
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {

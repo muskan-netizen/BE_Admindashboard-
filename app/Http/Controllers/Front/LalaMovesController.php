@@ -177,7 +177,12 @@ class LalaMovesController extends Controller
             $time = date('H:i:s',strtotime($order->scheduled_date_time));
             $scheduledAt = $date.'T'.$time.'Z';
         }
-        if (empty($order->web_hook_code))
+        $noRef = '';
+        $checkOrderRef = Webhook::where('tracking_order_id',$order_id)->first();
+        if(isset($checkOrderRef) && $checkOrderRef->id){
+            $noRef = json_decode($checkOrderRef->response)->orderRef;
+        }
+        if(empty($order->web_hook_code) && empty($noRef))
         {
         $cus_address = UserAddress::find($order->address_id);
                 if ($cus_address && $this->lalamove_status==1){
@@ -199,21 +204,20 @@ class LalaMovesController extends Controller
                     );
         
                 $quotation = $this->getQuotations($data);
-                \Log::info(json_encode($quotation));
                 $response = json_decode($quotation['response']);
                 if($quotation['code']=='200'){
-                        $response = $this->placeOrders($data,$response);
+                        $response = $this->placeOrders($data,$response,$order_id);
                         if(isset($response->orderRef)){
                             $response = $response;
                         }else{
-                            $response = 2;
+                            $response = false;
                         }
                 }else{
-                    $response = 2;
+                    $response = false;
                 }
             }
         }else{
-            $response = 2;
+             $response = json_decode($checkOrderRef->response);
         }
 
         return $response;
