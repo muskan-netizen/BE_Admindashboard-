@@ -1037,6 +1037,17 @@ $(document).ready(function () {
         $('#tasknow').val('now');
     });
 
+    $(document).on("click", ".clproduct_cart_order_form", function(e) {
+                e.preventDefault();
+               let cart_product_id = $(this).attr("data-product_id");
+               let cart_vendor_id = $(this).attr("data-vendor_id");
+               var href = get_product_faq+"/"+cart_product_id;
+                $.get(href, function(response) {
+                    //console.log(response);
+                    $('#cart_product_order_form').modal('show');
+                    $('#cart_product-order-form-modal').html(response);
+                 });
+    });
     $(document).on("click", "#order_placed_btn", function () {
 
         var delivery_type = 'D';
@@ -1046,7 +1057,7 @@ $(document).ready(function () {
         }
         console.log($("input[name='product_faq_ids']").length);
         if($("input[name='product_faq_ids']").length > 0){
-            success_error_alert('error', 'Please fill all the product order form!', ".cart_response");
+            success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
             return false;
         
         }
@@ -1488,7 +1499,7 @@ $(document).ready(function () {
             { name: 'returnUrl', value: path }
         );
         ajaxData.push({ name: 'payment_option_id', value: payment_option_id });
-
+           
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -2875,13 +2886,13 @@ $(document).ready(function () {
     // ********************************************* all functions for vendor product new page ************************************** //
 
 
-    window.getProductAddons = function getProductAddons(slug, variantId = 0) {
+    window.getProductAddons = function getProductAddons(slug, variantId = 0, vendorId = 0) {
         $.ajax({
             type: "post",
             dataType: "json",
             url: get_product_addon_url,
-            data: { "slug": slug, "variant": variantId },
-            success: function (response) {
+            data: { "slug": slug, "variant": variantId , "vendor" : vendorId},
+            success: function(response) {
                 if (response.status == 'Success') {
                     $("#product_addon_modal .modal-content").html('');
                     let addon_template = _.template($('#addon_template').html());
@@ -3171,7 +3182,8 @@ $(document).ready(function () {
         if (check_addon > 0) {
             var variant_id = that.data("variant_id");
             let slug = that.parents('.product_row').attr('data-slug');
-            getProductAddons(slug, variant_id);
+            let vendor_id = that.data("vendor_id");
+            getProductAddons(slug, variant_id,vendor_id);
             return false;
         }
 

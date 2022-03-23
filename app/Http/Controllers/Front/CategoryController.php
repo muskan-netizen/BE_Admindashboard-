@@ -427,6 +427,8 @@ class CategoryController extends FrontController{
     {
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
+        $limit = $request->has('limit') ? $request->limit : 12;
+        $page = $request->has('page') ? $request->page : 1;
         $vendor_id = $request->has('vendor_id') ? $request->vendor_id : '';
         $setArray = $optionArray = array();
         $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
@@ -523,8 +525,8 @@ class CategoryController extends FrontController{
             if( $vendor_id ){
                 $products = $products->where('vendor_id', $vendor_id);
             }
-            if(!empty($productIds)){
-                $products = $products->whereIn('id', $productIds);
+            if(!empty($productIds) || !empty($multiArray)){
+                $products = $products->whereIn('products.id', $productIds);
             }
 
             if($request->has('brands') && !empty($request->brands)){
@@ -548,9 +550,9 @@ class CategoryController extends FrontController{
             }else{
                 //
             }
-            $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
+            // $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
 
-            $products = $products->groupBy('products.id')->paginate($pagiNate);
+            $products = $products->groupBy('products.id')->paginate($limit, $page);
 
         if(!empty($products)){
             foreach ($products as $key => $value) {
