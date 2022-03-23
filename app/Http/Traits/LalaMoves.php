@@ -4,6 +4,8 @@ namespace App\Http\Traits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use App\Models\ShippingOption;
+use App\Models\Webhook;
+
 
 trait LalaMoves{
 
@@ -190,14 +192,6 @@ trait LalaMoves{
   $response = curl_exec($curl);
   $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
   curl_close($curl);
-
-  // $response = '{
-  //   "totalFee": "80", 
-  //   "totalFeeCurrency": "INR",
-  //   "distance": {
-  //     "text": "16.2 km",
-  //     "value": 16210
-  //   }}';
   return array('code'=>$httpCode,'response'=>$response);
 }
 
@@ -220,7 +214,7 @@ public function getOrderBody($data)
   }
 
 
-public function placeOrders($data,$quotation)
+public function placeOrders($data,$quotation,$order_id = '')
 {
   $this->configDetails();
 
@@ -262,7 +256,16 @@ curl_close($curl);
 \Log::info('orderRef = '.json_decode($response)->orderRef);
 \Log::info($response);
 \Log::info('End Place Order response Mail');
-return json_decode($response);
+$resp = json_decode($response);
+if($resp->orderRef){
+  Webhook::create(['tracking_order_id'=>$order_id,'response'=>$response]);
+  return $resp;
+ }
+ return false;
+
+
+
+
 // Response
 // {
 //   "orderRef": "193400800238",
