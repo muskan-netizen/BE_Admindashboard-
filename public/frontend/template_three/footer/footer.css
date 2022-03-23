@@ -1,0 +1,15 @@
+.footer-contant li{display: block;}
+.payment-card-bottom li{display: inline-block;}
+.royo_whatsapp_img {
+    position: fixed;
+    z-index: 99999;
+    bottom: 7%;
+    left: 1%;
+}
+.royo_whatsapp_img img {
+    width: 50px;
+}
+.footer-theme .sub-title li a {
+    position: relative;
+    color: #777;
+}
