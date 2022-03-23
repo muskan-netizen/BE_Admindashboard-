@@ -204,37 +204,39 @@ class OrderController extends BaseController
 
                 case 'active_orders':
                     $order_status_options = [2, 4, 5];
-                    $orders = $orders->with('vendors', function ($query) use ($order_status_options, $user) {
+                    $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if ($user->is_superadmin == 0) {
                             $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
                                 $query1->where('user_id', $user->id);
                             });
                         }
-                    })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                    }, 'vendors.acceptedBy'])
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    })->with('vendors.acceptedBy');
+                    });
                     break;
 
 
                 case 'orders_history':
                     $order_status_options = [6, 3];
-                    $orders = $orders->with('vendors', function ($query) use ($order_status_options, $user) {
+                    $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if ($user->is_superadmin == 0) {
                             $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
                                 $query1->where('user_id', $user->id);
                             });
                         }
-                    })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                    }, 'vendors.cancelledBy','vendors.acceptedBy'])
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    })->with('vendors.cancelledBy','vendors.acceptedBy');
+                    });
                     break;
             }
         }
