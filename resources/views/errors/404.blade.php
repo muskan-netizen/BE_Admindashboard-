@@ -292,7 +292,7 @@ animation-delay: 3s; }
                     <p class="detail-text">We're sorry,<br> The page you were looking for doesn't exist anymore.</p>
 
                     <div class="back-btn">
-                        <a href="{{route('userHome')}}" class="btn">Back to Home</a>
+                        <a href="{{ route('userHome') }}" class="btn">Back to Home</a>
                     </div>
                 </div>
             </div>
