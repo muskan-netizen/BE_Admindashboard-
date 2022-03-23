@@ -1037,6 +1037,17 @@ $(document).ready(function () {
         $('#tasknow').val('now');
     });
 
+    $(document).on("click", ".clproduct_cart_order_form", function(e) {
+                e.preventDefault();
+               let cart_product_id = $(this).attr("data-product_id");
+               let cart_vendor_id = $(this).attr("data-vendor_id");
+               var href = get_product_faq+"/"+cart_product_id;
+                $.get(href, function(response) {
+                    //console.log(response);
+                    $('#cart_product_order_form').modal('show');
+                    $('#cart_product-order-form-modal').html(response);
+                 });
+    });
     $(document).on("click", "#order_placed_btn", function () {
 
         var delivery_type = 'D';
