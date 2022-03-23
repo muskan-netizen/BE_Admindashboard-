@@ -1499,7 +1499,7 @@ $(document).ready(function () {
             { name: 'returnUrl', value: path }
         );
         ajaxData.push({ name: 'payment_option_id', value: payment_option_id });
-
+           
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -2886,13 +2886,13 @@ $(document).ready(function () {
     // ********************************************* all functions for vendor product new page ************************************** //
 
 
-    window.getProductAddons = function getProductAddons(slug, variantId = 0) {
+    window.getProductAddons = function getProductAddons(slug, variantId = 0, vendorId = 0) {
         $.ajax({
             type: "post",
             dataType: "json",
             url: get_product_addon_url,
-            data: { "slug": slug, "variant": variantId },
-            success: function (response) {
+            data: { "slug": slug, "variant": variantId , "vendor" : vendorId},
+            success: function(response) {
                 if (response.status == 'Success') {
                     $("#product_addon_modal .modal-content").html('');
                     let addon_template = _.template($('#addon_template').html());
@@ -3182,7 +3182,8 @@ $(document).ready(function () {
         if (check_addon > 0) {
             var variant_id = that.data("variant_id");
             let slug = that.parents('.product_row').attr('data-slug');
-            getProductAddons(slug, variant_id);
+            let vendor_id = that.data("vendor_id");
+            getProductAddons(slug, variant_id,vendor_id);
             return false;
         }
 

@@ -59,20 +59,25 @@ class ProductController extends FrontController{
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if($product){
                 $productVendorId = $product->vendor_id;
-                if(Session::has('vendors')){
-                    $vendors = Session::get('vendors');
-                    if(is_array($vendors))
-                    $vendors = $vendors;
-                    else
-                    $vendors = $vendors->toArray();
-
-                    if(!in_array($productVendorId, $vendors)){
-                        $is_available = false;
-                        // abort(404);
-                    }
-                }else{
-                    // abort(404);
+                $vendors = $this->getServiceAreaVendors();
+                if(!in_array($productVendorId, $vendors)){
+                    $is_available = false;
                 }
+
+                // if(Session::has('vendors')){
+                //     $vendors = Session::get('vendors');
+                //     if(is_array($vendors))
+                //     $vendors = $vendors;
+                //     else
+                //     $vendors = $vendors->toArray();
+
+                //     if(!in_array($productVendorId, $vendors)){
+                //         $is_available = false;
+                //         // abort(404);
+                //     }
+                // }else{
+                //     // abort(404);
+                // }
             }
         }
 
@@ -278,8 +283,16 @@ class ProductController extends FrontController{
             $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
             Session::put('customerCurrency', $primaryCurrency->currency_id);
         }
+        $data = array();
+        $is_available = true;
+        $vendors = $this->getServiceAreaVendors();
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
-        $product = Product::select('id')->where('sku', $sku)->firstOrFail();
+        $product = Product::select('id', 'vendor_id')->where('sku', $sku)->firstOrFail();
+        if(!in_array($product->vendor_id, $vendors)){
+            $is_available = false;
+        }
+        $data['is_available'] = $is_available;
+
         $pv_ids = array();
         $product_variant = '';
         if ($request->has('options') && !empty($request->options)) {
@@ -337,6 +350,8 @@ class ProductController extends FrontController{
         ->select('id')
         ->where('id', $product->id)->first();
 
+        $data['availableSets'] = $availableSets->variantSet;
+
         if($pv_ids){
             $variantData = ProductVariant::with('product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart')->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
                 ->whereIn('id', $pv_ids)->get();
@@ -385,11 +400,12 @@ class ProductController extends FrontController{
                 }else{
                     $variantData = array();
                 }
-                return response()->json(array('status' => 'Success', 'variant' => $variantData, 'availableSets' => $availableSets->variantSet));
+                $data['variant'] = $variantData;
+                return response()->json(array('status' => 'Success', 'data' => $data));
             }
 
         }
-        return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'availableSets' => $availableSets->variantSet));
+        return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'data' => $data));
     }
     # get product faq 
     public function getProductFaq(Request $request,$domain = '',$product_id){
