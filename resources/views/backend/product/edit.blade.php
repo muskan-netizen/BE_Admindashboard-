@@ -196,7 +196,7 @@
                         </div>
                         <div class="col-12 mb-2">
                             {!! Form::label('title', __('Product Description'),['class' => 'control-label']) !!}
-                            {!! Form::textarea('body_html', $product->primary ? $product->primary->body_html : '', ['class'=>'form-control', 'id' => 'body_html', 'placeholder' => 'Description', 'rows' => '5']) !!}
+                            {!! Form::textarea('body_html', $product->primary ? $product->body_html : '', ['class'=>'form-control', 'id' => 'body_html', 'placeholder' => 'Description', 'rows' => '5']) !!}
                         </div>
                         <div class="col-12 mb-2">
                             {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!}
@@ -451,8 +451,6 @@
                             <input type="checkbox" bid="" id="inquiry_only" data-plugin="switchery" name="inquiry_only" class="chk_box" data-color="#43bee1" @if($product->inquiry_only == 1) checked @endif>
                         </div>
                         @endif
-
-
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
@@ -465,7 +463,6 @@
                             </select>
                         </div>
                         @endif
-
                         @if($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
@@ -478,7 +475,6 @@
                             </select>
                         </div>
                         @endif
-
                         @if($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Mode Of Service'),['class' => 'control-label']) !!}
@@ -488,6 +484,14 @@
                             </select>
                         </div>
                         @endif
+                        @if($configData->age_restriction_on_product_mode == 1)
+                        <div class="col-md-6 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Age Restriction'),['class' => 'control-label']) !!}
+                            <input type="checkbox" bid="" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box" data-color="#43bee1" @if($product->age_restriction == 1) checked @endif>
+                        </div>
+                        @endif
+
+
 
 
 

@@ -1011,7 +1011,6 @@ class AuthController extends BaseController
                 $phoneCode = mt_rand(100000, 999999);
                 $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
                 $request->request->add(['is_phone' => 1, 'phone_number' => $phone_number, 'phoneCode' => $phoneCode, 'sendTime' => $sendTime, 'codeSent' => 0]);
-
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
                 if (!$user) {
                     return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);

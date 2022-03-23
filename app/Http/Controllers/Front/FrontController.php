@@ -162,10 +162,10 @@ class FrontController extends Controller
             ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id')
             ->where('parent_id', $category_id)->where('status', 1)->get();
         if($categories){
-            foreach ($categories as $cate) {
-                if ($cate->childs) {
-                    foreach ($cate->childs as $child) {
-                        $vendorCategory = VendorCategory::with(['category.translation' => function ($q) use ($langId) {
+            foreach($categories as $cate){
+                if($cate->childs){
+                    foreach($cate->childs as $child){
+                        $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
                             $q->where('category_translations.language_id', $langId);
                         }])->where('vendor_id', $vid)->where('category_id', $child->id)->where('status', 1)->first();
                         if ($vendorCategory) {
@@ -174,6 +174,7 @@ class FrontController extends Controller
                         $this->getChildCategoriesForVendor($child->id, $langId, $vid);
                     }
                 }
+            
 
                 $vendorCategory = VendorCategory::with(['category.translation' => function ($q) use ($langId) {
                     $q->where('category_translations.language_id', $langId);
@@ -183,6 +184,9 @@ class FrontController extends Controller
                 }
                 $this->getChildCategoriesForVendor($cate->id, $langId, $vid);
             }
+               
+
+
             }
         
         return $category_list;
@@ -594,16 +598,17 @@ class FrontController extends Controller
         $langId = Session::get('customerLanguage');
         $guest_user = true;
         if ($user) {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count','scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
             $addresses = UserAddress::where('user_id', $user->id)->get();
             $guest_user = false;
         } else {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count','scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             $addresses = collect();
         }
         if ($cart) {
             $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
         }
+        
         $navCategories = $this->categoryNav($langId);
         $subscription_features = array();
         if ($user) {
@@ -632,6 +637,7 @@ class FrontController extends Controller
         $end_time = date('Y-m-d 23:59');
         $period = CarbonPeriod::create($start_date, $end_date);
         $time_slots = $this->SplitTime($start_time, $end_time, "60");
+        //dd($period);
         return ['time_slots' => $time_slots,'period' => $period,'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user];
     }
 

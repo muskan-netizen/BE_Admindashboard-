@@ -26,6 +26,7 @@ use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCa
 use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
 use Math;
+use SimpleXMLElement;
 class CustomerAuthController extends FrontController
 {
     use ApiResponser;
@@ -962,6 +963,46 @@ class CustomerAuthController extends FrontController
         }
         return redirect()->route('customer.login');
     }
+
+
+
+    # zillowGetData 
+
+    public function zillowGetData()
+    {
+
+        
+
+       
+        $params = (array('address' => '7356 CARTER AVE', 'citystatezip' => 'NEWARK'));
+
+        $params['zws-id'] = 'X1-ZWz1ip5o7rayob_a57uf';
+			$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);dd($url);
+			$result = new SimpleXMLElement($url, 0, true);
+        
+			// save this in object so that we could reuse it
+			if ( isset($result->response->results->result->zpid) ) {
+				$this->zpid = (string)$result->response->results->result->zpid;
+			}
+
+			return $result;
+        
+    }
+
+
+    // public function getDatazillo($params);
+    // {
+    //     $params['zws-id'] = $this->zws_id;
+	// 		$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
+	// 		$result = new SimpleXMLElement($url, 0, true);
+
+	// 		// save this in object so that we could reuse it
+	// 		if ( isset($result->response->results->result->zpid) ) {
+	// 			$this->zpid = (string)$result->response->results->result->zpid;
+	// 		}
+
+	// 		return $result;
+    // }
 
 
 }
