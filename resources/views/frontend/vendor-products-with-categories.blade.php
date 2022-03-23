@@ -524,7 +524,7 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6">
-                                        <div class="row ">
+                                        <div class="row mb-3">
                                             <div class="col">
                                                 @if (isset($tags) && !empty($tags))
                                                     @foreach ($tags as $key => $tag)

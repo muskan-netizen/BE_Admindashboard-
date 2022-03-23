@@ -137,3 +137,11 @@ body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}.faq_
     }
 
 
+
+/* dashboard css */
+@media(max-width:767px){
+    .navbar-custom {
+        border-radius: 0 0 0 10px;
+        width: calc(100% - 0px);
+    }
+    }

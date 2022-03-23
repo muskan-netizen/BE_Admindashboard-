@@ -262,7 +262,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                     <% if(product.delOptions) { %>
                         <div class="row mb-1 d-flex align-items-center">
-                            <div class="col-5 text-lg-right">
+                            <div class="col-md-5 text-lg-right">
                                 <label class="m-0 radio">
                                     {{__('Delivery Fee')}} :</label>
                                 </div>
@@ -273,12 +273,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <% } %>
 
                     <div class="row mb-1">
-                        <div class="col-5 text-lg-right">
+                        <div class="col-md-5 text-lg-right">
                             <% if(product.coupon_amount_used > 0) { %>
                                 <label class="m-0 radio">{{__('Coupon Discount')}} :</label>
                             <% } %>
                         </div>
-                        <div class="col-7 text-right">
+                        <div class="col-md-7 text-right">
                             <% if(product.coupon_amount_used > 0) { %>
                                 <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.coupon_amount_used) %></p>
                                 <% } %>
@@ -287,7 +287,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                     <div class="row">
                         <% if(cart_details.vendorCnt>1) { %>
-                            <div class="col-5 text-lg-right">
+                            <div class="col-md-5 text-lg-right">
                                 <label class="m-0 radio">{{__('Sub Total')}} :</label>
                             </div>
                             <div class="col-md-7 text-right">
@@ -401,7 +401,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(client_preference_detail.tip_before_order == 1) { %>
             <div class="row">
                 <div class="col-12">
-                    <div class="mb-2">@if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif</div> 
+                    <div class="mb-2">@if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif</div>
                     <div class="tip_radio_controls">
                         <% if(cart_details.total_payable_amount > 0) { %>
                             <input type="radio" class="tip_radio" id="control_01" name="select" value="<%= cart_details.tip_5_percent %>">
@@ -468,12 +468,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
 
         </div>
-        {{-- Schedual code Start at down --}}
+
+    </div>
+    {{-- Schedual code Start at down --}}
 
             <% if(client_preference_detail.off_scheduling_at_cart != 1 && cart_details.vendorCnt==1) { %>
                 @if($client_preference_detail->business_type != 'laundry')
-            <div class="row col-md-12 d-flex p-0 justify-content-end arabic-lng mt-2 mb-md-4 mb-2 position-relative" id="dateredio">
-                <div class="col mb-2 mb-md-0 text-right p-0">
+            <div class="row col-12 arabic-lng position-relative" id="dateredio">
+                <div class=" col-md-6 mb-2 mb-md-0 text-right p-0">
                     <div class="login-form">
                         <ul class="list-inline ml-auto d-flex align-items-center justify-content-end">
                             <li class="d-inline-block mr-1">
@@ -534,7 +536,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% } %>
 
             {{-- Schedual code end at down --}}
-    </div>
 </script>
 
 <script type="text/template" id="promo_code_template">
