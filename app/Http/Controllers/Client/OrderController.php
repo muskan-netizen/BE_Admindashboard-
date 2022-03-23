@@ -138,7 +138,9 @@ class OrderController extends BaseController
         $user = Auth::user();
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
-        $orders = Order::with(['vendors.products', 'vendors.status', 'orderStatusVendor', 'address', 'user'])->orderBy('id', 'DESC');
+        $orders = Order::with(['vendors.products'=>function($q){
+            $q->withoutAppends();
+        }, 'vendors.status', 'orderStatusVendor', 'address', 'user'])->orderBy('id', 'DESC');
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -242,7 +244,7 @@ class OrderController extends BaseController
                 $q2->where('payment_option_id', 1);
             });
         })->select('*', 'id as total_discount_calculate')->paginate(30);
-
+        
 
         $pending_orders = $pending_orders->with('vendors', function ($query) {
             $query->where('order_status_option_id', 1);
