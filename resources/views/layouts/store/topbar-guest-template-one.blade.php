@@ -78,6 +78,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         </ul>
                     </li>
                     @endif
+                    @if(count($languageList) > 1)
                     <li class="onhover-dropdown change-language">
                         <a href="javascript:void(0)">{{$applocale}}
                         <span class="icon-ic_lang align-middle"></span>
@@ -91,6 +92,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                             @endforeach
                         </ul>
                     </li>
+                    @endif
+                    @if(count($currencyList) > 1)
                     <li class="onhover-dropdown change-currency">
                         <a href="javascript:void(0)">{{session()->get('iso_code')}}
                         <span class="icon-ic_currency align-middle"></span>
@@ -106,6 +109,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                             @endforeach
                         </ul>
                     </li>
+                    @endif
                     <li class="onhover-dropdown mobile-account">
                         <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
                         <ul class="onhover-show-div">

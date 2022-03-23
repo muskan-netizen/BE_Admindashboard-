@@ -233,6 +233,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('draw-circle-with-radius/{vid}', 'Client\ServiceAreaController@drawCircleWithRadius')->name('draw.circle.with.radius');
         Route::resource('order', 'Client\OrderController');
         Route::post('orders/filter', 'Client\OrderController@postOrderFilter')->name('orders.filter');
+        Route::get('orders/product_faq/{product_id}', 'Client\OrderController@viewProductForm')->name('orders.product_faq');
         Route::get('order/return/{status}', 'Client\OrderController@returnOrders')->name('backend.order.returns');
         Route::get('order/return-modal/get-return-product-modal', 'Client\OrderController@getReturnProductModal')->name('get-return-product-modal');
         Route::post('order/update-product-return-client', 'Client\OrderController@updateProductReturn')->name('update.order.return.client');
@@ -312,6 +313,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::any('vendor/subscriptions/filterData', 'Client\VendorSubscriptionController@getSubscriptionsFilterData')->name('vendor.subscriptions.filterData');
         Route::post('vendor/subscription/status/update/{slug}', 'Client\VendorSubscriptionController@updateSubscriptionStatus')->name('vendor.subscription.status.update');
 
+        Route::post('vendor/update_all', 'Client\VendorController@updateActions')->name('vendor.updateall');
 
         Route::post('subscription/payment/stripe', 'Client\StripeGatewayController@subscriptionPaymentViaStripe')->name('subscription.payment.stripe');
 

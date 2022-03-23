@@ -320,22 +320,36 @@
 
                             <!-- Step Two Html -->
 
-                            @if(app('request')->input('step') == '2')
-                                <div id="step-2-ondemand">
 
+                            @if(app('request')->input('step') == '2')
+                                <div id="step-2-ondemand">                               
+                                                       
                                     @foreach ($cartData as $cd => $cart_data)
                                       @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
+
+                                      @php
+                                        $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
+                                      @endphp  
+
+
                                         <div  id="date_time_set_div{{$cart_data->id}}">
 
                                         <h4 class="mb-2"><b>When would you like your service?</b></h4>
                                         <div class="date-items radio-btns hide">
                                             @foreach ($period as $key => $date)
                                                 <div>
+                                                    @php
+                                                    $checked = '';
+                                                     $singleDate =  trim(date('Y-m-d', strtotime($date))); 
+                                                     if($productDate == $singleDate && !empty($productDate)){                                                        
+                                                         $checked = "checked";
+                                                     }
+                                                    @endphp
                                                     <div class="radios">
                                                         <p>{{date('D', strtotime($date))}}</p>
-                                                        <input type="radio" class="check-time-slots" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date{{$cart_data->id}}' id='radio{{$cd}}{{$key}}' @if($key == 0) checked @endif/>
+                                                        <input type="radio" class="check-time-slots" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_slot[{{$cart_data->id}}][booking_date]' id='radio{{$cd}}{{$key}}'{{$checked}}/>
                                                         <label for='radio{{$cd}}{{$key}}'>
-                                                            <span class="customCheckbox" aria-hidden="true">{{date('d', strtotime($date))}}</span>
+                                                            <span class="customCheckbox" @if($checked) style='background-color:#34a099 !important;'@endif aria-hidden="true" >{{date('d', strtotime($date))}}</span>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -349,8 +363,10 @@
                                                 @if($key+1 < count($time_slots))
                                                 <div>
                                                     <div class="radios">
-                                                        <input type="radio" value='{{$date}}' name='booking_time{{$cart_data->id}}'  id='time{{$cart_data->id}}{{$key+1}}'/>
-                                                        <label for='time{{$cart_data->id}}{{$key+1}}'><span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{$date}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span></label>
+                                                        <input type="radio" value='{{date('h:i:s', strtotime($date))}}' name='booking_time'  id='time{{$cart_data->id}}{{$key+1}}'/>
+                                                        <label for='time{{$cart_data->id}}{{$key+1}}'>
+                                                            <span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{date('h:i:s', strtotime($date))}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
+                                                        </label>                                                        
                                                     </div>
                                                 </div>
                                                 @endif
@@ -432,7 +448,7 @@
                                     <a href="?step=3" id="next-button-ondemand-4"><span class="btn btn-solid float-right">Continue</span></a>
                                 @else
                             @endif
-                        </div>
+                        </div>                                                                                                                          
 
 
                     </div>

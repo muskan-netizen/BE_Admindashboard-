@@ -520,6 +520,7 @@
                                     </thead>
                                     <tbody id="post_list">
                                         @foreach ($csvProducts as $csv)
+                                        
                                             <tr data-row-id="{{ $csv->id }}">
                                                 <td> {{ $loop->iteration }}</td>
                                                 <td> {{ $csv->name }}</td>
@@ -543,7 +544,7 @@
                                                         </ul>
                                                     </td>
                                                 @endif
-                                                <td> <a href="{{ $csv->path }}">{{ __('Download') }}</a> </td>
+                                                <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -589,6 +590,7 @@
                                          <option value="for_live">{{__('Draft/Published')}}</option>
                                          <option value="for_tax">{{__('Tax Category')}}</option>
                                          <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock ')}}</option>
+                                         <option value="delete">{{__('Delete')}}</option>
                                     </select>
                                 </div>
 

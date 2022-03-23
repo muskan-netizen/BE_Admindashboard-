@@ -99,7 +99,7 @@ svg {
   <div class="buttons-con">
     <div class="action-link-wrap">
       <a onclick="history.back(-1)" class="link-button link-back-button">Go Back</a>
-      {{-- <a href="{{route('userHome')}}" class="link-button">Go to Home Page</a> --}}
+     
     </div>
   </div>
 </div> -->
@@ -292,7 +292,7 @@ animation-delay: 3s; }
                     <p class="detail-text">We're sorry,<br> The page you were looking for doesn't exist anymore.</p>
 
                     <div class="back-btn">
-                        <a href="{{ route('userHome') }}" class="btn">Back to Home</a>
+                        
                     </div>
                 </div>
             </div>

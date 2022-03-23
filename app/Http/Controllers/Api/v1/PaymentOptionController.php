@@ -26,7 +26,7 @@ class PaymentOptionController extends BaseController{
             $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree');
         }
         elseif($page == 'pickup_delivery'){
-            $code = array('cod', 'razorpay');
+            $code = array('cod', 'razorpay','stripe');
         }
         else{
             $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree');
@@ -55,7 +55,9 @@ class PaymentOptionController extends BaseController{
             }else{
                 $domain = $client->sub_domain.env('SUBMAINDOMAIN');
             }
-            $server_url = "https://".$domain."/";
+            $domain = '192.168.97.160:9090';
+            $server_url = "http://".$domain."/";
+            //$server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
             $function = 'postPaymentVia_'.$gateway;
