@@ -11,7 +11,7 @@ class DownloadFileController extends Controller
 
 		if(session()->get("applocale_admin") == "ta"){
 		    $file_path = public_path($file_name);	
-		}elseif(session()->get("applocale_admin") == "am"){
+		}elseif(session()->get("applocale_admin") == "ar"){
 			$file_path = public_path($file_name);
 		}elseif(session()->get("applocale_admin") == "fr"){	
 			$file_path = public_path($file_name);
