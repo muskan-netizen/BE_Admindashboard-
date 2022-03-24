@@ -451,6 +451,9 @@ class CustomerAuthController extends FrontController
 
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
                 if(!$user){
+                    if(session()->get("locale") == "ar"){
+                        return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك.'), 404);
+                    }
                     return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
 
                     $registerUser = $this->registerViaPhone($request)->getData();
@@ -485,9 +488,16 @@ class CustomerAuthController extends FrontController
                         unset($response->_token);
                         return $this->successResponse($response, $message);
                     }else{
+
+                        if(session()->get("locale") == "ar"){
+                            return $this->errorResponse(__('حدث خطأ ما في إرسال OTP. نأسف للإزعاج'), 404);
+                        }                        
                         return $this->errorResponse(__('Something went wrong in sending OTP. We are sorry to for the inconvenience'), 404);
                     }
                 }else{
+                    if(session()->get("locale") == "ar"){
+                        return $this->errorResponse(__('لم يتم تكوين خدمة الموفر. الرجاء الاتصال بالإدارة'), 404);
+                    }
                     return $this->errorResponse(__('Provider service is not configured. Please contact administration'), 404);
                 }
             }
@@ -561,14 +571,26 @@ class CustomerAuthController extends FrontController
                 $checkEmail = User::where('email', $username)->first();
                 if ($checkEmail) {
                     if($checkEmail->status != 1){
+                        if(session()->get("locale") == "ar"){
+                            return $this->errorResponse(__('أنت غير مخول للوصول إلى هذا الحساب'), 404);
+                        }
                         return $this->errorResponse(__('You are unauthorized to access this account.'), 404);
                     }else{
+                        if(session()->get("locale") == "ar"){
+                            return $this->errorResponse(__('كلمة سر خاطئة'), 404);
+                        }
                         return $this->errorResponse(__('Incorrect Password'), 404);
                     }
+                }
+                if(session()->get("locale") == "ar"){
+                    return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
                 }
                 return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
             }
             else {
+                if(session()->get("locale") == "ar"){
+                    return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك.'), 404);
+                }
                 return $this->errorResponse(__('Invalid email or phone number'), 404);
             }
         }
@@ -977,16 +999,16 @@ class CustomerAuthController extends FrontController
        
         $params = (array('address' => '7356 CARTER AVE', 'citystatezip' => 'NEWARK'));
 
-        $params['zws-id'] = 'X1-ZWz1ip5o7rayob_a57uf';
-			$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);dd($url);
-			$result = new SimpleXMLElement($url, 0, true);
+        $params['zws-id'] = 'X1-ZWz16b0yk0045n_8mfo0';
+			$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
+			$result = new SimpleXMLElement($url, 0, true);dd($params);
         
 			// save this in object so that we could reuse it
 			if ( isset($result->response->results->result->zpid) ) {
 				$this->zpid = (string)$result->response->results->result->zpid;
 			}
 
-			return $result;
+			return $result->response;
         
     }
 

@@ -433,6 +433,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 @endsection
 @section('script')
 <script type="text/javascript">
+    var ajaxCall = 'ToCancelPrevReq';
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('input[name="_token"]').val()
@@ -460,19 +461,25 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
     function autoloaddashboad(){
         //console.log('dasd');
-        var typ=  $("a.nav-link.active").data('rel');
-        console.log('Test');
-        init(typ, "{{ route('orders.filter') }}", '', false);
+        var type =  $("a.nav-link.active").data('rel');
+        var search = $("#search_via_keyword").val();
+        init(type, "{{ route('orders.filter') }}", search, false);
 
     }
 
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
-        $.ajax({
+        ajaxCall = $.ajax({
             url: url,
             type: "POST",
             dataType: "JSON",
+            // async: false,
+            beforeSend: function(){
+                if(ajaxCall !=  'ToCancelPrevReq' && ajaxCall.readyState < 4){
+                    ajaxCall.abort();
+                }
+            },
             data: {
                 filter_order_status: filter_order_status,
                 search_keyword: search_keyword,
@@ -510,15 +517,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     $("#history-orders").html("(" + response.data.orders_history + ")");
 
                  }
-                 setTimeout(function() {
-                    autoloaddashboad()
-                }, 7000);
 
             },
             error: function(data) {
-                setTimeout(function() {
-                    autoloaddashboad()
-                }, 7000);
             },
         });
     }
@@ -527,7 +528,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         setTimeout(function() {
             $("#pending_order-tab").trigger('click');
         }, 500);
-        //setInterval(autoloaddashboad, 10000);
+
+        setInterval(function() {
+            autoloaddashboad();
+        }, 7000);
 
         $(document).on("click", ".load-more-btn", function() {
             $('#order_list_order').show();
@@ -561,7 +565,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         //     });
         // });
 
-        $("#search_via_keyword").on("keyup blur", function(e) {
+        $(document).on("input", "#search_via_keyword", function(e) {
             $('#order_list_order').show();
             var rel = $("#top-tab li a.active").data('rel');
             var url = "{{ route('orders.filter') }}";

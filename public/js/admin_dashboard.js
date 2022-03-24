@@ -160,10 +160,15 @@ $(document).ready(function () {
                     breakpoint: 480,
                     options: {
                         chart: {
-                            width: 200
+                            width: 300,
+                            offsetX: -70,
+                            offsetY: -70,
+                            
                         },
                         legend: {
-                            show: false
+                            position: 'bottom',
+                            height: 150,
+                            width : 240
                         }
                     }
                 }],
