@@ -219,7 +219,7 @@ if(session()->has('applocale')){
                                     @endif
                                     <li class="onhover-dropdown change-language">
                                         <a href="javascript:void(0)">{{$applocale}}
-                                        <span class="icon-ic_lang align-middle"></span>
+                                        <i class='fa fa-language'></i>
                                         <span class="language ml-1 align-middle">{{ __("Language") }}</span>
                                         </a>
                                         <ul class="onhover-show-div">

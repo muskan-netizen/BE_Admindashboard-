@@ -24,7 +24,7 @@ $preference = $client_preference_detail;
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
                                 <div class=" col location-bar d-inline-flex align-items-center position-relative p-0 mr-2" href="#edit-address" data-toggle="modal">
-                                        <i class="fa fa-map-marker mr-2" aria-hidden="true"></i>
+                                        <i class="fa fa-solid fa-location-dot mr-2" aria-hidden="true"></i>
                                         <h2 class="homepage-address"><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
                                 </div>
                             @endif
@@ -82,7 +82,7 @@ $preference = $client_preference_detail;
                         @if(count($languageList) > 1)
                         <li class="onhover-dropdown change-language">
                             <a href="javascript:void(0)">{{$applocale}}
-                            <span class="icon-ic_lang align-middle"></span>
+                            <i class='fa fa-language'></i>
                             <span class="language ml-1 align-middle">{{ __("language") }}</span>
                             </a>
                             <ul class="onhover-show-div">
@@ -297,7 +297,7 @@ $preference = $client_preference_detail;
                         @endif
                         <li class="onhover-dropdown change-language">
                             <a href="javascript:void(0)">{{$applocale}}
-                            <span class="icon-ic_lang align-middle"></span>
+                            <i class='fa fa-solid fa-language'></i>
                             <span class="language ml-1 align-middle">{{ __("language") }}</span>
                             </a>
                             <ul class="onhover-show-div">

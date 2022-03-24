@@ -13,14 +13,13 @@ if(session()->has('applocale')){
 @if($clientData->whatsapp_url)
 <div class="royo_whatsapp_img">
     <a href="{{$clientData->whatsapp_url}}" target="_blank">
-        <img src="{{ asset('images/whatsapp-img.png')}}" alt="">
+        <img style="" src="{{ asset('images/whatsapp-img.png')}}" alt="">
     </a>
 </div>
 @endif
     <footer id="footer" class="footer-light al_footer_template_three">
         <section class="section-b-space light-layout pb-0">
             <div class="container">
-
                 <div class="row footer-theme partition-f py-lg-3 py-2">
                     @if($client_preference_detail->show_contact_us == 1)
                     <div class="col-12 d-block d-md-none">
@@ -82,7 +81,7 @@ if(session()->has('applocale')){
                                     <div class="footer-contant">
                                         <ul class="contact-list al">
                                             <li class="pl-0">
-                                                <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                            <i class='fa fa-solid fa-location-dot'></i>
                                                 <span>{{$clientData ? ($clientData->contact_address ?? $clientData->company_address)  : ''}}</span>
                                             </li>
                                             <li class="pl-0">

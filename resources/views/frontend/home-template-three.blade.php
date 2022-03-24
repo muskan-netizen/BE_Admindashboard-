@@ -390,54 +390,50 @@
 <!-- our_vendor_main_div start -->
 <section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div" >
 	<div class="vendors"> @foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') @elseif($homePageLabel->slug == 'brands')
-		<section class="popular-brands left-shape_ position-relative">
-			<div class="container " data-aos="zoom-in">
-				<div class="al_top_heading col-md-12">
-					<div class="row d-flex justify-content-between">
-						<h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
-						{{-- <a class="" href="">See All</a> --}}
-					</div>
-				</div>
-				<div class="row ">
-					<div class=" col-12 al_custom_brand p-0">
-					<div class=" brand-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
-					</div>
+		<section class="container popular-brands left-shape_ position-relative " data-aos="zoom-in">
+
+			<div class="al_top_heading d-flex justify-content-between">
+				<h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
+					{{-- <a class="" href="">See All</a> --}}
+
+			</div>
+			<div class="row">
+				<div class=" col-12 al_custom_brand p-0">
+				<div class=" brand-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 				</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'vendors')
-		<section class="suppliers-section">
-			<div class="container mb-0" data-aos="zoom-in">
-					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
-						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2> <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a> </div>
-					<div class="row">
-						<div class="col-12 p-0">
-						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
-					</div>
-				</div>
+		<section class="suppliers-section container " data-aos="zoom-in">
+			<div class=" top-heading d-flex justify-content-between align-self-center">
+				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
+				<a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>
+			</div>
+			<div class="col-12 p-0">
+				<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
-		<section class="suppliers-section">
-			<div class="container" data-aos="zoom-in">
-
-					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
-						<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
-					<div class="row">
-						<div class="col-12 p-0">
-						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
-					</div>
+		<section class="suppliers-section container " data-aos="zoom-in">
+			<div class=" top-heading ">
+				<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
+			<div class="row">
+				<div class="col-12 p-0">
+					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 				</div>
 			</div>
 		</section> @else
 		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" data-aos="zoom-in">
 
-				<div class="col-md-12 top-heading d-flex align-items-center justify-content-between">
-				<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
+				<div class="top-heading d-flex justify-content-between">
+					<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a>
+					@endif
+				</div>
 
 			<div class="row">
 				<div class="col-12"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
 					<div class="product-5 product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@elseif($homePageLabel->slug=='recent_orders')
 					<div class="recent-orders product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@else
-					<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif </div>
+					<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif
+				</div>
 			</div>
 		</section> @endif @endforeach </div>
 </section><!-- our_vendor_main_div end -->
@@ -490,7 +486,7 @@
                 image.attr('data-src',icon);
                 image.attr('src',icon);
             },200);
-       
+
        }
     }
 </script>

@@ -71,7 +71,7 @@ $pages = \App\Models\Page::with([
                         @if(count($languageList) > 1)
                         <li class="onhover-dropdown change-language">
                             <a href="javascript:void(0)">{{ session()->get('locale') }}
-                                <span class="icon-ic_lang align-middle"></span>
+                            <i class='fa fa-language'></i>
                                 <span class="language ml-1 align-middle">{{ __('language') }}</span>
                             </a>
                             <ul class="onhover-show-div">

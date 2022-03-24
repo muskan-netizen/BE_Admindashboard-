@@ -1,6 +1,6 @@
 <div class="tap-top top-cls">
     <div>
-        <i class="fa fa-angle-double-up"></i>
+        <i class="fa fa-solid fa-angles-up"></i>
     </div>
 </div>
 <div class="d-none" id ="nearmap">
@@ -206,7 +206,7 @@
 
 {{--
 <!-- shift to product detail page -->
-<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script> 
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 <!-- duplicate script -->
 <script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
 --}}
