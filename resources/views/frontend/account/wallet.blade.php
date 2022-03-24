@@ -209,7 +209,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
             </div>
             <div class="form-group">
                 <label for="wallet_amount">{{__('Amount')}}</label>
-                <input class="form-control" name="wallet_amount" id="wallet_amount" type="text" placeholder="Enter Amount">
+                <input class="form-control" name="wallet_amount" id="wallet_amount" type="text" placeholder="{{__('Enter Amount')}}">
                 <span class="error-msg" id="wallet_amount_error"></span>
             </div>
             <div class="form-group">

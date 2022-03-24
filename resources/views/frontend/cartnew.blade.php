@@ -351,7 +351,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                 <div class="col-12">
                     {{__('Specific instructions')}}
-                    <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions ?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions">
+                    <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions">
                 </div>
             </div>
            @endif
@@ -463,7 +463,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <p class="total_amt m-0">{{__('Amount Payable')}}</p>
                 </div>
                 <div class="col-6 text-right">
-                    <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> 
+                    <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
                         <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
                         <% }else{ %>
                             <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_payable_amount) %></p>
@@ -471,7 +471,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         } %>
                         <div>
                             <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
-                            <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> 
+                            <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
                                 <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                                 <% }else{ %>
                                     <input type="hidden" name="cart_total_payable_amount" value="<%= cart_details.total_payable_amount %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
@@ -1354,7 +1354,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     if(product_order_form_element == 0){
         return false;
     }
-  
+
     $.ajax({
         type: "POST",
         dataType: "json",

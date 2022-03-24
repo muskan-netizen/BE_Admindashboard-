@@ -360,7 +360,7 @@
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                         @if($is_inwishlist_btn && $is_available)
                                         <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}">
-                                            {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
+                                            {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('REMOVE FROM WISHLIST') : __('Add To Wishlist') }}
                                         </button>
                                         @endif
                                         @if($product->inquiry_only == 0)
@@ -469,7 +469,7 @@
                                             </div>
                                         </div>
                                         @empty
-                                        <p>{{__('No Result Found.')}}</p>
+                                        <p>{{__('No Result Found')}}</p>
                                         @endforelse
                                     </div>
                                 </div>
@@ -584,7 +584,7 @@
                     <button type="button" class="btn quantity-left-minus" data-type="minus" data-field="" data-batch_count="<%= variant.product.batch_count %>" data-minimum_order_count="<%= variant.product.minimum_order_count %>"><i class="ti-angle-left"></i>
                     </button>
                 </span>
-                <input type="text" onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="<%= variant.product.minimum_order_count %>" data-minimum_order_count="<%= variant.product.minimum_order_count %>"> 
+                <input type="text" onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="<%= variant.product.minimum_order_count %>" data-minimum_order_count="<%= variant.product.minimum_order_count %>">
                 <span class="input-group-prepend quant-plus">
                     <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="" data-batch_count="<%= variant.product.batch_count %>" data-minimum_order_count="<%= variant.product.minimum_order_count %>">
                         <i class="ti-angle-right"></i>
