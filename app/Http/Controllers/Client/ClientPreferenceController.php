@@ -248,6 +248,7 @@ class ClientPreferenceController extends BaseController{
             $preference->auto_implement_5_percent_tip = ($request->has('auto_implement_5_percent_tip') && $request->auto_implement_5_percent_tip == 'on') ? 1 : 0;
 
             $preference->category_kyc_documents = ($request->has('category_kyc_documents') && $request->category_kyc_documents == 'on') ? 1 : 0;
+            $preference->vendor_return_request = ($request->has('vendor_return_request') && $request->vendor_return_request == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){

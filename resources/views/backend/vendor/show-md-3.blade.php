@@ -122,12 +122,12 @@
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="need_container_charges" class="form-control" data-color="#43bee1" @if($vendor->need_container_charges == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
-                    {{-- @if(Auth::user()->is_superadmin == 1) --}}
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
-                        <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if($vendor->return_request == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
-                    </div>
-                    {{-- @endif --}}
+                    @if(Auth::user()->is_superadmin == 1 || $client_preference_detail->vendor_return_request == 1)
+                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if($vendor->return_request == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    @endif
                     <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
                         <div class="form-group">
                             {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}

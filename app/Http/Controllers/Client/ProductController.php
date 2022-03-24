@@ -19,6 +19,7 @@ class ProductController extends BaseController
 {
     use ApiResponser;
     private $folderName = 'prods';
+    private $slugIsUnique = true;
     public function __construct()
     {
         $code = Client::orderBy('id','asc')->value('code');
@@ -62,11 +63,23 @@ class ProductController extends BaseController
      */
     public function validateData(Request $request)
     {
+        //checking if slug is unique in particular vendor
+        if(!empty(Product::where(['vendor_id'=>$request->vendor_id,'url_slug'=>$request->url_slug])->first()->id)){
+        $this->slugIsUnique=false;
+        }
         $rules = array(
             'sku' => 'required|unique:products',
-            'url_slug' => 'required|unique:products',
+            // 'url_slug' => 'required|unique:products',
             'category' => 'required',
             'product_name' => 'required',
+                'url_slug' => [
+                    'required',
+                    function ($attribute, $value, $fail) {
+                        if ($this->slugIsUnique== false) {
+                            $fail('The '.$attribute.' exists already.');
+                        }
+                    },
+                ],
         );
         $validation = Validator::make($request->all(), $rules)->validate();
 
