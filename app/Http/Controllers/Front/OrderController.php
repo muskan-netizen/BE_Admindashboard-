@@ -376,7 +376,7 @@ class OrderController extends FrontController
     public function sendSuccessSMS($request, $order, $vendor_id = '')
     {
         try {
-            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
 
             $currId = Session::get('customerCurrency');
             $currSymbol = Session::get('currencySymbol');
@@ -389,6 +389,7 @@ class OrderController extends FrontController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
+                $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
                 $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
             //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                 if (!empty($prefer->sms_provider)) {
