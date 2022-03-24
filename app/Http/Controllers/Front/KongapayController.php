@@ -39,6 +39,7 @@ class KongapayController extends Controller
    public function createHash(Request $request)
    {
      $time = '';
+     $amt = $request->amt??$request->amount;
     if(isset($request->auth_token) && !empty($request->auth_token)){
       $user = User::where('auth_token', $request->auth_token)->first();
       Auth::login($user);
@@ -49,7 +50,7 @@ class KongapayController extends Controller
      $returnUrl = '';
      if($request->from == 'cart')
      {
-      $request->amt = $request->amt*100;
+      $request->amt = $amt*100;
       $time = $request->order_number;
 
       if(isset($request->app) && !empty($request->app))
@@ -63,8 +64,8 @@ class KongapayController extends Controller
      {
       $time = ($request->transaction_id)??'W_'.time();
       //Save transaction before payment success for get information only
-      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d')]);
-      $request->amt = $request->amt*100;
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'wallet','date'=>date('Y-m-d')]);
+      $request->amt = $amt*100;
 
       if(isset($request->app) && !empty($request->app))
       {
@@ -76,9 +77,9 @@ class KongapayController extends Controller
      }elseif($request->from == 'tip')
      {
       $time = 'T_'.time().'_'.$request->order_number;
-      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d')]);
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'tip','date'=>date('Y-m-d')]);
      
-      $request->amt = $request->amt*100;
+      $request->amt = $amt*100;
       if(isset($request->app) && !empty($request->app))
       {
         $returnUrl = route('kongapay.successTip',['order_no='.$time]);
@@ -89,9 +90,9 @@ class KongapayController extends Controller
      }elseif($request->from == 'subscription')
      {
       $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
-      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'subscription','date'=>date('Y-m-d')]);
 
-      $request->amt = number_format($request->amt,2)*100;
+      $request->amt = number_format($amt,2)*100;
       
       if(isset($request->app) && !empty($request->app))
       {
@@ -127,10 +128,11 @@ class KongapayController extends Controller
 
    public function webViewPay(Request $request)
    {
+     $request->request->add(['amt'=>$request->amount,'from'=>$request->from,'order_number'=>$request->order_no??time()]);
     // $data = $request->all();
-    $request['from']=$request->from;
-    $request['amt']=$request->amount??'100';
-    $request['order_number']=$request->order_no??time(); // order no
+    // $request['from']=$request->from;
+    // $request['amt']=$request->amount??'100';
+    // $request['order_number']=$request->order_no??time(); // order no
     $data = json_decode($this->createHash($request));
     $inputs = '
     <input type="text" value="'.$data->hash.'" name="hash"/>
