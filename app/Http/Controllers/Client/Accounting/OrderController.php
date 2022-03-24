@@ -86,7 +86,7 @@ class OrderController extends Controller{
                 $query->where('user_id', $user->id);
             });
         }
-        $vendor_orders = $vendor_orders->orderBy('id', 'DESC')->get();
+        $vendor_orders = $vendor_orders->orderBy('id', 'DESC');
         
         // foreach ($vendor_orders as $vendor_order) {
         //     $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);

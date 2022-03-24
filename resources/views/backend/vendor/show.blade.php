@@ -810,15 +810,15 @@
     });
 </script>
 <script type="text/javascript">
-    var all_coordinates = @json($all_coordinates);
+    var all_coordinates = @json($all_coordinates);    
     var areajson_json = all_coordinates; //{all_coordinates};
 
     function initialize_show() {
 
         // var myLatlng = new google.maps.LatLng("{{ $center['lat'] }}","{{ $center['lng']  }}");
         //console.log(myLatlng);
-        var latitude = parseFloat("{{ $vendor['latitude'] }}");
-        var longitude = parseFloat("{{ $vendor['longitude'] }}");
+        var latitude  =  all_coordinates[0].coordinates['0']['lat'];
+        var longitude =  all_coordinates[0].coordinates['0']['lng'];
         var myOptions = {
             zoom: parseInt(10),
             center: {
