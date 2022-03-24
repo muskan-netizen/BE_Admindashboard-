@@ -12,7 +12,7 @@ use App\Http\Traits\{ApiResponser,CartManager};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq};
 use Log;
 class CartController extends FrontController
 {
@@ -517,6 +517,7 @@ class CartController extends FrontController
     public function getCart($cart, $address_id=0 , $code = 'D')
     {
         $address = [];
+        $category_array = [];
         $cart_id = $cart->id;
         $user = Auth::user();
         $langId = Session::has('customerLanguage') ? Session::get('customerLanguage') : 1;
@@ -677,11 +678,23 @@ class CartController extends FrontController
                     if($cart_dinein_table_id > 0){
                         $prod->update(['vendor_dinein_table_id' => $cart_dinein_table_id]);
                     }
+                    //pr($prod->product->toArray());
                     $prod->product_out_of_stock =  $product_out_of_stock;
 
                     $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
 
-                    $prod->category_kyc_count = 1;
+                    $prod->category_id = $prod->product->category_id;
+                    $prod->category_kyc_count = 0;
+                    $category_kyc_count = CategoryKycDocuments::whereHas('categoryMapping',function($q) use($prod){
+                        $q->where('category_id',$prod->product->category_id);
+                       })->count();
+                    if( $category_kyc_count  > 0 && !in_array( $prod->product->category_id, $category_array)){
+                        $category_array[] = $prod->product->category_id;
+                        $prod->category_kyc_count =  $category_kyc_count;
+                    }
+                       
+                    
+
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price;

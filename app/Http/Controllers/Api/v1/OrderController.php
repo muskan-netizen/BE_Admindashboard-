@@ -253,6 +253,7 @@ class OrderController extends BaseController
                             $order_product->vendor_id = $vendor_cart_product->vendor_id;
                             $order_product->product_id = $vendor_cart_product->product_id;
                             $order_product->created_by = $vendor_cart_product->created_by;
+                            $order_product->user_product_order_form = $vendor_cart_product->user_product_order_form;
                             $order_product->variant_id = $vendor_cart_product->variant_id;
                             $product_variant_sets = '';
                             if (isset($vendor_cart_product->variant_id) && !empty($vendor_cart_product->variant_id)) {

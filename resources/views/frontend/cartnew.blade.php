@@ -234,14 +234,29 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </div>
                         </div>
                     <% } %>
-                    <% if( (vendor_product.faq_count > 0 ) && (vendor_product.user_product_order_form == '' || vendor_product.user_product_order_form == null ) ) { %>
-                    <div class=" col-12 <%= vendor_product.faq_count %>  " id="product_faq_dev_<%= vendor_product.product_id %>">
-                        <input type="hidden" name="product_faq_ids" value="<%= vendor_product.product_id %>">
-                        <div class="text-center col-4 my-3 btn-product-order-form-div">
-                            <button class="clproduct_cart_order_form btn btn-solid w-100" id="add__cart_product_form" data-dev_remove_id="product_faq_dev_<%= vendor_product.product_id %>" data-product_id="<%= vendor_product.product_id %>"  data-vendor_id="<%= vendor_product.vendor_id %>">{{__('Product Order Form')}}</button>
+                    @if($client_preference_detail->product_order_form ==1)
+                        <% if( (vendor_product.faq_count > 0 ) && (vendor_product.user_product_order_form == '' || vendor_product.user_product_order_form == null ) ) { %>
+                        <div class=" col-3 <%= vendor_product.faq_count %>  " id="product_faq_dev_<%= vendor_product.product_id %>">
+                            <input type="hidden" name="product_faq_ids" value="<%= vendor_product.product_id %>">
+                            <div class="text-center my-3 btn-product-order-form-div">
+                                <button class="clproduct_cart_order_form btn btn-solid w-100" id="add__cart_product_form" data-dev_remove_id="product_faq_dev_<%= vendor_product.product_id %>" data-product_id="<%= vendor_product.product_id %>"  data-vendor_id="<%= vendor_product.vendor_id %>">{{__('Product Order Form')}}</button>
+                            </div>
                         </div>
-                    </div>
-                    <% } %>
+                        <% } %>
+                    @endif
+
+                    @if($client_preference_detail->category_kyc_documents ==1)
+                        <% if( (vendor_product.category_kyc_count > 0 ) ) { %>
+                        <div class=" col-3 <%= vendor_product.category_kyc_count %>  " id="category_kyc_dev_<%= vendor_product.category_id %>">
+                            <input type="hidden" name="category_kyc_ids" value="<%= vendor_product.category_id %>">
+                            <div class="text-center my-3 btn-category_kyc-div">
+                                <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= vendor_product.category_id %>" data-category_id="<%= vendor_product.category_id %>" >{{__('Category KYC Form')}}</button>
+                            </div>
+                        </div>
+                        
+                        <% } %>
+                    @endif
+
                 </div>
 
                 <hr>
