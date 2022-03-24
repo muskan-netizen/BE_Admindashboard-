@@ -170,20 +170,31 @@ class VendorController extends FrontController
         }
 
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-            if(Session::has('vendors')){
-                $vendors = Session::get('vendors');
-                $vendors = $vendors->toArray();
-                if(isset($vendor) && isset($vendor->id)){
-                    if(!in_array($vendor->id, $vendors)){
-                        $listData =collect();
-                        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
-                       
-                    }
+            $vendors = $this->getServiceAreaVendors();
+            if(isset($vendor) && isset($vendor->id)){
+                if(!in_array($vendor->id, $vendors)){
+                    $listData =collect();
+                    return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
                 }
-                
-            }else{
-                // abort(404);
             }
+
+            // if(Session::has('vendors')){
+            //     $vendors = Session::get('vendors');
+            //     if(!is_array($vendors))
+            //     {
+            //         $vendors = $vendors->toArray();
+            //     }
+            //     if(isset($vendor) && isset($vendor->id)){
+            //         if(!in_array($vendor->id, $vendors)){
+            //             $listData =collect();
+            //             return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
+                       
+            //         }
+            //     }
+                
+            // }else{
+            //     // abort(404);
+            // }
         }
 
         $is_vendor_closed = 0;
@@ -482,16 +493,19 @@ class VendorController extends FrontController
                     // }
                 }
             }
-            $listData = $products;
+            $listData = $products; 
             return $listData;
         }
     }
 
     public function vendorProductAddons(Request $request){
+        $vendor = $request->vendor;
         $langId = Session::get('customerLanguage');
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $variant_id = ($request->has('variant')) ? $request->variant : 0;
-        $AddonData = Product::with(['media.image', 'translation' => function($q) use($langId){
+        $AddonData = Product::with([
+                'media.image', 
+                'translation' => function($q) use($langId){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                 },
                 'variant' => function($q) use($langId, $variant_id){
@@ -510,9 +524,12 @@ class VendorController extends FrontController
                     $q2->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
                     $q2->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 }
-            ])->where('is_live', 1)->where('url_slug', $request->slug)->first();
+            ]);
+            $AddonData = $AddonData->whereHas('vendor',function($q) use($vendor){
+                $q->where('id',$vendor);
+            })->where('is_live', 1)->where('url_slug', $request->slug)->first();
         if(!empty($AddonData)){
-            if($AddonData->variant->first()->media->isNotEmpty()){
+            if(!is_null($AddonData->variant->first()) && $AddonData->variant->first()->media->isNotEmpty()){
                 $image_fit = $AddonData->variant->first()->media->first()->pimage->image->path['image_fit'];
                 $image_path = $AddonData->variant->first()->media->first()->pimage->image->path['image_path'];
             }else{
@@ -527,7 +544,6 @@ class VendorController extends FrontController
             $variant_price = ($AddonData->variant->isNotEmpty()) ? $AddonData->variant->first()->price : 0;
             $AddonData->variant_price = decimal_format(($variant_price * $AddonData->variant_multiplier));
         }
-            // dd($AddonData);
         return response()->json(array('status' => 'Success', 'data' => $AddonData));
     }
 
@@ -698,8 +714,19 @@ class VendorController extends FrontController
                 array_push($vendorCategory, $child->category->id);
             }
         }
+        
+        // Check vendor service area on hyperlocal
+        $check_service_area = false;
+        $vendors = [];
+        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+            $check_service_area = true;
+            $vendors = $this->getServiceAreaVendors();
+        }
+        
+        $vendor_categories = collect(); // final data
+        if( !$check_service_area || ( $check_service_area && in_array($vid, $vendors) ) ){
 
-        $products = Product::with(['media.image',
+            $products = Product::with(['media.image',
                 'translation' => function($q) use($langId, $keyword){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     if($keyword){
@@ -728,7 +755,7 @@ class VendorController extends FrontController
             ])->select('products.id', 'products.sku','products.title', 'products.url_slug','products.weight_unit','products.category_id', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
             ->join('product_translations', 'product_translations.product_id', '=', 'products.id');
-           
+        
             if($keyword){
                 $products->where(function ($q) use ($keyword, $langId) {
                     $q->where(function ($q1) use ($keyword) {
@@ -746,96 +773,98 @@ class VendorController extends FrontController
             if($tagId){
                 $products->whereHas('tags',function($query) use ($tagId){
                     $query->whereIn('tag_id',$tagId);
-                 });
+                });
             }
 
-        if(count($vendorCategory) > 0){
-            $products = $products->whereIn('category_id', $vendorCategory);
-        }
-        // Sorting
-        if (!empty($order_type) && $request->order_type == 'rating') {
-            $products = $products->orderBy('products.averageRating', 'desc');
-        }elseif (!empty($order_type) && $order_type == 'low_to_high') {
-            $products = $products->orderBy('product_variants.price', 'asc');
-        }elseif (!empty($order_type) && $order_type == 'high_to_low') {
-            $products = $products->orderBy('product_variants.price', 'desc'); 
-        }elseif (!empty($order_type) && $order_type == 'newly_added') {
-            $products = $products->orderBy('products.id', 'desc');
-        }elseif (!empty($order_type) && $order_type == 'a_to_z') {
-            $products = $products->orderBy('product_translations.title', 'asc');
-        }elseif (!empty($order_type) && $order_type == 'z_to_a') {
-            $products = $products->orderBy('product_translations.title', 'desc');
-        }else{
-            //
-        }
-        // End Sorting
-        $products = $products->where('is_live', 1)
-        ->groupBy('products.id')
-        ->where('vendor_id', $vid)->get();
+            if(count($vendorCategory) > 0){
+                $products = $products->whereIn('category_id', $vendorCategory);
+            }
+            // Sorting
+            if (!empty($order_type) && $request->order_type == 'rating') {
+                $products = $products->orderBy('products.averageRating', 'desc');
+            }elseif (!empty($order_type) && $order_type == 'low_to_high') {
+                $products = $products->orderBy('product_variants.price', 'asc');
+            }elseif (!empty($order_type) && $order_type == 'high_to_low') {
+                $products = $products->orderBy('product_variants.price', 'desc'); 
+            }elseif (!empty($order_type) && $order_type == 'newly_added') {
+                $products = $products->orderBy('products.id', 'desc');
+            }elseif (!empty($order_type) && $order_type == 'a_to_z') {
+                $products = $products->orderBy('product_translations.title', 'asc');
+            }elseif (!empty($order_type) && $order_type == 'z_to_a') {
+                $products = $products->orderBy('product_translations.title', 'desc');
+            }else{
+                //
+            }
+            // End Sorting
+            $products = $products->where('is_live', 1)
+            ->groupBy('products.id')
+            ->where('vendor_id', $vid)->get();
 
-        $vendor_categories = collect();
-        $category_list = [];
-        if($products->isNotEmpty()){
-            foreach($products as $k => $value) {
-                foreach ($value->addOn as $key => $val) {
-                    foreach ($val->setoptions as $k => $v) {
-                        if($v->price == 0){
-                            $v->is_free = true;
-                        }else{
-                            $v->is_free = false;
-                        }
-                        $v->multiplier = $clientCurrency->doller_compare;
-                    } 
-                }
-                
-
-
-
-                $p_id = $value->id;
-                $variantData = $value->with(['variantSet' => function ($z) use ($langId, $p_id) {
-                    $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
-                    $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
-                    $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
-                    $z->where('vt.language_id', $langId);
-                    $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
-                },'variantSet.option2'=> function ($zx) use ($langId, $p_id) {
-                    $zx->where('vt.language_id', $langId)
-                    ->where('product_variant_sets.product_id', $p_id);
-                }])->where('id', $p_id)->first();
-                $value->variantSet = $variantData->variantSet;
-                $value->product_image = ($value->media->isNotEmpty()) ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-                $value->translation_title = ($value->translation->isNotEmpty()) ? $value->translation->first()->title : $value->sku;
-                $value->translation_description = ($value->translation->isNotEmpty()) ? strip_tags($value->translation->first()->body_html) : '';
-                $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
-                $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
-                $value->variant_quantity = ($value->variant->isNotEmpty()) ? $value->variant->first()->quantity : 0;
-
-                $cid = $value->category_id;
-
-                if(!in_array($cid, $category_list)){
-                    $category_list[] = $cid;
-                    $vendor_category = VendorCategory::with(['category.translation' => function($q) use($langId){
-                        $q->where('category_translations.language_id', $langId)->groupBy('category_translations.language_id');
-                    }]);
-                    // ->whereHas('category');
-                    if(count($vendorCategory) < 1){ // if user is not coming to vendor by selecting a category
-                        // $vendor_category = $vendor_category->whereHas('category', function($query) {
-                        //     $query->whereIn('categories.type_id', [1]);
-                        // });
+            
+            $category_list = [];
+            if($products->isNotEmpty()){
+                foreach($products as $k => $value) {
+                    foreach ($value->addOn as $key => $val) {
+                        foreach ($val->setoptions as $k => $v) {
+                            if($v->price == 0){
+                                $v->is_free = true;
+                            }else{
+                                $v->is_free = false;
+                            }
+                            $v->multiplier = $clientCurrency->doller_compare;
+                        } 
                     }
-                    $vendor_category = $vendor_category->where('status', 1)->where('vendor_id', $vid)->where('category_id', $cid)->first();
-                    if($vendor_categories){
-                        $vendorProducts = $products->where('category_id', $cid);
-                        if($vendor_category){
-                            $vendor_category->category->translation_title = $vendor_category->category->translation->first() ? $vendor_category->category->translation->first()->name : '';
-                            $vendor_category->products = $vendorProducts;
-                            $vendor_category->products_count = $vendorProducts->count();
-                            $vendor_categories->push($vendor_category);
+
+
+
+                    $p_id = $value->id;
+                    $variantData = $value->with(['variantSet' => function ($z) use ($langId, $p_id) {
+                        $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                        $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+                        $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                        $z->where('vt.language_id', $langId);
+                        $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
+                    },'variantSet.option2'=> function ($zx) use ($langId, $p_id) {
+                        $zx->where('vt.language_id', $langId)
+                        ->where('product_variant_sets.product_id', $p_id);
+                    }])->where('id', $p_id)->first();
+                    $value->variantSet = $variantData->variantSet;
+                    $value->product_image = ($value->media->isNotEmpty()) ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                    $value->translation_title = ($value->translation->isNotEmpty()) ? $value->translation->first()->title : $value->sku;
+                    $value->translation_description = ($value->translation->isNotEmpty()) ? strip_tags($value->translation->first()->body_html) : '';
+                    $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                    $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
+                    $value->variant_quantity = ($value->variant->isNotEmpty()) ? $value->variant->first()->quantity : 0;
+
+                    $cid = $value->category_id;
+
+                    if(!in_array($cid, $category_list)){
+                        $category_list[] = $cid;
+                        $vendor_category = VendorCategory::with(['category.translation' => function($q) use($langId){
+                            $q->where('category_translations.language_id', $langId)->groupBy('category_translations.language_id');
+                        }]);
+                        // ->whereHas('category');
+                        if(count($vendorCategory) < 1){ // if user is not coming to vendor by selecting a category
+                            // $vendor_category = $vendor_category->whereHas('category', function($query) {
+                            //     $query->whereIn('categories.type_id', [1]);
+                            // });
+                        }
+                        $vendor_category = $vendor_category->where('status', 1)->where('vendor_id', $vid)->where('category_id', $cid)->first();
+                        if($vendor_categories){
+                            $vendorProducts = $products->where('category_id', $cid);
+                            if($vendor_category){
+                                $vendor_category->category->translation_title = $vendor_category->category->translation->first() ? $vendor_category->category->translation->first()->name : '';
+                                $vendor_category->products = $vendorProducts;
+                                $vendor_category->products_count = $vendorProducts->count();
+                                $vendor_categories->push($vendor_category);
+                            }
                         }
                     }
                 }
             }
+
         }
+
         $product_tag_ids = Product::where('vendor_id', $vid)->where('is_live', 1)->pluck('id')->toArray();
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();

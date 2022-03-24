@@ -372,6 +372,7 @@
 @endsection
 @section('css-links')
     <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}">
+    <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
     <!-- section start -->
@@ -524,7 +525,7 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6">
-                                        <div class="row ">
+                                        <div class="row mb-3">
                                             <div class="col">
                                                 @if (isset($tags) && !empty($tags))
                                                     @foreach ($tags as $key => $tag)
@@ -1207,6 +1208,7 @@
 @section('script')
     <script src="{{ asset('front-assets/js/rangeSlider.min.js') }}"></script>
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
+    <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
         var get_product_addon_url = "{{ route('vendorProductAddons') }}"
 

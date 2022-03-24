@@ -463,9 +463,30 @@
                                 </div>
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
-                                        @csrf
+                                        @csrf                                        
+
+
+                                        @if(session()->get("applocale_admin") == "ta")
                                         <a
-                                            href="{{ url('file-download' . '/sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
+                                            href="{{ url('file-download' . '/tamil_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a> 
+
+                                        @elseif(session()->get("applocale_admin") == "ar")
+                                        <a
+                                            href="{{ url('file-download' . '/arabic_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a> 
+
+                                        @elseif(session()->get("applocale_admin") == "fr")
+                                        <a
+                                            href="{{ url('file-download' . '/french_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a> 
+
+                                        @elseif(session()->get("applocale_admin") == "de")
+                                        <a
+                                            href="{{ url('file-download' . '/german_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a> 
+
+                                        @else
+                                        <a
+                                            href="{{ url('file-download' . '/sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>  
+                                        @endif
+                                        
                                         <input type="hidden" value="{{ $vendor->id }}" name="vendor_id" />
                                         <input type="file" accept=".csv" onchange="submitProductImportForm()"
                                             data-plugins="dropify" name="product_excel" class="dropify" />

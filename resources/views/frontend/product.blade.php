@@ -169,7 +169,7 @@
                             </div>
 
                             <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text">
-                                <div class="product-right inner_spacing pl-3">
+                                <div class="product-right inner_spacing pl-sm-3 p-0">
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                     </h2>
@@ -569,24 +569,24 @@
 </script>
 <script type="text/template" id="variant_quantity_template">
     <% if(variant.product.inquiry_only == 0) { %>
-    <div class="product-description border-product">
+    <div class="product-description border-product pb-0">
         <h6 class="product-title mt-0">{{__('Quantity')}}:
-            <% if(!variant.quantity > 0) { %>
+            <% if(variant.product.has_inventory && !(variant.quantity > 0) && (variant.product.sell_when_out_of_stock != 1)){ %>
                 <span id="outofstock" style="color: red;">{{__('Out of Stock')}}</span>
             <% }else{ %>
                 <input type="hidden" id="instock" value="<%= variant.quantity %>">
             <% } %>
         </h6>
-        <% if(variant.quantity > 0) { %>
+        <% if(!variant.product.has_inventory || (variant.quantity > 0) || (variant.product.sell_when_out_of_stock == 1)){ %>
         <div class="qty-box mb-3">
             <div class="input-group">
                 <span class="input-group-prepend">
-                    <button type="button" class="btn quantity-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
+                    <button type="button" class="btn quantity-left-minus" data-type="minus" data-field="" data-batch_count="<%= variant.product.batch_count %>" data-minimum_order_count="<%= variant.product.minimum_order_count %>"><i class="ti-angle-left"></i>
                     </button>
                 </span>
-                <input type="text" onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="1">
+                <input type="text" onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="<%= variant.product.minimum_order_count %>" data-minimum_order_count="<%= variant.product.minimum_order_count %>"> 
                 <span class="input-group-prepend quant-plus">
-                    <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="">
+                    <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="" data-batch_count="<%= variant.product.batch_count %>" data-minimum_order_count="<%= variant.product.minimum_order_count %>">
                         <i class="ti-angle-right"></i>
                     </button>
                 </span>
@@ -748,7 +748,7 @@
                 $('#inquiry_form').modal('hide');
             },
             error: function(response) {
-                console.log(response);
+                // console.log(response);
                 $('.messageError').html(response.responseJSON.errors.message[0]);
                 $('.agreeError').html(response.responseJSON.errors.agree[0]);
                 $('.numberError').html(response.responseJSON.errors.number[0]);
@@ -839,21 +839,22 @@
                     ajaxCall.abort();
                 }
             },
-            success: function(response) {
-                console.log(response);
-                if(response.status == 'Success'){
+            success: function(resp) {
+                // console.log(resp);
+                if(resp.status == 'Success'){
                     $("#variant_response span").html('');
+                    var response = resp.data;
                     if(response.variant != ''){
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
-                        response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count); 
+                        response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
                         response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
                         $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant}));
                         $('#product_variant_quantity_wrapper').html('');
                         let variant_quantity_template = _.template($('#variant_quantity_template').html());
                         $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
-                        console.log(response.variant.quantity);
-                        if(response.variant.quantity < 1){
+                        // console.log(response.variant.quantity);
+                        if(!response.is_available){
                             $(".addToCart, #addon-table").hide();
                         }else{
                             $(".addToCart, #addon-table").show();
@@ -870,7 +871,7 @@
                         }
                     }
                 }else{
-                    $("#variant_response span").html(response.message);
+                    $("#variant_response span").html(resp.message);
                     $(".addToCart, #addon-table").hide();
                 }
             },
@@ -1084,7 +1085,7 @@
                 //循环所有图片,计算尺寸,添加缩略图导航
                 for (let i = 0; i < imgNum; i++) {
                     imgArr[i] = copute_image_prop(images.eq(i)); //记录图片的尺寸属性等
-                    console.log(imgArr[i]);
+                    // console.log(imgArr[i]);
                     let li = exzoom_img_ul.find("li").eq(i);
                     li.css("width", boxWidth); //设置图片上级的 li 元素的宽度
                     li.find("img").css({
@@ -1247,7 +1248,7 @@
                 //移动端大图区域的 touchend 事件
                 exzoom_img_ul.on("touchend", function (event) {
                     //触屏滑动,根据移动方向按倍数对齐元素
-                    console.log(endX < startX);
+                    // console.log(endX < startX);
                     if (endX < startX) {
                         //向左滑动
                         moveRight();
