@@ -1,5 +1,5 @@
 <?php
-  $zws_id = 'X1-ZWz1ip5o7rayob_a57uf';
+  $zws_id = 'X1-ZWz16b0yk0045n_8mfo';
   $zillow_api = new Zillow_Api($zws_id); // $zws_id is your Zillow API Key
   $search_result = $zillow_api->GetSearchResults(array('address' => '7356 CARTER AVE', 'citystatezip' => 'NEWARK'));
   echo  $search_result;
@@ -39,9 +39,9 @@
 		public static function GetSearchResults()
 		{
 			
-			$params['zws-id'] = 'X1-ZWz1ip5o7rayob_a57uf';
+			$params['zws-id'] = 'X1-ZWz16b0yk0045n_8mfo';
             $params['address'] = '3799 S Las Vegas Blvd, Las Vegas, NV 89109, United States';
-            $params['citystatezip'] = 'X1-ZWz1ip5o7rayob_a57uf';
+            $params['citystatezip'] = 'X1-ZWz16b0yk0045n_8mfo';
             
 
 			$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);

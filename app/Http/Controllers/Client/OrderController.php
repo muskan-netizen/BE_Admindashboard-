@@ -74,8 +74,13 @@ class OrderController extends BaseController
         $cancel_order_requests = $cancel_order_requests->count();
 
         // Pending counts
-        $pending_order_count = Order::with('vendors')->whereHas('vendors', function ($query) {
+        $pending_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use($user) {
             $query->where('order_status_option_id', 1);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         });
         if ($user->is_superadmin == 0) {
             $pending_order_count = $pending_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
@@ -90,8 +95,13 @@ class OrderController extends BaseController
         })->count();
 
         // past orders count
-        $past_order_count = Order::with('vendors')->whereHas('vendors', function ($query) {
+        $past_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use($user) {
             $query->whereIn('order_status_option_id', [6, 3]);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         });
         if ($user->is_superadmin == 0) {
             $past_order_count = $past_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
@@ -106,8 +116,13 @@ class OrderController extends BaseController
         })->count();
 
         // active orders count
-        $active_order_count = Order::with('vendors')->whereHas('vendors', function ($query) {
+        $active_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use($user) {
             $query->whereIn('order_status_option_id', [2, 4, 5]);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         });
         if ($user->is_superadmin == 0) {
             $active_order_count = $active_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
@@ -248,22 +263,37 @@ class OrderController extends BaseController
         })->select('*', 'id as total_discount_calculate')->paginate(30);
         
 
-        $pending_orders = $pending_orders->with('vendors', function ($query) {
+        $pending_orders = $pending_orders->with('vendors', function ($query) use($user) {
             $query->where('order_status_option_id', 1);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         })->whereHas('vendors', function ($query) {
             $query->where('order_status_option_id', 1);
         })->count();
 
         $order_status_optionsa = [2, 4, 5];
-        $active_orders = $active_orders->with('vendors', function ($query) use ($order_status_optionsa) {
+        $active_orders = $active_orders->with('vendors', function ($query) use ($order_status_optionsa, $user) {
             $query->whereIn('order_status_option_id', $order_status_optionsa);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         })->whereHas('vendors', function ($query) use ($order_status_optionsa) {
             $query->whereIn('order_status_option_id', $order_status_optionsa);
         })->count();
 
         $order_status_optionsd = [6, 3];
-        $orders_history = $orders_history->with('vendors', function ($query) use ($order_status_optionsd) {
+        $orders_history = $orders_history->with('vendors', function ($query) use ($order_status_optionsd, $user) {
             $query->whereIn('order_status_option_id', $order_status_optionsd);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         })->whereHas('vendors', function ($query) use ($order_status_optionsd) {
             $query->whereIn('order_status_option_id', $order_status_optionsd);
         })->count();
