@@ -450,10 +450,10 @@ class OrderController extends BaseController
             if(empty($order->vendors[0]->web_hook_code)){
                     $checkOrderRef = Webhook::where('tracking_order_id',$order_id)->first();
                     if(isset($checkOrderRef) && $checkOrderRef->id){
-                        $OrderStatusUp = OrderVendor::where(['vendor_id' => $vendor_id, 'order_id' => $order_id])->first();
-                        $noRef = json_decode($checkOrderRef->response)->orderRef;
-                        $OrderStatusUp->web_hook_code = $noRef;
-                        $OrderStatusUp->save();
+                        // $OrderStatusUp = OrderVendor::where(['vendor_id' => $vendor_id, 'order_id' => $order_id])->first();
+                        // $noRef = json_decode($checkOrderRef->response)->orderRef;
+                        // $OrderStatusUp->web_hook_code = $noRef;
+                        // $OrderStatusUp->save();
                     }
             }
             $lala = new LalaMovesController();
