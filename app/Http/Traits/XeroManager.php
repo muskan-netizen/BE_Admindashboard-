@@ -5,7 +5,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use XeroAPI\XeroPHP\AccountingObjectSerializer;
 use App\Http\Traits\XeroStorageClass as StorageClass;
-use XeroAPI, GuzzleHttp, Session;
+use XeroAPI, GuzzleHttp, Session, DateTime;
 
 
 trait XeroManager{
@@ -182,6 +182,27 @@ trait XeroManager{
         }
     }
 
+    public function createItem($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp)
+    {
+        $item = new XeroAPI\XeroPHP\Models\Accounting\Item;
+        $item->setCode('abcXYZ123');
+        $item->setName('HelloWorld');
+        $item->setDescription('Foobar');
+
+        $items = new XeroAPI\XeroPHP\Models\Accounting\Items;
+        $arr_items = [];
+        array_push($arr_items, $item);
+        $items->setItems($arr_items);
+
+        try {
+          $result = $apiInstance->updateOrCreateItems($xeroTenantId, $items, $summarizeErrors, $unitdp);
+          return $result[0];
+
+        } catch (Exception $e) {
+          echo 'Exception when calling AccountingApi->updateOrCreateItems: ', $e->getMessage(), PHP_EOL;
+        }
+    }
+
     public function createInvoice($data)
     {
         $apiInstance = $this->authorizedResource();
@@ -190,18 +211,20 @@ trait XeroManager{
 
         $summarizeErrors = true;
         $unitdp = 4;
-        $dateValue = new DateTime('2020-10-10');
-        $dueDateValue = new DateTime('2020-10-28');
+        $dateValue = new DateTime('2022-03-25');
+        $dueDateValue = new DateTime('2022-03-28');
 
         $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
         $contact->setContactID($data['contact_id']);
 
-
+        $item = $this->createItem($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp);
+        
         $lineItem = new XeroAPI\XeroPHP\Models\Accounting\LineItem;
         $lineItem->setDescription('Foobar');
         $lineItem->setQuantity(1.0);
         $lineItem->setUnitAmount(20.0);
         $lineItem->setAccountCode('000');
+        $lineItem->setItemCode($item['code']);
         $lineItems = [];
         array_push($lineItems, $lineItem);
 
@@ -209,7 +232,7 @@ trait XeroManager{
         $invoice->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCREC);
         $invoice->setContact($contact);
         $invoice->setDate($dateValue);
-        $invoice->setDate($dueDateValue);
+        $invoice->setDueDate($dueDateValue);
         $invoice->setLineItems($lineItems);
         $invoice->setReference('Website Design');
         $invoice->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_DRAFT);
@@ -221,6 +244,7 @@ trait XeroManager{
 
         try {
           $result = $apiInstance->updateOrCreateInvoices($xeroTenantId, $invoices, $summarizeErrors, $unitdp);
+          return $result;
         } catch (Exception $e) {
           echo 'Exception when calling AccountingApi->updateOrCreateInvoices: ', $e->getMessage(), PHP_EOL;
         } 
