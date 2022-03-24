@@ -150,7 +150,20 @@ trait XeroManager{
         $projectApi = new XeroAPI\XeroPHP\Api\ProjectApi(
             new GuzzleHttp\Client(),
             $config
-        );  
+        );
+
+        if (isset($_POST["endpoint"]) ) {
+            $endpoint = htmlspecialchars($_POST["endpoint"]);
+        } else {
+            $endpoint = "Accounts";
+        }
+
+        if (isset($_POST["action"]) ) {
+            $action = htmlspecialchars($_POST["action"]);
+        } else {
+            $action = "none";
+        } 
+         
 
         $message = "no API calls";
         if (isset($_GET['action'])){
