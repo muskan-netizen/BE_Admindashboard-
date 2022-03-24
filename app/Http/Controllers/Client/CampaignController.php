@@ -284,7 +284,14 @@ class CampaignController extends BaseController
             $notification_type = $request->type;
             if($usertype==1)    // for all users
             {
-                $users = User::where(['status'=>1])->get();
+                $users = User::where(['status'=>1]);
+                if($request->type==1){
+                    $users->whereNotNull('phone_number');
+                }
+                if($request->type==2){
+                    $users->whereNotNull('email');
+                }                
+                $users = $users->get();
                 $getusercount = count($users);                
                 $totalbatches = ceil($getusercount/$request->request_user_count);
                 for ($i=1;$i<=$totalbatches;$i++)
@@ -299,20 +306,34 @@ class CampaignController extends BaseController
                     $roasterdata = [];
                     $conditionalvalue = (($i*$usercount)<=$getusercount)?$i*$usercount:$getusercount;
                     for($j = (($i-1)*$usercount); $j<$conditionalvalue;$j++)
-                    {                        
-                        $getdevicedetail = UserDevice::where('user_id',$users[$j]->id)->latest()->first();
-                        if($getdevicedetail)
+                    {                             
+                        if($request->type==3)
                         {
+                            $getdevicedetail = UserDevice::where('user_id',$users[$j]->id)->latest()->first();
+                            if($getdevicedetail)
+                            {
+                                $roasterdata[] = array(
+                                    'campaign_id'   =>  $campaign->id,
+                                    'user_id'   =>  $users[$j]->id,
+                                    'notification_time'   =>  $notification_time,
+                                    'notofication_type'   =>  $notification_type,
+                                    'device_type'   =>  $getdevicedetail->device_type,
+                                    'device_token'   =>  $getdevicedetail->device_token,
+                                    'status'    =>  0
+                                );
+                            } 
+                        }else{
                             $roasterdata[] = array(
                                 'campaign_id'   =>  $campaign->id,
                                 'user_id'   =>  $users[$j]->id,
                                 'notification_time'   =>  $notification_time,
                                 'notofication_type'   =>  $notification_type,
-                                'device_type'   =>  $getdevicedetail->device_type,
-                                'device_token'   =>  $getdevicedetail->device_token,
+                                'device_type'   =>  "",
+                                'device_token'   =>  "",
                                 'status'    =>  0
                             );
-                        }                        
+                        }               
+                                               
                     }
                     $insertroaster = CampaignRoster::insert($roasterdata);
                 }
@@ -336,19 +357,32 @@ class CampaignController extends BaseController
                     $conditionalvalue = (($i*$usercount)<=$getusercount)?$i*$usercount:$getusercount;
                     for($j = (($i-1)*$usercount); $j<$conditionalvalue;$j++)
                     {
-                        $getdevicedetail = UserDevice::where('user_id',$vendors[$j]->user_id)->latest()->first();
-                        if($getdevicedetail)
+                        if($request->type==3)
                         {
+                            $getdevicedetail = UserDevice::where('user_id',$vendors[$j]->user_id)->latest()->first();
+                            if($getdevicedetail)
+                            {
+                                $roasterdata[] = array(
+                                    'campaign_id'   =>  $campaign->id,
+                                    'user_id'   =>  $vendors[$j]->user_id,
+                                    'notification_time'   =>  $notification_time,
+                                    'notofication_type'   =>  $notification_type,
+                                    'device_type'   =>  $getdevicedetail->device_type,
+                                    'device_token'   =>  $getdevicedetail->device_token,
+                                    'status'    =>  0
+                                );
+                            } 
+                        }else{
                             $roasterdata[] = array(
                                 'campaign_id'   =>  $campaign->id,
                                 'user_id'   =>  $vendors[$j]->user_id,
                                 'notification_time'   =>  $notification_time,
                                 'notofication_type'   =>  $notification_type,
-                                'device_type'   =>  $getdevicedetail->device_type,
-                                'device_token'   =>  $getdevicedetail->device_token,
+                                'device_type'   =>  "",
+                                'device_token'   =>  "",
                                 'status'    =>  0
                             );
-                        }  
+                        } 
                     }
                     $insertroaster = CampaignRoster::insert($roasterdata);
                 }

@@ -977,16 +977,16 @@ class CustomerAuthController extends FrontController
        
         $params = (array('address' => '7356 CARTER AVE', 'citystatezip' => 'NEWARK'));
 
-        $params['zws-id'] = 'X1-ZWz1ip5o7rayob_a57uf';
-			$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);dd($url);
-			$result = new SimpleXMLElement($url, 0, true);
+        $params['zws-id'] = 'X1-ZWz16b0yk0045n_8mfo0';
+			$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
+			$result = new SimpleXMLElement($url, 0, true);dd($params);
         
 			// save this in object so that we could reuse it
 			if ( isset($result->response->results->result->zpid) ) {
 				$this->zpid = (string)$result->response->results->result->zpid;
 			}
 
-			return $result;
+			return $result->response;
         
     }
 
