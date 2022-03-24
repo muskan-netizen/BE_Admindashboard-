@@ -181,6 +181,8 @@ class LalaMovesController extends Controller
         $checkOrderRef = Webhook::where('tracking_order_id',$order_id)->first();
         if(isset($checkOrderRef) && $checkOrderRef->id){
             $noRef = json_decode($checkOrderRef->response)->orderRef;
+           return $response = json_decode($checkOrderRef->response);
+           die;
         }
         if(empty($order->web_hook_code) && empty($noRef))
         {
@@ -216,8 +218,6 @@ class LalaMovesController extends Controller
                     $response = false;
                 }
             }
-        }else{
-             $response = json_decode($checkOrderRef->response);
         }
 
         return $response;
