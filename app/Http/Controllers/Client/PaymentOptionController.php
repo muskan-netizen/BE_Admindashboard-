@@ -10,6 +10,7 @@ use App\Http\Traits\ToasterResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
+use Illuminate\Support\Facades\DB;
 use App\Models\{Client, ClientPreference, PaymentOption, PayoutOption};
 
 class PaymentOptionController extends BaseController

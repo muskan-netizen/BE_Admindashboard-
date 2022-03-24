@@ -531,7 +531,7 @@
                                             </ul>
                                         </td>
                                         @endif
-                                        <td> <a href="{{ $csv->path }}">{{ __('Download') }}</a> </td>
+                                        <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
                                     </tr>
                                     @endforeach
                                 </tbody>

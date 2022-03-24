@@ -160,6 +160,7 @@ class ProductController extends BaseController
     public function edit($domain = '', $id)
     {
         $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $id)->firstOrFail();
+       // dd($product);
         $type = Type::all();
         $countries = Country::all();
         $addons = AddonSet::with('option')->select('id', 'title')
@@ -938,6 +939,7 @@ class ProductController extends BaseController
                     $update_product = Product::whereIn('id',$request->product_id)->update(['sell_when_out_of_stock' => $sell_when_out_of_stock]);
                 break;
                 case "delete":
+                    // delete product harrry
                     $products = Product::whereIn('id',$request->product_id)->get();
                     foreach($products as $product){
                         DB::beginTransaction();
@@ -971,6 +973,12 @@ class ProductController extends BaseController
             'status' => 'success',
             'message' => __('Product action Submitted successfully!')
         ]);
+    }
+
+    # check if last mile delivery on
+    public function getProductFaq(Request $request){
+        pr($request->all());
+        
     }
 
 

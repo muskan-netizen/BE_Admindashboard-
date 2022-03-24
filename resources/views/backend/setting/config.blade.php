@@ -1086,7 +1086,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="product_order_form" class="mr-2 mb-0">{{__('Product Order Form')}}<small class="d-block pr-5">Add a Product Order form for Pickup/Delivery. Create Dynamic questions per product.</small></label>
+                        <label for="product_order_form" class="mr-2 mb-0">{{__('Product Order Form')}}<small class="d-block pr-5">{{__('Add a Product Order form. Create Dynamic questions per product.')}}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="product_order_form" id="product_order_form" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->product_order_form == '1')) checked='checked' @endif>
                      </span>
                      </div>

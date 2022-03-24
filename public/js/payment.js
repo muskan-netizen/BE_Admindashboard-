@@ -527,6 +527,8 @@ $(document).ready(function() {
         // ajaxData.payment_from = 'cart';
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
+        // console.log(JSON.stringify(ajaxData));
+        // return false;
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1051,15 +1053,15 @@ $(document).ready(function() {
             total_amount = walletElement.val();
             payment_from = 'wallet';
             var rowData = 'amt='+total_amount+'&from='+payment_from;
-        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
-            total_amount = tipElement.val();
-            payment_from = 'tip';
-            var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
         }else if (path.indexOf("subscription") !== -1) {
             total_amount = subscriptionElement.val();
             subsId = subscriptionId.val();
             payment_from = 'subscription';
             var rowData = 'subsid='+subsId+'&from='+payment_from+'&amt='+total_amount;
+        }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+            var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
         }
         $.ajax({
             type: "POST",

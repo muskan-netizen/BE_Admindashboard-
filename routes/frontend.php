@@ -1,11 +1,12 @@
 <?php
-
-Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
-Route::get('/debug-sentry', function () {
+	Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
+	Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
+	Route::get('auth/xero','Front\XeroController@index');
+	Route::any('auth/callback/xero','Front\XeroController@xero_callback');
+	Route::get('/debug-sentry', function () {
 	throw new Exception('My first Sentry error!');
 });
-
 
 
 Route::group(['middleware' => ['domain']], function () {
@@ -39,10 +40,6 @@ Route::group(['middleware' => ['domain']], function () {
 
 		dd('send mail successfully !!');
 	});
-
-
-
-	Route::get('zillow', 'Front\CustomerAuthController@zillowGetData');
 
 
 	// Start edit order routes
@@ -141,6 +138,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/checkout/notify', 'Front\CheckoutGatewayController@checkoutNotify')->name('payment.checkoutNotify');
 
 	//Passbase
+	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
+	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 	Route::any('passbase/webhook','Front\PassbaseController@webhook')->name('passbase.webhook');
 
 
@@ -150,6 +149,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//VivaWallet routes 
 	Route::match(['get','post'],'payment/vivawallet/pay', 'Front\VivawalletController@createPayLink')->name('vivawallet.pay');
+	
 
 	Route::match(['get','post'],'viva/result', 'Front\VivawalletController@successPage')->name('viva.success');
 	Route::any('viva/webhook/success', 'Front\VivawalletController@verifyWebhookUrl')->name('viva.webhook');
@@ -192,7 +192,6 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Cashfree
 	Route::get('payment/cashfree/return', 'Front\CashfreeGatewayController@cashfreeReturn')->name('payment.cashfree.return');
-	Route::get('payment/cashfree/return/app', 'Front\CashfreeGatewayController@cashfreeReturnApp')->name('payment.cashfree.return.app');
 	Route::post('payment/cashfree/notify', 'Front\CashfreeGatewayController@cashfreeNotify')->name('payment.cashfree.notify');
 
 
@@ -247,6 +246,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('paginateValue', 'Front\UserhomeController@changePaginate')->name('changePaginate');
 	Route::get('{vendor?}/product/{id?}', 'Front\ProductController@index')->name('productDetail');
 	Route::post('/product/variant/{id}', 'Front\ProductController@getVariantData')->name('productVariant');
+	Route::get('product/faq/{id}', 'Front\ProductController@getProductFaq')->name('getProductFaq');
 	Route::post('cart/product/lastAdded', 'Front\CartController@getLastAddedProductVariant')->name('getLastAddedProductVariant');
 	Route::post('cart/product/variant/different-addons', 'Front\CartController@getProductVariantWithDifferentAddons')->name('getProductVariantWithDifferentAddons');
 	Route::post('add/product/cart', 'Front\CartController@postAddToCart')->name('addToCart');
@@ -255,6 +255,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('add/vendorTable/cart', 'Front\CartController@addVendorTableToCart')->name('addVendorTableToCart');
 	Route::post('add/product/prescription', 'Front\CartController@uploadPrescription')->name('cart.uploadPrescription');
 	Route::post('cart/schedule/update', 'Front\CartController@updateSchedule')->name('cart.updateSchedule');
+	Route::post('cart/productfaq/update', 'Front\CartController@updateCartProductFaq')->name('cart.productfaq');
 	Route::post('cart/schedule/slots', 'Front\CartController@checkScheduleSlots')->name('cart.check_schedule_slots');
 	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cart.updateProductSchedule');
 	Route::get('cartProducts', 'Front\CartController@getCartData')->name('getCartProducts');
@@ -348,6 +349,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::group(['prefix' => 'rating'], function () {
 		Route::post('update-product-rating', 'Front\RatingController@updateProductRating')->name('update.order.rating');
 		Route::get('get-product-rating', 'Front\RatingController@getProductRating')->name('get-product-rating-details');
+		
+		Route::post('update-driver-rating', 'Front\RatingController@updateDriverRating')->name('update.driver.rating');
+		Route::get('get-driver-rating', 'Front\RatingController@getDriverRating')->name('get-driver-rating-details');
 	});
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
@@ -381,5 +385,5 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
 	//Passbase
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
-	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
+	Route::match(['get','post'],'passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 });

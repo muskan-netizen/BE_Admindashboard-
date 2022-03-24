@@ -12,7 +12,7 @@ use App\Http\Traits\{ApiResponser,CartManager};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq};
 use Log;
 class CartController extends FrontController
 {
@@ -571,7 +571,7 @@ class CartController extends FrontController
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
-        ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        ])->select('vendor_id', 'luxury_option_id',  'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         $loyalty_amount_saved = 0;
         $redeem_points_per_primary_currency = '';
         $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -679,6 +679,8 @@ class CartController extends FrontController
                     }
                     $prod->product_out_of_stock =  $product_out_of_stock;
 
+                    $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
+
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price;
@@ -774,10 +776,19 @@ class CartController extends FrontController
                            if(isset($deliveries[0]))
                            {
                             $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
+                            if(count($deliveries)>1){
                             foreach($deliveries as $k=> $opt)
                                 {
                                     $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                    //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
                                 }
+                            }else{
+                                foreach($deliveries as $k=> $opt)
+                                {
+                                    //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                                }
+                            }
                             $select .= '</select>';
                                 if($code){
                                     $new = array_filter($deliveries, function ($var) use ($code) {
@@ -971,7 +982,7 @@ class CartController extends FrontController
                     $delivery_status = 0;
                 }
 
-                if((float)($vendorData->vendor->order_min_amount) > $subtotal_amount){  # if any vendor total amount of order is less then minimum order amount
+                if((float)($vendorData->vendor->order_min_amount) > $payable_amount){  # if any vendor total amount of order is less then minimum order amount
                     $delivery_status = 0;
                 }
 
@@ -1658,26 +1669,31 @@ class CartController extends FrontController
     }
 
     public function updateSchedule(Request $request, $domain = '')
-    {        
+    {       
         DB::beginTransaction();
         try{
             $user = Auth::user();
             $new_session_token = session()->get('_token');
             if ($user || $new_session_token) {                
                 if($request->task_type == 'now'){
-                    $time = Carbon::now()->format('Y-m-d H:i:s');
+                    $time = Carbon::now()->format('Y-m-d H:i:s');                  
+                    
                 }else{
-
+                   
                     if(isset($request->slot))
-                    {
+                    { 
                         $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                        $slot = $request->slot;
-                    }else{
+                        $slot = $request->slot;                        
+                    }else{                       
+                     
                         if(isset($request->schedule_dt) && !empty($request->schedule_dt))
                         $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                      
                     }
 
                 }
+
+               
 
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
                 $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
@@ -1859,6 +1875,26 @@ class CartController extends FrontController
     public function updateCartSlot(Request $request){
         $checkVendorProd = CartProduct::where('vendor_id',$request->vid)->update(['schedule_type'=>$request->slot,'scheduled_date_time'=>$request->date]);
             return true;
+    }
+    public function updateCartProductFaq(Request $request, $domain=''){
+       
+        $user = Auth::user();
+        $new_session_token = session()->get('_token');
+        if ($user) {
+            $cart = Cart::where('user_id', $user->id)->first();
+        } else {
+            $cart = Cart::where('unique_identifier', $new_session_token)->first();
         }
+        $user_product_order_form = null;
+       
+        $cartData_id = CartProduct::where('cart_id', $cart->id)->where('product_id', $request->product_id)->pluck('id');
+       
+        if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
+        $user_product_order_form = json_encode($request->user_product_order_form);
+       
+        CartProduct::whereIn('id', $cartData_id)->update(['user_product_order_form'=> $user_product_order_form]);
+
+        return response()->json(['status'=>'Success', 'message'=>__('Product form Submit successfully.')]);
+    }
 
 }

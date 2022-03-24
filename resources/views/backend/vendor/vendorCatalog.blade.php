@@ -463,9 +463,30 @@
                                 </div>
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
-                                        @csrf
+                                        @csrf                                        
+
+
+                                        @if(session()->get("applocale_admin") == "ta")
                                         <a
-                                            href="{{ url('file-download' . '/sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
+                                            href="{{ url('file-download' . '/tamil_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a> 
+
+                                        @elseif(session()->get("applocale_admin") == "am")
+                                        <a
+                                            href="{{ url('file-download' . '/arabic_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a> 
+
+                                        @elseif(session()->get("applocale_admin") == "fr")
+                                        <a
+                                            href="{{ url('file-download' . '/french_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a> 
+
+                                        @elseif(session()->get("applocale_admin") == "de")
+                                        <a
+                                            href="{{ url('file-download' . '/german_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a> 
+
+                                        @else
+                                        <a
+                                            href="{{ url('file-download' . '/sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>  
+                                        @endif
+                                        
                                         <input type="hidden" value="{{ $vendor->id }}" name="vendor_id" />
                                         <input type="file" accept=".csv" onchange="submitProductImportForm()"
                                             data-plugins="dropify" name="product_excel" class="dropify" />
@@ -520,6 +541,7 @@
                                     </thead>
                                     <tbody id="post_list">
                                         @foreach ($csvProducts as $csv)
+                                        
                                             <tr data-row-id="{{ $csv->id }}">
                                                 <td> {{ $loop->iteration }}</td>
                                                 <td> {{ $csv->name }}</td>
@@ -543,7 +565,7 @@
                                                         </ul>
                                                     </td>
                                                 @endif
-                                                <td> <a href="{{ $csv->path }}">{{ __('Download') }}</a> </td>
+                                                <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
