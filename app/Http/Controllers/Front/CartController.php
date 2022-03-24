@@ -681,6 +681,7 @@ class CartController extends FrontController
 
                     $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
 
+                    $prod->category_kyc_count = 1;
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price;

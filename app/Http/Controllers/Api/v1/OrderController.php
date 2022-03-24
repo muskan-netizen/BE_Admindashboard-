@@ -1203,6 +1203,9 @@ class OrderController extends BaseController
                                 );
                             }
                         }
+                        if($product->user_product_order_form)
+                        $product->user_product_order_form=json_decode($product->user_product_order_form);
+
                         $product->variant_options = $variant_options;
                         if (!empty($product->addon)) {
                             foreach ($product->addon as $k => $addon) {
