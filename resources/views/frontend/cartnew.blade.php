@@ -185,13 +185,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <% _.each(vendor_product.addon, function(addon, ad){%>
                             <% if(addon.option){%>
                                 <div class="row">
-                                    <div class="col-md-3 col-sm-4 items-details text-left">
+                                    <div class="col-md-3 col col-sm-4 items-details text-left">
                                         <p class="p-0 m-0"><%= addon.option.title %></p>
                                     </div>
-                                    <div class="col-md-2 col-sm-4 text-center">
+                                    <div class="col-md-2 col col-sm-4 text-center">
                                         <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart * addon.option.multiplier) %></div>
                                     </div>
-                                    <div class="col-md-7 col-sm-4 text-right">
+                                    <div class="col-md-7 col col-sm-4 text-right">
                                         <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
                                     </div>
                                 </div>
@@ -270,7 +270,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                     <% if(product.delOptions) { %>
                         <div class="row mb-1 d-flex align-items-center">
-                            <div class="col-5 text-lg-right">
+                            <div class="col-md-5 text-lg-right">
                                 <label class="m-0 radio">
                                     {{__('Delivery Fee')}} :</label>
                                 </div>
@@ -281,12 +281,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <% } %>
 
                     <div class="row mb-1">
-                        <div class="col-5 text-lg-right">
+                        <div class="col-md-5 text-lg-right">
                             <% if(product.coupon_amount_used > 0) { %>
                                 <label class="m-0 radio">{{__('Coupon Discount')}} :</label>
                             <% } %>
                         </div>
-                        <div class="col-7 text-right">
+                        <div class="col-md-7 text-right">
                             <% if(product.coupon_amount_used > 0) { %>
                                 <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.coupon_amount_used) %></p>
                                 <% } %>
@@ -295,7 +295,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                     <div class="row">
                         <% if(cart_details.vendorCnt>1) { %>
-                            <div class="col-5 text-lg-right">
+                            <div class="col-md-5 text-lg-right">
                                 <label class="m-0 radio">{{__('Sub Total')}} :</label>
                             </div>
                             <div class="col-md-7 text-right">
@@ -365,7 +365,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <hr class="my-2">
             <% } %>
-            
+
             <% if(cart_details.total_container_charges > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Total Container Charges')}}</div>
@@ -383,7 +383,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
             </div>
             <hr class="my-2">
-           
+
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
@@ -409,7 +409,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(client_preference_detail.tip_before_order == 1) { %>
             <div class="row">
                 <div class="col-12">
-                    <div class="mb-2">@if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif</div> 
+                    <div class="mb-2">@if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif</div>
                     <div class="tip_radio_controls">
                         <% if(cart_details.total_payable_amount > 0) { %>
                             <input type="radio" class="tip_radio" id="control_01" name="select" value="<%= cart_details.tip_5_percent %>" <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> checked <% } %>>
@@ -485,12 +485,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
 
         </div>
-        {{-- Schedual code Start at down --}}
+
+    </div>
+    {{-- Schedual code Start at down --}}
 
             <% if(client_preference_detail.off_scheduling_at_cart != 1 && cart_details.vendorCnt==1) { %>
                 @if($client_preference_detail->business_type != 'laundry')
-            <div class="row col-md-12 d-flex p-0 justify-content-end arabic-lng mt-2 mb-md-4 mb-2 position-relative" id="dateredio">
-                <div class="col mb-2 mb-md-0 text-right p-0">
+            <div class="row col-12 arabic-lng position-relative" id="dateredio">
+                <div class=" col-md-6 mb-2 mb-md-0 text-right p-0">
                     <div class="login-form">
                         <ul class="list-inline ml-auto d-flex align-items-center justify-content-end">
                             <li class="d-inline-block mr-1">
@@ -551,7 +553,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% } %>
 
             {{-- Schedual code end at down --}}
-    </div>
 </script>
 
 <script type="text/template" id="promo_code_template">

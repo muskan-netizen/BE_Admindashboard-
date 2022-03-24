@@ -2,6 +2,8 @@
 	Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
 	Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
+	Route::get('auth/xero','Front\XeroController@index');
+	Route::any('auth/callback/xero','Front\XeroController@xero_callback');
 	Route::get('/debug-sentry', function () {
 	throw new Exception('My first Sentry error!');
 });

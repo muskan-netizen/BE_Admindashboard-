@@ -62,7 +62,7 @@
                         <div class="col-6 mb-2">{{__('Duration')}}</div>
                         <div class="col-6 mb-2 text-right" id="duration"></div>
                         <% if(result.loyalty_amount_saved) { %>
-                            <div class="col-6 mb-2">Loyalty</div>
+                            <div class="col-6 mb-2">{{__('Loyalty')}}</div>
                             <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
                         <% } %>
                     </div>
@@ -76,14 +76,14 @@
                     <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" style="display:none;">Remove</a>
                 </div>
                 <div class="form-group pmd-textfield pmd-textfield-floating-label" style="display:none;" id="schedule_datetime_main_div">
-                    <label class="control-label" for="datetimepicker-default">Select Date and Time</label>
+                    <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
             </div>
             <div class="payment-promo-container p-2">
                 <h4 class="d-flex align-items-center justify-content-between mb-2">
                     <span>
-                        <i class="fa fa-money" aria-hidden="true"></i> Cash
+                        <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
                     </span>
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                 </h4>
@@ -109,7 +109,7 @@
                         <hr class="m-0">
                         <div class="code-outer p-2 text-uppercase d-flex align-items-center justify-content-between">
                             <label class="m-0"><%= promo_code.name %></label>
-                            <a class="btn btn-solid cab_booking_apply_promo_code_btn" data-vendor_id="<%= vendor_id %>" data-coupon_id="<%= promo_code.id %>" data-product_id="<%= product_id %>" data-amount="<%= amount %>" style="cursor: pointer;">Apply</a>
+                            <a class="btn btn-solid cab_booking_apply_promo_code_btn" data-vendor_id="<%= vendor_id %>" data-coupon_id="<%= promo_code.id %>" data-product_id="<%= product_id %>" data-amount="<%= amount %>" style="cursor: pointer;">{{__("Apply")}}</a>
                         </div>
                         <hr class="m-0">
                         <div class="offer-text p-2">
