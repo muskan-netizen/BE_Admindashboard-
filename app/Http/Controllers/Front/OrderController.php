@@ -292,8 +292,6 @@ class OrderController extends FrontController
     }
     public function sendSuccessEmail($request, $order, $vendor_id = '')
     {
-        \Log::info('user-id = '.$request->user_id);
-        \Log::info(json_encode($request->all()));
         if ((isset($request->user_id)) && (!empty($request->user_id))) {
             $user = User::find($request->user_id);
         } elseif ((isset($request->auth_token)) && (!empty($request->auth_token))) {
@@ -369,7 +367,6 @@ class OrderController extends FrontController
                 }
                 // $res = $this->testOrderMail($email_data);
                 // dd($res);
-                \Log::info(json_encode($email_data));
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
