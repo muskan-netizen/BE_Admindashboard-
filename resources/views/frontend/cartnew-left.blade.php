@@ -12,7 +12,7 @@
     <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
         <h4 class="page-title m-0">{{ __($label)  }} {{ ($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</h4>
         <a class="add-address ml-auto" href="javascript:void(0)">
-            <i class="fa fa-plus mr-1" aria-hidden="true"></i>{{__('Add New ') }}{{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address')}}
+            <i class="fa fa-plus mr-1" aria-hidden="true"></i>{{__('Add New') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address')}}
         </a>
     </div>
     @endif

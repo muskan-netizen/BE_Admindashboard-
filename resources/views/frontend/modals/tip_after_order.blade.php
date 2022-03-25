@@ -14,13 +14,13 @@
               <div class="form-group">
                   <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance"></span></div>
               </div>
-             
+
               <div class="form-group">
-                
+
                   <input class="form-control" name="wallet_amount" id="wallet_amount" type="hidden" placeholder="Enter Amount">
                   <input class="form-control" name="tip_for_past_order" id="tip_for_past_order" type="hidden" value="1">
                   <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                  <input type="hidden" name="order_number" id="order_number" value="0"> 
+                  <input type="hidden" name="order_number" id="order_number" value="0">
                   <span class="error-msg" id="wallet_amount_error"></span>
               </div>
                <hr class="mt-0 mb-1" />
@@ -51,7 +51,7 @@
           <% _.each(payment_options, function(payment_option, k){%>
               <% if( (payment_option.slug != 'cash_on_delivery') && (payment_option.slug != 'loyalty_points') ) { %>
                   <label class="radio mt-2">
-                      <%= payment_option.title %> 
+                      <%= payment_option.title %>
                       <input type="radio" name="wallet_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.slug %>" data-payment_option_id="<%= payment_option.id %>">
                       <span class="checkround"></span>
                   </label>
