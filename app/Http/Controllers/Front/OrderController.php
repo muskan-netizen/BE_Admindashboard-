@@ -376,7 +376,7 @@ class OrderController extends FrontController
     public function sendSuccessSMS($request, $order, $vendor_id = '')
     {
         try {
-            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
 
             $currId = Session::get('customerCurrency');
             $currSymbol = Session::get('currencySymbol');
@@ -389,6 +389,7 @@ class OrderController extends FrontController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
+                $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
                 $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
             //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                 if (!empty($prefer->sms_provider)) {
@@ -1013,13 +1014,18 @@ class OrderController extends FrontController
                 $order->payment_status = 1;
             }
             $order->save();
-            foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-                $this->sendSuccessEmail($request, $order, $vendor_id);
-            }
             // $this->sendOrderNotification($user->id, $vendor_ids);
-            $this->sendSuccessEmail($request, $order);
+           
             $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20,21,24]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree
             if (!in_array($request->payment_option_id, $ex_gateways)) {
+
+                //Send Email to customer
+                $this->sendSuccessEmail($request, $order);
+                //Send Email to Vendor
+                foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                    $this->sendSuccessEmail($request, $order, $vendor_id);
+                }
+
                 Cart::where('id', $cart->id)->update([
                     'schedule_type' => null, 'scheduled_date_time' => null,
                     'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
@@ -1028,7 +1034,9 @@ class OrderController extends FrontController
                 CartCoupon::where('cart_id', $cart->id)->delete();
                 CartProduct::where('cart_id', $cart->id)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
+
             }
+
             if (count($tax_category_ids)) {
                 foreach ($tax_category_ids as $tax_category_id) {
                     $order_tax = new OrderTax();
