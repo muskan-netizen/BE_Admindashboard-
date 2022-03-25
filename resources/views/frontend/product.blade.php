@@ -274,7 +274,7 @@
 
                                     @if(!empty($product->addOn) && $product->addOn->count() > 0)
                                     <div class="border-product">
-                                        <h6 class="product-title">Addon List</h6>
+                                        <h6 class="product-title">{{ __('Addon List')}}</h6>
 
                                         <div id="addon-table">
                                             @foreach($product->addOn as $row => $addon)
@@ -282,19 +282,22 @@
                                                     <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
                                                         @php
                                                             $min_select = '';
+                                                            $minText = __('Minimum');
+                                                            $maxText = __('Maximum');
+                                                            $andText = __('and');
                                                             if($addon->min_select > 0){
-                                                                $min_select = 'Minimum '.$addon->min_select;
+                                                                $min_select = $minText.' '.$addon->min_select;
                                                             }
                                                             $max_select = '';
                                                             if($addon->max_select > 0){
-                                                                $max_select = 'Maximum '.$addon->max_select;
+                                                                $max_select = $maxText.' '.$addon->max_select;
                                                             }
                                                             if( ($min_select != '') && ($max_select != '') ){
-                                                                $min_select = $min_select.' and ';
+                                                                $min_select = $min_select.' '.$andText.' ';
                                                             }
                                                         @endphp
                                                         @if( ($min_select != '') || ($max_select != '') )
-                                                            <small>({{$min_select.$max_select}} Selections allowed)</small>
+                                                            <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
                                                         @endif
                                                     </h4>
 
@@ -359,8 +362,8 @@
                                     <div class="product-buttons">
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                         @if($is_inwishlist_btn && $is_available)
-                                        <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}">
-                                            {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('REMOVE FROM WISHLIST') : __('Add To Wishlist') }}
+                                        <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
+                                            {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
                                         </button>
                                         @endif
                                         @if($product->inquiry_only == 0)

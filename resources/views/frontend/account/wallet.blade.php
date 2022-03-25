@@ -137,7 +137,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                                         <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}{{decimal_format($amount)}}</b></td>
                                     </tr>
                                     @empty
-                                    <tr><td align="center" colspan="4">{{__('No Transaction history exists')}}</td></tr>
+                                    <tr><td align="center" colspan="4">{{__('No Transaction History Exists')}}</td></tr>
                                     @endforelse
                                     </tbody>
                                   </table>

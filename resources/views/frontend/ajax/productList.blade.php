@@ -1,4 +1,4 @@
-<div class="col-12 text-right mt-2">Sort By :
+<div class="col-12 text-right mt-2">{{ __('Sort By:')}}
     <select name="order_type" id='order_type' class="sortingFilter p-1">
      <option value="">{{__('Please Select')}}</option>
         <option value="featured" {{isset($data['order_type']) && $data['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
