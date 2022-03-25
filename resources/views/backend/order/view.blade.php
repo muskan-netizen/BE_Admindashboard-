@@ -432,7 +432,7 @@ $timezone = Auth::user()->timezone;
 
 
         <div class="row">
-            @if($order->address && ($order->luxury_option_id == 1) && ($client_preference_detail->hide_order_address ==0 ) )
+            @if( (Auth::user()->is_superadmin) || ($order->address && ($order->luxury_option_id == 1) && ($client_preference_detail->hide_order_address ==0 )) )
 
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0 h-100">
