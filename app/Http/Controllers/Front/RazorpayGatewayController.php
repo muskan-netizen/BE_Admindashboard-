@@ -142,8 +142,6 @@ class RazorpayGatewayController extends FrontController
                     $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                    // $request = new Request();
                     $request->request->add(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
-                    \Log::info(json_encode($request->getContent()));
-                    \Log::info(json_encode($request->all()));
                    //Send Email to customer
                     $orderController->sendSuccessEmail($request, $order);
                     //Send Email to Vendor
