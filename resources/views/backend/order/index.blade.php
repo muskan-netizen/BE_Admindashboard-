@@ -24,7 +24,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <div class="col-md-3"><h4>{{ __("Order ID") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Date & Time") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Customer") }}</h4></div>
-                        @if($client_preference_detail->hide_order_address ==0 )
+                        @if( (Auth::user()->is_superadmin) ||  ($client_preference_detail->hide_order_address ==0) )
                         <div class="col-md-3"><h4>{{ __("Address") }}</h4></div>
                         @endif
                     </div>
@@ -36,7 +36,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <div class="col-md-3">
                             <a class="text-capitalize" href="#"><%= order.user.name %></a>
                         </div>
-                        @if($client_preference_detail->hide_order_address ==0 )
+                        @if( (Auth::user()->is_superadmin) ||  ($client_preference_detail->hide_order_address ==0) )
                             <% if(order.address !== null) { %>
                             <div class="col-md-3">
                                 <p class="ellipsis mb-0" data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">

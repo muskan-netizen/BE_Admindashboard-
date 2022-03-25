@@ -26,7 +26,6 @@ class DeliveryOptionController extends Controller
         $last_mile_teams = [];
         if(isset($preference) && $preference->need_delivery_service == '1') {
             $last_mile_teams = $this->getLastMileTeams();
-
         }
 
         return view('backend/deliveryoption/index')->with(['delOption' => $delOption,'opt'=>$shipingOption,'optDunzo'=>$dunzoOption,'optAhoy'=>$ahoyOption,'last_mile_teams'=>$last_mile_teams,'preference'=>$preference]);
@@ -85,7 +84,7 @@ class DeliveryOptionController extends Controller
                      }
                  }
                ShippingOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
-             
+               $this->OnLAstMileDelivery();
                $toaster = $this->successToaster(__('Success'), $msg);
      
              }catch(\Exception $e)
@@ -150,7 +149,7 @@ class DeliveryOptionController extends Controller
                     }
                 }
               ShippingOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
-            
+              $this->OnLAstMileDelivery();
               $toaster = $this->successToaster(__('Success'), $msg);
     
             }catch(\Exception $e)
@@ -222,6 +221,7 @@ class DeliveryOptionController extends Controller
                 }
             }
             ShippingOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
+            $this->OnLAstMileDelivery();
             $toaster = $this->successToaster(__('Success'), $msg);
 
         }catch(\Exception $e)
@@ -257,7 +257,16 @@ class DeliveryOptionController extends Controller
             $preferenceset->need_delivery_service =  ($request->has('need_delivery_service') && $request->need_delivery_service == 'on') ? 1 : 0;
         }
         $preferenceset->save();
+        $this->OnLAstMileDelivery();
         return redirect()->back()->with('success', 'Client configurations updated successfully!');
+    }
+
+    function OnLAstMileDelivery()
+    {
+        $count = ShippingOption::where('status',1)->count();
+        $preferenceset = ClientPreference::where('client_code', Auth::user()->code)->first();
+        $preferenceset->need_delivery_service = (($count>0)?1:0);
+        $preferenceset->save();
     }
 
 

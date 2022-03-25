@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest};
+use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest, Webhook};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -447,6 +447,15 @@ class OrderController extends BaseController
 
         $driver_data = '';
         if($order->vendors[0]->shipping_delivery_type == 'L'){
+            if(empty($order->vendors[0]->web_hook_code)){
+                    $checkOrderRef = Webhook::where('tracking_order_id',$order_id)->first();
+                    if(isset($checkOrderRef) && $checkOrderRef->id){
+                        // $OrderStatusUp = OrderVendor::where(['vendor_id' => $vendor_id, 'order_id' => $order_id])->first();
+                        // $noRef = json_decode($checkOrderRef->response)->orderRef;
+                        // $OrderStatusUp->web_hook_code = $noRef;
+                        // $OrderStatusUp->save();
+                    }
+            }
             $lala = new LalaMovesController();
             $driver_data = $lala->getDeriverDetails($order->vendors[0]);
         }
@@ -492,6 +501,7 @@ class OrderController extends BaseController
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
+                $orderPlaced = true;
                 $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
@@ -529,7 +539,7 @@ class OrderController extends BaseController
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
 
-                    OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
+                    OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason ?? null, 'cancelled_by'=>$request->cancelled_by ?? null]);
                 }
                 if ($request->status_option_id == 3) {
                     if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
