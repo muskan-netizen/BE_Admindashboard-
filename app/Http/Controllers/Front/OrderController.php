@@ -369,7 +369,7 @@ class OrderController extends FrontController
                 }
                 // $res = $this->testOrderMail($email_data);
                 // dd($res);
-                \Log::info('hit Email Job');
+                \Log::info(json_encode($email_data));
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
