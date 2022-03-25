@@ -140,9 +140,16 @@ class RazorpayGatewayController extends FrontController
                     $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
                     $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                    
+                    $request->request->add(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
+                   //Send Email to customer
+                    $orderController->sendSuccessEmail($request, $order);
+                    //Send Email to Vendor
+                    foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                        $orderController->sendSuccessEmail($request, $order, $vendor_id);
+                    }
 
-                    // Send Email
-                    //   $this->successMail();
+
                 }
                 $returnUrlParams = '?gateway=razorpay&order=' . $order->id;
                 $returnUrl = route('order.return.success');
