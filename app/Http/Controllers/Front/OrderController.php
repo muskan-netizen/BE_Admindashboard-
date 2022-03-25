@@ -993,7 +993,6 @@ class OrderController extends FrontController
                 $request->tip = str_replace(',', '', $request->tip);
                 $tip_amount = $request->tip;
                 $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
-                Log::info($tip_amount);
                 $order->tip_amount = $tip_amount;
             }
             $payable_amount = $payable_amount + $tip_amount;
