@@ -293,6 +293,8 @@ class OrderController extends FrontController
     public function sendSuccessEmail($request, $order, $vendor_id = '')
     {
         \Log::info('Order-id = '.$order->order_number);
+        \Log::info(json_encode($request));
+        \Log::info('vendor-id = '.$vendor_id);
         if ((isset($request->user_id)) && (!empty($request->user_id))) {
             $user = User::find($request->user_id);
         } elseif ((isset($request->auth_token)) && (!empty($request->auth_token))) {
