@@ -677,9 +677,13 @@ function stripeFPXPaymentCredentials(){
     return $response;
 }
 
+ function OnLAstMileDelivery()
+    {
+        $count = ShippingOption::where('status',1)->count();
+        return $count;
+    }
 
-function getServerURL()
-{
+function getServerURL(){
     $client = ClientData::where('id', '>', 0)->first();
     $domain = '';
     if(!empty($client->custom_domain)){
