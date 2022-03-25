@@ -261,7 +261,7 @@ class OrderController extends BaseController
                 $q2->where('payment_option_id', 1);
             });
         })->select('*', 'id as total_discount_calculate')->paginate(30);
-        
+
 
         $pending_orders = $pending_orders->with('vendors', function ($query) use($user) {
             $query->where('order_status_option_id', 1);
@@ -409,7 +409,7 @@ class OrderController extends BaseController
                     $total_amount = $total_amount + $opt_quantity_price;
                 }
                 $product->total_amount = $total_amount;
-                
+
             }
             if ($vendor->dineInTable) {
                 $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -444,7 +444,7 @@ class OrderController extends BaseController
         $user_registration_documents = UserRegistrationDocuments::get();
         //pr($user_docs->toArray() );
         $vendor_data = Vendor::where('id',$vendor_id)->first();
-        
+
         $driver_data = '';
         if($order->vendors[0]->shipping_delivery_type == 'L'){
             if(empty($order->vendors[0]->web_hook_code)){
@@ -457,7 +457,7 @@ class OrderController extends BaseController
                     }
             }
             $lala = new LalaMovesController();
-            $driver_data = $lala->getDeriverDetails($order->vendors[0]); 
+            $driver_data = $lala->getDeriverDetails($order->vendors[0]);
         }
 
         return view('backend.order.view')->with([
@@ -481,7 +481,7 @@ class OrderController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function changeStatus(Request $request, $domain = '') 
+    public function changeStatus(Request $request, $domain = '')
     {
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
@@ -501,6 +501,7 @@ class OrderController extends BaseController
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
+                $orderPlaced = true;
                 $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
@@ -538,7 +539,7 @@ class OrderController extends BaseController
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
 
-                    OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
+                    OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason ?? null, 'cancelled_by'=>$request->cancelled_by ?? null]);
                 }
                 if ($request->status_option_id == 3) {
                     if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
@@ -1516,9 +1517,9 @@ class OrderController extends BaseController
             'vendor_order_status_created_dates' => $vendor_order_status_created_dates, 'clientCurrency' => $clientCurrency,'vendor_data' => $vendor_data
         ]);
     }
-     # get product faq 
+     # get product faq
     public function viewProductForm(Request $request,$domain = '',$product_id){
-       
+
         $faq_data =  OrderProduct::where('id',$product_id)->select('id','user_product_order_form')->first();
         //pr($faq_data->user_product_order_form);
         if(isset($faq_data)){

@@ -990,11 +990,12 @@ class OrderController extends FrontController
             }
             $payable_amount = $payable_amount - $wallet_amount_used;
             $tip_amount = 0;
-            if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
-                $request->tip = str_replace(',', '', $request->tip);
-                $tip_amount = $request->tip;
-                $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
-                $order->tip_amount = $tip_amount;
+            if (isset($request->tip)) {
+                $tip_amount = floatval($request->tip);
+                if( ($tip_amount != '') && ($tip_amount > 0) ){
+                    $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
+                    $order->tip_amount = $tip_amount;
+                }
             }
             $payable_amount = $payable_amount + $tip_amount;
             $order->total_service_fee = $total_service_fee;
@@ -1034,7 +1035,7 @@ class OrderController extends FrontController
                 CartCoupon::where('cart_id', $cart->id)->delete();
                 CartProduct::where('cart_id', $cart->id)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
-
+                CartDeliveryFee::where('cart_id', $cart->id)->delete();
             }
 
             if (count($tax_category_ids)) {
