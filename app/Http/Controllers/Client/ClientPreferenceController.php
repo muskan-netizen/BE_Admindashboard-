@@ -246,6 +246,7 @@ class ClientPreferenceController extends BaseController{
             $preference->age_restriction_on_product_mode = ($request->has('age_restriction_on_product_mode') && $request->age_restriction_on_product_mode == 'on') ? 1 : 0;
             $preference->show_qr_on_footer = ($request->has('show_qr_on_footer') && $request->show_qr_on_footer == 'on') ? 1 : 0;
             $preference->auto_implement_5_percent_tip = ($request->has('auto_implement_5_percent_tip') && $request->auto_implement_5_percent_tip == 'on') ? 1 : 0;
+            $preference->vendor_return_request = ($request->has('vendor_return_request') && $request->vendor_return_request == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
