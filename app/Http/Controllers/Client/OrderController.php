@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest};
+use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest, Webhook};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -447,6 +447,15 @@ class OrderController extends BaseController
         
         $driver_data = '';
         if($order->vendors[0]->shipping_delivery_type == 'L'){
+            if(empty($order->vendors[0]->web_hook_code)){
+                    $checkOrderRef = Webhook::where('tracking_order_id',$order_id)->first();
+                    if(isset($checkOrderRef) && $checkOrderRef->id){
+                        // $OrderStatusUp = OrderVendor::where(['vendor_id' => $vendor_id, 'order_id' => $order_id])->first();
+                        // $noRef = json_decode($checkOrderRef->response)->orderRef;
+                        // $OrderStatusUp->web_hook_code = $noRef;
+                        // $OrderStatusUp->save();
+                    }
+            }
             $lala = new LalaMovesController();
             $driver_data = $lala->getDeriverDetails($order->vendors[0]); 
         }
