@@ -18,8 +18,6 @@ class XeroController extends Controller
     {
     	$data = $request->all();
     	// $this->callback($request->all());
-    	$contact = $this->createContact();
-    	$data['contact_id'] = $contact[0]['contact_id'];
     	$invoice = $this->createInvoice($data);
     	dd($invoice);
     }
