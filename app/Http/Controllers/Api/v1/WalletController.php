@@ -12,7 +12,7 @@ use App\Http\Controllers\Controller;
 class WalletController extends Controller{
     use ApiResponser;
 
-    # get my wallet details 
+    # get my wallet details
     public function getFindMyWalletDetails(Request $request){
     	$user = Auth::user();
         $user = User::with('country')->find($user->id);
@@ -27,9 +27,9 @@ class WalletController extends Controller{
     }
 
 
-    # credit wallet set 
+    # credit wallet set
     public function creditMyWallet(Request $request)
-    {   
+    {
         if($request->has('auth_token')){
             $user = User::whereHas('device',function  ($qu) use ($request){
                 $qu->where('access_token', $request->auth_token);
@@ -38,7 +38,7 @@ class WalletController extends Controller{
         else{
             $user = Auth::user();
         }
-       
+
         if($user){
             $credit_amount = $request->amount;
             $wallet = $user->wallet;
@@ -85,7 +85,7 @@ class WalletController extends Controller{
             if($user_exists){
                 return $this->successResponse($user_exists, __('User is verified'), 201);
             }else{
-                return $this->errorResponse('User does not exist', 422);   
+                return $this->errorResponse('User does not exist', 422);
             }
         }
         catch(Exception $ex){
@@ -111,9 +111,9 @@ class WalletController extends Controller{
             if($transfer_amount > $first_user_balance){
                 return $this->errorResponse(__('Insufficient funds in wallet'), 422);
             }
-            
+
             $transaction_reference = generateWalletTransactionReference();
-            
+
             $second_user = User::where(function($q) use($username){
                 $q->where('email', $username)->orWhereRaw("CONCAT(`dial_code`, `phone_number`) = ?", $username);
             })

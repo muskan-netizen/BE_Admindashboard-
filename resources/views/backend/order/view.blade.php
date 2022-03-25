@@ -146,7 +146,7 @@ $timezone = Auth::user()->timezone;
                                     else
                                     $open_option = [$order->vendors->first()->order_status_option_id + 1];
                                     @endphp
-                                    
+
                                     <!-- List of completed order status -->
                                 @if(count($vendor_order_statuses))
                                     @foreach ($vendor_order_statuses as $key => $vendor_order_status)
@@ -309,9 +309,9 @@ $timezone = Auth::user()->timezone;
                                             <a href="{{ isset($product->product) ? route('product.edit', @$product->product->id) : '#'}}" target="_blank">
                                                 {{$product->product_name}}
                                             </a>
-                                            
+
                                             @if(isset($product->product) && isset($product->product->category) && isset($product->product->category->categoryDetail) && $product->product->category->categoryDetail->translation_one) ( in {{$product->product->category->categoryDetail->translation_one->name}} ) @endif
-                                          
+
                                             @if (isset($product->user_product_order_form))
                                             <a href="javascript:void(0)" class="Order_product_form float-right "  data-product_form_id="{{$product->id}}">
                                                 <span class="badge badge-info mr-2">
@@ -323,7 +323,7 @@ $timezone = Auth::user()->timezone;
                                             <p class="p-0 m-0">
                                                 @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
                                             </p>
-                                           
+
                                             @foreach($product->prescription as $pres)
                                             <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
                                             @endforeach
@@ -432,7 +432,7 @@ $timezone = Auth::user()->timezone;
 
 
         <div class="row">
-            @if($order->address && ($order->luxury_option_id == 1) && ($client_preference_detail->hide_order_address ==0 ) )
+            @if( (Auth::user()->is_superadmin) || ($order->address && ($order->luxury_option_id == 1) && ($client_preference_detail->hide_order_address ==0 )) )
 
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0 h-100">
@@ -603,7 +603,7 @@ $timezone = Auth::user()->timezone;
             <span aria-hidden="true">&times;</span>
           </button>
           <div id="order_product-order-form-modal">
-            
+
           </div>
         </div>
       </div>
@@ -765,7 +765,7 @@ $timezone = Auth::user()->timezone;
     });
     $(document).on('click', '.Order_product_form', function(e) {
         var product_form_id = $(this).attr('data-product_form_id');
-        
+
         var href  = "{{ url('client/orders/product_faq')}}"+"/"+product_form_id;
         $.ajax({
             type: "GET",

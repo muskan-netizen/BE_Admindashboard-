@@ -12,10 +12,13 @@ class XeroController extends Controller
     public function index()
     {
     	$response = $this->authorization();
-    	dd($response);
+    	// dd($response);
     }
     public function xero_callback(Request $request)
     {
-    	$response = $this->callback($request->all());
+    	$data = $request->all();
+    	$this->callback($request->all());
+    	$invoice = $this->createInvoice($data);
+    	dd($invoice);
     }
 }

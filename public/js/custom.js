@@ -722,6 +722,8 @@ $(document).ready(function () {
     }
     $('.addWishList').click(function () {
         var sku = $(this).attr('proSku');
+        var remveFrmWishlist = $(this).attr('remWishlist');
+        var addWishlist = $(this).attr('addWishlist');
         var _this = $(this);
         $.ajax({
             type: "post",
@@ -736,9 +738,9 @@ $(document).ready(function () {
                 if (res.status == "success") {
                     if (_this.hasClass('btn-solid')) {
                         if (res.message.indexOf('added') !== -1) {
-                            _this.text('REMOVE FROM WISHLIST');
+                            _this.text(remveFrmWishlist);
                         } else {
-                            _this.text('ADD TO WISHLIST');
+                            _this.text(addWishlist);
                         }
                     }
                 } else {
@@ -1059,9 +1061,9 @@ $(document).ready(function () {
         if($("input[name='product_faq_ids']").length > 0){
             success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
             return false;
-        
+
         }
-       
+
         $('.alert-danger').html('');
         if ((typeof guest_cart != undefined) && (guest_cart == 1)) {
             // window.location.href = login_url;
@@ -1499,7 +1501,7 @@ $(document).ready(function () {
             { name: 'returnUrl', value: path }
         );
         ajaxData.push({ name: 'payment_option_id', value: payment_option_id });
-           
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1651,7 +1653,7 @@ $(document).ready(function () {
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
         var is_gift = $('#is_gift:checked').val() ?? 0;
-        // place_order_url=domain+/user/    
+        // place_order_url=domain+/user/
         if ((task_type == 'schedule') && (schedule_dt == '')) {
             $("#proceed_to_pay_modal").modal('hide');
             $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
@@ -2757,7 +2759,6 @@ $(document).ready(function () {
 
     function addToCart() {
 
-
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
 
@@ -3330,7 +3331,7 @@ $(document).ready(function () {
         var specific_instructions = $("#specific_instructions").val();
 
         var selectedArr = JSON.stringify($("input[type='radio'][name='booking_slot']:checked"));
-    
+
 
 
         //var elems = $("input[name='booking_slot']:checked").val();
@@ -3349,7 +3350,7 @@ $(document).ready(function () {
         //     if (elem.type === 'radio' || elem.type === 'checkbox') {
         //         return elem.checked && elem.value;
         //     } else {
-        //         return elem.value.trim(); 
+        //         return elem.value.trim();
         //     }
         //  }).get()
 
