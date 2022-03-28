@@ -481,59 +481,132 @@
         </form><!-- Tags for Product end -->
       </div>
    </div>
-   <div class="col-md-5">
-    <!-- User Registration Documents start -->
-    <div class="card-box pb-2">
-        <div class="d-flex align-items-center justify-content-between">
-           <h4 class="header-title m-0">{{ __("User Registration Documents") }}</h4>
-           <a class="btn btn-info d-block" id="add_user_registration_document_modal_btn">
-              <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
-           </a>
-        </div>
-        <div class="table-responsive mt-3 mb-1">
-           <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
-              <thead>
-                 <tr>
-                    <th>{{ __("Name") }}</th>
-                    <th>{{ __("Type") }}</th>
-                    <th>{{ __("Is Required?") }}</th>
-                    <th>{{ __("Action") }}</th>
-                 </tr>
-              </thead>
-              <tbody id="post_list">
-                 @forelse($user_registration_documents as $user_registration_documents)
-                 <tr>
-                    <td>
-                       <a class="edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}" href="javascript:void(0)">
-                          {{$user_registration_documents->primary ? $user_registration_documents->primary->name : ''}}
-                       </a>
-                    </td>
-                    <td>{{$user_registration_documents->file_type}}</td>
-                    <td>{{ ($user_registration_documents->is_required == 1)?__('Yes'):__('No') }}</td>
-                    <td>
-                       <div>
-                          <div class="inner-div" style="float: left;">
-                             <a class="action-icon edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}" href="javascript:void(0)">
-                                <i class="mdi mdi-square-edit-outline"></i>
-                             </a>
-                          </div>
-                          <div class="inner-div">
-                             <button type="button" class="btn btn-primary-outline action-icon delete_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}">
-                                <i class="mdi mdi-delete"></i>
-                             </button>
-                          </div>
-                       </div>
-                    </td>
-                 </tr>
-                 @empty
-                 <tr align="center">
-                    <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-                 </tr>
-                 @endforelse
-              </tbody>
-           </table>
-        </div>
-    </div><!-- USer Registration Documents end -->
+<div class="row"> 
+   <div class="col-md-6">
+        <!-- User Registration Documents start -->
+        <div class="card-box pb-2">
+            <div class="d-flex align-items-center justify-content-between">
+            <h4 class="header-title m-0">{{ __("User Registration Documents") }}</h4>
+            <a class="btn btn-info d-block" id="add_user_registration_document_modal_btn">
+                <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+            </a>
+            </div>
+            <div class="table-responsive mt-3 mb-1">
+            <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                <thead>
+                    <tr>
+                        <th>{{ __("Name") }}</th>
+                        <th>{{ __("Type") }}</th>
+                        <th>{{ __("Is Required?") }}</th>
+                        <th>{{ __("Action") }}</th>
+                    </tr>
+                </thead>
+                <tbody id="post_list">
+                    @forelse($user_registration_documents as $user_registration_documents)
+                    <tr>
+                        <td>
+                        <a class="edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}" href="javascript:void(0)">
+                            {{$user_registration_documents->primary ? $user_registration_documents->primary->name : ''}}
+                        </a>
+                        </td>
+                        <td>{{$user_registration_documents->file_type}}</td>
+                        <td>{{ ($user_registration_documents->is_required == 1)?__('Yes'):__('No') }}</td>
+                        <td>
+                        <div>
+                            <div class="inner-div" style="float: left;">
+                                <a class="action-icon edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}" href="javascript:void(0)">
+                                    <i class="mdi mdi-square-edit-outline"></i>
+                                </a>
+                            </div>
+                            <div class="inner-div">
+                                <button type="button" class="btn btn-primary-outline action-icon delete_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}">
+                                    <i class="mdi mdi-delete"></i>
+                                </button>
+                            </div>
+                        </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr align="center">
+                        <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            </div>
+        </div><!-- USer Registration Documents end -->
+    </div>
+    @if($client_preference_detail->category_kyc_documents == 1 )
+    <div class="col-md-6">
+        <!-- User Registration Documents start -->
+        <div class="card-box pb-2">
+            <div class="d-flex align-items-center justify-content-between">
+            <h4 class="header-title m-0">{{ __("Categorie Kyc Documents") }}</h4>
+            <a class="btn btn-info d-block" id="add_category_kyc_document_modal_btn">
+                <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+            </a>
+            </div>
+            <div class="table-responsive mt-3 mb-1">
+            <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                <thead>
+                    <tr>
+                        <th>{{ __("Name") }}</th>
+                        <th>{{ __("Type") }}</th>
+                        <th>{{ __("Is Required?") }}</th>
+                        <th>{{ __("Categories") }}</th>
+                        <th>{{ __("Action") }}</th>
+                    </tr>
+                </thead>
+                <tbody id="post_list">
+                    @forelse($category_kyc_documents as $category_kyc_document)
+                    <tr>
+                        <td>
+                        <a class="edit_user_registration_document_btn" data-user_registration_document_id="{{$category_kyc_document->id}}" href="javascript:void(0)">
+                            {{$category_kyc_document->primary ? $category_kyc_document->primary->name : ''}}
+                        </a>
+                        </td>
+                        <td>{{$category_kyc_document->file_type}}</td>
+                        <td>{{ ($category_kyc_document->is_required == 1)?__('Yes'):__('No') }}</td>
+                        <td>
+                            @php
+                            $category_other='0';
+                            @endphp
+                            @foreach($category_kyc_document->categoryMapping as $category_ones)
+                           
+
+                             {{ ($category_other =='1') ? ", " : "" }}
+                            {{ $category_ones->category->translation_one->name }}
+                            @php
+                            $category_other='1';
+                            @endphp
+                            @endforeach
+                        </td>
+                        <td>
+                        <div>
+                            <div class="inner-div" style="float: left;">
+                                <a class="action-icon edit_category_kyc_document_btn" data-category_kyc_document_id="{{$category_kyc_document->id}}" href="javascript:void(0)">
+                                    <i class="mdi mdi-square-edit-outline"></i>
+                                </a>
+                            </div>
+                            <div class="inner-div">
+                                <button type="button" class="btn btn-primary-outline action-icon delete_category_kyc_document_btn" data-category_kyc_documents_id="{{$category_kyc_document->id}}">
+                                    <i class="mdi mdi-delete"></i>
+                                </button>
+                            </div>
+                        </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr align="center">
+                        <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            </div>
+        </div><!-- USer Registration Documents end -->
+    </div>   
+    @endif
 </div>
     <div class="row">
         <div class="col-lg-3 col-lg-3 mb-3">
@@ -1172,6 +1245,89 @@
          </div>
       </div>
    </div>
+
+   <!-- Add category kyc Document Modal -->
+<div id="add_category_kyc_document_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-bottom al">
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Category Kyc Document") }}</h4>
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <form id="CategoryKycDocumentForm" method="POST" action="javascript:void(0)">
+                  @csrf
+                  <div id="save_social_media">
+                     <input type="hidden" name="category_kyc_document_id" value="">
+                     <div class="row">
+                        <div class="col-md-6">
+                           <div class="form-group position-relative">
+                              <label for="">Type</label>
+                              <div class="input-group mb-2">
+                                 <select class="form-control" name="file_type" id="category_kyc_file_type_select">
+                                    <option value="Image">Image</option>
+                                    <option value="Pdf">PDF</option>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6">
+                           <div class="form-group position-relative">
+                              <label for="">Is Required?</label>
+                              <div class="input-group mb-2">
+                                 <select class="form-control" name="is_required">
+                                    <option value="1">{{__('Yes')}}</option>
+                                    <option value="0">{{__('No')}}</option>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-12">
+                           <div class="form-group position-relative">
+                              <label for="">{{('Category')}}</label>
+                              <div class="input-group mb-2">
+                                 <select class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." id="category_list" name="category_id[]">
+                                   
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-12 selector-option-al ">
+                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
+                                <tr class="trForClone">
+
+                                    @foreach($client_languages as $langs)
+                                        <th>{{$langs->langName}}</th>
+                                    @endforeach
+                                    <th></th>
+                                </tr>
+                                <tbody id="table_body">
+                                        <tr>
+                                    @foreach($client_languages as $category_lankey => $category_kyc_langs)
+                                        <td>
+                                            <input class="form-control" name="language_id[{{$category_lankey}}]" type="hidden" value="{{$category_kyc_langs->langId}}">
+                                            <input class="form-control" name="name[{{$category_lankey}}]" type="text" id="category_kyc_document_name_{{$category_kyc_langs->langId}}">
+                                        </td>
+                                    @endforeach
+                                    <td class="lasttd"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary submitcategoryKycDocument">{{ __("Save") }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
+
+
+
    <!-- end product tags -->
    <script type="text/template" id="vendorSelectorTemp">
         <tr class ="option_section" id ="option_section_<%= id %>" data-section_number="<%= id %>">
@@ -1263,6 +1419,8 @@
         $('#add_user_registration_document_modal').modal('show');
         $('#add_user_registration_document_modal #standard-modalLabel').html('Add User Registration Document');
     });
+
+    
     
 
     $(document).on('click', '.submitSaveUserRegistrationDocument', function(e) {
@@ -1359,6 +1517,142 @@
         });
     });
 
+
+    //category kyc document model
+    $('#add_category_kyc_document_modal_btn').click(function(e) {
+        document.getElementById("CategoryKycDocumentForm").reset();
+        $('#add_category_kyc_document_modal_btn input[name=category_kyc_document_id]').val("");
+        $.ajax({
+                type: "get",
+                
+                url: "{{route('categorykyc.getCategory')}}",
+                success: function(response) {
+                    console.log(response);
+                    if(response.status == 1){
+                        $('#category_list').selectize()[0].selectize.destroy();
+                        $("#category_list").find('option').remove();
+                        $("#category_list").append(response.options);
+                    }
+                },
+                error:function(error){
+
+                }
+            });
+        $('#add_category_kyc_document_modal').modal('show');
+        $('#add_category_kyc_document_modal #standard-modalLabel').html('Add Category kyc Document');
+    });
+
+     //category kyc form submit document
+     $(document).on('click', '.submitcategoryKycDocument', function(e) {
+        var category_kyc_document_id = $("#add_category_kyc_document_modal input[name=category_kyc_document_id]").val();
+        if (category_kyc_document_id) {
+            var post_url = "{{ route('categorykyc.document.update') }}";
+        } else {
+            var post_url = "{{ route('categorykyc.document.create') }}";
+        }
+        var form_data = new FormData(document.getElementById("CategoryKycDocumentForm"));
+        $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                console.log(response);
+               if (response.status == 'Success') {
+                  $('#add_category_kyc_document_modal').modal('hide');
+                  $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+               }
+            },
+            error: function(response) {
+               $('#add_category_kyc_document_modal .social_media_url_err').html('The default language name field is required.');
+            }
+        });
+    });
+
+    //
+    $(document).on("click", ".edit_category_kyc_document_btn", function() {
+        let category_kyc_document_id = $(this).data('category_kyc_document_id');
+        edikYCForm(category_kyc_document_id);
+    });
+
+    function edikYCForm(category_kyc_document_id){
+        let language_id = $('#option_client_language').val();
+         $('#add_category_kyc_document_modal input[name=category_kyc_document_id]').val(category_kyc_document_id);
+         $.ajax({
+            method: 'GET',
+            data: {
+                category_kyc_document_id: category_kyc_document_id,
+                language_id:language_id
+            },
+            url: "{{ route('categorykyc.document.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                $.ajax({
+                    type: "get",
+                    data: {category_kyc_document_id:category_kyc_document_id },
+                    url: "{{route('categorykyc.getCategory')}}",
+                    success: function(response) {
+                        console.log(response);
+                        if(response.status == 1){
+                            $('#category_list').selectize()[0].selectize.destroy();
+                            $("#category_list").find('option').remove();
+                            $("#category_list").append(response.options);
+                        }
+                    },
+                    error:function(error){
+
+                    }
+                });
+                  $(document).find("#add_category_kyc_document_modal select[name=file_type]").val(response.data.file_type).change();
+
+                  $("#add_category_kyc_document_modal input[name=vendor_registration_document_id]").val(response.data.id);
+                  $(document).find("#add_category_kyc_document_modal select[name=is_required]").val(response.data.is_required).change();
+                  $('#add_category_kyc_document_modal #standard-modalLabel').html('Update Category KYC Document ');
+                  $('#add_category_kyc_document_modal').modal('show');
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_category_kyc_document_modal #category_kyc_document_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {}
+        });
+    }
+    // delete kyc document 
+    $(document).on("click", ".delete_category_kyc_document_btn", function() {
+         var category_kyc_document_id = $(this).data('category_kyc_documents_id');
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+         }).then((result) => {
+            if (result.value) {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('categorykyc.document.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     category_kyc_document_id: category_kyc_document_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
+                  }
+               });
+            }
+        });
+    });
 
     //vendor registration document
     $(document).on('click', '.submitSaveVendorRegistrationDocument', function(e) {
@@ -1475,6 +1769,8 @@
             }
         });
     });
+
+    
     //End Vendor Registration Document Script
 
     // Product Tag Script
