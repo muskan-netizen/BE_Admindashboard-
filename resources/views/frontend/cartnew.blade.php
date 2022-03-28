@@ -135,7 +135,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="col-8 col-md-10">
                         <div class="row align-items-md-center">
                             <div class="col-md-3 order-0">
-                                <h4 class="mt-0 mb-1"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
+                                <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
                                     <% if(vset.variant_detail.trans) { %>
                                         <label><span><b><%= vset.variant_detail.trans.title %>:</b></span> <%= vset.option_data.trans.title %></label>
