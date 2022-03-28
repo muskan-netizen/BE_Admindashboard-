@@ -599,7 +599,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'vendor' => $new_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($new_product_detail->variant->first()->price??0 * $multiply)),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($new_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
         }
@@ -617,7 +617,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $feature_product_detail->inquiry_only,
                 'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
                 'vendor' => $feature_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($feature_product_detail->variant->first()->price * $multiply)),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($feature_product_detail->variant->first()->price * $multiply,',')),
                 'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
             );
         }
@@ -635,7 +635,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $on_sale_product_detail->inquiry_only,
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'vendor' => $on_sale_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($on_sale_product_detail->variant->first()->price??0 * $multiply)),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
@@ -1199,7 +1199,7 @@ class UserhomeController extends FrontController
                     'inquiry_only' => $on_sale_product_detail->inquiry_only,
                     'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                     'vendor' => $on_sale_product_detail->vendor,
-                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format($on_sale_product_detail->variant->first()->price??0 * $multiply)),
+                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format($on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
                     'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
                 );
             }
@@ -1222,7 +1222,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'vendor' => $new_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($new_product_detail->variant->first()->price??0 * $multiply, 2)),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($new_product_detail->variant->first()->price??0 * $multiply, ',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
             }
@@ -1234,7 +1234,7 @@ class UserhomeController extends FrontController
             $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
 
             foreach ($feature_product_details as  $feature_product_detail) {
-                $multiply =$feature_product_detail->variant->first()->multiplier ?? 1;
+                $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
                 $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
                 $image_url = $feature_product_detail->media->first() && !is_null($feature_product_detail->media->first()->image) ? $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $feature_products[] = array(
@@ -1247,7 +1247,7 @@ class UserhomeController extends FrontController
                     'inquiry_only' => $feature_product_detail->inquiry_only,
                     'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
                     'vendor' => $feature_product_detail->vendor,
-                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format($feature_product_detail->variant->first()->price * $multiply, 2)),
+                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format($feature_product_detail->variant->first()->price * $multiply, ',')),
                     'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
                 );
             }
