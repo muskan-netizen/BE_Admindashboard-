@@ -527,11 +527,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         setTimeout(function() {
             $("#pending_order-tab").trigger('click');
-        }, 500);
+        }, 1500);
 
         setInterval(function() {
             autoloaddashboad();
-        }, 7000);
+        }, 17000);
 
         $(document).on("click", ".load-more-btn", function() {
             $('#order_list_order').show();
