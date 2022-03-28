@@ -513,13 +513,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                  }
                  setTimeout(function() {
                     autoloaddashboad()
-                }, 7000);
+                }, 17000);
 
             },
             error: function(data) {
                 setTimeout(function() {
                     autoloaddashboad()
-                }, 7000);
+                }, 17000);
             },
         });
     }
@@ -527,7 +527,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         setTimeout(function() {
             $("#pending_order-tab").trigger('click');
-        }, 500);
+        }, 1500);
         //setInterval(autoloaddashboad, 10000);
 
         $(document).on("click", ".load-more-btn", function() {
