@@ -1234,7 +1234,7 @@ class UserhomeController extends FrontController
             $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
 
             foreach ($feature_product_details as  $feature_product_detail) {
-                $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
+                $multiply =$feature_product_detail->variant->first()->multiplier ?? 1;
                 $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
                 $image_url = $feature_product_detail->media->first() && !is_null($feature_product_detail->media->first()->image) ? $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $feature_products[] = array(
