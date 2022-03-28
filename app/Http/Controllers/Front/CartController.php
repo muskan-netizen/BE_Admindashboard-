@@ -30,10 +30,6 @@ class CartController extends FrontController
 
     public function showCart(Request $request, $domain = '')
     {
-        // dd(json_decode("{\"customerOrderId\":\"000004F0-F54E-8FED-8093-3A5CD8C3AEC4\",\"orderRef\":\"145293819687\",\"totalFee\":\"28\",\"totalFeeCurrency\":\"MYR\",\"distance\":{\"text\":\"31.7 km\",\"value\":31702}}\n"));
-        //  $viva = new VivawalletController();
-        //  $pay = $viva->fetchTransactionDetails('8903797304456875');
-        //  dd($pay);
         if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
                 $order = Order::where('order_number', $request->order)->first();
