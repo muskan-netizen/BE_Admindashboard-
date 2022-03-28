@@ -24,7 +24,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <div class="col-md-3"><h4>{{ __("Order ID") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Date & Time") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Customer") }}</h4></div>
-                        @if($client_preference_detail->hide_order_address ==0 )
+                        @if( (Auth::user()->is_superadmin) ||  ($client_preference_detail->hide_order_address ==0) )
                         <div class="col-md-3"><h4>{{ __("Address") }}</h4></div>
                         @endif
                     </div>
@@ -36,7 +36,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <div class="col-md-3">
                             <a class="text-capitalize" href="#"><%= order.user.name %></a>
                         </div>
-                        @if($client_preference_detail->hide_order_address ==0 )
+                        @if( (Auth::user()->is_superadmin) ||  ($client_preference_detail->hide_order_address ==0) )
                             <% if(order.address !== null) { %>
                             <div class="col-md-3">
                                 <p class="ellipsis mb-0" data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
@@ -120,7 +120,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                             <div class="list-img" style="height:50px;">
                                                                 <img style="height:50px;" data-placement="right" data-toggle="tooltip" title="<%= product.product_name %>" src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
                                                                 <span class="item_no position-absolute">x<%= product.quantity %></span>
-                                                                
+
                                                             </div>
                                                             <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
                                                             <label class="items_price">{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %></label>
@@ -186,7 +186,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.payable_amount) %></span>
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.payable_amount) %></span>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -309,23 +309,22 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 <div class="container-fluid order-page">
     <div class="row">
 
-        <div class="col-12">
-            <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="page-title">{{ __('Orders') }}</h4>
-                <div>
-                    <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
-                        <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
-                            <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-                        </b>
-                    </a>
-                    <a class="return-btn ml-3" href="{{route('cancel-order.requests')}}">
-                        <b>{{ __("Cancel Order Request") }} <sup class="total-items">({{$cancel_order_requests}})</sup>
-                            <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-                        </b>
-                    </a>
-                </div>
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="page-title">{{ __('Orders') }}</h4>
+            <div class="d-flex align-items-center">
+                <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
+                    <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
+                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                    </b>
+                </a>
+                <a class="return-btn ml-3" href="{{route('cancel-order.requests')}}">
+                    <b>{{ __("Cancel Order Request") }} <sup class="total-items">({{$cancel_order_requests}})</sup>
+                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                    </b>
+                </a>
             </div>
         </div>
+
 
         <div class="col-sm-12 mb-2 d-flex justify-content-end">
             <div class="row align-items-center ">
@@ -434,6 +433,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 @endsection
 @section('script')
 <script type="text/javascript">
+    var ajaxCall = 'ToCancelPrevReq';
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('input[name="_token"]').val()
@@ -461,19 +461,25 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
     function autoloaddashboad(){
         //console.log('dasd');
-        var typ=  $("a.nav-link.active").data('rel');
-        console.log('Test');
-        init(typ, "{{ route('orders.filter') }}", '', false);
+        var type =  $("a.nav-link.active").data('rel');
+        var search = $("#search_via_keyword").val();
+        init(type, "{{ route('orders.filter') }}", search, false);
 
     }
 
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
-        $.ajax({
+        ajaxCall = $.ajax({
             url: url,
             type: "POST",
             dataType: "JSON",
+            // async: false,
+            beforeSend: function(){
+                if(ajaxCall !=  'ToCancelPrevReq' && ajaxCall.readyState < 4){
+                    ajaxCall.abort();
+                }
+            },
             data: {
                 filter_order_status: filter_order_status,
                 search_keyword: search_keyword,
@@ -482,7 +488,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             },
             success: function(response) {
                 // reload after 10 sec
-
 
                 $('#order_list_order').hide();
                 if (response.status == 'Success') {
@@ -511,15 +516,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     $("#history-orders").html("(" + response.data.orders_history + ")");
 
                  }
-                 setTimeout(function() {
-                    autoloaddashboad()
-                }, 17000);
 
             },
             error: function(data) {
-                setTimeout(function() {
-                    autoloaddashboad()
-                }, 17000);
             },
         });
     }
@@ -528,7 +527,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         setTimeout(function() {
             $("#pending_order-tab").trigger('click');
         }, 1500);
-        //setInterval(autoloaddashboad, 10000);
+
+        setInterval(function() {
+            autoloaddashboad();
+        }, 17000);
 
         $(document).on("click", ".load-more-btn", function() {
             $('#order_list_order').show();
@@ -562,7 +564,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         //     });
         // });
 
-        $("#search_via_keyword").on("keyup blur", function(e) {
+        $(document).on("input", "#search_via_keyword", function(e) {
             $('#order_list_order').show();
             var rel = $("#top-tab li a.active").data('rel');
             var url = "{{ route('orders.filter') }}";
