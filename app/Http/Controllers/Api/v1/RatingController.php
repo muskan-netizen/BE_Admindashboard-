@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,Client};
+use App\Http\Requests\OrderDriverRatingRequest;
+use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,Client,OrderVendor,OrderDriverRating,ClientPreference};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Requests\Web\CheckImageRequest;
@@ -61,6 +62,42 @@ class RatingController extends BaseController{
                 return $this->successResponse($ratings,'Rating Submitted.');
             }
             return $this->errorResponse('Invalid order', 404);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * update driver rating
+
+     */
+    public function updateDriverRating(OrderDriverRatingRequest $request){
+        try {
+            //return $request->all();
+            $user = Auth::user();
+            $checkdriverdetail = OrderVendor::where('order_id',$request->order_id)->first();
+            if(isset($checkdriverdetail->dispatch_traking_url) && $checkdriverdetail->dispatch_traking_url!=NULL)
+            {
+                $ratings = OrderDriverRating::updateOrCreate([
+                    'order_id' => $request->order_id,
+                    'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review]);
+                
+                $split_trcking_url = explode('/',$checkdriverdetail->dispatch_traking_url);
+                $driverclientcode = $split_trcking_url[count($split_trcking_url)-2];
+                $unique_order_code = $split_trcking_url[count($split_trcking_url)-1];
+                $request->client_id = $driverclientcode;
+                $request->order_unique_id = $unique_order_code;
+                $staus = $this->setDriverRatingOnDispatch($request); 
+                
+                if(isset($ratings)) {
+                    return $this->successResponse($ratings,'Rating Submitted.');
+                }else{
+                    return $this->errorResponse('There is some issue. Try again later', 401);
+                }
+            }else{
+                return $this->errorResponse('Invalid order for driver rating', 401);
+            }           
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -129,6 +166,33 @@ class RatingController extends BaseController{
                 $res = $client->post($url.'/api/update-order-feedback',
                     ['form_params' => ($postdata)]
                 );
+
+                $response = json_decode($res->getBody(), true);
+                if($response && $response['message'] == 'success'){
+
+                }
+            }
+        }catch(\Exception $e){
+              return $e->getMessage();
+        }
+    }
+
+    # set Driver rating at dispatch panel
+    public function setDriverRatingOnDispatch($request)
+    {
+        try {
+            $dispatch_domain = ClientPreference::select('id', 'delivery_check','delivery_service_key_url','delivery_service_key_code','need_dispacher_ride', 'pickup_delivery_service_key', 'pickup_delivery_service_key_code', 'pickup_delivery_service_key_url')->first();            
+            if ($dispatch_domain && $dispatch_domain != false) {
+                // $all_location = array();
+                // $postdata =  [ 'order_id' => $request->rating_for_dispatch??'',
+                //                 'client_id' =>$request->client_id,
+                //                 'order_unique_id' => $request->order_unique_id,
+                //                 'rating' => $request->rating??'',
+                //                 'review' => $request->review??''];
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key_url,'shortcode' => $dispatch_domain->delivery_service_key_code,'content-type' => 'application/json']]);
+                $url = $dispatch_domain->delivery_service_key_url;                
+                //$url = "http://127.0.0.1:8002";
+                $res = $client->get($url.'/order/driver-rating/'.$request->client_id.'/'.$request->order_unique_id.'?review='.$request->review.'&rating='.$request->rating);
 
                 $response = json_decode($res->getBody(), true);
                 if($response && $response['message'] == 'success'){
