@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting};
+use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
