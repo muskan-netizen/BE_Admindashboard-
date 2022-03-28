@@ -923,7 +923,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Fixed Fee") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="FixedFee_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="FixedFee_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, $fixed_fee->id)}}">
+                                    <input type="text" name="FixedFee_name[]" class="form-control al_box_height" value="{{ ($fixed_fee) ? \App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, $fixed_fee->id) : ''}}">
                                     @if($k == 0)
                                         @if($errors->has('Zip-Code.0'))
                                             <span class="text-danger" role="alert">
