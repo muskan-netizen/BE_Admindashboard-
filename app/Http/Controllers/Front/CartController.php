@@ -6,13 +6,15 @@ use DB;
 use Auth;
 use Session;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc};
 use Log;
 class CartController extends FrontController
 {
@@ -72,6 +74,8 @@ class CartController extends FrontController
             $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         }
         $navCategories = $this->categoryNav($langId);
+        $fixedFee = $this->fixedFee($langId);
+    
         $subscription_features = array();
         if ($user) {
             $now = Carbon::now()->toDateTimeString();
@@ -87,6 +91,7 @@ class CartController extends FrontController
             }
         }
         $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
+
         $data = array(
             'navCategories' => $navCategories,
             'cartData' => $cartData,
@@ -94,8 +99,8 @@ class CartController extends FrontController
             'countries' => $countries,
             'subscription_features' => $subscription_features,
             'guest_user'=>$guest_user,
-
-            'action' => $action
+            'action' => $action,
+            'fixedFee'=>$fixedFee
         );
         $client_preference_detail = ClientPreference::first();
         $client_detail = Client::first();
@@ -107,10 +112,13 @@ class CartController extends FrontController
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
         } 
-
         return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
+
+
+
+
 
     public function postAddToCart(Request $request, $domain = '')
     {
@@ -513,6 +521,7 @@ class CartController extends FrontController
     public function getCart($cart, $address_id=0 , $code = 'D')
     {
         $address = [];
+        $category_array = [];
         $cart_id = $cart->id;
         $user = Auth::user();
         $langId = Session::has('customerLanguage') ? Session::get('customerLanguage') : 1;
@@ -567,7 +576,8 @@ class CartController extends FrontController
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
-        ])->select('vendor_id', 'luxury_option_id',  'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+
         $loyalty_amount_saved = 0;
         $redeem_points_per_primary_currency = '';
         $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -673,9 +683,20 @@ class CartController extends FrontController
                     if($cart_dinein_table_id > 0){
                         $prod->update(['vendor_dinein_table_id' => $cart_dinein_table_id]);
                     }
+                    
+                    //pr($prod->product->toArray());
                     $prod->product_out_of_stock =  $product_out_of_stock;
-
-                    $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
+                    $prod->faq_count = 0;
+                    if( $preferences->product_order_form ==1 ){
+                        $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
+                    }
+                    $prod->category_id = $prod->product->category_id;
+                    $prod->category_kyc_count = 0;
+                    if( $preferences->category_kyc_documents ==1 ){
+                        if(  !in_array( $prod->product->category_id, $category_array)){
+                            $category_array[] = $prod->product->category_id;
+                        }
+                    }
 
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
@@ -1092,6 +1113,29 @@ class CartController extends FrontController
                 $cart->slots = [];
                 $cart->vendor_id =  0;
             }
+            if( $preferences->category_kyc_documents ==1 ){
+                      
+                $category_query =  CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_array){
+                    $q->whereIn('category_id',$category_array);
+                });
+
+                $category_kyc_document_ids =  $category_query->pluck('id');
+            //     $category_kyc_category_ids =  $category_query->categoryMapping->pluck('category_id');
+               // pr( $category_query->first()->toArray());
+                $category_kyc_document_ids = $category_kyc_document_ids->isNotEmpty() ? $category_kyc_document_ids->toArray() : [];
+               
+              
+                $category_kyc_count =  $category_query->count();
+                
+                $is_alrady_submit = CaregoryKycDoc::whereIn('category_kyc_document_id', $category_kyc_document_ids)->where('cart_id',$cart_id)->count();
+            //     echo  $is_alrady_submit." <br>";
+            //    pr($category_kyc_document_ids);
+                if( $category_kyc_count  > 0 && ($is_alrady_submit  !=  $category_kyc_count )){
+                    $cart->category_kyc_count = $category_kyc_count;
+                    $cart->category_rendem_id = rand(9,10);
+                    $cart->category_ids = implode( ',',$category_array);
+                }
+            }
             $cart->slotsCnt = count((array)$slots);
             $cart->total_service_fee = decimal_format($total_service_fee);
             $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
@@ -1389,10 +1433,11 @@ class CartController extends FrontController
             $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->update(['is_primary' => 1]);
         }
 
-
+        
         if ($cart) {
-           $cart_details = $this->getCart($cart, $address_id,$request->code);
+            $cart_details = $this->getCart($cart, $address_id,$request->code);
         }
+        
         $client_preference_detail = ClientPreference::first();
 
         $expected_vendors = [];
@@ -1898,6 +1943,86 @@ class CartController extends FrontController
         CartProduct::whereIn('id', $cartData_id)->update(['user_product_order_form'=> $user_product_order_form]);
 
         return response()->json(['status'=>'Success', 'message'=>__('Product form Submit successfully.')]);
+    }
+
+    public function updateCartCategoryKyc(Request $request){
+        $category_ids = explode(",",$request->category_id);
+        $category_kyc_documents =CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_ids){
+            $q->whereIn('category_id',$category_ids);
+       })->with('primary')->get();
+        foreach ($category_kyc_documents as $vendor_registration_document) {
+            if($vendor_registration_document->is_required == 1){
+                if(isset($vendor_registration_document->primary) && !empty($vendor_registration_document->primary))
+                {
+                    $rules[$vendor_registration_document->primary->slug] = 'required';
+                }
+            }
+        }
+        $validation  = Validator::make($request->all(), $rules)->validate();
+
+        $user = Auth::user();
+        $new_session_token = session()->get('_token');
+        if ($user) {
+            $cart = Cart::where('user_id', $user->id)->first();
+        } else {
+            $cart = Cart::where('unique_identifier', $new_session_token)->first();
+        }
+       
+        //pr($category_ids);
+        $user_product_order_form = null;
+        
+        foreach ($category_ids as $category_id){
+            $category_kyc_documents =CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_id){
+                $q->where('category_id',$category_id);
+           })->with('primary')->get();
+    
+            //  pr($category_kyc_documents->first());
+
+            if ($category_kyc_documents->count() > 0) {
+                foreach ($category_kyc_documents as $vendor_registration_document) {
+                    $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);
+                    if ($vendor_registration_document->file_type != "Text" && $vendor_registration_document->file_type != "selector") {
+                        $check = CaregoryKycDoc::where(['cart_id'=>$cart->id,'category_kyc_document_id'=>$vendor_registration_document->id])->first();
+                        if ($request->hasFile($doc_name) && !$check) {
+                        
+                            $vendor_docs =  new CaregoryKycDoc();
+                            $vendor_docs->user_id = $user->id;
+                            $vendor_docs->category_kyc_document_id = $vendor_registration_document->id;
+                            $filePath = 'category_kyc_document' . '/' . Str::random(40);
+                            $file = $request->file($doc_name);
+                            $vendor_docs->file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                            $vendor_docs->cart_id = $cart->id;
+                            $vendor_docs->save();
+                        }
+                     } 
+                     //else {
+                    //     if (!empty($request->$doc_name)) {
+                    //         $vendor_docs =  new CaregoryKycDoc();
+                    //         $vendor_docs->user_id = $user->id;
+                    //         $vendor_docs->category_kyc_document_id = $vendor_registration_document->id;
+                    //         $vendor_docs->file_name = $request->$doc_name;
+                    //         $vendor_docs->cart_id = $cart->id;
+                    //         $vendor_docs->save();
+                    //     }
+                    //}
+                }
+            }
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'document submit Successfully!',
+        ]);
+        //return redirect()->back()->with('status','Submit successfully.');
+        // $res = CaregoryKycDoc::where('user_id',$user->id)->get();
+        // pr($res);
+        // $cartData_id = CartProduct::where('cart_id', $cart->id)->where('product_id', $request->product_id)->pluck('id');
+       
+        // if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
+        // $user_product_order_form = json_encode($request->user_product_order_form);
+       
+        // CartProduct::whereIn('id', $cartData_id)->update(['user_product_order_form'=> $user_product_order_form]);
+
+        //return response()->json(['status'=>'Success', 'message'=>__('Product form Submit successfully.')]);
     }
 
 }

@@ -268,6 +268,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('category/{slug?}', 'Front\CategoryController@categoryProduct')->name('categoryDetail');
 	Route::get('category/{slug1}/{slug2}', 'Front\CategoryController@categoryVendorProducts')->name('categoryVendorProducts');
 	Route::post('category/filters/{id}', 'Front\CategoryController@categoryFilters')->name('productFilters');
+	Route::get('category_kycDocument', 'Front\CategoryController@getcategoryKycDocument')->name('getCategoryKycDocument');
 	Route::get('vendor/all', 'Front\VendorController@viewAll')->name('vendor.all');
 	Route::match(['get','post'],'vendor/{id?}', 'Front\VendorController@vendorProducts')->name('vendorDetail');
 	Route::get('vendor/{slug1}/{slug2}', 'Front\VendorController@vendorCategoryProducts')->name('vendorCategoryProducts');
@@ -296,6 +297,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
 	Route::get('firebase-messaging-sw.js', 'Front\FirebaseController@service_worker');
+	Route::post('category_kyc_submit', 'Front\CartController@updateCartCategoryKyc')->name('updateCartCategoryKyc');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 

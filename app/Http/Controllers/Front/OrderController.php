@@ -31,6 +31,7 @@ use App\Models\Client as CP;
 use App\Models\OrderProduct;
 use App\Models\EmailTemplate;
 use App\Models\ClientCurrency;
+use App\Models\CaregoryKycDoc;
 use App\Models\VendorOrderStatus;
 use App\Models\OrderProductAddon;
 use App\Models\NotificationTemplate;
@@ -754,6 +755,9 @@ class OrderController extends FrontController
                 $OrderVendor->vendor_id = $vendor_id;
                 $OrderVendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                 $OrderVendor->save();
+                //
+                CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+
                 $vendorProductIds = array();
                 foreach ($vendor_cart_products as $vendor_cart_product) {
                     $variant = $vendor_cart_product->product->variants->where('id', $vendor_cart_product->variant_id)->first();
