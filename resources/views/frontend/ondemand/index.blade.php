@@ -1,5 +1,8 @@
 @extends('layouts.store', ['title' => (!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->name : $category->slug])
 @section('content')
+@php
+use Illuminate\Support\Arr;
+@endphp
 
 
 <section class="home-serivces">
@@ -322,8 +325,12 @@
 
 
                             @if(app('request')->input('step') == '2')
-                                <div id="step-2-ondemand">                               
-                                                       
+                                <div id="step-2-ondemand">                           
+                                   {{count($cartData)}}    
+                                   @php
+                                   $lastKey = count($cartData) - 1;
+                                   @endphp
+                                   {{ Arr::last($cartData)}}                
                                     @foreach ($cartData as $cd => $cart_data)
                                       @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
 
@@ -332,7 +339,7 @@
                                       @endphp  
 
 
-                                        <div  id="date_time_set_div{{$cart_data->id}}">
+                                        <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif>
 
                                         <h4 class="mb-2"><b>When would you like your service?</b></h4>
                                         <div class="date-items radio-btns hide">
@@ -347,25 +354,37 @@
                                                     @endphp
                                                     <div class="radios">
                                                         <p>{{date('D', strtotime($date))}}</p>
-                                                        <input type="radio" class="check-time-slots" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_slot[{{$cart_data->id}}][booking_date]' id='radio{{$cd}}{{$key}}'{{$checked}}/>
+
+                                                        <input type="radio" class="check-time-slots" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' @if($key == 0) checked @endif />
+
+
                                                         <label for='radio{{$cd}}{{$key}}'>
                                                             <span class="customCheckbox" @if($checked) style='background-color:#34a099 !important;'@endif aria-hidden="true" >{{date('d', strtotime($date))}}</span>
                                                         </label>
+                                                        <input type="hidden" name="productid" id="productid" value="{{$cart_data->id}}" />
                                                     </div>
                                                 </div>
                                             @endforeach
                                         </div>
 
-                                        <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if(isset($cart_data->scheduled_date_time))  @else display: none; @endif ">
+                                        <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
                                             <h4 class="mt-4 mb-2"><b>What time would you like us to start?</b></h4>
+                                            
                                             <div class="booking-time radio-btns long-radio">
                                                 @foreach ($time_slots as $key => $date)
                                                 @if($key+1 < count($time_slots))
+                                                @php
+                                                $checked='';
+                                                    $slotTime = $date.' - '.@$time_slots[$key+1];                                                    
+                                                    if(isset($cart_data->schedule_slot) && $cart_data->schedule_slot == $slotTime){
+                                                        echo $checked="checked";
+                                                    }                                                     
+                                                @endphp
                                                 <div>
                                                     <div class="radios">
-                                                        <input type="radio" value='{{date('h:i:s', strtotime($date))}}' name='booking_time'  id='time{{$cart_data->id}}{{$key+1}}'/>
+                                                        <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_data->id}}{{$key+1}}' @if($checked) {{$checked}} @endif/>
                                                         <label for='time{{$cart_data->id}}{{$key+1}}'>
-                                                            <span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{date('h:i:s', strtotime($date))}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
+                                                            <span class="customCheckbox selected-time" @if($checked) style='background-color:#34a099 !important;'@endif   aria-hidden="true"  data-value='{{$date}} - {{@$time_slots[$key+1]}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
                                                         </label>                                                        
                                                     </div>
                                                 </div>
@@ -467,7 +486,7 @@
                                 </div>
 
                                 <script type="text/template" id="header_cart_template_ondemand">
-                                        <% _.each(cart_details.products, function(product, key){%>
+                                        <% _.each(cart_details.products, function(product, key){ console.log(product);%>
                                             <li>
                                                 <h6 class="d-flex align-items-center justify-content-between"> <%= product.vendor.name %> </h6>
                                             </li>
@@ -714,7 +733,7 @@
     var apply_promocode_coupon_url = "{{ route('verify.promocode') }}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
     var getTimeSlotsForOndemand = "{{route('getTimeSlotsForOndemand')}}";
-    var update_cart_schedule = "{{route('cart.updateSchedule')}}";
+    var update_cart_schedule = "{{route('cart.updateSchedule')}}";    
     var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
     var showCart = "{{route('showCart')}}";
     var update_addons_in_cart = "{{route('addToCartAddons')}}";
@@ -986,6 +1005,8 @@
 
       })( jQuery, window , document );
     </script>
+  
+  
 
 
 @endsection

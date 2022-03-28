@@ -1150,7 +1150,7 @@ $(document).ready(function () {
                         window.location.replace(verifyaccounturl);
                     }
                     if (response.status == "Success") {
-                        $.ajax({
+                        $.ajax({             
                             data: {},
                             type: "POST",
                             dataType: 'json',
@@ -3320,62 +3320,30 @@ $(document).ready(function () {
 
     // **********************************************   all function for ondemand services   *****************************************  ////////////////////////
 
-    $(document).on("click", "#next-button-ondemand-3", function () {
+    $(document).on("click", "#next-button-ondemand-3", function () {      
         $('.alert-danger').html('');
-       // window.location.href = showCart;
+       //window.location.href = showCart;
 
-        var task_type = 'schedule';
-        var schedule_date = $("input[name='booking_slot']:checked").val();
-        //var schedule_time = $("input[name='booking_time']:checked").val();
-        var specific_instructions = $("#specific_instructions").val();
-
-        var selectedArr = JSON.stringify($("input[type='radio'][name='booking_slot']:checked"));
-    
-
-
-        //var elems = $("input[name='booking_slot']:checked").val();
-       // var arrayString = jQuery.makeArray(elems);
-
-       // var elems = $('input:radio[name=booking_slot]:checked').val();
-        //var arrayString = jQuery.makeArray(elems);
-       // console.log(selectedArr);
-       // alert(selectedArr);
-
-
-
-        // var data_array = $("input[name='booking_slot']").map(function(idx, elem) {
-        //     console.log(elem);
-        //     alert(elem.value);
-        //     if (elem.type === 'radio' || elem.type === 'checkbox') {
-        //         return elem.checked && elem.value;
-        //     } else {
-        //         return elem.value.trim(); 
-        //     }
-        //  }).get()
-
-        //alert(JSON.stringify($("input[name='booking_slot']:checked").val()));
-        //alert($("input[name='booking_slot']:checked"));
-
-        //console.log(arrayString);
-       // alert(12);
-       // alert(arrayString);
+        var task_type = 'schedule';        
+        var schedule_date = $("input[name='booking_date']:checked").val();
+        var schedule_time = $("input[name='booking_time']:checked").val();        
+        var specific_instructions = $("#specific_instructions").val(); 
+        var productid = $("#productid").val();  
+        //alert(schedule_date);
         //alert(schedule_time);
-
-       // var schedule_dt = schedule_date +' '+schedule_time;
-       var schedule_dt = schedule_date;
+       var schedule_dt = schedule_date;      
         //alert(schedule_dt);
+       // var schedule_dt = schedule_date +' '+schedule_time;
         if( (task_type == 'schedule') && (schedule_dt == '') ){
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
             return false;
         }
-
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: update_cart_schedule,
-            data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions},
-            success: function (response) {
-                alert(response.status);
+            data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions,productid:productid,schedule_time:schedule_time},
+            success: function (response) {               
                 if (response.status == "Success") {
                     window.location.href = showCart;
                 }
@@ -3388,7 +3356,7 @@ $(document).ready(function () {
 
             }
         });
-    });
+   });
 
 
 
@@ -3604,18 +3572,24 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.selected-time', function () {
-        let selected_time = $(this).html();
-        let cart_product_id = $(this).data("cart_product_id");
+       
+        let selected_time   = $(this).html();
+        let cart_product_id = $(this).data("cart_product_id");        
         $("#show_time" + cart_product_id).html(selected_time);
         $("#message_of_time" + cart_product_id).html("Your service will start between " + selected_time);
         $("#next-button-ondemand-3").show();
 
         var task_type = 'schedule';
-        var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date" + cart_product_id + "']:checked").val();
-        var schedule_time = $(this).data("value");
-        var specific_instructions = $("#specific_instructions").val();
+        //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date" + cart_product_id + "']:checked").val();
 
-        var schedule_dt = schedule_date + ' ' + schedule_time;
+        //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date']:checked").val();
+        var schedule_date = $("input[name='booking_date']:checked").val();
+       // var schedule_time = $(this).data("value");        
+        //var specific_instructions = $("#specific_instructions").val();
+       // alert(specific_instructions);
+
+        //var schedule_dt = schedule_date + ' ' + schedule_time;
+        var schedule_dt = schedule_date;
         if ((task_type == 'schedule') && (schedule_dt == '')) {
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
             return false;
@@ -3625,7 +3599,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: update_cart_product_schedule,
-            data: { task_type: task_type, schedule_dt: schedule_dt, specific_instructions: specific_instructions, cart_product_id: cart_product_id },
+            data: { task_type: task_type, schedule_dt: schedule_dt,schedule_time:selected_time,cart_product_id: cart_product_id },
             success: function (response) {
                 if (response.status == "Success") {
                 }
