@@ -1222,6 +1222,11 @@ class AuthController extends BaseController
             if ($currentTime > $user->phone_token_valid_till) {
                 return $this->errorResponse(__('OTP has been expired.'), 404);
             }
+            
+            if($currentTime <= $user->phone_token_valid_till && $user->phone_token == $request->verifyToken){
+                User::where('id', $user->id)->update(['status' => 1]);
+            }
+            
             $request->request->add(['phone_number' => $phone_number]);
             return $this->proceedToPhoneLogin($request);
         } catch (Exception $ex) {

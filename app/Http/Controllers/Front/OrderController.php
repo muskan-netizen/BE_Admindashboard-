@@ -994,10 +994,12 @@ class OrderController extends FrontController
             }
             $payable_amount = $payable_amount - $wallet_amount_used;
             $tip_amount = 0;
-            if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
-                $tip_amount = $request->tip;
-                $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
-                $order->tip_amount = $tip_amount;
+            if (isset($request->tip)) {
+                $tip_amount = floatval($request->tip);
+                if( ($tip_amount != '') && ($tip_amount > 0) ){
+                    $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
+                    $order->tip_amount = $tip_amount;
+                }
             }
             $payable_amount = $payable_amount + $tip_amount;
             $order->total_service_fee = $total_service_fee;
@@ -1017,13 +1019,18 @@ class OrderController extends FrontController
                 $order->payment_status = 1;
             }
             $order->save();
-            foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-                $this->sendSuccessEmail($request, $order, $vendor_id);
-            }
             // $this->sendOrderNotification($user->id, $vendor_ids);
-            $this->sendSuccessEmail($request, $order);
+           
             $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20,21,24]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree
             if (!in_array($request->payment_option_id, $ex_gateways)) {
+
+                //Send Email to customer
+                $this->sendSuccessEmail($request, $order);
+                //Send Email to Vendor
+                foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                    $this->sendSuccessEmail($request, $order, $vendor_id);
+                }
+
                 Cart::where('id', $cart->id)->update([
                     'schedule_type' => null, 'scheduled_date_time' => null,
                     'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
@@ -1032,7 +1039,9 @@ class OrderController extends FrontController
                 CartCoupon::where('cart_id', $cart->id)->delete();
                 CartProduct::where('cart_id', $cart->id)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
+                CartDeliveryFee::where('cart_id', $cart->id)->delete();
             }
+
             if (count($tax_category_ids)) {
                 foreach ($tax_category_ids as $tax_category_id) {
                     $order_tax = new OrderTax();

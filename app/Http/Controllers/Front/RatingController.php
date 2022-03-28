@@ -135,7 +135,8 @@ class RatingController extends FrontController{
     public function setDriverRatingOnDispatch($request)
     {
         try {
-            $dispatch_domain = $this->checkIfPickupDeliveryOnCommon();
+            $dispatch_domain = ClientPreference::select('id', 'delivery_check','delivery_service_key_url','delivery_service_key_code','need_dispacher_ride', 'pickup_delivery_service_key', 'pickup_delivery_service_key_code', 'pickup_delivery_service_key_url')->first();
+            //$dispatch_domain = $this->checkIfPickupDeliveryOnCommon();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $all_location = array();
                 $postdata =  [ 'order_id' => $request->rating_for_dispatch??'',
@@ -143,8 +144,8 @@ class RatingController extends FrontController{
                                 'order_unique_id' => $request->order_unique_id,
                                 'rating' => $request->rating??'',
                                 'review' => $request->review??''];
-                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
-                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key_url,'shortcode' => $dispatch_domain->delivery_service_key_code,'content-type' => 'application/json']]);
+                $url = $dispatch_domain->delivery_service_key_url;
                 // $res = $client->post($url.'/api/update-driver-rating',                
                 //     ['form_params' => ($postdata)]
                 // ); 

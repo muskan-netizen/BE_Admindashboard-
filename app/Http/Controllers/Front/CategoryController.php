@@ -611,15 +611,21 @@ class CategoryController extends FrontController{
             $curr_time = "00:00";
         }else{
             $daten = new DateTime("now", new DateTimeZone($timezone) );
-            $curr_time = $daten->format('H:i');
+            $curr_time = $daten->format('h:i');
 
         }
 
 
-        $date = $request->cur_date;
+       // $date =new DateTime($request->cur_date);
 
-        $start_time = $date." ".$curr_time;
-        $end_time = $date." 23:59";
+        $start_time = new DateTime("now", new  DateTimeZone($timezone) );
+        $start_time = $start_time->format('Y-m-d H:m');
+        $end_time = date('Y-m-d 23:59');
+
+        // $start_time = $date." ".$curr_time;
+        // $end_time = $date." 23:59";
+
+
         $time_slots = $this->SplitTime($start_time, $end_time, "60");
         $cart_product_id = $request->cart_product_id??0;
         if ($request->ajax()) {

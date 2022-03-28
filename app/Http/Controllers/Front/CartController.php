@@ -32,10 +32,6 @@ class CartController extends FrontController
 
     public function showCart(Request $request, $domain = '')
     {
-        // dd(json_decode("{\"customerOrderId\":\"000004F0-F54E-8FED-8093-3A5CD8C3AEC4\",\"orderRef\":\"145293819687\",\"totalFee\":\"28\",\"totalFeeCurrency\":\"MYR\",\"distance\":{\"text\":\"31.7 km\",\"value\":31702}}\n"));
-        //  $viva = new VivawalletController();
-        //  $pay = $viva->fetchTransactionDetails('8903797304456875');
-        //  dd($pay);
         if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
                 $order = Order::where('order_number', $request->order)->first();
@@ -1755,7 +1751,11 @@ class CartController extends FrontController
                 'comment_for_dropoff_driver' => $request->comment_for_dropoff_driver??null,
                 'comment_for_vendor' => $request->comment_for_vendor??null,
                 'schedule_pickup' => $request->schedule_pickup??null,
-                'schedule_dropoff' => $request->schedule_dropoff??null]);
+                'schedule_dropoff' => $request->schedule_dropoff??null,
+                'scheduled_slot' => $request->schedule_time??null
+                ]);
+                 CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
+
                 DB::commit();
                 if ($user) {            
                     $checkpreference = ClientPreference::select('verify_email','verify_phone')->first();
@@ -1802,7 +1802,7 @@ class CartController extends FrontController
                 }else{
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-                CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt]);
+                CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
                 DB::commit();
                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
             }
@@ -1910,9 +1910,12 @@ class CartController extends FrontController
 
 
     public function updateCartSlot(Request $request){
-        $checkVendorProd = CartProduct::where('vendor_id',$request->vid)->update(['schedule_type'=>$request->slot,'scheduled_date_time'=>$request->date]);
+        $checkVendorProd = CartProduct::where('vendor_id',$request->vid)->update(['schedule_type'=>$request->slot,'scheduled_date_time'=>$request->date,'specific_instruction'=>$request->specific_instructions]);
             return true;
     }
+
+
+
     public function updateCartProductFaq(Request $request, $domain=''){
        
         $user = Auth::user();

@@ -24,7 +24,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <div class="col-md-3"><h4>{{ __("Order ID") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Date & Time") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Customer") }}</h4></div>
-                        @if((Auth::user()->is_superadmin) || ($client_preference_detail->hide_order_address ==0) )
+                        @if( (Auth::user()->is_superadmin) ||  ($client_preference_detail->hide_order_address ==0) )
                         <div class="col-md-3"><h4>{{ __("Address") }}</h4></div>
                         @endif
                     </div>
@@ -36,7 +36,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <div class="col-md-3">
                             <a class="text-capitalize" href="#"><%= order.user.name %></a>
                         </div>
-                        @if(  (Auth::user()->is_superadmin) || ($client_preference_detail->hide_order_address ==0) )
+                        @if( (Auth::user()->is_superadmin) ||  ($client_preference_detail->hide_order_address ==0) )
                             <% if(order.address !== null) { %>
                             <div class="col-md-3">
                                 <p class="ellipsis mb-0" data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
@@ -186,7 +186,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.payable_amount) %></span>
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.payable_amount) %></span>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -489,7 +489,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             success: function(response) {
                 // reload after 10 sec
 
-
                 $('#order_list_order').hide();
                 if (response.status == 'Success') {
                     if (!isOnload) {
@@ -527,11 +526,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         setTimeout(function() {
             $("#pending_order-tab").trigger('click');
-        }, 500);
+        }, 1500);
 
         setInterval(function() {
             autoloaddashboad();
-        }, 7000);
+        }, 17000);
 
         $(document).on("click", ".load-more-btn", function() {
             $('#order_list_order').show();

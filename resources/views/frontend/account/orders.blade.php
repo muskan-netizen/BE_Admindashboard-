@@ -229,7 +229,7 @@
                                                                                         @endif
                                                                                         @if (!empty($order->scheduled_date_time))
                                                                                             <span
-                                                                                                class="badge badge-success ml-2">Scheduled</span>
+                                                                                                class="badge badge-success ml-2">{{__('Scheduled')}}</span>
                                                                                             <span
                                                                                                 class="ml-2">{{ (($order->scheduled_slot)?dateTimeInUserTimeZone($order->scheduled_date_time, $timezone).'. Slot: '.$order->scheduled_slot:dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) ) }}</span>
                                                                                         @elseif(!empty($vendor->ETA))
@@ -691,7 +691,7 @@
                                                                                                 @endphp
                                                                                                 <li class="text-center">
                                                                                                     {{-- <img src="#" alt=""> --}}
-                                                                                                    <label class="items_price">Rate Your Driver</label>
+                                                                                                    <label class="items_price">{{__('Rate Your Driver')}}</label>
                                                                                                     <label class="rating-star add_edit_driver_review"
                                                                                                         data-id="{{ $order->driver_rating->id ?? 0 }}"
                                                                                                         data-order_vendor_product_id="{{ $product->id ?? 0 }}">
@@ -959,7 +959,7 @@
                                                                                                 class="input-number form-control"
                                                                                                 name="custom_tip_amount{{ $order->order_number }}"
                                                                                                 id="custom_tip_amount{{ $order->order_number }}"
-                                                                                                placeholder="Enter Custom Amount"
+                                                                                                placeholder="{{ __('Enter Custom Amount') }}"
                                                                                                 type="number" value=""
                                                                                                 min="0.01" step="0.01">
                                                                                         </div>

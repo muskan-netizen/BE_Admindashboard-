@@ -454,6 +454,8 @@ class OrderController extends BaseController
         }
         $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
+        
+
         //pr($order->KYC_document->toArray());
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 'order' => $order,
