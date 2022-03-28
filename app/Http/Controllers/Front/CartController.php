@@ -74,6 +74,8 @@ class CartController extends FrontController
             $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         }
         $navCategories = $this->categoryNav($langId);
+        $fixedFee = $this->fixedFee($langId);
+    
         $subscription_features = array();
         if ($user) {
             $now = Carbon::now()->toDateTimeString();
@@ -89,6 +91,7 @@ class CartController extends FrontController
             }
         }
         $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
+
         $data = array(
             'navCategories' => $navCategories,
             'cartData' => $cartData,
@@ -96,8 +99,8 @@ class CartController extends FrontController
             'countries' => $countries,
             'subscription_features' => $subscription_features,
             'guest_user'=>$guest_user,
-
-            'action' => $action
+            'action' => $action,
+            'fixedFee'=>$fixedFee
         );
         $client_preference_detail = ClientPreference::first();
         $client_detail = Client::first();
@@ -109,10 +112,13 @@ class CartController extends FrontController
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
         } 
-
         return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
+
+
+
+
 
     public function postAddToCart(Request $request, $domain = '')
     {
@@ -570,7 +576,8 @@ class CartController extends FrontController
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
-        ])->select('vendor_id', 'luxury_option_id',  'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+
         $loyalty_amount_saved = 0;
         $redeem_points_per_primary_currency = '';
         $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -1426,10 +1433,11 @@ class CartController extends FrontController
             $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->update(['is_primary' => 1]);
         }
 
-
+        
         if ($cart) {
-           $cart_details = $this->getCart($cart, $address_id,$request->code);
+            $cart_details = $this->getCart($cart, $address_id,$request->code);
         }
+        
         $client_preference_detail = ClientPreference::first();
 
         $expected_vendors = [];
