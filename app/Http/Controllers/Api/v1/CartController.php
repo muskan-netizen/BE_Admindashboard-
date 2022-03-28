@@ -475,6 +475,7 @@ class CartController extends BaseController
         $nowdate = Carbon::now()->toDateTimeString();
         $vondorCnt = 0;
         $address = [];
+        $category_array = [];
         $latitude = '';
         $longitude = '';
         $address_id = 0;
@@ -663,7 +664,17 @@ class CartController extends BaseController
                         } else {
                             $prod->cartImg = (isset($prod->product->media[0]) && !empty($prod->product->media[0])) ? $prod->product->media[0]->image : '';
                         }
-                        $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
+                        $prod->faq_count = 0;
+                        if( $preferences->product_order_form ==1 ){
+                            $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
+                        }
+                        $prod->category_id = $prod->product->category_id;
+                        $prod->category_kyc_count = 0;
+                        if( $preferences->category_kyc_documents ==1 ){
+                            if(  !in_array( $prod->product->category_id, $category_array)){
+                                $category_array[] = $prod->product->category_id;
+                            }
+                        }
 
                         if($prod->product->delay_hrs_min != 0){
                             if($prod->product->delay_hrs_min > $delay_date)
