@@ -216,48 +216,47 @@ $sms_crendential = json_decode($preference->sms_credentials);
          @endif
 
           <!-- Xero Accounting API Credentials -->
-        <div class="col-lg-3 col-md-6 mb-3">
-            <form method="POST" action="" class="h-100">
-                @csrf
-                <div class="card-box h-100 h-100">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title text-uppercase mb-0">{{__('Xero Configuration')}}</h4>
-                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                    </div>
-                    <p class="sub-header">{{__('View and update your Xero Keys')}}</p>
-                    <div class="row">
-                        <div class="col-12">
-                           <div class="form-group mb-0">
-                              <div class="form-group mb-0 switchery-demo">
-                                 <label for="xero_enable_switch" class="mr-3">{{ __("Enable") }}</label>
-                                 <input type="checkbox" data-plugin="switchery" name="xero_enable_switch" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->xero_enable_switch == '1')) checked='checked' @endif>
+         @if(!is_null($accounting)) 
+         <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card-box h-100 h-100"> 
+               <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h4 class="header-title text-uppercase mb-0">{{__('Xero Configuration')}}</h4>
+                  <button class="btn btn-info d-block" type="submit" name="xero_submit"> {{ __("Save") }} </button>
+               </div>
+               <p class="sub-header">{{__('View and update your Xero Keys')}}</p>
+               <div class="row">
+                  <div class="col-12">
+                     <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                           <label for="xero_enable_switch" class="mr-3">{{ __("Enable") }}</label>
+                           <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if((isset($accounting) && $accounting->status == '1')) checked='checked' @endif>
+                        </div>
+                     </div>
+                     @php
+                     $creds = json_decode($accounting->credentials); 
+                     @endphp
+                     <div class="mt-2 xeroFields" @if($accounting->status != 1) style="display:none" @endif>
+                        <div class="row">
+                           <div class="col-12">
+                              <div class="form-group mb-2">
+                                 <label for="xero_client_id">{{ __("Client ID") }}</label>
+                                 <input type="text" name="xero_client_id" id="xero_client_id" placeholder="" class="form-control" value="{{ old('xero_client_id', $creds->client_id ?? '')}}">
                               </div>
                            </div>
-
-                           <div class="form-group mt-3 mb-0 xeroFields" style="{{((isset($preference) && $preference->need_xero == '1')) ? '' : 'display:none;'}}">
-                              <label for="xero_client_id">{{ __("Client ID") }}</label>
-                              <input type="text" name="xero_client_id" id="xero_client_id" placeholder="" class="form-control" value="{{ old('xero_client_id', $preference->xero_client_id ?? '')}}">
-                              @if($errors->has('xero_client_id'))
-                              <span class="text-danger" role="alert">
-                                 <strong>{{ $errors->first('xero_client_id') }}</strong>
-                              </span>
-                              @endif
-                           </div>
-
-                           <div class="form-group mt-3 mb-0 xeroFields" style="{{((isset($preference) && $preference->need_xero == '1')) ? '' : 'display:none;'}}">
-                              <label for="xero_secret_id">{{ __("Client Secret ID") }}</label>
-                              <input type="text" name="xero_secret_id" id="xero_secret_id" placeholder="" class="form-control" value="{{ old('xero_secret_id', $preference->xero_secret_id ?? '')}}">
-                              @if($errors->has('xero_secret_id'))
-                              <span class="text-danger" role="alert">
-                                 <strong>{{ $errors->first('xero_secret_id') }}</strong>
-                              </span>
-                              @endif
+                           <div class="col-12">
+                              <div class="form-group mb-2">
+                                 <label for="xero_secret_id">{{ __("Secret ID") }}</label>
+                                 <input type="text" name="xero_secret_id" id="xero_secret_id" placeholder="" class="form-control" value="{{ old('xero_secret_id', $creds->secret_id ?? '')}}">
+                              </div>
                            </div>
                         </div>
-                    </div>
-                </div>
-            </form>
-        </div><!-- Xero Accounting API Credentials Ends -->
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         @endif
+         <!-- Xero Accounting API Credentials Ends -->
 
          @if($client_preference_detail->business_type == 'laundry')
          <div class="col-lg-3 col-md-6 mb-3">
