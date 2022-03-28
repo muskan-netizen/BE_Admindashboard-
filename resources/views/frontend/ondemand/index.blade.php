@@ -325,8 +325,7 @@ use Illuminate\Support\Arr;
 
 
                             @if(app('request')->input('step') == '2')
-                                <div id="step-2-ondemand">                           
-                                   {{count($cartData)}}    
+                                <div id="step-2-ondemand">
                                    @php
                                    $lastKey = count($cartData) - 1;
                                    @endphp
