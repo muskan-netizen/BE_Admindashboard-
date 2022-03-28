@@ -355,7 +355,7 @@ $applocale = session()->get('applocale');
                         </div>
                         <div class="footer-contant">
                             @if($client_preference_detail->show_payment_icons == 1)
-                            <div class="payment-card-bottom text-center d-flex">
+                            <div class="payment-card-bottom payment-img text-center d-flex">
                                 <ul>
                                     <li>
                                         <a href="#"><img class="blur-up lazyload" data-src="{{ getImageUrl(asset('assets/images/visa.png'),'26/26') }}"></a>
