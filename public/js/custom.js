@@ -3325,50 +3325,12 @@ $(document).ready(function () {
         $('.alert-danger').html('');
        //window.location.href = showCart;
 
-<<<<<<< HEAD
-        var task_type = 'schedule';
-        var schedule_date = $("input[name='booking_slot']:checked").val();
-        //var schedule_time = $("input[name='booking_time']:checked").val();
-        var specific_instructions = $("#specific_instructions").val();
-
-        var selectedArr = JSON.stringify($("input[type='radio'][name='booking_slot']:checked"));
-
-
-
-        //var elems = $("input[name='booking_slot']:checked").val();
-       // var arrayString = jQuery.makeArray(elems);
-
-       // var elems = $('input:radio[name=booking_slot]:checked').val();
-        //var arrayString = jQuery.makeArray(elems);
-       // console.log(selectedArr);
-       // alert(selectedArr);
-
-
-
-        // var data_array = $("input[name='booking_slot']").map(function(idx, elem) {
-        //     console.log(elem);
-        //     alert(elem.value);
-        //     if (elem.type === 'radio' || elem.type === 'checkbox') {
-        //         return elem.checked && elem.value;
-        //     } else {
-        //         return elem.value.trim();
-        //     }
-        //  }).get()
-
-        //alert(JSON.stringify($("input[name='booking_slot']:checked").val()));
-        //alert($("input[name='booking_slot']:checked"));
-
-        //console.log(arrayString);
-       // alert(12);
-       // alert(arrayString);
-=======
         var task_type = 'schedule';        
         var schedule_date = $("input[name='booking_date']:checked").val();
         var schedule_time = $("input[name='booking_time']:checked").val();        
         var specific_instructions = $("#specific_instructions").val(); 
         var productid = $("#productid").val();  
         //alert(schedule_date);
->>>>>>> a4e75a3fae12865a8c7f945814de3205ea891629
         //alert(schedule_time);
        var schedule_dt = schedule_date;      
         //alert(schedule_dt);
