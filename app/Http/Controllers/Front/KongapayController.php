@@ -35,7 +35,6 @@ class KongapayController extends Controller
       $this->merchant_id = $json->merchant_id;
    }
 
-
    public function createHash(Request $request)
    {
      $time = '';
@@ -92,7 +91,7 @@ class KongapayController extends Controller
       $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'subscription','date'=>date('Y-m-d')]);
 
-      $request->amt = number_format($amt,2)*100;
+      $request->amt = $amt*100;
       
       if(isset($request->app) && !empty($request->app))
       {
