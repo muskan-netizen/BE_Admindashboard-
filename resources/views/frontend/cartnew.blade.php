@@ -19,7 +19,26 @@
         text-decoration: line-through;
         color: #6c757d;
     }
+    #category_kyc_form_in_cart .file--upload>label {
+    width: 100%;
+    height: 200px;
+    border: 1px solid #eee;
+    border-radius: 15px;
+}
+#category_kyc_form_in_cart .file .update_pic {
+    width: 100%;
+    height: auto;
+    margin: auto;
+    text-align: center;
+    border: 0;
+    border-radius: 0;
+}
+#category_kyc_form_in_cart .file .update_pic img {
+    height: 130px;
+    width: auto;
+}
 </style>
+
 @endsection
 
 @section('content')
@@ -78,7 +97,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 </div>
 
 <script type="text/template" id="cart_template">
-    <% _.each(cart_details.products, function(product, key){%>
+    <% 
+    let fixed_fee=0;
+    let fixed_fee_amount=0;
+
+    _.each(cart_details.products, function(product, key){
+        fixed_fee=product.vendor.fixed_fee;
+        fixed_fee_amount=product.vendor.fixed_fee_amount;
+
+        %>
         <div id="thead_<%= product.vendor.id %>">
             <div class="row">
                 <div class="col-12">
@@ -234,14 +261,29 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </div>
                         </div>
                     <% } %>
-                    <% if( (vendor_product.faq_count > 0 ) && (vendor_product.user_product_order_form == '' || vendor_product.user_product_order_form == null ) ) { %>
-                    <div class=" col-12 <%= vendor_product.faq_count %>  " id="product_faq_dev_<%= vendor_product.product_id %>">
-                        <input type="hidden" name="product_faq_ids" value="<%= vendor_product.product_id %>">
-                        <div class="text-center col-4 my-3 btn-product-order-form-div">
-                            <button class="clproduct_cart_order_form btn btn-solid w-100" id="add__cart_product_form" data-dev_remove_id="product_faq_dev_<%= vendor_product.product_id %>" data-product_id="<%= vendor_product.product_id %>"  data-vendor_id="<%= vendor_product.vendor_id %>">{{__('Product Order Form')}}</button>
+                    @if($client_preference_detail->product_order_form ==1)
+                        <% if( (vendor_product.faq_count > 0 ) && (vendor_product.user_product_order_form == '' || vendor_product.user_product_order_form == null ) ) { %>
+                        <div class=" col-3 <%= vendor_product.faq_count %>  " id="product_faq_dev_<%= vendor_product.product_id %>">
+                            <input type="hidden" name="product_faq_ids" value="<%= vendor_product.product_id %>">
+                            <div class="text-center my-3 btn-product-order-form-div">
+                                <button class="clproduct_cart_order_form btn btn-solid w-100" id="add__cart_product_form" data-dev_remove_id="product_faq_dev_<%= vendor_product.product_id %>" data-product_id="<%= vendor_product.product_id %>"  data-vendor_id="<%= vendor_product.vendor_id %>">{{__('Product Order Form')}}</button>
+                            </div>
                         </div>
-                    </div>
-                    <% } %>
+                        <% } %>
+                    @endif
+<!-- 
+                    @if($client_preference_detail->category_kyc_documents ==1)
+                        <% if( (vendor_product.category_kyc_count > 0 ) ) { %>
+                        <div class=" col-3 <%= vendor_product.category_kyc_count %>  " id="category_kyc_dev_<%= vendor_product.category_id %>">
+                            <input type="hidden" name="category_kyc_ids" value="<%= vendor_product.category_id %>">
+                            <div class="text-center my-3 btn-category_kyc-div">
+                                <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= vendor_product.category_id %>" data-category_id="<%= vendor_product.category_id %>" >{{__('Category KYC Form')}}</button>
+                            </div>
+                        </div>
+                        
+                        <% } %>
+                    @endif -->
+
                 </div>
 
                 <hr>
@@ -311,6 +353,18 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <hr>
     <% }); %>
     <div class="row">
+        
+        @if($client_preference_detail->category_kyc_documents ==1)
+            <% if( (cart_details.category_kyc_count > 0 ) ) { %>
+            <div class=" col-3 <%= cart_details.category_kyc_count %>  " id="category_kyc_dev_<%= cart_details.category_rendem_id %>">
+                <input type="hidden" name="category_kyc_ids" value="<%= cart_details.category_rendem_id %>">
+                <div class="text-center my-3 btn-category_kyc-div">
+                    <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= cart_details.category_rendem_id %>" data-category_id="<%= cart_details.category_ids %>" >{{__('Category KYC Form')}}</button>
+                </div>
+            </div>
+            
+            <% } %>
+        @endif
         <div class="col-12">
             @if(isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry')
             <div class="row">
@@ -327,6 +381,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="col-4">{{__('Comment for Vendor ')}}</div>
                 <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Eg. Please do the whites separately')}}" id="comment_for_vendor" value ="{{$cart->comment_for_vendor??''}}"  name="comment_for_vendor"></div>
             </div>
+
             <hr class="my-2">
             <div class="row">
                 <div class="col-md-6">
@@ -366,6 +421,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <hr class="my-2">
             <% } %>
 
+            <% if(fixed_fee > 0) { %>
+                <div class="row">
+                    <div class="col-6">{{__($fixedFee)}}</div>
+                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(fixed_fee_amount) %></div>
+                </div>
+                <hr class="my-2">
+            <% } %>
+            
             <% if(cart_details.total_container_charges > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Total Container Charges')}}</div>
@@ -463,19 +526,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <p class="total_amt m-0">{{__('Amount Payable')}}</p>
                 </div>
                 <div class="col-6 text-right">
-                    <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
-                        <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
+                    <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> 
+                        <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(fixed_fee_amount)) %></p>
                         <% }else{ %>
-                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_payable_amount) %></p>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(fixed_fee_amount)) %></p>
                             <%
                         } %>
                         <div>
                             <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
                                 <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
-                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(fixed_fee_amount) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                                 <% }else{ %>
                                     <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                                    <input type="hidden" name="cart_total_payable_amount" value="<%= cart_details.total_payable_amount %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(fixed_fee_amount) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                                 <% } %>
                         <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= cart_details.total_payable_amount %>">
                     </div>
@@ -1199,8 +1262,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @endif
 
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
-
 
 <script type="text/javascript">
     var stripe_fpx = '';
@@ -1228,7 +1291,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
-    var get_product_faq = "{{ url('product/faq') }}";
+    
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";
     var update_cart_slot = "{{ route('updateCartSlot') }}";
@@ -1244,6 +1307,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var longitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
+    
+    var get_product_faq = "{{ url('product/faq') }}";
+
+    var get_category_kyc_document = "{{ url('category_kycDocument') }}";
+    var post_category_kyc_document = "{{ route('updateCartCategoryKyc') }}";
     var product_order_form_element_data = [];
 
     if(!latitude){
@@ -1407,6 +1475,66 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     }
 
 
+    $(document).delegate('#category_kyc_form_submit', 'click', function() {
+    var product_id = $(this).attr('data-product_id');
+    var form_class = $(this).attr('data-form_class');
+    var remove_div_id = $(this).attr('data-dev_remove_id');
+    var product_order_form_element = getFormDataImage('.'+form_class);
+    if(product_order_form_element == 0){
+        return false;
+    }
+  
+    // $.ajax({
+    //     type: "POST",
+    //     dataType: "json",
+    //     url: product_faq_update_url,
+    //     data: {product_id:product_id,user_product_order_form:product_order_form_element},
+    //     success: function(response) {
+    //         $("#"+remove_div_id).remove();
+    //         //window.location.reload();
+    //     },
+    //     error: function(data) {
+    //         $(".product_order_form_error").html(data.responseJSON.message);
+    //         setTimeout(function() {
+    //             $('.product_order_form_error').html('').hide();
+    //         }, 5000);
+    //     },
+    // });
+        $('#cart_product_order_form').modal('hide');
+    });
+
+
+    function getFormDataImage(dom_query){
+        var product_order_form_element_data = [];
+        var out = {};
+        var s_data = $(dom_query).serializeArray();
+
+        console.log(s_data);
+
+            //transform into simple data/value object
+            for(var i = 0; i < s_data.length; i++){
+                var record = s_data[i];
+                console.log(record);
+                out[record.name] = record.value;
+                var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
+                var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
+                console.log(is_required);
+
+                if((is_required)==1 && (record.value =='' )){
+                    var errorMsg ="The "+ record.name +" field is required.";
+                    $('.product_order_form_error').html(errorMsg);
+                    // errorMsg = document.querySelector(".product_order_form_error");
+                    // errorMsg.html = "error msg";
+                    // errorMsg.style.display = 'none';
+                    // alert("hello");
+                    return 0;
+                } else {
+                    $('.product_order_form_error').html('');
+                }
+                product_order_form_element_data.push({'question':record.name,'answer':record.value,'product_faq_id':product_faq_id})
+            }
+        return product_order_form_element_data;
+    }
 
     $(document).delegate('#cart_payment_form input[name="cart_payment_method"]', 'change', function() {
         var method = $(this).attr('id');
@@ -1717,6 +1845,36 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             return false;
         return true;
     }
+    function getExtension(filename) {
+        return filename.split('.').pop().toLowerCase();
+    }
+    function readURL(input, previewId) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            var extension = getExtension(input.files[0].name);
+            reader.onload = function(e) {
+                if(extension == 'pdf'){
+                    $(previewId).attr('src', "{{ asset('assets/images/pdf-icon-png-2072.png') }}");
+                }else if(extension == 'csv'){
+                    $(previewId).attr('src',text_image);
+                }else if(extension == 'txt'){
+                    $(previewId).attr('src',text_image);
+                }else if(extension == 'xls'){
+                    $(previewId).attr('src',text_image);
+                }else if(extension == 'xlsx'){
+                    $(previewId).attr('src',text_image);
+                }else{
+                    $(previewId).attr('src',e.target.result);
+                }
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    $(document).on('change', '[id^=input_file_logo_]', function(event){
+        var rel = $(this).data('rel');
+        // $('#plus_icon_'+rel).hide();
+        readURL(this, '#upload_logo_preview_'+rel);
+    });
 
 
 </script>
