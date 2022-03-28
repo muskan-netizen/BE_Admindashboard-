@@ -17,9 +17,7 @@ class XeroController extends Controller
     public function xero_callback(Request $request)
     {
     	$data = $request->all();
-    	// $this->callback($request->all());
-    	$contact = $this->createContact();
-    	$data['contact_id'] = $contact[0]['contact_id'];
+    	$this->callback($request->all());
     	$invoice = $this->createInvoice($data);
     	dd($invoice);
     }
