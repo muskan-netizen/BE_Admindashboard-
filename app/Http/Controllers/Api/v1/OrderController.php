@@ -1090,7 +1090,7 @@ class OrderController extends BaseController
             $order_id = $request->order_id;
             $vendor_id = $request->vendor_id;
             if ($vendor_id) {
-                $order = Order::with([
+                $order = Order::with(['driver_rating',
                     'vendors' => function ($q) use ($vendor_id) {
                         $q->where('vendor_id', $vendor_id);
                     },
@@ -1129,7 +1129,8 @@ class OrderController extends BaseController
                     ->where('id', $order_id)->select('*', 'id as total_discount_calculate')->first();
             } else {
                 $order = Order::with(
-                    [
+                    [   
+                        'driver_rating',
                         'vendors.vendor',
                         'vendors.products.translation' => function ($q) use ($language_id) {
                             $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
