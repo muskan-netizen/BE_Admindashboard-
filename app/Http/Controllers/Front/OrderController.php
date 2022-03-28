@@ -1466,7 +1466,7 @@ class OrderController extends FrontController
             }
         }
 
-
+ 
         $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
         if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
             $ondemand = 0;

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation};
+use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -47,6 +47,7 @@ class ClientPreferenceController extends BaseController{
 
         $tags = Tag::with('primary')->get();
         $slots = ClientSlot::get();
+        $accounting = ThirdPartyAccounting::where('code','xero')->first();
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
                                                 'slots'=>$slots,
@@ -61,7 +62,8 @@ class ClientPreferenceController extends BaseController{
                                                 'vendor_registration_documents' => $vendor_registration_documents,
                                                
                                                 'driver_registration_documents' => $driver_registration_documents, 
-                                                'file_types_driver' => $file_types_driver
+                                                'file_types_driver' => $file_types_driver,
+                                                'accounting' => $accounting
                                             ]);
     }
 
@@ -141,7 +143,7 @@ class ClientPreferenceController extends BaseController{
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes');
+        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','xero_submit','xero_status','xero_client_id','xero_secret_id');
 
         foreach ($request->all() as $key => $value) {
             if(!in_array($key, $keyShouldNot)){
@@ -198,6 +200,26 @@ class ClientPreferenceController extends BaseController{
                 $preference->Default_longitude = $request->Default_longitude;
             }
 
+        }
+
+        /* Xero Configuration */
+        if($request->has('xero_submit'))
+        {
+            if($request->has('xero_status') && $request->xero_status == 'on')
+            {
+                if( ((!$request->has('xero_client_id')) || ($request->xero_client_id == '')) || ((!$request->has('xero_secret_id')) || ($request->xero_secret_id == ''))){
+                    return redirect()->route('configure.index')->with('error', 'Invalid Xero Configuration Data');
+                }   
+            }
+            $json_creds = json_encode(array(
+                        'client_id' => $request->xero_client_id,
+                        'secret_id' => $request->xero_secret_id,
+                    ));
+
+            $update = ThirdPartyAccounting::where('code','xero')->update([
+                'status' => ($request->has('xero_status') && $request->xero_status == 'on') ? 1 : 0,
+                'credentials' => $json_creds
+            ]);
         }
 
         // $preference->stripe_connect = ($request->has('stripe_connect') && $request->stripe_connect == 'on') ? 1 : 0;
