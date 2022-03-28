@@ -55,7 +55,7 @@ class CategoryKycDocumentController extends BaseController{
             }
            
             DB::commit();
-            return $this->successResponse($category_kyc_document, 'User Registration Document Added Successfully.');
+            return $this->successResponse($category_kyc_document, __('Category KYC Document Added Successfully.'));
         } catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse([], $e->getMessage());

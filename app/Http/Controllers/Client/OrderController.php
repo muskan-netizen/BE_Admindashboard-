@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest};
+use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -388,6 +388,8 @@ class OrderController extends BaseController
             'vendors.dineInTable.category',
             'vendors.cancel_request'
         ))->findOrFail($order_id);
+       
+       
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
@@ -450,7 +452,9 @@ class OrderController extends BaseController
             $lala = new LalaMovesController();
             $driver_data = $lala->getDeriverDetails($order->vendors[0]); 
         }
+        $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
+        //pr($order->KYC_document->toArray());
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 'order' => $order,
             'vendor_order_statuses' => $vendor_order_statuses,
@@ -462,6 +466,7 @@ class OrderController extends BaseController
             'clientCurrency' => $clientCurrency,
             'user_docs' => $user_docs,
             'vendor_data' => $vendor_data,
+            "category_KYC_document" =>$category_KYC_document,
             'driver_data' => (($driver_data)?json_decode($driver_data):'')
         ]);
     }
