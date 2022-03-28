@@ -605,7 +605,7 @@
                                          <option value="for_new">{{__('For  New')}}</option>
                                          <option value="for_featured">{{__('For Featured')}}</option>
                                          @endif
-                                         @if ($client_preferences->need_delivery_service == 1)
+                                         @if ($client_preferences->need_delivery_service == 1 || OnLAstMileDelivery()>0)
                                          <option value="for_last_mile">{{__('For Requires Last Mile Delivery')}}</option>
                                          @endif
                                          <option value="for_live">{{__('Draft/Published')}}</option>
@@ -632,7 +632,7 @@
                                             class="chk_box" data-color="#43bee1">
                                     </div>
                                 @endif
-                                @if ($client_preferences->need_delivery_service == 1)
+                                @if ($client_preferences->need_delivery_service == 1 || OnLAstMileDelivery()>0)
                                      <div class="col-md-6  justify-content-between mb-2"    id="for_last_mile"  style="display:none;">
                                         {!! Form::label('title', __('Requires Last Mile Delivery'), ['class' => 'control-label']) !!}
                                         <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile"
