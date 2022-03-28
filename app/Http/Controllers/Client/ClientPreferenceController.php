@@ -116,7 +116,7 @@ class ClientPreferenceController extends BaseController{
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
                     
-        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee'));
     }
 
     public function referandearnUpdate(Request $request, $code){
