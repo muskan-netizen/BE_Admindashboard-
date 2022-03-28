@@ -1050,6 +1050,87 @@ $(document).ready(function () {
                     $('#cart_product-order-form-modal').html(response);
                  });
     });
+    // category kyc verification 
+    $(document).on("click", ".cl_category_kyc_form", function(e) {
+        e.preventDefault();
+       let category_ids = $(this).attr("data-category_id");
+       //$(this).prop('disabled', true);
+       var href = get_category_kyc_document;
+
+       $.ajax({
+            data: {category_ids:category_ids},
+            type: "GET",
+            dataType: 'json',
+            url: get_category_kyc_document,
+            success: function (response) {
+                $('#cart_product_order_form').modal('show');
+                $('#cart_product-order-form-modal').html(response);
+            },
+            error: function (error) {
+            
+            }
+            //$(this).prop('disabled', false);
+        });
+        
+    });
+    
+    $(document).on('click', '#category_kycform_submit', function(e) {
+        e.preventDefault();
+        var input='';
+       
+        var form = document.getElementById('category_kyc_form_in_cart');
+        var formData = new FormData(form);
+        var data_uri = post_category_kyc_document;
+        // console.log(data_uri);
+        //  return false;
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: data_uri,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.status == 'success') {
+                    $(".modal .close").click();
+                    location.reload();
+                } else {
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text(response.message);
+                }
+                return response;
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            },
+            error: function(response) {
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    Object.keys(errors).forEach(function(key) {
+                        $("#" + key + "Input input").addClass("is-invalid");
+                        $("#" + key + "Input span.invalid-feedback").children("strong").text(errors[key][0]);
+                        $("#" + key + "Input span.invalid-feedback").show();
+                    });
+                } else {
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text('Something went wrong, Please try Again.');
+                }
+                return response;
+            }
+        });
+
+    });
     $(document).on("click", "#order_placed_btn", function () {
 
         var delivery_type = 'D';
@@ -1057,9 +1138,13 @@ $(document).ready(function () {
         if (selected) {
             delivery_type = selected.value;
         }
-        console.log($("input[name='product_faq_ids']").length);
+       
         if($("input[name='product_faq_ids']").length > 0){
             success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
+            return false;
+        }
+        if($("input[name='category_kyc_ids']").length > 0){
+            success_error_alert('error', 'Category KYC is required! kindly fill the details.', ".cart_response");
             return false;
 
         }

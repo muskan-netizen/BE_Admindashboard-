@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Session;
 use Auth;
 class Category extends Model
 {
@@ -18,6 +19,8 @@ class Category extends Model
 
     public function translation_one(){
 
+      $langset = Session::has('adminLanguage') ? Session::get('adminLanguage') : '';
+      if(!$langset){
         $primary = ClientLanguage::orderBy('is_primary','desc')->first();
         if(isset($primary) && !empty($primary))
         {
@@ -25,11 +28,8 @@ class Category extends Model
         }else{
           $langset = 1;
         }
-
-        return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset);
-
-
-
+      }
+      return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset);
     }
 
     public function english(){
