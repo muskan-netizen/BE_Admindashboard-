@@ -80,7 +80,7 @@ class StoreController extends BaseController{
     }
     public function getMyStoreDetails(Request $request){
     	try {
-    		$user = Auth::user();
+	   		$user = Auth::user();
     		$is_selected_vendor_id = 0;
             $paginate = $request->has('limit') ? $request->limit : 12;
             $selected_vendor_id = $request->has('selected_vendor_id') ? $request->selected_vendor_id : '';
@@ -88,17 +88,20 @@ class StoreController extends BaseController{
 			if($user_vendor_ids){
 				$is_selected_vendor_id = $selected_vendor_id ? $selected_vendor_id : $user_vendor_ids->first();
 			}
+			//dd($is_selected_vendor_id);
 			$order_list = Order::with('orderStatusVendor')
 						->whereHas('vendors', function($query) use ($is_selected_vendor_id){
 						   $query->where('vendor_id', $is_selected_vendor_id);
 						})
+						//dd($order_list);
 						->where(function ($q1) {
-							$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+							$q1->where('payment_status', 1);
 							$q1->orWhere(function ($q2) {
 								$q2->where('payment_option_id', 1);
 							});
 						})
 						->orderBy('id', 'DESC')->paginate($paginate);
+						
 			foreach ($order_list as $order) {
 				$order_status = [];
 				$product_details = [];
@@ -108,26 +111,28 @@ class StoreController extends BaseController{
 				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
 				$order->date_time = date("d-M-Y h:i A", strtotime($order->date_time));
 				$order->payment_option_title = __($order->paymentOption->title);
-				foreach ($order->vendors as $vendor) {
-					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $is_selected_vendor_id)->orderBy('id', 'DESC')->first();
-					if($vendor_order_status){
-						$order_status_option_id = $vendor_order_status->order_status_option_id;
-						$current_status = OrderStatusOption::select('id','title')->find($order_status_option_id);
-						if($order_status_option_id == 2){
-							$upcoming_status = OrderStatusOption::select('id','title')->where('id', '>', 3)->first();
-						}elseif ($order_status_option_id == 3) {
-							$upcoming_status = null;
-						}elseif ($order_status_option_id == 6) {
-							$upcoming_status = null;
-						}else{
-							$upcoming_status = OrderStatusOption::select('id','title')->where('id', '>', $order_status_option_id)->first();
-						}
-						$order->order_status = [
-							'current_status' => $current_status,
-							'upcoming_status' => $upcoming_status,
-						];
-					}
-				}
+				
+				// foreach ($order->vendors as $vendor) {
+				// 	$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $is_selected_vendor_id)->orderBy('id', 'DESC')->first();	
+				// 	if($vendor_order_status){
+				// 		$order_status_option_id = $vendor_order_status->order_status_option_id;
+				// 		$current_status = OrderStatusOption::select('id','title')->find($order_status_option_id);
+				// 		if($order_status_option_id == 2){
+				// 			$upcoming_status = OrderStatusOption::select('id','title')->where('id', '>', 3)->first();
+				// 		}elseif ($order_status_option_id == 3) {
+				// 			$upcoming_status = null;
+				// 		}elseif ($order_status_option_id == 6) {
+				// 			$upcoming_status = null;
+				// 		}else{
+				// 			$upcoming_status = OrderStatusOption::select('id','title')->where('id', '>', $order_status_option_id)->first();
+				// 		}
+				// 		$order->order_status = [
+				// 			'current_status' => $current_status,
+				// 			'upcoming_status' => $upcoming_status,
+				// 		];
+				// 	}
+				// }
+
 				foreach ($order->products as $product) {
     				$order_item_count += $product->quantity;
     				if($is_selected_vendor_id == $product->vendor_id){
@@ -155,6 +160,8 @@ class StoreController extends BaseController{
 						$luxury_option_name = __('Delivery');
 					}
 				}
+			//dd($product_details);
+				
 				$order->luxury_option_name = $luxury_option_name;
 				$order->product_details = $product_details;
 				$order->item_count = $order_item_count;
@@ -163,13 +170,24 @@ class StoreController extends BaseController{
 				unset($order->paymentOption);
 				unset($order->payment_option_id);
 			}
-			$vendor_list = Vendor::where('status',1)->whereIn('id', $user_vendor_ids)->get(['id','name','logo']);
+
+			//$vendor_list = Vendor::where('status',1)->whereIn('id', $user_vendor_ids)->get(['id','name','logo']);
+
+			$vendor_list = Vendor::where('status',1);
+			if(!empty($request->selected_vendor_id)){
+				$vendor_list->where('id', $request->selected_vendor_id);
+			}elseif($user->is_superadmin == 0){
+				$vendor_list->whereIn('id', $user_vendor_ids);
+			}
+
+			$vendor_list = $vendor_list->get(['id','name','logo']);
+			//dd($vendor_list);
 			foreach ($vendor_list as $vendor) {
 				$vendor->is_selected = ($is_selected_vendor_id == $vendor->id) ? true : false;
 			}
 			$data = ['order_list' => $order_list, 'vendor_list' => $vendor_list];
             return $this->successResponse($data, '', 200);
-    	} catch (Exception $e) {
+    	} catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
     	}
     }

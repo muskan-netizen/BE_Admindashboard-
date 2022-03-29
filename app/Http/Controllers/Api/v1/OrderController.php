@@ -639,10 +639,8 @@ class OrderController extends BaseController
             if (isset($order_lalamove->orderRef)){
                 $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
-
-                return 1;
             }
-        return false;
+        return 1;
     }
 
     public function checkIfanyProductLastMileon($request)
