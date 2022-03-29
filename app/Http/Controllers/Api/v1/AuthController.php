@@ -688,6 +688,7 @@ class AuthController extends BaseController
                 $message = 'OTP matched successfully.';
             }
             if ($request->type == 'phone') {
+                $message = 'Mobile number verified successfully.';
                 $phone_number = str_ireplace(' ', '', $request->phone_number);
                 $user_detail_exist = User::where('phone_number', $phone_number)->whereNotIn('id', [$user->id])->first();
                 if ($user_detail_exist) {
@@ -706,6 +707,7 @@ class AuthController extends BaseController
                 $user->save();
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             } elseif ($request->type == 'email') {
+                $message = 'Email verified successfully.';
                 $user_detail_exist = User::where('email', $request->email)->where('id', '!=', $user->id)->first();
                 if ($user_detail_exist) {
                     return $this->errorResponse(__('Email already in use!'), 404);
@@ -1220,6 +1222,22 @@ class AuthController extends BaseController
             if ($currentTime > $user->phone_token_valid_till) {
                 return $this->errorResponse(__('OTP has been expired.'), 404);
             }
+            
+            if($currentTime <= $user->phone_token_valid_till && $user->phone_token == $request->verifyToken){
+                if($user->status==0)
+                {
+                    User::where('id', $user->id)->update(['status' => 1]);
+                }
+                if($user->status==2)
+                {
+                    return $this->errorResponse(__('User is Blocked.'), 404);
+                }
+                if($user->status==3)
+                {
+                    return $this->errorResponse(__('User is Inactive.'), 404);
+                }
+            }
+            
             $request->request->add(['phone_number' => $phone_number]);
             return $this->proceedToPhoneLogin($request);
         } catch (Exception $ex) {

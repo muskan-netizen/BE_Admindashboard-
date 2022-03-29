@@ -67,22 +67,40 @@ class TaxController extends Controller{
                 }
             });
         }
-        $orders = $orders_query->orderBy('id', 'desc')->get();
-        foreach ($orders as $order) {
-            $order->payment_method = $order->paymentOption ? $order->paymentOption->title : '';
-            $order->customer_name = $order->user ? $order->user->name : '-';
-            $order->payable_amount = decimal_format($order->payable_amount);
-            $order->taxable_amount = decimal_format($order->taxable_amount);
-            $order->created_date = dateTimeInUserTimeZone($order->created_at, $timezone);
+        $orders = $orders_query->orderBy('id', 'desc');
+        // foreach ($orders as $order) {
+        //     $order->payment_method = $order->paymentOption ? $order->paymentOption->title : '';
+        //     $order->customer_name = $order->user ? $order->user->name : '-';
+        //     $order->payable_amount = decimal_format($order->payable_amount);
+        //     $order->taxable_amount = decimal_format($order->taxable_amount);
+        //     $order->created_date = dateTimeInUserTimeZone($order->created_at, $timezone);
+        //     $tax_types = [];
+        //     foreach ($order->taxes as $tax) {
+        //         if($tax){
+        //             $tax_types[]= $tax->category->title;
+        //         }
+        //     }
+        //     $order->tax_types = implode(', ',$tax_types);
+        // }
+        return Datatables::of($orders)
+        ->addColumn('payment_method', function($orders) {
+            return $orders->paymentOption ? $orders->paymentOption->title : '';
+        })
+        ->addColumn('customer_name', function($orders) {
+            return $orders->user ? $orders->user->name : '-';
+        })
+        ->addColumn('created_date', function($orders) use($timezone) {
+                return dateTimeInUserTimeZone($orders->created_at, $timezone);
+        })
+        ->addColumn('tax_types', function($orders){
             $tax_types = [];
-            foreach ($order->taxes as $tax) {
+            foreach ($orders->taxes as $tax) {
                 if($tax){
                     $tax_types[]= $tax->category->title;
                 }
             }
-            $order->tax_types = implode(', ',$tax_types);
-        }
-        return Datatables::of($orders)
+            return implode(', ',$tax_types);
+        })
         ->addIndexColumn()
         ->filter(function ($instance) use ($request) {
             if (!empty($request->get('search'))) {

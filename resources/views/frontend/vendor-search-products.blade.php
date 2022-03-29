@@ -26,7 +26,7 @@
                 @endforeach
             @endif
         </div>
-        <div class="col-6 text-right">Sort By :
+        <div class="col-6 text-right">{{ __('Sort By:')}}
             <select name="order_type" id='order_type' class="product_tag_filter p-1">
                 <option value="">{{__('Please Select')}}</option>
                 <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>

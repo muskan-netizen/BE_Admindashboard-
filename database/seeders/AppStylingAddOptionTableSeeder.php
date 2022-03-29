@@ -13,12 +13,23 @@ class AppStylingAddOptionTableSeeder extends Seeder
      */
     public function run()
     {
-        $app_styling_option = AppStylingOption::updateOrCreate([
+        $app_styling_option = AppStylingOption::updateOrCreate([ 
             'image' => 'home_seven.png',
         ],[
             'app_styling_id' => 8,
             'name' => 'Home Page 7',
             'template_id' => 5,
+            'is_selected' => 0,
+            'created_at' => NULL,
+            'updated_at' => NULL,
+        ]);
+
+        $app_styling_option = AppStylingOption::updateOrCreate([ 
+            'image' => 'home_eight.png',
+        ],[
+            'app_styling_id' => 8,
+            'name' => 'Home Page 8',
+            'template_id' => 6,
             'is_selected' => 0,
             'created_at' => NULL,
             'updated_at' => NULL,

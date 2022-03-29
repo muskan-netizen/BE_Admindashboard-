@@ -79,9 +79,25 @@ class ToolsController extends BaseController
             $from_vendor = $this->vendorObj->getById($request->copy_from);
             $from_products = $this->productObj->getByVendorId($request->copy_from);
             $client = $this->clientObj->getClient();
-
+            
             if(count($request->copy_to) > 0)
             {
+                
+            // dd( $from_vendor->toArray());
+            
+            // //copy vendor secifications of from vendor
+            // $vendor_specifications=array(
+            //      'need_container_charges'=>$from_vendor->need_container_charges,
+            //      'show_slot'=>$from_vendor->show_slot,
+            //      'auto_accept_order'=>$from_vendor->auto_accept_order,
+            //      'return_request'=>$from_vendor->return_request,
+            //      'slot_minutes'=>$from_vendor->slot_minutes
+            // );
+
+            // $this->vendorObj->where('id')
+
+
+
                 foreach($request->copy_to as $copy_to)
                 {
                     $update_vendor = $this->updateVendorData($from_vendor,$copy_to);
@@ -111,10 +127,12 @@ class ToolsController extends BaseController
                         $add_product = $this->addProduct($from_product,$copy_to,$request->copy_from,$product_sku);
                     }
                 }
+
                 foreach($from_vendor->getAllCategory as $v_category)
                 {
-                    $this->vendorCategoryObj->addVendorCategory($copy_to,$v_category->category_id);
+                    $this->vendorCategoryObj->addVendorCategory($copy_to,$v_category->category_id,$v_category->status);
                 }
+
                 foreach($from_vendor->getCustomCategory as $v_c_category)
                 {
                     $check_category = $this->categoryObj->checkCategory($v_c_category,$copy_to);
@@ -374,7 +392,10 @@ class ToolsController extends BaseController
             'delivery_fee_maximum' => $from_vendor->delivery_fee_maximum,
             'slot_minutes' => $from_vendor->slot_minutes,
             'closed_store_order_scheduled' => $from_vendor->closed_store_order_scheduled,
+            'need_container_charges' => $from_vendor->need_container_charges,
+            'return_request' => $from_vendor->return_request
         ]);
+       
         foreach($from_vendor->getAllCategory as $v_category)
         {
             $add_up_cat = $this->vendorCategoryObj->addVendorCategory($to_vendor_id,$v_category->category_id);  
