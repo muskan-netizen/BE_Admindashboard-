@@ -10,6 +10,11 @@ jQuery(window).scroll(function () {
     }
 });
 
+$(".mobile-account .fa").click(function(){
+    $(".onhover-show-div").toggleClass("open");
+  });
+
+
 
 // Material Select Initialization
 $(document).ready(function () {
