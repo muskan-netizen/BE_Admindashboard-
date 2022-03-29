@@ -48,6 +48,12 @@
                         keyboard: false
                     });
                     $('#edit-category-form #editCategoryBox').html(data.html);
+                    if(is_vendor==0)
+                    {
+                        $('.editcatmodal').css('display','none');
+                    }else{
+                        $('.editcatmodal').css('display','');
+                    }                    
                     setTimeout(function() {
                         $('input[name="type_id"]:checked').trigger('change');
                         $('input[name="warning_page_id"]:checked').trigger('change');

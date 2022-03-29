@@ -39,10 +39,6 @@ body i.fa{color: var(--theme-deafult);}
      box-shadow: rgb(28 28 28 / 8%) 0 2px 8px;
      border: 1px solid #e8e8e8;
 }
- .location-bar.d-inline-flex.align-items-center.position-relative{
-     width: 100%;
-     border-right: 1px solid #bbb;
-}
  .al_custom_head.site-topbar .location-bar i{
      color: var(--theme-deafult) !important;
      font-size: 18px;
@@ -246,9 +242,7 @@ body i.fa{color: var(--theme-deafult);}
  .al_new_wrapper_design .container-fluid{
      max-width: 100%;
 }
- #main-menu .slick-list{
-     overflow: inherit;
-}
+
  .menu-navigation_al li.al_main_category{
      margin: 0 20px;
      text-align: center;
@@ -290,9 +284,14 @@ body i.fa{color: var(--theme-deafult);}
  .onhover-dropdown:before{
      content: "\f107";
      font-family: FontAwesome;
-     position: absolute;
-     right: 3px;
-}
+     right: 0px;
+    top: 50%;
+    position: absolute;
+        transform: translate(0, -50%);
+    }
+    li.onhover-dropdown.change-language{
+        margin-right: 10px;
+    }
  .onhover-dropdown:hover .onhover-show-div{
      display: block;
      opacity: 1;
@@ -378,9 +377,6 @@ body i.fa{color: var(--theme-deafult);}
  .menu-slider .slick-next.slick-disabled, .menu-slider .slick-prev.slick-disabled{
      opacity: 0;
 }
- .container{
-     max-width: 1400px;
-}
  .pixelstrap ul{
      position: absolute;
      width: 16em !important;
@@ -446,13 +442,13 @@ body i.fa{color: var(--theme-deafult);}
     height: 20px;
     width: 20px;
 }
-.al_new_wrapper_design .slick-next {
+.al_new_wrapper_design header .slick-next{
     right: 0;
 }
-.menu-slider .slick-next.slick-disabled, .menu-slider .slick-prev.slick-disabled {
+.menu-slider .slick-next.slick-disabled, .menu-slider .slick-prev.slick-disabled{
     opacity: 0;
 }
-.al_new_wrapper_design .slick-prev {
+.al_new_wrapper_design header .slick-prev{
     left: 0;
     z-index: 9;
 }
@@ -494,3 +490,108 @@ h2.homepage-address {
     -webkit-transform: rotateZ(-45deg);
     transform: rotateZ(-45deg);
 }
+
+/* new header css */
+.menu_navigation_al_four{
+    width: 100%;
+    overflow: visible;
+}
+.menu_navigation_al_four li.al_main_category a{
+    padding-left: 10px;
+    padding-right: 35px;
+    padding-bottom: 0;
+    white-space: nowrap;
+}
+.menu_navigation_al_four .slick-list{
+    overflow-x: clip;
+    overflow-y: visible;
+}
+.al_new_wrapper_design .menu_navigation_al_four .slick-next{
+    right: 0;
+    background-color: #fff;
+    font-size: 0;
+    border: none;
+    top: 10px;
+    position: absolute;
+}
+.al_new_wrapper_design .menu_navigation_al_four .slick-prev{
+    background-color: #fff;
+    font-size: 0;
+    border: none;
+    top: 10px;
+    position: absolute;
+}
+.al_icons_mapPin svg g,
+.al_icons_mapPin svg,
+.al_icons_mapPin svg path{
+    height: 24px;width: 24px;fill: var(--theme-deafult);
+}
+
+.al_searchType{
+    border-radius: 45px;
+    overflow: hidden;
+}
+.al_addCart li.onhover-div{
+    border-radius: 30px;
+    background-color: var(--theme-deafult);
+}
+.al_addCart li.onhover-div a,
+.al_addCart li.onhover-div a i{
+    color: #fff;
+}
+.top-header .header-dropdown li a{color: #777;}
+.top-header .header-dropdown li.onhover-dropdown{
+    padding: 0 20px 0 0;
+    cursor: pointer;
+}
+.top-header .header-dropdown li.change-language a{
+    font-size: 0;
+    vertical-align: middle;
+}
+.top-header .header-dropdown li.change-language a span{
+    font-size: 14px;
+    color: #777;
+}
+
+.al_BGcolor{
+    position: relative;
+    border-radius: 80px;
+    overflow: hidden;
+    height: 40px;
+    width: 40px;
+    text-align: center;
+    padding: 0;
+    margin-right: 0;
+    display: inherit;
+    vertical-align: middle;
+    line-height: 40px;
+}
+.input-group-prepend label.input-group-text{
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    margin: 0 auto;
+}
+.custom-select{
+    background:none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+}
+.onhover-show-div li{
+    display: block;
+}
+li.onhover-dropdown.mobile-account span.al_BGcolor{
+    margin-right: 10px;
+}
+.carousel-inner{
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    height: 100%;
+}
+.carousel-item{
+    height: 100%;
+}
+.navigation_tab_al.nav-material.tab-icons .nav-link:hover{border:none;}
+.al_BGcolor::before{position: absolute;content: "";background-color: var(--theme-deafult);height: 100%;width: 100%;opacity: .3;left: 0;top: 0;}
