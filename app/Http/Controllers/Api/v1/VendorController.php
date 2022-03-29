@@ -52,6 +52,7 @@ class VendorController extends BaseController{
     }
 
     public function productsByVendor(Request $request, $vid = 0){
+       // pr($vid);
         try {
             if($vid == 0){
                 return response()->json(['error' => 'No record found.'], 404);
@@ -276,6 +277,7 @@ class VendorController extends BaseController{
                         }
                     }
                 }
+               
                 $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
                             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                             ->where('category_translations.language_id', $langId);
@@ -2174,12 +2176,15 @@ class VendorController extends BaseController{
 
                     $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     
-
+            $product_category_ids =  Product::where('vendor_id', $vid)->pluck('category_id');
+            $product_category_ids = $product_category_ids->isNotEmpty() ? $product_category_ids->toArray() : [];
+            //pr($product_category_ids);
             if($vendor->vendor_templete_id == 5){
+            
                 $vendor_categories = VendorCategory::where('vendor_id', $vid)->with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
-                }])->whereHas('category.products')->with(['category.products' => function ($q)use($langId,$userid, $multipli){
-                        $q->where('is_live', 1)->with([
+                }])->whereHas('category.products')->with(['category.products' => function ($q)use($langId,$userid, $multipli,$vid){
+                        $q->where('is_live', 1)->where('vendor_id', $vid)->with([
                         //     'category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
                         //     $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                         //     ->where('category_translations.language_id', $langId);
@@ -2227,6 +2232,8 @@ class VendorController extends BaseController{
                     if(isset($request->category_id))
                     $vendor_categories = $vendor_categories->where('category_id',$request->category_id);
 
+                    
+                    $vendor_categories->whereIn('category_id',$product_category_ids)->groupBy('category_id');
                     $vendor_categories = $vendor_categories->get();
                
                 $listData =  array_values($vendor_categories->toArray());

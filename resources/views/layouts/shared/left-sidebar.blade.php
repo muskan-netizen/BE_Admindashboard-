@@ -438,12 +438,12 @@
                                 </li>
                             @endif
                             @if(Auth::user()->is_superadmin == 1)
-                                {{-- <li>
+                                <li>
                                     <a href="{{ route('campaign.index')}}">
                                         <span class="icon-celebrity"></span>
                                         <span> {{ __("Campaigns") }} </span>
                                     </a>
-                                </li> --}}
+                                </li>
                             @endif
                         </ul>
                     </li>
