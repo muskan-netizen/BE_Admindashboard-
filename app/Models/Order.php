@@ -95,4 +95,9 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\OrderDriverRating', 'order_id', 'id');
     }
+
+    public function getByNumber($order_number)
+    {
+        return self::where('order_number',$order_number)->with('products')->first();
+    }
 }
