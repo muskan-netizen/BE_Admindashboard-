@@ -6,6 +6,7 @@ use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use Auth;
 use App\Http\Traits\ApiResponser;
+use App\Http\Traits\Vivawallet;
 use App\Models\Cart;
 use App\Models\CartAddon;
 use App\Models\CartCoupon;
@@ -14,123 +15,152 @@ use App\Models\CartProductPrescription;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
+use App\Models\UserAddress;
 use App\Models\UserVendor;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
 use Log;
 
-class KongapayController extends Controller
+class VivawalletController extends Controller
 {
-   use ApiResponser;
+   use ApiResponser, Vivawallet;
 
-   private $api_key;
-   private $merchant_id;
-   private $url;
+    private $merchant_key;
+    private $merchant_id;
+    private $client_key;
+    private $client_id;
+    private $url;
+    private $tokenUrl;
+    private $test_mode;
 
    public function __construct()
    {
-      $konga = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'vivawallet')->where('status', 1)->first();
-      $json = json_decode($konga->credentials);
-      $this->api_key = $json->api_key;
-      $this->merchant_id = $json->merchant_id;
+        // $viva = PaymentOption::select('credentials','test_mode','status')->where('code', 'viva_wallet')->where('status', 1)->first();
+        // $json = json_decode($viva->credentials);
+        // $this->client_key = $json->client_key;
+        // $this->client_id = $json->client_id;
+        // $this->merchant_key = $json->merchant_key;
+        // $this->merchant_id = $json->merchant_id;
+        // $this->test_mode = $viva->test_mode;
    }
 
-   public function createToken(Request $request)
-   {
-
-        
-
-   }
-
-
-   public function createHash(Request $request)
-   {
-     $time = '';
-    if(isset($request->auth_token) && !empty($request->auth_token)){
-      $user = User::where('auth_token', $request->auth_token)->first();
-      Auth::login($user);
-    }else{
-      $user = auth()->user();
+   public function credentials()
+    {
+         $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'viva_wallet')->where('status', 1)->first();
+         $json = json_decode($viva->credentials);
+         $this->client_key = $json->client_key;
+         $this->client_id = $json->client_id;
+         $this->merchant_key = $json->merchant_key;
+         $this->merchant_id = $json->merchant_id;
+         $this->test_mode = $viva->test_mode;
     }
-     $name = explode(' ',$user->name);
-     $returnUrl = '';
-     if($request->from == 'cart')
-     {
-      $request->amt = $request->amt*100;
-      $time = $request->order_number;
 
-      if(isset($request->app) && !empty($request->app))
-      {
-        $returnUrl = route('kongapay.successCart',['from'=>'?auth_token='.$request->auth_token]);
-      }else{ 
-        $returnUrl = route('kongapay.successCart');
+   public function createToken()
+   {
+    $this->credentials();
+    return $this->getAuthTokenViva();
+   }
+
+   public function orderNumber($request)
+   {
+        if($request->from == 'cart')
+        {
+            $time = $request->order_number;
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'cart','date'=>date('Y-m-d'),'user_id'=>auth()->user()->id]);
+
+        }elseif($request->from == 'wallet')
+        {
+            $time = ($request->transaction_id)??'W_'.time();
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
+
+        }elseif($request->from == 'tip')
+        {
+             $time = 'T_'.time().'_'.$request->order_number;
+             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
+
+        }elseif($request->from == 'subscription')
+        {
+            $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
+            
+        }
+        return $time;
+   }
+
+  //  public function payForm(Request $request)
+  //  {
+  //   $number = $this->orderNumber($request); // order no
+  //   return $this->createPayLink($request); 
+  //  }
+
+   public function createPayLink(Request $request)
+   {
+    // \Log::info($request->all());
+    $number =  $this->orderNumber($request);
+    $user = auth()->user();
+    $this->credentials();
+            $data  = [
+              'amount'              => intval($request->amt),
+              'customerTrns'        => $number,
+              'customer'            => [
+                  'email'         => $user->email,
+                  'fullName'      => $user->name,
+                  'phone'         => $user->phone_number,
+                  'countryCode'   => 'EN',
+                  'requestLang'   => 'el-EN'
+              ],
+              'paymentTimeout'      => 0,
+              'preauth'             => false,
+              'allowRecurring'      => false,
+              'maxInstallments'     => 0,
+              'paymentNotification' => true,
+              'tipAmount'           => 0,
+              'disableExactAmount'  => false,
+              'disableCash'         => false,
+              'disableWallet'       => false,
+              'sourceCode'          => 'Default',
+              'merchantTrns'        => $number
+          ];
+      $response = $this->createOrderPaymentLink($data);
+      if($response->orderCode){
+          // if($request->from != ''){
+          // //   $payId = Payment::where('transaction_id',$number)->first();
+          // //   $payId->viva_order_id = $response->orderCode;
+          // //   $payId->save();
+          // // }else{
+          // //   $orderId = Order::where('order_number',$number)->first();
+          // //   $orderId->viva_order_id = $response->orderCode;
+          // //   $orderId->save();
+
+            $payId = Payment::where('transaction_id',$number)->first();
+            $payId->viva_order_id = $response->orderCode;
+            $payId->user_id = auth()->id();
+            $payId->save();
+          // }
       }
 
-     }elseif($request->from == 'wallet')
-     {
-      $time = ($request->transaction_id)??'W_'.time();
-      //Save transaction before payment success for get information only
-      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d')]);
-      $request->amt = $request->amt*100;
-
-      if(isset($request->app) && !empty($request->app))
-      {
-        $returnUrl = route('kongapay.successWallet',['transaction_id='.$time]);
-      }else{ 
-        $returnUrl = route('kongapay.successWallet');
-      }
-
-     }elseif($request->from == 'tip')
-     {
-      $time = 'T_'.time().'_'.$request->order_number;
-      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d')]);
-     
-      $request->amt = $request->amt*100;
-      if(isset($request->app) && !empty($request->app))
-      {
-        $returnUrl = route('kongapay.successTip',['order_no='.$time]);
-      }else{ 
-        $returnUrl = route('kongapay.successTip');
-      }
-      
-     }elseif($request->from == 'subscription')
-     {
-      $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
-      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
-
-      $request->amt = number_format($request->amt,2)*100;
-      
-      if(isset($request->app) && !empty($request->app))
-      {
-        $returnUrl = route('kongapay.successSubs',['subscription_id='.$time]);
-      }else{ 
-        $returnUrl = route('kongapay.successSubs');
-      }
-
-
-     
-     }
-       
-     $key = $request->amt.'|'.$this->api_key.'|'.$time;
-
-     //Need to save entry in payment table
-
-     $data = (object)array(
-            "hash"=> hash('Sha512',$key),
-            "amount"=> $request->amt??0,
-            "description"=> "web payment",
-            "email"=> $user->email??'',
-            "merchantId"=> $this->merchant_id,
-            "reference"=> $time,
-            "firstname" => $name[0]??'',
-            "lastname" => $name[1]??'last name',
-            "phone" => $user->phone_number,
-            "enableFrame"=> true,
-            "callback" => $returnUrl,
-            "customerId" => $user->email
-        );
-      return json_encode($data);
+      return $this->sendResponse($response);
    }  
+
+   public function sendResponse($response)
+   {
+    $this->credentials();
+        if($this->test_mode=='1'){
+          $this->api_url = 'https://demo.vivapayments.com/web/checkout?ref='.$response->orderCode;            
+          }else{
+          $this->api_url = 'https://vivapayments.com/web/checkout?ref='.$response->orderCode;
+          }
+         return $this->api_url;
+        // header('Location: '.$this->api_url);
+        //exit;
+   }
+
+   public function verifyWebhookUrl($response)
+   {
+      $key = $this->verificationWebhookKey();
+      // $key =  json_encode($key);
+       echo $key->Key;
+   }
 
 
    public function webViewPay(Request $request)
@@ -178,14 +208,37 @@ class KongapayController extends Controller
        return $this->successResponse(url($request->serverUrl.'payment/kongapay/api/'.$params)); 
    }
 
-   public function completeOrderCart(Request $request)
+
+   public function successPage(Request $request)
+   {
+    $payment = Payment::where('viva_order_id',$request->s)->first();
+        if($payment->type=='cart'){
+          return $this->completeOrderCart($request,$payment);
+        }elseif($payment->type=='wallet'){
+            return $this->completeOrderWallet($request,$payment);
+        }elseif($payment->type=='tip'){
+            return $this->completeOrderTip($request,$payment);
+        }elseif($payment->type=='subscription'){
+            return $this->completeOrderSubs($request,$payment);
+        }
+   }
+
+   public function fetchTransactionDetails($tid)
+   {
+      return $this->getTransactionDetails($tid);
+   }
+
+
+   public function completeOrderCart($request,$payment)
     {
 
-      $order = Order::where('order_number',$request->merchant_reference)->first();
-          if(isset($request->merchant_reference) && $request->status == 'success')
+      $order = Order::where('order_number',$payment->transaction_id)->first();
+      //dd($order);
+          if(isset($request->s) && $request->s != '')
           {
            
             $order->payment_status = '1';
+            $order->viva_order_id = $request->s;
             $order->save();
 
             // Auto accept order
@@ -203,7 +256,7 @@ class KongapayController extends Controller
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
 
-            Payment::create(['amount'=>0,'transaction_id'=>$request->merchant_reference,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id]);
+            Payment::updateOrCreate(['viva_order_id'=>$request->s],['amount'=>0,'transaction_id'=>$request->s,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id,'user_id'=>auth()->id()]);
 
              // Send Notification
              if (!empty($order->vendors)) {
@@ -219,7 +272,7 @@ class KongapayController extends Controller
 
           if(isset($request->auth_token) && !empty($request->auth_token))
           {
-            $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order->order_number;
+            $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&order='.$order->order_number;
             return Redirect::to($returnUrl); 
           }else{
             return Redirect::to(route('order.success',[$order->id]));
@@ -233,7 +286,7 @@ class KongapayController extends Controller
             }
             if(isset($request->auth_token) && !empty($request->auth_token))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&order='.$order->order_number;
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=00&order='.$order->order_number;
               return Redirect::to($returnUrl);  
             }else{
               return Redirect::to(route('showCart'))->with('error',$request->message);
@@ -246,18 +299,18 @@ class KongapayController extends Controller
     }
 
 
-    public function completeOrderWallet(Request $request)
+    public function completeOrderWallet(Request $request,$payment)
     {
-          if(isset($request->merchant_reference) && $request->status == 'success')
+       if(isset($request->s) && $request->s != '')
           {
-            $data = Payment::where('transaction_id',$request->merchant_reference)->first();
+            $data = Payment::where('viva_order_id',$request->s)->first();
             $user = auth()->user();
             $wallet = $user->wallet;
-            $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->merchant_reference . '</b>']);
+            $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->s . '</b>']);
 
             if(isset($request->transaction_id) && !empty($request->transaction_id))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=wallet';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&transaction_id='.$request->s.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
               return Redirect::to(route('user.wallet'));
@@ -265,12 +318,12 @@ class KongapayController extends Controller
 
             
           }else{
-            $data = Payment::where('transaction_id',$request->merchant_reference)->first();
+            $data = Payment::where('viva_order_id',$request->s)->first();
             $data->delete();
 
             if(isset($request->transaction_id) && !empty($request->transaction_id))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=wallet';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=00&transaction_id='.$request->merchant_reference.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
               return Redirect::to(route('user.wallet'))->with('error',$request->message);
@@ -283,20 +336,20 @@ class KongapayController extends Controller
     }
 
 
-    public function completeOrderSubs(Request $request)
+    public function completeOrderSubs(Request $request,$payment)
     {
       $user = auth()->user();
-      $data = Payment::where('transaction_id',$request->merchant_reference)->first();
-      if(isset($request->merchant_reference) && $request->status == 'success')
+      $data = Payment::where('viva_order_id',$request->s)->first();
+      if(isset($request->s) && $request->s != '')
           {
-            $subscription = explode('_',$request->merchant_reference);
-            $request->request->add(['user_id' => $user->id, 'payment_option_id' => 20, 'amount' => $data->balance_transaction, 'transaction_id' => $request->merchant_reference]);
+            $subscription = explode('_',$data->transaction_id);
+            $request->request->add(['user_id' => $user->id, 'payment_option_id' => 21, 'amount' => $data->balance_transaction, 'transaction_id' => $request->s]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription[2]);
 
             if(isset($request->subscription_id) && !empty($request->subscription_id))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=subscription';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&transaction_id='.$request->s.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
               return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
@@ -306,7 +359,7 @@ class KongapayController extends Controller
 
             if(isset($request->subscription_id) && !empty($request->subscription_id))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=subscription';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=00&transaction_id='.$request->s.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
               return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
@@ -317,19 +370,19 @@ class KongapayController extends Controller
 
     }
 
-    public function completeOrderTip(Request $request)
+    public function completeOrderTip(Request $request,$payment)
     {
-      $data = Payment::where('transaction_id',$request->merchant_reference)->first();
-      if(isset($request->merchant_reference) && $request->status == 'success')
+      $data = Payment::where('viva_order_id',$request->s)->first();
+      if(isset($request->s) && $request->s != '')
           {
-            $order_number = explode('_',$request->merchant_reference);
-            $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $request->merchant_reference]);
+            $order_number = explode('_',$data->transaction_id);
+            $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $data->transaction_id]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
 
             if(isset($request->order_no) && !empty($request->order_no))
               {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order_number[2].'&action=tip';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&order='.$order_number[2].'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
                 return Redirect::to(route('user.orders'))->with('success', $request->message);
@@ -340,7 +393,7 @@ class KongapayController extends Controller
 
               if(isset($request->order_no) && !empty($request->order_no))
               {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=tip';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=00&transaction_id='.$data->transaction_id.'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
                 return Redirect::to(route('user.orders'))->with('error', $request->message);
@@ -350,5 +403,6 @@ class KongapayController extends Controller
         return $this->successResponse($request->getTransactionReference());
 
     }
+
 
 }

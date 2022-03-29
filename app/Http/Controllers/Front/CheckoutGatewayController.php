@@ -109,7 +109,7 @@ class CheckoutGatewayController extends FrontController
                 'customer' => $customer_data,
                 'payment_ip' => getUserIP(),
                 'billing_descriptor' => array(
-                    'name' => $user->address->first()->address,
+                    'name' => $user->name,
                     'address' => $user->address->first()->address,
                     'street' =>  $user->address->first()->street,
                     'city' => $user->address->first()->city,
@@ -118,7 +118,7 @@ class CheckoutGatewayController extends FrontController
                 ),
                 'shipping' => array(
                     'address' => array(
-                        'name' => $user->address->first()->address,
+                        'name' => $user->name,
                         'address_line1' => $user->address->first()->address,
                         'address_line2' => $user->address->first()->address,
                         'street' =>  $user->address->first()->street,

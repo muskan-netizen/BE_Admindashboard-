@@ -10,6 +10,7 @@ use App\Http\Traits\ToasterResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
+use Illuminate\Support\Facades\DB;
 use App\Models\{Client, ClientPreference, PaymentOption, PayoutOption};
 
 class PaymentOptionController extends BaseController
@@ -29,7 +30,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet');
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -298,6 +299,19 @@ class PaymentOptionController extends BaseController
                         'enc_key' => $request->ccavenue_enc_key,
                         'access_code' => $request->ccavenue_access_code,
                         'merchant_id' => $request->ccavenue_merchant_id
+                    ));
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'viva_wallet')) {
+                    $validatedData = $request->validate([
+                        'viva_wallet_client_id' => 'required',
+                        'viva_wallet_client_key' => 'required',
+                        'viva_wallet_merchant_id' => 'required',
+                        'viva_wallet_merchant_key' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'client_id' => $request->viva_wallet_client_id,
+                        'client_key' => $request->viva_wallet_client_key,
+                        'merchant_id' => $request->viva_wallet_merchant_id,
+                        'merchant_key' => $request->viva_wallet_merchant_key
                     ));
                 }
                 else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'easypaisa')) {

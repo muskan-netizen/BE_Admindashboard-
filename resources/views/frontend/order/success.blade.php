@@ -5,7 +5,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12 my-1">
-                <div class="success-text">
+                <div class="success-text al">
                 	<i class="fa fa-check-circle" aria-hidden="true"></i>
                     <h2>{{__('Thank You')}}</h2>
                     {{-- <p>{{__('Payment is successfully processsed and your order is on the way')}}</p> --}}
@@ -107,7 +107,7 @@
                         @if($order->luxury_option_id == 1)
                         <h4>{{__('Delivery Address')}}</h4>
                         <ul class="order-detail">
-                            <li> {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{$order->address ? $order->address->address : ''}}</li>
+                            <li> {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{ $order->address ? $order->address->address : ''}}{{$order->address ? ($order->address->pincode ? ", ".$order->address->pincode : '') : ''}}</li>
                         </ul>
                         @endif
                     </div>

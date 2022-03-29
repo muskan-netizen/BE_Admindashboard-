@@ -215,6 +215,49 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div>
          @endif
 
+          <!-- Xero Accounting API Credentials -->
+         @if(!is_null($accounting)) 
+         <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card-box h-100 h-100"> 
+               <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h4 class="header-title text-uppercase mb-0">{{__('Xero Configuration')}}</h4>
+                  <button class="btn btn-info d-block" type="submit" name="xero_submit"> {{ __("Save") }} </button>
+               </div>
+               <p class="sub-header">{{__('View and update your Xero Keys')}}</p>
+               <div class="row">
+                  <div class="col-12">
+                     <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                           <label for="xero_enable_switch" class="mr-3">{{ __("Enable") }}</label>
+                           <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if((isset($accounting) && $accounting->status == '1')) checked='checked' @endif>
+                        </div>
+                     </div>
+                     @php
+                     $creds = json_decode($accounting->credentials); 
+                     @endphp
+                     <div class="mt-2 xeroFields" @if($accounting->status != 1) style="display:none" @endif>
+                        <div class="row">
+                           <div class="col-12">
+                              <div class="form-group mb-2">
+                                 <label for="xero_client_id">{{ __("Client ID") }}</label>
+                                 <input type="text" name="xero_client_id" id="xero_client_id" placeholder="" class="form-control" value="{{ old('xero_client_id', $creds->client_id ?? '')}}">
+                              </div>
+                           </div>
+                           <div class="col-12">
+                              <div class="form-group mb-2">
+                                 <label for="xero_secret_id">{{ __("Secret ID") }}</label>
+                                 <input type="text" name="xero_secret_id" id="xero_secret_id" placeholder="" class="form-control" value="{{ old('xero_secret_id', $creds->secret_id ?? '')}}">
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         @endif
+         <!-- Xero Accounting API Credentials Ends -->
+
          @if($client_preference_detail->business_type == 'laundry')
          <div class="col-lg-3 col-md-6 mb-3">
             <!-- laundry section start -->
@@ -995,8 +1038,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div>
       </div>
       <!-- Customer Support end -->
-
-
    </div>
 
    <div class="row">
@@ -1071,6 +1112,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="auto_implement_5_percent_tip" class="mr-2 mb-0">{{__('Auto Implement Tip 5% ')}}<small class="d-block pr-5">{{__('Enable to apply auto implement 5 percent tip.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="auto_implement_5_percent_tip" id="auto_implement_5_percent_tip" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->auto_implement_5_percent_tip == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
+                  <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
                         <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="delay_order" id="delay_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delay_order == '1')) checked='checked' @endif>
@@ -1079,7 +1127,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="product_order_form" class="mr-2 mb-0">{{__('Product Order Form')}}<small class="d-block pr-5">Add a Product Order form for Pickup/Delivery. Create Dynamic questions per product.</small></label>
+                        <label for="product_order_form" class="mr-2 mb-0">{{__('Product Order Form')}}<small class="d-block pr-5">{{__('Add a Product Order form. Create Dynamic questions per product.')}}</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="product_order_form" id="product_order_form" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->product_order_form == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1140,6 +1188,36 @@ $sms_crendential = json_decode($preference->sms_credentials);
                        </span>
                     </div>
                  </div>
+                 <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="age_restriction_on_product_mode" class="mr-2 mb-0">{{__('Age Restriction On Product')}}<small class="d-block pr-5">{{__('Enable to add age restriction on products.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="age_restriction_on_product_mode" id="age_restriction_on_product_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->age_restriction_on_product_mode == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
+                 <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Show Apps QR On Footer')}}<small class="d-block pr-5">{{__('Enable to show qr for Mobile apps in footer.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="show_qr_on_footer" id="show_qr_on_footer" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->show_qr_on_footer == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
+                 <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Categorie Kyc')}}<small class="d-block pr-5">{{__('Enable to show categories documents in cart.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="category_kyc_documents" id="category_kyc_documents" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->category_kyc_documents == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
+
+                 <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Return Request')}}<small class="d-block pr-5">{{__('Enable to show return request functionality for vendors.')}}</small></label>
+                     <span> <input type="checkbox" data-plugin="switchery" name="vendor_return_request" id="vendor_return_request" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->vendor_return_request == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+                
 
                  <div class="col-md-4">
                   <div class="form-group d-flex justify-content-between mb-3">
@@ -1407,7 +1485,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div id="save_product_tag">
                      <input type="hidden" name="slot_id" value="">
                      <div class="row">
-
 
                         <div class="col-md-12 mb-2">
                            <div class="row">
@@ -1838,7 +1915,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       var dispatcherDiv = $('#need_dispacher_ride');
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
       var laundry_service = $('#need_laundry_service');
-
+      var xero_enable_switch = $('#xero_enable_switch');
 
       if(laundry_service.length > 0){
          laundry_service[0].onchange = function() {
@@ -1869,6 +1946,17 @@ $sms_crendential = json_decode($preference->sms_credentials);
             $('.home_other_dispatcherFields').hide();
          } else {
             $('.home_other_dispatcherFields').show();
+         }
+         }
+      }
+
+      if(xero_enable_switch.length > 0){
+         xero_enable_switch[0].onchange = function() {
+
+         if ($('#xero_enable_switch:checked').length != 1) {
+            $('.xeroFields').hide();
+         } else {
+            $('.xeroFields').show();
          }
          }
       }

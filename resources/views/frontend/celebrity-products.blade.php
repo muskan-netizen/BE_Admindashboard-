@@ -22,7 +22,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-5">
                 <div class="collection-filter col-lg-3">
                     <div class="collection-filter-block bg-transparent p-0">
                         <!-- <div class="collection-mobile-back">
@@ -30,7 +30,7 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
                             </span>
                         </div> -->
-                        <div class="collection-collapse-block open">
+                        <div class="collection-collapse-block open mb-2">
                             @if(!empty($category->brands) && count($category->brands) > 0)
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
                             <div class="collection-collapse-block-content">

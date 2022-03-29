@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Session;
 use Auth;
 class Category extends Model
 {
@@ -18,6 +19,8 @@ class Category extends Model
 
     public function translation_one(){
 
+      $langset = Session::has('adminLanguage') ? Session::get('adminLanguage') : '';
+      if(!$langset){
         $primary = ClientLanguage::orderBy('is_primary','desc')->first();
         if(isset($primary) && !empty($primary))
         {
@@ -25,11 +28,8 @@ class Category extends Model
         }else{
           $langset = 1;
         }
-
-        return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset);
-
-
-
+      }
+      return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset);
     }
 
     public function english(){
@@ -111,24 +111,32 @@ class Category extends Model
       return $values;
     }
 
+    public function getIconTwoAttribute($value)
+    {
+      $values = array();
+      if(!empty($value)){
+        $img = $value;
+        $values['proxy_url'] = \Config::get('app.IMG_URL1');
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+        $values['image_fit'] = \Config::get('app.FIT_URl');
+        return $values;
+      }
+      return $value;
+    }
     public function getIcon2Attribute($value)
     {
       $values = array();
-      $img = 'default/default_image.png';
       if(!empty($value)){
         $img = $value;
+        $values['proxy_url'] = \Config::get('app.IMG_URL1');
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+        $values['image_fit'] = \Config::get('app.FIT_URl');
+        return $values;
       }
-      $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
-      $values['image_fit'] = \Config::get('app.FIT_URl');
-      if(!empty($value)){
-        $values['image_name'] = true;
-      }else{
-        $values['image_name'] = false;
-      }
+      return $value;
       
-      return $values;
     }
+
 
     public function parent(){
       return $this->belongsTo('App\Models\Category','parent_id','id');

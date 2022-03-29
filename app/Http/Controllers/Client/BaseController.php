@@ -31,8 +31,6 @@ class BaseController extends Controller
                     $branch[] = $element;
                 }
             }   
-            
-
         }
         return $branch;
     }
@@ -48,13 +46,14 @@ class BaseController extends Controller
                 }
                 if(!empty($activeCategory)){
                     if (in_array($node['id'], $activeCategory)) {
-                        $this->htmlData .= '<li class="dd-item dd3-item" data-id="' . $node["id"] . '">';
+                        $this->htmlData .= '<li class="dd-item dd3-item catid'.$node["id"].'" data-id="' . $node["id"] . '">';
                         if ($from == 'category') {
                             $this->htmlData .= '<div class="dd-handle dd3-handle"></div>';
                         }
                         $icon = $node['icon']['proxy_url'] . '30/30' . $node['icon']['image_path'];
+                        $is_vendr = ($from == 'vendor' && $node["is_core"] == 0)?1:0;
                         if (isset($node['translation_one'])) {
-                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] . '</a></div><span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="'.$is_vendr.'" href="#"> ' . $node['translation_one']["name"] . '</a></div><span class="inner-div text-right">';
                         } else {
                             $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '</div><span class="inner-div text-right">';
                         }
@@ -80,9 +79,9 @@ class BaseController extends Controller
                     }
                 }else{
                     if($node['type_id'] == 4 || $node['type_id']==5 || $node['type_id']==1 || $node['type_id']==3){
-                        $this->htmlData .= '<li class="dd-item dd3-item dd-nochildren" data-id="' . $node["id"] . '">';
+                        $this->htmlData .= '<li class="dd-item dd3-item dd-nochildren catid'.$node["id"].'" data-id="' . $node["id"] . '">';
                     } else {
-                        $this->htmlData .= '<li class="dd-item dd3-item" data-id="' . $node["id"] . '">';
+                        $this->htmlData .= '<li class="dd-item dd3-item catid'.$node["id"].'" data-id="' . $node["id"] . '">';
                     }
                         if ($from == 'category') {
                             $this->htmlData .= '<div class="dd-handle dd3-handle"></div>';
@@ -97,14 +96,23 @@ class BaseController extends Controller
                             $status = 2; //$icon = 'mdi-lock-open-variant';
                             $title = 'Delete';
                             $icon = 'mdi-delete';
-                            $askMessage = "return confirm('Are you sure? You want to delete category.')";
+                            //$askMessage = "return confirm('Are you sure? You want to delete category.')";
+                            $askMessage = "deleteCategory(".$node['id'].")";
+                            // $askMessage = "return Swal.fire({title: 'Are you sure? You want to delete category.', showCancelButton:true,confirmButtonText: 'Ok',}).then((result) => {
+                            //     if (result.isConfirmed) {
+                            //       Swal.fire(
+                            //         'Deleted!',                                    
+                            //         'success'
+                            //       )
+                            //     }
+                            //   })";
                             if ($from == 'category') {
                                 if ($node["is_core"] == 1) {
-                                    $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> <i class="mdi mdi-square-edit-outline"></i></a><a class="action-icon" dataid="' . $node["id"] . '" title="' . $title . '" onclick="' . $askMessage . '" href="' . url("client/category/delete/" . $node["id"]) . '"> <i class="mdi ' . $icon . '"></i></a>';
+                                    $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> <i class="mdi mdi-square-edit-outline"></i></a><a class="action-icon" dataid="' . $node["id"] . '" title="' . $title . '" onclick="' . $askMessage . '" href="#"> <i class="mdi ' . $icon . '"></i></a>';
                                 }
                             } elseif ($from == 'vendor' && $node["is_core"] == 0) {
                                 $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="1" href="#"> <i class="mdi mdi-square-edit-outline"></i></a>
-                                <a class="action-icon" dataid="' . $node["id"] . '" onclick="' . $askMessage . '" href="' . url("client/category/delete/" . $node["id"]) . '" title="' . $title . '"> <i class="mdi ' . $icon . '"></i></a>';
+                                <a class="action-icon" dataid="' . $node["id"] . '" onclick="' . $askMessage . '" href="#" title="' . $title . '"> <i class="mdi ' . $icon . '"></i></a>';
                             }
                         }
                         $this->htmlData .= '</span> </div>';

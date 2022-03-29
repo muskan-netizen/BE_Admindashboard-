@@ -349,8 +349,10 @@ ul li {margin: 0 0 10px;color: #6c757d;}
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
+    var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+    var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var subscription_payment_options_url = "{{route('user.subscription.plan.select', ':id')}}";
     var user_subscription_purchase_url = "{{route('user.subscription.plan.purchase', ':id')}}";
     var user_subscription_cancel_url = "{{route('user.subscription.plan.cancel', ':id')}}";

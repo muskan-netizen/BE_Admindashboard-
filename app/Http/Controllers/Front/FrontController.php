@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Order};
+use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
 
 class FrontController extends Controller
 {
@@ -87,7 +87,7 @@ class FrontController extends Controller
        $preferences = Session::get('preferences');
        $primary = ClientLanguage::orderBy('is_primary','desc')->first();
        $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-       ->select('categories.id', 'categories.icon', 'categories.icon_2', 'categories.slug', 'categories.parent_id', 'cts.name')->distinct('categories.slug');
+       ->select('categories.id', 'categories.icon', 'categories.icon_2 as icon_two' , 'categories.slug', 'categories.parent_id', 'cts.name')->orderBy('position')->distinct('categories.slug');
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;
@@ -136,6 +136,15 @@ class FrontController extends Controller
         return $categories;
     }
 
+    public function fixedFee($lang_id){
+        if(Nomenclature::where('label','Fixed Fee')->exists()){
+            $nomenclatures_translation_id=Nomenclature::where('label','Fixed Fee')->first()->id;
+            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee";
+        }else{
+            return "Fixed Fee";
+        }
+    }
+
     public function buildTree($elements, $parentId = 1)
     {
         $branch = array();
@@ -174,6 +183,7 @@ class FrontController extends Controller
                         $this->getChildCategoriesForVendor($child->id, $langId, $vid);
                     }
                 }
+            
 
                 $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
@@ -183,7 +193,11 @@ class FrontController extends Controller
                 }
                 $this->getChildCategoriesForVendor($cate->id, $langId, $vid);
             }
-        }
+               
+
+
+            }
+        
         return $category_list;
     }
 
@@ -593,16 +607,17 @@ class FrontController extends Controller
         $langId = Session::get('customerLanguage');
         $guest_user = true;
         if ($user) {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count','scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
             $addresses = UserAddress::where('user_id', $user->id)->get();
             $guest_user = false;
         } else {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count','scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             $addresses = collect();
         }
         if ($cart) {
             $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
         }
+        
         $navCategories = $this->categoryNav($langId);
         $subscription_features = array();
         if ($user) {
@@ -631,6 +646,7 @@ class FrontController extends Controller
         $end_time = date('Y-m-d 23:59');
         $period = CarbonPeriod::create($start_date, $end_date);
         $time_slots = $this->SplitTime($start_time, $end_time, "60");
+        //dd($period);
         return ['time_slots' => $time_slots,'period' => $period,'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user];
     }
 

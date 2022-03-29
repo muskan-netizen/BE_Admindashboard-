@@ -13,7 +13,7 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController};
 use App\Models\Client as CP;
-use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, Transaction};
+use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, SubscriptionPlansUser, UserDevice, UserVendor, Transaction};
 
 class CashfreeGatewayController extends FrontController
 {
@@ -40,9 +40,18 @@ class CashfreeGatewayController extends FrontController
 
     public function createOrder(Request $request, $domain = ''){
         try{
+            $rules = [
+                'amount'   => 'required',
+                'payment_form'   => 'required'
+            ];
+
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
             $payment_form = $request->payment_form;
+
+            if(empty($user->phone_number)){
+                $rules['phone_number'] = 'required';
+            }
 
             $returnUrl = route('order.return.success');
             $customer_data = array(
@@ -88,6 +97,15 @@ class CashfreeGatewayController extends FrontController
                     $returnUrlParams = $returnUrlParams . '&subscription=' . $request->subscription_id;
                     $order_tags['subscription_id'] = $request->subscription_id;
                 }
+            }
+
+            $validator = Validator::make($request->all(), $rules, [
+                'amount.required' => 'Amount is required',
+                'payment_form.required' => 'Action is required',
+                'phone_number.required' => 'Phone number is required'
+            ]);
+            if ($validator->fails()) {
+                return $this->errorResponse(__($validator->errors()->first()), 422);
             }
 
             $data = array(
@@ -222,6 +240,71 @@ class CashfreeGatewayController extends FrontController
         }
     }
 
+    public function cashfreeReturnApp(Request $request, $domain = '')
+    {
+        $user = Auth::user();
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $this->getPaymentURL() . "/orders/" .$request->order_id,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            // CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_HTTPHEADER => [
+                "Accept: application/json",
+                "Content-Type: application/json",
+                "x-api-version: 2022-01-01",
+                "x-client-id: ". $this->APP_ID,
+                "x-client-secret: ". $this->SECRET_KEY
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        $response = json_decode($response);
+        // dd($response);
+
+        if(!$err && $response){
+            $order_status = strtolower($response->order_status);
+            $returnUrl = url('payment/gateway/returnResponse');
+            if($order_status == 'paid'){
+                $returnUrlParams = '?status=200&gateway=cashfree&action=' . $request->payment_form;
+                if($request->payment_form == 'cart'){
+                    $order_number = $request->order_id;
+                    $order = Order::where('order_number', $order_number)->first();
+                    if ($order) {
+                        $returnUrlParams = $returnUrlParams . '&order=' . $order_number;
+                    }
+                }
+
+                return Redirect::to(url($returnUrl . $returnUrlParams));
+            }
+            else{
+                $returnUrlParams = '?status=0&gateway=cashfree&action=' .$request->payment_form;
+                if($request->payment_form == 'cart'){
+                    $order = Order::where('order_number', $request->order_id)->first();
+                    if($order){
+                        $wallet_amount_used = $order->wallet_amount_used;
+                        if($wallet_amount_used > 0){
+                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                            if(!$transaction){
+                                $wallet = $user->wallet;
+                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                            }
+                        }
+                        $returnUrlParams = $returnUrlParams . '&order=' . $order->order_number;
+                    }
+                }
+
+                return Redirect::to(url($returnUrl . $returnUrlParams));
+            }
+        }
+    }
+
     public function cashfreeNotify(Request $request, $domain = '')
     {
         // Notify cashfree that information has been received
@@ -238,10 +321,12 @@ class CashfreeGatewayController extends FrontController
             
             if(!empty($response) && ($response['payment']['payment_status'] == 'SUCCESS')) {
                 $transactionId = $response['payment']['cf_payment_id'];
-                $user_id = $cart_id = $payment_form = $order_number = '';
+                $user_id = $cart_id = $payment_form = $order_number = $subscription_id = '';
                 $amount = $response['order']['order_amount'];
                 if($response['order']['order_tags']){
                     $tags = $response['order']['order_tags'];
+                    $subscription_id = $tags['subscription_id'] ?? '';
+                    $order_number = $tags['order_number'] ?? '';
                     $payment_form = $tags['payment_form'];
                     $user_id = intval($tags['user_id']);
                 }
@@ -296,16 +381,14 @@ class CashfreeGatewayController extends FrontController
                     $walletController->creditWallet($request);
                 }
                 elseif($payment_form == 'tip'){
-                    $order_number = $charges[0]->metadata->order_number;
                     $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                     $orderController = new OrderController();
                     $orderController->tipAfterOrder($request);
                 }
                 elseif($payment_form == 'subscription'){
-                    $subscription = $charges[0]->metadata->subscription_id;
                     $request->request->add(['user_id' => $user_id, 'payment_option_id' => 24, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
-                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
+                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription_id);
                 }
             }
             elseif($request->txStatus == 'FAILED'){

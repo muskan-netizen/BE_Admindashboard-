@@ -115,6 +115,14 @@
                     @endif
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Fixed Fee'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="fixed_fee" class="form-control" data-color="#43bee1" @if($vendor->fixed_fee == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-md-12 mb-2 align-items-center justify-content-between" style="display:{{$vendor->fixed_fee == 0 ? 'none!important' : 'block'}}" id="fixed_fee_amount">
+                    {!! Form::label('title', 'Fixed Fee Amount',['class' => 'control-label']) !!}
+                            <input class="form-control" onkeypress="return isNumberKey(event)" name="fixed_fee_amount" type="text" value="{{$vendor->fixed_fee_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
@@ -122,10 +130,12 @@
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="need_container_charges" class="form-control" data-color="#43bee1" @if($vendor->need_container_charges == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
-                        <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if($vendor->return_request == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
-                    </div>
+                    @if(Auth::user()->is_superadmin == 1 || $client_preference_detail->vendor_return_request == 1)
+                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                            {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
+                            <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if($vendor->return_request == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    @endif
                     <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
                         <div class="form-group">
                             {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}
@@ -367,6 +377,11 @@
         @endif
         <div class="col-md-12">
             {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
+            <div class="col-sm-12 text-sm-left catalogupdate" style="display: none">
+                <div class="alert alert-success">
+                    <span class="cattxt"></span>
+                </div>
+            </div>
             <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
                 <ol class="dd-list">
                     @forelse($builds as $build)
@@ -668,6 +683,15 @@ $( document ).ready(function() {
             success: function(response) {
                 if (response.status == 'Success') {
                     console.log(response.data);
+                    $('.cattxt').text('Updated successfully');
+                    $('.catalogupdate').css('display','');                    
+                    setTimeout(function() {
+                        $('.cattxt').text('');
+                        $('.catalogupdate').css('display','none');       
+                    }, 1000);
+
+
+
                     if(response.data.check_pickup_delivery_service == 1)
                     {
                         $('.for_pickup_delivery_service_only').html('<button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcher" data-id="'+response.data.product_categories[0].vendor_id+'">{{__("Login Into Dispatcher (Pickup & Delivery)")}} </button>');
@@ -709,6 +733,14 @@ $( document ).ready(function() {
             $("#sch_vendor_close").css("display", "none");
         } else {
             $("#sch_vendor_close").css("display", "block");
+        }
+    })
+
+    $("input[name='fixed_fee']").change(function() {
+        if($(this).prop('checked')){
+            $("#fixed_fee_amount").css("display", "block");
+        } else {
+            $("#fixed_fee_amount").css("display", "none");
         }
     })
 

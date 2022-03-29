@@ -19,6 +19,7 @@ class ProductController extends BaseController
 {
     use ApiResponser;
     private $folderName = 'prods';
+    private $slugIsUnique = true;
     public function __construct()
     {
         $code = Client::orderBy('id','asc')->value('code');
@@ -62,11 +63,23 @@ class ProductController extends BaseController
      */
     public function validateData(Request $request)
     {
+        //checking if slug is unique in particular vendor
+        if(!empty(Product::where(['vendor_id'=>$request->vendor_id,'url_slug'=>$request->url_slug])->first()->id)){
+        $this->slugIsUnique=false;
+        }
         $rules = array(
             'sku' => 'required|unique:products',
-            'url_slug' => 'required|unique:products',
+            // 'url_slug' => 'required|unique:products',
             'category' => 'required',
             'product_name' => 'required',
+                'url_slug' => [
+                    'required',
+                    function ($attribute, $value, $fail) {
+                        if ($this->slugIsUnique== false) {
+                            $fail('The '.$attribute.' exists already.');
+                        }
+                    },
+                ],
         );
         $validation = Validator::make($request->all(), $rules)->validate();
 
@@ -160,6 +173,7 @@ class ProductController extends BaseController
     public function edit($domain = '', $id)
     {
         $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $id)->firstOrFail();
+       // dd($product);
         $type = Type::all();
         $countries = Country::all();
         $addons = AddonSet::with('option')->select('id', 'title')
@@ -211,7 +225,7 @@ class ProductController extends BaseController
             }
         }
         $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
-        $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch')->first();
+        $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode')->first();
         $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
 
         $agent_dispatcher_tags = [];
@@ -295,6 +309,7 @@ class ProductController extends BaseController
         $product->requires_shipping         = ($request->has('require_ship') && $request->require_ship == 'on') ? 1 : 0;
         $product->Requires_last_mile        = ($request->has('last_mile') && $request->last_mile == 'on') ? 1 : 0;
         $product->need_price_from_dispatcher = ($request->has('need_price_from_dispatcher') && $request->need_price_from_dispatcher == 'on') ? 1 : 0;
+        $product->age_restriction = ($request->has('age_restriction') && $request->age_restriction == 'on') ? 1 : 0;
         $product->mode_of_service        = $request->mode_of_service??null;
         $product->delay_order_hrs        = $request->delay_order_hrs??0;
         $product->delay_order_min        = $request->delay_order_min??0;
@@ -936,6 +951,30 @@ class ProductController extends BaseController
                 case "for_sell_when_out_of_stock":
                     $update_product = Product::whereIn('id',$request->product_id)->update(['sell_when_out_of_stock' => $sell_when_out_of_stock]);
                 break;
+                case "delete":
+                    // delete product harrry
+                    $products = Product::whereIn('id',$request->product_id)->get();
+                    foreach($products as $product){
+                        DB::beginTransaction();
+                        $dynamic = time();
+
+                        Product::where('id', $product->id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
+    
+                        $tot_var  = ProductVariant::where('product_id', $product->id)->get();
+                        foreach($tot_var as $varr)
+                        {
+                            $dynamic = time().substr(md5(mt_rand()), 0, 7);
+                            ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
+                        }
+    
+                        Product::where('id', $product->id)->delete();
+    
+                        CartProduct::where('product_id', $product->id)->delete();
+                        UserWishlist::where('product_id', $product->id)->delete();
+    
+                        DB::commit();
+                    }
+                break;
                 default:
                 '';
             }
@@ -947,6 +986,12 @@ class ProductController extends BaseController
             'status' => 'success',
             'message' => __('Product action Submitted successfully!')
         ]);
+    }
+
+    # check if last mile delivery on
+    public function getProductFaq(Request $request){
+        pr($request->all());
+        
     }
 
 

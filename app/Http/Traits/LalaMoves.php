@@ -4,6 +4,8 @@ namespace App\Http\Traits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use App\Models\ShippingOption;
+use App\Models\Webhook;
+
 
 trait LalaMoves{
 
@@ -24,17 +26,17 @@ trait LalaMoves{
  * Country Locale Keys : Local Language type en_MY, ms_MY
  */
 
-  public function __construct()
-  {
-    $simp_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'lalamove')->where('status', 1)->first();
-    $creds_arr = json_decode($simp_creds->credentials);
-    $this->api_key = $creds_arr->api_key??'';
-    $this->secret_key = $creds_arr->secret_key ?? '';
-    $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
-    $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
-    $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
-    $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
-  }
+  // public function __construct()
+  // {
+  //   $simp_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'lalamove')->where('status', 1)->first();
+  //   $creds_arr = json_decode($simp_creds->credentials);
+  //   $this->api_key = $creds_arr->api_key??'';
+  //   $this->secret_key = $creds_arr->secret_key ?? '';
+  //   $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
+  //   $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
+  //   $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
+  //   $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
+  // }
 
   public function configDetails()
   {
@@ -190,14 +192,6 @@ trait LalaMoves{
   $response = curl_exec($curl);
   $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
   curl_close($curl);
-
-  // $response = '{
-  //   "totalFee": "80", 
-  //   "totalFeeCurrency": "INR",
-  //   "distance": {
-  //     "text": "16.2 km",
-  //     "value": 16210
-  //   }}';
   return array('code'=>$httpCode,'response'=>$response);
 }
 
@@ -220,7 +214,7 @@ public function getOrderBody($data)
   }
 
 
-public function placeOrders($data,$quotation)
+public function placeOrders($data,$quotation,$order_id = '')
 {
   $this->configDetails();
 
@@ -258,8 +252,20 @@ $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 curl_close($curl);
 
 // echo "Total elapsed http request/response time in milliseconds: ".floor((microtime(true) - $this->startTime)*1000)."\r\n";
+\Log::info('Place Order response Mail');
+\Log::info('orderRef = '.json_decode($response)->orderRef);
+\Log::info($response);
+\Log::info('End Place Order response Mail');
+$resp = json_decode($response);
+Webhook::create(['tracking_order_id'=>$order_id,'response'=>$response]);
+if($resp->orderRef){
+  return $resp;
+ }
+ return false;
 
-return array('code'=>$httpCode,'response'=>$response,'totalTime'=>floor((microtime(true) - $this->startTime)*1000));
+
+
+
 // Response
 // {
 //   "orderRef": "193400800238",
@@ -349,15 +355,14 @@ public function orderDetails($orderReff)
 
   }
 
-  public function orderDriverDetail($driverId)
+  public function orderDriverDetail($orderid,$driverId)
   {
 
     $this->configDetails();
 
     $method = 'GET';
-    $path = '/v2/orders/drivers/'.$driverId;
+    $path = '/v2/orders/'.$orderid.'/drivers/'.$driverId;
     $token = $this->token($method,$path);
-
     $curl = curl_init();
     curl_setopt_array($curl, array(
       CURLOPT_URL => $this->base_url.$path,

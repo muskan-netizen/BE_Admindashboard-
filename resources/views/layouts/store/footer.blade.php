@@ -1,6 +1,6 @@
 <div class="tap-top top-cls">
     <div>
-        <i class="fa fa-angle-double-up"></i>
+        <i class="fa fa-solid fa-angles-up"></i>
     </div>
 </div>
 <div class="d-none" id ="nearmap">
@@ -64,6 +64,7 @@
     var check_isolate_single_vendor_url = "{{ route('checkIsolateSingleVendor') }}";
     let empty_cart_url = "{{route('emptyCartData')}}";
     var cart_details_url = "{{ route('cartDetails') }}";
+    var session_vendor_type = "{{Session::get('vendorType')}}";
     var delete_cart_url = "{{ route('emptyCartData') }}";
     var user_checkout_url= "{{ route('user.checkout') }}";
     var cart_product_url= "{{ route('getCartProducts') }}";
@@ -205,7 +206,7 @@
 
 {{--
 <!-- shift to product detail page -->
-<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script> 
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 <!-- duplicate script -->
 <script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
 --}}
@@ -226,6 +227,8 @@
 <script type="text/javascript" src="{{asset('js/waitMe.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <!--WaitMe Loader Script -->
+
+
 
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>

@@ -19,7 +19,7 @@ use App\Http\Controllers\Api\v1\PromoCodeController;
 use App\Http\Controllers\DunzoController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
-use App\Models\{User, Product, Cart, ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot};
+use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot};
 use GuzzleHttp\Client as GCLIENT;
 use Log;
 class CartController extends BaseController
@@ -663,6 +663,7 @@ class CartController extends BaseController
                         } else {
                             $prod->cartImg = (isset($prod->product->media[0]) && !empty($prod->product->media[0])) ? $prod->product->media[0]->image : '';
                         }
+                        $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
 
                         if($prod->product->delay_hrs_min != 0){
                             if($prod->product->delay_hrs_min > $delay_date)
@@ -1490,6 +1491,28 @@ class CartController extends BaseController
       }
       return $option;
   }
+  public function updateCartProductFaq(Request $request){
+     // pr($request->all());
+    $user = Auth::user();
+    if (!$user->id) {
+        $cart = Cart::where('unique_identifier', $user->system_user);
+    } else {
+        $cart = Cart::where('user_id', $user->id);
+    }
+    $cart = $cart->first();
+   
+    $user_product_order_form = null;
+   
+    $cartData_id = CartProduct::where('cart_id', $cart->id)->where('product_id', $request->product_id)->pluck('id');
+   
+    if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
+    $user_product_order_form = json_encode($request->user_product_order_form);
+   
+    CartProduct::whereIn('id', $cartData_id)->update(['user_product_order_form'=> $user_product_order_form]);
+
+    return response()->json(['status'=>'Success', 'message'=>__('Product form Submit successfully.')]);
+}
+
 
 
 }

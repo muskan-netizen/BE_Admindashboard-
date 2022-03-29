@@ -143,7 +143,7 @@
                                                 </li>
                                             @endif
                                             <li class="nav-item">
-                                                <a class="nav-link {{ Request::query('pageType') == 'pastOrders' ? 'active show' : '' }}"
+                                                <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
                                                         class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . $ordertitle) }}</a>
@@ -229,7 +229,7 @@
                                                                                         @endif
                                                                                         @if (!empty($order->scheduled_date_time))
                                                                                             <span
-                                                                                                class="badge badge-success ml-2">Scheduled</span>
+                                                                                                class="badge badge-success ml-2">{{__('Scheduled')}}</span>
                                                                                             <span
                                                                                                 class="ml-2">{{ (($order->scheduled_slot)?dateTimeInUserTimeZone($order->scheduled_date_time, $timezone).'. Slot: '.$order->scheduled_slot:dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) ) }}</span>
                                                                                         @elseif(!empty($vendor->ETA))
@@ -284,7 +284,7 @@
                                                                                                 <a href="{{ route('front.booking.details', $order->order_number) }}"
                                                                                                     target="_blank">{{ __('Details') }}</a>
                                                                                             @endif
-                                                                                            @if ($vendor->order_status_option_id==1)
+                                                                                            @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
                                                                                             <h6 class="m-0">
                                                                                                 <label class="rating-star cancel_order"  data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
                                                                                                     {{ __('Cancel Order') }}
@@ -642,46 +642,75 @@
                                                                                             @endif
                                                                                         </ul>
                                                                                     </div>
-                                                                                    <div class="col-7 col-sm-4">
-                                                                                        <ul
-                                                                                            class="product_list d-flex align-items-center p-0 flex-wrap m-0">
-                                                                                            @foreach ($vendor->products as $product)
-                                                                                                @if ($vendor->vendor_id == $product->vendor_id)
-                                                                                                    @php
-                                                                                                        $pro_rating = $product->productRating->rating ?? 0;
-                                                                                                    @endphp
-                                                                                                    <li class="text-center">
-                                                                                                        <img src="{{ $product->image_url }}"
-                                                                                                            alt="">
-                                                                                                        <span
-                                                                                                            class="item_no position-absolute">x{{ $product->quantity }}</span>
-                                                                                                        <label
-                                                                                                            class="items_price">{{ Session::get('currencySymbol') }}{{ $product->price * $clientCurrency->doller_compare }}</label>
-                                                                                                        <label
-                                                                                                            class="rating-star add_edit_review"
-                                                                                                            data-id="{{ $product->productRating->id ?? 0 }}"
-                                                                                                            data-order_vendor_product_id="{{ $product->id ?? 0 }}">
-                                                                                                            <i
-                                                                                                                class="fa fa-star{{ $pro_rating >= 1 ? '' : '-o' }}"></i>
-                                                                                                            <i
-                                                                                                                class="fa fa-star{{ $pro_rating >= 2 ? '' : '-o' }}"></i>
-                                                                                                            <i
-                                                                                                                class="fa fa-star{{ $pro_rating >= 3 ? '' : '-o' }}"></i>
-                                                                                                            <i
-                                                                                                                class="fa fa-star{{ $pro_rating >= 4 ? '' : '-o' }}"></i>
-                                                                                                            <i
-                                                                                                                class="fa fa-star{{ $pro_rating >= 5 ? '' : '-o' }}"></i>
-                                                                                                        </label>
+                                                                                    <div class="col-7 col-sm-4 row">
+                                                                                        <div class="col-6 col-sm-6">
+                                                                                            <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
+                                                                                                @foreach ($vendor->products as $product)
+                                                                                                    @if ($vendor->vendor_id == $product->vendor_id)
                                                                                                         @php
-                                                                                                            $product_total_price = $product->price * $clientCurrency->doller_compare;
-                                                                                                            $product_total_count += $product->quantity * $product_total_price;
-                                                                                                            $product_taxable_amount += $product->taxable_amount;
-                                                                                                            $total_tax_order_price += $product->taxable_amount;
+                                                                                                            $pro_rating = $product->productRating->rating ?? 0;
                                                                                                         @endphp
-                                                                                                @endif
+                                                                                                        <li class="text-center">
+                                                                                                            <img src="{{ $product->image_url }}"
+                                                                                                                alt="">
+                                                                                                            <span
+                                                                                                                class="item_no position-absolute">x{{ $product->quantity }}</span>
+                                                                                                            <label
+                                                                                                                class="items_price">{{ Session::get('currencySymbol') }}{{ $product->price * $clientCurrency->doller_compare }}</label>
+                                                                                                            <label
+                                                                                                                class="rating-star add_edit_review"
+                                                                                                                data-id="{{ $product->productRating->id ?? 0 }}"
+                                                                                                                data-order_vendor_product_id="{{ $product->id ?? 0 }}">
+                                                                                                                <i
+                                                                                                                    class="fa fa-star{{ $pro_rating >= 1 ? '' : '-o' }}"></i>
+                                                                                                                <i
+                                                                                                                    class="fa fa-star{{ $pro_rating >= 2 ? '' : '-o' }}"></i>
+                                                                                                                <i
+                                                                                                                    class="fa fa-star{{ $pro_rating >= 3 ? '' : '-o' }}"></i>
+                                                                                                                <i
+                                                                                                                    class="fa fa-star{{ $pro_rating >= 4 ? '' : '-o' }}"></i>
+                                                                                                                <i
+                                                                                                                    class="fa fa-star{{ $pro_rating >= 5 ? '' : '-o' }}"></i>
+                                                                                                            </label>
+                                                                                                            @php
+                                                                                                                $product_total_price = $product->price * $clientCurrency->doller_compare;
+                                                                                                                $product_total_count += $product->quantity * $product_total_price;
+                                                                                                                $product_taxable_amount += $product->taxable_amount;
+                                                                                                                $total_tax_order_price += $product->taxable_amount;
+                                                                                                            @endphp
+                                                                                                    @endif
+                                                                                                    </li>
+                                                                                                @endforeach
+                                                                                            </ul>
+                                                                                        </div>
+                                                                                        @if($order->vendors[0]->dispatch_traking_url!=null && $order->vendors[0]->dispatch_traking_url!="")
+                                                                                        <div class="col-6 col-sm-6">
+                                                                                            <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
+                                                                                                @php
+                                                                                                $driverrating = $order->driver_rating->rating ?? 0;
+                                                                                                @endphp
+                                                                                                <li class="text-center">
+                                                                                                    {{-- <img src="#" alt=""> --}}
+                                                                                                    <label class="items_price">{{__('Rate Your Driver')}}</label>
+                                                                                                    <label class="rating-star add_edit_driver_review"
+                                                                                                        data-id="{{ $order->driver_rating->id ?? 0 }}"
+                                                                                                        data-order_vendor_product_id="{{ $product->id ?? 0 }}">
+                                                                                                        <i
+                                                                                                            class="fa fa-star{{ $driverrating >= 1 ? '' : '-o' }}"></i>
+                                                                                                        <i
+                                                                                                            class="fa fa-star{{ $driverrating >= 2 ? '' : '-o' }}"></i>
+                                                                                                        <i
+                                                                                                            class="fa fa-star{{ $driverrating >= 3 ? '' : '-o' }}"></i>
+                                                                                                        <i
+                                                                                                            class="fa fa-star{{ $driverrating >= 4 ? '' : '-o' }}"></i>
+                                                                                                        <i
+                                                                                                            class="fa fa-star{{ $driverrating >= 5 ? '' : '-o' }}"></i>
+                                                                                                    </label>
                                                                                                 </li>
-                                                                                            @endforeach
-                                                                                        </ul>
+                                                                                            </ul>
+                                                                                        </div>
+                                                                                        @endif
+
                                                                                     </div>
                                                                                     <div class="col-md-5 mt-md-0 mt-sm-2">
                                                                                         <ul class="price_box_bottom m-0 p-0">
@@ -855,7 +884,7 @@
                                                                                 <div class="row">
                                                                                     <div class="col-12">
                                                                                         <div class="mb-2">
-                                                                                            {{ __('Do you want to give a tip?') }}
+                                                                                        @if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif
                                                                                         </div>
                                                                                         <div class="tip_radio_controls">
                                                                                             @if ($order->payable_amount > 0)
@@ -930,7 +959,7 @@
                                                                                                 class="input-number form-control"
                                                                                                 name="custom_tip_amount{{ $order->order_number }}"
                                                                                                 id="custom_tip_amount{{ $order->order_number }}"
-                                                                                                placeholder="Enter Custom Amount"
+                                                                                                placeholder="{{ __('Enter Custom Amount') }}"
                                                                                                 type="number" value=""
                                                                                                 min="0.01" step="0.01">
                                                                                         </div>
@@ -1574,6 +1603,22 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade driver-rating" id="driver_rating" tabindex="-1" aria-labelledby="driver_ratingLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div id="driver-review-rating-form-modal">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade return-order" id="return_order_model" tabindex="-1" aria-labelledby="return_orderLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -1686,6 +1731,7 @@
         var credit_tip_url = "{{ route('user.tip_after_order') }}";
         var payment_stripe_url = "{{ route('payment.stripe') }}";
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+        var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
         var create_ccavenue_url = "{{route('ccavenue.pay')}}";
         var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
         var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
@@ -1735,6 +1781,16 @@
                 },
             });
         }
+        $('body').on('click', '.add_edit_driver_review', function(event) {
+            event.preventDefault();
+            var id = $(this).data('id');
+            var order_vendor_product_id = $(this).data('order_vendor_product_id');
+            $.get('/rating/get-driver-rating?id=' + id + '&order_vendor_product_id=' + order_vendor_product_id,
+                function(markup) {
+                    $('#driver_rating').modal('show');
+                    $('#driver-review-rating-form-modal').html(markup);
+                });
+        });
         $('body').on('click', '.add_edit_review', function(event) {
             event.preventDefault();
             var id = $(this).data('id');

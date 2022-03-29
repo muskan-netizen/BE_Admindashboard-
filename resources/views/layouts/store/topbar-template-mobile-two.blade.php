@@ -106,6 +106,7 @@ if(session()->has('applocale')){
                                     @endforeach
 
                                     @endif
+                                    @if(count($languageList) > 1)
                                     <li class="onhover-dropdown change-language">
                                         <a href="javascript:void(0)">{{$applocale}}
                                         <span class="icon-ic_lang align-middle"></span>
@@ -119,7 +120,8 @@ if(session()->has('applocale')){
                                             @endforeach
                                         </ul>
                                     </li>
-
+                                    @endif
+                                    @if(count($currencyList) > 1)
                                     <li class="onhover-dropdown change-currency">
                                         <a href="javascript:void(0)">{{session()->get('iso_code')}}
                                         <span class="icon-ic_currency align-middle"></span>
@@ -135,6 +137,7 @@ if(session()->has('applocale')){
                                             @endforeach
                                         </ul>
                                     </li>
+                                    @endif
 
 
                                     @if(Auth::user())

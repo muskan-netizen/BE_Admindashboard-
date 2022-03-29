@@ -89,17 +89,23 @@ class VendorController extends BaseController
             $vendor->offers = $offers;
         }
         return Datatables::of($vendors)
-        ->addIndexColumn()
-        ->filter(function ($instance) use ($request) {
-            if (!empty($request->get('search'))) {
-                $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                    if (Str::contains(Str::lower($row['name']), Str::lower($request->get('search')))){
-                        return true;
-                    }
-                    return false;
-                });
-            }
-        })->make(true);
+            ->addColumn('checkbox', function($row){
+                $btn = '<input type="checkbox" class="single_vendor_check" name="vendor_id[]" id="single_vendor" value="'.$row->id.'"></a>';
+                return $btn;
+            })
+            ->addIndexColumn()
+            ->filter(function ($instance) use ($request) {
+                if (!empty($request->get('search'))) {
+                    $instance->collection = $instance->collection->filter(function ($row) use ($request){
+                        if (Str::contains(Str::lower($row['name']), Str::lower($request->get('search')))){
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+            })
+            ->rawColumns(['checkbox'])
+            ->make(true);
     }
     public function index(){
         $user = Auth::user();
@@ -353,6 +359,8 @@ class VendorController extends BaseController
             'address' => 'required',
         //    'name' => 'required|string|max:150|unique:vendors,name,' . $id,
             'name' => 'required|string|max:150',
+            'phone_no' => 'nullable|digits_between:7,12',
+            'email' => 'nullable|email',
         );
         //dd($request->all());
         $validation  = Validator::make($request->all(), $rules)->validate();
@@ -601,6 +609,7 @@ class VendorController extends BaseController
             ->where('status', 1)
             ->orderBy('parent_id', 'asc')->get();
         $csvProducts = CsvProductImport::where('vendor_id', $id)->orderBy('id','DESC')->get();
+        //pr($csvProducts->toArray());
         $csvVendors = CsvVendorImport::all();
         /*    get active category list also with parent     */
         foreach ($categories as $category) {
@@ -784,7 +793,7 @@ class VendorController extends BaseController
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
         $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
 
-        return view('backend.vendor.vendorPayout')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory, 'tab' => 'payout', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'total_promo_amount'=>$total_promo_amount, 'past_payout_value'=>$past_payout_value, 'available_funds'=>$available_funds, 'payout_options' => $payout_options]);
+        return view('backend.vendor.vendorPayout')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory, 'tab' => 'payout', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'total_promo_amount'=>$total_promo_amount, 'past_payout_value'=>$past_payout_value, 'available_funds'=>decimal_format($available_funds), 'payout_options' => $payout_options]);
     }
 
     public function vendorPayoutCreate(Request $request, $domain = '', $id){
@@ -929,6 +938,9 @@ class VendorController extends BaseController
         $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
         $vendor->slot_minutes = ($request->slot_minutes>0)?$request->slot_minutes:0;
         $vendor->closed_store_order_scheduled = (($request->has('show_slot')) ? 0 : ($request->closed_store_order_scheduled == 'on')) ? 1 : 0;
+        $vendor->fixed_fee = ($request->has('fixed_fee') && $request->fixed_fee == 'on') ? 1 : 0;
+        $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
+        $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
 
         if ($request->has('order_min_amount')) {
             $vendor->order_min_amount   = $request->order_min_amount;
@@ -1542,4 +1554,16 @@ class VendorController extends BaseController
         public function export() {
             return Excel::download(new VendorSimpelExport, 'vendor_simpel.xlsx');
         }
+   
+        # update all vendor action
+    public function updateActions(Request $request){
+        $vendor_ids = $request->vendor_id;
+        if($request->action == "delete"){
+             Vendor::whereIn('id', $vendor_ids)->update(['status'=>2]);
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Vendor action Submitted successfully!')
+        ]);
+    }
 }

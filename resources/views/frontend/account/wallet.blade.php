@@ -137,7 +137,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                                         <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}{{decimal_format($amount)}}</b></td>
                                     </tr>
                                     @empty
-                                    <tr><td align="center" colspan="4">{{__('No Transaction history exists')}}</td></tr>
+                                    <tr><td align="center" colspan="4">{{__('No Transaction History Exists')}}</td></tr>
                                     @endforelse
                                     </tbody>
                                   </table>
@@ -209,7 +209,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
             </div>
             <div class="form-group">
                 <label for="wallet_amount">{{__('Amount')}}</label>
-                <input class="form-control" name="wallet_amount" id="wallet_amount" type="text" placeholder="Enter Amount">
+                <input class="form-control" name="wallet_amount" id="wallet_amount" type="text" placeholder="{{__('Enter Amount')}}">
                 <span class="error-msg" id="wallet_amount_error"></span>
             </div>
             <div class="form-group">
@@ -394,6 +394,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";

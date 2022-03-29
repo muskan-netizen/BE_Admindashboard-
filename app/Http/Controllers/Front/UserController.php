@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner, Client, Category, Brand, Product, ClientLanguage, User, ClientCurrency, ClientPreference, Country, UserAddress, UserVerification,EmailTemplate};
+use App\Models\{Currency, Banner, Client, Category, Brand, Product, ClientLanguage, User, ClientCurrency, ClientPreference, Country, UserAddress, UserVerification,EmailTemplate, VerificationOption};
 
 
 class UserController extends FrontController{
@@ -27,11 +27,15 @@ class UserController extends FrontController{
         $curId = Session::get('customerCurrency');
         $user = User::where('id', Auth::user()->id)->first();
         $preference = ClientPreference::select('verify_email', 'verify_phone')->where('id', '>', 0)->first();
-        if ($preference->verify_email == 0 && $preference->verify_phone == 0) {
+        $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+        if($passbase_check && is_null($user->passbase_verification))
+        {
+            return redirect()->route('passbase.page');
+        }elseif ($preference->verify_email == 0 && $preference->verify_phone == 0) {
             return redirect()->route('userHome');
-        } elseif (Auth::user()->is_email_verified == 1 && Auth::user()->is_phone_verified == 1) {
+        }elseif (Auth::user()->is_email_verified == 1 && Auth::user()->is_phone_verified == 1) {
             return redirect()->route('userHome');
-        } elseif ($preference->verify_email == 1 && $preference->verify_phone == 0) {
+        }elseif ($preference->verify_email == 1 && $preference->verify_phone == 0) {
             if (Auth::user()->is_email_verified == 1) {
                 return redirect()->route('userHome');
             }

@@ -1,11 +1,12 @@
 <?php
-
-Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
-Route::get('/debug-sentry', function () {
+	Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
+	Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
+	Route::get('auth/xero','Front\XeroController@index');
+	Route::any('auth/callback/xero','Front\XeroController@xero_callback');
+	Route::get('/debug-sentry', function () {
 	throw new Exception('My first Sentry error!');
 });
-
 
 
 Route::group(['middleware' => ['domain']], function () {
@@ -146,6 +147,13 @@ Route::group(['middleware' => ['domain']], function () {
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
 
+	//VivaWallet routes 
+	Route::match(['get','post'],'payment/vivawallet/pay', 'Front\VivawalletController@createPayLink')->name('vivawallet.pay');
+	
+
+	Route::match(['get','post'],'viva/result', 'Front\VivawalletController@successPage')->name('viva.success');
+	Route::any('viva/webhook/success', 'Front\VivawalletController@verifyWebhookUrl')->name('viva.webhook');
+
 	//ccavenue-pay
 	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
 	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
@@ -238,6 +246,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('paginateValue', 'Front\UserhomeController@changePaginate')->name('changePaginate');
 	Route::get('{vendor?}/product/{id?}', 'Front\ProductController@index')->name('productDetail');
 	Route::post('/product/variant/{id}', 'Front\ProductController@getVariantData')->name('productVariant');
+	Route::get('product/faq/{id}', 'Front\ProductController@getProductFaq')->name('getProductFaq');
 	Route::post('cart/product/lastAdded', 'Front\CartController@getLastAddedProductVariant')->name('getLastAddedProductVariant');
 	Route::post('cart/product/variant/different-addons', 'Front\CartController@getProductVariantWithDifferentAddons')->name('getProductVariantWithDifferentAddons');
 	Route::post('add/product/cart', 'Front\CartController@postAddToCart')->name('addToCart');
@@ -246,6 +255,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('add/vendorTable/cart', 'Front\CartController@addVendorTableToCart')->name('addVendorTableToCart');
 	Route::post('add/product/prescription', 'Front\CartController@uploadPrescription')->name('cart.uploadPrescription');
 	Route::post('cart/schedule/update', 'Front\CartController@updateSchedule')->name('cart.updateSchedule');
+	Route::post('cart/productfaq/update', 'Front\CartController@updateCartProductFaq')->name('cart.productfaq');
 	Route::post('cart/schedule/slots', 'Front\CartController@checkScheduleSlots')->name('cart.check_schedule_slots');
 	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cart.updateProductSchedule');
 	Route::get('cartProducts', 'Front\CartController@getCartData')->name('getCartProducts');
@@ -258,6 +268,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('category/{slug?}', 'Front\CategoryController@categoryProduct')->name('categoryDetail');
 	Route::get('category/{slug1}/{slug2}', 'Front\CategoryController@categoryVendorProducts')->name('categoryVendorProducts');
 	Route::post('category/filters/{id}', 'Front\CategoryController@categoryFilters')->name('productFilters');
+	Route::get('category_kycDocument', 'Front\CategoryController@getcategoryKycDocument')->name('getCategoryKycDocument');
 	Route::get('vendor/all', 'Front\VendorController@viewAll')->name('vendor.all');
 	Route::match(['get','post'],'vendor/{id?}', 'Front\VendorController@vendorProducts')->name('vendorDetail');
 	Route::get('vendor/{slug1}/{slug2}', 'Front\VendorController@vendorCategoryProducts')->name('vendorCategoryProducts');
@@ -276,10 +287,17 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('viewcart', 'Front\CartController@showCart')->name('showCart');
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
+
 	Route::post('/updateCartSlot', 'Front\CartController@updateCartSlot')->name('updateCartSlot');
+
+	Route::post('/updateCartBookingSlot', 'Front\CartController@updateCartBookingSlot')->name('updateCartBookingSlot');
+
+	
+
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
 	Route::get('firebase-messaging-sw.js', 'Front\FirebaseController@service_worker');
+	Route::post('category_kyc_submit', 'Front\CartController@updateCartCategoryKyc')->name('updateCartCategoryKyc');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
@@ -339,6 +357,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::group(['prefix' => 'rating'], function () {
 		Route::post('update-product-rating', 'Front\RatingController@updateProductRating')->name('update.order.rating');
 		Route::get('get-product-rating', 'Front\RatingController@getProductRating')->name('get-product-rating-details');
+		
+		Route::post('update-driver-rating', 'Front\RatingController@updateDriverRating')->name('update.driver.rating');
+		Route::get('get-driver-rating', 'Front\RatingController@getDriverRating')->name('get-driver-rating-details');
 	});
 	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
@@ -370,4 +391,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('get-product-order-form', 'Front\PickupDeliveryController@getProductOrderForm')->name('get-product-order-form');
 	});
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
+	//Passbase
+	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
+	Route::match(['get','post'],'passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
 });

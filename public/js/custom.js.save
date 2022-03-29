@@ -136,38 +136,10 @@ window.initializeSlider = function initializeSlider() {
         slidesToShow: 4,
         slidesToScroll: 1,
         responsive: [{
-                breakpoint: 1367,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                    arrows: false,
-                    infinite: true
-                }
-            },
-            {
-                breakpoint: 991,
-                settings: {
-                    slidesToShow: 2,
-                    arrows: false,
-                    slidesToScroll: 1
-                }
-            },
-            {
-                breakpoint: 767,
-                settings: {
-                    slidesToShow: 2,
-                    arrows: false,
-                    slidesToScroll: 1
-                }
-            },
-            {
-                breakpoint: 480,
-                settings: {
-                    slidesToShow: 1,
-                    arrows: false,
-                    slidesToScroll: 1
-                }
-            }
+                breakpoint: 1367, settings: { slidesToShow: 3, slidesToScroll: 1, arrows: false, infinite: true } },
+                { breakpoint: 991, settings: { slidesToShow: 2, arrows: false, slidesToScroll: 1 }  },
+            { breakpoint: 767, settings: { slidesToShow: 2, arrows: false, slidesToScroll: 1}},
+            { breakpoint: 480, settings: { slidesToShow: 1, arrows: false, slidesToScroll: 1} }
         ],
     });
     $('.suppliers-slider').slick({
@@ -350,7 +322,7 @@ $(document).ready(function() {
             });
         }
     }
-    // // Cabbooking Js Code 
+    // // Cabbooking Js Code
     //     $('.add-more-location').click(function(){
     //         $(".location-inputs").append("<li class='d-block mb-3 dots apdots map-icon'><input class='form-control pickup-text' type='text' placeholder='Choose destination, or click on the map...' /><i class='fa fa-times ml-1 apremove' aria-hidden='true'></i></li>");
     //         const height = document.querySelector('.location-box').offsetHeight;
@@ -370,7 +342,7 @@ $(document).ready(function() {
     //     });
     // // Cabbooking Js Code
 
-    // // Cabbooking Js Code 
+    // // Cabbooking Js Code
     //     $('.add-more-location').click(function(){
     //         $(".location-inputs").append("<li class='d-block mb-3 dots apdots map-icon'><input class='form-control pickup-text' type='text' placeholder='Choose destination, or click on the map...' /><i class='fa fa-times ml-1 apremove' aria-hidden='true'></i></li>");
     //         const height = document.querySelector('.location-box').offsetHeight;
@@ -388,7 +360,7 @@ $(document).ready(function() {
     //         var minheight = parseFloat(getheight + abc)+'px';
     //         $('.vehical-container').attr('style', 'height:calc(100vh - '+minheight+' !important');
     //     });
-    // // Cabbooking Js Code  
+    // // Cabbooking Js Code
 
 
     // top Moveble Tabbar on top js code
@@ -793,7 +765,7 @@ $(document).ready(function() {
         let walletElement = $("input[name='wallet_amount']");
         let subscriptionElement = $("input[name='subscription_amount']");
         let tipElement = $("#cart_tip_amount");
-        
+
         let ajaxData = [];
         if (cartElement.length > 0) {
             total_amount = cartElement.val();
@@ -821,7 +793,7 @@ $(document).ready(function() {
                     else if (path.indexOf("subscription") !== -1) {
                         userSubscriptionPurchase(total_amount, payment_option_id, resp.data.id);
                     }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
-                         
+
                         let order_number = $("#order_number").val();
                         if (order_number.length > 0) {
                             order_number = order_number;
@@ -2048,7 +2020,7 @@ $(document).ready(function() {
     });
 
     $(document).delegate(".product_addon_option", "click", function() {
-        //  add addons data 
+        //  add addons data
         var addonSet = $(this).parents('.productAddonSetOptions');
         var addon_minlimit = addonSet.attr("data-min");
         var addon_maxlimit = addonSet.attr("data-max");
@@ -2212,7 +2184,7 @@ $(document).ready(function() {
 
     $(document).on("click", "#next-button-ondemand-3", function() {
         $('.alert-danger').html('');
-        window.location.href = showCart;
+        //window.location.href = showCart;
 
         // var task_type = 'schedule';
         // var schedule_date = $("input[name='booking_date']:checked").val();
@@ -2272,7 +2244,7 @@ $(document).ready(function() {
         var cart_product_id = '';
         let that = $(this);
 
-        //  add addons data 
+        //  add addons data
         let parentdiv = $(this).parents('.add-on-main-div');
         let addon_elem = parentdiv.find('.productAddonSetOptions');
 
@@ -2373,7 +2345,7 @@ $(document).ready(function() {
         });
     }
 
-    // on demand add to cart 
+    // on demand add to cart
     function addToCartOnDemand(ajaxCall, vendor_id, product_id, addonids, addonoptids, add_to_cart_url, variant_id, show_plus_minus, that) {
         $.ajax({
             type: "post",
@@ -2424,7 +2396,7 @@ $(document).ready(function() {
 
 
 
-    // get time slots according to date 
+    // get time slots according to date
     $(document).on('click', '.check-time-slots', function() {
         let cur_date = $(this).val();
         let cart_product_id = $(this).data("cart_product_id");
@@ -2469,7 +2441,7 @@ $(document).ready(function() {
 
     });
 
-    // on demand add to cart 
+    // on demand add to cart
     function getTimeSlots(cur_date, cart_product_id) {
         $("#show_date" + cart_product_id).html(cur_date);
         $.ajax({
@@ -2481,6 +2453,8 @@ $(document).ready(function() {
                 "cart_product_id": cart_product_id
             },
             success: function(response) {
+                //console.log(response);
+               // alert(response);
                 var booking_time_slick = $("#show-all-time-slots" + cart_product_id).find('.booking-time');
                 if (booking_time_slick.length > 0) {
                     booking_time_slick.slick('unslick');
@@ -2509,7 +2483,7 @@ $(document).ready(function() {
         });
     }
 
-    /// ***************************************       END show cart data for on demand services    ***************************************************************///////////////// 
+    /// ***************************************       END show cart data for on demand services    ***************************************************************/////////////////
 
 
 
