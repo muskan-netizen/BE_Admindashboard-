@@ -938,6 +938,9 @@ class VendorController extends BaseController
         $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
         $vendor->slot_minutes = ($request->slot_minutes>0)?$request->slot_minutes:0;
         $vendor->closed_store_order_scheduled = (($request->has('show_slot')) ? 0 : ($request->closed_store_order_scheduled == 'on')) ? 1 : 0;
+        $vendor->fixed_fee = ($request->has('fixed_fee') && $request->fixed_fee == 'on') ? 1 : 0;
+        $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
+        $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
 
         if ($request->has('order_min_amount')) {
             $vendor->order_min_amount   = $request->order_min_amount;

@@ -1,6 +1,6 @@
 <div class="tap-top top-cls">
     <div>
-        <i class="fa fa-angle-double-up"></i>
+        <i class="fa fa-solid fa-angles-up"></i>
     </div>
 </div>
 <div class="d-none" id ="nearmap">
@@ -206,7 +206,7 @@
 
 {{--
 <!-- shift to product detail page -->
-<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script> 
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 <!-- duplicate script -->
 <script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
 --}}
@@ -227,6 +227,8 @@
 <script type="text/javascript" src="{{asset('js/waitMe.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <!--WaitMe Loader Script -->
+
+
 
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>

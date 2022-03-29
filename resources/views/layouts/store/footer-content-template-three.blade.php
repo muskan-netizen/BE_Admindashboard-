@@ -6,21 +6,20 @@ $languageList = \App\Models\ClientLanguage::with('language')->where('is_active',
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 $applocale = 'en';
 if(session()->has('applocale')){
-    $applocale = session()->get('applocale');
+$applocale = session()->get('applocale');
 }
 @endphp
 </article>
 @if($clientData->whatsapp_url)
 <div class="royo_whatsapp_img">
     <a href="{{$clientData->whatsapp_url}}" target="_blank">
-        <img src="{{ asset('images/whatsapp-img.png')}}" alt="">
+        <img style="" src="{{ asset('images/whatsapp-img.png')}}" alt="">
     </a>
 </div>
 @endif
     <footer id="footer" class="footer-light al_footer_template_three">
         <section class="section-b-space light-layout pb-0">
             <div class="container">
-
                 <div class="row footer-theme partition-f py-lg-3 py-2">
                     @if($client_preference_detail->show_contact_us == 1)
                     <div class="col-12 d-block d-md-none">
@@ -33,45 +32,46 @@ if(session()->has('applocale')){
                             </div>
                         </div>
                     </div>
-                    @endif
-                    @if(count($pages))
-                    <div class="col-lg-3 col-md-6 pt-md-4 pt-lg-0">
-                        <div class="sub-title">
-                            <div class="footer-title mt-0">
-                                <h4 class="mt-0">{{ __('Quick Links') }}</h4>
-                            </div>
-                            <div class="footer-contant">
-                                <ul>
-                                    @foreach($pages as $page)
-                                    @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
-                                    @if(isset($last_mile_common_set) && $last_mile_common_set != false)
-                                    <li>
-                                        <a href="{{route('extrapage',['slug' => $page->slug])}}">
-                                            @if(isset($page->translations) && $page->translations->first()->title != null)
-                                            {{ $page->translations->first()->title ?? ''}}
-                                            @else
-                                            {{ $page->primary->title ?? ''}}
-                                            @endif
-                                        </a>
-                                    </li>
-                                    @endif
-                                    @else
-                                    <li>
-                                        <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
-                                            @if(isset($page->translations) && $page->translations->first()->title != null)
-                                            {{ $page->translations->first()->title ?? ''}}
-                                            @else
-                                            {{ $page->primary->title ?? ''}}
-                                            @endif
-                                        </a>
-                                    </li>
-                                    @endif
-                                    @endforeach
-                                </ul>
-                            </div>
+                </div>
+                @endif
+                @if(count($pages))
+                <div class="col-lg-2 col-md-6 col-5 pt-md-4 pt-lg-0">
+                    <div class="sub-title">
+                        <div class="footer-title mt-0">
+                            <h4 class="mt-0">{{ __('Quick Links') }}</h4>
+                        </div>
+                        <div class="footer-contant">
+                            <ul>
+                                @foreach($pages as $page)
+                                @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
+                                @if(isset($last_mile_common_set) && $last_mile_common_set != false)
+                                <li>
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">
+                                        @if(isset($page->translations) && $page->translations->first()->title != null)
+                                        {{ $page->translations->first()->title ?? ''}}
+                                        @else
+                                        {{ $page->primary->title ?? ''}}
+                                        @endif
+                                    </a>
+                                </li>
+                                @endif
+                                @else
+                                <li>
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
+                                        @if(isset($page->translations) && $page->translations->first()->title != null)
+                                        {{ $page->translations->first()->title ?? ''}}
+                                        @else
+                                        {{ $page->primary->title ?? ''}}
+                                        @endif
+                                    </a>
+                                </li>
+                                @endif
+                                @endforeach
+                            </ul>
                         </div>
                     </div>
-                    @endif
+                </div>
+               
                     {{-- Contact Us details --}}
                         @if($client_preference_detail->show_contact_us == 1)
                             <div class="col-lg-3 col-md-6">
@@ -82,7 +82,7 @@ if(session()->has('applocale')){
                                     <div class="footer-contant">
                                         <ul class="contact-list al">
                                             <li class="pl-0">
-                                                <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                            <i class='fa fa-solid fa-location-dot'></i>
                                                 <span>{{$clientData ? ($clientData->contact_address ?? $clientData->company_address)  : ''}}</span>
                                             </li>
                                             <li class="pl-0">
@@ -99,30 +99,8 @@ if(session()->has('applocale')){
                             </div>
                         @endif
 
-                    @if(count($social_media_details))
-                    <div class="col-lg-4 col-md-6 pl-lg-5">
-                        <div class="sub-title">
-                            <div class="footer-title mt-0">
-                                <h4 class="mt-0">{{ __('Connect') }}</h4>
-                            </div>
-                            <div class="footer-contant">
-                                <div class="footer-social">
-                                    <ul>
-                                        @foreach($social_media_details as $social_media_detail)
-                                        <li class="d-block">
-                                            <a href="{{http_check($social_media_detail->url)}}" target="_blank">
-                                                <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
-                                                <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span>
-                                            </a>
-                                        </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-                    <div class="col-lg-3 col-md-6 col-5 pl-xl-3 d-none d-md-block mobile-border">
+
+                    <div class="col-lg-3 col-md-6 d-none d-md-block mobile-border">
                         <div class="sub-title">
                             <div class="footer-title mt-0 ">
                                 <h4 class="mt-0">{{ __('Find Our App On Mobile') }}</h4>
@@ -135,21 +113,7 @@ if(session()->has('applocale')){
                                     <a class="ml-xl-2 mt-2 mt-xl-0" href="{{$client_preference_detail->android_app_link??'#'}}" target="_blank"><svg style="height:30px" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 161 41"><defs><style>.cls-1{stroke:#515251;stroke-miterlimit:10;}.cls-2{fill:#fff;}.cls-3{fill:#5ccae7;}.cls-4{fill:#33c3f2;}.cls-5{fill:#6abe55;}.cls-6{fill:#ee3540;}.cls-7{fill:#fcc210;}</style></defs><rect class="cls-1" x="0.5" y="0.5" width="160" height="40" rx="8"/><path class="cls-2" d="M75,18.84a3.09,3.09,0,0,1,3.09-3.41,2.71,2.71,0,0,1,2,.83l-.62.75a1.79,1.79,0,0,0-1.32-.57c-1.16,0-1.94.9-1.94,2.36s.69,2.4,2,2.4a1.44,1.44,0,0,0,.93-.29V19.5H77.86v-.95h2.27v2.88a3,3,0,0,1-2.09.78C76.28,22.21,75,21,75,18.84Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M81.59,15.55h3.93v1H82.75V18.2H85.1v1H82.75v1.93h2.87v1h-4Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M88.29,16.53H86.4v-1h4.93v1H89.45v5.56H88.29Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M94.43,15.55h1.16v6.54H94.43Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M98.57,16.53H96.68v-1h4.94v1H99.73v5.56H98.57Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M104.37,18.79c0-2.11,1.17-3.36,2.88-3.36s2.88,1.25,2.88,3.36-1.18,3.42-2.88,3.42S104.37,20.91,104.37,18.79Zm4.57,0c0-1.46-.66-2.35-1.69-2.35s-1.69.89-1.69,2.35.66,2.41,1.69,2.41S108.94,20.26,108.94,18.79Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M111.45,15.55h1.19l2,3.67.68,1.4h0c-.06-.68-.15-1.5-.15-2.23V15.55h1.1v6.54h-1.19l-2-3.68L112.45,17h0c0,.69.14,1.48.14,2.2v2.87h-1.1Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M75.41,31.08c0-3.82,2.29-6.14,5.42-6.14a4.56,4.56,0,0,1,3.41,1.46l-.82,1a3.35,3.35,0,0,0-2.55-1.12C78.49,26.26,77,28.09,77,31s1.41,4.83,3.93,4.83a3.23,3.23,0,0,0,2.13-.7V32.1H80.51V30.85h3.88v5a5.06,5.06,0,0,1-3.65,1.37C77.63,37.19,75.41,34.91,75.41,31.08Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M86.41,32.61c0-2.92,1.91-4.6,4.06-4.6s4,1.68,4,4.6-1.91,4.58-4,4.58S86.41,35.51,86.41,32.61Zm6.58,0c0-2-1-3.37-2.52-3.37s-2.53,1.36-2.53,3.37S89,36,90.47,36,93,34.62,93,32.61Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M96.17,32.61c0-2.92,1.91-4.6,4-4.6s4.06,1.68,4.06,4.6-1.91,4.58-4.06,4.58S96.17,35.51,96.17,32.61Zm6.58,0c0-2-1-3.37-2.53-3.37S97.7,30.6,97.7,32.61s1,3.35,2.52,3.35S102.75,34.62,102.75,32.61Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M105.91,38.66a2.46,2.46,0,0,1,1.28-2v-.07a1.64,1.64,0,0,1-.78-1.44,2.07,2.07,0,0,1,1-1.62v-.08a3,3,0,0,1-1.13-2.35A3.1,3.1,0,0,1,109.52,28a3.64,3.64,0,0,1,1.24.21h3v1.14H112a2.55,2.55,0,0,1,.71,1.8,3,3,0,0,1-3.21,3,3.16,3.16,0,0,1-1.3-.3,1.29,1.29,0,0,0-.56,1c0,.55.36,1,1.54,1h1.7c2,0,3.06.63,3.06,2.09,0,1.62-1.72,3-4.43,3C107.39,41,105.91,40.16,105.91,38.66Zm6.6-.46c0-.81-.62-1.09-1.77-1.09h-1.51a4.75,4.75,0,0,1-1.14-.13,1.84,1.84,0,0,0-.89,1.47c0,.94,1,1.53,2.54,1.53S112.51,39.11,112.51,38.2Zm-1.13-7.08a1.87,1.87,0,1,0-3.72,0,1.87,1.87,0,1,0,3.72,0Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M115.65,35.22V24.15h1.48V35.33c0,.45.19.63.41.63a1.13,1.13,0,0,0,.32,0l.2,1.13a2.26,2.26,0,0,1-.85.14C116.1,37.19,115.65,36.48,115.65,35.22Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M119.58,32.61c0-2.85,1.92-4.6,3.94-4.6,2.23,0,3.49,1.6,3.49,4.1a4,4,0,0,1-.07.84h-5.89A2.91,2.91,0,0,0,124,36a3.77,3.77,0,0,0,2.17-.7l.54,1a5.09,5.09,0,0,1-2.89.91C121.44,37.19,119.58,35.49,119.58,32.61Zm6.12-.72c0-1.75-.78-2.7-2.15-2.7a2.68,2.68,0,0,0-2.51,2.7Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M132.9,25.16h3.38c2.64,0,4.43.89,4.43,3.48s-1.78,3.65-4.36,3.65h-1.94V37H132.9Zm3.26,5.91c2.06,0,3.05-.75,3.05-2.43s-1.05-2.26-3.12-2.26h-1.68v4.69Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M143,35.22V24.15h1.48V35.33c0,.45.2.63.41.63a1.19,1.19,0,0,0,.33,0l.2,1.13a2.26,2.26,0,0,1-.85.14C143.41,37.19,143,36.48,143,35.22Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M147,34.7c0-1.9,1.64-2.86,5.37-3.26,0-1.13-.37-2.21-1.8-2.21a4.85,4.85,0,0,0-2.61.93l-.58-1A6.38,6.38,0,0,1,150.81,28c2.14,0,3,1.42,3,3.59V37h-1.22l-.12-1h0a4.69,4.69,0,0,1-2.9,1.26A2.38,2.38,0,0,1,147,34.7Zm5.37.14V32.41c-2.93.35-3.92,1.07-3.92,2.19A1.34,1.34,0,0,0,150,36,3.57,3.57,0,0,0,152.37,34.84Z" transform="translate(-23.98 -7.28)"/><path class="cls-2" d="M155.73,40.57l.29-1.18a2.34,2.34,0,0,0,.67.13c1,0,1.61-.8,2-1.88l.19-.65-3.51-8.77h1.53l1.78,4.85c.28.76.57,1.65.86,2.46h.07c.25-.79.5-1.69.74-2.46l1.55-4.85h1.46L160,37.7c-.62,1.73-1.52,3-3.28,3A3.06,3.06,0,0,1,155.73,40.57Z" transform="translate(-23.98 -7.28)"/><path class="cls-3" d="M40.2,15.93a1.26,1.26,0,0,1,.43-1,.91.91,0,0,1,.66.39c2.65,2.75,5.52,5.28,8.17,8,.26.27.66.48.5,1a2.3,2.3,0,0,1-.47.64c-2.11,2-4,4.16-6.14,6.08C42.63,31.62,42,32.4,41.3,33a2.07,2.07,0,0,0-.55,1.09c-.08.29-.14.61-.48.74-.18-.16-.12-.34-.12-.5V16.29A.62.62,0,0,1,40.2,15.93Z" transform="translate(-23.98 -7.28)"/><path class="cls-4" d="M40.2,15.93v18a2.23,2.23,0,0,0,.1.81c.07-1.51,1.24-2.22,2.1-3.08,1.58-1.59,3.17-3.16,4.75-4.76C48.08,26,49,25,49.89,24.08c.39.06.61.38.86.6a29.2,29.2,0,0,1,3,3,.34.34,0,0,1,0,.2,2.56,2.56,0,0,1-.57.66c-1.64,1.64-3.27,3.3-4.93,4.92-2.33,2.28-4.72,4.51-7,6.86-.19.19-.36.41-.66.4a1.77,1.77,0,0,1-.5-1.45V16.35A1.85,1.85,0,0,1,40.2,15.93Z" transform="translate(-23.98 -7.28)"/><path class="cls-5" d="M53.74,27.75l-3.83-3.66c-1-1.22-2.21-2.27-3.33-3.43-2-1.95-4-3.88-5.95-5.81.69-.73,1.45-.49,2.17-.1,2.19,1.19,4.35,2.42,6.52,3.64q4.45,2.49,8.9,5a.36.36,0,0,1-.17.37c-1.3,1.14-2.42,2.42-3.64,3.61C54.21,27.55,54.05,27.8,53.74,27.75Z" transform="translate(-23.98 -7.28)"/><path class="cls-6" d="M40.63,40.72,53.21,28.33l.53-.49c.26,0,.4.14.56.28l3.54,3.55a.67.67,0,0,1,.26.5C54.73,34.06,51.38,36,48,37.86c-1.72,1-3.49,2-5.25,2.93C41.83,41.36,41.3,41.32,40.63,40.72Z" transform="translate(-23.98 -7.28)"/><path class="cls-7" d="M58.13,32.2l-4.39-4.36v-.09L57.63,24c.18-.19.39-.36.59-.54,1.71,1,3.51,1.92,5.23,2.93,1.38.86,1.36,2.07,0,2.87C61.68,30.26,59.9,31.22,58.13,32.2Z" transform="translate(-23.98 -7.28)"/></svg></a>
                                     <!-- <img class="blur-up lazyload" data-src="{{ getImageUrl(asset('front-assets/images/google-play.svg'),'270/48') }}" alt=""> -->
                                 </div>
-                                @if(count($social_media_details))
-                                <div class="footer-title mt-0">
-                                    <h4 class="mt-0">{{ __('Keep In Touch') }}</h4>
-                                </div>
-                                <ul class="social-links d-flex">
-                                    @foreach($social_media_details as $social_media_detail)
-                                    <li>
-                                        <a href="{{http_check($social_media_detail->url)}}" target="_blank">
-                                            <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
-                                            <!-- <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span> -->
-                                        </a>
-                                    </li>
-                                    @endforeach
-                                </ul>
-                                @endif
+                               
                             </div>
                         </div>
                     </div>
@@ -161,7 +125,7 @@ if(session()->has('applocale')){
                             </div>
                             <div class="footer-contant">
                                 @if($client_preference_detail->show_payment_icons == 1)
-                                <div class="payment-card-bottom text-center d-flex">
+                                <div class="payment-card-bottom text-center d-flex mb-2">
                                     <ul>
                                         <li>
                                             <a href="#"><img class="blur-up lazyload" style="height: 40px;" data-src="{{ getImageUrl(asset('assets/images/visa.png'),'40/40') }}"></a>
@@ -181,31 +145,48 @@ if(session()->has('applocale')){
                                     </ul>
                                 </div>
                                 @endif
+                                @if(count($social_media_details))
+                                <div class="footer-title mt-0">
+                                    <h4 class="mt-0">{{ __('Keep In Touch') }}</h4>
+                                </div>
+                                <ul class="social-links d-flex">
+
+                                    @foreach($social_media_details as $social_media_detail)
+                                    <li class="d-block">
+                                        <a href="{{http_check($social_media_detail->url)}}" target="_blank">
+                                            <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
+                                            <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span>
+                                        </a>
+                                    </li>
+                                    @endforeach
+                                </ul>
+                                @endif
                             </div>
                         </div>
                     </div>
                     @endif
-                </div>
 
             </div>
-        </section>
-        <div class="sub-footer">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12 text-center">
-                        <div class="footer-end">
-                            @php
-                                $currYear = \Carbon\Carbon::now()->year;
-                                $prevYear = $currYear - 1;
-                                $currYear = substr($currYear, -2);
-                            @endphp
-                            <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} | {{__('All rights reserved')}}</p>
-                        </div>
+            @endif
+        </div>
+    </section>
+    <div class="sub-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <div class="footer-end">
+                        @php
+                        $currYear = \Carbon\Carbon::now()->year;
+                        $prevYear = $currYear - 1;
+                        $currYear = substr($currYear, -2);
+                        @endphp
+                        <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} | {{__('All rights reserved')}}</p>
                     </div>
                 </div>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
 </article>
 </article>
 
@@ -231,34 +212,34 @@ if(session()->has('applocale')){
 
 <!-- Modal -->
 <div class="modal fade mobile-setting" id="setting_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="setting-modalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="setting-modalLabel">Language & Currency</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body pt-0">
-        <div class="show-div setting">
-            <h6 class="mb-1">{{ __("language") }}</h6>
-            <ul>
-                @foreach($languageList as $key => $listl)
-                    <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
-                    </li>
-                @endforeach
-            </ul>
-            <h6 class="mb-1">{{ __("currency") }}</h6>
-            <ul class="list-inline">
-                @foreach($currencyList as $key => $listc)
-                    <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
-                        <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
-                    </li>
-                @endforeach
-            </ul>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="setting-modalLabel">Language & Currency</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="show-div setting">
+                    <h6 class="mb-1">{{ __("language") }}</h6>
+                    <ul>
+                        @foreach($languageList as $key => $listl)
+                        <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
+                            <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                        </li>
+                        @endforeach
+                    </ul>
+                    <h6 class="mb-1">{{ __("currency") }}</h6>
+                    <ul class="list-inline">
+                        @foreach($currencyList as $key => $listc)
+                        <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
+                            <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>

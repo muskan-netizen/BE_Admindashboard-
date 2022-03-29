@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\Accounting\TaxController;
 use App\Http\Controllers\Client\Accounting\OrderController;
 use App\Http\Controllers\Client\Accounting\VendorController;
 use App\Http\Controllers\Client\Accounting\LoyaltyController;
+use App\Http\Controllers\Client\CategoryKycDocumentController;
 use App\Http\Controllers\Client\Accounting\PromoCodeController;
 use App\Http\Controllers\Client\UserRegistrationDocumentController;
 use App\Http\Controllers\Client\VendorRegistrationDocumentController;
@@ -143,7 +144,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendorregistrationdocument/update', [VendorRegistrationDocumentController::class, 'update'])->name('vendor.registration.document.update');
         Route::post('vendor/registration/document/delete', [VendorRegistrationDocumentController::class, 'destroy'])->name('vendor.registration.document.delete');
 
-
+        
         // user registreation document 
         Route::resource('userregistrationdocument', 'Client\UserRegistrationDocumentController');
         Route::get('user/registration/document/edit', [UserRegistrationDocumentController::class, 'show'])->name('user.registration.document.edit');
@@ -151,6 +152,13 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('userregistrationdocument/update', [UserRegistrationDocumentController::class, 'update'])->name('user.registration.document.update');
         Route::post('user/registration/document/delete', [UserRegistrationDocumentController::class, 'destroy'])->name('user.registration.document.delete');
 
+        // Category Kyc document 
+        Route::resource('categorykycdocument', 'Client\CategoryKycDocumentController');
+        Route::get('categorykyc/document/edit', [CategoryKycDocumentController::class, 'show'])->name('categorykyc.document.edit');
+        Route::post('categorykycdocument/create', [CategoryKycDocumentController::class, 'store'])->name('categorykyc.document.create');
+        Route::post('categorykycdocument/update', [CategoryKycDocumentController::class, 'update'])->name('categorykyc.document.update');
+        Route::post('categorykyc/document/delete', [CategoryKycDocumentController::class, 'destroy'])->name('categorykyc.document.delete');
+        Route::get('categorykyc/list', [CategoryKycDocumentController::class, 'getCategory'])->name('categorykyc.getCategory');
 
         Route::resource('tag', 'Client\TagController');
 
