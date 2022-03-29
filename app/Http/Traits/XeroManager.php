@@ -5,7 +5,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use XeroAPI\XeroPHP\AccountingObjectSerializer;
 use App\Http\Traits\XeroStorageClass as StorageClass;
-use XeroAPI, GuzzleHttp, Session, DateTime;
+use XeroAPI, GuzzleHttp, Session, DateTime, Auth;
 
 
 trait XeroManager{
@@ -15,7 +15,7 @@ trait XeroManager{
         return new \League\OAuth2\Client\Provider\GenericProvider([
             'clientId'                => $this->client_id,   
             'clientSecret'            => $this->secret_id,
-            'redirectUri'             => 'https://6e46-103-72-170-243.ngrok.io/auth/callback/xero',
+            'redirectUri'             => 'https://60f3-112-196-88-218.ngrok.io/auth/callback/xero',
             'urlAuthorize'            => 'https://login.xero.com/identity/connect/authorize',
             'urlAccessToken'          => 'https://identity.xero.com/connect/token',
             'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
@@ -124,18 +124,18 @@ trait XeroManager{
         return $apiInstance;   
     }
 
-    public function createContact($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp)
+    public function createContact($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp, $user)
     {
 
         $phone = new XeroAPI\XeroPHP\Models\Accounting\Phone;
-        $phone->setPhoneNumber('+918059272673');
+        $phone->setPhoneNumber('+'.$user->dial_code??'91'.$user->phone_number??'9876543210');
         $phone->setPhoneType(XeroAPI\XeroPHP\Models\Accounting\Phone::PHONE_TYPE_MOBILE);
         $phones = [];
         array_push($phones, $phone);
 
         $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-        $contact->setName('Sujata Saneja');
-        $contact->setEmailAddress('sujatacodebrew@gmail.com');
+        $contact->setName($user->name ?? 'Default Name');
+        $contact->setEmailAddress($user->email ?? 'default@yopmail.com');
         $contact->setPhones($phones);
 
         $contacts = new XeroAPI\XeroPHP\Models\Accounting\Contacts;
@@ -146,7 +146,6 @@ trait XeroManager{
         try {
           $result = $apiInstance->updateOrCreateContacts($xeroTenantId, $contacts, $summarizeErrors);
           return $result[0];
-          return $result[0];
         } catch (Exception $e) {
             dd($e);
           echo 'Exception when calling AccountingApi->createContacts: ', $e->getMessage(), PHP_EOL;
@@ -155,10 +154,15 @@ trait XeroManager{
 
     public function createItem($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp, $product)
     {
+        $description = $product->product_name ;
+
+        foreach($product->addon as $p_addon){
+           $description = $description." + ".(isset($p_addon->option) ? $p_addon->option->title : "");
+        }
         $item = new XeroAPI\XeroPHP\Models\Accounting\Item;
         $item->setCode(isset($product->product) ? $product->product->sku : mt_rand(10000000,99999999));
         $item->setName($product->product_name);
-        $item->setDescription($product->product_name);
+        $item->setDescription($description);
 
         $items = new XeroAPI\XeroPHP\Models\Accounting\Items;
         $arr_items = [];
@@ -172,15 +176,7 @@ trait XeroManager{
         } catch (Exception $e) {
           echo 'Exception when calling AccountingApi->updateOrCreateItems: ', $e->getMessage(), PHP_EOL;
         }
-    }
-    public function getBankAccount($xeroTenantId,$apiInstance)
-    {
-        // READ only ACTIVE
-        $where = 'Status=="' . \XeroAPI\XeroPHP\Models\Accounting\Account::STATUS_ACTIVE .'" AND Type=="' .  \XeroAPI\XeroPHP\Models\Accounting\Account::BANK_ACCOUNT_TYPE_BANK . '"';
-        $result = $apiInstance->getAccounts($xeroTenantId, null, $where); 
-
-        return $result;
-    }   
+    } 
 
     public function createInvoice($data,$order)
     {
@@ -190,31 +186,33 @@ trait XeroManager{
 
         $summarizeErrors = true;
         $unitdp = 4;
-        $dateValue = new DateTime('2022-03-25');
-        $dueDateValue = new DateTime('2022-03-28');
-
-        // // $getAccount = $this->getBankAccount($xeroTenantId,$apiInstance);
-        // // $accountCode = $getAccount->getAccounts()[1]->getCode();
+        $dateValue = date('Y-m-d');
+        $dueDateValue = date('Y-m-d',strtotime('+7 day',strtotime($dateValue)));
     
-        // $createContact = $this->createContact($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp);
+        $createContact = $this->createContact($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp, $order->user);
 
-        // $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-        // $contact->setContactID($createContact['contact_id']);
+        $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+        $contact->setContactID($createContact['contact_id']);
         $lineItems = [];
         foreach($order->products as $product)
         {
-            dd($product);
+            $product_price = $product->price ?? 0;
+            foreach($product->addon as $p_addon)
+            {
+                $product_price = $product_price + (isset($p_addon->option) ? $p_addon->option->price : 0); 
+            }
+            $discount_price = ($product->quantity * $product_price)/$order->total_amount * $order->total_discount ;
             $item = $this->createItem($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp,$product);
             $lineItem = new XeroAPI\XeroPHP\Models\Accounting\LineItem;
             $lineItem->setDescription($item['description']);
-            $lineItem->setQuantity($product->quantity);
-            $lineItem->setUnitAmount(20.0);
+            $lineItem->setQuantity($product->quantity ?? 1);
+            $lineItem->setUnitAmount(decimal_format($product_price));
             $lineItem->setAccountCode('429'); //General Expense
             $lineItem->setItemCode($item['code']);
             $lineItem->setItem($item);
-            $lineItem->setTaxAmount(1.0);
-            $lineItem->setDiscountAmount(4.0);
-            $lineItem->setLineAmount(36.0);
+            $lineItem->setTaxAmount($product->taxable_amount);
+            $lineItem->setDiscountAmount(decimal_format($discount_price));
+            // $lineItem->setLineAmount(decimal_format($product->quantity * $product_price - $discount_price));
             
             array_push($lineItems, $lineItem);
         }
@@ -225,8 +223,8 @@ trait XeroManager{
         $invoice->setDate($dateValue);
         $invoice->setDueDate($dueDateValue);
         $invoice->setLineItems($lineItems);
-        $invoice->setReference('Payment Type : Cash On Delivery');
-        $invoice->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_SUBMITTED);
+        $invoice->setReference(__('Payment Method').' : '.($order->paymentOption  ? $order->paymentOption->title : 'Cash On Delivery'));
+        $invoice->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_SUBMITTED); 
 
         $invoices = new XeroAPI\XeroPHP\Models\Accounting\Invoices;
         $arr_invoices = [];

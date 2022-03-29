@@ -98,6 +98,6 @@ class Order extends Model implements Auditable
 
     public function getByNumber($order_number)
     {
-        return self::where('order_number',$order_number)->with('products')->first();
+        return self::where('order_number',$order_number)->with('user','products','products.addon','products.addon.option','products.pvariant')->first();
     }
 }
