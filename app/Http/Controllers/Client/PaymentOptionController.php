@@ -332,6 +332,16 @@ class PaymentOptionController extends BaseController
                         'secret_key' => $request->cashfree_secret_key
                     ));
                 }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'easebuzz')) {
+                    $validatedData = $request->validate([
+                        'easebuzz_merchant_key' => 'required',
+                        'easebuzz_salt' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'easebuzz_merchant_key' => $request->easebuzz_merchant_key,
+                        'easebuzz_salt' => $request->easebuzz_salt
+                    ));
+                }
             }
             PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
         }
