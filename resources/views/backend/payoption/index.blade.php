@@ -87,6 +87,8 @@
                 $access_code = (isset($creds->access_code)) ? $creds->access_code : '';
                 $enc_key = (isset($creds->enc_key)) ? $creds->enc_key : '';
                 $easypaisa_store_id = (isset($creds->easypaisa_store_id)) ? $creds->easypaisa_store_id : '';
+                $easebuzz_merchant_key = (isset($creds->easebuzz_merchant_key)) ? $creds->easebuzz_merchant_key : '';
+                $easebuzz_salt = (isset($creds->easebuzz_salt)) ? $creds->easebuzz_salt : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -561,6 +563,24 @@
                                 <div class="form-group mb-2">
                                     <label for="cashfree_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
                                     <input type="password" name="cashfree_secret_key" id="cashfree_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'easebuzz') )
+                    <div class="mt-2" id="easebuzz_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="easebuzz_merchant_key" class="mr-3">{{ __("Merchant Key") }}</label>
+                                    <input type="text" name="easebuzz_merchant_key" id="easebuzz_merchant_key" class="form-control" value="{{$easebuzz_merchant_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="easebuzz_salt" class="mr-3">{{ __("Salt") }}</label>
+                                    <input type="text" name="easebuzz_salt" id="easebuzz_salt" class="form-control" value="{{$easebuzz_salt}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>
