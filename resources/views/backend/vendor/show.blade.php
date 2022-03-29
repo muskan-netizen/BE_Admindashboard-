@@ -1,6 +1,7 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Vendor'])
 
 @section('css')
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <link href="{{asset('assets/css/calendar_main-5.9.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .fc-v-event {
@@ -137,6 +138,9 @@
     .pricingtable.green:hover .price-value,
     .pricingtable.red:hover .price-value {
         color: #fff
+    }
+    .iti{
+        width: 100%;
     }
 
     /**/
@@ -717,10 +721,10 @@
                             <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-50">{{ __("Save") }}</button>
                         </div>
                         <div class="col-md-6">
-                        <input id="remove-line" class="btn btn-block btn-blue waves-effect waves-light w-50" type="button" value="Remove" />                       
+                        <input id="remove-line" class="btn btn-block btn-blue waves-effect waves-light w-50" type="button" value="Remove" />
                         </div>
                     </div>
-                    
+
 
                 </div>
             </form>
@@ -810,7 +814,7 @@
     });
 </script>
 <script type="text/javascript">
-    var all_coordinates = @json($all_coordinates);    
+    var all_coordinates = @json($all_coordinates);
     var areajson_json = all_coordinates; //{all_coordinates};
 
     function initialize_show() {
@@ -939,7 +943,7 @@
         $('#remove-line').on('click', function() {
             $('#latlongs').val('');
             _myPolygon.setMap(null);
-            
+
         });
 
         searchBox.addListener("places_changed", () => {
