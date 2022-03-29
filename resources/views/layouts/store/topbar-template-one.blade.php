@@ -171,30 +171,10 @@ $preference = $client_preference_detail;
             <ul class="header-dropdown icon-nav d-flex justify-content-around">
                 <li class="onhover-div mobile-setting">
                     <div data-toggle="modal" data-target="#setting_modal"><i class="ti-settings"></i></div>
-                    <!-- <div class="show-div setting">
-                        <h6>language</h6>
-                        <ul>
-                            <li><a href="#">english</a></li>
-                            <li><a href="#">french</a></li>
-                        </ul>
-                        <h6>currency</h6>
-                        <ul class="list-inline">
-                            @foreach($currencyList as $key => $listc)
-                                <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
-                                    <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
-                                </li>
-                            @endforeach
-                        </ul>
-                        <h6>Change Theme</h6>
-                        @if($client_preference_detail->show_dark_mode == 1)
-                        <ul class="list-inline">
-                            <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
-                        </ul>
-                        @endif
-                    </div> -->
                 </li>
 
-                <li class="onhover-dropdown mobile-account  d-inline d-sm-none"> <i class="fa fa-user" aria-hidden="true"></i>
+                <li class="onhover-dropdown mobile-account  d-inline d-sm-none">
+                    <i class="fa fa-user" aria-hidden="true"></i>
                     {{__('My Account')}}
                     <ul class="onhover-show-div">
                         @if(Auth::user())

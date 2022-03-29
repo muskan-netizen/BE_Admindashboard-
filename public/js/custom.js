@@ -10,6 +10,11 @@ jQuery(window).scroll(function () {
     }
 });
 
+$(".mobile-account .fa").click(function(){
+    $(".onhover-show-div").toggleClass("open");
+  });
+
+
 
 // Material Select Initialization
 $(document).ready(function () {
@@ -1059,9 +1064,9 @@ $(document).ready(function () {
         if($("input[name='product_faq_ids']").length > 0){
             success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
             return false;
-        
+
         }
-       
+
         $('.alert-danger').html('');
         if ((typeof guest_cart != undefined) && (guest_cart == 1)) {
             // window.location.href = login_url;
@@ -1499,7 +1504,7 @@ $(document).ready(function () {
             { name: 'returnUrl', value: path }
         );
         ajaxData.push({ name: 'payment_option_id', value: payment_option_id });
-           
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1651,7 +1656,7 @@ $(document).ready(function () {
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
         var is_gift = $('#is_gift:checked').val() ?? 0;
-        // place_order_url=domain+/user/    
+        // place_order_url=domain+/user/
         if ((task_type == 'schedule') && (schedule_dt == '')) {
             $("#proceed_to_pay_modal").modal('hide');
             $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
@@ -3330,7 +3335,7 @@ $(document).ready(function () {
         var specific_instructions = $("#specific_instructions").val();
 
         var selectedArr = JSON.stringify($("input[type='radio'][name='booking_slot']:checked"));
-    
+
 
 
         //var elems = $("input[name='booking_slot']:checked").val();
@@ -3349,7 +3354,7 @@ $(document).ready(function () {
         //     if (elem.type === 'radio' || elem.type === 'checkbox') {
         //         return elem.checked && elem.value;
         //     } else {
-        //         return elem.value.trim(); 
+        //         return elem.value.trim();
         //     }
         //  }).get()
 
