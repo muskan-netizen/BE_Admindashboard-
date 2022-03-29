@@ -59,6 +59,7 @@ class CartController extends FrontController
         $user = Auth::user();
         $countries = Country::get();
         $langId = Session::get('customerLanguage');
+        $fixedFee = $this->fixedFee($langId);
         $guest_user = true;
         if ($user) {
             $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
@@ -72,7 +73,6 @@ class CartController extends FrontController
             $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         }
         $navCategories = $this->categoryNav($langId);
-        $fixedFee = $this->fixedFee($langId);
     
         $subscription_features = array();
         if ($user) {
@@ -924,7 +924,7 @@ class CartController extends FrontController
                 //}
                 //$payable_amount = $payable_amount + $deliver_charge;
                 //Start applying service fee on vendor products total
-
+                   
                 $slotsDate = findSlot('',$vendorData->vendor->id,'');
                 $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
 
@@ -976,8 +976,10 @@ class CartController extends FrontController
                     $vendorData->is_vendor_closed = 1;
                     $delivery_status = 0;
                 }
-
-                if((float)($vendorData->vendor->order_min_amount) > $payable_amount){  # if any vendor total amount of order is less then minimum order amount
+                // if ($loyalty_amount_saved > 0) {
+                // dd($payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)); //36.81
+                // }
+                if((float)($vendorData->vendor->order_min_amount) > $payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)){  # if any vendor total amount of order is less then minimum order amount
                     $delivery_status = 0;
                 }
 

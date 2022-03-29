@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\{Client, Category, Product, ClientPreference, UserDevice, UserLoyaltyPoint, Wallet, VendorSavedPaymentMethods, Nomenclature};
+use App\Models\{Client, Category, Product, ClientPreference, UserDevice, UserLoyaltyPoint, Wallet, VendorSavedPaymentMethods, Nomenclature,NomenclatureTranslation};
 use Illuminate\Support\Facades\Storage;
 use Session;
 
@@ -333,5 +333,14 @@ class BaseController extends Controller
             return $preference;
         else
             return false;
+    }
+    
+    public function fixedFee($lang_id){
+        if(Nomenclature::where('label','Fixed Fee')->exists()){
+            $nomenclatures_translation_id=Nomenclature::where('label','Fixed Fee')->first()->id;
+            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee";
+        }else{
+            return "Fixed Fee";
+        }
     }
 }

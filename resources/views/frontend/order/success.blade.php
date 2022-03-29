@@ -66,6 +66,9 @@
                             @if($order->total_service_fee > 0)
                                 <li>{{__('Service Fee')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_service_fee * @$clientCurrency->doller_compare)}}</span></li>
                             @endif
+                            @if(!empty($order->fixed_fee_amount) && $order->fixed_fee_amount > 0)
+                                <li>{{__($fixedFee)}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->fixed_fee_amount)}}</span></li>
+                            @endif
                             @if($order->total_container_charges > 0)
                                 <li>{{__('Container Charges')}} <span>{{Session::get('currencySymbol')}}@money($order->total_container_charges * @$clientCurrency->doller_compare)</span></li>
                             @endif
@@ -89,7 +92,7 @@
                         </ul>
                     </div>
                     <div class="final-total">
-                        <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->payable_amount * @$clientCurrency->doller_compare)}}</span></h3>
+                        <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($order->payable_amount+$order->fixed_fee_amount) * @$clientCurrency->doller_compare)}}</span></h3>
                     </div>
                 </div>
             </div>
