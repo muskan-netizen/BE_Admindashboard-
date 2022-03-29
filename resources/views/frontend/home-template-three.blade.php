@@ -1,65 +1,21 @@
 @extends('layouts.store', ['title' => __('Home')])
-
+<style>
+.cardbanner {border-radius:50px;height:300px;}
+.shimmer_effect .grid-row .cards {margin-bottom: 40px;}
+.shimmer_effect .grid-row .card_icon{display:none;}
+.shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
+@media(max-width:767px){.cardbanner {border-radius:20px;height:80px;}}
+</style>
 @section('content')
-
-
-<!-- html code here -->
-<button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
-@if(count($banners))
-<section class="home-slider-wrapper pt-md-3" data-aos="zoom-in">
-	<div class="container">
-		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
-			<div class="carousel-inner">
-
-				@foreach($banners as $key => $banner)
-					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
-					<div class="carousel-item @if($key == 0) active @endif">
-					 <a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
-					</a>
-					</div>
-				@endforeach
-
-			</div>
-			<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
-				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">Previous</span>
-			</a>
-			<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
-			</a>
-		</div>
-
-		<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel" style="display:none;">
-			<div class="carousel-inner">
-
-				@foreach($mobile_banners as $key => $banner)
-					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
-					<div class="carousel-item @if($key == 0) active @endif">
-					 <a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
-					</a>
-					</div>
-				@endforeach
-
-			</div>
-			<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
-				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">Previous</span>
-			</a>
-			<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
-				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
-			</a>
-		</div>
-
-	</div>
-</section>
-
- @endif
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
+	<div class="container mt-3 mb-5 shimmer_effect">
+		<div class="row">
+			<div class="col-12 cards">
+				<div class="cardbanner loading"></div>
+			</div>
+		</div>
+	</div>
 	<div class="container mb-5 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">
@@ -187,6 +143,62 @@
 	</div>
 </section>
 <!-- shimmer_effect end -->
+
+<!-- html code here -->
+<button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
+@if(count($banners))
+<section class="home-slider-wrapper pt-md-3" data-aos="zoom-in">
+	<div class="container">
+		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
+			<div class="carousel-inner">
+				@foreach($banners as $key => $banner)
+					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+					<div class="carousel-item @if($key == 0) active @endif">
+					 <a class="banner-img-outer" href="{{$url??'#'}}">
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+					</a>
+					</div>
+				@endforeach
+
+			</div>
+			<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="sr-only">Previous</span>
+			</a>
+			<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="sr-only">Next</span>
+			</a>
+		</div>
+
+		<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel" style="display:none;">
+			<div class="carousel-inner">
+
+				@foreach($mobile_banners as $key => $banner)
+					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+					<div class="carousel-item @if($key == 0) active @endif">
+					 <a class="banner-img-outer" href="{{$url??'#'}}">
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+					</a>
+					</div>
+				@endforeach
+
+			</div>
+			<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="sr-only">Previous</span>
+			</a>
+			<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="sr-only">Next</span>
+			</a>
+		</div>
+
+	</div>
+</section>
+
+ @endif
+
 <!-- no-store-wrapper start -->
 <section class="no-store-wrapper mb-3 d-none" >
 	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else

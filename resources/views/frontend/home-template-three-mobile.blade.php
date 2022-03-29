@@ -15,19 +15,10 @@ if(session()->has('applocale')){
 @endphp
 
 <style>
-.onhover-show-div li{
-    display: block;
-    padding: 10px ;
-}
-.icon-ic_currency:before {
-    color: #777;
-}
-.dark .icon-ic_currency:before {
-    color: #fff;
-}
-.section-b-space_al_shimer{
-    background-color: #fff;z-index: 99999;
-}
+.onhover-show-div li{display: block;padding: 10px ;}
+.icon-ic_currency:before {color: #777;}
+.dark .icon-ic_currency:before {color: #fff;}
+.section-b-space_al_shimer{background-color: #fff;z-index: 99999;}
 .al_menu-drawer {width: 0;display: none;background-color: #fff;height: 100vh;position: absolute;right: -350px;top: 0;z-index: 9999;transition: right linear .2s;}
 .al_menu-drawer.open {padding: 50px 10px;width: 250px;display: block;right: 0;-webkit-transition: right linear .2s;transition: right linear .2s;box-shadow: 0 0 5px rgb(0 0 0 / 50%);}
 .al_only_mobile_wrapper svg{fill: #FA1C0A;height:20px;}
@@ -219,7 +210,7 @@ if(session()->has('applocale')){
                                     @endif
                                     <li class="onhover-dropdown change-language">
                                         <a href="javascript:void(0)">{{$applocale}}
-                                        <i class='fa fa-language'></i>
+                                        <span class="lnr-earth align-middle"></span>
                                         <span class="language ml-1 align-middle">{{ __("Language") }}</span>
                                         </a>
                                         <ul class="onhover-show-div">

@@ -7,15 +7,17 @@
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
 <section class="home-slider-wrapper pt-md-3" data-aos="zoom-in">
-	<div class="container">
-		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
+	<div class="container-fluid d-flex justify-content-center">
+
+		<div class="col-sm-10">
+			<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<div class="carousel-inner">
 
 				@foreach($banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
-					 <a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+					<a class="banner-img-outer" href="{{$url??'#'}}">
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/400' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -37,8 +39,8 @@
 				@foreach($mobile_banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
-					 <a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+					<a class="banner-img-outer" href="{{$url??'#'}}">
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/400' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -53,14 +55,17 @@
 				<span class="sr-only">Next</span>
 			</a>
 		</div>
+			</div>
+
+
 
 	</div>
 </section>
 
  @endif
 <!-- shimmer_effect start -->
-<section class="section-b-space_  p-0 ratio_asos">
-	<div class="container mb-5 shimmer_effect">
+<section class="section-b-space_  p-0 ratio_asos ">
+	<div class="container-fliud mb-5 shimmer_effect px-3">
 		<div class="row">
 			<div class="col-12 cards">
 				<h2 class="h2-heading loading mb-3"></h2> </div>
@@ -187,6 +192,7 @@
 	</div>
 </section>
 <!-- shimmer_effect end -->
+
 <!-- no-store-wrapper start -->
 <section class="no-store-wrapper mb-3 d-none" >
 	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
@@ -201,7 +207,7 @@
  <!-- vendors_template start -->
 <script type="text/template" id="vendors_template" >
 	<% _.each(vendors, function(vendor, k){%>
-		<div class="product-card-box position-relative text-center al_custom_vendors_sec" data-aos="zoom-in">
+		<div class="product-card-box position-relative text-center al_custom_vendors_sec_al" data-aos="zoom-in">
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative ">
 					<% if(vendor.is_vendor_closed==1){%>
@@ -242,7 +248,7 @@
 <!-- products_template start -->
 <script type="text/template" id="products_template" >
 	<% _.each(products, function(product, k){ %>
-		<div class="product-card-box position-relative al_box_third_template al" data-aos="zoom-in">
+		<div class="product-card-box position-relative al_box_four_template al" data-aos="zoom-in">
 			{{--<div class="add-to-fav 12">
 				<input id="fav_pro_one" type="checkbox">
 				<label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
@@ -256,19 +262,21 @@
 						<div class="product-description">
 							<div class="d-flex align-items-center justify-content-between">
 								<h6 class="card_title mb-1 ellips"><%=product.title %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-								<% if(product.averageRating > 0){%> <span class="rating-number"><%=product.averageRating %></span>
+								<% if(product.averageRating > 0){%>
 									<%}%> @endif @endif </div>
-							<div class="product-description_list border-bottom">
-								<p>
+							<div class="product-description_list">
+								<p class="al_vendorName">
 									<%=product.vendor_name %>
 								</p>
+
+								<p class="al_ratingNumber">
+									<span class="rating-number"><%=product.averageRating %></span>
+								</p>
 								<p class="al_product_category">
-									<span>
-								{{__('In')}}
-									<%=product.category %></span>
+									<span>{{__('In')}} <%=product.category %></span>
 								</p>
 							</div>
-							<div class="d-flex align-items-center justify-content-between al_clock pt-2">
+							<div class="d-flex align-items-center justify-content-end al_clock px-2">
 								<b><% if(product.inquiry_only==0){%> <%=product.price %> <%}%></b>
 							</div>
 						</div>
@@ -391,12 +399,11 @@
 <section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div" >
 	<div class="vendors"> @foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') @elseif($homePageLabel->slug == 'brands')
 		<section class="popular-brands left-shape_ position-relative">
-			<div class="container " data-aos="zoom-in">
-				<div class="al_top_heading col-md-12">
-					<div class="row d-flex justify-content-between">
-						<h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
+			<div class="container" data-aos="zoom-in">
+				<div class="al_top_heading col-md-12 text-center mb-4">
+					<h2 class="h2-heading  text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
 						{{-- <a class="" href="">See All</a> --}}
-					</div>
+
 				</div>
 				<div class="row ">
 					<div class=" col-12 al_custom_brand p-0">
@@ -405,10 +412,12 @@
 				</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'vendors')
-		<section class="suppliers-section">
+		<section class="suppliers-section al_fourthTemplateVender">
 			<div class="container mb-0" data-aos="zoom-in">
-					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
-						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2> <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a> </div>
+					<div class="col-12 text-center top-heading">
+						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
+						<a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>
+					</div>
 					<div class="row">
 						<div class="col-12 p-0">
 						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
@@ -428,7 +437,7 @@
 				</div>
 			</div>
 		</section> @else
-		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" data-aos="zoom-in">
+		<section class="container-fliud mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" data-aos="zoom-in">
 
 				<div class="col-md-12 top-heading d-flex align-items-center justify-content-between">
 				<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
@@ -437,7 +446,7 @@
 				<div class="col-12"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
 					<div class="product-5 product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@elseif($homePageLabel->slug=='recent_orders')
 					<div class="recent-orders product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@else
-					<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif </div>
+					<div class="al product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif </div>
 			</div>
 		</section> @endif @endforeach </div>
 </section><!-- our_vendor_main_div end -->
@@ -490,7 +499,7 @@
                 image.attr('data-src',icon);
                 image.attr('src',icon);
             },200);
-       
+
        }
     }
 </script>

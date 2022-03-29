@@ -228,6 +228,8 @@
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <!--WaitMe Loader Script -->
 
+
+
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 <script>
