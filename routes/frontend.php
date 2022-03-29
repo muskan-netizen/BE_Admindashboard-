@@ -2,6 +2,8 @@
 	Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
 	Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
+	Route::get('auth/xero','Front\XeroController@index');
+	Route::any('auth/callback/xero','Front\XeroController@xero_callback');
 	Route::get('/debug-sentry', function () {
 	throw new Exception('My first Sentry error!');
 });
@@ -266,6 +268,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('category/{slug?}', 'Front\CategoryController@categoryProduct')->name('categoryDetail');
 	Route::get('category/{slug1}/{slug2}', 'Front\CategoryController@categoryVendorProducts')->name('categoryVendorProducts');
 	Route::post('category/filters/{id}', 'Front\CategoryController@categoryFilters')->name('productFilters');
+	Route::get('category_kycDocument', 'Front\CategoryController@getcategoryKycDocument')->name('getCategoryKycDocument');
 	Route::get('vendor/all', 'Front\VendorController@viewAll')->name('vendor.all');
 	Route::match(['get','post'],'vendor/{id?}', 'Front\VendorController@vendorProducts')->name('vendorDetail');
 	Route::get('vendor/{slug1}/{slug2}', 'Front\VendorController@vendorCategoryProducts')->name('vendorCategoryProducts');
@@ -284,10 +287,17 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('viewcart', 'Front\CartController@showCart')->name('showCart');
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
+
 	Route::post('/updateCartSlot', 'Front\CartController@updateCartSlot')->name('updateCartSlot');
+
+	Route::post('/updateCartBookingSlot', 'Front\CartController@updateCartBookingSlot')->name('updateCartBookingSlot');
+
+	
+
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
 	Route::get('firebase-messaging-sw.js', 'Front\FirebaseController@service_worker');
+	Route::post('category_kyc_submit', 'Front\CartController@updateCartCategoryKyc')->name('updateCartCategoryKyc');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 

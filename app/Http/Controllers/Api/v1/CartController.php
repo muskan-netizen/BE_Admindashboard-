@@ -1492,6 +1492,7 @@ class CartController extends BaseController
       return $option;
   }
   public function updateCartProductFaq(Request $request){
+     // pr($request->all());
     $user = Auth::user();
     if (!$user->id) {
         $cart = Cart::where('unique_identifier', $user->system_user);

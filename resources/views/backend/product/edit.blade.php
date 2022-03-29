@@ -196,7 +196,7 @@
                         </div>
                         <div class="col-12 mb-2">
                             {!! Form::label('title', __('Product Description'),['class' => 'control-label']) !!}
-                            {!! Form::textarea('body_html', $product->primary ? $product->body_html : '', ['class'=>'form-control', 'id' => 'body_html', 'placeholder' => 'Description', 'rows' => '5']) !!}
+                            {!! Form::textarea('body_html', $product->primary ? $product->primary->body_html : '', ['class'=>'form-control', 'id' => 'body_html', 'placeholder' => 'Description', 'rows' => '5']) !!}
                         </div>
                         <div class="col-12 mb-2">
                             {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!}

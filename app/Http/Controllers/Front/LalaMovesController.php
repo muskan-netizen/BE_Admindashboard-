@@ -177,7 +177,15 @@ class LalaMovesController extends Controller
             $time = date('H:i:s',strtotime($order->scheduled_date_time));
             $scheduledAt = $date.'T'.$time.'Z';
         }
-        if (empty($order->web_hook_code))
+        $noRef = '';
+        $checkOrderRef = Webhook::where('tracking_order_id',$order_id)->first();
+        if(isset($checkOrderRef) && $checkOrderRef->id){
+            $noRef = json_decode($checkOrderRef->response)->orderRef;
+            //dd(json_decode($checkOrderRef->response));
+           return $response = json_decode($checkOrderRef->response);
+           die;
+        }
+        if(empty($order->web_hook_code) && empty($noRef))
         {
         $cus_address = UserAddress::find($order->address_id);
                 if ($cus_address && $this->lalamove_status==1){
@@ -199,21 +207,18 @@ class LalaMovesController extends Controller
                     );
         
                 $quotation = $this->getQuotations($data);
-                \Log::info(json_encode($quotation));
                 $response = json_decode($quotation['response']);
                 if($quotation['code']=='200'){
-                        $response = $this->placeOrders($data,$response);
+                        $response = $this->placeOrders($data,$response,$order_id);
                         if(isset($response->orderRef)){
                             $response = $response;
                         }else{
-                            $response = 2;
+                            $response = false;
                         }
                 }else{
-                    $response = 2;
+                    $response = false;
                 }
             }
-        }else{
-            $response = 2;
         }
 
         return $response;
@@ -235,44 +240,36 @@ class LalaMovesController extends Controller
 
     public function webhooks(Request $request)
     {
+        try{
+
            $trackingId = '';
            $json = json_decode($request->getContent());
-           //\Log::info($request->getContent());
-        //    if(DB::connection()->getDatabaseName())
-        //         {
-        //         echo "Connected sucessfully to database ".DB::connection()->getDatabaseName().".";
-        //         }
+    
            $driverId = $json->data->order->driverId??'';
-        //    $trackingId = $json->data->order->id;
-           //\Log::info('Got Id =');
-           //\Log::info($trackingId);
            if(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'ASSIGNING_DRIVER')
-        {
+           {
             $trackingId = $json->data->order->id;
 
             // ASSIGNING_DRIVER means Order is placed and assigning drivers
             OrderVendor::where('web_hook_code',$trackingId)
             ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId]);
             $details = OrderVendor::where('web_hook_code',$trackingId)  ->first();
-            //\Log::info('OrderVendor 1=');
-            //\Log::info($details->toArray());
 
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
-        }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'ON_GOING')
-        {
+            }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'ON_GOING')
+            {
             $trackingId = $json->data->order->id;
             // ON_GOING means driver assigned and start drive
             OrderVendor::where('web_hook_code',$trackingId)
             ->update(['lalamove_tracking_url'=>$json->data->order->shareLink,'driver_id'=>$driverId]);
             $details = OrderVendor::where('web_hook_code',$trackingId)->first();
-            //\Log::info('OrderVendor 2=');
-            //\Log::info($details->toArray());
+
             VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'4']);
 
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
-        }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'PICKED_UP')
-        {
+            }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'PICKED_UP')
+            {
             $trackingId = $json->data->order->id;
             // PICKED_UP means driver picked order and out for delivery
             OrderVendor::where('web_hook_code',$trackingId)
@@ -282,8 +279,8 @@ class LalaMovesController extends Controller
             VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'5']);
 
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
-        }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'COMPLETED')
-        {
+            }elseif(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'COMPLETED')
+            {
             $trackingId = $json->data->order->id;
             // COMPLETED means driver complete the delivery
             OrderVendor::where('web_hook_code',$trackingId)
@@ -294,11 +291,16 @@ class LalaMovesController extends Controller
             VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'6']);
 
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
-        }
+            }
 
 
         if($request && isset($json->data)){
          Webhook::create(['tracking_order_id'=>(($trackingId)?$trackingId:''),'response'=>$request->getContent()]);
+        }
+        
+        }catch(\Exception $e){
+            \Log::info($e->getMessage());
+            return response([],200);
         }
 
         return response([],200);

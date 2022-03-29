@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order};
+use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order,CaregoryKycDoc};
 use Redirect;
 use Log;
 class CategoryController extends FrontController{
@@ -312,7 +312,7 @@ class CategoryController extends FrontController{
                     $value->translation_description = (!empty($value->translation->first())) ? html_entity_decode(strip_tags($value->translation->first()->body_html)) : $value->sku;
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
-                    $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                    $value->image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                     // foreach ($value->variant as $k => $v) {
                     //     $value->variant[$k]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     // }
@@ -611,20 +611,64 @@ class CategoryController extends FrontController{
             $curr_time = "00:00";
         }else{
             $daten = new DateTime("now", new DateTimeZone($timezone) );
-            $curr_time = $daten->format('H:i');
+            $curr_time = $daten->format('h:i');
 
         }
 
 
-        $date = $request->cur_date;
+       // $date =new DateTime($request->cur_date);
 
-        $start_time = $date." ".$curr_time;
-        $end_time = $date." 23:59";
+        $start_time = new DateTime("now", new  DateTimeZone($timezone) );
+        $start_time = $start_time->format('Y-m-d H:m');
+        $end_time = date('Y-m-d 23:59');
+
+        // $start_time = $date." ".$curr_time;
+        // $end_time = $date." 23:59";
+
+
         $time_slots = $this->SplitTime($start_time, $end_time, "60");
         $cart_product_id = $request->cart_product_id??0;
         if ($request->ajax()) {
            return \Response::json(\View::make('frontend.ondemand.time-slots-for-date', array('time_slots' => $time_slots,'cart_product_id'=> $cart_product_id))->render());
         }
+    }
+    # get product faq 
+    public function getcategoryKycDocument(Request $request,$domain = ''){
+        $user = Auth::user();
+        if ($user) {
+            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+        } else {
+            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+        }
+        $is_alrady_submit = [];
+        if ($cart) {
+            $is_alrady_submit = CaregoryKycDoc::where('cart_id',$cart->id)->pluck('category_kyc_document_id');
+            $is_alrady_submit = $is_alrady_submit->isNotEmpty() ? $is_alrady_submit->toArray() : [];
+        }
+       
+        $category_ids = explode(",",$request->category_ids);
+       
+        $langId = Session::get('customerLanguage');
+        
+        if(empty($langId))
+        $langId = ClientLanguage::orderBy('is_primary','desc')->value('language_id');
+        $product_faqs=[];
+        
+        $category_kyc_documents = CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_ids){
+            $q->whereIn('category_id',$category_ids);
+           })->with(['translations' => function ($qs) use($langId){
+                $qs->where('language_id',$langId);
+            },'primary'])
+            ->whereNotIn('id',$is_alrady_submit)->get();
+        $category_id = rand(9,10);
+        if(isset($category_kyc_documents)){
+            if ($request->ajax()) {
+             return \Response::json(\View::make('frontend.modals.category_kyc_form', array('category_kyc_documents'=>  $category_kyc_documents,'category_id'=> $category_id,'category_ids'=>$request->category_ids))->render());
+            }
+        }
+        return \Response::json(\View::make('frontend.modals.category_kyc_form', array('category_kyc_documents'=>  $category_kyc_documents,'category_id'=> $category_id,'category_ids'=>$request->category_ids))->render());
+
+        return $this->errorResponse('Invalid product form ', 404);
     }
 
 }

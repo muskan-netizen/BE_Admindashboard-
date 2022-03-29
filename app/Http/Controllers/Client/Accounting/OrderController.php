@@ -86,7 +86,7 @@ class OrderController extends Controller{
                 $query->where('user_id', $user->id);
             });
         }
-        $vendor_orders = $vendor_orders->orderBy('id', 'DESC')->get();
+        $vendor_orders = $vendor_orders->orderBy('id', 'DESC');
         
         // foreach ($vendor_orders as $vendor_order) {
         //     $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);
@@ -111,7 +111,7 @@ class OrderController extends Controller{
         return Datatables::of($vendor_orders)
             ->addColumn('view_url', function($vendor_orders) {
                 if(!empty($vendor_orders->order_id) && !empty($vendor_orders->vendor_id)){
-                    $vendor_orders->view_url = route('order.show.detail', [$vendor_orders->order_id, $vendor_orders->vendor_id]);
+                    return route('order.show.detail', [$vendor_orders->order_id, $vendor_orders->vendor_id]);
                 }else{
                     return '';
                 }
