@@ -308,6 +308,8 @@
     content: "\f070";
     font-family: 'FontAwesome';
 }
+.fa-user:before,
+.fa-heart:before,
 .fa-twitter:before,
 .fa-whatsapp:before,
 .fa-facebook-square:before{

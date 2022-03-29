@@ -173,7 +173,7 @@ $preference = $client_preference_detail;
                     <div data-toggle="modal" data-target="#setting_modal"><i class="ti-settings"></i></div>
                 </li>
 
-                <li class="onhover-dropdown mobile-account  d-inline d-sm-none">
+                <li class="onhover-dropdown_al mobile-account  d-inline d-sm-none">
                     <i class="fa fa-user" aria-hidden="true"></i>
                     {{__('My Account')}}
                     <ul class="onhover-show-div">
