@@ -105,6 +105,12 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/mobbex', 'Front\MobbexGatewayController@mobbexPurchase')->name('payment.mobbexPurchase');
 	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
 
+	//
+	// EasebuzzController payment test
+	Route::get('/easebuzz-gateway', 'Front\EasebuzzController@easebuzz_gateway');
+    Route::post('/order', 'Front\EasebuzzController@order')->name('easebuzz.order');
+    Route::post('easebuzz-webhook', 'Front\EasebuzzController@easebuzz_webhook');
+
 
 	//GCash
 	Route::post('payment/gcash','Front\GCashController@beforePayment')->name('payment.gcash.beforePayment');
@@ -192,6 +198,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Cashfree
 	Route::get('payment/cashfree/return', 'Front\CashfreeGatewayController@cashfreeReturn')->name('payment.cashfree.return');
+	Route::get('payment/cashfree/return/app', 'Front\CashfreeGatewayController@cashfreeReturnApp')->name('payment.cashfree.return.app');
 	Route::post('payment/cashfree/notify', 'Front\CashfreeGatewayController@cashfreeNotify')->name('payment.cashfree.notify');
 
 

@@ -31,6 +31,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet');
+        //,'easebuzz' 
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -330,6 +331,16 @@ class PaymentOptionController extends BaseController
                     $json_creds = json_encode(array(
                         'app_id' => $request->cashfree_app_id,
                         'secret_key' => $request->cashfree_secret_key
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'easebuzz')) {
+                    $validatedData = $request->validate([
+                        'easebuzz_merchant_key' => 'required',
+                        'easebuzz_salt' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'easebuzz_merchant_key' => $request->easebuzz_merchant_key,
+                        'easebuzz_salt' => $request->easebuzz_salt
                     ));
                 }
             }
