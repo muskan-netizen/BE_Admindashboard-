@@ -2,24 +2,27 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Http\Controllers\AhoyController;
 use DB;
-use Illuminate\Support\Facades\Session;
-use Validation;
+use Client;
 use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\Country;
-use Client;
+
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\DunzoController;
+use App\Http\Controllers\AhoyController;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
-use App\Http\Controllers\DunzoController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
-use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot};
+use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc};
 use GuzzleHttp\Client as GCLIENT;
 use Log;
 class CartController extends BaseController
@@ -475,6 +478,7 @@ class CartController extends BaseController
         $nowdate = Carbon::now()->toDateTimeString();
         $vondorCnt = 0;
         $address = [];
+        $category_array = [];
         $latitude = '';
         $longitude = '';
         $address_id = 0;
@@ -663,7 +667,17 @@ class CartController extends BaseController
                         } else {
                             $prod->cartImg = (isset($prod->product->media[0]) && !empty($prod->product->media[0])) ? $prod->product->media[0]->image : '';
                         }
-                        $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
+                        $prod->faq_count = 0;
+                        if( $preferences->product_order_form ==1 ){
+                            $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
+                        }
+                        $prod->category_id = $prod->product->category_id;
+                        $prod->category_kyc_count = 0;
+                        if( $preferences->category_kyc_documents ==1 ){
+                            if(  !in_array( $prod->product->category_id, $category_array)){
+                                $category_array[] = $prod->product->category_id;
+                            }
+                        }
 
                         if($prod->product->delay_hrs_min != 0){
                             if($prod->product->delay_hrs_min > $delay_date)
@@ -1063,6 +1077,25 @@ class CartController extends BaseController
             $cart->slots = [];
             $cart->closed_store_order_scheduled = 0;
         }
+        $cart->category_kyc_count = 0;
+        $cart->category_ids = '';
+        if( $preferences->category_kyc_documents ==1 ){
+                      
+            $category_query =  CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_array){
+                $q->whereIn('category_id',$category_array);
+            });
+
+            $category_kyc_document_ids =  $category_query->pluck('id');
+            $category_kyc_document_ids = $category_kyc_document_ids->isNotEmpty() ? $category_kyc_document_ids->toArray() : [];
+          
+            $category_kyc_count =  $category_query->count();
+            
+            $is_alrady_submit = CaregoryKycDoc::whereIn('category_kyc_document_id', $category_kyc_document_ids)->where('cart_id',$cartID)->count();
+            if( $category_kyc_count  > 0 && ($is_alrady_submit  !=  $category_kyc_count )){
+                $cart->category_kyc_count = $category_kyc_count;
+                $cart->category_ids = implode( ',',$category_array);
+            }
+        }
 
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
@@ -1358,89 +1391,89 @@ class CartController extends BaseController
     }
 
 
-      //Fetch all delivery fee option
-      public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address)
-      {
-          $option = array();
-          $delivery_count = 0;
-          try {
-              if($vendorData->vendor_id)
-              {
-                 Session()->put('vid',$vendorData->vendor_id);
+    //Fetch all delivery fee option
+    public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address)
+    {
+        $option = array();
+        $delivery_count = 0;
+        try {
+            if($vendorData->vendor_id)
+            {
+                Session()->put('vid',$vendorData->vendor_id);
 
-          if($preferences->static_delivey_fee != 1)
-          {
-              //Dispatcher Delivery changes code
-              $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
-              if (!empty($deliver_charge)){
-                  $deliver_charge = number_format($deliver_charge, 2, '.', '');
-                  $option[] = array(
-                      'type'=>'D',
-                      'courier_name'=>__('Dispatcher'),
-                      'rate' => $deliver_charge,
-                      'courier_company_id' => 0,
-                      'etd' => 0,
-                      'etd_hours' => 0,
-                      'estimated_delivery_days' => 0,
-                      'code' => 'D_0'
-                  );
-              }
-
-
-          //Lalamove Delivery changes code
-          $lalamove = new LalaMovesController();
-          $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
-          if($deliver_lalmove_fee>0)
-          {
-              $deliver_charge_lalamove = number_format($deliver_lalmove_fee, 2, '.', '');
-
-              $optionLala[] = array(
-                  'type'=>'L',
-                  'courier_name'=>__('Lalamove'),
-                  'rate' => $deliver_charge_lalamove,
-                  'courier_company_id' => 0,
-                  'etd' => 0,
-                  'etd_hours' => 0,
-                  'estimated_delivery_days' => 0,
-                  'code' => 'L_0'
-              );
-              $option = array_merge($option,$optionLala);
-          }
-          //End Lalamove Delivery changes code
+        if($preferences->static_delivey_fee != 1)
+        {
+            //Dispatcher Delivery changes code
+            $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
+            if (!empty($deliver_charge)){
+                $deliver_charge = number_format($deliver_charge, 2, '.', '');
+                $option[] = array(
+                    'type'=>'D',
+                    'courier_name'=>__('Dispatcher'),
+                    'rate' => $deliver_charge,
+                    'courier_company_id' => 0,
+                    'etd' => 0,
+                    'etd_hours' => 0,
+                    'estimated_delivery_days' => 0,
+                    'code' => 'D_0'
+                );
+            }
 
 
-          if($vendorData->vendor->shiprocket_pickup_name){
-              //getShiprocketFee Delivery changes code
-              $ship = new ShiprocketController();
-              $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
-              if($deliver_ship_fee)
-              {
-                  $option = array_merge($option,$deliver_ship_fee);
-              }
-          }
+        //Lalamove Delivery changes code
+        $lalamove = new LalaMovesController();
+        $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
+        if($deliver_lalmove_fee>0)
+        {
+            $deliver_charge_lalamove = number_format($deliver_lalmove_fee, 2, '.', '');
 
-              //getDunzo Delivery fee changes code
-              $dunzo = new DunzoController();
-              if($dunzo->status){
-                  $deliver_dunzo_fee = $dunzo->getQuotations($vendorData->vendor_id,$address);
-                  if($deliver_dunzo_fee>0)
-                  {
-                      $deliver_charge_dunzo = number_format($deliver_dunzo_fee, 2, '.', '');
-                      $optionDunzo[] = array(
-                          'type'=>'DU',
-                          'courier_name'=>__('Dunzo'),
-                          'rate' => $deliver_charge_dunzo,
-                          'courier_company_id' => 0,
-                          'etd' => 0,
-                          'etd_hours' => 0,
-                          'estimated_delivery_days' => 0,
-                          'code' => 'DU_0'
-                      );
-                      $option = array_merge($option,$optionDunzo);
-                  }
-              }
+            $optionLala[] = array(
+                'type'=>'L',
+                'courier_name'=>__('Lalamove'),
+                'rate' => $deliver_charge_lalamove,
+                'courier_company_id' => 0,
+                'etd' => 0,
+                'etd_hours' => 0,
+                'estimated_delivery_days' => 0,
+                'code' => 'L_0'
+            );
+            $option = array_merge($option,$optionLala);
+        }
+        //End Lalamove Delivery changes code
 
-              if(isset($vendorData->vendor->ahoy_location)){
+
+        if($vendorData->vendor->shiprocket_pickup_name){
+            //getShiprocketFee Delivery changes code
+            $ship = new ShiprocketController();
+            $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
+            if($deliver_ship_fee)
+            {
+                $option = array_merge($option,$deliver_ship_fee);
+            }
+        }
+
+            //getDunzo Delivery fee changes code
+            $dunzo = new DunzoController();
+            if($dunzo->status){
+                $deliver_dunzo_fee = $dunzo->getQuotations($vendorData->vendor_id,$address);
+                if($deliver_dunzo_fee>0)
+                {
+                    $deliver_charge_dunzo = number_format($deliver_dunzo_fee, 2, '.', '');
+                    $optionDunzo[] = array(
+                        'type'=>'DU',
+                        'courier_name'=>__('Dunzo'),
+                        'rate' => $deliver_charge_dunzo,
+                        'courier_company_id' => 0,
+                        'etd' => 0,
+                        'etd_hours' => 0,
+                        'estimated_delivery_days' => 0,
+                        'code' => 'DU_0'
+                    );
+                    $option = array_merge($option,$optionDunzo);
+                }
+            }
+
+            if(isset($vendorData->vendor->ahoy_location)){
                 //getAhoy (Masa) Delivery fee changes code
                 $ahoy = new AhoyController();
                 if($ahoy->status){ 
@@ -1461,58 +1494,132 @@ class CartController extends BaseController
                         $option = array_merge($option,$optionAhoy);
                     }
                 }
-              }
+            }
 
 
-      }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
-           # for static fees
+        }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
+            # for static fees
 
-              if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){
-                  $deliveryCharges = number_format($vendorData->vendor->delivery_fee_maximum, 2, '.', '');
-              }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
-                  $deliveryCharges = number_format($vendorData->vendor->delivery_fee_minimum, 2, '.', '');
-              }
+                if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){
+                    $deliveryCharges = number_format($vendorData->vendor->delivery_fee_maximum, 2, '.', '');
+                }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
+                    $deliveryCharges = number_format($vendorData->vendor->delivery_fee_minimum, 2, '.', '');
+                }
 
-              $option[] = array(
-                  'type'=>'D',
-                  'courier_name'=>__('Static'),
-                  'rate' => $deliveryCharges,
-                  'courier_company_id' => 0,
-                  'etd' => 0,
-                  'etd_hours' => 0,
-                  'estimated_delivery_days' => 0,
-                  'code' => 'D_0'
-              );
+                $option[] = array(
+                    'type'=>'D',
+                    'courier_name'=>__('Static'),
+                    'rate' => $deliveryCharges,
+                    'courier_company_id' => 0,
+                    'etd' => 0,
+                    'etd_hours' => 0,
+                    'estimated_delivery_days' => 0,
+                    'code' => 'D_0'
+                );
 
-         }//End statis fe code
+            }//End statis fe code
 
+            }
+        } catch (\Exception $e) {
         }
-      } catch (\Exception $e) {
-      }
-      return $option;
-  }
-  public function updateCartProductFaq(Request $request){
-     // pr($request->all());
-    $user = Auth::user();
-    if (!$user->id) {
-        $cart = Cart::where('unique_identifier', $user->system_user);
-    } else {
-        $cart = Cart::where('user_id', $user->id);
+        return $option;
     }
-    $cart = $cart->first();
-   
-    $user_product_order_form = null;
-   
-    $cartData_id = CartProduct::where('cart_id', $cart->id)->where('product_id', $request->product_id)->pluck('id');
-   
-    if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
-    $user_product_order_form = json_encode($request->user_product_order_form);
-   
-    CartProduct::whereIn('id', $cartData_id)->update(['user_product_order_form'=> $user_product_order_form]);
+    public function updateCartProductFaq(Request $request){
+        // pr($request->all());
+        $user = Auth::user();
+        if (!$user->id) {
+            $cart = Cart::where('unique_identifier', $user->system_user);
+        } else {
+            $cart = Cart::where('user_id', $user->id);
+        }
+        $cart = $cart->first();
+    
+        $user_product_order_form = null;
+    
+        $cartData_id = CartProduct::where('cart_id', $cart->id)->where('product_id', $request->product_id)->pluck('id');
+    
+        if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
+        $user_product_order_form = json_encode($request->user_product_order_form);
+    
+        CartProduct::whereIn('id', $cartData_id)->update(['user_product_order_form'=> $user_product_order_form]);
 
-    return response()->json(['status'=>'Success', 'message'=>__('Product form Submit successfully.')]);
-}
+        return response()->json(['status'=>'Success', 'message'=>__('Product form Submit successfully.')]);
+    }
 
+    public function updateCartCategoryKyc(Request $request){
+        $rules=[];
+        $category_ids = explode(",",$request->category_ids);
+
+        $category_kyc_documents =CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_ids){
+            $q->whereIn('category_id',$category_ids);
+        })->with('primary')->get();
+        foreach ($category_kyc_documents as $vendor_registration_document) {
+            if($vendor_registration_document->is_required == 1){
+                if(isset($vendor_registration_document->primary) && !empty($vendor_registration_document->primary))
+                {
+                    $rules[$vendor_registration_document->primary->slug] = 'required';
+                }
+            }
+        }
+
+        $validation  = Validator::make($request->all(), $rules)->validate();
+
+        $user = Auth::user();
+        if (!$user->id) {
+            $cart = Cart::where('unique_identifier', $user->system_user);
+        } else {
+            $cart = Cart::where('user_id', $user->id);
+        }
+        $cart = $cart->first();
+    
+        //pr($category_ids);
+        $user_product_order_form = null;
+        
+        foreach ($category_ids as $category_id){
+            $category_kyc_documents = CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_id){
+                $q->where('category_id',$category_id);
+        })->with('primary')->get();
+
+            //  pr($category_kyc_documents->first());
+
+            if ($category_kyc_documents->count() > 0) {
+                foreach ($category_kyc_documents as $vendor_registration_document) {
+                    $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);
+                    if ($vendor_registration_document->file_type != "Text" && $vendor_registration_document->file_type != "selector") {
+                        $check = CaregoryKycDoc::where(['cart_id'=>$cart->id,'category_kyc_document_id'=>$vendor_registration_document->id])->first();
+                        if ($request->hasFile($doc_name) && !$check) {
+                        
+                            $vendor_docs =  new CaregoryKycDoc();
+                            $vendor_docs->user_id = $user->id;
+                            $vendor_docs->category_kyc_document_id = $vendor_registration_document->id;
+                            $filePath = 'category_kyc_document' . '/' . Str::random(40);
+                            $file = $request->file($doc_name);
+                            $vendor_docs->file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                            $vendor_docs->cart_id = $cart->id;
+                            $vendor_docs->save();
+                        }
+                    } 
+                    //else {
+                    //     if (!empty($request->$doc_name)) {
+                    //         $vendor_docs =  new CaregoryKycDoc();
+                    //         $vendor_docs->user_id = $user->id;
+                    //         $vendor_docs->category_kyc_document_id = $vendor_registration_document->id;
+                    //         $vendor_docs->file_name = $request->$doc_name;
+                    //         $vendor_docs->cart_id = $cart->id;
+                    //         $vendor_docs->save();
+                    //     }
+                    //}
+                }
+            }
+        }
+        // $rest = CaregoryKycDoc::where(['cart_id'=>$cart->id])->get();
+        // pr($rest );
+        return response()->json([
+            'status' => 'success',
+            'message' => 'document submit Successfully!',
+        ]);
+    
+    }
 
 
 }

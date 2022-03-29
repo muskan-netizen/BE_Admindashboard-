@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory, ProductCategory, Client, ClientPreference};
+use App\Models\{User,Cart, Product,ClientLanguage, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory, ProductCategory, Client, ClientPreference,CategoryKycDocuments,CaregoryKycDoc};
 
 class CategoryController extends BaseController
 {
@@ -524,4 +524,43 @@ class CategoryController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
+     # get product faq 
+     public function getcategoryKycDocument(Request $request,$domain = ''){
+        $user = Auth::user();
+        if (!$user->id) {
+            $cart = Cart::where('unique_identifier', $user->system_user);
+        } else {
+            $cart = Cart::where('user_id', $user->id);
+        }
+        $cart = $cart->first();
+        $is_alrady_submit = [];
+        if ($cart) {
+            $is_alrady_submit = CaregoryKycDoc::where('cart_id',$cart->id)->pluck('category_kyc_document_id');
+            $is_alrady_submit = $is_alrady_submit->isNotEmpty() ? $is_alrady_submit->toArray() : [];
+        }
+       
+        $category_ids = explode(",",$request->category_ids);
+       
+        $langId = Auth::user()->language;
+
+        if(empty($langId))
+        $langId = ClientLanguage::orderBy('is_primary','desc')->value('language_id');
+        $product_faqs=[];
+        
+        $category_kyc_documents = CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_ids){
+            $q->whereIn('category_id',$category_ids);
+           })->with(['translations' => function ($qs) use($langId){
+                $qs->where('language_id',$langId);
+            },'primary'])
+            ->whereNotIn('id',$is_alrady_submit)->get();
+      
+            if(!$category_kyc_documents){
+                return response()->json(['error' => 'No record found.'], 404);
+            }
+            return response()->json([
+                'data' => $category_kyc_documents,
+            ]);
+       
+    }
+
 }
