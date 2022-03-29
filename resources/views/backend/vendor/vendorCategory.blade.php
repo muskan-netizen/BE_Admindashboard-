@@ -363,7 +363,7 @@
 
                 {!! Form::hidden('vendor_id', $vendor->id) !!}
                 <div class="modal-body" id="editCategoryBox"></div>
-                <div class="modal-footer justify-content-start mb-2">
+                <div class="modal-footer justify-content-start mb-2 @if(Auth::user()->is_superadmin==0)editcatmodal @endif">
                     <p id="p-error1" style="color:red;font-size:20px;text-align:left;justify-content: flex-start;"></p>
                     <button type="button" class="btn btn-info waves-effect waves-light editCategorySubmit">{{ __("Submit") }}</button>
                 </div>

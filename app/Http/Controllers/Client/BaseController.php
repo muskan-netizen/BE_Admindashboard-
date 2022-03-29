@@ -51,8 +51,9 @@ class BaseController extends Controller
                             $this->htmlData .= '<div class="dd-handle dd3-handle"></div>';
                         }
                         $icon = $node['icon']['proxy_url'] . '30/30' . $node['icon']['image_path'];
+                        $is_vendr = ($from == 'vendor' && $node["is_core"] == 0)?1:0;
                         if (isset($node['translation_one'])) {
-                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] . '</a></div><span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="'.$is_vendr.'" href="#"> ' . $node['translation_one']["name"] . '</a></div><span class="inner-div text-right">';
                         } else {
                             $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '</div><span class="inner-div text-right">';
                         }
