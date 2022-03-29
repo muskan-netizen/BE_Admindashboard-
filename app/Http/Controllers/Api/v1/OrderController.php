@@ -2142,6 +2142,8 @@ class OrderController extends BaseController
             } else if ($order_status_option_id == 8) {
                 $order_status_option_id = 3;
             }
+           
+
            // $vendor_order_status = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->first();
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
             Log::info(($currentOrderStatus ? $currentOrderStatus->order_status_option_id : 'no'));
@@ -2152,6 +2154,7 @@ class OrderController extends BaseController
                 return response()->json(['status' => 'error', 'message' => __('This Order has been rejected.')]);
             }
             $vendor_order_status_detail = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->where('order_status_option_id', $order_status_option_id)->first();
+
             if (!$vendor_order_status_detail) {
                 // $vendor_order_status = new VendorOrderStatus();
                 // $vendor_order_status->order_id = $order_id;
@@ -2159,12 +2162,15 @@ class OrderController extends BaseController
                 // $vendor_order_status->order_status_option_id = $order_status_option_id;
                 // $vendor_order_status->order_vendor_id = $vendor_order_status->order_vendor_id;
                 // $vendor_order_status->save();
+
+
                 
                 if ($order_status_option_id == 2 || $order_status_option_id == 3) {
                     $clientDetail = Client::on('mysql')->where(['code' => $client_preference->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
                 $current_status = OrderStatusOption::select('id', 'title')->find($order_status_option_id);
+
                 if ($order_status_option_id == 2) {
                     $upcoming_status = OrderStatusOption::select('id', 'title')->where('id', '>', 3)->first();
                 } elseif ($order_status_option_id == 3) {
@@ -2178,11 +2184,11 @@ class OrderController extends BaseController
                     'current_status' => $current_status,
                     'upcoming_status' => $upcoming_status,
                 ];
-                
 
                 $orderPlaced = true;
                 $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
-                if ($request->status_option_id == 2) {
+
+                if ($request->order_status_option_id == 2) {
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
