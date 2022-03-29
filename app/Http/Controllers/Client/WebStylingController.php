@@ -58,7 +58,6 @@ class WebStylingController extends BaseController{
         if ($homepage_style) {
             $homepage_style_options = WebStylingOption::where('web_styling_id', $homepage_style->id)->get();
         }
-
         $user = Auth::user();
         $client = Client::where('code', $user->code)->first();
 
@@ -502,6 +501,7 @@ class WebStylingController extends BaseController{
         $font->save();
         return response()->json([
             'status' => 'success',
+            'theeme'  => $font->id,
             'message' => 'Updated successfully!'
         ]);
     }

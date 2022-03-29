@@ -86,7 +86,6 @@
                             </div>
 
                         </div>
-
                         <div class="card">
                             <div class="card-body al_custom_control">
                                 <h4 class="header-title">{{ __("Home Page Style") }}</h4>
@@ -777,7 +776,9 @@ $(document).on('click', '.deletePickupSection', function() {
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'success') {
-                    console.log(response.message);
+                   if(response.theeme){
+                       $('changeIcon').show();
+                   }
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }
             }
