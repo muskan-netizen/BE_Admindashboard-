@@ -483,6 +483,7 @@ class OrderController extends BaseController
     {
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
+        $orderPlaced = true;
         try {
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
