@@ -62,8 +62,10 @@ class ClientPreference extends Model
       $values = array();
       $img = 'default/default_image.png';
       if(!empty($value)){
-      }
         $img = $value;
+      }else{
+        return '';
+      }
 
       $ex = checkImageExtension($img);
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
@@ -77,9 +79,11 @@ class ClientPreference extends Model
     public function getDineiniconAttribute($value)
     {
       $values = array();
-      $img = 'default/default_image.png';
+      //$img = 'default/default_image.png';
       if(!empty($value)){
         $img = $value;
+      }else{
+        return '';
       }
       $ex = checkImageExtension($img);
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
@@ -93,9 +97,11 @@ class ClientPreference extends Model
     public function getTakewayiconAttribute($value)
     {
       $values = array();
-      $img = 'default/default_image.png';
+      //$img = 'default/default_image.png';
       if(!empty($value)){
         $img = $value;
+      }else{
+        return '';
       }
       $ex = checkImageExtension($img);
       $values['proxy_url'] = \Config::get('app.IMG_URL1');

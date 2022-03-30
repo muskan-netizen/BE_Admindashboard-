@@ -20,7 +20,7 @@ class WebStylingController extends BaseController{
     public function index()
     {
         $client_preferences = ClientPreference::first();
-
+       
         switch($client_preferences->business_type){
             case "taxi":
             $home_page_labels = HomePageLabel::whereIn('slug',['dynamic_page','pickup_delivery'])->with('translations')->orderBy('order_by');
