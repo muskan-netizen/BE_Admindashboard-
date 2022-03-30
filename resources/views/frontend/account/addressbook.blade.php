@@ -107,7 +107,7 @@
                             <div class="row">
                                 <div class="col-xl-4 col-md-6 text-center mt-3">
                                     <a class="outer-box border-dashed d-flex align-items-center justify-content-center add_edit_address_btn" href="javascript:void(0)" data-toggle="modal" data-target="#add_edit_address">
-                                        <i class="fa fa-plus-circle d-block mb-1" aria-hidden="true"></i>
+                                        <i class="fa fa-plus-circle d-block mr-1" aria-hidden="true"></i>
                                         <h6 class="m-0">
                                         @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
                                             {{ __('Add New Cars') }}
@@ -119,7 +119,7 @@
                                 </div>
                                 @foreach($useraddress as $add)
                                     <div class="col-xl-4 col-md-6 mt-3">
-                                        <div class="outer-box d-flex align-items-center justify-content-between px-0">
+                                        <div class="outer-box  px-0">
                                             <div class="address-type w-100">
                                                 <div class="default_address border-bottom mb-1 px-2">
                                                     <h6 class="mt-0 mb-2"><i class="fa fa-{{ ($add->type == 1 || $add->type == 3) ? 'home' : 'building' }} mr-1" aria-hidden="true"></i> {{ ($add->type == 1) ? __('Home') : (($add->type == 2) ? __('Office') : __('Others')) }}</h6>

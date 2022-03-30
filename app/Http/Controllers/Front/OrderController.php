@@ -258,7 +258,9 @@ class OrderController extends FrontController
 
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
         //   dd($activeOrders->toArray());
-        return view('frontend/account/orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency]);
+        $langId = Session::get('customerLanguage');
+        $fixedFee = $this->fixedFee($langId);
+        return view('frontend/account/orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency,'fixedFee'=>$fixedFee]);
     }
 
     public function getOrderSuccessPage(Request $request)
@@ -269,7 +271,8 @@ class OrderController extends FrontController
         $order = Order::with(['products.pvariant.vset', 'products.pvariant.translation_one', 'address'])->findOrfail($request->order_id);
         // dd($order->toArray());
 
-
+        $langId = Session::get('customerLanguage');
+        $fixedFee = $this->fixedFee($langId);
         $order_vendors =  OrderVendor::where('order_id', $request->order_id)->whereNotNull('dispatch_traking_url')->get();
         if (count($order_vendors)) {
             $home_service = ClientPreference::where('business_type', 'home_service')->where('id', '>', 0)->first();
@@ -280,7 +283,7 @@ class OrderController extends FrontController
 
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-        return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency'));
+        return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFee'));
     }
     public function getOrderSuccessReturnPage(Request $request)
     {
@@ -648,6 +651,10 @@ class OrderController extends FrontController
     public function orderSave($request, $paymentStatus)
     {
         try {
+            $fixed_fee_amount=0.00;
+            if(Session()->has('vid')){
+                $fixed_fee_amount=Vendor::find(Session()->get('vid'))->fixed_fee_amount ?? 0.00;
+            }
             DB::beginTransaction();
             $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code')->first();
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
@@ -700,6 +707,7 @@ class OrderController extends FrontController
             $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
             $order->schedule_pickup = $cart->schedule_pickup ?? null;
             $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
+            $order->fixed_fee_amount = $fixed_fee_amount;
             $order->specific_instructions = $cart->specific_instructions ?? null;
             $order->is_gift = $request->is_gift ?? 0;
             $order->save();
