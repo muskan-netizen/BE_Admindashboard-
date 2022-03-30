@@ -17,17 +17,17 @@ class NomenclatureController extends BaseController
      */
     public function store(Request $request)
     {
-        $names = $request->names??null;
-        $loyalty_cards_language_ids = $request->loyalty_cards_language_ids??null;
-        $loyalty_cards_names = $request->loyalty_cards_names??null;
-        $takeaway_names = $request->takeaway_names??null;
-        $search_names = $request->search_names??null;
-        $wishlist_names = $request->wishlist_names??null;
-        $dinein_names = $request->dinein_names??null;
-        $delivery_names = $request->delivery_names??null;
-        $zipCode_names = $request->zipCode_name??null;
-        $wantToTip_names = $request->wantToTip_name??null;
-        $FixedFee_names = $request->FixedFee_name??null;
+        $names = $request->names;
+        $loyalty_cards_language_ids = $request->loyalty_cards_language_ids;
+        $loyalty_cards_names = $request->loyalty_cards_names;
+        $takeaway_names = $request->takeaway_names;
+        $search_names = $request->search_names;
+        $wishlist_names = $request->wishlist_names;
+        $dinein_names = $request->dinein_names;
+        $delivery_names = $request->delivery_names;
+        $zipCode_names = $request->zipCode_name;
+        $wantToTip_names = $request->wantToTip_name;
+        $FixedFee_names = $request->FixedFee_name;
         NomenClature::updateOrCreate(['id' => 1], ['label' => 'vendors']);
         NomenClature::updateOrCreate(['id' => 2], ['label' => 'Loyalty Cards']);
         NomenClature::updateOrCreate(['id' => 3], ['label' => 'Takeaway']);
@@ -215,7 +215,7 @@ class NomenclatureController extends BaseController
                 NomenclatureTranslation::where('nomenclature_id', 8)->delete();
             }
         }
-        if (count($wantToTip_names) > 0) {
+        if ($wantToTip_names && (count($wantToTip_names) > 0)) {
             $names_value_exists = [];
             foreach ($wantToTip_names as $name) {
                 if ($name) {
