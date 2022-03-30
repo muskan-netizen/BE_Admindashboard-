@@ -2654,16 +2654,22 @@ $(document).ready(function () {
     });
 
     function setTipAmount(tip, amount_payable, currency) {
+        var fixed_fee_amount = $("#fixed_fee_amount").val();
+            if ((fixed_fee_amount == '') || (isNaN(fixed_fee_amount))) {
+                fixed_fee_amount = 0;
+            }
         if (tip != 'custom') {
             if ((tip == '') || (isNaN(tip))) {
                 tip = 0;
             }
-            amount_payable = parseFloat(amount_payable) + parseFloat(tip);
+            
+            amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
             $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
         } else {
+            amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
             $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
@@ -2676,10 +2682,14 @@ $(document).ready(function () {
         if ((tip == '') || (isNaN(tip))) {
             tip = 0;
         }
+        var fixed_fee_amount = $("#fixed_fee_amount").val();
+        if ((fixed_fee_amount == '') || (isNaN(fixed_fee_amount))) {
+            fixed_fee_amount = 0;
+        }
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
         var amount_payable = amount_elem.val();
-        amount_payable = parseFloat(amount_payable) + parseFloat(tip);
+        amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
         $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
@@ -3413,43 +3423,14 @@ $(document).ready(function () {
 
     $(document).on("click", "#next-button-ondemand-3", function () {      
         $('.alert-danger').html('');
-       // window.location.href = showCart;
+       //window.location.href = showCart;
 
-        var task_type = 'schedule';
-        var schedule_date = $("input[name='booking_slot']:checked").val();
-        //var schedule_time = $("input[name='booking_time']:checked").val();
-        var specific_instructions = $("#specific_instructions").val();
-
-        var selectedArr = JSON.stringify($("input[type='radio'][name='booking_slot']:checked"));
-
-
-
-        //var elems = $("input[name='booking_slot']:checked").val();
-       // var arrayString = jQuery.makeArray(elems);
-
-       // var elems = $('input:radio[name=booking_slot]:checked').val();
-        //var arrayString = jQuery.makeArray(elems);
-       // console.log(selectedArr);
-       // alert(selectedArr);
-
-
-
-        // var data_array = $("input[name='booking_slot']").map(function(idx, elem) {
-        //     console.log(elem);
-        //     alert(elem.value);
-        //     if (elem.type === 'radio' || elem.type === 'checkbox') {
-        //         return elem.checked && elem.value;
-        //     } else {
-        //         return elem.value.trim();
-        //     }
-        //  }).get()
-
-        //alert(JSON.stringify($("input[name='booking_slot']:checked").val()));
-        //alert($("input[name='booking_slot']:checked"));
-
-        //console.log(arrayString);
-       // alert(12);
-       // alert(arrayString);
+        var task_type = 'schedule';        
+        var schedule_date = $("input[name='booking_date']:checked").val();
+        var schedule_time = $("input[name='booking_time']:checked").val();        
+        var specific_instructions = $("#specific_instructions").val(); 
+        var productid = $("#productid").val();  
+        //alert(schedule_date);
         //alert(schedule_time);
        var schedule_dt = schedule_date;      
         //alert(schedule_dt);

@@ -355,6 +355,16 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+                                                                                            @if ($order->fixed_fee_amount > 0)
+                                                                                                <li
+                                                                                                    class="d-flex align-items-center justify-content-between">
+                                                                                                    <label
+                                                                                                        class="m-0">{{ __($fixedFee) }}</label>
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->fixed_fee_amount
+                                                                                                        *
+                                                                                                        $clientCurrency->doller_compare)}}</span>
+                                                                                                </li>
+                                                                                            @endif
                                                                                             @if ($vendor->delivery_fee > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
@@ -373,7 +383,7 @@
                                                                                                     $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
                                                                                                     $subtotal_order_price += $product_subtotal_amount;
                                                                                                 @endphp
-                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount
+                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount+$order->fixed_fee_amount
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
@@ -474,6 +484,16 @@
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+                                                                                @if ($order->fixed_fee_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __($fixedFee) }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->fixed_fee_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
                                                                                 @if ($order->tip_amount > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -518,7 +538,7 @@
                                                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
-                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount)}}</span>
+                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount+$order->fixed_fee_amount)}}</span>
                                                                                 </li>
                                                                             </ul>
                                                                         </div>
