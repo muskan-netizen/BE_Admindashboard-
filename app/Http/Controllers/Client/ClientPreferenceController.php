@@ -268,6 +268,7 @@ class ClientPreferenceController extends BaseController{
             $preference->max_safety_mod = ($request->has('max_safety_mod') && $request->max_safety_mod == 'on') ? 1 : 0;
             $preference->address_is_car = ($request->has('address_is_car') && $request->address_is_car == 'on') ? 1 : 0;
             $preference->hide_order_address = ($request->has('hide_order_address') && $request->hide_order_address == 'on') ? 1 : 0;
+            $preference->db_audit_logs = ($request->has('db_audit_logs') && $request->db_audit_logs == 'on') ? 1 : 0;
             $preference->age_restriction_on_product_mode = ($request->has('age_restriction_on_product_mode') && $request->age_restriction_on_product_mode == 'on') ? 1 : 0;
             $preference->show_qr_on_footer = ($request->has('show_qr_on_footer') && $request->show_qr_on_footer == 'on') ? 1 : 0;
             $preference->auto_implement_5_percent_tip = ($request->has('auto_implement_5_percent_tip') && $request->auto_implement_5_percent_tip == 'on') ? 1 : 0;
