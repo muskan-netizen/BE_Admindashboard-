@@ -308,6 +308,8 @@
     content: "\f070";
     font-family: 'FontAwesome';
 }
+.fa-user:before,
+.fa-heart:before,
 .fa-twitter:before,
 .fa-whatsapp:before,
 .fa-facebook-square:before{
@@ -451,6 +453,23 @@ span.filter-btn.btn.btn-theme i {
     margin-right: 10px;
 }
 .filter-main-btn span{border-radius: 15px;}
+.product-wrapper-grid .inner_spacing h3 {
+    font-size: 16px;
+}
+.al_new_wrapper_design .rating-text-box{
+    height: 30px;
+    background-color: #409a40;
+    line-height: 30px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgb(0 0 0 / 5%);
+    color: #fff;
+    text-align: center;
+    padding: 0 10px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 60px;
+    margin-bottom: 10px;
+}
 @media(max-width:991px){
     .filter-main-btn span,
     .filter-main-btn {
