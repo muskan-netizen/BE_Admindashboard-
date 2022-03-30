@@ -26,9 +26,7 @@ $preference = $client_preference_detail;
                                 <div class="homepage-address text-left">
                                     <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                 </div>
-                                <!-- <div class="down-icon ml-2">
-                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                </div> -->
+
                             </div>
                         @endif
                     @endif
@@ -52,9 +50,6 @@ $preference = $client_preference_detail;
                                 <div class="homepage-address text-left">
                                     <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                 </div>
-                                <!-- <div class="down-icon ml-2">
-                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                </div> -->
                             </div>
                         @endif
                     @endif
@@ -66,11 +61,6 @@ $preference = $client_preference_detail;
                 }
                 @endphp
                 <ul class="header-dropdown d-none d-sm-inline">
-                    <!-- <li class="mobile-wishlist d-inline d-sm-none">
-                        <a href="{{route('user.wishlists')}}">
-                            <i class="fa fa-heart" aria-hidden="true"></i>
-                        </a>
-                    </li> -->
                     @if($client_preference_detail->header_quick_link == 1)
                     <li class="onhover-dropdown quick-links quick-links">
 
