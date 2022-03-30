@@ -2,13 +2,156 @@
 <link href="{{asset('css/aos.css')}}" rel="stylesheet">
 @section('css')
 <style type="text/css">
-.main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.shimmer_effect{overflow:hidden}.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(5,1fr);grid-gap:20px}.shimmer_effect .card_image{width:100%;height:100%}.shimmer_effect .card_image.loading{width:100%;height:180px}.shimmer_effect .card_title.loading{width:50%;height:1rem;margin:1rem 0;border-radius:3px;position:relative}.shimmer_effect .card_description{padding:8px;font-size:16px}.shimmer_effect .card_description.loading{height:1rem;margin:1rem 0;border-radius:3px}.shimmer_effect .loading{position:relative;background:#cccccc86}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}.no-store-wrapper{display:none}@keyframes loading{100%{transform:translateX(100%)}}
+.main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}
+.shimmer_effect{overflow:hidden}.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(4,1fr);grid-gap:20px}.shimmer_effect .card_image{width:100%;height:100%}.shimmer_effect .card_image.loading{width:100%;height:180px}.shimmer_effect .card_title.loading{width:50%;height:1rem;margin:1rem 0;border-radius:3px;position:relative}.shimmer_effect .card_description{padding:8px;font-size:16px}.shimmer_effect .card_description.loading{height:1rem;margin:1rem 0;border-radius:3px}.shimmer_effect .loading{position:relative;background:#cccccc86}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}.no-store-wrapper{display:none}@keyframes loading{100%{transform:translateX(100%)}}
+.cardbanner {border-radius:0;height:550px;}
+.shimmer_effect .grid-row .cards {margin-bottom: 40px;}
+.shimmer_effect .grid-row .card_icon{display:none;}
+.alTemplateTwoShimnerEffect .alTemplateTwoShimnerEffectBanner{width: 100%;max-width: 100%;}
+.shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
+@media(max-width:767px){.cardbanner {border-radius:0;height:250px;}}
 </style>
+
 @endsection
 @section('content')
 
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
+<!-- shimmer_effect start -->
+<section class="section-b-space_ alTemplateTwoShimnerEffect p-0 ratio_asos">
+	<div class="container  alTemplateTwoShimnerEffectBanner mt-3 mb-5 shimmer_effect">
+		<div class="row">
+			<div class="col-12 cards">
+				<div class="cardbanner loading"></div>
+			</div>
+		</div>
+	</div>
+	<div class="container mb-5 shimmer_effect">
+		<div class="row">
+			<div class="col-12 cards">
+				<h2 class="h2-heading loading mb-3"></h2> </div>
+		</div>
+		<div class="grid-row grid-4-4">
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+		</div>
 
+		<div class="grid-row grid-4-4">
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+			<div class="cards">
+				<div class="card_image loading"></div>
+				<div class="d-flex align-items-center justify-content-between">
+					<div class="card_title loading"></div>
+					<div class="card_icon loading"></div>
+				</div>
+				<div class="card_content loading mt-0 w-75"></div>
+				<div class="card_content loading mt-0 w-50"></div>
+				<div class="card_line loading"></div>
+				<div class="card_price loading"></div>
+			</div>
+		</div>
+
+	</div>
+
+
+	</div>
+</section>
+<!-- shimmer_effect end -->
 @if(count($banners))
 <section class="p-0 small-slider al_desktop_banner">
     <div class="slide-1 home-slider mb-sm-2 ">
@@ -294,54 +437,7 @@
     <% }); %>
 </script>
 
-<section class="section-b-space p-t-0 pt-3 pt-md-5 ratio_asos pb-0 shimmer_effect">
-    <div class="row">
-        <div class="container">
-            <div class="grid-row grid-4-4">
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 <section class="section-b-space ratio_asos d-none pb-0 pt-0 mt-0 al_template_two_content" id="our_vendor_main_div">
     <div class="vendors">

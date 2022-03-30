@@ -318,3 +318,11 @@ footer#footer {position: relative;height: auto;}article#content-wrap {padding-bo
 .al_body_template_two .footer-theme .sub-title .contact-list li {
     padding-left: 30px !important;
 }
+ul.onhover-show-div.open {
+
+    background-color: #fff;
+    display: block !important;
+    max-width: 260px !important;
+    position: absolute;
+    width: 37%;
+}

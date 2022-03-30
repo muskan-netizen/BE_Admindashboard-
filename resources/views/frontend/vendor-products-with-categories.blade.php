@@ -388,7 +388,7 @@
                             @endif
                         </div>
                         <div class="product-bottom-bar">
-                            <div class="row">
+                            <div class="row d-flex align-items-center">
                                 <div class="col-md-8 col-lg-5 order-0">
                                     <div class="card-box vendor-details-left px-2 py-3">
                                         <div class="d-sm-flex">
@@ -462,7 +462,7 @@
                                 <div class="col-lg-4 col-xl-5 order-lg-1 order-2">
                                     <div class="vendor-search-bar">
                                         <div class="radius-bar w-100">
-                                            <div class="search_form d-flex align-items-center justify-content-between">
+                                            <div class="search_form d-flex align-items-center justify-content-between border">
                                                 <button class="btn"><i class="fa fa-search"
                                                         aria-hidden="true"></i></button>
                                                 <input class="form-control border-0 typeahead" type="search"

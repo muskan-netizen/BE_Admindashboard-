@@ -2,8 +2,8 @@
 	Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
 	Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
-	Route::get('auth/xero','Front\XeroController@index');
-	Route::any('auth/callback/xero','Front\XeroController@xero_callback');
+	Route::get('auth/xero','Front\XeroController@index')->name('xero_auth');
+	Route::any('auth/callback/xero','Front\XeroController@xero_callback')->name('callback_xero');
 	Route::get('/debug-sentry', function () {
 	throw new Exception('My first Sentry error!');
 });
@@ -197,7 +197,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Cashfree
 	Route::get('payment/cashfree/return', 'Front\CashfreeGatewayController@cashfreeReturn')->name('payment.cashfree.return');
-	Route::get('payment/cashfree/return/app', 'Front\CashfreeGatewayController@cashfreeReturn')->name('payment.cashfree.return.app');
+	Route::get('payment/cashfree/return/app', 'Front\CashfreeGatewayController@cashfreeReturnApp')->name('payment.cashfree.return.app');
 	Route::post('payment/cashfree/notify', 'Front\CashfreeGatewayController@cashfreeNotify')->name('payment.cashfree.notify');
 
 
