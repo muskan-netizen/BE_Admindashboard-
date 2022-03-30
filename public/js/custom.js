@@ -916,7 +916,13 @@ $(document).ready(function () {
                 payWithCcAvenue('');
             } else if (payment_option_id == 24) {
                 paymentViaCashfree('');
+            } else if (payment_option_id == 26) {
+                paymentViaToyyibPay('');
             }
+
+            
+
+
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -1695,7 +1701,7 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-    $(document).on("click", ".proceed_to_pay", function () {
+    $(document).on("click", ".proceed_to_pay", function () {       
 
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -1867,6 +1873,16 @@ $(document).ready(function () {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
                 paymentViaCashfree(address_id, payment_option_id, order);
+            }
+            else {
+                return false;
+            }
+        }else if (payment_option_id == 26) {
+           // alert(123);
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //alert(12345677888);
+                paymentViaToyyibPay(address_id, payment_option_id, order);
             }
             else {
                 return false;
@@ -2072,7 +2088,12 @@ $(document).ready(function () {
             payWithCcAvenue('');
         } else if (payment_option_id == 24) {
             paymentViaCashfree('', payment_option_id, '');
+        }else if (payment_option_id == 26) {
+            paymentViaToyyibPay('', payment_option_id, '');
         }
+
+
+        
 
     });
     $(document).on("click", ".remove_promo_code_btn", function () {

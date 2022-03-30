@@ -281,6 +281,31 @@ class OrderController extends FrontController
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency'));
     }
+
+    // public function getOrderToyyibPaySuccessPage(Request $request)
+    // {
+    //     $currency_id = Session::get('customerCurrency');
+    //     $langId = Session::get('customerLanguage');
+    //     $navCategories = $this->categoryNav($langId);
+    //     $order = Order::with(['products.pvariant.vset', 'products.pvariant.translation_one', 'address'])->findOrfail($request->order_id);
+    //     // dd($order->toArray());
+
+
+    //     $order_vendors =  OrderVendor::where('order_id', $request->order_id)->whereNotNull('dispatch_traking_url')->get();
+    //     if (count($order_vendors)) {
+    //         $home_service = ClientPreference::where('business_type', 'home_service')->where('id', '>', 0)->first();
+    //         if ($home_service) {
+    //             return Redirect::route('front.booking.details', $order->order_number);
+    //         }
+    //     }
+
+
+    //     $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+    //     return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency'));
+    // }
+
+
+
     public function getOrderSuccessReturnPage(Request $request)
     {
         $currency_id = Session::get('customerCurrency');
@@ -1017,7 +1042,7 @@ class OrderController extends FrontController
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20,21,24]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree
+            $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20,21,24,26]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 
                 //Send Email to customer

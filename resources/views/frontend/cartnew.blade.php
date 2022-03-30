@@ -83,6 +83,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <div class="row">
                 <div class="col-12">
                     <h5 class="m-0"><b><%= product.vendor.name %></b></h5>
+                    <input type="hidden" name="category_name" id="category_name" value= "<%= product.vendor.name %>" />
                 </div>
                 <div class="col-12">
                     <div class="countdownholder alert-danger" id="min_order_validation_error_<%= product.vendor.id %>" style="display:none;">Your cart will be expired in </div>
@@ -134,8 +135,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     <div class="col-8 col-md-10">
                         <div class="row align-items-md-center">
-                            <div class="col-md-3 order-0">
+                            <div class="col-md-3 order-0">123456
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
+                                <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
                                     <% if(vset.variant_detail.trans) { %>
                                         <label><span><b><%= vset.variant_detail.trans.title %>:</b></span> <%= vset.option_data.trans.title %></label>
@@ -312,6 +314,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <% }); %>
     <div class="row">
         <div class="col-12">
+            @php
+             //dd($data);
+            @endphp
             @if(isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry')
             <div class="row">
                 <div class="col-4">{{__('Comment for Pickup Driver ')}}</div>
@@ -1241,6 +1246,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var order_success_return_url = "{{route('order.return.success')}}";
     var my_orders_url = "{{route('user.orders')}}";
     var validate_promocode_coupon_url = "{{ route('verify.promocode.validate_code') }}";
+
+    var post_toyyibpay_via_gateway_url = "{{route('payment.toyyibpay.index')}}";
 
     var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var longitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";

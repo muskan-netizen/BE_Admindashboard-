@@ -133,6 +133,14 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/authorize_net/page','Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
 	Route::post('payment/authorize','Front\AuthorizeGatewayController@createPayment')->name('payment.authorize.createPayment');
 
+	// toyyibpay
+	Route::match(['get','post'],'payment/toyyib', 'Front\ToyyibPayController@index')->name('payment.toyyibpay.index');
+	//Route::post('payment/webhook/toyyib', 'Front\ToyyibPayController@webhook')->name('payment.webhook.toyyibpay');
+
+	Route::post('payment/toyyib/callback', 'Front\ToyyibPayController@callback')->name('payment.toyyibpay.callback');
+
+	Route::get('payment/toyyib/callback-success/{payment_form}', 'Front\ToyyibPayController@callbackSuccess')->name('payment.toyyibpay.callbackSuccess');
+
 	// Checkout
 	Route::post('payment/checkout', 'Front\CheckoutGatewayController@checkoutPurchase')->name('payment.checkoutPurchase');
 	Route::post('payment/checkout/notify', 'Front\CheckoutGatewayController@checkoutNotify')->name('payment.checkoutNotify');
@@ -339,6 +347,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('remove/promocode', 'Front\PromoCodeController@postRemovePromoCode')->name('remove.promocode');
 	Route::get('order/success/{order_id}', 'Front\OrderController@getOrderSuccessPage')->name('order.success');
 	Route::get('order/return/success', 'Front\OrderController@getOrderSuccessReturnPage')->name('order.return.success');
+
+
+
 	Route::post('promocode/list', 'Front\PromoCodeController@postPromoCodeList')->name('verify.promocode.list');
 	Route::post('promocode/validate_code', 'Front\PromoCodeController@validate_code')->name('verify.promocode.validate_code');
 	Route::post('payment/option/list', 'Front\PaymentController@index')->name('payment.option.list');

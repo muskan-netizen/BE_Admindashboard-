@@ -26,6 +26,7 @@ class VerifyCsrfToken extends Middleware
         'payment/cashfree/notify',
 
         /** routes for edit order **/
-        'edit-order/*'
+        'edit-order/*',
+        'payment/webhook/*'
     ];
 }
