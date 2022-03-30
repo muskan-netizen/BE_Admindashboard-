@@ -2144,8 +2144,12 @@ class OrderController extends BaseController
             $client_preference = ClientPreference::first();
             if ($order_status_option_id == 7) {
                 $order_status_option_id = 2;
+                $request->order_status_option_id = 2;
+
             } else if ($order_status_option_id == 8) {
                 $order_status_option_id = 3;
+                $request->order_status_option_id = 3;
+
             }
            
 
