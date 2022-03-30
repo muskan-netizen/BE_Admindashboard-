@@ -260,7 +260,7 @@ class NomenclatureController extends BaseController
                 }
                 //dd("reached");
             } else {
-                NomenclatureTranslation::where('label', 'Fixed Fee')->delete();
+                NomenClature::where('label', 'Fixed Fee')->delete();
             }
         }
         return redirect()->route('configure.customize')->with('success', 'Nomenclature Saved Successfully!');
