@@ -989,51 +989,54 @@ $sms_crendential = json_decode($preference->sms_credentials);
       <div class="col-lg-3 col-md-6 mb-3">
          <div class="row h-100">
             <div class="col-12">
-               <div class="card-box h-100">
-                  <div class="d-flex align-items-center justify-content-between mb-2">
-                     <h4 class="header-title text-uppercase mb-0">{{ __("Customer Support") }}</h4>
-                     <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                  </div>
-                  <p class="sub-header">{{ __("View and update your Customer Support, it's API key and Application ID") }}</p>
-                  <div class="row">
-                     <div class="col-12">
-                        <div class="form-group mb-0">
-                           <label for="customer_support">{{ __("Customer Support") }}</label>
-                           <select class="form-control" id="customer_support" name="customer_support">
-                              <option value="zen_desk" {{ isset($preference) && $preference->customer_support == 'zen_desk' ? 'selected' : '' }}>
-                                 {{__('Zen Desk')}}
-                              </option>
-                           </select>
-                           @if($errors->has('customer_support'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('customer_support') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
+               @csrf
+                  <div class="card-box h-100">
+                     <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title text-uppercase mb-0">{{ __("Customer Support") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                     </div>
+                     <p class="sub-header">{{ __("View and update your Customer Support, it's API key and Application ID") }}</p>
+                     <div class="row">
+                        <div class="col-12">
+                           <div class="form-group mb-0">
+                              <label for="customer_support">{{ __("Customer Support") }}</label>
+                              <select class="form-control" id="customer_support" name="customer_support">
+                                 <option value="zen_desk" {{ isset($preference) && $preference->customer_support == 'zen_desk' ? 'selected' : '' }}>
+                                    {{__('Zen Desk')}}
+                                 </option>
+                              </select>
+                              @if($errors->has('customer_support'))
+                              <span class="text-danger" role="alert">
+                                 <strong>{{ $errors->first('customer_support') }}</strong>
+                              </span>
+                              @endif
+                           </div>
 
-                        <div class="form-group mt-3 mb-0">
-                           <label for="customer_support_key">{{ __("API Key") }}</label>
-                           <input type="text" name="customer_support_key" id="customer_support_key" placeholder="Please enter key" class="form-control" value="{{ old('customer_support_key', $preference->customer_support_key ?? '')}}">
-                           @if($errors->has('customer_support_key'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('customer_support_key') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                           <div class="form-group mt-3 mb-0">
+                              <label for="customer_support_key">{{ __("API Key") }}</label>
+                              <input type="text" name="customer_support_key" id="customer_support_key" placeholder="Please enter key" class="form-control" value="{{ old('customer_support_key', $preference->customer_support_key ?? '')}}">
+                              @if($errors->has('customer_support_key'))
+                              <span class="text-danger" role="alert">
+                                 <strong>{{ $errors->first('customer_support_key') }}</strong>
+                              </span>
+                              @endif
+                           </div>
 
-                        <div class="form-group mt-3 mb-0">
-                           <label for="customer_support_application_id">{{ __("Application ID") }}</label>
-                           <input type="text" name="customer_support_application_id" id="customer_support_application_id" placeholder="Please enter application ID" class="form-control" value="{{ old('customer_support_application_id', $preference->customer_support_application_id ?? '')}}">
-                           @if($errors->has('customer_support_application_id'))
-                           <span class="text-danger" role="alert">
-                              <strong>{{ $errors->first('customer_support_application_id') }}</strong>
-                           </span>
-                           @endif
-                        </div>
+                           <div class="form-group mt-3 mb-0">
+                              <label for="customer_support_application_id">{{ __("Application ID") }}</label>
+                              <input type="text" name="customer_support_application_id" id="customer_support_application_id" placeholder="Please enter application ID" class="form-control" value="{{ old('customer_support_application_id', $preference->customer_support_application_id ?? '')}}">
+                              @if($errors->has('customer_support_application_id'))
+                              <span class="text-danger" role="alert">
+                                 <strong>{{ $errors->first('customer_support_application_id') }}</strong>
+                              </span>
+                              @endif
+                           </div>
 
+                        </div>
                      </div>
                   </div>
-               </div>
+               </form>
             </div>
          </div>
       </div>

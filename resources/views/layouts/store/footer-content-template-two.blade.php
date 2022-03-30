@@ -245,19 +245,19 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <div class="payment-card-bottom">
                             <ul>
                                 <li>
-                                    <a href="#"><img src="{{ getImageUrl(asset('assets/images/visa.png'),'26/26') }}"></a>
+                                    <a href="#"><img class="blur-up lazyload" style="height: 40px;" data-src="{{ getImageUrl(asset('assets/images/visa.png'),'40/40') }}"></a>
                                 </li>
                                 <li>
-                                    <a href="#"><img src="{{ getImageUrl(asset('assets/images/mastercard.png'),'26/26') }}"></a>
+                                    <a href="#"><img class="blur-up lazyload" style="height: 40px;" data-src="{{ getImageUrl(asset('assets/images/mastercard.png'),'40/40') }}"></a>
+                                </li>
+                               <!--  <li>
+                                    <a href="#"><img class="blur-up lazyload" data-src="{{ getImageUrl(asset('assets/images/paypal.png'),'26/26') }}"></a>
+                                </li> -->
+                                <li>
+                                    <a href="#"><img class="blur-up lazyload" style="height: 40px;" data-src="{{ getImageUrl(asset('assets/images/american-express.png'),'40/40') }}"></a>
                                 </li>
                                 <li>
-                                    <a href="#"><img src="{{ getImageUrl(asset('assets/images/paypal.png'),'26/26') }}"></a>
-                                </li>
-                                <li>
-                                    <a href="#"><img src="{{ getImageUrl(asset('assets/images/american-express.png'),'26/26') }}"></a>
-                                </li>
-                                <li>
-                                    <a href="#"><img src="{{ getImageUrl(asset('assets/images/discover.png'),'26/26') }}"></a>
+                                    <a href="#"><img class="blur-up lazyload" style="height: 40px;" data-src="{{ getImageUrl(asset('assets/images/discover.png'),'40/40') }}"></a>
                                 </li>
                             </ul>
                         </div>

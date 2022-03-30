@@ -2224,10 +2224,10 @@ class OrderController extends BaseController
                     $vendor_order_status->order_id = $request->order_id;
                     $vendor_order_status->vendor_id = $request->vendor_id;
                     $vendor_order_status->order_vendor_id = $request->order_vendor_id;
-                    $vendor_order_status->order_status_option_id = $request->status_option_id;
+                    $vendor_order_status->order_status_option_id = $request->order_status_option_id;
                     $vendor_order_status->save();
 
-                    OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason ?? null, 'cancelled_by'=>$request->cancelled_by ?? null]);
+                    OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->order_status_option_id, 'reject_reason' => $request->reject_reason ?? null, 'cancelled_by'=>$request->cancelled_by ?? null]);
                 }
 
 
