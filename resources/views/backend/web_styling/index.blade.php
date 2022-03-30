@@ -85,7 +85,51 @@
                                 </div>
                             </div>
 
+                     
+                        <div  style="display:{{(($themeId==3)?'block':'none')}}" class="card changeIcon">
+                            <div class="card-body al_custom_control">
+                                {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
+                                <div class="row">
+                                    <form id="themeIcon-form" method="post" enctype="multipart/form-data">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="mb-0">
+                                                <label>{{ __("Delivery Icon") }}</label>
+                                                <input type="file" accept="image/*" data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="DeliveryIcon" class="dropify ss_form_submit" id="image" />
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong></strong>
+                                                </span>
+                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <div class="mb-0">
+                                                <label>{{ __("Dine-In Icon") }}</label>
+                                                <input type="file" accept="image/*" data-default-file="{{$client_preferences->dineinicon ? $client_preferences->dineinicon['proxy_url'].'600/400'.$client_preferences->dineinicon['image_path'] : asset('images/al_custom1.png')}}" data-plugins="dropify" name="dineinIcon" class="dropify ss_form_submit" id="image" />
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong></strong>
+                                                </span>
+                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <div class="mb-0">
+                                                <label>{{ __("Takeway Icon") }}</label>
+                                                <input type="file" accept="image/*" data-default-file="{{$client_preferences->takewayicon ? $client_preferences->takewayicon['proxy_url'].'600/400'.$client_preferences->takewayicon['image_path'] : asset('images/al_custom2.png')}}" data-plugins="dropify" name="takewayIcon" class="dropify ss_form_submit" id="image" />
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong></strong>
+                                                </span>
+                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
                         <div class="card">
                             <div class="card-body al_custom_control">
                                 <h4 class="header-title">{{ __("Home Page Style") }}</h4>
@@ -776,8 +820,10 @@ $(document).on('click', '.deletePickupSection', function() {
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'success') {
-                   if(response.theeme){
-                       $('changeIcon').show();
+                   if(response.theme == 3){
+                       $('.changeIcon').show();
+                   }else{
+                    $('.changeIcon').hide();
                    }
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }
