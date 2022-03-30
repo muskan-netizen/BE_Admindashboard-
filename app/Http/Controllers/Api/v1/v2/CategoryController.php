@@ -47,7 +47,9 @@ class CategoryController extends BaseController
 
             if (!empty($category)) {
 
-                $mode_of_service = Product::where('category_id',$cid)->first()->value('mode_of_service');
+                $mode_of_service_data = Product::where('category_id',$cid)->first();
+
+                $mode_of_service = $mode_of_service_data->mode_of_service ?? null;
                
             }
 
