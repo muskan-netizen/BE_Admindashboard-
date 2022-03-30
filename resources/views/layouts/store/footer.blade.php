@@ -240,6 +240,10 @@
             $('#page-container').toggleClass("al_fixed");
         });
     });
+    jQuery(document).ready(function($) {
+        var footer_height = $('.footer-light').height();
+        $('article#content-wrap').css('padding-bottom',footer_height);
+    });
 </script>
 @if (Auth::check())
 @if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
