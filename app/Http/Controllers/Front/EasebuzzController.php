@@ -95,6 +95,7 @@ class EasebuzzController  extends Controller
         $easebuzzObj = new Easebuzz($MERCHANT_KEY = null, $this->SALT, $ENV = null);
         $result = $easebuzzObj->easebuzzResponse($request->all());
         $res = json_decode($result);
+        //pr($res);
         $status = $res->status;
         if ($status == 1){
             $data = $res->data;
@@ -103,10 +104,10 @@ class EasebuzzController  extends Controller
             if ($status == 'success'){
               //  Order::where('id', $orderId)->update(['status_id' => 1]);
                 \Session::flash('successMessage', 'Successful..!');
-                return redirect('easebuzz-gateway');
+                return redirect()->route('easebuzz-gateway');
             }else{
-                \Session::flash('errorMessage', 'failed!');
-                return redirect('agent/add-money/v1/welcome');
+                \Session::flash('errorMessage',  $data->error_Message);
+                return redirect()->route('easebuzz-gateway');
             }
         }
     }

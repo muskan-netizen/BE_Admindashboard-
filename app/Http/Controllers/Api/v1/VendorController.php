@@ -2205,7 +2205,7 @@ class VendorController extends BaseController{
                         //     $q2->where('apt.language_id', $langId);
                         // },
                         'translation' => function($q) use($langId){
-                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id')->where('language_id', $langId)->orderBy('id','desc');
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id','body_html as translation_description')->where('language_id', $langId)->groupBy('language_id')->orderBy('id','desc');
                         },
                         'variant' => function($q) use($langId, $multipli){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
@@ -2237,6 +2237,7 @@ class VendorController extends BaseController{
                     $vendor_categories = $vendor_categories->get();
                
                 $listData =  array_values($vendor_categories->toArray());
+               // pr( $listData);
             }
             else{ 
                 $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
