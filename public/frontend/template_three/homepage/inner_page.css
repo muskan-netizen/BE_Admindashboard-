@@ -15,6 +15,10 @@
     overflow: hidden;
     border-radius: 50px;
 }
+.nav-cate-img.activ_nav{
+    filter: grayscale(1);
+}
+.nav-cate-img.activ_nav.current_category{filter: grayscale(0);}
 .al_body_template_three .product-banner-img img,
 .al_body_template_three .common-banner.text-center img{
     object-fit: cover;
