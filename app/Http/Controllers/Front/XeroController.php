@@ -32,7 +32,7 @@ class XeroController extends Controller
     public function xero_callback(Request $request)
     {
     	$data = $request->all();
-    	// $this->callback($data);
+    	$this->callback($data);
         $order_number = Session::get('xero_order_number','00045400');
         $order = $this->orderObj->getByNumber($order_number);
         // dd($order);
