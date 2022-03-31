@@ -795,7 +795,7 @@
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -812,7 +812,7 @@
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -829,7 +829,7 @@
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -846,7 +846,7 @@
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -863,7 +863,7 @@
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -880,7 +880,7 @@
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -1624,7 +1624,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1643,7 +1643,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/pYuRTyCq1V0zAdMX5kakYkWKmO81TEkyprg4Cqgp.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/pYuRTyCq1V0zAdMX5kakYkWKmO81TEkyprg4Cqgp.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1662,7 +1662,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/NVtOSeR3oh8PW8JPOMCHj4uIQuHUR49M5xqSQMoU.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/NVtOSeR3oh8PW8JPOMCHj4uIQuHUR49M5xqSQMoU.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1681,7 +1681,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/IDGuBlBZ0JaFok1JCLntxzDvDZqBE86Nu28zcCh9.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/IDGuBlBZ0JaFok1JCLntxzDvDZqBE86Nu28zcCh9.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1700,7 +1700,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/WXBAjSXzudaQeoEfXtEaOgVqtCetzGexwmLbWFNX.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/WXBAjSXzudaQeoEfXtEaOgVqtCetzGexwmLbWFNX.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1719,7 +1719,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1738,27 +1738,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/WXBAjSXzudaQeoEfXtEaOgVqtCetzGexwmLbWFNX.jpg" alt="">
-                                </div>    
-                                <div class="media-body align-self-center">
-                                    <div class="inner_spacing">
-                                        <h3>Pizza</h3>
-                                        <p>DeliveryZone</p>
-                                        <h4>$ 100</h4>
-                                        <div class="rating">
-                                            @for($i = 1; $i < 6; $i++) 
-                                                <i class="fa fa-star"></i>
-                                            @endfor
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        
-                        <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
-                            <a class="card text-center scale-effect" href="#">
-                                <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/WXBAjSXzudaQeoEfXtEaOgVqtCetzGexwmLbWFNX.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1778,7 +1758,27 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/pYuRTyCq1V0zAdMX5kakYkWKmO81TEkyprg4Cqgp.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
+                                </div>    
+                                <div class="media-body align-self-center">
+                                    <div class="inner_spacing">
+                                        <h3>Pizza</h3>
+                                        <p>DeliveryZone</p>
+                                        <h4>$ 100</h4>
+                                        <div class="rating">
+                                            @for($i = 1; $i < 6; $i++) 
+                                                <i class="fa fa-star"></i>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                            <a class="card text-center scale-effect" href="#">
+                                <div class="product-image p-0 mb-2">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/pYuRTyCq1V0zAdMX5kakYkWKmO81TEkyprg4Cqgp.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1797,7 +1797,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1816,7 +1816,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/IDGuBlBZ0JaFok1JCLntxzDvDZqBE86Nu28zcCh9.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/IDGuBlBZ0JaFok1JCLntxzDvDZqBE86Nu28zcCh9.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1835,7 +1835,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/NVtOSeR3oh8PW8JPOMCHj4uIQuHUR49M5xqSQMoU.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/NVtOSeR3oh8PW8JPOMCHj4uIQuHUR49M5xqSQMoU.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1854,7 +1854,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1873,7 +1873,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/pYuRTyCq1V0zAdMX5kakYkWKmO81TEkyprg4Cqgp.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/pYuRTyCq1V0zAdMX5kakYkWKmO81TEkyprg4Cqgp.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1892,7 +1892,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/NVtOSeR3oh8PW8JPOMCHj4uIQuHUR49M5xqSQMoU.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/NVtOSeR3oh8PW8JPOMCHj4uIQuHUR49M5xqSQMoU.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1911,7 +1911,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/IDGuBlBZ0JaFok1JCLntxzDvDZqBE86Nu28zcCh9.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/IDGuBlBZ0JaFok1JCLntxzDvDZqBE86Nu28zcCh9.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1930,7 +1930,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/WXBAjSXzudaQeoEfXtEaOgVqtCetzGexwmLbWFNX.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/WXBAjSXzudaQeoEfXtEaOgVqtCetzGexwmLbWFNX.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -1949,7 +1949,7 @@
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                             <a class="card text-center scale-effect" href="#">
                                 <div class="product-image p-0 mb-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
+                                    <img src="https://images.royoorders.com/insecure/fill/300/300/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/HGutDcpC4i8tMidJ7lIgiVosqPorYZ73GKOrZMU2.jpg" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing">
@@ -2066,7 +2066,7 @@
                                                      <th scope="row">Roll 
                                                         </th>
                                                     <td>
-                                                        <img src="https://imgproxy.royoorders.com/insecure/fill/32/32/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/RQAO9fhVSoquNYpVIN0aui9XpEBeyyWBXr9ncVVV.png" alt="product-img" height="32">
+                                                        <img src="https://images.royoorders.com/insecure/fill/32/32/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/RQAO9fhVSoquNYpVIN0aui9XpEBeyyWBXr9ncVVV.png" alt="product-img" height="32">
                                                     </td>
                                                     <td>1</td>
                                                     <td>$100.00</td>

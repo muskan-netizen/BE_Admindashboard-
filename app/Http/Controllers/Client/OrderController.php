@@ -483,6 +483,7 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '') 
     {
+        $orderPlaced = true;
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
         try {
