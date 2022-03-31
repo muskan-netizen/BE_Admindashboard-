@@ -197,7 +197,7 @@
     letter-spacing: 0;
     line-height: 24px;
 }
-.al_new_wrapper_design .top-banner-wrapper.text-center .common-banner img{width: 100%;object-fit: cover;}
+.al_new_wrapper_design .top-banner-wrapper.text-center .common-banner img{width: 100%;object-fit: cover;height: 100%;}
 .org_price{
     text-decoration: line-through;
     font-weight: 400;
