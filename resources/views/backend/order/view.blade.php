@@ -1,6 +1,9 @@
 @extends('layouts.vertical', ['title' => 'Order Detail'])
 @section('css')
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css">
 <style>
 /* td { white-space:pre-line; word-break:break-all} */
 #cancel-request-card{
@@ -462,6 +465,55 @@ $timezone = Auth::user()->timezone;
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Contact Number") }}:</span> {{ $driver_data->phone ? $driver_data->phone : ''}}</p>
                     </div>
                     @endif
+
+                    <div class="col-lg-6 card-body">
+                        <h4 class="header-title mb-3">{{ __("Upload Report") }}</h4>
+                        {{-- <form action="{{route('order.upload.report')}}" method="post" enctype="multipart/form-data">
+                            @csrf
+                            <input type="file" required>
+                            <input type="submit" value="Upload" id="">
+                        </form> --}}
+                        <?php echo $order->reports->image_url;
+                        
+                        ?>
+                        @if($order->reports!=null)
+                        
+                            <a target="_blank" href="{{$order->reports->image_url}}">Download Report</a>
+                        @endif
+                        <form class="" action="{{route('order.upload.report')}}" method="post" enctype="multipart/form-data">
+                            @csrf
+                            <input type="text" value="{{$order->id}}" name="order_id">
+                            <input type="text" value="{{$vendor_data->id}}" name="vendor_id">
+                            <div class="card px-2">
+                                <div class="dropify-wrapper">
+                                    <div class="dropify-message">
+                                        <span class="file-icon"></span> 
+                                        <p>Drag and drop a file here or click</p>
+                                        <p class="dropify-error">Ooops, something wrong appended.</p>
+                                    </div>
+                                    <div class="dropify-loader"></div>
+                                    <div class="dropify-errors-container">
+                                        <ul></ul>
+                                    </div>
+                                    <input required type="file" accept="" data-plugins="dropify" name="file_name" class="dropify" data-default-file="">
+                                    <button type="button" class="dropify-clear">Remove</button>
+                                    <div class="dropify-preview">
+                                        <span class="dropify-render"></span>
+                                        <div class="dropify-infos">
+                                            <div class="dropify-infos-inner">
+                                                <p class="dropify-filename">
+                                                    <span class="file-icon"></span> 
+                                                    <span class="dropify-filename-inner"></span>
+                                                </p>
+                                                <p class="dropify-infos-message">Drag and drop or click to replace</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                                
+                                <button type="submit" class="btn btn-info waves-effect waves-light mt-2">Submit</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
