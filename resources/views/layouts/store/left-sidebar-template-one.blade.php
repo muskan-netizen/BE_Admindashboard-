@@ -28,7 +28,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-sm-3 col-md-2">
-                    <a class="navbar-brand mr-0" href="{{ route('userHome') }}">
+                    <a class="navbar-brand mr-0" style="height:60px" href="{{ route('userHome') }}">
                         <img height="60" alt="" src="{{ $urlImg }}"></a>
                 </div>
                 <div class="col-sm-9 col-md-10 top-header bg-transparent">
@@ -146,8 +146,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                 <div class="col-lg-12">
                     <div class="row mobile-header align-items-center justify-content-between my-sm-2">
                         <div class="logo col-2">
-                            <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center"
-                                href="{{route('userHome')}}"><img height="60" alt="" src="{{$urlImg}}"></a>
+                            <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a>
                         </div>
                         <div class="al_count_tabs my-1">
                             @if($mod_count > 1)
