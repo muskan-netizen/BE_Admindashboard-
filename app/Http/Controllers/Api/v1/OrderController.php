@@ -2144,14 +2144,18 @@ class OrderController extends BaseController
             $client_preference = ClientPreference::first();
             if ($order_status_option_id == 7) {
                 $order_status_option_id = 2;
+                $request->order_status_option_id = 2;
+
             } else if ($order_status_option_id == 8) {
                 $order_status_option_id = 3;
+                $request->order_status_option_id = 3;
+
             }
            
 
            // $vendor_order_status = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->first();
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
-            Log::info(($currentOrderStatus ? $currentOrderStatus->order_status_option_id : 'no'));
+            //Log::info(($currentOrderStatus ? $currentOrderStatus->order_status_option_id : 'no'));
 
             if ($currentOrderStatus->order_status_option_id == 3 ) { 
                 //$request->status_option_id == 2){
@@ -2192,8 +2196,12 @@ class OrderController extends BaseController
 
                 $orderPlaced = true;
                 $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
+                \Log::info('in request =');
+                \Log::info(json_encode($request->all()));
 
                 if ($request->order_status_option_id == 2) {
+                    \Log::info(json_encode($orderData));
+                    
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
@@ -2203,6 +2211,7 @@ class OrderController extends BaseController
                             $orderPlaced = true;
                         }
                     }elseif($orderData->shipping_delivery_type=='L'){
+                    \Log::info('In lalamove');
                         //Create Shipping place order request for Lalamove
                         $orderPlaced = $this->placeOrderRequestlalamove($request);
                     }elseif($orderData->shipping_delivery_type=='SR'){
@@ -2224,10 +2233,10 @@ class OrderController extends BaseController
                     $vendor_order_status->order_id = $request->order_id;
                     $vendor_order_status->vendor_id = $request->vendor_id;
                     $vendor_order_status->order_vendor_id = $request->order_vendor_id;
-                    $vendor_order_status->order_status_option_id = $request->status_option_id;
+                    $vendor_order_status->order_status_option_id = $request->order_status_option_id;
                     $vendor_order_status->save();
 
-                    OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason ?? null, 'cancelled_by'=>$request->cancelled_by ?? null]);
+                    OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->order_status_option_id, 'reject_reason' => $request->reject_reason ?? null, 'cancelled_by'=>$request->cancelled_by ?? null]);
                 }
 
 
