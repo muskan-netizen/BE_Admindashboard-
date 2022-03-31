@@ -41,6 +41,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('update/image', 'Api\v1\ProfileController@updateAvatar');
         Route::post('user/getAddress', 'Api\v1\ProfileController@getAddress');
         Route::post('order-detail', 'Api\v1\OrderController@postOrderDetail');
+        Route::post('create-payment-intent', 'Api\v1\PaymentResourceController@createPaymentIntent');
+        Route::post('confirm-payment-intent', 'Api\v1\PaymentResourceController@confirmPaymentIntent');
         Route::post('update/profile', 'Api\v1\ProfileController@updateProfile');
         Route::get('myWallet', 'Api\v1\WalletController@getFindMyWalletDetails');
         Route::post('myWallet/credit', 'Api\v1\WalletController@creditMyWallet');

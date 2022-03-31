@@ -224,7 +224,7 @@ trait XeroManager{
         $invoice->setDueDate($dueDateValue);
         $invoice->setLineItems($lineItems);
         $invoice->setReference(__('Payment Method').' : '.($order->paymentOption  ? $order->paymentOption->title : 'Cash On Delivery'));
-        $invoice->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_SUBMITTED); 
+        $invoice->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_AUTHORISED); 
 
         $invoices = new XeroAPI\XeroPHP\Models\Accounting\Invoices;
         $arr_invoices = [];
