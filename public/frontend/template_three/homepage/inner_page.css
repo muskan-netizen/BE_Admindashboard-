@@ -14,6 +14,7 @@
 .al_body_template_three .common-banner{
     overflow: hidden;
     border-radius: 50px;
+    height: 300px;
 }
 .nav-cate-img.activ_nav{
     filter: grayscale(1);
@@ -197,6 +198,11 @@
     letter-spacing: 0;
     line-height: 24px;
 }
+.breadcrumb-item+.breadcrumb-item::before{
+    content: "\f105";
+    font-family: FontAwesome;
+}
+
 .al_new_wrapper_design .top-banner-wrapper.text-center .common-banner img{width: 100%;object-fit: cover;height: 100%;}
 .org_price{
     text-decoration: line-through;
