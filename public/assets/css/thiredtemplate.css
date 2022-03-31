@@ -96,7 +96,9 @@ body[dir="rtl"] .timing-box_al li{margin-right: 0;}
 /* Recent order */
 #main-menu .slick-list{overflow:inherit}.al_new_wrapper_design .modal-header{border-radius:5px}.al_menu-drawer.open .cart_qty_cls{top:-3px;right:-40px}body .modal-content{overflow:hidden}.al_new_wrapper_design .common-product-box:hover,.al_new_wrapper_design .product-box:hover,.al_new_wrapper_design .suppliers-box:hover{box-shadow:none;box-sizing:border-box;border:1px solid transparent}body #page-container #footer .footer-theme .sub-title .contact-list li span{padding-left:0}
 .site-header.fixed-bar .nav-cate-img.activ_nav{display: none;}
-
+.nav-cate-img.activ_nav{filter: grayscale(1);}
+.site-header.fixed-bar .current_category{color: var(--theme-deafult);}
+.current_category .nav-cate-img.activ_nav{filter: grayscale(0);}
 @media (max-width: 1430px){
 .al_new_wrapper_design .top-banner-wrapper.text-center .common-banner{border-radius:20px;height:200px; margin-bottom: 30px;}
 .al_desktop_banner {height: 240px;}
