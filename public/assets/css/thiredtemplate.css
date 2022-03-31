@@ -95,7 +95,7 @@ body[dir="rtl"] .timing-box_al li{margin-right: 0;}
 .royo_whatsapp_img img {width: 50px;}.royo_whatsapp_img {position: fixed;z-index: 99999;bottom:7%;left: 1%;}
 /* Recent order */
 #main-menu .slick-list{overflow:inherit}.al_new_wrapper_design .modal-header{border-radius:5px}.al_menu-drawer.open .cart_qty_cls{top:-3px;right:-40px}body .modal-content{overflow:hidden}.al_new_wrapper_design .common-product-box:hover,.al_new_wrapper_design .product-box:hover,.al_new_wrapper_design .suppliers-box:hover{box-shadow:none;box-sizing:border-box;border:1px solid transparent}body #page-container #footer .footer-theme .sub-title .contact-list li span{padding-left:0}
-.al_new_ipad_view.ipad-view {padding-right: 25px;}
+.site-header.fixed-bar .nav-cate-img.activ_nav{display: none;}
 @media (max-width: 1430px){
 .al_new_wrapper_design .top-banner-wrapper.text-center .common-banner{border-radius:20px;height:200px; margin-bottom: 30px;}
 .al_desktop_banner {height: 240px;}
