@@ -116,12 +116,12 @@ a.navbar-brand.mr-xl-3.mr-0 {height: 50px !important;}
 
 .al_new_wrapper_design .top-banner-wrapper.text-center .common-banner{height:80px; margin-bottom: 20px;}
 .grid-row.grid-4-4 {display: grid;grid-template-columns: repeat(1,1fr);grid-gap: 20px;}
-    .al_mobile_menu{display:block}.footer-title{border:0}.sub-title{margin-bottom:20px}footer#footer{position:relative;}article#content-wrap{padding-bottom:0}body .footer-theme .sub-title h4{font-size:16px;margin-bottom:10px}.container.al_mobile-header{max-width:100%}.al_new_wrapper_design #myCarousel{border-radius:20px}
-    .al_new_wrapper_design .al_custom_brand .brand-box .brand-ing{height:80px;width:80px}.al_new_wrapper_design .top-header.site-topbar.al_custom_head{padding-bottom:0;height:auto}
+.al_mobile_menu{display:block}.footer-title{border:0}.sub-title{margin-bottom:20px}footer#footer{position:relative;}article#content-wrap{padding-bottom:0}body .footer-theme .sub-title h4{font-size:16px;margin-bottom:10px}.container.al_mobile-header{max-width:100%}.al_new_wrapper_design #myCarousel{border-radius:20px}
+.al_new_wrapper_design .al_custom_brand .brand-box .brand-ing{height:80px;width:80px}.al_new_wrapper_design .top-header.site-topbar.al_custom_head{padding-bottom:0;height:auto}
 .dark .al_custom_head_map_box{border:none;padding:0!important}.location-bar.d-inline-flex.align-items-center.position-relative{width:100%;max-width:240px}
-    .al_count_tabs_new_design li a.nav-link img{width:100%;padding: 10px;}.footer-title .according-menu{display:none}section.home-slider-wrapper{padding-top:20px!important;padding-bottom:20px}
-    .al_new_wrapper_design h2.h2-heading{font-size:20px;padding-left: 15px;}.footer-theme .sub-title .contact-list li{padding-left:0!important}.sub-footer{display:none}.menu-navigation_al li.al_main_category a .nav-cate-img img{height:50px!important;width:50px!important}.menu-navigation_al li.al_main_category a .nav-cate-img{height:50px;width:50px}
-    .al_custom_head_map_box{margin-bottom:10px;padding: 0 9px !important;overflow: hidden;border-radius: 8px;}.home-slider-wrapper .banner-img-outer img{border-radius:20px}
+.al_count_tabs_new_design li a.nav-link img{width:100%;padding: 10px;}.footer-title .according-menu{display:none}section.home-slider-wrapper{padding-top:20px!important;padding-bottom:20px}
+.al_new_wrapper_design h2.h2-heading{font-size:20px;padding-left: 15px;}.footer-theme .sub-title .contact-list li{padding-left:0!important}.sub-footer{display:none}.menu-navigation_al li.al_main_category a .nav-cate-img img{height:50px!important;width:50px!important}.menu-navigation_al li.al_main_category a .nav-cate-img{height:50px;width:50px}
+.al_custom_head_map_box{margin-bottom:10px;padding: 0 9px !important;overflow: hidden;border-radius: 8px;}.home-slider-wrapper .banner-img-outer img{border-radius:20px}
 }
 @media only screen and (max-width : 768px) {
     .aos-animate {
