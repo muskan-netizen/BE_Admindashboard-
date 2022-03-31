@@ -11,7 +11,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
    <div class="cab-booking-header">
    <div class="container">
       <div class="row align-items-center">
-         <div class="col-3 col-md-2"> <a class="navbar-brand mr-0" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}" height="60" style="width: 100%"></a> </div>
+         <div class="col-3 col-md-2"> <a class="navbar-brand mr-0" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a> </div>
          <div class="col-9 col-md-10 top-header bg-transparent d-flex align-items-center justify-content-end">
             <ul class="header-dropdown">
                @if(count($languageList) > 1)
@@ -63,8 +63,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
    <div class="container main-menu d-block ">
       <div class="row align-items-center py-md-2 position-initial">
          <div class="col-lg-2 col-5">
-            <a class="navbar-brand mr-0" href="{{route('userHome')}}">
-               <img alt="" src="{{$urlImg}}" height="60">
+            <a class="navbar-brand mr-0" style="height:60px" href="{{route('userHome')}}">
+               <img alt="" src="{{$urlImg}}">
             </a>
          </div>
          <div class="col-lg-5 main-menu d-block order-lg-1 order-2 ">
