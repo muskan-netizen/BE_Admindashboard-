@@ -18,7 +18,7 @@ $preference = $client_preference_detail;
         <div class="row align-items-center justify-content-between">
             <div class="col-sm-4">
                 <div class="d-flex align-items-center justify-content-lg-start">
-                    <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}" height="60" ></a>
+                    <a class="navbar-brand mr-sm-3 d-block d-sm-none" style="height:60px" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}" height="60" ></a>
                     @if(isset($preference))
                     @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
                             <div class="location-bar d-flex align-items-center justify-content-start m-0 p-0 dropdown-toggle order-1 ellips" href="#edit-address" data-toggle="modal">
