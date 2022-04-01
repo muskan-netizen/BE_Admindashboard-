@@ -46,8 +46,9 @@ function initMap() {
             $('#pickup_later').attr('disabled', false);
             if(response.status == '200'){
                 $('#cab_detail_box').html('');
+                var orderSuccessData = _.extend({ Helper: NumberFormatHelper },{result: response.data, product_image: response.data.product_image});
                 let order_success_template = _.template($('#order_success_template').html());
-                $("#cab_detail_box").append(order_success_template({result: response.data, product_image: response.data.product_image})).show();
+                $("#cab_detail_box").append(order_success_template(orderSuccessData)).show();
                 setInterval(function(){
                     product_image = response.data.product_image;
                     getOrderDriverDetails(response.data.dispatch_traking_url,response.data.id,product_image)
