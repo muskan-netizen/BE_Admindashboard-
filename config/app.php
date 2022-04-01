@@ -54,9 +54,9 @@ return [
 
     'url' => env('APP_URL', 'https://localhost'),
 
-    'IMG_URL1' => env('IMG_URL1', 'https://imgproxy.royoorders.com/insecure/fill/'),
+    'IMG_URL1' => env('IMG_URL1', 'https://images.royoorders.com/insecure/fill/'),
 
-    'FIT_URl' => env('FIT_URl', 'https://imgproxy.royoorders.com/insecure/fit/'),
+    'FIT_URl' => env('FIT_URl', 'https://images.royoorders.com/insecure/fit/'),
 
     'IMG_URL2' => env('IMG_URL2', '/sm/0/plain'),
 

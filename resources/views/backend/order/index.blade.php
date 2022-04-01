@@ -123,7 +123,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                                             </div>
                                                             <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
-                                                            <label class="items_price">{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %></label>
+                                                            <label class="items_price">
+                                                                (<%= product.product_name %>)
+                                                                {{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %></label>
                                                         </div>
                                                     <% }); %>
                                                 </div>
