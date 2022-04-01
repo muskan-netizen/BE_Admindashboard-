@@ -236,7 +236,7 @@ class NomenclatureController extends BaseController
                 }
                 //dd("reached");
             } else {
-                $nomenclature = NomenClature::where('label', 'Want To Tip')->delete();
+              //  $nomenclature = NomenClature::where('label', 'Want To Tip')->delete();
             }
         }
         if (count($FixedFee_names) > 0) {
@@ -260,7 +260,7 @@ class NomenclatureController extends BaseController
                 }
                 //dd("reached");
             } else {
-                NomenClature::where('label', 'Fixed Fee')->delete();
+              //  NomenClature::where('label', 'Fixed Fee')->delete();
             }
         }
         return redirect()->route('configure.customize')->with('success', 'Nomenclature Saved Successfully!');
