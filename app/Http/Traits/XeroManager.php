@@ -160,7 +160,8 @@ trait XeroManager{
            $description = $description." + ".(isset($p_addon->option) ? $p_addon->option->title : "");
         }
         $item = new XeroAPI\XeroPHP\Models\Accounting\Item;
-        $item->setCode(isset($product->product) ? $product->product->sku : mt_rand(10000000,99999999));
+        //code length must be less than or equa lto 30 characters
+        $item->setCode(isset($product->product) ? (strlen($product->product->sku) > 30 ? mt_rand(10000000,99999999) : $product->product->sku ) : mt_rand(10000000,99999999));
         $item->setName($product->product_name);
         $item->setDescription($description);
 
