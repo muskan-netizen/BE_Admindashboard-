@@ -75,9 +75,9 @@ class FrontController extends Controller
         $to = '966506342600';
         $body = "this is test sms from codebrew";
         $crendentials = [
-            'app_id' =>'ab8JPwmnCRgTrn2kkDEMCuCkMysK8l',
-            'account_email' => 'abhimanyuvij@code-brew.com',
-            'account_password' => 'Code@12345'
+            'unifonic_app_id' =>'ab8JPwmnCRgTrn2kkDEMCuCkMysK8l',
+            'unifonic_account_email' => 'abhimanyuvij@code-brew.com',
+            'unifonic_account_password' => 'Code@12345'
         ];
         $send = $this->unifonic($to,$body,$crendentials);
         pr($send);

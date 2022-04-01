@@ -90,7 +90,10 @@ class Easebuzz{
         // $txnid = substr(hash('sha256', mt_rand() . microtime()), 0, 20);
         // $params['txnid'] = $txnid;
        
-        Payment::initiate_payment($params, $this->MERCHANT_KEY, $this->SALT, $this->ENV);
+      $res =  Payment::initiate_payment($params, $this->MERCHANT_KEY, $this->SALT, $this->ENV);
+    //   echo "initiatePaymentAPI";
+    //   pr( $res);
+      return $res;
     }
 
 

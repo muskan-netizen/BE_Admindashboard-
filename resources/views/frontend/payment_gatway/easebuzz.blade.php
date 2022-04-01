@@ -13,7 +13,7 @@
                 <div class="card border-primary rounded-0">
                     <div class="card-header p-0">
                         <div class="bg-info text-white text-center py-2">
-                            <h3>Easebuzz Payment Gateway Integration in Laravel</h3>
+                            <h3>Easebuzz Payment Gateway Integration </h3>
                         </div>
                     </div>
                     <div class="card-body p-3">
