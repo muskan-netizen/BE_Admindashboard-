@@ -216,9 +216,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          @endif
 
           <!-- Xero Accounting API Credentials -->
-         @if($preference->third_party_accounting == '1'
-
-          && !is_null($accounting)) 
+         @if($preference->third_party_accounting == '1' && !is_null($accounting)) 
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100 h-100"> 
                <div class="d-flex align-items-center justify-content-between mb-2">
