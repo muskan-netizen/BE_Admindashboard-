@@ -216,7 +216,9 @@ $sms_crendential = json_decode($preference->sms_credentials);
          @endif
 
           <!-- Xero Accounting API Credentials -->
-         @if(!is_null($accounting)) 
+         @if($preference->third_party_accounting == '1'
+
+          && !is_null($accounting)) 
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100 h-100"> 
                <div class="d-flex align-items-center justify-content-between mb-2">
@@ -1226,6 +1228,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="form-group d-flex justify-content-between mb-3">
                      <label for="db_audit_logs" class="mr-2 mb-0">{{__('Database Audit Logs')}}<small class="d-block pr-5">{{__('Enable/Disable audit logs for the admin')}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="db_audit_logs" id="address_is_car" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->db_audit_logs == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Third Party Accounting')}}<small class="d-block pr-5">{{__('Enable to use third party accounting.')}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="third_party_accounting" id="third_party_accounting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->third_party_accounting == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>
