@@ -30,7 +30,7 @@ class XeroController extends Controller
     }
     public function xero_callback(Request $request)
     {
-    	// $this->callback();
+    	$this->callback();
         $order_vendors = OrderVendor::has('accounting', '<', 1)->where('order_status_option_id',6)->with('user','products','products.addon','products.addon.option','products.pvariant')->get();
         foreach($order_vendors as $order_vendor)
         {
