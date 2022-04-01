@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc};
+use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -147,7 +147,9 @@ class OrderController extends BaseController
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors','fixedFee'));
+        $accounting = ThirdPartyAccounting::where('status',1)->get();
+        $del_order_count = OrderVendor::has('accounting', '<', 1)->where('order_status_option_id',6)->count();
+        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors','fixedFee','accounting','del_order_count'));
     }
 
     public function postOrderFilter(Request $request, $domain = '')
