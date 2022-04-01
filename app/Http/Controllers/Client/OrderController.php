@@ -373,6 +373,14 @@ class OrderController extends BaseController
         $vendorreport->save();
         return redirect()->back()->with('success', __("Report added successfully"));
     }
+
+
+    public function deleteReport(Request $request, $domain = '', $reportId = 0)
+    {
+        $report = OrderVendorReport::findOrfail($reportId);        
+        $report->delete();
+        return redirect()->back()->with('success', 'Report deleted successfully!');
+    }
     /**
      * Display the order.
      *
@@ -478,7 +486,7 @@ class OrderController extends BaseController
         $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
         // $rr = OrderVendorReport::first();
-        // return $rr;
+         //return $vendor_order_statuses;
         
 
         //pr($order->KYC_document->toArray());

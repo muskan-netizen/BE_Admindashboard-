@@ -254,6 +254,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('customer/edit/{id}', 'Client\UserController@newEdit')->name('customer.new.edit');
         Route::post('customer/import', 'Client\UserController@importCsv')->name('customer.import');
         Route::post('order/updateReport', 'Client\OrderController@uploadReport')->name('order.upload.report');
+        Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
 
         Route::put('newUpdate/edit/{id}', 'Client\UserController@newUpdate')->name('customer.new.update');
         Route::put('profile/{id}', 'Client\UserController@updateProfile')->name('client.profile.update');

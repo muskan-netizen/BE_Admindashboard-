@@ -65,6 +65,21 @@ $timezone = Auth::user()->timezone;
             </div>
         </div>
 
+        <div class="text-sm-left">
+            @if (\Session::has('success'))
+            <div class="alert alert-success">
+                <span>{!! \Session::get('success') !!}</span>
+            </div>
+            @endif
+        </div>
+        <div class="text-sm-left">
+            @if (\Session::has('error'))
+            <div class="alert alert-danger">
+                <span>{!! \Session::get('error') !!}</span>
+            </div>
+            @endif
+        </div>
+
         @if($order->vendors->first())
             @if( ($order->vendors->first()->cancel_request) && ($order->vendors->first()->cancel_request->status == 'Pending') )
             <div class="row">
@@ -466,36 +481,35 @@ $timezone = Auth::user()->timezone;
                     </div>
                     @endif
 
+                    @if(in_array(6,$vendor_order_status_option_ids))
                     <div class="col-lg-6 card-body">
                         <h4 class="header-title mb-3">{{ __("Upload Report") }}</h4>
-                        {{-- <form action="{{route('order.upload.report')}}" method="post" enctype="multipart/form-data">
-                            @csrf
-                            <input type="file" required>
-                            <input type="submit" value="Upload" id="">
-                        </form> --}}
-                        <?php echo $order->reports->image_url;
-                        
-                        ?>
-                        @if($order->reports!=null)
-                        
-                            <a target="_blank" href="{{$order->reports->image_url}}">Download Report</a>
+                                               
+                        @if($order->reports!=null) 
+                        <div class="upload-report py-1">                       
+                            <a target="_blank" class="d-inline-block" href="{{$order->reports->report['original']}}" download><i class="fa fa-download" aria-hidden="true"></i> &nbsp;Download Report</a> 
+                            <a href="{{route('order.report.delete',$order->reports->id)}}"> <span><i class="fa fa-times floar-right" aria-hidden="true"></i></span></a>
+                        </div>
+                            {{-- <form class="" action="{{route('order.upload.report')}}" method="post">
+                                <input type="text">
+                            </form> --}}
                         @endif
                         <form class="" action="{{route('order.upload.report')}}" method="post" enctype="multipart/form-data">
                             @csrf
-                            <input type="text" value="{{$order->id}}" name="order_id">
-                            <input type="text" value="{{$vendor_data->id}}" name="vendor_id">
+                            <input type="hidden" value="{{$order->id}}" name="order_id">
+                            <input type="hidden" value="{{$vendor_data->id}}" name="vendor_id">
                             <div class="card px-2">
-                                <div class="dropify-wrapper">
-                                    <div class="dropify-message">
+                                <div class="dropify-wrapper report-upload-subt w-50">
+                                    {{-- <div class="dropify-message">
                                         <span class="file-icon"></span> 
                                         <p>Drag and drop a file here or click</p>
                                         <p class="dropify-error">Ooops, something wrong appended.</p>
-                                    </div>
+                                    </div> --}}
                                     <div class="dropify-loader"></div>
                                     <div class="dropify-errors-container">
                                         <ul></ul>
                                     </div>
-                                    <input required type="file" accept="" data-plugins="dropify" name="file_name" class="dropify" data-default-file="">
+                                    <input required type="file" accept="image/*,.pdf,.doc" data-plugins="dropify" name="file_name" class="dropify" data-default-file="">
                                     <button type="button" class="dropify-clear">Remove</button>
                                     <div class="dropify-preview">
                                         <span class="dropify-render"></span>
@@ -510,10 +524,11 @@ $timezone = Auth::user()->timezone;
                                         </div>
                                     </div>
                                 </div>                                
-                                <button type="submit" class="btn btn-info waves-effect waves-light mt-2">Submit</button>
+                                <button type="submit" class="w-50 mt-3 btn btn-info waves-effect waves-light mt-2">Submit</button>
                             </div>
                         </form>
                     </div>
+                    @endif
                 </div>
             </div>
 
