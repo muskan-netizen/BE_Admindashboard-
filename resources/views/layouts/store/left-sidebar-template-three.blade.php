@@ -156,14 +156,14 @@ $pages = \App\Models\Page::with([
                                 @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                                 <li class="navigation-tab-item pr-lg-3" role="presentation">
                                     <a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
-                                        <span><img src="{{asset('images/al_custom3.png')}}" alt=""></span>
+                                        <span><img src="{{$client_preference_detail->deliveryicon ? $client_preference_detail->deliveryicon['proxy_url'].'36/26'.$client_preference_detail->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" alt=""></span>
                                         {{$Delivery}}
                                     </a>
                                 </li>
                                 @endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
                                 <li class="navigation-tab-item pr-lg-3 " role="presentation">
                                     <a class="nav-link al_dinein {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
-                                        <span><img src="{{asset('images/al_custom1.png')}}" alt=""></span>
+                                        <span><img src="{{$client_preference_detail->dineinicon ? $client_preference_detail->dineinicon['proxy_url'].'36/26'.$client_preference_detail->dineinicon['image_path'] : asset('images/al_custom1.png')}}" alt=""></span>
                                         {{$Dine_In}}
                                     </a>
                                 </li>
@@ -171,7 +171,7 @@ $pages = \App\Models\Page::with([
                                 <li class="navigation-tab-item  pr-lg-3" role="presentation">
                                     @php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
                                     <a class="nav-link al_takeway {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
-                                        <span><img src="{{asset('images/al_custom2.png')}}" alt=""></span>
+                                        <span><img src="{{$client_preference_detail->takewayicon ? $client_preference_detail->takewayicon['proxy_url'].'36/26'.$client_preference_detail->takewayicon['image_path'] : asset('images/al_custom2.png')}}" alt=""></span>
                                         {{$Takeaway}}
                                     </a>
                                 </li>
@@ -187,14 +187,14 @@ $pages = \App\Models\Page::with([
                                 @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                                 <li class="navigation-tab-item pr-lg-3" role="presentation">
                                     <a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
-                                        <span><img src="{{asset('images/al_custom3.png')}}" alt=""></span>
+                                        <span><img src="{{$client_preference_detail->deliveryicon ? $client_preference_detail->deliveryicon['proxy_url'].'36/26'.$client_preference_detail->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" alt=""></span>
                                         {{$Delivery}}
                                     </a>
                                 </li>
                                 @endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
                                 <li class="navigation-tab-item pr-lg-3 " role="presentation">
                                     <a class="nav-link al_dinein {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
-                                        <span><img src="{{asset('images/al_custom1.png')}}" alt=""></span>
+                                        <span><img src="{{$client_preference_detail->dineinicon ? $client_preference_detail->dineinicon['proxy_url'].'36/26'.$client_preference_detail->dineinicon['image_path'] : asset('images/al_custom1.png')}}" alt=""></span>
                                         {{$Dine_In}}
                                     </a>
                                 </li>
@@ -202,7 +202,7 @@ $pages = \App\Models\Page::with([
                                 <li class="navigation-tab-item  pr-lg-3" role="presentation">
                                     @php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
                                     <a class="nav-link al_takeway {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
-                                        <span><img src="{{asset('images/al_custom2.png')}}" alt=""></span>
+                                        <span><img src="{{$client_preference_detail->takewayicon ? $client_preference_detail->takewayicon['proxy_url'].'36/26'.$client_preference_detail->takewayicon['image_path'] : asset('images/al_custom2.png')}}" alt=""></span>
                                         {{$Takeaway}}
                                     </a>
                                 </li>
@@ -439,9 +439,9 @@ $pages = \App\Models\Page::with([
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
                   <li class="al_main_category" data-aos="zoom-in">
-                     <a href="{{route('categoryDetail', $cate['slug'])}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
-                        @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                        <div class="nav-cate-img" > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
+                     <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
+                        @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='categoryDetail'))
+                        <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
                         @endif
                         {{$cate['name']}}
                      </a>
@@ -489,9 +489,9 @@ $pages = \App\Models\Page::with([
       }
     %>
     <li class="al_main_category" data-aos="zoom-in">
-        <a href="{{route('categoryDetail')}}/<%=category.slug %>" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
-            @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-            <div class="nav-cate-img">
+        <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
+            @if($client_preference_detail->show_icons==1)
+            <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}}">
                 <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="<%=icon_2_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
             </div>
             @endif

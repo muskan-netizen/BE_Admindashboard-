@@ -1,5 +1,5 @@
 {{--@if($listData->isNotEmpty()) --}}
-<div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
+<div class="col-sm-4 col-lg-3 border-right al_white_bg_round p-0">
     <nav class="scrollspy-menu">
         <ul>
             @forelse($listData as $key => $data)
@@ -10,11 +10,11 @@
     </nav>
 </div>
 <div class="col-md-8 col-lg-6">
-    <div class="row ">
+    <div class="row d-flex align-items-center">
         <div class="col-6">
             @if (isset($tags) && !empty($tags))
                 @foreach ($tags as $key => $tag)
-                    <label class="label-switch switch-primary product_tag_filter mr-2">
+                    <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
                         <input type="checkbox"
                             class="switch switch-bootstrap product_tag_filter status"
                             name="tag_id" id="product_tag_filter_{{ $key }}"
