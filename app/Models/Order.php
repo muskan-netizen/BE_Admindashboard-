@@ -96,6 +96,11 @@ class Order extends Model implements Auditable
         return $this->hasOne('App\Models\OrderDriverRating', 'order_id', 'id');
     }
 
+    public function reports()
+    {
+        return $this->hasOne('App\Models\OrderVendorReport', 'order_id', 'id');
+    }
+    
     public function getByNumber($order_number)
     {
         return self::where('order_number',$order_number)->with('user','products','products.addon','products.addon.option','products.pvariant')->first();
