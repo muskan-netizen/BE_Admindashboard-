@@ -110,6 +110,8 @@ class VendorController extends BaseController
     public function index(){
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
+       
+      //  pr($csvVendors);
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->orderBy('id', 'desc');

@@ -1971,6 +1971,16 @@ $(document).ready(function () {
                 return false;
             }
         }
+        else if (payment_option_id == 25) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //Easebuzz payment gateway 
+                payWithEasebuss(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
+        }
 
 
     });
