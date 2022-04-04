@@ -16,7 +16,7 @@
 <!-- Button trigger modal -->
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
-	<div class="container mb-3 shimmer_effect">
+	<div class="container mb-3 mt-3 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">
 				<div class="cardbanner loading"></div>
@@ -361,7 +361,7 @@
 								<h6 class="card_title mb-1 ellips"><%=product.title %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
 								<% if(product.averageRating > 0){%> <span class="rating-number"><%=product.averageRating %></span>
 									<%}%> @endif @endif </div>
-							<p>
+							<p class="al_productText ellips">
 								<%=product.vendor_name %>
 							</p>
 							<p class="border-bottom pb-1">

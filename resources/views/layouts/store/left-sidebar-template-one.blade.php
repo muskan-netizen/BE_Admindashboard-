@@ -150,7 +150,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                         </div>
                         <div class="al_count_tabs my-1">
                             @if($mod_count > 1)
-                            <ul class="nav nav-tabs navigation-tab nav-material tab-icons mr-md-3 vendor_mods"
+                            <ul class="nav nav-tabs navigation-tab nav-material tab-icons vendor_mods"
                                 id="top-tab" role="tablist">
                                 @if($client_preference_detail->delivery_check==1) @php
                                 $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ?

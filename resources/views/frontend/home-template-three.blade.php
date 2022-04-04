@@ -22,7 +22,7 @@
 				<h2 class="h2-heading loading mb-3"></h2> </div>
 		</div>
         <div class="row">
-            <div class="col-1 grid-row">
+            <div class="col-1 grid-row px-sm-3 p-0">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -80,7 +80,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-1 grid-row">
+            <div class="col-1 grid-row px-sm-3 p-0">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -93,7 +93,7 @@
             </div>
         </div>
 		<div class="row">
-            <div class="col-1 grid-row">
+            <div class="col-1 grid-row px-sm-3 p-0">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -151,7 +151,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-1 grid-row">
+            <div class="col-1 grid-row px-sm-3 p-0">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -164,7 +164,7 @@
             </div>
         </div>
 		<div class="row">
-            <div class="col-1 grid-row">
+            <div class="col-1 grid-row px-sm-3 p-0">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -222,7 +222,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-1 grid-row">
+            <div class="col-1 grid-row px-sm-3 p-0">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
