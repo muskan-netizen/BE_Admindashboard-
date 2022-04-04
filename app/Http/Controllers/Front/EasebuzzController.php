@@ -172,14 +172,16 @@ class EasebuzzController  extends FrontController
     public function easybuzzNotify(Request $request, $domain = '')
     {
       
-        Log::info($request->getContent());
-        Log::info('json:=');
-        Log::info(json_encode($request->getContent()));
+        // Log::info($request->getContent());
+        // Log::info('json:=');
+        // Log::info(json_encode($request->getContent()));
        
         try{
             $easebuzzObj = new Easebuzz($MERCHANT_KEY = null, $this->SALT, $ENV = null);
             $result = $easebuzzObj->easebuzzResponse($request->all());
             $response = json_decode($result);
+            Log::info('json:=');
+            Log::info( $response);
             $status = $response->status;
             if ($status == 1){  
                 // udf1 for payment_form
@@ -189,6 +191,9 @@ class EasebuzzController  extends FrontController
                 
                 $data = $response->data;
                 $order_number = $data->txnid;
+                Log::info('order_number:=');
+                Log::info(  $order_number);
+
                 $payment_form = $request->udf1;
                 $cart_id = $data->udf3;
                 $status = $data->status;
