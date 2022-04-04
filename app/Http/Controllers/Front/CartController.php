@@ -14,7 +14,7 @@ use App\Http\Traits\{ApiResponser,CartManager};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption};
 use Log;
 class CartController extends FrontController
 {
@@ -1799,11 +1799,26 @@ class CartController extends FrontController
                 'schedule_dropoff' => $request->schedule_dropoff??null,
                 // 'scheduled_slot' => $request->schedule_time??null
                 ]);
-                 CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
+                CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
 
                 DB::commit();
-                if ($user) {            
-                    $checkpreference = ClientPreference::select('verify_email','verify_phone')->first();
+                if ($user) { 
+                    $checkpreference = ClientPreference::select('verify_email','verify_phone','third_party_accounting')->first();
+                    $age_restriction = CartProduct::whereHas('product',function($q){
+                        $q->where('age_restriction',1);
+                    })->count();     
+                    $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+                    if($checkpreference->third_party_accounting == 1 && $passbase_check && $age_restriction)
+                    {
+                        if(is_null($user->passbase_verification)){
+                            return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alochol/Tobacco contents. It is mandatory to provide the verification documents to proceed']); 
+                        }elseif($user->passbase_verification->status == 'pending'){
+                            return response()->json(['status'=>'passbase_submitted', 'message'=>'We have recieved your request for verification. Check back soon and order OR remove Alcohol/Tobocco items']);
+                        }elseif($user->passbase_verification->status == 'approved'){
+                            return response()->json(['status'=>'passbase_rejected', 'message'=>'According to our terms and conditions and Company\'s Policies, your verification documents were not found upto the mark .Please upload them again and enjoy shoppping.' ]);
+                        }
+                    }
+
                     if($checkpreference->verify_email == 1 || $checkpreference->verify_phone == 1)
                     {             
                         if($checkpreference->verify_email == 1)
