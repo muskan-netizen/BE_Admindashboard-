@@ -26,18 +26,9 @@ $preference = $client_preference_detail;
                                 <div class="homepage-address text-left">
                                     <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                 </div>
-
                             </div>
                         @endif
                     @endif
-                </div>
-            </div>
-
-            <div class="col d-none text-right pr-0">
-                <div class="icon-nav">
-                    <ul>
-                        <li class="d-inline-block d-lg-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
-                    </ul>
                 </div>
             </div>
 
@@ -157,15 +148,15 @@ $preference = $client_preference_detail;
     </div>
 
     <div class="mobile-menu main-menu position-fixed d-block d-sm-none">
-        <div class="menu-right_">
+        <div class="menu-right_ oneTemplateMobile">
             <ul class="header-dropdown icon-nav d-flex justify-content-around">
-                <li class="onhover-div mobile-setting">
+                <li class="onhover-div mobile-setting al_iconsMb">
                     <div data-toggle="modal" data-target="#setting_modal"><i class="ti-settings"></i></div>
                 </li>
 
-                <li class="onhover-dropdown_al mobile-account  d-inline d-sm-none">
+                <li class="onhover-dropdown_al mobile-account  d-inline d-sm-none al_iconsMb">
                     <i class="fa fa-user" aria-hidden="true"></i>
-                    {{__('My Account')}}
+
                     <ul class="onhover-show-div">
                         @if(Auth::user())
                             @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
@@ -190,13 +181,13 @@ $preference = $client_preference_detail;
                     </ul>
                 </li>
                 @if($client_preference_detail->show_wishlist == 1)
-                <li class="mobile-wishlist d-inline d-sm-none">
+                <li class="mobile-wishlist d-inline d-sm-none al_iconsMb">
                     <a href="{{route('user.wishlists')}}">
                         <i class="fa fa-heart" aria-hidden="true"></i>
                     </a>
                 </li>
                 @endif
-                <li class="onhover-div al_mobile-search">
+                <li class="onhover-div al_mobile-search al_iconsMb">
                     <a href="javascript:void(0);" id="mobile_search_box_btn" onClick="$('.search-overlay').css('display','block');"><i class="ti-search"></i></a>
                     <div id="search-overlay" class="search-overlay">
                         <div> <span class="closebtn" onclick="closeSearch()" title="Close Overlay">×</span>
@@ -213,7 +204,7 @@ $preference = $client_preference_detail;
                 </li>
 
                 @if($client_preference_detail->cart_enable == 1)
-                <li class="onhover-div mobile-cart">
+                <li class="onhover-div mobile-cart al_iconsMb">
                     <a href="{{route('showCart')}}" style="position: relative">
                         <i class="ti-shopping-cart"></i>
                         <span class="cart_qty_cls" style="display:none"></span>
