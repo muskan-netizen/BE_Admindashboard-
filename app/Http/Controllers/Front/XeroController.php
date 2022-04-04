@@ -31,7 +31,7 @@ class XeroController extends Controller
     public function xero_callback(Request $request)
     {
     	$this->callback();
-        $order_vendors = OrderVendor::has('accounting', '<', 1)->where('order_status_option_id',6)->with('user','products','products.addon','products.addon.option','products.pvariant')->get();
+        $order_vendors = OrderVendor::has('accounting', '<', 1)->where('order_status_option_id',6)->with('user','products','products.addon','products.addon.option','products.pvariant')->take(10)->get();
         foreach($order_vendors as $order_vendor)
         {
             $invoice = $this->createInvoice($order_vendor);

@@ -1313,6 +1313,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     var get_category_kyc_document = "{{ url('category_kycDocument') }}";
     var post_category_kyc_document = "{{ route('updateCartCategoryKyc') }}";
+
+    var passbase_page = "{{route('passbase.page')}}";
     var product_order_form_element_data = [];
 
     if(!latitude){
