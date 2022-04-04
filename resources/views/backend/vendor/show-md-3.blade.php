@@ -112,6 +112,13 @@
                     </div>
                     </div>
 
+                    <div class="col-md-12 mb-2">
+                        <div class="form-group" id="orders_per_slotInput">
+                            {!! Form::label('title', 'Maximum Orders Per Slot',['class' => 'control-label']) !!}
+                            <input class="form-control" onkeypress="return isNumberKey(event)" name="orders_per_slot" type="text" value="{{$vendor->orders_per_slot}}">
+                        </div>
+                    </div>
+
                     @endif
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
