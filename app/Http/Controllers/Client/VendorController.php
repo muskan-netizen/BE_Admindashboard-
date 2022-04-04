@@ -111,7 +111,7 @@ class VendorController extends BaseController
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
        
-      //  pr($csvVendors);
+       // pr($csvVendors->toArray());
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->orderBy('id', 'desc');
@@ -943,6 +943,11 @@ class VendorController extends BaseController
         $vendor->fixed_fee = ($request->has('fixed_fee') && $request->fixed_fee == 'on') ? 1 : 0;
         $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
         $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
+
+        // Set order limit - By Ovi
+        if($request->has('orders_per_slot')){
+            $vendor->orders_per_slot   = $request->orders_per_slot;
+        }
 
         if ($request->has('order_min_amount')) {
             $vendor->order_min_amount   = $request->order_min_amount;

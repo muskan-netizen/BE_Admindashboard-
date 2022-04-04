@@ -201,7 +201,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/easebuzz-gateway', 'Front\EasebuzzController@easebuzz_gateway')->name('easebuzz-gateway');
     Route::post('payment/easebuzz/request', 'Front\EasebuzzController@order')->name('easebuzz.order');
     Route::match(['get','post'],'easebuzz_respont', 'Front\EasebuzzController@easebuzz_respont')->name('easebuzz_respont');
-	Route::post('payment/easebuzz/notify', 'Front\EasebuzzController@easybuzzNotify')->name('payment.easebuzz.easybuzzNotify');
+	Route::any('payment/easebuzz/notify', 'Front\EasebuzzController@easybuzzNotify')->name('payment.easebuzz.easybuzzNotify');
 
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
@@ -293,6 +293,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('stripe/make', 'Front\PaymentController@makePayment')->name('stripe.makePayment');
 	Route::post('inquiryMode/store', 'Front\ProductInquiryController@store')->name('inquiryMode.store');
 	Route::get('viewcart', 'Front\CartController@showCart')->name('showCart');
+	Route::get('checkSlotOrders', 'Front\CartController@checkSlotOrders')->name('checkSlotOrders'); //Added by Ovi
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
 
