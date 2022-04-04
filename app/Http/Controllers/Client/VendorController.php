@@ -944,6 +944,11 @@ class VendorController extends BaseController
         $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
         $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
 
+        // Set order limit - By Ovi
+        if($request->has('orders_per_slot')){
+            $vendor->orders_per_slot   = $request->orders_per_slot;
+        }
+
         if ($request->has('order_min_amount')) {
             $vendor->order_min_amount   = $request->order_min_amount;
         }

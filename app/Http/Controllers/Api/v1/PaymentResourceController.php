@@ -39,7 +39,7 @@ class PaymentResourceController extends BaseController
         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
         $testmode = (isset($stripe_creds->test_mode) && ($stripe_creds->test_mode == '1')) ? true : false;
 
-        $primaryCurrency = ClientCurrency::where('id', '=', $request->header('currency'))->first();
+        $primaryCurrency = ClientCurrency::where('currency_id', '=', $request->header('currency'))->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
 
         $user = Auth::user();
