@@ -168,6 +168,9 @@ class EasebuzzController  extends FrontController
 
     public function easybuzzNotify(Request $request, $domain = '')
     {
+        Log::info($request->all());
+        http_response_code(200);
+        exit();
         pr( $request->all());
         try{
             $response = $request->has('data') ? $request->data : [];

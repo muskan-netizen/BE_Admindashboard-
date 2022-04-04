@@ -80,7 +80,7 @@ class OrderController extends FrontController
             },'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating'
+            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating','reports'
         ])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', 6);
