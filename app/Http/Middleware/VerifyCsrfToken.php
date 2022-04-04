@@ -23,6 +23,8 @@ class VerifyCsrfToken extends Middleware
         'webhook/dunzo',
         'webhook/ahoy',
         'easebuzz_respont',
+        'payment/easebuzz/notify',
+        
         'ccavenue/success',
         'payment/cashfree/notify',
 

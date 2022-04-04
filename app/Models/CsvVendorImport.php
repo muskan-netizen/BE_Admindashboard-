@@ -11,6 +11,7 @@ class CsvVendorImport extends Model
     use HasFactory;
 
     protected $appends = ['storage_url'];
+    
     public function getStorageUrlAttribute($value){
         return Storage::url('csv_vendors/'.$this->name);
     }
