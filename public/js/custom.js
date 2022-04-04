@@ -1140,7 +1140,6 @@ $(document).ready(function () {
 
     });
     $(document).on("click", "#order_placed_btn", function () {
-
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
@@ -1240,11 +1239,28 @@ $(document).ready(function () {
                 dataType: 'json',
                 url: update_cart_schedule,
                 data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, address: address },
-                success: function (response) {
-                    if (response.status == "Pending") {
-                        window.location.replace(verifyaccounturl);
-                    }
-                    if (response.status == "Success") {
+                success: function (response) { 
+                    if(response.status == "passbase_submitted"){
+                        Swal.fire({
+                            text: response.message,
+                            icon: "error",
+                            button: "OK",
+                        });
+                        return false;
+                    }else if(response.status == "passbase_rejected" || response.status == "passbase_pending"){
+                        Swal.fire({  
+                            text: response.message,    
+                            showCancelButton: true,  
+                            confirmButtonText: `Ok`,    
+                            }).then((result) => {  
+                                if (result.value) {
+                                    window.location.replace(passbase_page);
+                                }
+                            });
+                        return false;
+                    }else if (response.status == "Pending") {
+                        window.location.replace(verifyaccounturl); 
+                    }else if (response.status == "Success") {
                         $.ajax({             
                             data: {},
                             type: "POST",
