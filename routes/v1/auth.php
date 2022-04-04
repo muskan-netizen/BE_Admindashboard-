@@ -60,6 +60,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('primary/address/{id}', 'Api\v1\AddressController@postUpdatePrimaryAddress');
         Route::post('update/order/status', 'Api\v1\OrderController@postVendorOrderStatusUpdate');
         Route::get('payment/options/{page}', 'Api\v1\PaymentOptionController@getPaymentOptions');
+        Route::get('mystore/vendors', 'Api\v1\StoreController@getMyStoreVendors');
+        Route::get('mystore/vendor/dashboard/{id}', 'Api\v1\StoreController@getMyStoreVendorDashboard');
+        Route::get('mystore/vendor/orders/{id}', 'Api\v1\StoreController@getMyStoreVendorOrders');
         Route::post('mystore/vendor/category', 'Api\v1\StoreController@VendorCategory');
         Route::post('mystore/product/add', 'Api\v1\StoreController@addProduct');
         Route::post('mystore/product/detail', 'Api\v1\StoreController@productDetail'); 

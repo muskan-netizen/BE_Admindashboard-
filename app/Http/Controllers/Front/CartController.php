@@ -117,6 +117,41 @@ class CartController extends FrontController
     }
 
 
+     // Added By Ovi
+    // Check if the order slots is full
+    public function checkSlotOrders(Request $request)
+    {
+        // Get Logged in user
+       $user = Auth::user();
+       $schedule_datetime = $request->schedule_datetime;
+       $schedule_slot     = $request->schedule_slot;
+       $vendor_id         = $request->vendor_id;
+
+        // Get current vendor
+        $vendor = Vendor::find($vendor_id);
+        $orders_per_slot = $vendor->orders_per_slot;
+        $orderCount = 0;
+        // Get Vendor orders
+        $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
+        foreach($orderVendors as $orderVendor){
+            // Get orders of current vendor where scheduled_slot and schedule_pickup_datetime is same as received from frontend.
+            $order = Order::where('id', $orderVendor->order_id)->where('scheduled_slot', $schedule_slot)->first();
+            if($order){
+                $schedule_pickup = Carbon::parse($order->scheduled_date_time);
+                $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $user->timezone, 'Y-m-d');
+                if($schedule_pickup_final == $schedule_datetime){
+                    // Increment orderCount and return this count to front end for validation
+                    $orderCount++;
+                }
+            }
+        }
+     
+        // Return JSON Response
+        return response()->json([
+            'orderCount' => $orderCount,
+            'orders_per_slot' => $orders_per_slot,
+        ], 200);
+    }
 
 
 
@@ -1762,7 +1797,7 @@ class CartController extends FrontController
                 'comment_for_vendor' => $request->comment_for_vendor??null,
                 'schedule_pickup' => $request->schedule_pickup??null,
                 'schedule_dropoff' => $request->schedule_dropoff??null,
-                'scheduled_slot' => $request->schedule_time??null
+                // 'scheduled_slot' => $request->schedule_time??null
                 ]);
                  CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
 

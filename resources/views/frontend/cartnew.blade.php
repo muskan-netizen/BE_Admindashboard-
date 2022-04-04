@@ -604,7 +604,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                             <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled_date_time != '')?cart_details.scheduled_date_time : cart_details.delay_date ) %>"  min="<%= cart_details.delay_date %>" >
                             <input type="hidden" id="checkSlot" value="1">
-                            <select name="slots" id="slot" class="form-control">
+                            <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
                                 <option value="">{{__("Select Slot")}} </option>
                                 <% _.each(cart_details.slots, function(slot, sl){%>
                                 <option value="<%= slot.value  %>" <%= slot.value == cart_details.scheduled.slot ? 'selected' : '' %> ><%= slot.name %></option>
@@ -1846,9 +1846,48 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             return false;
         return true;
     }
+
+    // Added by Ovi
+    // Check Slot Availability
+    function checkSlotOrders()
+    {
+        var url = "{{route('checkSlotOrders')}}"
+        var schedule_datetime = $('#schedule_datetime').val();
+        var schedule_slot = $('#slot').val();
+        var vendor_id = $('#vendor_id').val();
+        $.ajax({
+            type: "GET",
+            data: {
+                "schedule_datetime": schedule_datetime,
+                "schedule_slot"    : schedule_slot,
+                "vendor_id"        : vendor_id,
+            },
+            url: url,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(output) {
+                // Check if orderCount is greater equal to orders_per_slot
+                if(output.orderCount >= output.orders_per_slot){
+                    success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
+                    // Disable the place order button
+                    $('#order_placed_btn').attr("disabled", true);
+                }else{
+                    // Enable the place order button
+                    $('#order_placed_btn').attr("disabled", false);
+                }
+            },
+            error: function(output) {
+                // console.log(output);
+            },
+        });
+    }
+
+
     function getExtension(filename) {
         return filename.split('.').pop().toLowerCase();
     }
+
     function readURL(input, previewId) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
@@ -1871,6 +1910,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             reader.readAsDataURL(input.files[0]);
         }
     }
+
     $(document).on('change', '[id^=input_file_logo_]', function(event){
         var rel = $(this).data('rel');
         // $('#plus_icon_'+rel).hide();
