@@ -180,8 +180,11 @@ class EasebuzzController  extends FrontController
             $easebuzzObj = new Easebuzz($MERCHANT_KEY = null, $this->SALT, $ENV = null);
             $result = $easebuzzObj->easebuzzResponse($request->all());
             $response = json_decode($result);
-            Log::info('json:=');
-            Log::info( $response);
+           
+         Log::info('result from easebuzz:=');
+        Log::info($result);
+            // Log::info('json:=');
+             Log::info( $response->status);
             $status = $response->status;
             if ($status == 1){  
                 // udf1 for payment_form
