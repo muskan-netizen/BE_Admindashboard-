@@ -14,7 +14,7 @@ class AddFixedFeeFiledToOrdersTable extends Migration
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->decimal('fixed_fee_amount',16,2)->defualt(0.00);
+            $table->decimal('fixed_fee_amount',16,2)->default(0.00);
         });
     }
 
