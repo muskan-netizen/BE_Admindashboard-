@@ -127,6 +127,9 @@ span.icon-payment-option_s.aldelivery svg {
 .txtarea.form-control {
     height: auto;
     }
+    .report-upload-subt{
+        border:none !important;
+    }
 body .modal-body{padding-bottom: 0;}
 body p:empty{display: none;}
 body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}.faq_section .option_section:nth-child(even){background-color:#f3f7f9;border-radius:15px;padding-top:15px;margin-bottom:15px}body button.update_order_status{border-radius:30px;padding:3px 12px;border:none}body #update-single-status{text-align:right}.al_custom_control label.custom-control-label{height:100px;overflow:hidden;transition:.5s}.al_custom_control label.custom-control-label img{position:relative;transition:1.5s ease-in-out;vertical-align:top;top:0}.al_custom_control label.custom-control-label:hover img{top:-210px}

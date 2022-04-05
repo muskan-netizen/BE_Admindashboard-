@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFixedFeeFiledToOrdersTable extends Migration
+class AddThirdPartyAccountingToClientPreferenceTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddFixedFeeFiledToOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->decimal('fixed_fee_amount',16,2)->default(0.00);
+        Schema::table('client_preferences', function (Blueprint $table) {
+            $table->tinyInteger('third_party_accounting')->nullable()->default(0)->comment('0-No, 1-Yes');
         });
     }
 
@@ -25,8 +25,8 @@ class AddFixedFeeFiledToOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('fixed_fee_amount');
+        Schema::table('client_preferences', function (Blueprint $table) {
+            //
         });
     }
 }

@@ -80,7 +80,7 @@ class OrderController extends FrontController
             },'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
-            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating'
+            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address','driver_rating','reports'
         ])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', 6);
@@ -1029,7 +1029,7 @@ class OrderController extends FrontController
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20,21,24]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree
+            $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20,21,24,25]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 
                 //Send Email to customer

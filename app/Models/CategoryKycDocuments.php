@@ -24,5 +24,9 @@ class CategoryKycDocuments extends Model
         return  $this->hasMany('App\Models\CategoryKycDocumentMapping', "category_kyc_document_id" ,'id');
       
     }
+    public function category_doc(){
+        return  $this->hasMany('App\Models\CaregoryKycDoc', "category_kyc_document_id" ,'id');
+      
+    }
    
 }

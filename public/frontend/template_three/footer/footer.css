@@ -46,9 +46,16 @@ ul{margin: 0;}
 .tap-top.top-cls i.fa {
     color: #fff;
 }
+.al_QRcode.col-12 a{display: block;}
 .theme-layout-version {
     opacity: 0;
 }
 .row .col, .row div[class*=col-] {
     position: relative;
+}
+.footer-theme .sub-title .contact-list li i{
+top: 4px !important;font-size:24px}.footer-theme .sub-title .contact-list li span{padding:0}
+.footer-theme .sub-title li .al_QRcode  a{display: block;}
+ul.social-links{
+    width: max-content;
 }

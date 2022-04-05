@@ -703,8 +703,10 @@
                                                                                                 @endforeach
                                                                                             </ul>
                                                                                         </div>
-                                                                                        @if($order->vendors[0]->dispatch_traking_url!=null && $order->vendors[0]->dispatch_traking_url!="")
+                                                                                        
                                                                                         <div class="col-6 col-sm-6">
+                                                                                        @if($order->vendors[0]->dispatch_traking_url!=null && $order->vendors[0]->dispatch_traking_url!="")
+                                                                                        
                                                                                             <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
                                                                                                 @php
                                                                                                 $driverrating = $order->driver_rating->rating ?? 0;
@@ -727,9 +729,17 @@
                                                                                                             class="fa fa-star{{ $driverrating >= 5 ? '' : '-o' }}"></i>
                                                                                                     </label>
                                                                                                 </li>
+                                                                                                
                                                                                             </ul>
-                                                                                        </div>
+                                                                                        
                                                                                         @endif
+
+                                                                                        @if($order->reports!=null)
+                                                                                        <div class="order-past-report text-center">                                                                                                                    
+                                                                                            <a target="_blank" href="{{$order->reports->report['original']}}" download><i class="fa fa-download" aria-hidden="true"></i> Report</a>
+                                                                                        </div>
+                                                                                    @endif
+                                                                                    </div>
 
                                                                                     </div>
                                                                                     <div class="col-md-5 mt-md-0 mt-sm-2">
