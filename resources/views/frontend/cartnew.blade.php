@@ -1318,6 +1318,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     var passbase_page = "{{route('passbase.page')}}";
     var product_order_form_element_data = [];
+    var error_Slot_is_required = "{{__('Slot is required')}}";
+    var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
+    var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
 
     if(!latitude){
         @if(!empty($client_preference_detail->Default_latitude))

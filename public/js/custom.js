@@ -1186,10 +1186,10 @@ $(document).ready(function () {
             }
 
             if (schedule_dt == '') {
-                success_error_alert('error', 'Schedule date time is required', ".cart_response");
+                success_error_alert('error', error_Schedule_date_is_required, ".cart_response");
                 return false;
             } else if (schedule_dt < now) {
-                success_error_alert('error', 'Invalid schedule date time', ".cart_response");
+                success_error_alert('error', error_Invalid_Schedule_date , ".cart_response");
                 return false;
             }
         } else {
@@ -1197,7 +1197,7 @@ $(document).ready(function () {
         }
         if (checkSlot == '1') {
             if (!slot) {
-                success_error_alert('error', 'Slot is required.', ".cart_response");
+                success_error_alert('error', error_Slot_is_required, ".cart_response");
                 return false;
             }
         }
