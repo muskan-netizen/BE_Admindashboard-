@@ -42,6 +42,7 @@ class DatabaseSeeder extends Seeder
               NotificationTemplateSeeder::class,
               WebStylingSeeder::class,
               SmsProviderSeeder::class,
+              NomenclatureTableSeeder::class,
           ]);
         // $this->call(UsersTableSeeder::class);
        // $this->call(AppStylingOptionsTableSeeder::class);

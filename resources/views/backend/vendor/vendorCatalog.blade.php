@@ -306,7 +306,9 @@
                                                                 <td> {{ $product->variant->first() ? decimal_format($product->variant->first()->price) : 0 }}
                                                                 </td>
                                                             @endif
-                                                            <td> {{ $product->is_live == 1 ? 'Published' : 'Draft' }}
+                                                            <td> 
+                                                                {{ $live_status[$product->is_live]  }}
+                                                                
                                                             </td>
                                                             @if ($client_preference_detail->business_type != 'taxi')
                                                                 <td> {{ $product->is_new == 0 ? __('No') : __('Yes') }}</td>

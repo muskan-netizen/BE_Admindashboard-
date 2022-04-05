@@ -512,6 +512,7 @@ class VendorController extends FrontController
                     $q2->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 }
             ])->where('is_live', 1)->where('url_slug', $request->slug)->first();
+            // dd($AddonData);
         if(!empty($AddonData)){
             if($AddonData->variant->first()->media->isNotEmpty()){
                 $image_fit = $AddonData->variant->first()->media->first()->pimage->image->path['image_fit'];
