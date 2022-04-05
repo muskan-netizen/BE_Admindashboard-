@@ -53,6 +53,7 @@
             </div>
         </div>
         <div class="row">
+           
             @foreach($payOption as $key => $opt)
             <div class="col-6 col-md-3 col-xl-2 mb-3">
 
