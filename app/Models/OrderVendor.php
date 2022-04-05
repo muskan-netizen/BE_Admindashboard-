@@ -24,6 +24,9 @@ class OrderVendor extends Model{
 	public function payment(){
 	    return $this->hasOne('App\Models\Payment' , 'order_id', 'order_id'); 
 	}
+	public function accounting(){
+	    return $this->hasOne('App\Models\OrderVendorAccounting' , 'order_vendor_id', 'id'); 
+	}
 	public function coupon(){
 	    return $this->hasOne('App\Models\Promocode' , 'id', 'coupon_id'); 
 	}

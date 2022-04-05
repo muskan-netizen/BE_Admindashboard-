@@ -72,7 +72,7 @@
         "spatie/laravel-webhook-server": "^2.0",
         "square/square": "16.0.0.20211117",
         "staudenmeir/laravel-adjacency-list": "^1.0",
-        "stripe/stripe-php": "^7.100",
+        "stripe/stripe-php": "^7.100",       
         "twilio/sdk": "^6.13",
         "webpatser/laravel-uuid": "^4.0",
         "xeroapi/xero-php-oauth2": "^2.12",

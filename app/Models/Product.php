@@ -26,7 +26,7 @@ class Product extends Model implements Auditable{
     }
 
     public function vendor(){
-       return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges');
+       return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation');
     }
 
     public function related(){
@@ -268,13 +268,12 @@ class Product extends Model implements Auditable{
         });
 
     }
-
+    
 
 
 
     public function productTranslation(){
-   
-        return $this->hasMany('App\Models\ProductTranslation');
+      return $this->hasMany('App\Models\ProductTranslation');
     }
 
 

@@ -259,7 +259,7 @@ class UserhomeController extends FrontController
         }
     }
     public function index(Request $request, $domain='')
-    {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+    {
         try {
             $home = array();
             $vendor_ids = array();
@@ -586,7 +586,7 @@ class UserhomeController extends FrontController
         $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
         $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
         foreach ($new_product_details as  $new_product_detail) {
-            $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
+            $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
             $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $new_products[] = array(
@@ -599,12 +599,12 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'vendor' => $new_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($new_product_detail->variant->first()->price??0 * $multiply)),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($new_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
         }
         foreach ($feature_product_details as  $feature_product_detail) {
-            $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
+            $multiply = $feature_product_detail->variant->first()->multiplier ?? 1;
             $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
             $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $feature_products[] = array(
@@ -617,12 +617,12 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $feature_product_detail->inquiry_only,
                 'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
                 'vendor' => $feature_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($feature_product_detail->variant->first()->price * $multiply)),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($feature_product_detail->variant->first()->price * $multiply,',')),
                 'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
             );
         }
         foreach ($on_sale_product_details as  $on_sale_product_detail) {
-            $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
+            $multiply = $on_sale_product_detail->variant->first()->multiplier ?? 1;
             $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
             $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $on_sale_products[] = array(
@@ -635,7 +635,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $on_sale_product_detail->inquiry_only,
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'vendor' => $on_sale_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($on_sale_product_detail->variant->first()->price??0 * $multiply)),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
@@ -1186,7 +1186,7 @@ class UserhomeController extends FrontController
         if (isset($slug) && $slug == 'on_sale'){
             $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
             foreach ($on_sale_product_details as  $on_sale_product_detail) {
-                $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
+                $multiply = $on_sale_product_detail->variant->first()->multiplier ?? 1;
                 $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
                 $image_url = $on_sale_product_detail->media->first() && !is_null($on_sale_product_detail->media->first()->image)? $on_sale_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $on_sale_products[] = array(
@@ -1199,7 +1199,7 @@ class UserhomeController extends FrontController
                     'inquiry_only' => $on_sale_product_detail->inquiry_only,
                     'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                     'vendor' => $on_sale_product_detail->vendor,
-                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format($on_sale_product_detail->variant->first()->price??0 * $multiply)),
+                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format($on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
                     'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
                 );
             }
@@ -1209,7 +1209,7 @@ class UserhomeController extends FrontController
         if (isset($slug) && $slug == 'new_products'){
             $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
             foreach ($new_product_details as  $new_product_detail) {
-            $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
+            $multiply = $new_product_detail->variant->first()->multiplier?? 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
             $image_url = $new_product_detail->media->first() && !is_null($new_product_detail->media->first()->image) ? $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $new_products[] = array(
@@ -1222,7 +1222,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'vendor' => $new_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($new_product_detail->variant->first()->price??0 * $multiply, 2)),
+                'price' => Session::get('currencySymbol') . ' ' . (decimal_format($new_product_detail->variant->first()->price??0 * $multiply, ',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
             }
@@ -1234,7 +1234,7 @@ class UserhomeController extends FrontController
             $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
 
             foreach ($feature_product_details as  $feature_product_detail) {
-                $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
+                $multiply = $feature_product_detail->variant->first()->multiplier ?? 1;
                 $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
                 $image_url = $feature_product_detail->media->first() && !is_null($feature_product_detail->media->first()->image) ? $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $feature_products[] = array(
@@ -1247,7 +1247,7 @@ class UserhomeController extends FrontController
                     'inquiry_only' => $feature_product_detail->inquiry_only,
                     'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
                     'vendor' => $feature_product_detail->vendor,
-                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format($feature_product_detail->variant->first()->price * $multiply, 2)),
+                    'price' => Session::get('currencySymbol') . ' ' . (decimal_format($feature_product_detail->variant->first()->price * $multiply, ',')),
                     'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
                 );
             }

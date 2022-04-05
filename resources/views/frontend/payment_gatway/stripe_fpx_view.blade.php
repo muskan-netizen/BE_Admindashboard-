@@ -20,7 +20,7 @@
           }
       }
       .payment-top-haeder{
-          background: {{getClientPreferenceDetail()->web_color}}; 
+          background: #ffffff;
       }
       button {
           background-color: {{getClientPreferenceDetail()->web_color}} ;
@@ -32,7 +32,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center">
-                    <img src="{{ getClientDetail()->logo_image_url }}" alt="" height="50"> 
+                    <img src="{{ getClientDetail()->logo_image_url }}" alt="" height="100"> 
                 </div>
             </div>
         </div>

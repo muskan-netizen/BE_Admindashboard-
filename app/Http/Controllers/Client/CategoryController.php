@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation};
+use App\Models\{Client, ClientPreference, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation};
 use GuzzleHttp\Client as GCLIENT;
 
 class CategoryController extends BaseController
@@ -374,6 +374,14 @@ class CategoryController extends BaseController
         array_push($array_of_ids, $id);
         Category::destroy($array_of_ids);
         Product::whereIn('category_id', $array_of_ids)->delete();
+        
+        // category kyc document delete 
+        CategoryKycDocumentMapping::where('category_id',$id)->delete();
+        // CategoryKycDocuments::whereIn(['id', $category_kyc_document_ids])->delete();
+        // CategoryKycDocumentTranslation::whereIn(['category_kyc_document_id',  $category_kyc_document_ids])->delete();
+        // CategoryKycDocumentMapping::whereIn('category_kyc_document_id',$category_kyc_document_ids)->delete();
+        //end kyc document
+
         CategoryHistory::insert([
             'category_id' => $id,
             'action' => 'deleted',
@@ -381,6 +389,7 @@ class CategoryController extends BaseController
             'updater_role' => 'Admin',
             'client_code' => $user->code,
         ]);
+
         return redirect()->back()->with('success', 'Category deleted successfully!');
     }
 
@@ -428,4 +437,5 @@ class CategoryController extends BaseController
         else
             return false;
     }
+    
 }

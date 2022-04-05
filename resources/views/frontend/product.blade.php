@@ -278,7 +278,7 @@
 
                                         <div id="addon-table">
                                             @foreach($product->addOn as $row => $addon)
-                                                <div class="addon-product mb-3">
+                                                <div class="addon-product">
                                                     <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
                                                         @php
                                                             $min_select = '';
@@ -610,8 +610,8 @@
             </div>
         </div>
     </div>
-    <div class="container mt-3 mb-4">
-        <div class="product-4 product-m no-arrow related-products">
+    <div class="container pb-4">
+        <div class="product-4 product-m no-arrow related-products pb-2">
             @forelse($product->related_products as $related_product)
             <div>
 				<a class="common-product-box scale-effect text-center"

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\{Client, Category, Product, ClientPreference, UserDevice, UserLoyaltyPoint, Wallet, VendorSavedPaymentMethods, Nomenclature};
+use App\Models\{Client, Category, Product, ClientPreference, UserDevice, UserLoyaltyPoint, Wallet, VendorSavedPaymentMethods, Nomenclature,NomenclatureTranslation};
 use Illuminate\Support\Facades\Storage;
 use Session;
 
@@ -51,8 +51,9 @@ class BaseController extends Controller
                             $this->htmlData .= '<div class="dd-handle dd3-handle"></div>';
                         }
                         $icon = $node['icon']['proxy_url'] . '30/30' . $node['icon']['image_path'];
+                        $is_vendr = ($from == 'vendor' && $node["is_core"] == 0)?1:0;
                         if (isset($node['translation_one'])) {
-                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] . '</a></div><span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="'.$is_vendr.'" href="#"> ' . $node['translation_one']["name"] . '</a></div><span class="inner-div text-right">';
                         } else {
                             $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '</div><span class="inner-div text-right">';
                         }
@@ -333,5 +334,14 @@ class BaseController extends Controller
             return $preference;
         else
             return false;
+    }
+    
+    public function fixedFee($lang_id){
+        if(Nomenclature::where('label','Fixed Fee')->exists()){
+            $nomenclatures_translation_id=Nomenclature::where('label','Fixed Fee')->first()->id;
+            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee";
+        }else{
+            return "Fixed Fee";
+        }
     }
 }

@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Order};
+use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
 
 class FrontController extends Controller
 {
@@ -75,9 +75,9 @@ class FrontController extends Controller
         $to = '966506342600';
         $body = "this is test sms from codebrew";
         $crendentials = [
-            'app_id' =>'ab8JPwmnCRgTrn2kkDEMCuCkMysK8l',
-            'account_email' => 'abhimanyuvij@code-brew.com',
-            'account_password' => 'Code@12345'
+            'unifonic_app_id' =>'ab8JPwmnCRgTrn2kkDEMCuCkMysK8l',
+            'unifonic_account_email' => 'abhimanyuvij@code-brew.com',
+            'unifonic_account_password' => 'Code@12345'
         ];
         $send = $this->unifonic($to,$body,$crendentials);
         pr($send);
@@ -134,6 +134,15 @@ class FrontController extends Controller
         }
 
         return $categories;
+    }
+
+    public function fixedFee($lang_id){
+        if(Nomenclature::where('label','Fixed Fee')->exists()){
+            $nomenclatures_translation_id=Nomenclature::where('label','Fixed Fee')->first()->id;
+            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee";
+        }else{
+            return "Fixed Fee";
+        }
     }
 
     public function buildTree($elements, $parentId = 1)

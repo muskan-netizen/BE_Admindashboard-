@@ -149,11 +149,17 @@ class CashfreeGatewayController extends FrontController
             if ($err) {
                 return $this->errorResponse($err->message, 400);
             } else {
-                return $this->successResponse(json_decode($response), 'Order has been created successfully');
+                $response = json_decode($response);
+                if(isset($response->payment_link)){
+                    return $this->successResponse($response, 'Order has been created successfully');
+                }else{
+                    return $this->errorResponse($response->message, 400);
+                }
             }
         }
         catch(\Exception $ex){
-            return $this->errorResponse($ex->getMessage(), 400);
+            Log::info($ex->getMessage());
+            return $this->errorResponse('Server Error', 400);
         }
     }
 

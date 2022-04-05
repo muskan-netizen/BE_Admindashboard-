@@ -1,6 +1,9 @@
 @extends('layouts.vertical', ['title' => 'Order Detail'])
 @section('css')
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css">
 <style>
 /* td { white-space:pre-line; word-break:break-all} */
 #cancel-request-card{
@@ -60,6 +63,21 @@ $timezone = Auth::user()->timezone;
                 </div>
 
             </div>
+        </div>
+
+        <div class="text-sm-left">
+            @if (\Session::has('success'))
+            <div class="alert alert-success">
+                <span>{!! \Session::get('success') !!}</span>
+            </div>
+            @endif
+        </div>
+        <div class="text-sm-left">
+            @if (\Session::has('error'))
+            <div class="alert alert-danger">
+                <span>{!! \Session::get('error') !!}</span>
+            </div>
+            @endif
         </div>
 
         @if($order->vendors->first())
@@ -276,6 +294,8 @@ $timezone = Auth::user()->timezone;
                                 <p>{{ $vendor->dineInTableName }} | Category : {{ $vendor->dineInTableCategory }} | Capacity : {{ $vendor->dineInTableCapacity }}</p>
                             @endforeach
                         @endif
+
+                      
                         <div class="table-responsive">
                             <table class="table table-bordered table-centered mb-0">
                                 <thead class="table-light">
@@ -460,6 +480,55 @@ $timezone = Auth::user()->timezone;
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Contact Number") }}:</span> {{ $driver_data->phone ? $driver_data->phone : ''}}</p>
                     </div>
                     @endif
+
+                    @if(in_array(6,$vendor_order_status_option_ids))
+                    <div class="col-lg-6 card-body">
+                        <h4 class="header-title mb-3">{{ __("Upload Report") }}</h4>
+                                               
+                        @if($order->reports!=null) 
+                        <div class="upload-report py-1">                       
+                            <a target="_blank" class="d-inline-block" href="{{$order->reports->report['original']}}" download><i class="fa fa-download" aria-hidden="true"></i> &nbsp;Download Report</a> 
+                            <a href="{{route('order.report.delete',$order->reports->id)}}"> <span><i class="fa fa-times floar-right" aria-hidden="true"></i></span></a>
+                        </div>
+                            {{-- <form class="" action="{{route('order.upload.report')}}" method="post">
+                                <input type="text">
+                            </form> --}}
+                        @endif
+                        <form class="" action="{{route('order.upload.report')}}" method="post" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" value="{{$order->id}}" name="order_id">
+                            <input type="hidden" value="{{$vendor_data->id}}" name="vendor_id">
+                            <div class="card px-2">
+                                <div class="dropify-wrapper report-upload-subt w-50">
+                                    {{-- <div class="dropify-message">
+                                        <span class="file-icon"></span> 
+                                        <p>Drag and drop a file here or click</p>
+                                        <p class="dropify-error">Ooops, something wrong appended.</p>
+                                    </div> --}}
+                                    <div class="dropify-loader"></div>
+                                    <div class="dropify-errors-container">
+                                        <ul></ul>
+                                    </div>
+                                    <input required type="file" accept="image/*,.pdf,.doc" data-plugins="dropify" name="file_name" class="dropify" data-default-file="">
+                                    <button type="button" class="dropify-clear">Remove</button>
+                                    <div class="dropify-preview">
+                                        <span class="dropify-render"></span>
+                                        <div class="dropify-infos">
+                                            <div class="dropify-infos-inner">
+                                                <p class="dropify-filename">
+                                                    <span class="file-icon"></span> 
+                                                    <span class="dropify-filename-inner"></span>
+                                                </p>
+                                                <p class="dropify-infos-message">Drag and drop or click to replace</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                                
+                                <button type="submit" class="w-50 mt-3 btn btn-info waves-effect waves-light mt-2">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -574,6 +643,43 @@ $timezone = Auth::user()->timezone;
             </div>
             @endif
 
+            <!-- Category kyc document -->
+            @if(count($category_KYC_document) > 0)
+            <div class="col-lg-6 mb-3">
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <h4 class="header-title mb-3">{{ __('Category KYC Documents') }}</h4>
+                        @foreach($category_KYC_document as $document)
+                            @php
+                           
+                            $field_value = $document->image_file['storage_url'];
+                            @endphp
+                            <div class="mb-2">
+                                @if($field_value)
+                                    <label class="mb-2"><b>{{$document->category_document->primary ? $document->category_document->primary->name : ''}} : </b></label>
+                                    @if(strtolower($document->category_document->file_type) == 'image')
+                                    <a href="{{$field_value}}" target="_blank">
+                                        <div class="border rounded-lg royo-thumnail_img text-center ">
+                                            <img src="{{$field_value}}" class="img-thumbnail fi">
+                                        </div>
+                                    </a>
+                                    @elseif(strtolower($document->category_document->file_type) == 'pdf')
+                                        <div>
+                                            <a href="{{$field_value}}" target="_blank"><i class="fa fa-file-pdf fa-6x text-danger"></i></a>
+                                        </div>
+                                    @else
+                                        {{$field_value}}
+                                    @endif
+
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                </div>
+            </div>
+            @endif
+
         </div>
     </div>
 </div>
@@ -597,18 +703,33 @@ $timezone = Auth::user()->timezone;
 <!-- modal for product order form -->
 <div class="modal fade product-order-form" id="order_product_order_form" tabindex="-1" aria-labelledby="order_product_order_form" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
+        <div class="modal-content">
         <div class="modal-body">
-             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
           <div id="order_product-order-form-modal">
 
           </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
+
+<!-- modal for Category KYC form -->
+<div class="modal fade caregory_kyc_form-form" id="caregory_kyc_form" tabindex="-1" aria-labelledby="caregory_kyc_form" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+            <div id="caregory_kyc_form-modal">
+           
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
 
 <!-- Order Invoice Code -->
 <div style="display: none;">
@@ -663,6 +784,10 @@ $timezone = Auth::user()->timezone;
             }
         });
 
+    });
+
+    $('#Order_category_kyc_document').click(function() {
+        $('#caregory_kyc_form').modal('show');
     });
 
 
