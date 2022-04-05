@@ -294,7 +294,7 @@ $(document).ready(function() {
                 {name: 'address_id', value: address_id}, 
                 {name: 'payment_form', value: 'cart'},
                 {name: 'cart_id', value: cart_id},
-                {name: 'order_number', value: order_number}
+                {name: 'order_number', value: order.order_number}
             );
             // ajaxData.tip = tip;
             // ajaxData.address_id = address_id;

@@ -876,7 +876,12 @@ $(document).ready(function () {
             } else if (payment_option_id == 8) {
                 inline.createToken().then(function (result) {
                     if (result.error) {
-                        $('#yoco_card_error').html(result.error.message);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: result.error.message,
+                        });
+                        // $('#yoco_card_error').html(result.error.message);
                         _this.attr("disabled", false);
                     } else {
                         const token = result;
@@ -1846,8 +1851,12 @@ $(document).ready(function () {
             var order;
             inline.createToken().then(function (result) {
                 if (result.error) {
-
-                    $('#yoco_card_error').html(result.error.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: result.error.message,
+                    });
+                    // $('#yoco_card_error').html(result.error.message);
                     $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
                 } else {
                     const token = result;
@@ -2146,7 +2155,12 @@ $(document).ready(function () {
         } else if (payment_option_id == 8) {
             inline.createToken().then(function (result) {
                 if (result.error) {
-                    $('#yoco_card_error').html(result.error.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: result.error.message,
+                    });
+                    // $('#yoco_card_error').html(result.error.message);
                     $(".topup_wallet_confirm").attr("disabled", false);
                 } else {
                     const token = result;
