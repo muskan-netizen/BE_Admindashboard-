@@ -16,7 +16,7 @@ $preference = $client_preference_detail;
 <div class="top-header site-topbar al_template_one">
     <div class="container">
         <div class="row align-items-center justify-content-between">
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 <div class="d-flex align-items-center justify-content-lg-start">
                     <a class="navbar-brand mr-sm-3 d-block d-sm-none" style="height:60px" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}" height="60" ></a>
                     @if(isset($preference))
@@ -32,7 +32,7 @@ $preference = $client_preference_detail;
                 </div>
             </div>
 
-            <div class="col-sm-8 text-right">
+            <div class="col-sm-6 text-right">
                 <div class="d-inline d-sm-none">
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
