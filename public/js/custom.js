@@ -922,6 +922,9 @@ $(document).ready(function () {
             } else if (payment_option_id == 24) {
                 paymentViaCashfree('');
             }
+            else if (payment_option_id == 25) {
+                payWithEasebuss('');
+            }
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -2188,6 +2191,9 @@ $(document).ready(function () {
             payWithCcAvenue('');
         } else if (payment_option_id == 24) {
             paymentViaCashfree('', payment_option_id, '');
+        }
+        else if (payment_option_id == 25) {
+            payWithEasebuss('', payment_option_id, '');
         }
 
     });

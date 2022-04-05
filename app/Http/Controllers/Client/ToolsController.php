@@ -7,15 +7,15 @@ use Illuminate\Http\Request;
 use OwenIt\Auditing\Models\Audit;
 use Yadahan\AuthenticationLog\AuthenticationLog;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Vendor,Product,Client,AddonSet,Category,ProductVariant,CartProduct,UserWishlist,TaxCategory,VendorCategory,VendorSlot,VendorSlotDate,VendorDineinCategory,VendorDineinTable};  
-use Auth,Carbon,DB,Storage,Session;
+use App\Models\{Vendor, Product, Client, AddonSet, Category, ProductVariant, CartProduct, UserWishlist, TaxCategory, VendorCategory, VendorSlot, VendorSlotDate, VendorDineinCategory, VendorDineinTable};
+use Auth, Carbon, DB, Storage, Session;
 
 
 class ToolsController extends BaseController
 {
     private $folderName = 'prods';
-    private $vendorObj, $productObj, $clientObj, $addOnSetObj, $categoryObj,$vendorCategoryObj,$vendorSlotObj, $vendorSlotDateObj, $vendorDineinCategoryObj,$vendorDineinTableObj;
-    public function __construct(Vendor $vendor, Product $product, Client $client,AddonSet $addonSet, Category $category, VendorCategory $vendorCategory, VendorSlot $vendorSlot, VendorSlotDate $vendorSlotDate, VendorDineinCategory $vendorDineinCategory, VendorDineinTable $vendorDineinTable)
+    private $vendorObj, $productObj, $clientObj, $addOnSetObj, $categoryObj, $vendorCategoryObj, $vendorSlotObj, $vendorSlotDateObj, $vendorDineinCategoryObj, $vendorDineinTableObj;
+    public function __construct(Vendor $vendor, Product $product, Client $client, AddonSet $addonSet, Category $category, VendorCategory $vendorCategory, VendorSlot $vendorSlot, VendorSlotDate $vendorSlotDate, VendorDineinCategory $vendorDineinCategory, VendorDineinTable $vendorDineinTable)
     {
         $this->vendorObj = $vendor;
         $this->productObj = $product;
@@ -27,7 +27,7 @@ class ToolsController extends BaseController
         $this->vendorSlotDateObj = $vendorSlotDate;
         $this->vendorDineinCategoryObj = $vendorDineinCategory;
         $this->vendorDineinTableObj = $vendorDineinTable;
-    }  
+    }
     /**
      * Display a listing of the resource.
      *
@@ -35,26 +35,26 @@ class ToolsController extends BaseController
      */
     public function index()
     {
-        $vendors = Vendor::where('status',1)->select('id','name','slug');
+        $vendors = Vendor::where('status', 1)->select('id', 'name', 'slug');
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
-            }); 
+            });
         }
-        $vendors = $vendors->get(); 
+        $vendors = $vendors->get();
         $taxCategory = TaxCategory::all();
 
-        $p_categories = Category::with(['parent','translation_one'])
-        ->whereIn('type_id',['1','3','7','8','9'])
-        ->where('id', '>', '1')
-        ->where('deleted_at', NULL)
-        ->where('status', 1)
-        ->orderBy('parent_id', 'asc')
-        ->orderBy('position', 'asc')
-        ->orderBy('id', 'asc')
-        ->get();
+        $p_categories = Category::with(['parent', 'translation_one'])
+            ->whereIn('type_id', ['1', '3', '7', '8', '9'])
+            ->where('id', '>', '1')
+            ->where('deleted_at', NULL)
+            ->where('status', 1)
+            ->orderBy('parent_id', 'asc')
+            ->orderBy('position', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
 
-        return view('backend.tools.index')->with(['vendors'=>$vendors,'taxCategory'=>$taxCategory,'categories'=>$p_categories]);
+        return view('backend.tools.index')->with(['vendors' => $vendors, 'taxCategory' => $taxCategory, 'categories' => $p_categories]);
     }
 
     /**
@@ -73,79 +73,80 @@ class ToolsController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request) 
+    public function store(Request $request)
     {
-        try{
+        try {
             $from_vendor = $this->vendorObj->getById($request->copy_from);
             $from_products = $this->productObj->getByVendorId($request->copy_from);
             $client = $this->clientObj->getClient();
-            
-            if(count($request->copy_to) > 0)
-            {
-                
-            // dd( $from_vendor->toArray());
-            
-            // //copy vendor secifications of from vendor
-            // $vendor_specifications=array(
-            //      'need_container_charges'=>$from_vendor->need_container_charges,
-            //      'show_slot'=>$from_vendor->show_slot,
-            //      'auto_accept_order'=>$from_vendor->auto_accept_order,
-            //      'return_request'=>$from_vendor->return_request,
-            //      'slot_minutes'=>$from_vendor->slot_minutes
-            // );
 
-            // $this->vendorObj->where('id')
+            if (count($request->copy_to) > 0) {
 
+                // dd( $from_vendor->toArray());
+                // //copy vendor secifications of from vendor
+                // $vendor_specifications=array(
+                //      'need_container_charges'=>$from_vendor->need_container_charges,
+                //      'show_slot'=>$from_vendor->show_slot,
+                //      'auto_accept_order'=>$from_vendor->auto_accept_order,
+                //      'return_request'=>$from_vendor->return_request,
+                //      'slot_minutes'=>$from_vendor->slot_minutes
+                // );
+                // $this->vendorObj->where('id')
 
-
-                foreach($request->copy_to as $copy_to)
-                {
-                    $update_vendor = $this->updateVendorData($from_vendor,$copy_to);
-                    if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
+                /*Products replicate */
+                foreach ($request->copy_to as $copy_to) {
+                    /* Block existing products */
+                    $this->productObj->where('vendor_id',$copy_to)->update(['is_live'=>2]);
+                    $update_vendor = $this->updateVendorData($from_vendor, $copy_to);
+                    if (isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
                         $sku_url =  ($client->custom_domain);
                     else
-                        $sku_url =  ($client->sub_domain.env('SUBMAINDOMAIN'));
+                        $sku_url =  ($client->sub_domain . env('SUBMAINDOMAIN'));
 
-                    $sku_url = array_reverse(explode('.',$sku_url));
-                    $sku_url = implode(".",$sku_url);
+                    $sku_url = array_reverse(explode('.', $sku_url));
+                    $sku_url = implode(".", $sku_url);
 
                     $to_vendor = $this->vendorObj->getById($copy_to);
                     $vendor_name = $to_vendor->name;
                     $vendor_name = preg_replace('/\s+/', '', $vendor_name);
-                    if(isset($vendor_name) && !empty($vendor_name))
-                    $sku_url = $sku_url.".".$vendor_name;
+                    if (isset($vendor_name) && !empty($vendor_name))
+                        $sku_url = $sku_url . "." . $vendor_name;
 
-                    foreach($from_products as $from_product)
-                    {
+                    foreach ($from_products as $from_product) {
                         $product_slug = createSlug(!is_null($from_product->title) ? $from_product->title : $from_product->url_slug);
-                        $product_sku = $sku_url.'.'.$product_slug;
+                        $product_sku = $sku_url . '.' . $product_slug;
                         $check_product = $this->productObj->getProductBySku($product_sku);
-                        if($check_product){
-                            // dd($check_product);
-                            $delete_product = $this->deleteProduct($check_product->id);
+                        if ($check_product) {
+                            $this->deleteProduct($check_product->id);
                         }
-                        $add_product = $this->addProduct($from_product,$copy_to,$request->copy_from,$product_sku);
+                        $this->addProduct($from_product, $copy_to, $request->copy_from, $product_sku);
                     }
                 }
 
-                foreach($from_vendor->getAllCategory as $v_category)
-                {
-                    $this->vendorCategoryObj->addVendorCategory($copy_to,$v_category->category_id,$v_category->status);
-                }
 
-                foreach($from_vendor->getCustomCategory as $v_c_category)
-                {
-                    $check_category = $this->categoryObj->checkCategory($v_c_category,$copy_to);
-                    if(is_null($check_category))
-                    {
-                        $add_category = $this->addCompleteCategory($v_c_category,$copy_to);
+                /*unique Categories replicate */
+                $v_c_categories = $this->vendorCategoryObj->select('categories.id as category_id', 'vendor_categories.vendor_id as vendor_id', 'vendor_categories.status as status')
+                    ->join('categories', 'categories.id', '=', 'vendor_categories.category_id')
+                    ->where('categories.vendor_id', "!=", null)
+                    ->where('vendor_categories.vendor_id', $from_vendor->id)
+                    ->get();
+
+                foreach ($v_c_categories as $row) {
+                    $category = Category::find($row->category_id);
+                    $new_category_result = $this->addCompleteCategory($category, $copy_to);
+                    if (VendorCategory::where(['category_id' => $new_category_result->id, 'vendor_id' => $new_category_result->vendor_id])->exists()) {
+                        $status = VendorCategory::where(['category_id' => $category->id, 'vendor_id' => $category->vendor_id])->first()->status;
+                        VendorCategory::where(['category_id' => $new_category_result->id, 'vendor_id' => $new_category_result->vendor_id])->update(['status' => $status]);
+                    } else {
+                        $status = VendorCategory::where(['category_id' => $category->id, 'vendor_id' => $category->vendor_id])->first()->status;
+                        VendorCategory::create(['category_id' => $new_category_result->id, 'vendor_id' => $new_category_result->vendor_id, 'status' => $status]);
                     }
                 }
 
                 return redirect()->back()->with('success', 'Catalogs copied successfully!');
             }
             return redirect()->back()->with('error', 'Please select atleast one store');
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             return redirect()->back()->with('error', 'Something went wrong!');
         }
     }
@@ -194,19 +195,18 @@ class ToolsController extends BaseController
     {
         //
     }
-    public function addProduct($from_product,$copy_to,$copy_from,$product_sku)
+    public function addProduct($from_product, $copy_to, $copy_from, $product_sku)
     {
         $product = $from_product;
         $product = $product->replicate();
-        $product->vendor_id = $copy_to;  
+        $product->vendor_id = $copy_to;
         $product->sku = $product_sku;
         $product->save();
-        foreach($from_product->addOn as $addOn)
-        {
+        foreach ($from_product->addOn as $addOn) {
             $addOn_id = $addOn->addon_id;
-            $check_addon = $this->addOnSetObj->checkAddon($addOn->addOnName,$copy_to);
-            if(is_null($check_addon)){
-                $add_addOn = $this->addCompleteAddOn($addOn,$copy_to);
+            $check_addon = $this->addOnSetObj->checkAddon($addOn->addOnName, $copy_to);
+            if (is_null($check_addon)) {
+                $add_addOn = $this->addCompleteAddOn($addOn, $copy_to);
                 $addOn_id = $add_addOn->id;
             }
             $new_addOn = $addOn;
@@ -215,14 +215,12 @@ class ToolsController extends BaseController
             $new_addOn->addon_id = $addOn_id;
             $new_addOn->save();
         }
-        if(isset($from_product->category) && !is_null($from_product->category)) 
-        {
+        if (isset($from_product->category) && !is_null($from_product->category)) {
             $category_id = $from_product->category->category_id;
-            if(!is_null($from_product->category->categoryDetail->vendor_id)){ 
-                $check_category = $this->categoryObj->checkCategory($from_product->category->categoryDetail,$copy_to);
-                if(is_null($check_category))
-                {
-                    $add_category = $this->addCompleteCategory($from_product->category->categoryDetail,$copy_to);
+            if (!is_null($from_product->category->categoryDetail->vendor_id)) {
+                $check_category = $this->categoryObj->checkCategory($from_product->category->categoryDetail, $copy_to);
+                if (is_null($check_category)) {
+                    $add_category = $this->addCompleteCategory($from_product->category->categoryDetail, $copy_to);
                     $category_id = $add_category->id;
                 }
             }
@@ -232,52 +230,45 @@ class ToolsController extends BaseController
             $new_category->category_id = $category_id;
             $new_category->save();
         }
-        foreach($from_product->celebrities as $celebrity)
-        {
+        foreach ($from_product->celebrities as $celebrity) {
             $new_celebrity = $celebrity;
             $new_celebrity = $new_celebrity->replicate();
             $new_celebrity->product_id = $product->id;
             $new_celebrity->save();
         }
-        foreach($from_product->media as $media)
-        {
+        foreach ($from_product->media as $media) {
             $new_media = $media;
             $new_media = $new_media->replicate();
             $new_media->product_id = $product->id;
             $new_media->save();
         }
-        
-        foreach($from_product->all_tags as $tag)
-        {
+
+        foreach ($from_product->all_tags as $tag) {
             $new_tag = $tag;
             $new_tag = $new_tag->replicate();
             $new_tag->product_id = $product->id;
             $new_tag->save();
         }
-        foreach($from_product->translation as $translation)
-        {
+        foreach ($from_product->translation as $translation) {
             $new_translation = $translation;
             $new_translation = $new_translation->replicate();
             $new_translation->product_id = $product->id;
             $new_translation->save();
         }
-        foreach($from_product->variant as $key=>$variant)
-        {
+        foreach ($from_product->variant as $key => $variant) {
             $new_variant = $variant;
             $new_variant = $new_variant->replicate();
             $new_variant->product_id = $product->id;
-            $new_variant->sku = $product_sku.'.'.$key;
-            $new_variant->barcode = $product->id.'_'.$key;
+            $new_variant->sku = $product_sku . '.' . $key;
+            $new_variant->barcode = $product->id . '_' . $key;
             $new_variant->save();
-            foreach($variant->media as $v_media)
-            {
+            foreach ($variant->media as $v_media) {
                 $new_v_media = $v_media;
                 $new_v_media = $new_v_media->replicate();
                 $new_v_media->product_variant_id = $new_variant->id;
                 $new_v_media->save();
             }
-            foreach($variant->vset as $vset) 
-            {
+            foreach ($variant->vset as $vset) {
                 $new_vset = $vset;
                 $new_vset = $new_vset->replicate();
                 $new_vset->product_id = $product->id;
@@ -288,48 +279,44 @@ class ToolsController extends BaseController
     }
     public function deleteProduct($id)
     {
-        try{
+        try {
             DB::beginTransaction();
             $product = Product::find($id);
             $dynamic = time();
-            $up = Product::where('id', $id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
+            $up = Product::where('id', $id)->update(['sku' => $product->sku . $dynamic, 'url_slug' => $product->url_slug . $dynamic]);
             $tot_var  = ProductVariant::where('product_id', $id)->get();
-            foreach($tot_var as $varr)
-            {
-                $dynamic = time().substr(md5(mt_rand()), 0, 7);
-                ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
+            foreach ($tot_var as $varr) {
+                $dynamic = time() . substr(md5(mt_rand()), 0, 7);
+                ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku . $dynamic]);
             }
             ProductVariant::where('product_id', $id)->delete();
             CartProduct::where('product_id', $id)->delete();
             UserWishlist::where('product_id', $id)->delete();
             Product::where('id', $id)->delete();
             DB::commit();
-        }catch(\Exception $ex){
+        } catch (\Exception $ex) {
             DB::rollback();
         }
     }
-    public function addCompleteAddOn($addOn,$copy_to)
+    public function addCompleteAddOn($addOn, $copy_to)
     {
         $addOnSet = $addOn->addOnName;
         $new_addOnSet = $addOnSet;
         $new_addOnSet = $new_addOnSet->replicate();
         $new_addOnSet->vendor_id = $copy_to;
         $new_addOnSet->save();
-        foreach($addOnSet->translation_many as $translation)
-        {
+        foreach ($addOnSet->translation_many as $translation) {
             $new_translation = $translation;
             $new_translation = $new_translation->replicate();
             $new_translation->addon_id = $new_addOnSet->id;
             $new_translation->save();
         }
-        foreach($addOnSet->option as $option)
-        {
+        foreach ($addOnSet->option as $option) {
             $new_option = $option;
             $new_option = $new_option->replicate();
             $new_option->addon_id = $new_addOnSet->id;
             $new_option->save();
-            foreach($option->translation_many as $o_translation)
-            {
+            foreach ($option->translation_many as $o_translation) {
                 $new_o_translation = $o_translation;
                 $new_o_translation = $new_o_translation->replicate();
                 $new_o_translation->addon_opt_id = $new_option->id;
@@ -340,37 +327,42 @@ class ToolsController extends BaseController
     }
     public function addCompleteCategory($category, $copy_to)
     {
+        //dd($category);
         $new_category = $category;
         $new_category = $new_category->replicate();
         $new_category->vendor_id = $copy_to;
-        $new_category->slug = $category->slug.'_'.$copy_to;
-        $new_category->save();
-        foreach($category->translationSet as $translation)
-        {
-            $new_translation = $translation;
-            $new_translation = $new_translation->replicate();
-            $new_translation->category_id = $new_category->id;
-            $new_translation->save();
+        $new_category->slug = $category->slug . '_' . $copy_to;
+        if (Category::where('slug', $new_category->slug)->exists()) {
+            return Category::where('slug', $new_category->slug)->first();
+        } else {
+
+            $new_category->status = $category->status;
+            $new_category->save();
+            foreach ($category->translationSet as $translation) {
+                $new_translation = $translation;
+                $new_translation = $new_translation->replicate();
+                $new_translation->category_id = $new_category->id;
+                $new_translation->save();
+            }
+            foreach ($category->tags as $tag) {
+                $new_tag = $tag;
+                $new_tag = $new_tag->replicate();
+                $new_tag->category_id = $new_category->id;
+                $new_tag->save();
+            }
+            foreach ($category->brands as $brand) {
+                $new_brand = $brand;
+                $new_brand = $new_brand->replicate();
+                $new_brand->category_id = $new_category->id;
+                $new_brand->save();
+            }
         }
-        foreach($category->tags as $tag)
-        {
-            $new_tag = $tag;
-            $new_tag = $new_tag->replicate();
-            $new_tag->category_id = $new_category->id;
-            $new_tag->save();
-        }
-        foreach($category->brands as $brand)
-        {
-            $new_brand = $brand;
-            $new_brand = $new_brand->replicate();
-            $new_brand->category_id = $new_category->id;
-            $new_brand->save();
-        }
+
         return $new_category;
     }
     public function updateVendorData($from_vendor, $to_vendor_id)
     {
-        $update = Vendor::where('id',$to_vendor_id)->update([
+        $update = Vendor::where('id', $to_vendor_id)->update([
             'order_min_amount' => $from_vendor->order_min_amount,
             'order_pre_time' => $from_vendor->order_pre_time,
             'auto_reject_time' => $from_vendor->auto_reject_time,
@@ -393,60 +385,57 @@ class ToolsController extends BaseController
             'slot_minutes' => $from_vendor->slot_minutes,
             'closed_store_order_scheduled' => $from_vendor->closed_store_order_scheduled,
             'need_container_charges' => $from_vendor->need_container_charges,
-            'return_request' => $from_vendor->return_request
+            'return_request' => $from_vendor->return_request,
+            'fixed_fee' => $from_vendor->fixed_fee,
+            'fixed_fee_amount' => $from_vendor->fixed_fee_amount,
+            'price_bifurcation' => $from_vendor->price_bifurcation
         ]);
-       
-        foreach($from_vendor->getAllCategory as $v_category)
-        {
-            $add_up_cat = $this->vendorCategoryObj->addVendorCategory($to_vendor_id,$v_category->category_id);  
-        }
+
+        // dd($from_vendor->getAllCategory);
+
+        // foreach ($from_vendor->getAllCategory as $v_category) {
+        $this->vendorCategoryObj->addVendorCategory($to_vendor_id, $from_vendor->id);
+        // }
         ///Replicate Vendor Slot/SlotDate
         $delete_slot = $this->vendorSlotObj->deleteVendorSlots($to_vendor_id);
         $delete_slot_date = $this->vendorSlotDateObj->deleteVendorSlotDates($to_vendor_id);
-        foreach($from_vendor->slots as $slot)
-        {
+        foreach ($from_vendor->slots as $slot) {
             $new_slot = $slot;
             $new_slot = $new_slot->replicate();
             $new_slot->vendor_id = $to_vendor_id;
             $new_slot->save();
         }
-        foreach($from_vendor->slotDates as $slotDate)
-        {
+        foreach ($from_vendor->slotDates as $slotDate) {
             $new_slotDate = $slotDate;
             $new_slotDate = $new_slotDate->replicate();
             $new_slotDate->vendor_id = $to_vendor_id;
             $new_slotDate->save();
         }
         //Replication Vendor Dine In
-        $add_dinein = $this->updateVendorDinein($from_vendor,$to_vendor_id);
-
+        $add_dinein = $this->updateVendorDinein($from_vendor, $to_vendor_id);
     }
     public function updateVendorDinein($from_vendor, $to_vendor_id)
     {
         $delete_dinein_table = $this->vendorDineinTableObj->deleteByVendor($to_vendor_id);
         $delete_dinein_cate = $this->vendorDineinCategoryObj->deleteByVendor($to_vendor_id);
-        foreach($from_vendor->dineinCategories as $category)
-        {
+        foreach ($from_vendor->dineinCategories as $category) {
             $new_category = $category;
             $new_category = $new_category->replicate();
             $new_category->vendor_id = $to_vendor_id;
             $new_category->save();
-            foreach($category->translations as $c_trans)
-            {
+            foreach ($category->translations as $c_trans) {
                 $new_c_trans = $c_trans;
                 $new_c_trans = $new_c_trans->replicate();
                 $new_c_trans->category_id = $new_category->id;
                 $new_c_trans->save();
             }
-            foreach($category->dineinTable as $table)
-            {
+            foreach ($category->dineinTable as $table) {
                 $new_table = $table;
                 $new_table = $new_table->replicate();
                 $new_table->vendor_id = $to_vendor_id;
                 $new_table->vendor_dinein_category_id = $new_category->id;
                 $new_table->save();
-                foreach($table->translations as $t_trans)
-                {
+                foreach ($table->translations as $t_trans) {
                     $new_t_trans = $t_trans;
                     $new_t_trans = $new_t_trans->replicate();
                     $new_t_trans->vendor_dinein_table_id = $new_table->id;
@@ -457,24 +446,20 @@ class ToolsController extends BaseController
     }
     public function taxCopy(Request $request)
     {
-        try{
-            foreach($request->product_category as $category_id)
-            {
+        try {
+            foreach ($request->product_category as $category_id) {
                 $products = $this->productObj->getProductByCategory($category_id);
-                foreach($products as $product)
-                {
+                foreach ($products as $product) {
                     $product->tax_category_id = $request->tax_category;
                     $product->save();
-                    foreach($product->variant as $variant)
-                    {
+                    foreach ($product->variant as $variant) {
                         $variant->tax_category_id = $request->tax_category;
                         $variant->save();
                     }
                 }
             }
             return redirect()->back()->with('success', __("Tax copied successfully!"));
-
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             return redirect()->back()->with('error', __("Something went wrong!"));
         }
     }
@@ -485,18 +470,18 @@ class ToolsController extends BaseController
             $imageId = '';
             $file = $request->file('file');
             $data['image_path'] = Storage::disk('s3')->put($this->folderName, $file, 'public');
-            $data['image_url'] = \Config::get('app.IMG_URL1').'30/30'.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($data['image_path']).'@webp';
+            $data['image_url'] = \Config::get('app.IMG_URL1') . '30/30' . \Config::get('app.IMG_URL2') . '/' . \Storage::disk('s3')->url($data['image_path']) . '@webp';
             $data['show_image_url'] = \Storage::disk('s3')->url($data['image_path']);
             $data['image_id'] = uniqid();
             $data['pdf_url'] = url('file-download' . '/pdf.png');
             $data['ext'] = $file->getClientOriginalExtension();
             return response()->json(['data' => $data]);
         } else {
-            return response()->json(['data' => $data,'error' => 'No file']);
+            return response()->json(['data' => $data, 'error' => 'No file']);
         }
     }
 
-     /**
+    /**
      * Get Request
      * Get Database Auditing Logs
      * Added By Ovi
@@ -515,7 +500,7 @@ class ToolsController extends BaseController
     public function singleDatabaseAuditingLogs(Request $request)
     {
         $auditable_type = ucfirst($request->table_name);
-        $audits = Audit::orderBy('id', 'DESC')->where('auditable_type', "App\\Models\\".$auditable_type )->paginate(500);
+        $audits = Audit::orderBy('id', 'DESC')->where('auditable_type', "App\\Models\\" . $auditable_type)->paginate(500);
         return view('backend.tools.single_db_audit_log')->with([
             'audits' => $audits,
             'auditable_type' => $auditable_type

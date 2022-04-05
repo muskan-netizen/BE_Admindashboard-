@@ -14,7 +14,7 @@ Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], functio
         Route::post('vendor/register', 'Api\v1\v2\VendorController@postVendorRegister');
         Route::get('vendor-optimize/{id?}', 'Api\v1\v2\VendorController@productsByVendorOptimize');  
         Route::get('vendor-optimize-category/{id}', 'Api\v1\v2\VendorController@productsByVendorCategoryOptimize');  
-      
+        Route::post('vendor/vendorProductsFilterOptimize', 'Api\v1\v2\VendorController@vendorProductsFilterOptimize');
 
     });
     Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {
