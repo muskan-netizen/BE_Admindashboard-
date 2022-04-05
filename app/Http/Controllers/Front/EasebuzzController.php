@@ -7,7 +7,7 @@ use App\Helpers\Easebuzz;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Redirect;
-use App\Models\{PaymentOption, Order, Cart, CartAddon, CartProduct, User,  Payment,  CartCoupon, CartProductPrescription, UserVendor, Transaction};
+use App\Models\{PaymentOption,ClientCurrency, Order, Cart, CartAddon, CartProduct, User,  Payment,  CartCoupon, CartProductPrescription, UserVendor, Transaction};
 
 use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController};
 
@@ -32,6 +32,11 @@ class EasebuzzController  extends FrontController
     }
 
     function order (Request $request){
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        if($primaryCurrency->currency->iso_code != 'INR' ) {
+            $error =  __(' Currency format error!');
+            return $this->errorResponse($error, 400);
+        }
         $user = Auth::user();
         // pr($request->all());
         $amount =  $this->getDollarCompareAmount($request->amount);
