@@ -1770,9 +1770,6 @@ class CartController extends FrontController
                     }
 
                 }
-
-               
-
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
                 $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
