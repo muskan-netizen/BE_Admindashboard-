@@ -31,13 +31,11 @@ class ToyyibPayController extends Controller
         $this->api_key = (isset($creds_arr->toyyibpay_api_key)) ? $creds_arr->toyyibpay_api_key : '';
         $this->url = (isset($creds_arr->toyyibpay_redirect_uri)) ? $creds_arr->toyyibpay_redirect_uri : '';
         
-        // $testmode = (isset($stripe_creds->test_mode) && ($stripe_creds->test_mode == '1')) ? true : false;
-        // $this->gateway = Omnipay::create('Stripe');
-        // $this->gateway->setApiKey($api_key);
-        // $this->gateway->setTestMode($testmode); //set it to 'false' when go live
-
-        // $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        // $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+        $testmode = (isset($toyyib_creds->test_mode) && ($toyyib_creds->test_mode == '1')) ? true : false;       
+        $this->gateway->setApiKey($api_key);
+        $this->gateway->setTestMode($testmode); //set it to 'false' when go live
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
         
     }
 
@@ -65,8 +63,84 @@ class ToyyibPayController extends Controller
     }
 
     public function createBill($codeCategory,$data){
+
+        try{
+
+            $rules = [
+                'amount'   => 'required',
+                'payment_form'   => 'required'
+            ];
+
+            $user = Auth::user();
+            $amount = $this->getDollarCompareAmount($request->amount);
+            $payment_form = $request->payment_form;
+
+            if(empty($user->phone_number)){
+                $rules['phone_number'] = 'required';
+            }
+
+            $returnUrl = route('payment.toyyibpay.callback');
+            $customer_data = array(
+                'customer_id' => 'customer_'.$user->id,
+                'customer_name' => $user->name,
+                'customer_email' => $user->email,
+                'customer_phone' => $user->phone_number
+            );
+            $order_tags = ['user_id' => strval($user->id), 'payment_form' => $payment_form];
+            $reference_number = $description = '';
+            $returnUrlParams = '?order_id={order_id}&order_token={order_token}&gateway=cashfree&amount=' . $request->amount . '&payment_form=' . $payment_form;
+
+            if($payment_form == 'cart'){
+                $description = 'Order Checkout';
+                $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                $request->request->add(['cart_id' => $cart->id]);
+                $reference_number = $request->order_number;
+                $order_tags['cart_id'] = strval($cart->id);
+                $order_tags['order_number'] = $reference_number;
+
+                $order = Order::where('order_number', $reference_number)->first();
+                $returnUrlParams = $returnUrlParams . '&cart_id=' .$cart->id; //. '&order_id={order_id}' .$reference_number. '&order_token=' .$reference_number;
+            }
+            elseif($payment_form == 'wallet'){
+                $description = 'Wallet Checkout';
+                // $reference_number = $user->id;
+            }
+            if($payment_form == 'tip'){
+                $description = 'Tip Checkout';
+                $order_tags['order_number'] = $request->order_number;
+                
+                $order = Order::where('order_number', $reference_number)->first();
+                // $reference_number = $request->order_number;
+                // $returnUrlParams = $returnUrlParams . '&order_id=' .$reference_number. '&order_token=' .$reference_number;
+            }
+            elseif($payment_form == 'subscription'){
+                $description = 'Subscription Checkout';
+                if($request->has('subscription_id')){
+                    $slug = $request->subscription_id;
+                    $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
+                    $customer_data['subscription_id'] = $subscription_plan->id;
+                    // $reference_number = $request->subscription_id;
+                    $returnUrlParams = $returnUrlParams . '&subscription=' . $request->subscription_id;
+                    $order_tags['subscription_id'] = $request->subscription_id;
+                }
+            }
+
+            $validator = Validator::make($request->all(), $rules, [
+                'amount.required' => 'Amount is required',
+                'payment_form.required' => 'Action is required',
+                'phone_number.required' => 'Phone number is required'
+            ]);
+            if ($validator->fails()) {
+                return $this->errorResponse(__($validator->errors()->first()), 422);
+            }
+
+
+
+        }catch(\Exception $ex){
+            return $this->errorResponse($ex->getMessage(), 400);
+        }
         
-        $user = Auth::user();
+       
         $some_data = array(
             'userSecretKey'=> $this->api_key,
             'categoryCode'=> $codeCategory,
@@ -97,11 +171,17 @@ class ToyyibPayController extends Controller
           curl_setopt($curl, CURLOPT_POSTFIELDS, $some_data);
         
           $result = curl_exec($curl);
-          $info = curl_getinfo($curl);  
+          $info = curl_getinfo($curl);
+          $err = curl_error($curl);  
           curl_close($curl);
+
+
           $obj = json_decode($result);
           if($obj){
-            return $obj[0]->BillCode;
+           // return $obj[0]->BillCode;
+           return $this->successResponse($obj[0]->BillCode, 'Order has been created successfully');
+          }else{
+            return $this->errorResponse($err->message, 400);
           }
 
     }
