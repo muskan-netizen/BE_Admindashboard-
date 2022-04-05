@@ -32,8 +32,6 @@ class EasebuzzController  extends FrontController
     }
 
     function order (Request $request){
-     //  pr($request->all());
-       
         $user = Auth::user();
         // pr($request->all());
         $amount =  $this->getDollarCompareAmount($request->amount);
@@ -44,12 +42,13 @@ class EasebuzzController  extends FrontController
         $customerEmail = $user->email;
         $now = new \DateTime();
         $created_at = $now->format('Y-m-d H:i:s');
-        $orderId = $request->order_number;
+        $orderId = $request->order_number ?? generateOrderNo();
         $cart_id  = '';
         //udf1 for payment_form
         //udf2 for user id 
+       
         $payment_form = $request->payment_form ?? 'cart';
-        if($payment_form = 'cart'){
+        if($payment_form == 'cart'){
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $cart_id =   $cart->id;
         }
@@ -75,10 +74,11 @@ class EasebuzzController  extends FrontController
             "country" => "India",
             "zipcode" => $user->address->first()->pincode,
         );
+       
         $easebuzzObj = new Easebuzz($this->MERCHANT_KEY, $this->SALT, $this->ENV);
         $response = $easebuzzObj->initiatePaymentAPI($postData);
         // echo "order";
-        // pr($response);
+        
         if($response->status == 1){
             return $this->successResponse($response, 'Order has been created successfully');
         }else{
@@ -171,32 +171,23 @@ class EasebuzzController  extends FrontController
 
     public function easybuzzNotify(Request $request, $domain = '')
     {
-      
-        // Log::info($request->getContent());
-        // Log::info('json:=');
-        // Log::info(json_encode($request->getContent()));
-       
         try{
             $easebuzzObj = new Easebuzz($MERCHANT_KEY = null, $this->SALT, $ENV = null);
             $result = $easebuzzObj->easebuzzResponse($request->all());
             $response = json_decode($result);
            
-         Log::info('result from easebuzz:=');
-        Log::info($result);
-            // Log::info('json:=');
-             Log::info( $response->status);
+             Log::info('result from easebuzz:=');
+            Log::info($result);
             $status = $response->status;
             if ($status == 1){  
+
                 // udf1 for payment_form
                 // udf2 for user id 
-    
-                // pr($request->all());
+                // udf3 for cart id 
+                // txnid is order_number
                 
                 $data = $response->data;
                 $order_number = $data->txnid;
-                Log::info('order_number:=');
-                Log::info(  $order_number);
-
                 $payment_form = $request->udf1;
                 $cart_id = $data->udf3;
                 $status = $data->status;
