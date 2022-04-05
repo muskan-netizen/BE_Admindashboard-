@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Api\v1\{BaseController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController};
+use App\Http\Controllers\Api\v1\{BaseController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController};
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
 use App\Http\Requests\OrderStoreRequest;
@@ -148,6 +148,10 @@ class PaymentOptionController extends BaseController{
     public function postPaymentVia_cashfree(Request $request){
         $gateway = new CashfreeGatewayController();
         return $gateway->createOrder($request);
+    }
+    public function postPaymentVia_easebuzz(Request $request){
+        $gateway = new EasebuzzController();
+        return $gateway->order($request);
     }
 
     public function postPaymentVia_toyyibpay(Request $request){
