@@ -449,13 +449,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="col-6">{{__('Total')}}</div>
                 <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
             </div>
-<<<<<<< HEAD
-            <hr class="my-2">
-
-=======
             <% } %>
             <hr class="my-2">           
->>>>>>> 7f796a586f08885760d341f9c7ff9bd706601e44
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
