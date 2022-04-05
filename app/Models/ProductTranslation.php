@@ -10,6 +10,6 @@ class ProductTranslation extends Model{
 
 	public function getTranslationDescriptionAttribute()
     {
-	 return	isset($this->body_html) ? html_entity_decode(strip_tags($this->body_html),ENT_QUOTES) : '';
+	  return	isset($this->body_html) ? html_entity_decode(strip_tags($this->body_html),ENT_QUOTES) : '';
     }
 }
