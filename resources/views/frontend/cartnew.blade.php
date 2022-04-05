@@ -100,16 +100,18 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <%
     let fixed_fee=0;
     let fixed_fee_amount=0;
+    let price_bifurcation=0;
 
     _.each(cart_details.products, function(product, key){
         fixed_fee=product.vendor.fixed_fee;
         fixed_fee_amount=product.vendor.fixed_fee_amount;
-
+        price_bifurcation=product.vendor.price_bifurcation;
         %>
         <div id="thead_<%= product.vendor.id %>">
             <div class="row">
                 <div class="col-12">
                     <h5 class="m-0"><b><%= product.vendor.name %></b></h5>
+                    <input type="hidden" name="category_name" id="category_name" value= "<%= product.vendor.name %>" />
                 </div>
                 <div class="col-12">
                     <div class="countdownholder alert-danger" id="min_order_validation_error_<%= product.vendor.id %>" style="display:none;">Your cart will be expired in </div>
@@ -161,8 +163,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     <div class="col-8 col-md-10">
                         <div class="row align-items-md-center">
-                            <div class="col-md-3 order-0">
+                            <div class="col-md-3 order-0">123456
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
+                                <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
                                     <% if(vset.variant_detail.trans) { %>
                                         <label><span><b><%= vset.variant_detail.trans.title %>:</b></span> <%= vset.option_data.trans.title %></label>
@@ -366,6 +369,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% } %>
         @endif
         <div class="col-12">
+            @php
+             //dd($data);
+            @endphp
             @if(isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry')
             <div class="row">
                 <div class="col-4">{{__('Comment for Pickup Driver ')}}</div>
@@ -413,7 +419,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
         </div>
         <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
-            <% if(cart_details.total_service_fee > 0) { %>
+            <% if(cart_details.total_service_fee > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>
                     <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_service_fee) %></div>
@@ -421,7 +427,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <hr class="my-2">
             <% } %>
 
-            <% if(fixed_fee > 0) { %>
+            <% if(fixed_fee > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__($fixedFee)}}</div>
                     <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(fixed_fee_amount) %></div>
@@ -429,25 +435,27 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <hr class="my-2">
             <% } %>
-
-            <% if(cart_details.total_container_charges > 0) { %>
+            
+            <% if(cart_details.total_container_charges > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Total Container Charges')}}</div>
                     <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_container_charges) %></div>
                 </div>
                 <hr class="my-2">
-            <% } %>
+            <% } 
+            if(price_bifurcation!=1){ %>
             <div class="row">
                 <div class="col-6">{{__('Tax')}}</div>
                 <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_taxable_amount) %></div>
             </div>
+            <% } if(price_bifurcation!=1){ %>
             <hr class="my-2">
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
                 <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
             </div>
-            <hr class="my-2">
-
+            <% } %>
+            <hr class="my-2">           
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
@@ -455,7 +463,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <hr class="my-2">
             <% } %>
-            <% if(cart_details.loyalty_amount > 0) { %>
+            <% if(cart_details.loyalty_amount > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Loyalty Amount')}}</div>
                     <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.loyalty_amount) %></div>
@@ -1305,6 +1313,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var my_orders_url = "{{route('user.orders')}}";
     var validate_promocode_coupon_url = "{{ route('verify.promocode.validate_code') }}";
 
+    var post_toyyibpay_via_gateway_url = "{{route('payment.toyyibpay.index')}}";
+
     var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var longitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
 
@@ -1315,6 +1325,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     var passbase_page = "{{route('passbase.page')}}";
     var product_order_form_element_data = [];
+    var error_Slot_is_required = "{{__('Slot is required')}}";
+    var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
+    var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
 
     if(!latitude){
         @if(!empty($client_preference_detail->Default_latitude))

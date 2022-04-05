@@ -18,17 +18,9 @@
 {{--<link rel="stylesheet" type="text/css" media="all" href="{{asset('css/waitMe.min.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('css/sweetalert2.min.css')}}">--}}
 
-@if(isset($set_template)  && $set_template->template_id == 3 && $set_template->template_id == 1 )
-@else
-{{-- <link rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">--}}
-@endif
-
 @if(isset($set_template)  && $set_template->template_id == 1)
 {{--<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom-template-one.css')}}">--}}
 @elseif(isset($set_template)  && $set_template->template_id == 3)
-
-
-
 {{--<link rel="stylesheet"  href="{{asset('frontend/template_four/header/header.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_four/footer/footer.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_four/homepage/homepage.css')}}">
@@ -41,6 +33,7 @@
 <link rel="stylesheet"  href="{{asset('frontend/template_one/header/header.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_one/footer/footer.css')}}">
 @elseif(isset($set_template)  && $set_template->template_id == 2)
+<link rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_two/homepage/homepage.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_two/header/header.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_two/footer/footer.css')}}">
