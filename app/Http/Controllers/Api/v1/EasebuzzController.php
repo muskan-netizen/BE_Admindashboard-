@@ -7,7 +7,7 @@ use App\Helpers\Easebuzz;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Redirect;
-use App\Models\{PaymentOption,ClientCurrency, Order, Cart, CartAddon, CartProduct, User,  Payment,  CartCoupon, CartProductPrescription, UserVendor, Transaction};
+use App\Models\{PaymentOption,ClientCurrency,SubscriptionPlansUser, Order, Cart, CartAddon, CartProduct, User,  Payment,  CartCoupon, CartProductPrescription, UserVendor, Transaction};
 use App\Http\Controllers\Api\v1\{BaseController, OrderController, WalletController, UserSubscriptionController};
 
 class EasebuzzController  extends BaseController
@@ -46,11 +46,27 @@ class EasebuzzController  extends BaseController
         $cart_id  = '';
         //udf1 for payment_form
         //udf2 for user id 
-       
-        $payment_form = $request->payment_form ?? 'cart';
+        
+        $payment_form = $request->action ?? 'cart';
+        
+        $returnUrlParams = '?order_id={order_id}&order_token={order_token}&gateway=easebuzz&amount=' . $request->amount . '&payment_form=' . $payment_form;
+        
         if($payment_form == 'cart'){
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $cart_id =   $cart->id;
+            $returnUrlParams = $returnUrlParams . '&cart_id=' .$cart->id; //. '&order_id={order_id}' .$reference_number. '&order_token=' .$reference_number;
+          
+        }
+        elseif($payment_form == 'subscription'){
+            $description = 'Subscription Checkout';
+            if($request->has('subscription_id')){
+                $slug = $request->subscription_id;
+                $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
+                $customer_data['subscription_id'] = $subscription_plan->id;
+                // $reference_number = $request->subscription_id;
+                $returnUrlParams = $returnUrlParams . '&subscription=' . $request->subscription_id;
+                $cart_id = $request->subscription_id;
+            }
         }
         $postData = array (
             "txnid" => $orderId,
@@ -59,8 +75,8 @@ class EasebuzzController  extends BaseController
             "email" => $customerEmail,
             "phone" => $customerPhone,
             "productinfo" => "test", 
-            "surl" => route('easebuzz_respont'),
-            "furl" => route('easebuzz_respont'),
+            "surl" =>  url($request->serverUrl.'payment/easebuzz/api' . $returnUrlParams),
+            "furl" =>  url($request->serverUrl.'payment/easebuzz/api' . $returnUrlParams),
             "udf1" => $payment_form,
             "udf2" => $user->id,
             "udf3" => $cart_id, 
@@ -78,61 +94,15 @@ class EasebuzzController  extends BaseController
         $easebuzzObj = new Easebuzz($this->MERCHANT_KEY, $this->SALT, $this->ENV);
         $response = $easebuzzObj->initiatePaymentAPI($postData);
         // echo "order";
-        
+        //pr($response );
         if($response->status == 1){
-            return $this->successResponse($response, 'Order has been created successfully');
+           // $res['payment_url']=$response->data;
+            // pr($res);
+            return $this->successResponse($response->data, 'Payment Url has been created successfully');
         }else{
             return $this->errorResponse($response->data, 400);
         }
        
     }
-
-    function easebuzz_respont(Request $request){
-        //login user with user id 
-        
-        $easebuzzObj = new Easebuzz($MERCHANT_KEY = null, $this->SALT, $ENV = null);
-        $result = $easebuzzObj->easebuzzResponse($request->all());
-        $res = json_decode($result);
-        $status = $res->status;
-        if ($status == 1){  
-            // udf1 for payment_form
-            // udf2 for user id 
-
-            // pr($request->all());
-            
-            $data = $res->data;
-            $order_number = $data->txnid;
-            $status = $data->status;
-            $user_id = $data->udf2 ;
-            if($status == 'success'){
-                if($request->udf1 == 'cart'){
-                    $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-                    if ($order) {
-                        return $this->successResponse([], __('Transaction has been completed successfully'));
-                    }
-                } 
-                return $this->successResponse([], __('Transaction has been completed successfully'));
-            }
-            else{
-                $user = User::find($user_id);
-                if($request->udf1 == 'cart'){
-                    $order = Order::where('order_number', $request->order_id)->first();
-                    if($order){
-                        $wallet_amount_used = $order->wallet_amount_used;
-                        if($wallet_amount_used > 0){
-                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                            if(!$transaction){
-                                $wallet = $user->wallet;
-                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
-                            }else{
-                                return $this->errorResponse(__('Your order has already been cancelled'), 400);
-                            }
-                        }
-                    }
-                    return $this->errorResponse(__('Your order has been cancelled'), 400);
-                }
-                return $this->errorResponse(__('Transaction has been cancelled'), 400);
-            }
-        }
-    }  
+ 
 }
