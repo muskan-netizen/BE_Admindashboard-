@@ -1,14 +1,253 @@
-@extends('layouts.store', ['title' => __('Home')]) 
+@extends('layouts.store', ['title' => __('Home')])
 <link href="{{asset('css/aos.css')}}" rel="stylesheet">
 @section('css')
 <style type="text/css">
-.main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.shimmer_effect{overflow:hidden}.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(5,1fr);grid-gap:20px}.shimmer_effect .card_image{width:100%;height:100%}.shimmer_effect .card_image.loading{width:100%;height:180px}.shimmer_effect .card_title.loading{width:50%;height:1rem;margin:1rem 0;border-radius:3px;position:relative}.shimmer_effect .card_description{padding:8px;font-size:16px}.shimmer_effect .card_description.loading{height:1rem;margin:1rem 0;border-radius:3px}.shimmer_effect .loading{position:relative;background:#cccccc86}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}.no-store-wrapper{display:none}@keyframes loading{100%{transform:translateX(100%)}}
+.main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}
+.shimmer_effect{overflow:hidden}.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(4,1fr);grid-gap:20px}.shimmer_effect .card_image{width:100%;height:100%}.shimmer_effect .card_image.loading{width:100%;height:180px}.shimmer_effect .card_title.loading{width:50%;height:1rem;margin:1rem 0;border-radius:3px;position:relative}.shimmer_effect .card_description{padding:8px;font-size:16px}.shimmer_effect .card_description.loading{height:1rem;margin:1rem 0;border-radius:3px}.shimmer_effect .loading{position:relative;background:#cccccc86}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}.no-store-wrapper{display:none}@keyframes loading{100%{transform:translateX(100%)}}
+.cardbanner {border-radius:0;height:550px;}
+.shimmer_effect .grid-row .cards {margin-bottom: 40px;}
+.shimmer_effect .grid-row .card_icon{display:none;}
+.alTemplateTwoShimnerEffect .alTemplateTwoShimnerEffectBanner{width: 100%;max-width: 100%;}
+.shimmer_effect .grid-row .card_image{border-radius:0;height:200px !important;}
+.container_al{width: 100%;}
+.al_body_template_two section.section-b-space_.p-0.ratio_asos .container_al.shimmer_effect{width:100%; max-width: 100%;}
+@media(max-width:767px){.cardbanner {border-radius:0;height:250px;}}
 </style>
+
 @endsection
 @section('content')
 
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
+<!-- shimmer_effect start -->
+<section class="section-b-space_  p-0 ratio_asos">
+	<div class="container_al mb-3 shimmer_effect">
+		<div class="row">
+			<div class="col-12 cards">
+				<div class="cardbanner loading"></div>
+			</div>
+		</div>
+	</div>
+	<div class="container mb-5 shimmer_effect">
+        <div class="row">
+            <div class="col-1 grid-row">
+                <div class="card_image loading"></div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="card_title loading"></div>
+                </div>
+                <div class="card_content loading mt-0 w-75"></div>
+                <div class="card_content loading mt-0 w-50"></div>
+                <div class="card_line loading"></div>
+                <div class="card_price loading"></div>
+            </div>
+            <div class="col-10">
+                <div class="grid-row grid-4-4">
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-1 grid-row">
+                <div class="card_image loading"></div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="card_title loading"></div>
+                    <div class="card_icon loading"></div>
+                </div>
+                <div class="card_content loading mt-0 w-75"></div>
+                <div class="card_content loading mt-0 w-50"></div>
+                <div class="card_line loading"></div>
+                <div class="card_price loading"></div>
+            </div>
+        </div>
+		<div class="row mt-3">
+            <div class="col-1 grid-row">
+                <div class="card_image loading"></div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="card_title loading"></div>
+                </div>
+                <div class="card_content loading mt-0 w-75"></div>
+                <div class="card_content loading mt-0 w-50"></div>
+                <div class="card_line loading"></div>
+                <div class="card_price loading"></div>
+            </div>
+            <div class="col-10">
+                <div class="grid-row grid-4-4">
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-1 grid-row">
+                <div class="card_image loading"></div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="card_title loading"></div>
+                    <div class="card_icon loading"></div>
+                </div>
+                <div class="card_content loading mt-0 w-75"></div>
+                <div class="card_content loading mt-0 w-50"></div>
+                <div class="card_line loading"></div>
+                <div class="card_price loading"></div>
+            </div>
+        </div>
+		<div class="row">
+            <div class="col-1 grid-row">
+                <div class="card_image loading"></div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="card_title loading"></div>
+                </div>
+                <div class="card_content loading mt-0 w-75"></div>
+                <div class="card_content loading mt-0 w-50"></div>
+                <div class="card_line loading"></div>
+                <div class="card_price loading"></div>
+            </div>
+            <div class="col-10">
+                <div class="grid-row grid-4-4">
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                    <div class="cards">
+                        <div class="card_image loading"></div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="card_title loading"></div>
+                            <div class="card_icon loading"></div>
+                        </div>
+                        <div class="card_content loading mt-0 w-75"></div>
+                        <div class="card_content loading mt-0 w-50"></div>
+                        <div class="card_line loading"></div>
+                        <div class="card_price loading"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-1 grid-row">
+                <div class="card_image loading"></div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="card_title loading"></div>
+                    <div class="card_icon loading"></div>
+                </div>
+                <div class="card_content loading mt-0 w-75"></div>
+                <div class="card_content loading mt-0 w-50"></div>
+                <div class="card_line loading"></div>
+                <div class="card_price loading"></div>
+            </div>
+        </div>
 
+	</div>
+
+
+	</div>
+</section>
+<!-- shimmer_effect end -->
 @if(count($banners))
 <section class="p-0 small-slider al_desktop_banner">
     <div class="slide-1 home-slider mb-sm-2 ">
@@ -103,7 +342,7 @@
                 </a>
                 <% if(vendor.timeofLineOfSightDistance != undefined){ %>
                     <h6 class="d-flex justify-content-between">
-                        <small><i class="fa fa-map-marker"></i> <%= vendor.lineOfSightDistance %></small>
+                        <small><svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.848633 6.15122C0.848633 2.7594 3.60803 0 6.99985 0C10.3917 0 13.1511 2.7594 13.1511 6.15122C13.1511 8.18227 12.1614 9.98621 10.6392 11.107L7.46151 15.7563C7.3573 15.9088 7.18455 16 6.99985 16C6.81516 16 6.64237 15.9088 6.5382 15.7563L3.36047 11.107C1.8383 9.98621 0.848633 8.18227 0.848633 6.15122ZM6.99981 10.4225C7.23979 10.4225 7.47461 10.4072 7.70177 10.3806C9.73302 10.0446 11.2871 8.27613 11.287 6.15122C11.287 3.78725 9.36375 1.86402 6.99977 1.86402C4.6358 1.86402 2.71257 3.78725 2.71257 6.15122C2.71257 8.27613 4.26665 10.0446 6.29786 10.3806C6.52498 10.4072 6.75984 10.4225 6.99981 10.4225ZM9.23683 6.15089C9.23683 7.38626 8.23537 8.38772 7.00001 8.38772C5.76464 8.38772 4.76318 7.38626 4.76318 6.15089C4.76318 4.91552 5.76464 3.91406 7.00001 3.91406C8.23537 3.91406 9.23683 4.91552 9.23683 6.15089Z" fill="black"/></svg> <%= vendor.lineOfSightDistance %></small>
                         <small><i class="fa fa-clock"></i> <%= vendor.timeofLineOfSightDistance %></small>
                     </h6>
                 <% } %>
@@ -182,7 +421,7 @@
                 </a>
                 <% if(vendor.timeofLineOfSightDistance != undefined){ %>
                     <h6 class="d-flex justify-content-between">
-                        <small><i class="fa fa-map-marker"></i> <%= vendor.lineOfSightDistance %>km</small>
+                        <small><svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.848633 6.15122C0.848633 2.7594 3.60803 0 6.99985 0C10.3917 0 13.1511 2.7594 13.1511 6.15122C13.1511 8.18227 12.1614 9.98621 10.6392 11.107L7.46151 15.7563C7.3573 15.9088 7.18455 16 6.99985 16C6.81516 16 6.64237 15.9088 6.5382 15.7563L3.36047 11.107C1.8383 9.98621 0.848633 8.18227 0.848633 6.15122ZM6.99981 10.4225C7.23979 10.4225 7.47461 10.4072 7.70177 10.3806C9.73302 10.0446 11.2871 8.27613 11.287 6.15122C11.287 3.78725 9.36375 1.86402 6.99977 1.86402C4.6358 1.86402 2.71257 3.78725 2.71257 6.15122C2.71257 8.27613 4.26665 10.0446 6.29786 10.3806C6.52498 10.4072 6.75984 10.4225 6.99981 10.4225ZM9.23683 6.15089C9.23683 7.38626 8.23537 8.38772 7.00001 8.38772C5.76464 8.38772 4.76318 7.38626 4.76318 6.15089C4.76318 4.91552 5.76464 3.91406 7.00001 3.91406C8.23537 3.91406 9.23683 4.91552 9.23683 6.15089Z" fill="black"/></svg> <%= vendor.lineOfSightDistance %>km</small>
                         <small><i class="fa fa-clock"></i> <%= vendor.timeofLineOfSightDistance %></small>
                     </h6>
                 <% } %>
@@ -294,54 +533,7 @@
     <% }); %>
 </script>
 
-<section class="section-b-space p-t-0 pt-3 pt-md-5 ratio_asos pb-0 shimmer_effect">
-    <div class="row">
-        <div class="container">
-            <div class="grid-row grid-4-4">
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-                <div class="cards">
-                    <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_description loading"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 <section class="section-b-space ratio_asos d-none pb-0 pt-0 mt-0 al_template_two_content" id="our_vendor_main_div">
     <div class="vendors">
@@ -426,7 +618,7 @@
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        
+
         $("#doneeee").click(function() {
             console.log("nejhbfe");
             // $(".hide_div").hide();
@@ -453,7 +645,7 @@
                 image.attr('data-src',icon);
                 image.attr('src',icon);
             },200);
-       
+
        }
     }
 </script>

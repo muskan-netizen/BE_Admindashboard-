@@ -482,6 +482,59 @@ class ProductsImport implements ToCollection{
                         }
                         else{
                             $product_id = Product::where('sku', $da[0])->first();
+
+                            //update product
+
+                            $brand_id = null;
+                            $tax_category_id = null;
+
+                            if($da[18] != ""){
+                                $brand = Brand::where('title', "LIKE", $da[18])->first();
+                                if($brand){
+                                    $brand_id = $brand->id;
+                                }
+                            }
+
+
+                            if($da[19] != ""){
+
+                                $tax_category = TaxCategory::where('title', "LIKE", $da[19])->first();
+                                if($tax_category){
+                                    $tax_category_id = $tax_category->id;
+                                }
+                            }                           
+
+                            $category = $da[4];
+
+                            $category = VendorCategory::with('category.translation')
+                            ->whereHas('category.translation', function($q)use($category){
+                                $q->select('category_translations.name')
+                                ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
+                                ->join('languages', 'category_translations.language_id', 'languages.id')
+                                ->where('cl.is_active', 1)
+                                ->where('category_translations.name', 'LIKE', $category);
+                            })->where('vendor_id', $this->vendor_id)->first();
+
+                            Product::where('id',$product_id->id)->update([
+                                'type_id' => 1,
+                                'sku' => $da[0],
+                                'is_featured' => 0,
+                                'is_physical' => 0,
+                                'has_inventory' => 0,
+                                'url_slug' => $da[0],                               
+                                'brand_id' => $brand_id,
+                                'requires_shipping' => 0,
+                                'Requires_last_mile' => 0,
+                                'sell_when_out_of_stock' => 0,
+                                'vendor_id' => $this->vendor_id,
+                                'category_id' =>$category->category_id,
+                                'tax_category_id' => $tax_category_id,
+                                'title' => ($da[1] == "") ? "" : $da[1],
+                                'is_live' => ($da[3] == 'TRUE') ? 1 : 0,
+                                'body_html' => ($da[2] == "") ? "" : $da[2],
+                            ]);
+
+
                             $delete = ProductAddon::where('product_id', $product_id->id)->delete();
                             $delete = ProductTag::where('product_id', $product_id->id)->delete();
                             foreach (explode(',', $da[23]) as $titleKey => $Addontitle) {

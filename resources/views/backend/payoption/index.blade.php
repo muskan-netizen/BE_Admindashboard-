@@ -53,6 +53,7 @@
             </div>
         </div>
         <div class="row">
+           
             @foreach($payOption as $key => $opt)
             <div class="col-6 col-md-3 col-xl-2 mb-3">
 
@@ -87,6 +88,10 @@
                 $access_code = (isset($creds->access_code)) ? $creds->access_code : '';
                 $enc_key = (isset($creds->enc_key)) ? $creds->enc_key : '';
                 $easypaisa_store_id = (isset($creds->easypaisa_store_id)) ? $creds->easypaisa_store_id : '';
+                $toyyibpay_api_key = (isset($creds->toyyibpay_api_key)) ? $creds->toyyibpay_api_key : '';
+                $toyyibpay_redirect_uri = (isset($creds->toyyibpay_redirect_uri)) ? $creds->toyyibpay_redirect_uri : '';
+                $easebuzz_merchant_key = (isset($creds->easebuzz_merchant_key)) ? $creds->easebuzz_merchant_key : '';
+                $easebuzz_salt = (isset($creds->easebuzz_salt)) ? $creds->easebuzz_salt : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -561,6 +566,42 @@
                                 <div class="form-group mb-2">
                                     <label for="cashfree_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
                                     <input type="password" name="cashfree_secret_key" id="cashfree_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'toyyibpay') )
+                        <div class="mt-2" id="stripe_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group mb-2">
+                                        <label for="toyyibpay_api_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                        <input type="password" name="toyyibpay_api_key" id="toyyibpay_api_key" class="form-control" value="{{$toyyibpay_api_key??''}}" @if($opt->status == 1) required @endif>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-2">
+                                        <label for="toyyibpay_redirect_uri" class="mr-3">{{ __("Redirect Uri") }}</label>
+                                        <input type="password" name="toyyibpay_redirect_uri" id="toyyibpay_redirect_uri" class="form-control" value="{{$toyyibpay_redirect_uri??''}}" @if($opt->status == 1) required @endif>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'easebuzz') )
+                    <div class="mt-2" id="easebuzz_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="easebuzz_merchant_key" class="mr-3">{{ __("Merchant Key") }}</label>
+                                    <input type="text" name="easebuzz_merchant_key" id="easebuzz_merchant_key" class="form-control" value="{{$easebuzz_merchant_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="easebuzz_salt" class="mr-3">{{ __("Salt") }}</label>
+                                    <input type="text" name="easebuzz_salt" id="easebuzz_salt" class="form-control" value="{{$easebuzz_salt}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

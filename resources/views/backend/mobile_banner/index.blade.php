@@ -33,7 +33,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>
@@ -51,7 +51,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>
@@ -62,7 +62,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>
@@ -73,7 +73,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>
@@ -84,7 +84,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>
@@ -95,7 +95,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>
@@ -178,11 +178,11 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                                 <a class="action-icon openBannerModal" userId="{{$ban->id}}" href="#"> <i class="mdi mdi-square-edit-outline"></i></a> 
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('mobilebanner.destroy', $ban->id) }}" id="deleteMobileBanner">
+                                                <form method="POST" action="{{ route('mobilebanner.destroy', $ban->id) }}" id="deleteMobileBanner_{{$ban->id}}">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group mb-0">
-                                                        <button type="button" class="btn btn-primary-outline action-icon" id="deleteMobileBannerButton">
+                                                        <button type="button" class="btn btn-primary-outline action-icon" id="deleteMobileBannerButton" onclick="deleteBanner('{{$ban->id}}')">
                                                             <i class="mdi mdi-delete"></i>
                                                         </button> 
 
@@ -211,8 +211,8 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
 @section('script')
 
 <script type="text/javascript">
-    $('#deleteMobileBannerButton').click(function(e) {
-        e.preventDefault();
+    function deleteBanner(banner_id)
+    {
         Swal.fire({
             title: "{{__('Are you sure?')}}",
             text:"{{__('You want to delete the banner.')}}",
@@ -222,12 +222,12 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
         }).then((result) => {
             if(result.value)
             {
-                $("#deleteMobileBanner").off("submit").submit();
+                $("#deleteMobileBanner_"+banner_id).submit();
             }else{
                 return false;
             }
         });
-    });
+    }
     function assignSortAttach() {
       $("table").sortable({
         axis: "y",

@@ -7,7 +7,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand,TagTranslation,Tag};
+use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand,TagTranslation,Tag};
 use Validation;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -411,5 +411,23 @@ class ProductController extends BaseController
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+     # get product faq 
+     public function getProductFaq(Request $request, $product_id){
+        $langId = Auth::user()->language;
+
+        if(empty($langId))
+        $langId = ClientLanguage::orderBy('is_primary','desc')->value('language_id');
+
+        $product_faqs = ProductFaq::where('product_id',$product_id)->with(['translations' => function ($qs) use($langId){
+            $qs->where('language_id',$langId);
+        }])->get();
+        
+        if(!$product_faqs){
+            return response()->json(['error' => 'No record found.'], 404);
+        }
+        return response()->json([
+            'data' => $product_faqs,
+        ]);
     }
 }

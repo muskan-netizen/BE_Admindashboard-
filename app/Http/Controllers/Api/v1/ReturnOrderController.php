@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\Web\OrderProductRatingRequest;
 use App\Http\Requests\Web\OrderProductReturnRequest;
-use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, User, UserDevice, UserVendor};
+use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, User, UserDevice, UserVendor, VendorOrderDispatcherStatus};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 use App\Models\Client as CP;
@@ -236,12 +236,28 @@ class ReturnOrderController extends BaseController{
             $request->status_option_id = 3;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
+            //check dispatcher status
+            $checkdispatcherstatus = VendorOrderDispatcherStatus::where(['order_id'=>$request->order_id])->orderBy('id', 'desc')->first();
 
             if ($currentOrderStatus->order_status_option_id == 3 && $request->status_option_id == 3) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
-            if ($currentOrderStatus->order_status_option_id >= 2 ) { //$request->status_option_id == 2){
-                return response()->json(['status' => 'error', 'message' => __('Order is accepted, you can not reject this order !!!')]);
+            // if order is out for delivery or delivered
+            if ($currentOrderStatus->order_status_option_id > 4 ) {                 
+                return response()->json(['status' => 'error', 'message' => __('Order is out for delivery, you can not reject this order !!!')]);
+            }
+
+            //if order is accepted or in processing
+            if ($currentOrderStatus->order_status_option_id == 2 || $currentOrderStatus->order_status_option_id == 4 ) { //$request->status_option_id == 2){
+                //$checkdispatcherstatus = VendorOrderDispatcherStatus::where(['order_id'=>$request->order_id])->where('dispatcher_status_option_id','>',2)->orderBy('id', 'desc')->first();                
+                if($checkdispatcherstatus)
+                {
+                    if($checkdispatcherstatus->dispatcher_status_option_id > 2)
+                    {
+                        return response()->json(['status' => 'error', 'message' => __('Driver has started the order, you can not reject this order !!!')]);                    
+                    }                    
+                }
+                //return response()->json(['status' => 'error', 'message' => __('Order is accepted, you can not reject this order !!!')]);
             }
             if (!$vendor_order_status_check) {
                 $vendor_order_status = new VendorOrderStatus();

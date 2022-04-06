@@ -41,6 +41,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('update/image', 'Api\v1\ProfileController@updateAvatar');
         Route::post('user/getAddress', 'Api\v1\ProfileController@getAddress');
         Route::post('order-detail', 'Api\v1\OrderController@postOrderDetail');
+        Route::post('create-payment-intent', 'Api\v1\PaymentResourceController@createPaymentIntent');
+        Route::post('confirm-payment-intent', 'Api\v1\PaymentResourceController@confirmPaymentIntent');
         Route::post('update/profile', 'Api\v1\ProfileController@updateProfile');
         Route::get('myWallet', 'Api\v1\WalletController@getFindMyWalletDetails');
         Route::post('myWallet/credit', 'Api\v1\WalletController@creditMyWallet');
@@ -58,6 +60,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('primary/address/{id}', 'Api\v1\AddressController@postUpdatePrimaryAddress');
         Route::post('update/order/status', 'Api\v1\OrderController@postVendorOrderStatusUpdate');
         Route::get('payment/options/{page}', 'Api\v1\PaymentOptionController@getPaymentOptions');
+        Route::get('mystore/vendors', 'Api\v1\StoreController@getMyStoreVendors');
+        Route::get('mystore/vendor/dashboard/{id}', 'Api\v1\StoreController@getMyStoreVendorDashboard');
+        Route::get('mystore/vendor/orders/{id}', 'Api\v1\StoreController@getMyStoreVendorOrders');
         Route::post('mystore/vendor/category', 'Api\v1\StoreController@VendorCategory');
         Route::post('mystore/product/add', 'Api\v1\StoreController@addProduct');
         Route::post('mystore/product/detail', 'Api\v1\StoreController@productDetail'); 
@@ -69,6 +74,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('mystore/product/getProductImages', 'Api\v1\StoreController@getProductImages');
         Route::post('mystore/product/deleteimage', 'Api\v1\StoreController@deleteProductImage');
         Route::post('mystore/vendor/product/list', 'Api\v1\StoreController@getVendorProductList');
+        Route::get('mystore/vendor/product-category/list/{id}', 'Api\v1\StoreController@getVendorProductCategoryList');
+        Route::get('mystore/vendor/products-with-category/list/{id}', 'Api\v1\StoreController@getVendorProductsWithCategoryList');
         Route::post('mystore/product/status-update', 'Api\v1\StoreController@updateProductStatus');
 
         Route::post('vendor-dasboard-data', 'Api\v1\RevenueController@getDashboardDetails');
@@ -92,6 +99,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::group(['prefix' => 'rating'], function () {
             Route::post('update-product-rating', 'Api\v1\RatingController@updateProductRating');
             Route::get('get-product-rating', 'Api\v1\RatingController@getProductRating');
+            Route::post('update-driver-rating', 'Api\v1\RatingController@updateDriverRating');
         });
         Route::post('upload-file', 'Api\v1\RatingController@uploadFile');
          // Return order

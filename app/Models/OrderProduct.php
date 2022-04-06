@@ -11,6 +11,20 @@ class OrderProduct extends Model{
     protected $table = 'order_vendor_products';
     protected $casts = ['price' => 'double'];
     protected $appends = ['image_base64']; 
+    public static $withoutAppends = false;
+
+    public function scopeWithoutAppends($query){
+        self::$withoutAppends = true;
+        return $query;
+    }
+
+    protected function getArrayableAppends(){
+        if (self::$withoutAppends){
+            return [];
+        }
+        return parent::getArrayableAppends();
+    }
+
 
     public function vendor(){
         return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'order_pre_time', 'auto_reject_time', 'order_min_amount');

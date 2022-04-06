@@ -9,7 +9,7 @@ class CartProduct extends Model{
 
     use HasFactory;
 
-    protected $fillable = ['cart_id','product_id', 'vendor_id', 'vendor_dinein_table_id', 'quantity', 'status', 'variant_id', 'is_tax_applied', 'tax_rate_id', 'currency_id', 'tax_category_id', 'luxury_option_id','schedule_type','scheduled_date_time'];
+    protected $fillable = ['cart_id','product_id', 'vendor_id', 'vendor_dinein_table_id', 'quantity', 'status', 'variant_id', 'is_tax_applied', 'tax_rate_id', 'currency_id', 'tax_category_id', 'luxury_option_id','schedule_type','scheduled_date_time','scheduled_slot'];
 
     protected $touches = ['cart'];
 
@@ -23,7 +23,7 @@ class CartProduct extends Model{
 
 
  	public function product(){
-    	return $this->belongsTo('App\Models\Product')->select('id','title', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id','Requires_last_mile','pharmacy_check','tags','mode_of_service','delay_order_hrs','delay_order_min','delay_order_hrs_for_dine_in','delay_order_min_for_dine_in','delay_order_hrs_for_takeway','delay_order_min_for_takeway','pickup_delay_order_hrs','pickup_delay_order_min','dropoff_delay_order_hrs','dropoff_delay_order_min','id as delay_hrs_min','id as pickup_delay_hrs_min','id as dropoff_delay_hrs_min','id as delay_order_time','sell_when_out_of_stock','minimum_order_count','batch_count','has_inventory');
+    	return $this->belongsTo('App\Models\Product')->select('id','title', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id','Requires_last_mile','pharmacy_check','tags','mode_of_service','delay_order_hrs','delay_order_min','delay_order_hrs_for_dine_in','delay_order_min_for_dine_in','delay_order_hrs_for_takeway','delay_order_min_for_takeway','pickup_delay_order_hrs','pickup_delay_order_min','dropoff_delay_order_hrs','dropoff_delay_order_min','id as delay_hrs_min','id as pickup_delay_hrs_min','id as dropoff_delay_hrs_min','id as delay_order_time','sell_when_out_of_stock','minimum_order_count','batch_count','has_inventory','category_id');
     }
 
     public function vendor(){
@@ -47,7 +47,7 @@ class CartProduct extends Model{
     }
 
     public function vendorProducts(){
-      return $this->hasMany(CartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'cart_products.currency_id')->select('cart_products.id', 'cart_products.cart_id', 'cart_products.product_id', 'cart_products.quantity', 'cart_products.variant_id', 'cart_products.is_tax_applied', 'cart_products.tax_category_id', 'cart_products.currency_id', 'cc.doller_compare', 'cart_products.vendor_id', 'cart_products.scheduled_date_time')->orderBy('cart_products.created_at', 'asc')->orderBy('cart_products.vendor_id', 'asc');
+      return $this->hasMany(CartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'cart_products.currency_id')->select('cart_products.id', 'cart_products.cart_id', 'cart_products.product_id', 'cart_products.quantity', 'cart_products.variant_id', 'cart_products.is_tax_applied', 'cart_products.tax_category_id', 'cart_products.currency_id', 'cc.doller_compare', 'cart_products.vendor_id', 'cart_products.scheduled_date_time','cart_products.user_product_order_form')->orderBy('cart_products.created_at', 'asc')->orderBy('cart_products.vendor_id', 'asc');
     }
 
 

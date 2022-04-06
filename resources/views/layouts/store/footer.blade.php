@@ -1,6 +1,6 @@
 <div class="tap-top top-cls">
     <div>
-        <i class="fa fa-angle-double-up"></i>
+        <i class="fa fa-solid fa-angles-up"></i>
     </div>
 </div>
 <div class="d-none" id ="nearmap">
@@ -206,7 +206,7 @@
 
 {{--
 <!-- shift to product detail page -->
-<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script> 
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 <!-- duplicate script -->
 <script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
 --}}
@@ -228,6 +228,8 @@
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <!--WaitMe Loader Script -->
 
+
+
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 <script>
@@ -238,6 +240,30 @@
             $('#page-container').toggleClass("al_fixed");
         });
     });
+    jQuery(document).ready(function($) {
+        var footer_height = $('.footer-light').height();
+        $('article#content-wrap').css('padding-bottom',footer_height);
+    });
+    @if(isset($set_template)  && $set_template->template_id ==3 && \Request::route()->getName()=='categoryDetail')
+    function changeImage(image2, check) {
+       var image = $(image2).children('.nav-cate-img').children("img");
+       var  icon = image.attr('data-icon');
+       var  icon_two = image.attr('data-icon_two');
+       if(check == 1)
+       {
+            setTimeout(function () {
+                image.attr('data-src',icon_two);
+                image.attr('src',icon_two);
+            },200);
+       }else if(check == 0){
+            setTimeout(function () {
+                image.attr('data-src',icon);
+                image.attr('src',icon);
+            },200);
+
+       }
+    }
+    @endif
 </script>
 @if (Auth::check())
 @if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))

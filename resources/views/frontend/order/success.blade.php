@@ -5,7 +5,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12 my-1">
-                <div class="success-text">
+                <div class="success-text al">
                 	<i class="fa fa-check-circle" aria-hidden="true"></i>
                     <h2>{{__('Thank You')}}</h2>
                     {{-- <p>{{__('Payment is successfully processsed and your order is on the way')}}</p> --}}

@@ -4,6 +4,8 @@ namespace App\Http\Traits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use App\Models\ShippingOption;
+use App\Models\Webhook;
+
 
 trait LalaMoves{
 
@@ -190,14 +192,6 @@ trait LalaMoves{
   $response = curl_exec($curl);
   $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
   curl_close($curl);
-
-  // $response = '{
-  //   "totalFee": "80", 
-  //   "totalFeeCurrency": "INR",
-  //   "distance": {
-  //     "text": "16.2 km",
-  //     "value": 16210
-  //   }}';
   return array('code'=>$httpCode,'response'=>$response);
 }
 
@@ -220,17 +214,15 @@ public function getOrderBody($data)
   }
 
 
-public function placeOrders($data,$quotation)
+public function placeOrders($data,$quotation,$order_id = '')
 {
-  $this->configDetails();
-
- $method = 'POST';
- $path = '/v2/orders';
- $bodyQut = $this->getQuotationBody($data);
- $bodyOrder = $this->getOrderBody($quotation);
- $body=json_encode(array_merge(json_decode($bodyQut, true),json_decode($bodyOrder, true)));
-
- $token = $this->token($method,$path,$body);
+    $this->configDetails();
+    $method = 'POST';
+    $path = '/v2/orders';
+    $bodyQut = $this->getQuotationBody($data);
+    $bodyOrder = $this->getOrderBody($quotation);
+    $body=json_encode(array_merge(json_decode($bodyQut, true),json_decode($bodyOrder, true)));
+    $token = $this->token($method,$path,$body);
 
   
 $curl = curl_init();
@@ -258,8 +250,20 @@ $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 curl_close($curl);
 
 // echo "Total elapsed http request/response time in milliseconds: ".floor((microtime(true) - $this->startTime)*1000)."\r\n";
+\Log::info('Place Order response Mail');
+\Log::info('orderRef = '.json_decode($response)->orderRef);
+\Log::info($response);
+\Log::info('End Place Order response Mail');
+$resp = json_decode($response);
+Webhook::create(['tracking_order_id'=>$order_id,'response'=>$response]);
+if($resp->orderRef){
+  return $resp;
+ }
+ return false;
 
-return array('code'=>$httpCode,'response'=>$response,'totalTime'=>floor((microtime(true) - $this->startTime)*1000));
+
+
+
 // Response
 // {
 //   "orderRef": "193400800238",

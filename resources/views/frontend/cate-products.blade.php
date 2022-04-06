@@ -51,7 +51,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-5">
                 <div class="collection-filter col-lg-3">
                     <!-- side-bar colleps block stat -->
                     <div class="collection-filter-block bg-transparent p-0 m-0">
@@ -61,7 +61,7 @@
                             </span>
                         </div> -->
                         @if(!empty($category->brands) && count($category->brands) > 0)
-                        <div class="collection-collapse-block open">
+                        <div class="collection-collapse-block open mb-2">
                             <h3 class="collapse-block-title">{{__('Brand')}}</h3>
                             <div class="collection-collapse-block-content">
                                 <div class="collection-brand-filter">
@@ -251,8 +251,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="displayProducts">
-                                        <div class="col-12 text-right mt-2">Sort By :
+                                    <div class="displayProducts" id="category_products_filter">
+                                        <div class="col-12 text-right mt-2">{{__('Sort By')}}
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Please Select')}}</option>
                                                 <option value="featured">{{_('Featured')}}</option>
@@ -350,6 +350,14 @@
         filterProducts();
     });
 
+    $(document).on('click', '#category_products_filter .pagination a.page-link', function(e){
+        e.preventDefault();
+        var link = $(this).attr('href');
+        var urlParams = new URL(link).searchParams;
+        var page = urlParams.get('page');
+        filterProducts(page);
+    });
+
     $(document).on('change','.sortingFilter',function(){
         filterProducts();
     });
@@ -357,7 +365,7 @@
         filterProducts();
     });
 
-    function filterProducts(){
+    function filterProducts(page='', limit=''){
         var brands = [];
         var variants = [];
         var options = [];
@@ -376,27 +384,39 @@
         });
         var range = $('.rangeSliderPrice').val();
         var order_type = $('.sortingFilter').val();
+        var ajaxData = {
+            "_token": "{{ csrf_token() }}",
+            "brands": brands,
+            "vendor_id": vendor_id,
+            "variants": variants,
+            "options": options,
+            "range": range,
+            "order_type" : order_type,
+        };
+
+        if(limit != ''){
+            ajaxData.limit = limit;
+        }
+        if(page != ''){
+            ajaxData.page = page;
+        }
 
         ajaxCall = $.ajax({
             type: "post",
             dataType: "json",
             url: "{{ route('productFilters', $category->id) }}",
-            data: {
-                "_token": "{{ csrf_token() }}",
-                "brands": brands,
-                "vendor_id": vendor_id,
-                "variants": variants,
-                "options": options,
-                "range": range,
-                "order_type" : order_type,
-            },
+            data: ajaxData,
             beforeSend : function() {
                 if(ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
                     ajaxCall.abort();
                 }
+                $('.spinner-overlay').show();
             },
             success: function(response) {
                 $('.displayProducts').html(response.html);
+            },
+            complete: function() {
+                $('.spinner-overlay').hide();
             },
             error: function (data) {
                 //location.reload();

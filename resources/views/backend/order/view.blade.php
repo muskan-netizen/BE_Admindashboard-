@@ -1,6 +1,9 @@
 @extends('layouts.vertical', ['title' => 'Order Detail'])
 @section('css')
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css">
 <style>
 /* td { white-space:pre-line; word-break:break-all} */
 #cancel-request-card{
@@ -10,6 +13,37 @@
     width: 100px;
     height: auto;
 }
+.royo-ques h3 {
+    font-size: 15px;
+    font-weight: 600 !important;
+}
+.royo-ques h6 {
+    font-size: 14px;
+    padding: 5px 0px;
+}
+
+.custom-accordin1 .card-header {
+    padding: 0px 0px !important;
+    background-color: rgba(0,0,0,.03);
+    border: 1px solid#d5cece;
+    border-radius: 10px;
+}
+.custom-accordin1 .card-body {
+    padding: 10px 10px;
+    border-bottom: 1px solid#eee;
+    border-radius: 10px;
+}
+.custom-accordin1 .card:nth-child(1){
+    margin: 29px 0px;
+}
+.custom-accordin1 .card {
+    padding-bottom: 0px !important;
+    border-radius: 0px !important;
+    box-shadow: none !important;
+    border:1px solid#eee;
+    border-radius: 10px !important;
+}
+
 </style>
 @endsection
 @section('content')
@@ -29,6 +63,21 @@ $timezone = Auth::user()->timezone;
                 </div>
 
             </div>
+        </div>
+
+        <div class="text-sm-left">
+            @if (\Session::has('success'))
+            <div class="alert alert-success">
+                <span>{!! \Session::get('success') !!}</span>
+            </div>
+            @endif
+        </div>
+        <div class="text-sm-left">
+            @if (\Session::has('error'))
+            <div class="alert alert-danger">
+                <span>{!! \Session::get('error') !!}</span>
+            </div>
+            @endif
         </div>
 
         @if($order->vendors->first())
@@ -115,7 +164,7 @@ $timezone = Auth::user()->timezone;
                                     else
                                     $open_option = [$order->vendors->first()->order_status_option_id + 1];
                                     @endphp
-                                    
+
                                     <!-- List of completed order status -->
                                 @if(count($vendor_order_statuses))
                                     @foreach ($vendor_order_statuses as $key => $vendor_order_status)
@@ -245,6 +294,8 @@ $timezone = Auth::user()->timezone;
                                 <p>{{ $vendor->dineInTableName }} | Category : {{ $vendor->dineInTableCategory }} | Capacity : {{ $vendor->dineInTableCapacity }}</p>
                             @endforeach
                         @endif
+
+                      
                         <div class="table-responsive">
                             <table class="table table-bordered table-centered mb-0">
                                 <thead class="table-light">
@@ -272,19 +323,30 @@ $timezone = Auth::user()->timezone;
                                     $sub_total += $product->total_amount;
                                     @endphp
                                     <tr>
-                                        <th scope="row">
+                                        <th scope="row" class="product-modal2">
 
 
                                             <a href="{{ isset($product->product) ? route('product.edit', @$product->product->id) : '#'}}" target="_blank">
                                                 {{$product->product_name}}
                                             </a>
+
                                             @if(isset($product->product) && isset($product->product->category) && isset($product->product->category->categoryDetail) && $product->product->category->categoryDetail->translation_one) ( in {{$product->product->category->categoryDetail->translation_one->name}} ) @endif
+
+                                            @if (isset($product->user_product_order_form))
+                                            <a href="javascript:void(0)" class="Order_product_form float-right "  data-product_form_id="{{$product->id}}">
+                                                <span class="badge badge-info mr-2">
+                                                    {{__('Product form ')}}
+                                                </span>
+                                            </a>
+                                            @endif
+
                                             <p class="p-0 m-0">
                                                 @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
                                             </p>
-                                                @foreach($product->prescription as $pres)
-                                                <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
-                                                @endforeach
+
+                                            @foreach($product->prescription as $pres)
+                                            <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
+                                            @endforeach
 
                                                 <p class="p-0 m-0">{{ substr($product->product_variant_sets, 0, -2) }}</p>
                                             @if($product->addon && count($product->addon))
@@ -390,7 +452,7 @@ $timezone = Auth::user()->timezone;
 
 
         <div class="row">
-            @if($order->address && ($order->luxury_option_id == 1) && ($client_preference_detail->hide_order_address ==0 ) )
+            @if( (Auth::user()->is_superadmin) || ($order->address && ($order->luxury_option_id == 1) && ($client_preference_detail->hide_order_address ==0 )) )
 
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0 h-100">
@@ -416,6 +478,55 @@ $timezone = Auth::user()->timezone;
                         <h4 class="header-title mb-3">{{ __("Driver Information") }}</h4>
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Name") }}:</span> {{ $driver_data->name ? $driver_data->name : ''}}</p>
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Contact Number") }}:</span> {{ $driver_data->phone ? $driver_data->phone : ''}}</p>
+                    </div>
+                    @endif
+
+                    @if(in_array(6,$vendor_order_status_option_ids))
+                    <div class="col-lg-6 card-body">
+                        <h4 class="header-title mb-3">{{ __("Upload Report") }}</h4>
+                                               
+                        @if($order->reports!=null) 
+                        <div class="upload-report py-1">                       
+                            <a target="_blank" class="d-inline-block" href="{{$order->reports->report['original']}}" download><i class="fa fa-download" aria-hidden="true"></i> &nbsp;Download Report</a> 
+                            <a href="{{route('order.report.delete',$order->reports->id)}}"> <span><i class="fa fa-times floar-right" aria-hidden="true"></i></span></a>
+                        </div>
+                            {{-- <form class="" action="{{route('order.upload.report')}}" method="post">
+                                <input type="text">
+                            </form> --}}
+                        @endif
+                        <form class="" action="{{route('order.upload.report')}}" method="post" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" value="{{$order->id}}" name="order_id">
+                            <input type="hidden" value="{{$vendor_data->id}}" name="vendor_id">
+                            <div class="card px-2">
+                                <div class="dropify-wrapper report-upload-subt w-50">
+                                    {{-- <div class="dropify-message">
+                                        <span class="file-icon"></span> 
+                                        <p>Drag and drop a file here or click</p>
+                                        <p class="dropify-error">Ooops, something wrong appended.</p>
+                                    </div> --}}
+                                    <div class="dropify-loader"></div>
+                                    <div class="dropify-errors-container">
+                                        <ul></ul>
+                                    </div>
+                                    <input required type="file" accept="image/*,.pdf,.doc" data-plugins="dropify" name="file_name" class="dropify" data-default-file="">
+                                    <button type="button" class="dropify-clear">Remove</button>
+                                    <div class="dropify-preview">
+                                        <span class="dropify-render"></span>
+                                        <div class="dropify-infos">
+                                            <div class="dropify-infos-inner">
+                                                <p class="dropify-filename">
+                                                    <span class="file-icon"></span> 
+                                                    <span class="dropify-filename-inner"></span>
+                                                </p>
+                                                <p class="dropify-infos-message">Drag and drop or click to replace</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                                
+                                <button type="submit" class="w-50 mt-3 btn btn-info waves-effect waves-light mt-2">Submit</button>
+                            </div>
+                        </form>
                     </div>
                     @endif
                 </div>
@@ -532,6 +643,43 @@ $timezone = Auth::user()->timezone;
             </div>
             @endif
 
+            <!-- Category kyc document -->
+            @if(count($category_KYC_document) > 0)
+            <div class="col-lg-6 mb-3">
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <h4 class="header-title mb-3">{{ __('Category KYC Documents') }}</h4>
+                        @foreach($category_KYC_document as $document)
+                            @php
+                           
+                            $field_value = $document->image_file['storage_url'];
+                            @endphp
+                            <div class="mb-2">
+                                @if($field_value)
+                                    <label class="mb-2"><b>{{$document->category_document->primary ? $document->category_document->primary->name : ''}} : </b></label>
+                                    @if(strtolower($document->category_document->file_type) == 'image')
+                                    <a href="{{$field_value}}" target="_blank">
+                                        <div class="border rounded-lg royo-thumnail_img text-center ">
+                                            <img src="{{$field_value}}" class="img-thumbnail fi">
+                                        </div>
+                                    </a>
+                                    @elseif(strtolower($document->category_document->file_type) == 'pdf')
+                                        <div>
+                                            <a href="{{$field_value}}" target="_blank"><i class="fa fa-file-pdf fa-6x text-danger"></i></a>
+                                        </div>
+                                    @else
+                                        {{$field_value}}
+                                    @endif
+
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                </div>
+            </div>
+            @endif
+
         </div>
     </div>
 </div>
@@ -548,6 +696,37 @@ $timezone = Auth::user()->timezone;
             <div class="modal-footer">
                 <button type="button" class="btn btn-info waves-effect waves-light submitAddForm">{{ __("Submit") }}</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal for product order form -->
+<div class="modal fade product-order-form" id="order_product_order_form" tabindex="-1" aria-labelledby="order_product_order_form" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div id="order_product-order-form-modal">
+
+          </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal for Category KYC form -->
+<div class="modal fade caregory_kyc_form-form" id="caregory_kyc_form" tabindex="-1" aria-labelledby="caregory_kyc_form" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+            <div id="caregory_kyc_form-modal">
+           
+            </div>
+        </div>
         </div>
     </div>
 </div>
@@ -595,7 +774,7 @@ $timezone = Auth::user()->timezone;
                             that.nextAll('li').remove();
                         }
                         $('#text_muted_' + status_option_id).html('<small class="text-muted">' + response.created_date + '</small>');
-                        if (status_option_id == 2)
+                        if (status_option_id == 2 || status_option_id == 4)
                             $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                         location.reload();
                     },
@@ -605,6 +784,10 @@ $timezone = Auth::user()->timezone;
             }
         });
 
+    });
+
+    $('#Order_category_kyc_document').click(function() {
+        $('#caregory_kyc_form').modal('show');
     });
 
 
@@ -705,7 +888,33 @@ $timezone = Auth::user()->timezone;
             }
         });
     });
+    $(document).on('click', '.Order_product_form', function(e) {
+        var product_form_id = $(this).attr('data-product_form_id');
 
+        var href  = "{{ url('client/orders/product_faq')}}"+"/"+product_form_id;
+        $.ajax({
+            type: "GET",
+            url: href,
+            success: function(response) {
+                $('#order_product_order_form').modal('show');
+                $('#order_product-order-form-modal').html(response);
+                $('#order_product_order_form').modal('show');
+            },
+            error: function(error) {
+                Swal.fire({
+                    text: "{{ __('Something went wrong!')}}",
+                    icon : "error",
+                    button: "OK",
+                    });
+            }
+        });
+        // $.get(href, function(response) {
+        //     console.log(response);
+        //     $('#order_product-order-form-modal').html(response);
+        //     $('#order_product_order_form').modal('show');
+        //  });
+       // $('#order_product-order-form-modal').html(product_form_data);
+    });
     function printDiv()
     {
         var divToPrint=document.getElementById('al_print_area');

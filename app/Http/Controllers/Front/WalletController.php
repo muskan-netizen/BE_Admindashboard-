@@ -62,7 +62,7 @@ class WalletController extends FrontController
                     return $this->errorResponse('Transaction has already been done', 400);
                 }
 
-                $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
+                $wallet->depositFloat($credit_amount, ['__("Wallet has been") <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
 
                 $payment = new Payment();
                 $payment->date = date('Y-m-d');
@@ -143,7 +143,7 @@ class WalletController extends FrontController
             if($user_exists){
                 return $this->successResponse($user_exists, __('User is verified'), 201);
             }else{
-                return $this->errorResponse('User does not exist', 422);   
+                return $this->errorResponse('User does not exist', 422);
             }
         }
         catch(Exception $ex){
@@ -169,9 +169,9 @@ class WalletController extends FrontController
             if($transfer_amount > $first_user_balance){
                 return $this->errorResponse(__('Insufficient funds in wallet'), 422);
             }
-            
+
             $transaction_reference = generateWalletTransactionReference();
-            
+
             $second_user = User::where(function($q) use($username){
                 $q->where('email', $username)->orWhereRaw("CONCAT(`dial_code`, `phone_number`) = ?", $username);
             })

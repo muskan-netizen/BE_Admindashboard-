@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest};
+use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -27,6 +27,7 @@ use Log;
 use Carbon\Carbon;
 class OrderController extends BaseController
 {
+    private $folderName = '/order/reports';
 
     use ApiResponser;
     use \App\Http\Traits\OrderTrait;
@@ -74,8 +75,13 @@ class OrderController extends BaseController
         $cancel_order_requests = $cancel_order_requests->count();
 
         // Pending counts
-        $pending_order_count = Order::with('vendors')->whereHas('vendors', function ($query) {
+        $pending_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use($user) {
             $query->where('order_status_option_id', 1);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         });
         if ($user->is_superadmin == 0) {
             $pending_order_count = $pending_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
@@ -90,8 +96,13 @@ class OrderController extends BaseController
         })->count();
 
         // past orders count
-        $past_order_count = Order::with('vendors')->whereHas('vendors', function ($query) {
+        $past_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use($user) {
             $query->whereIn('order_status_option_id', [6, 3]);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         });
         if ($user->is_superadmin == 0) {
             $past_order_count = $past_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
@@ -106,8 +117,13 @@ class OrderController extends BaseController
         })->count();
 
         // active orders count
-        $active_order_count = Order::with('vendors')->whereHas('vendors', function ($query) {
+        $active_order_count = Order::with('vendors')->whereHas('vendors', function ($query) use($user) {
             $query->whereIn('order_status_option_id', [2, 4, 5]);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         });
         if ($user->is_superadmin == 0) {
             $active_order_count = $active_order_count->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
@@ -132,7 +148,9 @@ class OrderController extends BaseController
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors','fixedFee'));
+        $accounting = ThirdPartyAccounting::where('status',1)->get();
+        $del_order_count = OrderVendor::has('accounting', '<', 1)->where('order_status_option_id',6)->count();
+        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors','fixedFee','accounting','del_order_count'));
     }
 
     public function postOrderFilter(Request $request, $domain = '')
@@ -140,10 +158,12 @@ class OrderController extends BaseController
         $user = Auth::user();
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
-        $orders = Order::with(['vendors.products', 'vendors.status', 'orderStatusVendor', 'address', 'user'])->orderBy('id', 'DESC');
-        if (Auth::user()->is_superadmin == 0) {
-            $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
+        $orders = Order::with(['vendors.products'=>function($q){
+            $q->withoutAppends();
+        }, 'vendors.status', 'orderStatusVendor', 'address', 'user'])->orderBy('id', 'DESC');
+        if ($user->is_superadmin == 0) {
+            $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
             });
         }
         if (!empty($request->search_keyword)) {
@@ -157,9 +177,9 @@ class OrderController extends BaseController
                 $q2->where('payment_option_id', 1);
             });
         })->orderBy('id', 'asc');
-        if (Auth::user()->is_superadmin == 0) {
-            $order_count = $order_count->whereHas('vendors.vendor.permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
+        if ($user->is_superadmin == 0) {
+            $order_count = $order_count->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
             });
         }
         //filer bitween date
@@ -186,39 +206,57 @@ class OrderController extends BaseController
         if ($filter_order_status) {
             switch ($filter_order_status) {
                 case 'pending_orders':
-                    $orders = $orders->with('vendors', function ($query) {
+                    $orders = $orders->with('vendors', function ($query) use($user) {
                         $query->where('order_status_option_id', 1);
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
                     })->whereHas('vendors', function ($query) use ($request) {
                         $query->where('order_status_option_id', 1);
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
                     });
-
                     break;
+
+
                 case 'active_orders':
                     $order_status_options = [2, 4, 5];
-                    $orders = $orders->with('vendors', function ($query) use ($order_status_options) {
+                    $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
                         $query->whereIn('order_status_option_id', $order_status_options);
-                    })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
+                    }, 'vendors.acceptedBy'])
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    })->with('vendors.acceptedBy');
-
+                    });
                     break;
+
+
                 case 'orders_history':
                     $order_status_options = [6, 3];
-                    $orders = $orders->with('vendors', function ($query) use ($order_status_options) {
+                    $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
                         $query->whereIn('order_status_option_id', $order_status_options);
-                    })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
+                    }, 'vendors.cancelledBy','vendors.acceptedBy'])
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    })->with('vendors.cancelledBy','vendors.acceptedBy');
-
+                    });
                     break;
             }
         }
@@ -228,24 +266,39 @@ class OrderController extends BaseController
                 $q2->where('payment_option_id', 1);
             });
         })->select('*', 'id as total_discount_calculate')->paginate(30);
+        
 
-
-        $pending_orders = $pending_orders->with('vendors', function ($query) {
+        $pending_orders = $pending_orders->with('vendors', function ($query) use($user) {
             $query->where('order_status_option_id', 1);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         })->whereHas('vendors', function ($query) {
             $query->where('order_status_option_id', 1);
         })->count();
 
         $order_status_optionsa = [2, 4, 5];
-        $active_orders = $active_orders->with('vendors', function ($query) use ($order_status_optionsa) {
+        $active_orders = $active_orders->with('vendors', function ($query) use ($order_status_optionsa, $user) {
             $query->whereIn('order_status_option_id', $order_status_optionsa);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         })->whereHas('vendors', function ($query) use ($order_status_optionsa) {
             $query->whereIn('order_status_option_id', $order_status_optionsa);
         })->count();
 
         $order_status_optionsd = [6, 3];
-        $orders_history = $orders_history->with('vendors', function ($query) use ($order_status_optionsd) {
+        $orders_history = $orders_history->with('vendors', function ($query) use ($order_status_optionsd, $user) {
             $query->whereIn('order_status_option_id', $order_status_optionsd);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
         })->whereHas('vendors', function ($query) use ($order_status_optionsd) {
             $query->whereIn('order_status_option_id', $order_status_optionsd);
         })->count();
@@ -303,6 +356,33 @@ class OrderController extends BaseController
 
         return $this->successResponse(['orders' => $orders, 'pending_orders' => $pending_orders, 'active_orders' => $active_orders, 'orders_history' => $orders_history], '', 201);
     }
+
+    public function uploadReport(Request $request)
+    {    
+        $checkpreviousrecord = OrderVendorReport::where(['order_id'=>$request->order_id])->first();
+        if($checkpreviousrecord)
+        {
+            $vendorreport = OrderVendorReport::where('id',$checkpreviousrecord->id)->first();
+        }else{
+            $vendorreport = new OrderVendorReport();
+        }        
+        if ($request->hasFile('file_name')) {    /* upload logo file */
+            $file = $request->file('file_name');
+            $vendorreport->report = Storage::disk('s3')->put($this->folderName, $file, 'public');
+        }
+        $vendorreport->order_id = $request->order_id;
+        $vendorreport->vendor_id = $request->vendor_id;
+        $vendorreport->save();
+        return redirect()->back()->with('success', __("Report added successfully"));
+    }
+
+
+    public function deleteReport(Request $request, $domain = '', $reportId = 0)
+    {
+        $report = OrderVendorReport::findOrfail($reportId);        
+        $report->delete();
+        return redirect()->back()->with('success', 'Report deleted successfully!');
+    }
     /**
      * Display the order.
      *
@@ -338,8 +418,11 @@ class OrderController extends BaseController
                 $qry->where('language_id', $langId);
             },
             'vendors.dineInTable.category',
-            'vendors.cancel_request'
+            'vendors.cancel_request',
+            'reports'
         ))->findOrFail($order_id);
+    //    return $order;
+       
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
@@ -361,6 +444,7 @@ class OrderController extends BaseController
                     $total_amount = $total_amount + $opt_quantity_price;
                 }
                 $product->total_amount = $total_amount;
+                
             }
             if ($vendor->dineInTable) {
                 $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -401,7 +485,13 @@ class OrderController extends BaseController
             $lala = new LalaMovesController();
             $driver_data = $lala->getDeriverDetails($order->vendors[0]); 
         }
+        $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
+        // $rr = OrderVendorReport::first();
+         //return $vendor_order_statuses;
+        
+
+        //pr($order->KYC_document->toArray());
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 'order' => $order,
             'vendor_order_statuses' => $vendor_order_statuses,
@@ -413,6 +503,7 @@ class OrderController extends BaseController
             'clientCurrency' => $clientCurrency,
             'user_docs' => $user_docs,
             'vendor_data' => $vendor_data,
+            "category_KYC_document" =>$category_KYC_document,
             'driver_data' => (($driver_data)?json_decode($driver_data):'')
         ]);
     }
@@ -425,7 +516,8 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '') 
     {
-
+        $orderPlaced = true;
+        $orderPlacedNo = '';
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
         try {
@@ -440,12 +532,6 @@ class OrderController extends BaseController
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
             if (!$vendor_order_status_check) {
-                $vendor_order_status = new VendorOrderStatus();
-                $vendor_order_status->order_id = $request->order_id;
-                $vendor_order_status->vendor_id = $request->vendor_id;
-                $vendor_order_status->order_vendor_id = $request->order_vendor_id;
-                $vendor_order_status->order_status_option_id = $request->status_option_id;
-                $vendor_order_status->save();
                 if ($request->status_option_id == 2 || $request->status_option_id == 3) {
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
@@ -456,29 +542,45 @@ class OrderController extends BaseController
                     if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
                         $order_dispatch = $this->checkIfanyProductLastMileon($request);
-                        if ($order_dispatch && $order_dispatch == 1)
+                        if ($order_dispatch && $order_dispatch == 1){
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
-
+                            $orderPlaced = true;
+                        }
                     }elseif($orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
-                        $order_lalamove = $this->placeOrderRequestlalamove($request);
+                        //$orderPlaced = $this->placeOrderRequestlalamove($request);
+
                     }elseif($orderData->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
-                        $order_ship = $this->placeOrderRequestShiprocket($request);
+                        $orderPlaced = $this->placeOrderRequestShiprocket($request);
                     }elseif($orderData->shipping_delivery_type=='DU'){
                         //Create Shipping place order request for Dunzo
-                        $order_dunzo = $this->placeOrderRequestDunzo($request);
+                        $orderPlaced = $this->placeOrderRequestDunzo($request);
                     }elseif($orderData->shipping_delivery_type=='M'){
                         //Create Shipping place order request for Ahoy Masa
-                        $order_dunzo = $this->placeOrderRequestAhoy($request);
+                        $orderPlaced = $this->placeOrderRequestAhoy($request);
                     }
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
-
-
                 }
-                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
+                
+                if($request->status_option_id == 4  && $orderData->shipping_delivery_type=='L'){
+                    //Create Shipping place order request for Lalamove when order in processing state
+                    $orderPlaced = $this->placeOrderRequestlalamove($request);
+                    $orderPlacedNo = $orderPlaced;
+               }
 
+                if($orderPlaced){
+
+                    $vendor_order_status = new VendorOrderStatus();
+                    $vendor_order_status->order_id = $request->order_id;
+                    $vendor_order_status->vendor_id = $request->vendor_id;
+                    $vendor_order_status->order_vendor_id = $request->order_vendor_id;
+                    $vendor_order_status->order_status_option_id = $request->status_option_id;
+                    $vendor_order_status->save();
+
+                    OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
+                }
                 if ($request->status_option_id == 3) {
                     if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
                         $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
@@ -512,7 +614,7 @@ class OrderController extends BaseController
                 return response()->json([
                     'status' => 'success',
                     'created_date' => convertDateTimeInTimeZone($vendor_order_status->created_at, $timezone, 'l, F d, Y, H:i A'),
-                    'message' => __('Order Status Updated Successfully.')
+                    'message' => __('Order Status Updated Successfully.'.(($orderPlacedNo)? ' Order No : '.$orderPlacedNo:''))
                 ]);
             }
         } catch (\Exception $e) {
@@ -655,7 +757,6 @@ class OrderController extends BaseController
 
     public function placeOrderRequestlalamove($request)
     {
-
         $lala = new LalaMovesController();
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
@@ -663,15 +764,12 @@ class OrderController extends BaseController
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
             $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id,$checkOrder->user_id,$checkOrder->id);
             }
-
-            if ($order_lalamove->totalFee >0){
-                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+            if (isset($order_lalamove->orderRef)){
+                 OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
-
-                return 1;
+                return $order_lalamove->orderRef;
             }
-
-        return 2;
+        return false;
     }
 
 
@@ -1457,5 +1555,20 @@ class OrderController extends BaseController
             'dispatcher_status_options' => $dispatcher_status_options,
             'vendor_order_status_created_dates' => $vendor_order_status_created_dates, 'clientCurrency' => $clientCurrency,'vendor_data' => $vendor_data
         ]);
+    }
+     # get product faq 
+    public function viewProductForm(Request $request,$domain = '',$product_id){
+       
+        $faq_data =  OrderProduct::where('id',$product_id)->select('id','user_product_order_form')->first();
+        //pr($faq_data->user_product_order_form);
+        if(isset($faq_data)){
+            $Product_faq =json_decode($faq_data->user_product_order_form);
+            //pr( $Product_faq );
+            if ($request->ajax()) {
+             return \Response::json(\View::make('backend.order.show_product_form', array('product_faqs'=>  $Product_faq))->render());
+            }
+
+        }
+        return $this->errorResponse('Invalid product form ', 404);
     }
 }

@@ -103,14 +103,14 @@
                             <div class="form-group" id="password-wrapper" style="display:none; position:relative">
                                 <input id="password-field" type="password" class="form-control pr-3" name="password" placeholder="{{ __('Password') }}">
                                 <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>
-                                <a class="font-14" href="javascript:void(0)" id="send_password_reset_link" style="right:10px;">Forgot?</a>
+                                <a class="font-14" href="javascript:void(0)" id="send_password_reset_link" style="right:10px;">{{__('Forgot')}}</a>
                             </div>
                             <div class="form-group">
                                 <span id="error-msg" class="font-14 text-danger" style="display:none"></span>
                                 <span id="success-msg" class="font-14 text-success" style="display:none"></span>
                             </div>
                             <div class="form-group">
-                                <button class="btn btn-solid w-100 login_continue_btn" type="submit">Continue</button>
+                                <button class="btn btn-solid w-100 login_continue_btn" type="submit">{{__('Continue')}}</button>
                             </div>
                         </div>
                         </form>

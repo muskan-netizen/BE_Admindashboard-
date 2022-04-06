@@ -33,7 +33,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>
@@ -51,7 +51,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>
@@ -62,7 +62,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>
@@ -73,7 +73,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>
@@ -84,7 +84,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>
@@ -95,7 +95,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
             <div class='file file--upload'>
                 <label for='input-file'>
                     <span class="update_pic">
-                        <img src="https://imgproxy.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
+                        <img src="https://images.royoorders.com/insecure/fill/400/160/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/banner/q20UcgmTuiuvzk8MjnwtfRTLhLOCCkT9EGYuFv3I.jpg" alt="" id="output">
                     </span>
                     <span class="plus_icon"><i class="fas fa-plus"></i></span>
                 </label>

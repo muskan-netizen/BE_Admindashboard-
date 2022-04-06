@@ -110,6 +110,8 @@ class VendorController extends BaseController
     public function index(){
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
+       
+       // pr($csvVendors->toArray());
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->orderBy('id', 'desc');
@@ -609,6 +611,7 @@ class VendorController extends BaseController
             ->where('status', 1)
             ->orderBy('parent_id', 'asc')->get();
         $csvProducts = CsvProductImport::where('vendor_id', $id)->orderBy('id','DESC')->get();
+        //pr($csvProducts->toArray());
         $csvVendors = CsvVendorImport::all();
         /*    get active category list also with parent     */
         foreach ($categories as $category) {
@@ -791,7 +794,7 @@ class VendorController extends BaseController
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
         $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
 
-        return view('backend.vendor.vendorPayout')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory, 'tab' => 'payout', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'total_promo_amount'=>$total_promo_amount, 'past_payout_value'=>$past_payout_value, 'available_funds'=>$available_funds, 'payout_options' => $payout_options]);
+        return view('backend.vendor.vendorPayout')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory, 'tab' => 'payout', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'total_promo_amount'=>$total_promo_amount, 'past_payout_value'=>$past_payout_value, 'available_funds'=>decimal_format($available_funds), 'payout_options' => $payout_options]);
     }
 
     public function vendorPayoutCreate(Request $request, $domain = '', $id){
@@ -939,6 +942,14 @@ class VendorController extends BaseController
         $vendor->fixed_fee = ($request->has('fixed_fee') && $request->fixed_fee == 'on') ? 1 : 0;
         $vendor->price_bifurcation = ($request->has('price_bifurcation') && $request->price_bifurcation == 'on') ? 1 : 0;
         $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
+
+        $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
+
+        // Set order limit - By Ovi
+        if($request->has('orders_per_slot')){
+            $vendor->orders_per_slot   = $request->orders_per_slot;
+        }
+
         if ($request->has('order_min_amount')) {
             $vendor->order_min_amount   = $request->order_min_amount;
         }

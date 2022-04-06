@@ -19,7 +19,26 @@
         text-decoration: line-through;
         color: #6c757d;
     }
+    #category_kyc_form_in_cart .file--upload>label {
+    width: 100%;
+    height: 200px;
+    border: 1px solid #eee;
+    border-radius: 15px;
+}
+#category_kyc_form_in_cart .file .update_pic {
+    width: 100%;
+    height: auto;
+    margin: auto;
+    text-align: center;
+    border: 0;
+    border-radius: 0;
+}
+#category_kyc_form_in_cart .file .update_pic img {
+    height: 130px;
+    width: auto;
+}
 </style>
+
 @endsection
 
 @section('content')
@@ -78,7 +97,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 </div>
 
 <script type="text/template" id="cart_template">
-    <% 
+    <%
     let fixed_fee=0;
     let fixed_fee_amount=0;
     let total_fixed_fee_amount=0;
@@ -94,6 +113,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <div class="row">
                 <div class="col-12">
                     <h5 class="m-0"><b><%= product.vendor.name %></b></h5>
+                    <input type="hidden" name="category_name" id="category_name" value= "<%= product.vendor.name %>" />
                 </div>
                 <div class="col-12">
                     <div class="countdownholder alert-danger" id="min_order_validation_error_<%= product.vendor.id %>" style="display:none;">Your cart will be expired in </div>
@@ -145,8 +165,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     <div class="col-8 col-md-10">
                         <div class="row align-items-md-center">
-                            <div class="col-md-3 order-0">
-                                <h4 class="mt-0 mb-1"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
+                            <div class="col-md-3 order-0">123456
+                                <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
+                                <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
                                     <% if(vset.variant_detail.trans) { %>
                                         <label><span><b><%= vset.variant_detail.trans.title %>:</b></span> <%= vset.option_data.trans.title %></label>
@@ -196,13 +217,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <% _.each(vendor_product.addon, function(addon, ad){%>
                             <% if(addon.option){%>
                                 <div class="row">
-                                    <div class="col-md-3 col-sm-4 items-details text-left">
+                                    <div class="col-md-3 col col-sm-4 items-details text-left">
                                         <p class="p-0 m-0"><%= addon.option.title %></p>
                                     </div>
-                                    <div class="col-md-2 col-sm-4 text-center">
+                                    <div class="col-md-2 col col-sm-4 text-center">
                                         <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart * addon.option.multiplier) %></div>
                                     </div>
-                                    <div class="col-md-7 col-sm-4 text-right">
+                                    <div class="col-md-7 col col-sm-4 text-right">
                                         <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
                                     </div>
                                 </div>
@@ -245,6 +266,29 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </div>
                         </div>
                     <% } %>
+                    @if($client_preference_detail->product_order_form ==1)
+                        <% if( (vendor_product.faq_count > 0 ) && (vendor_product.user_product_order_form == '' || vendor_product.user_product_order_form == null ) ) { %>
+                        <div class=" col-3 <%= vendor_product.faq_count %>  " id="product_faq_dev_<%= vendor_product.product_id %>">
+                            <input type="hidden" name="product_faq_ids" value="<%= vendor_product.product_id %>">
+                            <div class="text-center my-3 btn-product-order-form-div">
+                                <button class="clproduct_cart_order_form btn btn-solid w-100" id="add__cart_product_form" data-dev_remove_id="product_faq_dev_<%= vendor_product.product_id %>" data-product_id="<%= vendor_product.product_id %>"  data-vendor_id="<%= vendor_product.vendor_id %>">{{__('Product Order Form')}}</button>
+                            </div>
+                        </div>
+                        <% } %>
+                    @endif
+<!--
+                    @if($client_preference_detail->category_kyc_documents ==1)
+                        <% if( (vendor_product.category_kyc_count > 0 ) ) { %>
+                        <div class=" col-3 <%= vendor_product.category_kyc_count %>  " id="category_kyc_dev_<%= vendor_product.category_id %>">
+                            <input type="hidden" name="category_kyc_ids" value="<%= vendor_product.category_id %>">
+                            <div class="text-center my-3 btn-category_kyc-div">
+                                <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= vendor_product.category_id %>" data-category_id="<%= vendor_product.category_id %>" >{{__('Category KYC Form')}}</button>
+                            </div>
+                        </div>
+
+                        <% } %>
+                    @endif -->
+
                 </div>
 
                 <hr>
@@ -273,7 +317,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                     <% if(product.delOptions) { %>
                         <div class="row mb-1 d-flex align-items-center">
-                            <div class="col-5 text-lg-right">
+                            <div class="col-md-5 text-lg-right">
                                 <label class="m-0 radio">
                                     {{__('Delivery Fee')}} :</label>
                                 </div>
@@ -296,12 +340,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </div>
                     <% } %>
                     <div class="row mb-1">
-                        <div class="col-5 text-lg-right">
+                        <div class="col-md-5 text-lg-right">
                             <% if(product.coupon_amount_used > 0) { %>
                                 <label class="m-0 radio">{{__('Coupon Discount')}} :</label>
                             <% } %>
                         </div>
-                        <div class="col-7 text-right">
+                        <div class="col-md-7 text-right">
                             <% if(product.coupon_amount_used > 0) { %>
                                 <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.coupon_amount_used) %></p>
                                 <% } %>
@@ -310,7 +354,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                     <div class="row">
                         <% if(cart_details.vendorCnt>1) { %>
-                            <div class="col-5 text-lg-right">
+                            <div class="col-md-5 text-lg-right">
                                 <label class="m-0 radio">{{__('Sub Total')}} :</label>
                             </div>
                             <div class="col-md-7 text-right">
@@ -326,7 +370,22 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <hr>
     <% }); %>
     <div class="row">
+
+        @if($client_preference_detail->category_kyc_documents ==1)
+            <% if( (cart_details.category_kyc_count > 0 ) ) { %>
+            <div class=" col-3 <%= cart_details.category_kyc_count %>  " id="category_kyc_dev_<%= cart_details.category_rendem_id %>">
+                <input type="hidden" name="category_kyc_ids" value="<%= cart_details.category_rendem_id %>">
+                <div class="text-center my-3 btn-category_kyc-div">
+                    <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= cart_details.category_rendem_id %>" data-category_id="<%= cart_details.category_ids %>" >{{__('Category KYC Form')}}</button>
+                </div>
+            </div>
+
+            <% } %>
+        @endif
         <div class="col-12">
+            @php
+             //dd($data);
+            @endphp
             @if(isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry')
             <div class="row">
                 <div class="col-4">{{__('Comment for Pickup Driver ')}}</div>
@@ -342,6 +401,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="col-4">{{__('Comment for Vendor ')}}</div>
                 <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Eg. Please do the whites separately')}}" id="comment_for_vendor" value ="{{$cart->comment_for_vendor??''}}"  name="comment_for_vendor"></div>
             </div>
+
             <hr class="my-2">
             <div class="row">
                 <div class="col-md-6">
@@ -366,7 +426,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                 <div class="col-12">
                     {{__('Specific instructions')}}
-                    <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions ?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions">
+                    <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions">
                 </div>
             </div>
            @endif
@@ -435,7 +495,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(client_preference_detail.tip_before_order == 1) { %>
             <div class="row">
                 <div class="col-12">
-                    <div class="mb-2">@if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif</div> 
+                    <div class="mb-2">@if(getNomenclatureName('Want To Tip', true)!='Want To Tip') {{ getNomenclatureName('Want To Tip', true) }} @else {{__('Do you want to give a tip?')}} @endif</div>
                     <div class="tip_radio_controls">
                         <% if(cart_details.total_payable_amount > 0) { %>
                             <input type="radio" class="tip_radio" id="control_01" name="select" value="<%= cart_details.tip_5_percent %>" <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> checked <% } %>>
@@ -463,7 +523,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <% } %>
                     </div>
                     <div class="custom_tip mb-1 <% if(cart_details.total_payable_amount > 0) { %> d-none <% } %>">
-                        <input class="input-number form-control" name="custom_tip_amount" id="custom_tip_amount" placeholder="Enter Custom Amount" type="number" value="" step="0.1">
+                        <input class="input-number form-control" name="custom_tip_amount" id="custom_tip_amount" placeholder="{{ __('Enter Custom Amount') }}" type="number" value="" step="0.1">
                     </div>
                 </div>
             </div>
@@ -487,14 +547,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <p class="total_amt m-0">{{__('Amount Payable')}}</p>
                 </div>
                 <div class="col-6 text-right">
-                    <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> 
+                    <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
                         <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(fixed_fee_amount)) %></p>
                         <% }else{ %>
                             <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(total_fixed_fee_amount)) %></p>
                             <%
                         } %>
                         <div>
-                            <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> 
+                            <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
                                 <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
                                 <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(total_fixed_fee_amount) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                                 <% }else{ %>
@@ -510,17 +570,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
 
         </div>
-        {{-- Schedual code Start at down --}}
+
+    </div>
+    {{-- Schedual code Start at down --}}
 
             <% if(client_preference_detail.off_scheduling_at_cart != 1 && cart_details.vendorCnt==1) { %>
                 @if($client_preference_detail->business_type != 'laundry')
-            <div class="row col-md-12 d-flex p-0 justify-content-end arabic-lng mt-2 mb-md-4 mb-2 position-relative" id="dateredio">
-                <div class="col mb-2 mb-md-0 text-right p-0">
+            <div class="row arabic-lng position-relative mb-2" id="dateredio">
+                <div class=" col-md-12 mb-2 mb-md-0 text-right">
                     <div class="login-form">
                         <ul class="list-inline ml-auto d-flex align-items-center justify-content-end">
                             <li class="d-inline-block mr-1">
-                            <input type="hidden" class="custom-control-input check" id="vendor_id" name="vendor_id" value="<%= cart_details.vendor_id %>" >
-                            <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value="<%= ((cart_details.schedule_type == 'schedule') ? 'schedule' : 'now') %>" >
+                                <input type="hidden" class="custom-control-input check" id="vendor_id" name="vendor_id" value="<%= cart_details.vendor_id %>" >
+                                <input type="hidden" class="custom-control-input check" id="tasknow" name="task_type" value="<%= ((cart_details.schedule_type == 'schedule') ? 'schedule' : 'now') %>" >
                            <!-- <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button> -->
                             </li>
                             <% if(cart_details.delay_date == 0) { %>
@@ -544,9 +606,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <% } %>
 
                         </ul>
-                    </div>
-                </div>
-                <div class="col-md-6 datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="<%= ((cart_details.schedule_type != 'schedule' ) ? 'display:none!important' : '') %>">
+                        <div class=" col-sm-4 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="<%= ((cart_details.schedule_type != 'schedule' ) ? 'display:none!important' : '') %>">
                     <% if(cart_details.slotsCnt ==0) { %>
                     <% if(cart_details.delay_date != 0) { %>
                         <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
@@ -562,7 +622,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                             <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled_date_time != '')?cart_details.scheduled_date_time : cart_details.delay_date ) %>"  min="<%= cart_details.delay_date %>" >
                             <input type="hidden" id="checkSlot" value="1">
-                            <select name="slots" id="slot" class="form-control">
+                            <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
                                 <option value="">{{__("Select Slot")}} </option>
                                 <% _.each(cart_details.slots, function(slot, sl){%>
                                 <option value="<%= slot.value  %>" <%= slot.value == cart_details.scheduled.slot ? 'selected' : '' %> ><%= slot.name %></option>
@@ -571,12 +631,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <% } %>
 
                 </div>
+                    </div>
+                </div>
+
             </div>
             @endif
             <% } %>
 
             {{-- Schedual code end at down --}}
-    </div>
 </script>
 
 <script type="text/template" id="promo_code_template">
@@ -851,7 +913,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <% if(payment_option.slug == 'stripe') { %>
                             <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper option-wrapper d-none">
                                 <div class="form-control">
-                                    <label class="d-flex flex-row pt-1 pb-1 mb-0">
+                                    <label class="mb-0">
                                         <div id="stripe-card-element"></div>
                                     </label>
                                 </div>
@@ -1167,6 +1229,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     </div>
 
 </div>
+<!-- modal for product order form -->
+<div class="modal fade product-order-form
+" id="cart_product_order_form" tabindex="-1" aria-labelledby="cart_product_order_form" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <div id="cart_product-order-form-modal" style="padding-top: 30px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 <?php ?>
 
 {{-- <form action="{{ route('payment.razorpayCompletePurchase',[app('request')->input('amount'),app('request')->input('order')]) }}" method="POST" id="razorpay_gateway">
@@ -1209,8 +1284,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @endif
 
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
-
 
 <script type="text/javascript">
     var stripe_fpx = '';
@@ -1219,12 +1294,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var user_store_address_url = "{{route('address.store')}}";
+    var product_faq_update_url = "{{ route('cart.productfaq') }}";
     var promo_code_remove_url = "{{ route('remove.promocode') }}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
@@ -1236,6 +1313,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
+
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";
     var update_cart_slot = "{{ route('updateCartSlot') }}";
@@ -1249,8 +1327,21 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var my_orders_url = "{{route('user.orders')}}";
     var validate_promocode_coupon_url = "{{ route('verify.promocode.validate_code') }}";
 
+    var post_toyyibpay_via_gateway_url = "{{route('payment.toyyibpay.index')}}";
+
     var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var longitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
+
+    var get_product_faq = "{{ url('product/faq') }}";
+
+    var get_category_kyc_document = "{{ url('category_kycDocument') }}";
+    var post_category_kyc_document = "{{ route('updateCartCategoryKyc') }}";
+
+    var passbase_page = "{{route('passbase.page')}}";
+    var product_order_form_element_data = [];
+    var error_Slot_is_required = "{{__('Slot is required')}}";
+    var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
+    var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
 
     if(!latitude){
         @if(!empty($client_preference_detail->Default_latitude))
@@ -1351,6 +1442,128 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             }
         });
     });
+
+
+    $(document).delegate('#submit_productfaq', 'click', function() {
+    var product_id = $(this).attr('data-product_id');
+    var form_class = $(this).attr('data-form_class');
+    var remove_div_id = $(this).attr('data-dev_remove_id');
+    var product_order_form_element = getFormData('.'+form_class);
+    if(product_order_form_element == 0){
+        return false;
+    }
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: product_faq_update_url,
+        data: {product_id:product_id,user_product_order_form:product_order_form_element},
+        success: function(response) {
+            $("#"+remove_div_id).remove();
+            //window.location.reload();
+        },
+        error: function(data) {
+            $(".product_order_form_error").html(data.responseJSON.message);
+            setTimeout(function() {
+                $('.product_order_form_error').html('').hide();
+            }, 5000);
+        },
+    });
+        $('#cart_product_order_form').modal('hide');
+    });
+
+
+    function getFormData(dom_query){
+        var product_order_form_element_data = [];
+        var out = {};
+        var s_data = $(dom_query).serializeArray();
+
+            //transform into simple data/value object
+            for(var i = 0; i < s_data.length; i++){
+                var record = s_data[i];
+                console.log(record);
+                out[record.name] = record.value;
+                var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
+                var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
+                console.log(is_required);
+
+                if((is_required)==1 && (record.value =='' )){
+                    var errorMsg ="The "+ record.name +" field is required.";
+                    $('.product_order_form_error').html(errorMsg);
+                    // errorMsg = document.querySelector(".product_order_form_error");
+                    // errorMsg.html = "error msg";
+                    // errorMsg.style.display = 'none';
+                    // alert("hello");
+                    return 0;
+                } else {
+                    $('.product_order_form_error').html('');
+                }
+                product_order_form_element_data.push({'question':record.name,'answer':record.value,'product_faq_id':product_faq_id})
+            }
+        return product_order_form_element_data;
+    }
+
+
+    $(document).delegate('#category_kyc_form_submit', 'click', function() {
+    var product_id = $(this).attr('data-product_id');
+    var form_class = $(this).attr('data-form_class');
+    var remove_div_id = $(this).attr('data-dev_remove_id');
+    var product_order_form_element = getFormDataImage('.'+form_class);
+    if(product_order_form_element == 0){
+        return false;
+    }
+
+    // $.ajax({
+    //     type: "POST",
+    //     dataType: "json",
+    //     url: product_faq_update_url,
+    //     data: {product_id:product_id,user_product_order_form:product_order_form_element},
+    //     success: function(response) {
+    //         $("#"+remove_div_id).remove();
+    //         //window.location.reload();
+    //     },
+    //     error: function(data) {
+    //         $(".product_order_form_error").html(data.responseJSON.message);
+    //         setTimeout(function() {
+    //             $('.product_order_form_error').html('').hide();
+    //         }, 5000);
+    //     },
+    // });
+        $('#cart_product_order_form').modal('hide');
+    });
+
+
+    function getFormDataImage(dom_query){
+        var product_order_form_element_data = [];
+        var out = {};
+        var s_data = $(dom_query).serializeArray();
+
+        console.log(s_data);
+
+            //transform into simple data/value object
+            for(var i = 0; i < s_data.length; i++){
+                var record = s_data[i];
+                console.log(record);
+                out[record.name] = record.value;
+                var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
+                var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
+                console.log(is_required);
+
+                if((is_required)==1 && (record.value =='' )){
+                    var errorMsg ="The "+ record.name +" field is required.";
+                    $('.product_order_form_error').html(errorMsg);
+                    // errorMsg = document.querySelector(".product_order_form_error");
+                    // errorMsg.html = "error msg";
+                    // errorMsg.style.display = 'none';
+                    // alert("hello");
+                    return 0;
+                } else {
+                    $('.product_order_form_error').html('');
+                }
+                product_order_form_element_data.push({'question':record.name,'answer':record.value,'product_faq_id':product_faq_id})
+            }
+        return product_order_form_element_data;
+    }
 
     $(document).delegate('#cart_payment_form input[name="cart_payment_method"]', 'change', function() {
         var method = $(this).attr('id');
@@ -1661,6 +1874,76 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             return false;
         return true;
     }
+
+    // Added by Ovi
+    // Check Slot Availability
+    function checkSlotOrders()
+    {
+        var url = "{{route('checkSlotOrders')}}"
+        var schedule_datetime = $('#schedule_datetime').val();
+        var schedule_slot = $('#slot').val();
+        var vendor_id = $('#vendor_id').val();
+        $.ajax({
+            type: "GET",
+            data: {
+                "schedule_datetime": schedule_datetime,
+                "schedule_slot"    : schedule_slot,
+                "vendor_id"        : vendor_id,
+            },
+            url: url,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(output) {
+                // Check if orderCount is greater equal to orders_per_slot
+                if(output.orderCount >= output.orders_per_slot){
+                    success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
+                    // Disable the place order button
+                    $('#order_placed_btn').attr("disabled", true);
+                }else{
+                    // Enable the place order button
+                    $('#order_placed_btn').attr("disabled", false);
+                }
+            },
+            error: function(output) {
+                // console.log(output);
+            },
+        });
+    }
+
+
+    function getExtension(filename) {
+        return filename.split('.').pop().toLowerCase();
+    }
+
+    function readURL(input, previewId) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            var extension = getExtension(input.files[0].name);
+            reader.onload = function(e) {
+                if(extension == 'pdf'){
+                    $(previewId).attr('src', "{{ asset('assets/images/pdf-icon-png-2072.png') }}");
+                }else if(extension == 'csv'){
+                    $(previewId).attr('src',text_image);
+                }else if(extension == 'txt'){
+                    $(previewId).attr('src',text_image);
+                }else if(extension == 'xls'){
+                    $(previewId).attr('src',text_image);
+                }else if(extension == 'xlsx'){
+                    $(previewId).attr('src',text_image);
+                }else{
+                    $(previewId).attr('src',e.target.result);
+                }
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $(document).on('change', '[id^=input_file_logo_]', function(event){
+        var rel = $(this).data('rel');
+        // $('#plus_icon_'+rel).hide();
+        readURL(this, '#upload_logo_preview_'+rel);
+    });
 
 
 </script>

@@ -192,7 +192,7 @@ class DashBoardController extends BaseController{
             foreach ($monthlysales as $monthly) {
                 $dates[] = $monthly->x;
                 $sales[] = $monthly->z;
-                $revenue[] = $monthly->y;
+                $revenue[] = decimal_format($monthly->y); 
                 $address_ids [] = $monthly->address_id;
             }
             $address_details = UserAddress::whereIn('id', $address_ids)->get();

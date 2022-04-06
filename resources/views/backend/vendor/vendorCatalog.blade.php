@@ -66,7 +66,7 @@
             animation: button-loading-spinner 1s ease infinite;
         }
         .iti{
-            width: 100%; 
+            width: 100%;
         }
 
         @keyframes button-loading-spinner {
@@ -466,8 +466,29 @@
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
                                         @csrf
+
+
+                                        @if(session()->get("applocale_admin") == "ta")
+                                        <a
+                                            href="{{ url('file-download' . '/tamil_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
+
+                                        @elseif(session()->get("applocale_admin") == "ar")
+                                        <a
+                                            href="{{ url('file-download' . '/arabic_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
+
+                                        @elseif(session()->get("applocale_admin") == "fr")
+                                        <a
+                                            href="{{ url('file-download' . '/french_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
+
+                                        @elseif(session()->get("applocale_admin") == "de")
+                                        <a
+                                            href="{{ url('file-download' . '/german_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
+
+                                        @else
                                         <a
                                             href="{{ url('file-download' . '/sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
+                                        @endif
+
                                         <input type="hidden" value="{{ $vendor->id }}" name="vendor_id" />
                                         <input type="file" accept=".csv" onchange="submitProductImportForm()"
                                             data-plugins="dropify" name="product_excel" class="dropify" />
@@ -522,6 +543,7 @@
                                     </thead>
                                     <tbody id="post_list">
                                         @foreach ($csvProducts as $csv)
+
                                             <tr data-row-id="{{ $csv->id }}">
                                                 <td> {{ $loop->iteration }}</td>
                                                 <td> {{ $csv->name }}</td>
@@ -545,7 +567,7 @@
                                                         </ul>
                                                     </td>
                                                 @endif
-                                                <td> <a href="{{ $csv->path }}">{{ __('Download') }}</a> </td>
+                                                <td> <a href="{{ $csv->storage_url }}">{{ __('Download') }}</a> </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -585,7 +607,7 @@
                                          <option value="for_new">{{__('For  New')}}</option>
                                          <option value="for_featured">{{__('For Featured')}}</option>
                                          @endif
-                                         @if ($client_preferences->need_delivery_service == 1)
+                                         @if ($client_preferences->need_delivery_service == 1 || OnLAstMileDelivery()>0)
                                          <option value="for_last_mile">{{__('For Requires Last Mile Delivery')}}</option>
                                          @endif
                                          <option value="for_live">{{__('Draft/Published')}}</option>
@@ -612,7 +634,7 @@
                                             class="chk_box" data-color="#43bee1">
                                     </div>
                                 @endif
-                                @if ($client_preferences->need_delivery_service == 1)
+                                @if ($client_preferences->need_delivery_service == 1 || OnLAstMileDelivery()>0)
                                      <div class="col-md-6  justify-content-between mb-2"    id="for_last_mile"  style="display:none;">
                                         {!! Form::label('title', __('Requires Last Mile Delivery'), ['class' => 'control-label']) !!}
                                         <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile"

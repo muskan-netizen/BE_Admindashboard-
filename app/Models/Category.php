@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Session;
 use Auth;
 class Category extends Model
 {
@@ -18,6 +19,8 @@ class Category extends Model
 
     public function translation_one(){
 
+      $langset = Session::has('adminLanguage') ? Session::get('adminLanguage') : '';
+      if(!$langset){
         $primary = ClientLanguage::orderBy('is_primary','desc')->first();
         if(isset($primary) && !empty($primary))
         {
@@ -25,11 +28,8 @@ class Category extends Model
         }else{
           $langset = 1;
         }
-
-        return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset);
-
-
-
+      }
+      return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset);
     }
 
     public function english(){
@@ -157,8 +157,21 @@ class Category extends Model
   public function translationSetUnique(){
     return $this->hasMany('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->join('languages', 'category_translations.language_id', 'languages.id')->select('category_translations.*', 'languages.id as langId', 'languages.name as langName', 'cl.is_primary')->where('cl.is_active', 1)->groupBy('category_translations.language_id')->orderBy('cl.is_primary', 'desc');
   }
+
+
   public function checkCategory($category,$vendor_id){
     return self::where('vendor_id',$vendor_id)->whereIn('slug',[$category->slug,$category->slug.'_'.$vendor_id])->first();
+  }
+
+
+  public function vendorCategory(){
+    return $this->hasMany('App\Models\VendorCategory');
+  }
+
+
+  public function data()
+  {
+    return $this->hasMany(Product::class,'category_id', 'id');
   }
 
 }

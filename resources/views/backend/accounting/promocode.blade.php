@@ -187,7 +187,7 @@
                   }
                 },
                 columns: [
-                    {data: 'order_detail.order_number', name: 'name', orderable: true, searchable: false, "mRender": function ( data, type, full ) {
+                    {data: 'order_number', name: 'order_number', orderable: true, searchable: false, "mRender": function ( data, type, full ) {
                       return "<a href='" + full.view_url + "' target='_blank'>"+full.order_detail.order_number+"</a>";
                       }},
                     {data: 'created_date', name: 'created_date', orderable: false, searchable: false},

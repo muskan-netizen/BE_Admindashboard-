@@ -38,7 +38,7 @@ if(session()->has('applocale')){
                         <i></i>
                     </a>
                     <div class="al_menu-drawer" id="navbarsfoodTemplate">
-                        <a class="navbar-brand " style="max-width:100px;" href="{{ route('userHome') }}"><img style="width:100%;height:auto" alt="" src="{{$urlImg}}"></a>
+                        <a class="navbar-brand " style="height:60px;" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}"></a>
                         <ul class="header-dropdown ml-auto">
                             <li class="onhover-dropdown_al mobile-account_al">
                                 <ul class="onhover-show-div">
@@ -106,6 +106,7 @@ if(session()->has('applocale')){
                                     @endforeach
 
                                     @endif
+                                    @if(count($languageList) > 1)
                                     <li class="onhover-dropdown change-language">
                                         <a href="javascript:void(0)">{{$applocale}}
                                         <span class="icon-ic_lang align-middle"></span>
@@ -119,7 +120,8 @@ if(session()->has('applocale')){
                                             @endforeach
                                         </ul>
                                     </li>
-
+                                    @endif
+                                    @if(count($currencyList) > 1)
                                     <li class="onhover-dropdown change-currency">
                                         <a href="javascript:void(0)">{{session()->get('iso_code')}}
                                         <span class="icon-ic_currency align-middle"></span>
@@ -135,6 +137,7 @@ if(session()->has('applocale')){
                                             @endforeach
                                         </ul>
                                     </li>
+                                    @endif
 
 
                                     @if(Auth::user())

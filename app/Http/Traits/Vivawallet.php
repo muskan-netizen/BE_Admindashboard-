@@ -83,6 +83,37 @@ trait Vivawallet{
         return $response;
     }
 
+    public function getTransactionDetails($tid){
+        $token = $this->getAuthTokenViva();
+            // if($this->test_mode=='1'){
+            //     $this->api_url = 'https://demo-api.vivapayments.com/checkout/v2/transactions/'.$tid;            
+            //     }else{
+            //     $this->api_url = 'https://api.vivapayments.com/checkout/v2/transactions/'.$tid;
+            // }
+         //dd($token);
+        
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL            => "https://demo-api.vivapayments.com/checkout/v2/transactions/47825180",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => 'GET',
+            CURLOPT_HTTPHEADER     => array(
+                "Authorization: Bearer $token->access_token"
+            ),
+        ));
+        
+        $response = curl_exec($curl);
+        
+        curl_close($curl);
+        echo $response;
+    }
+
 
     public function verificationWebhookKey():object{
         $this->credentials();
@@ -148,7 +179,7 @@ trait Vivawallet{
                 echo 'Error:' . curl_error($ch);
             }
             curl_close($ch);
-            return json_decode($result); 
+             dd($result); 
     }
 
    

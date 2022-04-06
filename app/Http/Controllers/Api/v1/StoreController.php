@@ -173,6 +173,158 @@ class StoreController extends BaseController{
             return $this->errorResponse($e->getMessage(), $e->getCode());
     	}
     }
+
+	public function getMyStoreVendors(Request $request){
+		try {
+			$user = Auth::user();
+			$limit = $request->has('limit') ? $request->limit : 12;
+			$page = $request->has('page') ? $request->page : 1;
+			$user_vendor_ids = UserVendor::where('user_id', $user->id)->pluck('vendor_id')->toArray();
+			$vendors_list = Vendor::where('status',1)->whereIn('id', $user_vendor_ids)->select('id','name','logo')->paginate($limit, $page);
+			return $this->successResponse($vendors_list, '', 200);
+		} catch (Exception $e) {
+            return $this->errorResponse('Server Error', $e->getCode());
+    	}
+	}
+
+	public function getMyStoreVendorDashboard(Request $request, $vendor_id){
+		try {
+    		$user = Auth::user();
+			$orders = Order::where(function ($q1) {
+				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+				$q1->orWhere(function ($q2) {
+					$q2->where('payment_option_id', 1);
+				});
+			});
+			
+			$pending_orders = clone $orders;
+			$active_orders = clone $orders;
+			$completed_orders = clone $orders;
+			$cancelled_orders = clone $orders;
+
+			$pending_orders = $pending_orders->whereHas('vendors', function($query) use ($vendor_id){
+				$query->where('vendor_id', $vendor_id)->where('order_status_option_id', 1);
+			})->count();
+
+			$active_orders = $active_orders->whereHas('vendors', function($query) use ($vendor_id){
+				$query->where('vendor_id', $vendor_id)->whereIn('order_status_option_id', [2, 4,5]);
+			})->count();
+
+			$completed_orders = $completed_orders->whereHas('vendors', function($query) use ($vendor_id){
+				$query->where('vendor_id', $vendor_id)->where('order_status_option_id', 6);
+			})->count();
+
+			$cancelled_orders = $cancelled_orders->whereHas('vendors', function($query) use ($vendor_id){
+				$query->where('vendor_id', $vendor_id)->where('order_status_option_id', 3);
+			})->count();
+
+			$data = ['pending_orders' => $pending_orders, 'active_orders' => $active_orders, 'completed_orders' => $completed_orders, 'cancelled_orders' => $cancelled_orders];
+            return $this->successResponse($data, '', 200);
+    	} catch (Exception $e) {
+            return $this->errorResponse('Server Error', $e->getCode());
+    	}
+	}
+
+	public function getMyStoreVendorOrders(Request $request, $vendor_id){
+    	try {
+    		$user = Auth::user();
+            $limit = $request->has('limit') ? $request->limit : 12;
+			$page = $request->has('page') ? $request->page : 1;
+			$type = $request->has('type') ? $request->type : '';
+			if($type == ''){
+				$this->errorResponse(__('Missing Required parameters'), 400);
+			}
+			$status_ids = [];
+			if($type == 'pending'){
+				$status_ids = [1];
+			}elseif($type == 'active'){
+				$status_ids = [2,4,5];
+			}elseif($type == 'cancelled'){
+				$status_ids = [3];
+			}elseif($type == 'completed'){
+				$status_ids = [6];
+			}
+			$order_list = Order::select('*')->with(['vendors', 'user', 'orderStatusVendor', 'products'])
+			->whereHas('vendors', function($query) use ($vendor_id, $status_ids){
+				$query->where('vendor_id', $vendor_id)->whereIn('order_status_option_id', $status_ids);
+			})
+			->where(function ($q1) {
+				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+				$q1->orWhere(function ($q2) {
+					$q2->where('payment_option_id', 1);
+				});
+			})
+			->orderBy('id', 'DESC')->paginate($limit, $page);
+			foreach ($order_list as $order) {
+				$order_status = [];
+				$product_details = [];
+				$order_item_count = 0;
+				$order->user_name = $order->user->name;
+				$order->user_image = $order->user->image;
+				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+				$order->date_time = date("d-M-Y h:i A", strtotime($order->date_time));
+				$order->payment_option_title = __($order->paymentOption->title);
+				foreach ($order->vendors as $vendor) {
+					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $vendor_id)->orderBy('id', 'DESC')->first();
+					if($vendor_order_status){
+						$order_status_option_id = $vendor_order_status->order_status_option_id;
+						$current_status = OrderStatusOption::select('id','title')->find($order_status_option_id);
+						if($order_status_option_id == 2){
+							$upcoming_status = OrderStatusOption::select('id','title')->where('id', '>', 3)->first();
+						}elseif ($order_status_option_id == 3) {
+							$upcoming_status = null;
+						}elseif ($order_status_option_id == 6) {
+							$upcoming_status = null;
+						}else{
+							$upcoming_status = OrderStatusOption::select('id','title')->where('id', '>', $order_status_option_id)->first();
+						}
+						$order->order_status = [
+							'current_status' => $current_status,
+							'upcoming_status' => $upcoming_status,
+						];
+					}
+				}
+				foreach ($order->products as $product) {
+    				$order_item_count += $product->quantity;
+    				if($vendor_id == $product->vendor_id){
+	    				$product_details[]= array(
+	    					'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
+	    					'price' => $product->price,
+	    					'qty' => $product->quantity,
+							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
+							'product_id' => $product->product_id,
+							'title' => $product->product_name,
+	    				);
+    				}
+				}
+				if(!empty($order->scheduled_date_time)){
+					$order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
+				}
+				$luxury_option_name = '';
+				if($order->luxury_option_id > 0){
+					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+					if($luxury_option->title == 'takeaway'){
+						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+					}elseif($luxury_option->title == 'dine_in'){
+						$luxury_option_name = __('Dine-In');
+					}else{
+						$luxury_option_name = __('Delivery');
+					}
+				}
+				$order->luxury_option_name = $luxury_option_name;
+				$order->product_details = $product_details;
+				$order->item_count = $order_item_count;
+				unset($order->user);
+				unset($order->products);
+				unset($order->paymentOption);
+				unset($order->payment_option_id);
+			}
+            return $this->successResponse($order_list, '', 200);
+    	} catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+    	}
+    }
+
     public function getMyStoreRevenueDetails(Request $request){
         $dates = [];
         $sales = [];
@@ -1106,6 +1258,81 @@ class StoreController extends BaseController{
             }
 			$data = ['vendor_list' => $vendor_list,'category_list' => $category_list,'products'=> $products];
             return $this->successResponse($data, '', 200);
+    	} catch (Exception $e) {
+    		return $this->errorResponse($e->getMessage(), $e->getCode());
+    	}
+    }
+
+	public function getVendorProductCategoryList(Request $request, $vendor_id){
+    	try {
+    		$user = Auth::user();
+    		$langId = $user->language;
+            $limit = $request->has('limit') ? $request->limit : 12;
+			$page = $request->has('page') ? $request->page : 1;
+            
+			$vendor_categories = VendorCategory::with(['category.translation' => function($q) use($langId){
+				$q->where('category_translations.language_id', $langId)->groupBy('category_translations.category_id');
+			}])
+			->whereHas('category', function($query) {
+				$query->whereIn('type_id', [1]);
+			})
+			->select('category_id')->where('vendor_id', $vendor_id)->where('status', 1)->paginate($limit, $page);
+			
+			foreach ($vendor_categories as $vendor_category) {
+				$category_name = '';
+				if($vendor_category->category){
+					$category_name = $vendor_category->category->translation->first() ? $vendor_category->category->translation->first()->name : $vendor_category->category->slug;
+				}
+				$vendor_category->id = $vendor_category->category_id;
+				$vendor_category->name = $category_name;
+				$vendor_category->cat_image = $vendor_category->category->image ?? '';
+				$vendor_category->type_id = $vendor_category->category->type_id;
+				unset($vendor_category->category);
+				unset($vendor_category->category_id);
+			}
+            return $this->successResponse($vendor_categories, '', 200);
+    	} catch (Exception $e) {
+    		return $this->errorResponse($e->getMessage(), $e->getCode());
+    	}
+    }
+
+	public function getVendorProductsWithCategoryList(Request $request, $vendor_id){
+    	try {
+    		$user = Auth::user();
+    		$langId = $user->language;
+            $limit = $request->has('limit') ? $request->limit : 12;
+			$page = $request->has('page') ? $request->page : 1;
+			$publishtype = $request->has('type') ? $request->type : '';
+            
+			$client_currency_detail = ClientCurrency::where('currency_id', $user->currency)->first();
+            $selected_category_id = $request->has('selected_category_id') ? $request->selected_category_id : '';
+			
+			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id')->has('vendor')
+						->with(['media.image', 'categoryName', 'translation' => function($q) use($langId){
+                        	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                    	},'variant' => function($q) use($langId){
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->groupBy('product_id');
+                    	},
+                    ])->orderBy('id', 'DESC');
+
+			if($selected_category_id){
+				$products = $products->where('category_id', $selected_category_id);
+			}
+			
+			$products = $products->where('vendor_id', $vendor_id);
+			if($publishtype == "all" ){
+				$products = $products->paginate($limit, $page);
+			}else{
+				$products = $products->where('is_live', 1)->paginate($limit, $page);
+			}
+			
+			foreach ($products as $product) {
+                foreach ($product->variant as $k => $v) {
+                    $product->variant[$k]->multiplier = $client_currency_detail->doller_compare;
+                }
+            }
+            return $this->successResponse($products, '', 200);
     	} catch (Exception $e) {
     		return $this->errorResponse($e->getMessage(), $e->getCode());
     	}

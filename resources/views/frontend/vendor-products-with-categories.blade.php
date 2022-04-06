@@ -372,6 +372,7 @@
 @endsection
 @section('css-links')
     <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}">
+    <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
     <!-- section start -->
@@ -387,10 +388,10 @@
                             @endif
                         </div>
                         <div class="product-bottom-bar">
-                            <div class="row">
+                            <div class="row d-flex align-items-center">
                                 <div class="col-md-8 col-lg-5 order-0">
                                     <div class="card-box vendor-details-left px-2 py-3">
-                                        <div class="d-sm-flex">
+                                        <div class="d-sm-flex align-items-center">
                                             <div class="vender-icon mr-sm-1 text-center text-sm-left mb-2 mb-sm-0">
                                                 <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}"
                                                     class="rounded-circle avatar-lg" alt="profile-image">
@@ -461,7 +462,7 @@
                                 <div class="col-lg-4 col-xl-5 order-lg-1 order-2">
                                     <div class="vendor-search-bar">
                                         <div class="radius-bar w-100">
-                                            <div class="search_form d-flex align-items-center justify-content-between">
+                                            <div class="search_form d-flex align-items-center justify-content-between border">
                                                 <button class="btn"><i class="fa fa-search"
                                                         aria-hidden="true"></i></button>
                                                 <input class="form-control border-0 typeahead" type="search"
@@ -511,7 +512,7 @@
                             <div class="col-md-8"></div>
                             <div class="col-12">
                                 <div class="row vendor-products-wrapper">
-                                    <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
+                                    <div class="col-sm-4 col-lg-3 border-right al_white_bg_round p-0">
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
@@ -524,11 +525,11 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6">
-                                        <div class="row ">
+                                        <div class="row mb-3 d-flex align-items-center">
                                             <div class="col">
                                                 @if (isset($tags) && !empty($tags))
                                                     @foreach ($tags as $key => $tag)
-                                                        <label class="label-switch switch-primary product_tag_filter mr-2">
+                                                        <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
                                                             <input type="checkbox"
                                                                 class="switch switch-bootstrap product_tag_filter status"
                                                                 name="tag_id" id="product_tag_filter_{{ $key }}"
@@ -1207,6 +1208,7 @@
 @section('script')
     <script src="{{ asset('front-assets/js/rangeSlider.min.js') }}"></script>
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
+    <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
         var get_product_addon_url = "{{ route('vendorProductAddons') }}"
 

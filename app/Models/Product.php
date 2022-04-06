@@ -268,13 +268,12 @@ class Product extends Model implements Auditable{
         });
 
     }
-
+    
 
 
 
     public function productTranslation(){
-   
-        return $this->hasMany('App\Models\ProductTranslation');
+      return $this->hasMany('App\Models\ProductTranslation');
     }
 
 

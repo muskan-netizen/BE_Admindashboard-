@@ -52,13 +52,13 @@ $timezone = Auth::user()->timezone;
                     @php
                     $img = 'https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/default/default_image.png';
                     if(isset($vendor_product['product']['media'][0])){
-
-                       $img = $vendor_product['product']['media'][0]['image']['path']['image_fit'].'100/100'.$vendor_product['product']['media'][0]['image']['path']['image_path'];
+                        $imga = $vendor_product['product']['media'][0]['image']['path']['image_fit'].'100/100'.$vendor_product['product']['media'][0]['image']['path']['image_path'];
+                        $img = $vendor_product['product']['media'][0]['image']['path']['original_image'];
                     }
                     @endphp
                      <div style=" height:auto;width: 60px;background-color: #D8D8D8;">
-                       <!--  <img style="width: 100px;height: 100px;border-radius: 3px;object-fit: cover;" src="{{$img}}" alt=""> -->
-                        <img style="width: 100px;height: 100px;border-radius: 3px;object-fit: cover;" src="{{$vendor_product['product']['media'][0]['image']['path']['original_image']}}" alt="">
+                       {{-- <img style="width: 100px;height: 100px;border-radius: 3px;object-fit: cover;" src="{{$img}}" alt=""> --}}
+                        <img style="width: 100px;height: 100px;border-radius: 3px;object-fit: cover;" src="{{$img}}" alt="">
                      </div>
                      <div style="padding: 0 0 0 45px;">
                         <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{ ($vendor_product['product']['translation_one']['title'] ?? false) ? $vendor_product['product']['translation_one']['title'] : "" }}</h3>

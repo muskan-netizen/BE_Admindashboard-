@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Payment Options</h4>
+                <h4 class="page-title">{{__('Payment Options')}}</h4>
             </div>
         </div>
     </div>

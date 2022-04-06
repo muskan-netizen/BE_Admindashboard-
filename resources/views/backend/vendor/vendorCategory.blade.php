@@ -1,5 +1,6 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => getNomenclatureName('vendors', true)])
 @section('css')
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 <link href="{{asset('assets/libs/nestable2/nestable2.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/ion-rangeslider/ion-rangeslider.min.css')}}" rel="stylesheet" type="text/css" />
@@ -30,6 +31,9 @@
         -webkit-transform: translateY(-50%);
         -moz-transform: translateY(-50%);
         transform: translateY(-50%);
+    }
+    .iti{
+        width: 100%;
     }
 </style>
 @endsection
@@ -244,7 +248,7 @@
                                 <div class="col-md-12" style="overflow-x: auto;">
                                     <table class="table table-borderless mb-0 optionTableAdd" id="banner-datatable">
                                         <tr class="trForClone">
-                                            <th>{{ __("Price") }}({{$clientCurrency->currency->symbol}})</th> 
+                                            <th>{{ __("Price") }}({{$clientCurrency->currency->symbol}})</th>
                                             @foreach($languages as $langs)
                                             <th>{{$langs->language->name}}</th>
                                             @endforeach
@@ -363,7 +367,7 @@
 
                 {!! Form::hidden('vendor_id', $vendor->id) !!}
                 <div class="modal-body" id="editCategoryBox"></div>
-                <div class="modal-footer justify-content-start mb-2">
+                <div class="modal-footer justify-content-start mb-2 @if(Auth::user()->is_superadmin==0)editcatmodal @endif">
                     <p id="p-error1" style="color:red;font-size:20px;text-align:left;justify-content: flex-start;"></p>
                     <button type="button" class="btn btn-info waves-effect waves-light editCategorySubmit">{{ __("Submit") }}</button>
                 </div>

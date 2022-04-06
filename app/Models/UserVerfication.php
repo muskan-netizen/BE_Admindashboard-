@@ -11,6 +11,11 @@ class UserVerfication extends Model
     protected $table = 'user_verification';
     protected $fillable = ['verification_option_id', 'user_id', 'response_id', 'status'];
 
+    public function resources()
+    {
+        return $this->hasMany('App\Models\UserVerificationResource');
+    }
+
     public function addVerification($data)
     {
     	return self::updateOrCreate([

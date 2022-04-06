@@ -1,4 +1,0 @@
-logo,banner,name,description,address,latitude,longitude,dine in,takeaway,delivery
-,,,,,,,TRUE,TRUE,FALSE
-,,,,,,,FALSE,TRUE,TRUE
-,,,,,,,TRUE,FALSE,FALSE

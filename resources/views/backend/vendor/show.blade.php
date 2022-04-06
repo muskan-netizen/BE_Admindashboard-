@@ -1,6 +1,7 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Vendor'])
 
 @section('css')
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <link href="{{asset('assets/css/calendar_main-5.9.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .fc-v-event {
@@ -137,6 +138,9 @@
     .pricingtable.green:hover .price-value,
     .pricingtable.red:hover .price-value {
         color: #fff
+    }
+    .iti{
+        width: 100%;
     }
 
     /**/
@@ -711,9 +715,17 @@
                         <button type="button"
                             class="btn btn-block btn-outline-blue waves-effect waves-light">Cancel</button>
                     </div> -->
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">{{ __("Save") }}</button>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-50">{{ __("Save") }}</button>
+                        </div>
+                        <div class="col-md-6">
+                        <input id="remove-line" class="btn btn-block btn-blue waves-effect waves-light w-50" type="button" value="Remove" />
+                        </div>
                     </div>
+
+
                 </div>
             </form>
         </div>
@@ -809,8 +821,8 @@
 
         // var myLatlng = new google.maps.LatLng("{{ $center['lat'] }}","{{ $center['lng']  }}");
         //console.log(myLatlng);
-        var latitude = parseFloat("{{ $vendor['latitude'] }}");
-        var longitude = parseFloat("{{ $vendor['longitude'] }}");
+        var latitude  =  all_coordinates[0].coordinates['0']['lat'];
+        var longitude =  all_coordinates[0].coordinates['0']['lng'];
         var myOptions = {
             zoom: parseInt(10),
             center: {
@@ -858,6 +870,7 @@
     var lat_longs = new Array();
     var markers = new Array();
     var drawingManager;
+    var _myPolygon;
     var no_parking_geofences_json = all_coordinates; //{all_coordinates};
     var newlocation = '<?php echo json_encode($co_ordinates); ?>';
     var first_location = JSON.parse(newlocation);
@@ -924,6 +937,13 @@
                 alert('You can draw only one zone at a time');
                 event.overlay.setMap(null);
             }
+            _myPolygon = event.overlay;
+        });
+
+        $('#remove-line').on('click', function() {
+            $('#latlongs').val('');
+            _myPolygon.setMap(null);
+
         });
 
         searchBox.addListener("places_changed", () => {
@@ -985,7 +1005,7 @@
         if (length < 6) {
             Swal.fire(
                 'Select Location?',
-                'Please Drow a Location On Map first',
+                'Please Draw a Location On Map first',
                 'question'
             )
             e.preventDefault();

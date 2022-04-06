@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\Accounting\TaxController;
 use App\Http\Controllers\Client\Accounting\OrderController;
 use App\Http\Controllers\Client\Accounting\VendorController;
 use App\Http\Controllers\Client\Accounting\LoyaltyController;
+use App\Http\Controllers\Client\CategoryKycDocumentController;
 use App\Http\Controllers\Client\Accounting\PromoCodeController;
 use App\Http\Controllers\Client\UserRegistrationDocumentController;
 use App\Http\Controllers\Client\VendorRegistrationDocumentController;
@@ -143,7 +144,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendorregistrationdocument/update', [VendorRegistrationDocumentController::class, 'update'])->name('vendor.registration.document.update');
         Route::post('vendor/registration/document/delete', [VendorRegistrationDocumentController::class, 'destroy'])->name('vendor.registration.document.delete');
 
-
+        
         // user registreation document 
         Route::resource('userregistrationdocument', 'Client\UserRegistrationDocumentController');
         Route::get('user/registration/document/edit', [UserRegistrationDocumentController::class, 'show'])->name('user.registration.document.edit');
@@ -151,6 +152,13 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('userregistrationdocument/update', [UserRegistrationDocumentController::class, 'update'])->name('user.registration.document.update');
         Route::post('user/registration/document/delete', [UserRegistrationDocumentController::class, 'destroy'])->name('user.registration.document.delete');
 
+        // Category Kyc document 
+        Route::resource('categorykycdocument', 'Client\CategoryKycDocumentController');
+        Route::get('categorykyc/document/edit', [CategoryKycDocumentController::class, 'show'])->name('categorykyc.document.edit');
+        Route::post('categorykycdocument/create', [CategoryKycDocumentController::class, 'store'])->name('categorykyc.document.create');
+        Route::post('categorykycdocument/update', [CategoryKycDocumentController::class, 'update'])->name('categorykyc.document.update');
+        Route::post('categorykyc/document/delete', [CategoryKycDocumentController::class, 'destroy'])->name('categorykyc.document.delete');
+        Route::get('categorykyc/list', [CategoryKycDocumentController::class, 'getCategory'])->name('categorykyc.getCategory');
 
         Route::resource('tag', 'Client\TagController');
 
@@ -233,6 +241,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('draw-circle-with-radius/{vid}', 'Client\ServiceAreaController@drawCircleWithRadius')->name('draw.circle.with.radius');
         Route::resource('order', 'Client\OrderController');
         Route::post('orders/filter', 'Client\OrderController@postOrderFilter')->name('orders.filter');
+        Route::get('orders/product_faq/{product_id}', 'Client\OrderController@viewProductForm')->name('orders.product_faq');
         Route::get('order/return/{status}', 'Client\OrderController@returnOrders')->name('backend.order.returns');
         Route::get('order/return-modal/get-return-product-modal', 'Client\OrderController@getReturnProductModal')->name('get-return-product-modal');
         Route::post('order/update-product-return-client', 'Client\OrderController@updateProductReturn')->name('update.order.return.client');
@@ -244,6 +253,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('customer/account/{user}/{action}', 'Client\UserController@deleteCustomer')->name('customer.account.action');
         Route::get('customer/edit/{id}', 'Client\UserController@newEdit')->name('customer.new.edit');
         Route::post('customer/import', 'Client\UserController@importCsv')->name('customer.import');
+        Route::post('order/updateReport', 'Client\OrderController@uploadReport')->name('order.upload.report');
+        Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
 
         Route::put('newUpdate/edit/{id}', 'Client\UserController@newUpdate')->name('customer.new.update');
         Route::put('profile/{id}', 'Client\UserController@updateProfile')->name('client.profile.update');

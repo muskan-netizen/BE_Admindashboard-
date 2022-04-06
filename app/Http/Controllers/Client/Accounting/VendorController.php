@@ -71,24 +71,68 @@ class VendorController extends Controller{
             });
         }
 
-        $vendors = $vendors->get();
-        foreach ($vendors as $vendor) {
+        $vendors = $vendors;
+        // foreach ($vendors as $vendor) {
 
-            $vendor->total_paid = 0.00;
-            $vendor->url = route('vendor.show', $vendor->id);
-            $vendor->view_url = route('vendor.show', $vendor->id);
-            $vendor->delivery_fee = decimal_format($vendor->orders->sum('delivery_fee'));
-            $vendor->order_value = decimal_format($vendor->orders->sum('payable_amount'));
-            $vendor->payment_method = decimal_format($vendor->orders->whereIn('payment_option_id', [2,3, 4])->sum('payable_amount'));
-            $vendor->promo_admin_amount = decimal_format($vendor->orders->where('coupon_paid_by', 1)->sum('discount_amount'));
-            $vendor->promo_vendor_amount = decimal_format($vendor->orders->where('coupon_paid_by', 0)->sum('discount_amount'));
-            $vendor->service_fee = decimal_format($vendor->orders->sum('service_fee_percentage_amount'));
-            $vendor->cash_collected_amount = decimal_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount'));
-            $vendor->admin_commission_amount = decimal_format($vendor->orders->sum('admin_commission_percentage_amount') +  $vendor->orders->sum('admin_commission_fixed_amount'));
-            $vendor->taxable_amount = decimal_format($vendor->orders->sum('taxable_amount'));
-            $vendor->vendor_earning = decimal_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $vendor->admin_commission_amount - $vendor->delivery_fee ));
-        }
+        //     $vendor->total_paid = 0.00;
+        //     $vendor->url = route('vendor.show', $vendor->id);
+        //     $vendor->view_url = route('vendor.show', $vendor->id);
+        //     $vendor->delivery_fee = decimal_format($vendor->orders->sum('delivery_fee'));
+        //     $vendor->order_value = decimal_format($vendor->orders->sum('payable_amount'));
+        //     $vendor->payment_method = decimal_format($vendor->orders->whereIn('payment_option_id', [2,3, 4])->sum('payable_amount'));
+        //     $vendor->promo_admin_amount = decimal_format($vendor->orders->where('coupon_paid_by', 1)->sum('discount_amount'));
+        //     $vendor->promo_vendor_amount = decimal_format($vendor->orders->where('coupon_paid_by', 0)->sum('discount_amount'));
+        //     $vendor->service_fee = decimal_format($vendor->orders->sum('service_fee_percentage_amount'));
+        //     $vendor->cash_collected_amount = decimal_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount'));
+        //     $vendor->admin_commission_amount = decimal_format($vendor->orders->sum('admin_commission_percentage_amount') +  $vendor->orders->sum('admin_commission_fixed_amount'));
+        //     $vendor->taxable_amount = decimal_format($vendor->orders->sum('taxable_amount'));
+        //     $vendor->vendor_earning = decimal_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $vendor->admin_commission_amount - $vendor->delivery_fee ));
+        // }
         return Datatables::of($vendors)
+
+            ->addColumn('total_paid', function($vendors) {
+                return 0.00;
+            })
+            ->addColumn('url', function($vendors) {
+                return route('vendor.show', $vendors->id);
+            })
+            ->addColumn('view_url', function($vendors){
+                    return route('vendor.show', $vendors->id);
+            })
+
+            ->addColumn('delivery_fee', function($vendors) {
+                return decimal_format($vendors->orders->sum('delivery_fee'));
+            })
+            ->addColumn('order_value', function($vendors) {
+                return decimal_format($vendors->orders->sum('payable_amount'));
+            })
+            ->addColumn('payment_method', function($vendors){
+                    return decimal_format($vendors->orders->whereIn('payment_option_id', [2,3, 4])->sum('payable_amount'));
+            })
+
+            ->addColumn('promo_admin_amount', function($vendors) {
+                return decimal_format($vendors->orders->where('coupon_paid_by', 1)->sum('discount_amount'));
+            })
+            ->addColumn('promo_vendor_amount', function($vendors) {
+                return decimal_format($vendors->orders->where('coupon_paid_by', 0)->sum('discount_amount'));
+            })
+            ->addColumn('service_fee', function($vendors){
+                    return decimal_format($vendors->orders->sum('service_fee_percentage_amount'));
+            })
+
+            ->addColumn('cash_collected_amount', function($vendors) {
+                return decimal_format($vendors->orders->where('payment_option_id', 1)->sum('payable_amount'));
+            })
+            ->addColumn('admin_commission_amount', function($vendors) {
+                return decimal_format($vendors->orders->sum('admin_commission_percentage_amount') +  $vendors->orders->sum('admin_commission_fixed_amount'));
+            })
+            ->addColumn('taxable_amount', function($vendors){
+                    return decimal_format($vendors->orders->sum('taxable_amount'));
+            })
+            ->addColumn('vendor_earning', function($vendors) {
+                return decimal_format(($vendors->orders->sum('payable_amount') - $vendors->promo_vendor_amount - $vendors->promo_admin_amount - $vendors->admin_commission_amount - $vendors->delivery_fee ));
+            })
+
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {

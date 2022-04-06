@@ -488,7 +488,7 @@
                     ?>
                     <div class="row mb-3">
                     <div class="col-md-6">
-                        <h3 class="mb-1">{{$optDunzo->title}}</h3>
+                        <h3 class="mb-1">{{__($optDunzo->title)}}</h3>
                     </div>
                     <div class="col-md-6 text-right">
                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>

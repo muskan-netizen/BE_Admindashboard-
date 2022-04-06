@@ -316,7 +316,7 @@
                                                             @endforelse
                                                         {{-- <li class="dd-item dd3-item" data-category_id="3">
                                                             <div class="dd3-content">
-                                                                <img class="rounded-circle mr-1" src="https://imgproxy.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/Iw9YXkwmqOmxvSQlnYrkLNvte6slEQNcYPBsw8xH.svg"> Restaurants
+                                                                <img class="rounded-circle mr-1" src="https://images.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/Iw9YXkwmqOmxvSQlnYrkLNvte6slEQNcYPBsw8xH.svg"> Restaurants
                                                                 <span class="inner-div text-right">
                                                                     <a class="action-icon" data-id="3" href="javascript:void(0)">
                                                                     <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'><input type="hidden" value="3">
@@ -326,7 +326,7 @@
                                                             <ol class="dd-list">
                                                                 <li class="dd-item dd3-item" data-id="20">
                                                                     <div class="dd3-content">
-                                                                        <img class="rounded-circle mr-1" src="https://imgproxy.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/vveRdzXKw6cl7O8CUu89sxA57idFXLAqI9bj3deY.jpg">
+                                                                        <img class="rounded-circle mr-1" src="https://images.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/vveRdzXKw6cl7O8CUu89sxA57idFXLAqI9bj3deY.jpg">
                                                                         Venezia
                                                                         <span class="inner-div text-right">
                                                                             <a class="action-icon" data-id="6" href="javascript:void(0)">
@@ -337,7 +337,7 @@
                                                                 </li>
                                                                 <li class="dd-item dd3-item" data-id="20">
                                                                     <div class="dd3-content">
-                                                                        <img class="rounded-circle mr-1" src="https://imgproxy.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/vveRdzXKw6cl7O8CUu89sxA57idFXLAqI9bj3deY.jpg">
+                                                                        <img class="rounded-circle mr-1" src="https://images.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/vveRdzXKw6cl7O8CUu89sxA57idFXLAqI9bj3deY.jpg">
                                                                         Venezia
                                                                         <span class="inner-div text-right">
                                                                             <a class="action-icon" data-id="6" href="javascript:void(0)">
@@ -348,7 +348,7 @@
                                                                 </li>
                                                                 <li class="dd-item dd3-item" data-id="20">
                                                                     <div class="dd3-content">
-                                                                        <img class="rounded-circle mr-1" src="https://imgproxy.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/vveRdzXKw6cl7O8CUu89sxA57idFXLAqI9bj3deY.jpg">
+                                                                        <img class="rounded-circle mr-1" src="https://images.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/vveRdzXKw6cl7O8CUu89sxA57idFXLAqI9bj3deY.jpg">
                                                                         Venezia
                                                                         <span class="inner-div text-right">
                                                                             <a class="action-icon" data-id="6" href="javascript:void(0)">
@@ -361,7 +361,7 @@
                                                         </li>
                                                         <li class="dd-item dd3-item" data-category_id="3">
                                                             <div class="dd3-content">
-                                                                <img class="rounded-circle mr-1" src="https://imgproxy.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/Iw9YXkwmqOmxvSQlnYrkLNvte6slEQNcYPBsw8xH.svg"> Restaurants
+                                                                <img class="rounded-circle mr-1" src="https://images.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/Iw9YXkwmqOmxvSQlnYrkLNvte6slEQNcYPBsw8xH.svg"> Restaurants
                                                                 <span class="inner-div text-right">
                                                                     <a class="action-icon" data-id="3" href="javascript:void(0)">
                                                                     <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'><input type="hidden" value="3">

@@ -38,7 +38,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-8">
-                                                    <h3 class="mt-0"><b>You are on</b></h3>
+                                                    <h3 class="mt-0"><b>{{ __('You are on') }}</b></h3>
                                                     <div class="loalty-title">
                                                         {{ $current_loyalty->name }}
                                                     </div>

@@ -10,6 +10,11 @@ jQuery(window).scroll(function () {
     }
 });
 
+$(".mobile-account .fa").click(function(){
+    $(".onhover-show-div").toggleClass("open");
+  });
+
+
 
 // Material Select Initialization
 $(document).ready(function () {
@@ -722,6 +727,8 @@ $(document).ready(function () {
     }
     $('.addWishList').click(function () {
         var sku = $(this).attr('proSku');
+        var remveFrmWishlist = $(this).attr('remWishlist');
+        var addWishlist = $(this).attr('addWishlist');
         var _this = $(this);
         $.ajax({
             type: "post",
@@ -736,9 +743,9 @@ $(document).ready(function () {
                 if (res.status == "success") {
                     if (_this.hasClass('btn-solid')) {
                         if (res.message.indexOf('added') !== -1) {
-                            _this.text('REMOVE FROM WISHLIST');
+                            _this.text(remveFrmWishlist);
                         } else {
-                            _this.text('ADD TO WISHLIST');
+                            _this.text(addWishlist);
                         }
                     }
                 } else {
@@ -908,12 +915,16 @@ $(document).ready(function () {
                 paymentViaStripeFPX('', 19, '');
             } else if (payment_option_id == 20) {
                 payWithKPG('');
-            } else if (payment_option_id == 21) {
-                paymentViaEasyPaisa();
-            } else if (payment_option_id == 22) {
+            }else if (payment_option_id == 21) {
+                payWithVivaWallet('');
+            }else if(payment_option_id == 22) {
                 payWithCcAvenue('');
             } else if (payment_option_id == 24) {
                 paymentViaCashfree('');
+            } else if (payment_option_id == 26) {
+                paymentViaToyyibPay('');
+            } else if (payment_option_id == 25) {
+                payWithEasebuss('');
             }
         } else {
             _this.attr("disabled", false);
@@ -1037,12 +1048,113 @@ $(document).ready(function () {
         $('#tasknow').val('now');
     });
 
-    $(document).on("click", "#order_placed_btn", function () {
+    $(document).on("click", ".clproduct_cart_order_form", function(e) {
+                e.preventDefault();
+               let cart_product_id = $(this).attr("data-product_id");
+               let cart_vendor_id = $(this).attr("data-vendor_id");
+               var href = get_product_faq+"/"+cart_product_id;
+                $.get(href, function(response) {
+                    //console.log(response);
+                    $('#cart_product_order_form').modal('show');
+                    $('#cart_product-order-form-modal').html(response);
+                 });
+    });
+    // category kyc verification 
+    $(document).on("click", ".cl_category_kyc_form", function(e) {
+        e.preventDefault();
+       let category_ids = $(this).attr("data-category_id");
+       //$(this).prop('disabled', true);
+       var href = get_category_kyc_document;
 
+       $.ajax({
+            data: {category_ids:category_ids},
+            type: "GET",
+            dataType: 'json',
+            url: get_category_kyc_document,
+            success: function (response) {
+                $('#cart_product_order_form').modal('show');
+                $('#cart_product-order-form-modal').html(response);
+            },
+            error: function (error) {
+            
+            }
+            //$(this).prop('disabled', false);
+        });
+        
+    });
+    
+    $(document).on('click', '#category_kycform_submit', function(e) {
+        e.preventDefault();
+        var input='';
+       
+        var form = document.getElementById('category_kyc_form_in_cart');
+        var formData = new FormData(form);
+        var data_uri = post_category_kyc_document;
+        // console.log(data_uri);
+        //  return false;
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: data_uri,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.status == 'success') {
+                    $(".modal .close").click();
+                    location.reload();
+                } else {
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text(response.message);
+                }
+                return response;
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            },
+            error: function(response) {
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    Object.keys(errors).forEach(function(key) {
+                        $("#" + key + "Input input").addClass("is-invalid");
+                        $("#" + key + "Input span.invalid-feedback").children("strong").text(errors[key][0]);
+                        $("#" + key + "Input span.invalid-feedback").show();
+                    });
+                } else {
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text('Something went wrong, Please try Again.');
+                }
+                return response;
+            }
+        });
+
+    });
+    $(document).on("click", "#order_placed_btn", function () {
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
             delivery_type = selected.value;
+        }
+       
+        if($("input[name='product_faq_ids']").length > 0){
+            success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
+            return false;
+        }
+        if($("input[name='category_kyc_ids']").length > 0){
+            success_error_alert('error', 'Category KYC is required! kindly fill the details.', ".cart_response");
+            return false;
+
         }
 
         $('.alert-danger').html('');
@@ -1075,10 +1187,10 @@ $(document).ready(function () {
             }
 
             if (schedule_dt == '') {
-                success_error_alert('error', 'Schedule date time is required', ".cart_response");
+                success_error_alert('error', error_Schedule_date_is_required, ".cart_response");
                 return false;
             } else if (schedule_dt < now) {
-                success_error_alert('error', 'Invalid schedule date time', ".cart_response");
+                success_error_alert('error', error_Invalid_Schedule_date , ".cart_response");
                 return false;
             }
         } else {
@@ -1086,7 +1198,7 @@ $(document).ready(function () {
         }
         if (checkSlot == '1') {
             if (!slot) {
-                success_error_alert('error', 'Slot is required.', ".cart_response");
+                success_error_alert('error', error_Slot_is_required, ".cart_response");
                 return false;
             }
         }
@@ -1128,12 +1240,29 @@ $(document).ready(function () {
                 dataType: 'json',
                 url: update_cart_schedule,
                 data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, address: address },
-                success: function (response) {
-                    if (response.status == "Pending") {
-                        window.location.replace(verifyaccounturl);
-                    }
-                    if (response.status == "Success") {
-                        $.ajax({
+                success: function (response) { 
+                    if(response.status == "passbase_submitted"){
+                        Swal.fire({
+                            text: response.message,
+                            icon: "error",
+                            button: "OK",
+                        });
+                        return false;
+                    }else if(response.status == "passbase_rejected" || response.status == "passbase_pending"){
+                        Swal.fire({  
+                            text: response.message,    
+                            showCancelButton: true,  
+                            confirmButtonText: `Ok`,    
+                            }).then((result) => {  
+                                if (result.value) {
+                                    window.location.replace(passbase_page);
+                                }
+                            });
+                        return false;
+                    }else if (response.status == "Pending") {
+                        window.location.replace(verifyaccounturl); 
+                    }else if (response.status == "Success") {
+                        $.ajax({             
                             data: {},
                             type: "POST",
                             dataType: 'json',
@@ -1482,7 +1611,7 @@ $(document).ready(function () {
             { name: 'returnUrl', value: path }
         );
         ajaxData.push({ name: 'payment_option_id', value: payment_option_id });
-           
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1634,7 +1763,7 @@ $(document).ready(function () {
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
         var is_gift = $('#is_gift:checked').val() ?? 0;
-        // place_order_url=domain+/user/    
+        // place_order_url=domain+/user/
         if ((task_type == 'schedule') && (schedule_dt == '')) {
             $("#proceed_to_pay_modal").modal('hide');
             $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
@@ -1676,7 +1805,7 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-    $(document).on("click", ".proceed_to_pay", function () {
+    $(document).on("click", ".proceed_to_pay", function () {       
 
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -1852,7 +1981,38 @@ $(document).ready(function () {
             else {
                 return false;
             }
+        }else if (payment_option_id == 26) {
+           // alert(123);
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //alert(12345677888);
+                paymentViaToyyibPay(address_id, payment_option_id, order);
+            }
+            else {
+                return false;
+            }
+        }else if (payment_option_id == 21) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //Viva Wallet
+                payWithVivaWallet(order);
+            }
+            else{
+                return false;
+            }
         }
+        else if (payment_option_id == 25) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //Easebuzz payment gateway 
+                payWithEasebuss(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
+        }
+
+
     });
 
 
@@ -2036,11 +2196,21 @@ $(document).ready(function () {
             paymentViaStripeFPX('', payment_option_id, '');
         } else if (payment_option_id == 20) {
             payWithKPG('');
-        } else if (payment_option_id == 22) {
+        }else if (payment_option_id == 21) {
+            payWithVivaWallet('');
+        }else if (payment_option_id == 22) {
             payWithCcAvenue('');
         } else if (payment_option_id == 24) {
             paymentViaCashfree('', payment_option_id, '');
+        }else if (payment_option_id == 26) {
+            paymentViaToyyibPay('', payment_option_id, '');
         }
+        else if (payment_option_id == 25) {
+            payWithEasebuss('', payment_option_id, '');
+        }
+
+
+        
 
     });
     $(document).on("click", ".remove_promo_code_btn", function () {
@@ -2737,7 +2907,6 @@ $(document).ready(function () {
 
     function addToCart() {
 
-
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
 
@@ -2866,13 +3035,13 @@ $(document).ready(function () {
     // ********************************************* all functions for vendor product new page ************************************** //
 
 
-    window.getProductAddons = function getProductAddons(slug, variantId = 0) {
+    window.getProductAddons = function getProductAddons(slug, variantId = 0, vendorId = 0) {
         $.ajax({
             type: "post",
             dataType: "json",
             url: get_product_addon_url,
-            data: { "slug": slug, "variant": variantId },
-            success: function (response) {
+            data: { "slug": slug, "variant": variantId , "vendor" : vendorId},
+            success: function(response) {
                 if (response.status == 'Success') {
                     $("#product_addon_modal .modal-content").html('');
                     let addon_template = _.template($('#addon_template').html());
@@ -3162,7 +3331,8 @@ $(document).ready(function () {
         if (check_addon > 0) {
             var variant_id = that.data("variant_id");
             let slug = that.parents('.product_row').attr('data-slug');
-            getProductAddons(slug, variant_id);
+            let vendor_id = that.data("vendor_id");
+            getProductAddons(slug, variant_id,vendor_id);
             return false;
         }
 
@@ -3299,38 +3469,43 @@ $(document).ready(function () {
 
     // **********************************************   all function for ondemand services   *****************************************  ////////////////////////
 
-    $(document).on("click", "#next-button-ondemand-3", function () {
+    $(document).on("click", "#next-button-ondemand-3", function () {      
         $('.alert-danger').html('');
-        window.location.href = showCart;
+       //window.location.href = showCart;
 
-        // var task_type = 'schedule';
-        // var schedule_date = $("input[name='booking_date']:checked").val();
-        // var schedule_time = $("input[name='booking_time']:checked").val();
-        // var specific_instructions = $("#specific_instructions").val();
+        var task_type = 'schedule';        
+        var schedule_date = $("input[name='booking_date']:checked").val();
+        var schedule_time = $("input[name='booking_time']:checked").val();        
+        var specific_instructions = $("#specific_instructions").val(); 
+        var productid = $("#productid").val();  
+        //alert(schedule_date);
+        //alert(schedule_time);
+       var schedule_dt = schedule_date;      
+        //alert(schedule_dt);
+       // var schedule_dt = schedule_date +' '+schedule_time;
+        if( (task_type == 'schedule') && (schedule_dt == '') ){
+            success_error_alert('error', 'Schedule date time is required', ".cart_response");
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: update_cart_schedule,
+            data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions,productid:productid,schedule_time:schedule_time},
+            success: function (response) {               
+                if (response.status == "Success") {
+                    window.location.href = showCart;
+                }
+            },
+            error: function (error) {
+                console.log(error);
+                var response = $.parseJSON(error.responseText);
+                alert(response.message);
+                success_error_alert('error', response.message, ".cart_response");
 
-        // var schedule_dt = schedule_date +' '+schedule_time;
-        // if( (task_type == 'schedule') && (schedule_dt == '') ){
-        //     success_error_alert('error', 'Schedule date time is required', ".cart_response");
-        //     return false;
-        // }
-
-        // $.ajax({
-        //     type: "POST",
-        //     dataType: 'json',
-        //     url: update_cart_schedule,
-        //     data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions},
-        //     success: function (response) {
-        //         if (response.status == "Success") {
-        //             window.location.href = showCart;
-        //         }
-        //     },
-        //     error: function (error) {
-        //         var response = $.parseJSON(error.responseText);
-        //         success_error_alert('error', response.message, ".cart_response");
-
-        //     }
-        // });
-    });
+            }
+        });
+   });
 
 
 
@@ -3546,18 +3721,24 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.selected-time', function () {
-        let selected_time = $(this).html();
-        let cart_product_id = $(this).data("cart_product_id");
+       
+        let selected_time   = $(this).html();
+        let cart_product_id = $(this).data("cart_product_id");        
         $("#show_time" + cart_product_id).html(selected_time);
         $("#message_of_time" + cart_product_id).html("Your service will start between " + selected_time);
         $("#next-button-ondemand-3").show();
 
         var task_type = 'schedule';
-        var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date" + cart_product_id + "']:checked").val();
-        var schedule_time = $(this).data("value");
-        var specific_instructions = $("#specific_instructions").val();
+        //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date" + cart_product_id + "']:checked").val();
 
-        var schedule_dt = schedule_date + ' ' + schedule_time;
+        //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date']:checked").val();
+        var schedule_date = $("input[name='booking_date']:checked").val();
+       // var schedule_time = $(this).data("value");        
+        //var specific_instructions = $("#specific_instructions").val();
+       // alert(specific_instructions);
+
+        //var schedule_dt = schedule_date + ' ' + schedule_time;
+        var schedule_dt = schedule_date;
         if ((task_type == 'schedule') && (schedule_dt == '')) {
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
             return false;
@@ -3567,7 +3748,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: update_cart_product_schedule,
-            data: { task_type: task_type, schedule_dt: schedule_dt, specific_instructions: specific_instructions, cart_product_id: cart_product_id },
+            data: { task_type: task_type, schedule_dt: schedule_dt,schedule_time:selected_time,cart_product_id: cart_product_id },
             success: function (response) {
                 if (response.status == "Success") {
                 }
