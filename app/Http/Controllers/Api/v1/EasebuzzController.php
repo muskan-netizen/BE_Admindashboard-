@@ -35,7 +35,7 @@ class EasebuzzController  extends BaseController
         $user = Auth::user();
         // pr($request->all());
         $amount =  $this->getDollarCompareAmount($request->amount);
-        $amount = number_format($amount,2);
+        $amount =  number_format( (floor($amount *100)/100),2,'.','') ;
         
         $customerName = $user->name;
         $customerPhone =  $user->phone_number ;
