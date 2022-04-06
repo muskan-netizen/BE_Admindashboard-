@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Http\Request;
-use App\Models\{VerificationOption, UserVerfication};  
+use App\Models\{VerificationOption, UserVerfication, UserVerificationResource};  
 use Log, Auth;
 
 class PassbaseController extends FrontController 
@@ -14,10 +14,12 @@ class PassbaseController extends FrontController
 	private $publish_key;
   	private $secret_key;
   	private $userVerificationObj;
-  	public function __construct(UserVerfication $userVerfication)
+    private $resourceObj;
+  	public function __construct(UserVerfication $userVerfication, UserVerificationResource $resource)
 	{
 		$this->userVerificationObj = $userVerfication;
-		$passbase_creds = VerificationOption::select('credentials', 'test_mode')->where('code', 'passbase')->where('status', 1)->first();
+        $this->resourceObj = $resource;
+		$passbase_creds = VerificationOption::select('credentials','test_mode')->where('code','passbase')->where('status',1)->first();
         $creds_arr = json_decode($passbase_creds->credentials);
 	    $this->publish_key = $creds_arr->publish_key ?? '';
 	    $this->secret_key = $creds_arr->secret_key ?? '';
@@ -42,6 +44,14 @@ class PassbaseController extends FrontController
     		'response_id' => $response['id'],
     		'status' => $response['status']
     	]);
+        foreach($response['resources'] as $resource)
+        {
+            $addResource = $this->resourceObj->addResource([
+                'user_verification_id' => $add->id,
+                'type' => $resource['type'],
+                'datapoints' => json_encode($resource['datapoints'])
+            ]);
+        }
     	return $this->successResponse($response); 
     }
     public function webhook(Request $request)

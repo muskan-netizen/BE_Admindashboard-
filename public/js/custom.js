@@ -921,8 +921,9 @@ $(document).ready(function () {
                 payWithCcAvenue('');
             } else if (payment_option_id == 24) {
                 paymentViaCashfree('');
-            }
-            else if (payment_option_id == 25) {
+            } else if (payment_option_id == 26) {
+                paymentViaToyyibPay('');
+            } else if (payment_option_id == 25) {
                 payWithEasebuss('');
             }
         } else {
@@ -1186,10 +1187,10 @@ $(document).ready(function () {
             }
 
             if (schedule_dt == '') {
-                success_error_alert('error', 'Schedule date time is required', ".cart_response");
+                success_error_alert('error', error_Schedule_date_is_required, ".cart_response");
                 return false;
             } else if (schedule_dt < now) {
-                success_error_alert('error', 'Invalid schedule date time', ".cart_response");
+                success_error_alert('error', error_Invalid_Schedule_date , ".cart_response");
                 return false;
             }
         } else {
@@ -1197,7 +1198,7 @@ $(document).ready(function () {
         }
         if (checkSlot == '1') {
             if (!slot) {
-                success_error_alert('error', 'Slot is required.', ".cart_response");
+                success_error_alert('error', error_Slot_is_required, ".cart_response");
                 return false;
             }
         }
@@ -1804,7 +1805,7 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-    $(document).on("click", ".proceed_to_pay", function () {
+    $(document).on("click", ".proceed_to_pay", function () {       
 
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -1976,6 +1977,16 @@ $(document).ready(function () {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
                 paymentViaCashfree(address_id, payment_option_id, order);
+            }
+            else {
+                return false;
+            }
+        }else if (payment_option_id == 26) {
+           // alert(123);
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //alert(12345677888);
+                paymentViaToyyibPay(address_id, payment_option_id, order);
             }
             else {
                 return false;
@@ -2191,10 +2202,15 @@ $(document).ready(function () {
             payWithCcAvenue('');
         } else if (payment_option_id == 24) {
             paymentViaCashfree('', payment_option_id, '');
+        }else if (payment_option_id == 26) {
+            paymentViaToyyibPay('', payment_option_id, '');
         }
         else if (payment_option_id == 25) {
             payWithEasebuss('', payment_option_id, '');
         }
+
+
+        
 
     });
     $(document).on("click", ".remove_promo_code_btn", function () {

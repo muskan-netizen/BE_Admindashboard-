@@ -488,8 +488,9 @@ $pages = \App\Models\Page::with([
          icon_2_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
       }
     %>
+
     <li class="al_main_category" data-aos="zoom-in">
-        <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
+        <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category[0]) && $category->slug == $cate[0]['slug'] ? 'current_category' : ''}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
             @if($client_preference_detail->show_icons==1)
             <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}}">
                 <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="<%=icon_2_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
