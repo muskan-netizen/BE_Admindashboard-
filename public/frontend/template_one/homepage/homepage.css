@@ -1100,7 +1100,15 @@ span.rating-number{
 .al_new_all_venders h2{
     font-size: 24px;
 }
-
+.iti__flag-container li, .flag-container li {
+    display: block;
+}
+.tip_radio:checked+.tip_label{background:var(--theme-deafult);box-shadow:0 0 5px var(--theme-deafult)}
+.tip_radio:checked+.tip_label h5,.tip_radio:checked+.tip_label p{color:#fff}
+.tip_radio::after{color:#fff;font-family:'FontAwesome';
+    border:2px solid var(--theme-deafult);content:"\f00c";font-size:24px;position:absolute;top:-25px;left:50%;
+    transform:translateX(-50%);height:50px;width:50px;line-height:50px;text-align:center;border-radius:50%;background:white;
+    box-shadow:0 2px 5px -2px hsla(0,0%,0%,0.25)}
  @media(max-width:767px){
      .grid-row.grid-4-4{
          display: grid;
