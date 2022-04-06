@@ -240,6 +240,30 @@
             $('#page-container').toggleClass("al_fixed");
         });
     });
+    jQuery(document).ready(function($) {
+        var footer_height = $('.footer-light').height();
+        $('article#content-wrap').css('padding-bottom',footer_height);
+    });
+    @if(isset($set_template)  && $set_template->template_id ==3 && \Request::route()->getName()=='categoryDetail')
+    function changeImage(image2, check) {
+       var image = $(image2).children('.nav-cate-img').children("img");
+       var  icon = image.attr('data-icon');
+       var  icon_two = image.attr('data-icon_two');
+       if(check == 1)
+       {
+            setTimeout(function () {
+                image.attr('data-src',icon_two);
+                image.attr('src',icon_two);
+            },200);
+       }else if(check == 0){
+            setTimeout(function () {
+                image.attr('data-src',icon);
+                image.attr('src',icon);
+            },200);
+
+       }
+    }
+    @endif
 </script>
 @if (Auth::check())
 @if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))

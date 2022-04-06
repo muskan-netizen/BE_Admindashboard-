@@ -38,7 +38,7 @@ if(session()->has('applocale')){
                         <i></i>
                     </a>
                     <div class="al_menu-drawer" id="navbarsfoodTemplate">
-                        <a class="navbar-brand " style="max-width:100px;" href="{{ route('userHome') }}"><img style="width:100%;height:auto" alt="" src="{{$urlImg}}"></a>
+                        <a class="navbar-brand " style="height:60px;" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}"></a>
                         <ul class="header-dropdown ml-auto">
                             <li class="onhover-dropdown_al mobile-account_al">
                                 <ul class="onhover-show-div">

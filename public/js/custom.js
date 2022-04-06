@@ -10,6 +10,11 @@ jQuery(window).scroll(function () {
     }
 });
 
+$(".mobile-account .fa").click(function(){
+    $(".onhover-show-div").toggleClass("open");
+  });
+
+
 
 // Material Select Initialization
 $(document).ready(function () {
@@ -917,6 +922,9 @@ $(document).ready(function () {
             } else if (payment_option_id == 24) {
                 paymentViaCashfree('');
             }
+            else if (payment_option_id == 25) {
+                payWithEasebuss('');
+            }
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -1132,7 +1140,6 @@ $(document).ready(function () {
 
     });
     $(document).on("click", "#order_placed_btn", function () {
-
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
@@ -1232,11 +1239,28 @@ $(document).ready(function () {
                 dataType: 'json',
                 url: update_cart_schedule,
                 data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, address: address },
-                success: function (response) {
-                    if (response.status == "Pending") {
-                        window.location.replace(verifyaccounturl);
-                    }
-                    if (response.status == "Success") {
+                success: function (response) { 
+                    if(response.status == "passbase_submitted"){
+                        Swal.fire({
+                            text: response.message,
+                            icon: "error",
+                            button: "OK",
+                        });
+                        return false;
+                    }else if(response.status == "passbase_rejected" || response.status == "passbase_pending"){
+                        Swal.fire({  
+                            text: response.message,    
+                            showCancelButton: true,  
+                            confirmButtonText: `Ok`,    
+                            }).then((result) => {  
+                                if (result.value) {
+                                    window.location.replace(passbase_page);
+                                }
+                            });
+                        return false;
+                    }else if (response.status == "Pending") {
+                        window.location.replace(verifyaccounturl); 
+                    }else if (response.status == "Success") {
                         $.ajax({             
                             data: {},
                             type: "POST",
@@ -1966,6 +1990,16 @@ $(document).ready(function () {
                 return false;
             }
         }
+        else if (payment_option_id == 25) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //Easebuzz payment gateway 
+                payWithEasebuss(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
+        }
 
 
     });
@@ -2157,6 +2191,9 @@ $(document).ready(function () {
             payWithCcAvenue('');
         } else if (payment_option_id == 24) {
             paymentViaCashfree('', payment_option_id, '');
+        }
+        else if (payment_option_id == 25) {
+            payWithEasebuss('', payment_option_id, '');
         }
 
     });
@@ -2649,16 +2686,22 @@ $(document).ready(function () {
     });
 
     function setTipAmount(tip, amount_payable, currency) {
+        var fixed_fee_amount = $("#fixed_fee_amount").val();
+            if ((fixed_fee_amount == '') || (isNaN(fixed_fee_amount))) {
+                fixed_fee_amount = 0;
+            }
         if (tip != 'custom') {
             if ((tip == '') || (isNaN(tip))) {
                 tip = 0;
             }
-            amount_payable = parseFloat(amount_payable) + parseFloat(tip);
+            
+            amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
             $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
         } else {
+            amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
             $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
@@ -2671,10 +2714,14 @@ $(document).ready(function () {
         if ((tip == '') || (isNaN(tip))) {
             tip = 0;
         }
+        var fixed_fee_amount = $("#fixed_fee_amount").val();
+        if ((fixed_fee_amount == '') || (isNaN(fixed_fee_amount))) {
+            fixed_fee_amount = 0;
+        }
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
         var amount_payable = amount_elem.val();
-        amount_payable = parseFloat(amount_payable) + parseFloat(tip);
+        amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
         $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));

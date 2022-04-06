@@ -36,8 +36,7 @@ class NomenclatureController extends BaseController
         NomenClature::updateOrCreate(['id' => 6], ['label' => 'Dine-In']);
         NomenClature::updateOrCreate(['id' => 7], ['label' => 'Delivery']);
         NomenClature::updateOrCreate(['id' => 8], ['label' => 'Zip Code']);
-        NomenClature::updateOrCreate(['label' => 'Fixed Fee']);
-        if (count($names) > 0) {
+         if (count($names) > 0) {
             $names_value_exists = [];
             foreach ($names as $name) {
                 if ($name) {
@@ -215,7 +214,7 @@ class NomenclatureController extends BaseController
                 NomenclatureTranslation::where('nomenclature_id', 8)->delete();
             }
         }
-        if ($wantToTip_names && (count($wantToTip_names) > 0)) {
+        if (!empty($wantToTip_names) > 0) {
             $names_value_exists = [];
             foreach ($wantToTip_names as $name) {
                 if ($name) {
@@ -236,10 +235,10 @@ class NomenclatureController extends BaseController
                 }
                 //dd("reached");
             } else {
-              //  $nomenclature = NomenClature::where('label', 'Want To Tip')->delete();
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
             }
         }
-        if (count($FixedFee_names) > 0) {
+        if (!empty($FixedFee_names) > 0) {
             $names_value_exists = [];
             foreach ($FixedFee_names as $name) {
                 if ($name) {
@@ -260,7 +259,7 @@ class NomenclatureController extends BaseController
                 }
                 //dd("reached");
             } else {
-              //  NomenClature::where('label', 'Fixed Fee')->delete();
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
             }
         }
         return redirect()->route('configure.customize')->with('success', 'Nomenclature Saved Successfully!');

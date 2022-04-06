@@ -18,7 +18,7 @@ $preference = $client_preference_detail;
         <div class="row align-items-center justify-content-between">
             <div class="col-sm-4">
                 <div class="d-flex align-items-center justify-content-lg-start">
-                    <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}" height="60" ></a>
+                    <a class="navbar-brand mr-sm-3 d-block d-sm-none" style="height:60px" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}" height="60" ></a>
                     @if(isset($preference))
                     @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
                             <div class="location-bar d-flex align-items-center justify-content-start m-0 p-0 dropdown-toggle order-1 ellips" href="#edit-address" data-toggle="modal">
@@ -26,20 +26,9 @@ $preference = $client_preference_detail;
                                 <div class="homepage-address text-left">
                                     <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                 </div>
-                                <!-- <div class="down-icon ml-2">
-                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                </div> -->
                             </div>
                         @endif
                     @endif
-                </div>
-            </div>
-
-            <div class="col d-none text-right pr-0">
-                <div class="icon-nav">
-                    <ul>
-                        <li class="d-inline-block d-lg-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
-                    </ul>
                 </div>
             </div>
 
@@ -52,9 +41,6 @@ $preference = $client_preference_detail;
                                 <div class="homepage-address text-left">
                                     <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                 </div>
-                                <!-- <div class="down-icon ml-2">
-                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                </div> -->
                             </div>
                         @endif
                     @endif
@@ -66,11 +52,6 @@ $preference = $client_preference_detail;
                 }
                 @endphp
                 <ul class="header-dropdown d-none d-sm-inline">
-                    <!-- <li class="mobile-wishlist d-inline d-sm-none">
-                        <a href="{{route('user.wishlists')}}">
-                            <i class="fa fa-heart" aria-hidden="true"></i>
-                        </a>
-                    </li> -->
                     @if($client_preference_detail->header_quick_link == 1)
                     <li class="onhover-dropdown quick-links quick-links">
 
@@ -167,35 +148,15 @@ $preference = $client_preference_detail;
     </div>
 
     <div class="mobile-menu main-menu position-fixed d-block d-sm-none">
-        <div class="menu-right_">
+        <div class="menu-right_ oneTemplateMobile">
             <ul class="header-dropdown icon-nav d-flex justify-content-around">
-                <li class="onhover-div mobile-setting">
+                <li class="onhover-div mobile-setting al_iconsMb">
                     <div data-toggle="modal" data-target="#setting_modal"><i class="ti-settings"></i></div>
-                    <!-- <div class="show-div setting">
-                        <h6>language</h6>
-                        <ul>
-                            <li><a href="#">english</a></li>
-                            <li><a href="#">french</a></li>
-                        </ul>
-                        <h6>currency</h6>
-                        <ul class="list-inline">
-                            @foreach($currencyList as $key => $listc)
-                                <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
-                                    <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
-                                </li>
-                            @endforeach
-                        </ul>
-                        <h6>Change Theme</h6>
-                        @if($client_preference_detail->show_dark_mode == 1)
-                        <ul class="list-inline">
-                            <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
-                        </ul>
-                        @endif
-                    </div> -->
                 </li>
 
-                <li class="onhover-dropdown mobile-account  d-inline d-sm-none"> <i class="fa fa-user" aria-hidden="true"></i>
-                    {{__('My Account')}}
+                <li class="onhover-dropdown_al mobile-account  d-inline d-sm-none al_iconsMb">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+
                     <ul class="onhover-show-div">
                         @if(Auth::user())
                             @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
@@ -220,13 +181,13 @@ $preference = $client_preference_detail;
                     </ul>
                 </li>
                 @if($client_preference_detail->show_wishlist == 1)
-                <li class="mobile-wishlist d-inline d-sm-none">
+                <li class="mobile-wishlist d-inline d-sm-none al_iconsMb">
                     <a href="{{route('user.wishlists')}}">
                         <i class="fa fa-heart" aria-hidden="true"></i>
                     </a>
                 </li>
                 @endif
-                <li class="onhover-div al_mobile-search">
+                <li class="onhover-div al_mobile-search al_iconsMb">
                     <a href="javascript:void(0);" id="mobile_search_box_btn" onClick="$('.search-overlay').css('display','block');"><i class="ti-search"></i></a>
                     <div id="search-overlay" class="search-overlay">
                         <div> <span class="closebtn" onclick="closeSearch()" title="Close Overlay">×</span>
@@ -243,7 +204,7 @@ $preference = $client_preference_detail;
                 </li>
 
                 @if($client_preference_detail->cart_enable == 1)
-                <li class="onhover-div mobile-cart">
+                <li class="onhover-div mobile-cart al_iconsMb">
                     <a href="{{route('showCart')}}" style="position: relative">
                         <i class="ti-shopping-cart"></i>
                         <span class="cart_qty_cls" style="display:none"></span>

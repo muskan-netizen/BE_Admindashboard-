@@ -9,9 +9,6 @@ article#page-container{
     height: 100%;
     min-height: 1px;
 }
-article#content-wrap{
-    padding-bottom: 228px;
-}
 .al_new_wrapper_design{
     background-color: #fff;
 }
@@ -107,7 +104,6 @@ footer#footer{
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 228px;
 }
 .al_box_third_template{
     padding: 12px ;
@@ -324,6 +320,41 @@ footer#footer{
    -webkit-animation: pulse-animation 2s infinite;
    -moz-animation: pulse-animation 2s infinite;
    animation: pulse-animation 2s infinite;
+}
+.tip_label {
+    display: inline-block;
+    background: white;
+    border: 1px solid var(--theme-deafult);
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-bottom: 1rem;
+    text-align: center;
+    position: relative;
+}
+.tip_radio {
+    display: none;
+}
+.tip_radio:not(:disabled)~label {
+    cursor: pointer;
+}
+.radio input:checked~.checkround:after {
+    display: block;
+}
+.radio .checkround:after {
+    left: 0;
+    right: 0;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--theme-deafult);
+}
+.checkround:after {
+    content: "";
+    position: absolute;
+    display: none;
 }
 @-webkit-keyframes pulse-animation{0%{box-shadow:0 0 0 0 rgba(0,0,0,.2)}100%{box-shadow:0 0 0 20px transparent}}
 @keyframes pulse-animation{0%{box-shadow:0 0 0 0 rgba(0,0,0,.2)}100%{box-shadow:0 0 0 20px transparent}}
