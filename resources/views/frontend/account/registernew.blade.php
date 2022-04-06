@@ -33,7 +33,7 @@
     </style>
 @endsection
 @section('content')
-    <section class="wrapper-main mb-5 py-lg-5">
+    <section class="wrapper-main">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 mb-lg-0 mb-3 text-center">

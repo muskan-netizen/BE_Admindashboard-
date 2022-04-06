@@ -59,3 +59,10 @@ top: 4px !important;font-size:24px}.footer-theme .sub-title .contact-list li spa
 ul.social-links{
     width: max-content;
 }
+.dark ul.contact-list.al li span{
+    color: #fff;
+}
+
+@media(max-width:767px){
+.tap-top{width: 35px;height: 35px;line-height: 35px;}
+}
