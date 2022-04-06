@@ -286,7 +286,7 @@ window.initializeSlider = function initializeSlider() {
         responsive: [
             { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 3, infinite: true, dots: false, centerMode: false, } },
             { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 3, dots: false, centerMode: true, } },
-            { breakpoint: 767, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } }
+            { breakpoint: 767, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, } }
         ]
     });
     $('.al_t2_suppliers-slider').slick({
