@@ -2231,7 +2231,6 @@ class OrderController extends BaseController
                 if ($request->order_status_option_id == 4 && $orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         $orderPlaced = $this->placeOrderRequestlalamove($request);
-                    }
                 }
 
                 if($orderPlaced){
