@@ -132,7 +132,8 @@
     display:inline-flex
 }
 .product-wrapper-grid.list-view .product-image{
-    width:14%
+    width:14%;
+    height:auto;
 }
 .al_new_wrapper_design .list-view .scale-effect .media-body{
     display:inline-block;
@@ -666,14 +667,6 @@ body[dir="rtl"] .al_count_tabs_new_design li a.nav-link span{
     margin-top:7px;
     font-size:20px
 }
- .al_new_ipad_view a.btn, .al_new_ipad_view a.fav-button{
-    display:block!important;
-    height:40px;
-    width:40px;
-    line-height:40px;
-    text-align:center;
-    border-radius:40px
-}
  .header-dropdown li{
     margin:0
 }
@@ -830,15 +823,6 @@ h2.homepage-address{
     background-image:none;
     color:#777;
     padding:0!important
-}
-#al_new_design .pixelstrap a,#al_new_design .pixelstrap a:active,#al_new_design .pixelstrap a:hover{
-    padding:0
-}
-#al_new_design .pixelstrap a,#al_new_design .pixelstrap a:active,#al_new_design .pixelstrap a:hover,#al_new_design .pixelstrap li a{
-    padding:0;
-    width:auto;
-    font-size:16px;
-    width:max-content
 }
 #al_new_design .al_main_category_list li a{
     padding-left:10px!important;
@@ -1110,9 +1094,6 @@ body .al_new_wrapper_design .collection-filter .theme-card .offer-slider img{
 }
 .al_new_wrapper_design .scale-effect .inner_spacing{
     width:100%
-}
-.al_new_wrapper_design .collection-product-wrapper .product-top-filter{
-    margin-bottom:10px
 }
 .al_new_wrapper_design .breadcrumb-section .breadcrumb{
     margin-top:10px;
@@ -1908,8 +1889,20 @@ body.dark .switchery{
 .dark .al_new_wrapper_design select{
     color:#2d2d2d
 }
+.dark .delivery_box .radio{
+    color: #fff;
+}
+.dark .timing-box_al li{color: #fff;}
 .al_new_wrapper_design .collection-filter .inner_spacing{
     width:100%!important
+}
+.product-wrapper-grid.list-view .supplier-rating{
+    display: inline-block;
+    width: calc(100% - 250px);
+}
+.product-wrapper-grid.list-view .suppliers-img-outer{
+    display: inline-block;
+    vertical-align: top;margin-right: 20px;
 }
 /* mobile header */
  .al_new_mobile_header .location-bar.d-inline-flex.align-items-center.position-relative{
@@ -2297,4 +2290,20 @@ body #page-container #footer .footer-theme .sub-title .contact-list li span{
 }
  body a.navbar-brand img{
     height: 100%;
+}
+.displayProducts .product-wrapper-grid .inner_spacing span.rating i{color: #fff;}
+.displayProducts .product-wrapper-grid .inner_spacing span.rating{
+    top: 12px;
+    position: absolute;
+    right: 12px;
+    height: 30px;
+    width: 50px;
+    background-color: #409a40;
+    line-height: 30px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgb(0 0 0 / 5%);
+    color: #fff;
+    text-align: center;
+    padding-right: 0;
+    font-size: 14px;
 }

@@ -1,9 +1,13 @@
 body{
     background-color:#f5f5f5
 }
+.dark .new-tag{
+    color: #fff;
+}
 article#page-container{
     position:relative;
     min-height:100vh;
+    overflow: hidden;
 }
 body.al_body_template_one header.site-header.fixed-bar .pixelstrap li .nav-cate-img{
     display:none
@@ -67,7 +71,7 @@ body .navigation-tab,body .navigation-tab-overlay{
     max-width:100%
 }
 .menu-navigation .sm.pixelstrap.sm-horizontal.menu-slider.items-center .slick-prev{
-    left:0
+    left:-20px
 }
 .menu-slider .slick-next.slick-disabled,.menu-slider .slick-prev.slick-disabled{
     opacity:0

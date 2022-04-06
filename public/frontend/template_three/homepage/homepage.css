@@ -453,7 +453,11 @@ body.dark  .al_footer_template_three,
 body.dark  .al_box_third_template:hover{background-color: #0b0b0b;border-color: #000;}
 
 
-
+@media(max-width: 1400px){
+    section#our_vendor_main_div .vendors{
+        padding: 0 20px;
+    }
+}
 
 
 

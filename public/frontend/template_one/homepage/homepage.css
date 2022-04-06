@@ -104,14 +104,7 @@ ul.onhover-show-div.open{
     height:100%;
     object-fit:cover
 }
-.common-product-box,.product-box,.product-card-box,.suppliers-box{
-    border-bottom:0!important;
-    position:relative;
-    border-radius:12px;
-    overflow:hidden;
-    background:#fff;
-    box-shadow:0 0 0 1px rgb(67 41 163 / 8%),0 1px 5px 0 rgb(67 41 163 / 8%)
-}
+
 .suppliers-box .suppliers-img-outer{
     overflow: hidden;
     border:none;
@@ -877,12 +870,18 @@ li.close-window i{
     background-color:#fff;
     padding-bottom:20px
 }
-.item_no{
-    top:-7px;
-    background:var(--theme-deafult);
-    text-align:center;
-    color:#fff;
-    border-radius:20px
+.item_no {
+    top: -7px;
+    background: var(--theme-deafult);
+    color: #fff;
+    border-radius: 20px;
+    padding: 0;
+    font-size: 12px;
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    line-height: 30px;
+    letter-spacing: -1px;
 }
 .step-indicator .step-icon-order img{
     height:30px;
@@ -930,16 +929,6 @@ table.table.wishlist-table.border{
     border:solid var(--theme-deafult);
     border-width:0 2px 2px 0;
     transform:rotate(45deg)
-}
- .tip_label{
-     display: inline-block;
-     background: white;
-     border: 1px solid var(--theme-deafult);
-     border-radius: 5px;
-     padding: 5px 10px;
-     margin-bottom: 1rem;
-     text-align: center;
-     position: relative;
 }
  .file.upload-new>label, .vendor-signup .file>label {
      width: 100%;
@@ -1072,9 +1061,46 @@ table.table.wishlist-table.border{
     bottom: 0;
     top: 0;
 }
-.file>input[type=file] {
+.file>input[type=file]{
     display: none;
 }
+span.rating-number{
+    position: absolute;
+    content: "";
+    top: 4px;
+    right: 4px;
+    background-color: #38882f;
+    border-radius: 5px;
+    color: #fff;
+    padding: 2px 10px;
+}
+/* dark css */
+.dark .common-product-box .inner_spacing,.dark .product-box .inner_spacing,.dark .product-card-box .inner_spacing,.dark .suppliers-box .inner_spacing,
+.dark .common-product-box,.dark .product-box,.dark .product-card-box,.dark .suppliers-box{background-color: #1b1b1b;}
+.dark .al_custom_brand .brand-box h6{color: #fff;}
+.dark section.section-b-space.light-layout.pt-3.pb-0{
+    background-color: #232323;
+}
+.dark .progress-order{
+    background-color: #232323;
+}
+.dark .order_detail{background-color: #1b1b1b;}
+/* dark css end */
+
+.al_body_template_one  ul.timing-box li{
+    margin-right: 10px;
+    border: 1px solid #eee;
+    padding: 2px 5px;
+    border-radius: 6px;
+}
+.al_body_template_one  ul.timing-box li:last-child{
+    margin-right: 0;
+    float: right;
+}
+.al_new_all_venders h2{
+    font-size: 24px;
+}
+
  @media(max-width:767px){
      .grid-row.grid-4-4{
          display: grid;
@@ -1086,5 +1112,8 @@ table.table.wishlist-table.border{
     }
      .grid-row.grid-4-4 .cards:first-child{
         display: block;
+    }
+    .footer-contant{
+        margin-bottom: 20px;
     }
 }

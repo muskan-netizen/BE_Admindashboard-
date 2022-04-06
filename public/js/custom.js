@@ -1055,7 +1055,7 @@ $(document).ready(function () {
                     $('#cart_product-order-form-modal').html(response);
                  });
     });
-    // category kyc verification 
+    // category kyc verification
     $(document).on("click", ".cl_category_kyc_form", function(e) {
         e.preventDefault();
        let category_ids = $(this).attr("data-category_id");
@@ -1072,17 +1072,17 @@ $(document).ready(function () {
                 $('#cart_product-order-form-modal').html(response);
             },
             error: function (error) {
-            
+
             }
             //$(this).prop('disabled', false);
         });
-        
+
     });
-    
+
     $(document).on('click', '#category_kycform_submit', function(e) {
         e.preventDefault();
         var input='';
-       
+
         var form = document.getElementById('category_kyc_form_in_cart');
         var formData = new FormData(form);
         var data_uri = post_category_kyc_document;
@@ -1143,7 +1143,7 @@ $(document).ready(function () {
         if (selected) {
             delivery_type = selected.value;
         }
-       
+
         if($("input[name='product_faq_ids']").length > 0){
             success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
             return false;
@@ -1242,7 +1242,7 @@ $(document).ready(function () {
                         window.location.replace(verifyaccounturl);
                     }
                     if (response.status == "Success") {
-                        $.ajax({             
+                        $.ajax({
                             data: {},
                             type: "POST",
                             dataType: 'json',
@@ -2662,7 +2662,7 @@ $(document).ready(function () {
             if ((tip == '') || (isNaN(tip))) {
                 tip = 0;
             }
-            
+
             amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
             $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
@@ -3421,18 +3421,18 @@ $(document).ready(function () {
 
     // **********************************************   all function for ondemand services   *****************************************  ////////////////////////
 
-    $(document).on("click", "#next-button-ondemand-3", function () {      
+    $(document).on("click", "#next-button-ondemand-3", function () {
         $('.alert-danger').html('');
        //window.location.href = showCart;
 
-        var task_type = 'schedule';        
+        var task_type = 'schedule';
         var schedule_date = $("input[name='booking_date']:checked").val();
-        var schedule_time = $("input[name='booking_time']:checked").val();        
-        var specific_instructions = $("#specific_instructions").val(); 
-        var productid = $("#productid").val();  
+        var schedule_time = $("input[name='booking_time']:checked").val();
+        var specific_instructions = $("#specific_instructions").val();
+        var productid = $("#productid").val();
         //alert(schedule_date);
         //alert(schedule_time);
-       var schedule_dt = schedule_date;      
+       var schedule_dt = schedule_date;
         //alert(schedule_dt);
        // var schedule_dt = schedule_date +' '+schedule_time;
         if( (task_type == 'schedule') && (schedule_dt == '') ){
@@ -3444,7 +3444,7 @@ $(document).ready(function () {
             dataType: 'json',
             url: update_cart_schedule,
             data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions,productid:productid,schedule_time:schedule_time},
-            success: function (response) {               
+            success: function (response) {
                 if (response.status == "Success") {
                     window.location.href = showCart;
                 }
@@ -3673,9 +3673,9 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.selected-time', function () {
-       
+
         let selected_time   = $(this).html();
-        let cart_product_id = $(this).data("cart_product_id");        
+        let cart_product_id = $(this).data("cart_product_id");
         $("#show_time" + cart_product_id).html(selected_time);
         $("#message_of_time" + cart_product_id).html("Your service will start between " + selected_time);
         $("#next-button-ondemand-3").show();
@@ -3685,7 +3685,7 @@ $(document).ready(function () {
 
         //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date']:checked").val();
         var schedule_date = $("input[name='booking_date']:checked").val();
-       // var schedule_time = $(this).data("value");        
+       // var schedule_time = $(this).data("value");
         //var specific_instructions = $("#specific_instructions").val();
        // alert(specific_instructions);
 

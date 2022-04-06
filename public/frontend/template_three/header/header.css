@@ -217,7 +217,6 @@
      height: 40px;
      width: 40px;
      line-height: 40px;
-     background-color: #fff;
      text-align: center;
      border-radius: 40px;
 }
@@ -417,6 +416,11 @@
 }
  .al_offset-top-home, .al_new_wrapper_design .inner-pages-offset{
      margin-top: 0 !important;
+}
+.dark .pixelstrap ul.al_main_category_list li,
+.dark .pixelstrap ul.al_main_category_list li a,
+.dark .pixelstrap ul.al_main_category_list li a span.new-tag{
+    color: #fff;
 }
  ul{
     padding: 0;

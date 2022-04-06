@@ -241,8 +241,11 @@
         });
     });
     jQuery(document).ready(function($) {
-        var footer_height = $('.footer-light').height();
-        $('article#content-wrap').css('padding-bottom',footer_height);
+        setTimeout(function(){
+            var footer_height = $('.footer-light').height();
+            console.log(footer_height);
+            $('article#content-wrap').css('padding-bottom',footer_height);
+        }, 500);
     });
     @if(isset($set_template)  && $set_template->template_id ==3 && \Request::route()->getName()=='categoryDetail')
     function changeImage(image2, check) {
