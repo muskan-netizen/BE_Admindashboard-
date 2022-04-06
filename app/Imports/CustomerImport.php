@@ -53,29 +53,34 @@ class CustomerImport implements ToCollection
 
                         $insert_vendor_details = array(
                             'name' => $da[0],
-                            'phone_number' => ($da[1]) ?? NULL,
-                            'email' => ($da[2]) ?? NULL,
-                            'import_user_id' => ($da[3]) ?? NULL,
+                            'dial_code' => ($da[1]) ?? 1,
+                            'phone_number' => ($da[2]) ?? NULL,
+                            'email' => ($da[3]) ?? NULL,
+                            'import_user_id' => ($da[4]) ?? NULL,
                             'password' => Hash::make('123456'),
-                            'is_email_verified' => ($row[2] == '') ? '0' : '1',
-                            'is_phone_verified' => ($row[1] == '') ? '0' : '1',
+                            'is_email_verified' => ($da[3] == '') ? '0' : '1',
+                            'is_phone_verified' => ($da[2] == '') ? '0' : '1',
                             'status'=>'1'
                         );
 
-                        if(User::where('phone_number',$da[1])->exists())
-                        {
-                             User::where('phone_number',$da[1])->update($insert_vendor_details);
-                        }elseif(User::where('email',$da[2])->exists()){
-                             User::where('email',$da[2])->update($insert_vendor_details);
+                        if(User::where('dial_code', $da[1])->where('phone_number', $da[2])->exists()){
+                            User::where('dial_code', $da[1])->where('phone_number', $da[2])->update($insert_vendor_details);
+                        }
+                        elseif(User::where('email',$da[3])->exists()){
+                            User::where('email',$da[3])->update($insert_vendor_details);
                         }
 
-                        if (!User::where('phone_number',$da[1])->orWhere('email',$da[2])->exists()) {
-                            //$newusers[] = $insert_vendor_details;
+                        $user_exists = User::where(function($q) use($da){
+                            $q->where('dial_code', $da[1])->where('phone_number', $da[2]);
+                        })
+                        ->orWhere('email', $da[3])->exists();
+
+                        if (!$user_exists) {
                             $id = User::insertGetId($insert_vendor_details);
                             $user = User::find($id);
-                            if(isset($da[4]) && $da[4]>0){
+                            if(isset($da[5]) && ($da[5] > 0)){
                                 $wallet = $user->wallet;
-                                $wallet->depositFloat($da[4], ['Wallet has been <b>Credited</b>  by Admin']);
+                                $wallet->depositFloat($da[5], ['Wallet has been <b>Credited</b> by Admin']);
                             }   
                         }
                     }

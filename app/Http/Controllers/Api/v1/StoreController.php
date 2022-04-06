@@ -1263,6 +1263,81 @@ class StoreController extends BaseController{
     	}
     }
 
+	public function getVendorProductCategoryList(Request $request, $vendor_id){
+    	try {
+    		$user = Auth::user();
+    		$langId = $user->language;
+            $limit = $request->has('limit') ? $request->limit : 12;
+			$page = $request->has('page') ? $request->page : 1;
+            
+			$vendor_categories = VendorCategory::with(['category.translation' => function($q) use($langId){
+				$q->where('category_translations.language_id', $langId)->groupBy('category_translations.category_id');
+			}])
+			->whereHas('category', function($query) {
+				$query->whereIn('type_id', [1]);
+			})
+			->select('category_id')->where('vendor_id', $vendor_id)->where('status', 1)->paginate($limit, $page);
+			
+			foreach ($vendor_categories as $vendor_category) {
+				$category_name = '';
+				if($vendor_category->category){
+					$category_name = $vendor_category->category->translation->first() ? $vendor_category->category->translation->first()->name : $vendor_category->category->slug;
+				}
+				$vendor_category->id = $vendor_category->category_id;
+				$vendor_category->name = $category_name;
+				$vendor_category->cat_image = $vendor_category->category->image ?? '';
+				$vendor_category->type_id = $vendor_category->category->type_id;
+				unset($vendor_category->category);
+				unset($vendor_category->category_id);
+			}
+            return $this->successResponse($vendor_categories, '', 200);
+    	} catch (Exception $e) {
+    		return $this->errorResponse($e->getMessage(), $e->getCode());
+    	}
+    }
+
+	public function getVendorProductsWithCategoryList(Request $request, $vendor_id){
+    	try {
+    		$user = Auth::user();
+    		$langId = $user->language;
+            $limit = $request->has('limit') ? $request->limit : 12;
+			$page = $request->has('page') ? $request->page : 1;
+			$publishtype = $request->has('type') ? $request->type : '';
+            
+			$client_currency_detail = ClientCurrency::where('currency_id', $user->currency)->first();
+            $selected_category_id = $request->has('selected_category_id') ? $request->selected_category_id : '';
+			
+			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id')->has('vendor')
+						->with(['media.image', 'categoryName', 'translation' => function($q) use($langId){
+                        	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                    	},'variant' => function($q) use($langId){
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->groupBy('product_id');
+                    	},
+                    ])->orderBy('id', 'DESC');
+
+			if($selected_category_id){
+				$products = $products->where('category_id', $selected_category_id);
+			}
+			
+			$products = $products->where('vendor_id', $vendor_id);
+			if($publishtype == "all" ){
+				$products = $products->paginate($limit, $page);
+			}else{
+				$products = $products->where('is_live', 1)->paginate($limit, $page);
+			}
+			
+			foreach ($products as $product) {
+                foreach ($product->variant as $k => $v) {
+                    $product->variant[$k]->multiplier = $client_currency_detail->doller_compare;
+                }
+            }
+            return $this->successResponse($products, '', 200);
+    	} catch (Exception $e) {
+    		return $this->errorResponse($e->getMessage(), $e->getCode());
+    	}
+    }
+
 	public function updateProductStatus(Request $request){
 		try{
 			$validator = Validator::make($request->all(), [
