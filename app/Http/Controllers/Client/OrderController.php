@@ -517,6 +517,7 @@ class OrderController extends BaseController
     public function changeStatus(Request $request, $domain = '') 
     {
         $orderPlaced = true;
+        $orderPlacedNo = '';
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
         try {
@@ -547,7 +548,8 @@ class OrderController extends BaseController
                         }
                     }elseif($orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
-                        $orderPlaced = $this->placeOrderRequestlalamove($request);
+                        //$orderPlaced = $this->placeOrderRequestlalamove($request);
+
                     }elseif($orderData->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
                         $orderPlaced = $this->placeOrderRequestShiprocket($request);
@@ -560,9 +562,14 @@ class OrderController extends BaseController
                     }
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
-
-
                 }
+                
+                if($request->status_option_id == 4  && $orderData->shipping_delivery_type=='L'){
+                    //Create Shipping place order request for Lalamove when order in processing state
+                    $orderPlaced = $this->placeOrderRequestlalamove($request);
+                    $orderPlacedNo = $orderPlaced;
+               }
+
                 if($orderPlaced){
 
                     $vendor_order_status = new VendorOrderStatus();
@@ -607,7 +614,7 @@ class OrderController extends BaseController
                 return response()->json([
                     'status' => 'success',
                     'created_date' => convertDateTimeInTimeZone($vendor_order_status->created_at, $timezone, 'l, F d, Y, H:i A'),
-                    'message' => __('Order Status Updated Successfully.')
+                    'message' => __('Order Status Updated Successfully.'.(($orderPlacedNo)? ' Order No : '.$orderPlacedNo:''))
                 ]);
             }
         } catch (\Exception $e) {
@@ -758,10 +765,9 @@ class OrderController extends BaseController
             $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id,$checkOrder->user_id,$checkOrder->id);
             }
             if (isset($order_lalamove->orderRef)){
-                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                 OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
-
-                return 1;
+                return $order_lalamove->orderRef;
             }
         return false;
     }

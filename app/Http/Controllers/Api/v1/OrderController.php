@@ -2202,12 +2202,7 @@ class OrderController extends BaseController
 
                 $orderPlaced = true;
                 $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
-                \Log::info('in request =');
-                \Log::info(json_encode($request->all()));
-
                 if ($request->order_status_option_id == 2) {
-                    \Log::info(json_encode($orderData));
-                    
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
@@ -2217,9 +2212,8 @@ class OrderController extends BaseController
                             $orderPlaced = true;
                         }
                     }elseif($orderData->shipping_delivery_type=='L'){
-                    \Log::info('In lalamove');
                         //Create Shipping place order request for Lalamove
-                        $orderPlaced = $this->placeOrderRequestlalamove($request);
+                        //$orderPlaced = $this->placeOrderRequestlalamove($request);
                     }elseif($orderData->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
                         $orderPlaced = $this->placeOrderRequestShiprocket($request);
@@ -2232,6 +2226,11 @@ class OrderController extends BaseController
                     }
                     $orderData->accepted_by = auth()->id();
                     $orderData->save();
+                }
+
+                if ($request->order_status_option_id == 4 && $orderData->shipping_delivery_type=='L'){
+                        //Create Shipping place order request for Lalamove
+                        $orderPlaced = $this->placeOrderRequestlalamove($request);
                 }
 
                 if($orderPlaced){
