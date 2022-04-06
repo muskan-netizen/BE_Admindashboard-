@@ -112,7 +112,9 @@ class CartController extends FrontController
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
         } 
-        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
+
+        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data'))->with($data,$client_preference_detail,$client_detail);
+       // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
 
@@ -1770,9 +1772,6 @@ class CartController extends FrontController
                     }
 
                 }
-
-               
-
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
                 $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 

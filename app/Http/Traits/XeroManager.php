@@ -177,7 +177,28 @@ trait XeroManager{
         } catch (Exception $e) {
           echo 'Exception when calling AccountingApi->updateOrCreateItems: ', $e->getMessage(), PHP_EOL;
         }
-    } 
+    }
+    public function createOtherItem($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp,$title)
+    {
+        $item = new XeroAPI\XeroPHP\Models\Accounting\Item;
+        //code length must be less than or equa lto 30 characters
+        $item->setCode(mt_rand(10000000,99999999));
+        $item->setName($title);
+        $item->setDescription($title);
+
+        $items = new XeroAPI\XeroPHP\Models\Accounting\Items;
+        $arr_items = [];
+        array_push($arr_items, $item);
+        $items->setItems($arr_items);
+
+        try {
+          $result = $apiInstance->updateOrCreateItems($xeroTenantId, $items, $summarizeErrors, $unitdp);
+          return $result[0];
+
+        } catch (Exception $e) {
+          echo 'Exception when calling AccountingApi->updateOrCreateItems: ', $e->getMessage(), PHP_EOL;
+        }
+    }
 
     public function createInvoice($order)
     {
@@ -217,6 +238,36 @@ trait XeroManager{
             
             array_push($lineItems, $lineItem);
         }
+        //Add Shipping Charges
+        if($order->delivery_fee > 0)
+        {
+            $item = $this->createOtherItem($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp,'Shipping Charges');
+            $lineItem = new XeroAPI\XeroPHP\Models\Accounting\LineItem;
+            $lineItem->setDescription($item['description']);
+            $lineItem->setQuantity(1);
+            $lineItem->setUnitAmount(decimal_format($order->delivery_fee));
+            $lineItem->setItemCode($item['code']);
+            $lineItem->setItem($item);
+
+            array_push($lineItems, $lineItem); 
+        }
+        // Add Tip Amount
+        if($order->orderDetail->tip_amount > 0) 
+        {
+            $tip = 0;
+            if($order->orderDetail->total_amount > 0)
+            $tip = $order->subtotal_amount/$order->orderDetail->total_amount * $order->orderDetail->tip_amount;
+            $item = $this->createOtherItem($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp,'Shipping Charges');
+            $lineItem = new XeroAPI\XeroPHP\Models\Accounting\LineItem;
+            $lineItem->setDescription($item['description']);
+            $lineItem->setQuantity(1);
+            $lineItem->setUnitAmount(decimal_format($tip));
+            $lineItem->setItemCode($item['code']);
+            $lineItem->setItem($item);
+
+            array_push($lineItems, $lineItem); 
+        }
+
 
         $invoice = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
         $invoice->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCREC);

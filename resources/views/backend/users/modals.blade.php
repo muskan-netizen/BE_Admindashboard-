@@ -295,8 +295,8 @@
                     @csrf
                     <div class="modal-body">
                         <div class="row">
-                        <div class="col-md-12 text-center">
-                                <a href="{{url('file-download'.'/sample_customer.csv')}}">{{ __("Download Sample file here!") }}</a>
+                            <div class="col-md-12 text-center">
+                                <a href="{{url('/sample_customer.csv')}}">{{ __("Download Sample file here!") }}</a>
                             </div>
                             <div class="col-md-12">
                                 <div class="row mb-2">
@@ -307,7 +307,8 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <table class="table table-responsive table-centered table-nowrap table-striped" id="">
+                                <div class="table-responsive">
+                                <table class="table table-centered table-nowrap table-striped" id="">
                                 <p id="p-message" style="color:red;"></p>
                                     <thead>
                                         <tr>
@@ -347,6 +348,7 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         </div>
                     </div>

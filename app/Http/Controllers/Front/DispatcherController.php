@@ -181,7 +181,6 @@ class DispatcherController extends FrontController
     /******************    ---- share all details of order for dispatcher -----   ******************/
     public function dispatchOrderDetails(Request $request, $domain = '', $web_hook_code)
     {
-
         try {
             $user = Auth::user();
             $order_item_count = 0;
@@ -208,7 +207,8 @@ class DispatcherController extends FrontController
                             $q->where('language_id', $language_id);
                         },
                         'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus',
-                        'vendors.cancel_request'
+                        'vendors.cancel_request',
+                        'user','user.passbase_verification','user.passbase_verification.resources'
                     ])
                     ->where(function ($q1) {
                         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -331,8 +331,6 @@ class DispatcherController extends FrontController
                     $order->luxury_option_name = $luxury_option_name;
                     $order->order_item_count = $order_item_count;
                 }
-
-
                 return $this->successResponse($order, null, 201);
             }
 
