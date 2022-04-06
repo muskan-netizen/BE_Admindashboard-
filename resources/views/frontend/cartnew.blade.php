@@ -100,11 +100,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <%
     let fixed_fee=0;
     let fixed_fee_amount=0;
+    let total_fixed_fee_amount=0;
     let price_bifurcation=0;
 
     _.each(cart_details.products, function(product, key){
         fixed_fee=product.vendor.fixed_fee;
         fixed_fee_amount=product.vendor.fixed_fee_amount;
+        total_fixed_fee_amount=parseFloat(total_fixed_fee_amount)+parseFloat(product.vendor.fixed_fee_amount);
         price_bifurcation=product.vendor.price_bifurcation;
         %>
         <div id="thead_<%= product.vendor.id %>">
@@ -322,9 +324,21 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <div class="col-md-7">
                                 <%= product.delOptions %>
                             </div>
+                            
                         </div>
                     <% } %>
-
+                    <% if(product.vendor.fixed_fee_amount>0) { %>
+                        <div class="row mb-1 d-flex align-items-center">
+                            <div class="col-5 text-lg-right">
+                                <label class="m-0 radio">
+                                    {{__($fixedFee)}} :</label>
+                                </div>
+                            <div class="col-md-7">
+                                <%= product.vendor.fixed_fee_amount %>
+                            </div>
+                            
+                        </div>
+                    <% } %>
                     <div class="row mb-1">
                         <div class="col-md-5 text-lg-right">
                             <% if(product.coupon_amount_used > 0) { %>
@@ -344,7 +358,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <label class="m-0 radio">{{__('Sub Total')}} :</label>
                             </div>
                             <div class="col-md-7 text-right">
-                                <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.product_total_amount) %></p>
+                                <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(parseFloat(product.product_total_amount)+parseFloat(product.vendor.fixed_fee_amount)) %></p>
                             </div>
 
                             <% } %>
@@ -427,11 +441,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <hr class="my-2">
             <% } %>
 
-            <% if(fixed_fee > 0 && price_bifurcation!=1) { %>
+            <% if(total_fixed_fee_amount > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__($fixedFee)}}</div>
-                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(fixed_fee_amount) %></div>
-                    <input type="hidden" name="fixed_fee_amount" id="fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="<%= fixed_fee_amount %>">
+                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(total_fixed_fee_amount) %></div>
+                    <input type="hidden" name="fixed_fee_amount" id="fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="<%= total_fixed_fee_amount %>">
                 </div>
                 <hr class="my-2">
             <% } %>
@@ -536,16 +550,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
                         <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(fixed_fee_amount)) %></p>
                         <% }else{ %>
-                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(fixed_fee_amount)) %></p>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(total_fixed_fee_amount)) %></p>
                             <%
                         } %>
                         <div>
                             <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
                                 <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
-                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(fixed_fee_amount) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(total_fixed_fee_amount) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                                 <% }else{ %>
                                     <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(fixed_fee_amount) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(total_fixed_fee_amount) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                                 <% } %>
                         <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= cart_details.total_payable_amount %>">
                     </div>
@@ -899,7 +913,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <% if(payment_option.slug == 'stripe') { %>
                             <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper option-wrapper d-none">
                                 <div class="form-control">
-                                    <label class="d-flex flex-row pt-1 pb-1 mb-0">
+                                    <label class="mb-0">
                                         <div id="stripe-card-element"></div>
                                     </label>
                                 </div>

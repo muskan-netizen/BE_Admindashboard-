@@ -241,7 +241,6 @@ class LalaMovesController extends Controller
     public function webhooks(Request $request)
     {
         try{
-
            $trackingId = '';
            $json = json_decode($request->getContent());
     

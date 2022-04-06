@@ -774,7 +774,7 @@ $timezone = Auth::user()->timezone;
                             that.nextAll('li').remove();
                         }
                         $('#text_muted_' + status_option_id).html('<small class="text-muted">' + response.created_date + '</small>');
-                        if (status_option_id == 2)
+                        if (status_option_id == 2 || status_option_id == 4)
                             $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                         location.reload();
                     },
