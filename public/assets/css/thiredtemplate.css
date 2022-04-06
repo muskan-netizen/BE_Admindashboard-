@@ -42,13 +42,9 @@ article#content-wrap{padding-bottom:0 !important}body .footer-theme .sub-title h
 .al_new_wrapper_design h2.h2-heading{font-size:20px;padding-left: 15px;}.footer-theme .sub-title .contact-list li{padding-left:0!important}.sub-footer{display:none}.menu-navigation_al li.al_main_category a .nav-cate-img img{height:50px!important;width:50px!important}.menu-navigation_al li.al_main_category a .nav-cate-img{height:50px;width:50px}
 .al_custom_head_map_box{margin-bottom:10px;padding: 0 9px !important;overflow: hidden;border-radius: 8px;}
 
-.product-wrapper-grid a.product-box{
-padding: 0 !important;
-}
+.product-wrapper-grid a.product-box{padding: 0 !important;}
 .product-wrapper-grid a.product-box img{width: 100%;}
-.collection-product-wrapper{
-    position: relative;
-}
+.collection-product-wrapper{position: relative;}
 .collection-product-wrapper .product-top-filter{position: absolute;}
 
 }
