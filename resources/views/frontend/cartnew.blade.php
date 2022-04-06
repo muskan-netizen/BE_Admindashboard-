@@ -283,7 +283,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             
                         </div>
                     <% } %>
-                    <% if(product.vendor.fixed_fee_amount) { %>
+                    <% if(product.vendor.fixed_fee_amount>0) { %>
                         <div class="row mb-1 d-flex align-items-center">
                             <div class="col-5 text-lg-right">
                                 <label class="m-0 radio">
