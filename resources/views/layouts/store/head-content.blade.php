@@ -27,7 +27,7 @@
 <link rel="stylesheet"  href="{{asset('frontend/template_four/resposive/resposive.css')}}">--}}
 @endif
 
-
+<link rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
 @if(isset($set_template)  && $set_template->template_id == 1)
 <link rel="stylesheet"  href="{{asset('frontend/template_one/header/header.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_one/homepage/homepage.css')}}">
