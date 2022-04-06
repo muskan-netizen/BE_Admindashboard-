@@ -228,7 +228,8 @@ class EasebuzzController  extends FrontController
                             }
                         }
                     }
-                    $returnUrlParams = $returnUrlParams . '&order=' . $order->order_number;
+                    $returnUrlParams = $returnUrlParams . '&order=' .  $order_number;
+                   
                 }
                 return Redirect::to(url($returnUrl . $returnUrlParams));
             }
