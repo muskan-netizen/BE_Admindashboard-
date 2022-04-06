@@ -459,12 +459,15 @@ class CartController extends BaseController
             }
             $cart = $cart->where('unique_identifier', $user->system_user);
         } else {
-            $cart = $cart->where('user_id', $user->id);
+            $cart = $cart->where('user_id', 1);
         }
         $cart->delete();
         return response()->json(['message' => __('Empty cart successfully.')]);
     }
-    /**         *       Empty cart       *          */
+
+
+
+    /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
         $preferences = ClientPreference::first();
@@ -517,6 +520,7 @@ class CartController extends BaseController
                 $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
         ])->select('vendor_id', 'vendor_dinein_table_id')->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        
         $loyalty_amount_saved = 0;
         $subscription_features = array();
         if ($cart->user_id) {
@@ -544,6 +548,7 @@ class CartController extends BaseController
         $total_tax = $total_paying = $total_disc_amount = 0.00;
         $item_count = 0;
         $total_delivery_amount = 0;
+        $total_fixed_fee_amount = 0;
         $order_sub_total = 0;
         $totalDeliveryCharges = 0;
         if ($cartData) {
@@ -562,11 +567,13 @@ class CartController extends BaseController
             $couponApplied = 0;
             $total_container_charges = 0 ;
             foreach ($cartData as $ven_key => $vendorData) {
+                $total_fixed_fee_amount =$total_fixed_fee_amount+ $vendorData->vendor->fixed_fee_amount;
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
-                $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
+                
                 $vendorData->vendor->closed_store_order_scheduled = $vendorData->vendor->closed_store_order_scheduled;
+                $vendorData->vendor->fixed_fee_amount;
                 if ($action != 'delivery') {
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id', 'latitude', 'longitude', 'address')->where('id', $vendorData->vendor_id)->first();
                     if ($action == 'dine_in') {
@@ -575,6 +582,7 @@ class CartController extends BaseController
                             $vendor_table->qr_url = url('/vendor/' . $vendorData->vendor->slug . '/?id=' . $vendorData->vendor_id . '&name=' . $vendorData->vendor->name . '&table=' . $vendor_table->id);
                         }
                         $vendor_details['vendor_tables'] = $vendor_tables;
+                        return $vendor_details['vendor_tables'];
                     }
                 } else {
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
@@ -1068,6 +1076,7 @@ class CartController extends BaseController
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
         $cart->total_delivery_fee = $totalDeliveryCharges;
+        $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
         $cart->total_discount_amount = $total_disc_amount * $clientCurrency->doller_compare;
         $cart->products = $cartData;
@@ -1112,6 +1121,8 @@ class CartController extends BaseController
             ['label' => '10%', 'value' => decimal_format(0.1 * $cart->total_payable_amount)],
             ['label' => '15%', 'value' => decimal_format(0.15 * $cart->total_payable_amount)]
         );
+
+        $cart->total_payable_amount= number_format((float)$cart->total_payable_amount +=$cart->total_fixed_fee_amount, 2, '.', '');
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;
         $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
