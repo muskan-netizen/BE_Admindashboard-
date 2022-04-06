@@ -216,15 +216,13 @@ public function getOrderBody($data)
 
 public function placeOrders($data,$quotation,$order_id = '')
 {
-  $this->configDetails();
-
- $method = 'POST';
- $path = '/v2/orders';
- $bodyQut = $this->getQuotationBody($data);
- $bodyOrder = $this->getOrderBody($quotation);
- $body=json_encode(array_merge(json_decode($bodyQut, true),json_decode($bodyOrder, true)));
-
- $token = $this->token($method,$path,$body);
+    $this->configDetails();
+    $method = 'POST';
+    $path = '/v2/orders';
+    $bodyQut = $this->getQuotationBody($data);
+    $bodyOrder = $this->getOrderBody($quotation);
+    $body=json_encode(array_merge(json_decode($bodyQut, true),json_decode($bodyOrder, true)));
+    $token = $this->token($method,$path,$body);
 
   
 $curl = curl_init();
