@@ -1623,6 +1623,7 @@ class OrderController extends FrontController
             );
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
@@ -1727,6 +1728,7 @@ class OrderController extends FrontController
             );
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
@@ -1878,6 +1880,7 @@ class OrderController extends FrontController
 
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
