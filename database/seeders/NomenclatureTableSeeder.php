@@ -14,11 +14,11 @@ class NomenclatureTableSeeder extends Seeder
      */
     public function run()
     {
-        // if(!NomenClature::where(['label'=>'Want To Tip'])->exists()){
-        //     NomenClature::Create(['label'=>'Want To Tip']);
-        // }
-        // if(!NomenClature::where(['label'=>'Fixed Fee'])->exists()){
-        //     NomenClature::Create(['label'=>'Fixed Fee']);
-        // }
+        if(!NomenClature::where(['label'=>'Want To Tip'])->exists()){
+            NomenClature::Create(['label'=>'Want To Tip']);
+        }
+        if(!NomenClature::where(['label'=>'Fixed Fee'])->exists()){
+            NomenClature::Create(['label'=>'Fixed Fee']);
+        }
     }
 }
