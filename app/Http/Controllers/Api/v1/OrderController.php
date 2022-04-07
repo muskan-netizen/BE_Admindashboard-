@@ -167,7 +167,7 @@ class OrderController extends BaseController
                     $order->is_gift = $request->is_gift ?? 0;
                     $order->save();
                   
-                    CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+                  
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                     $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
@@ -442,8 +442,9 @@ class OrderController extends BaseController
                     $res = $this->sendSuccessEmail($request, $order);
                     // pr($res);
                     // exit();
-                    $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree
+                    $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz
                     if (!in_array($request->payment_option_id, $ex_gateways)) {
+                        CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
@@ -785,6 +786,7 @@ class OrderController extends BaseController
             );
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
@@ -893,6 +895,7 @@ class OrderController extends BaseController
             );
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
@@ -1044,6 +1047,7 @@ class OrderController extends BaseController
  
  
              $postdata =  [
+                'order_number' =>  $order->order_number,
                  'customer_name' => $customer->name ?? 'Dummy Customer',
                  'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                  'customer_email' => $customer->email ?? null,
