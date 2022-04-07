@@ -3,9 +3,19 @@
 .al_new_wrapper_design .top-banner-wrapper.text-center .common-banner{border-radius:20px;height:200px; margin-bottom: 30px;}
 .al_desktop_banner {height: 240px;}
 .al_new_ipad_view.ipad-view {padding-right: 15px;}
+.al_custom_head_map_box{max-width: 500px;}
+.al_custom_head .onhover-dropdown span:before, .al_custom_head.top-header .header-dropdown li, .al_custom_head.top-header .header-dropdown li a {font-size: 12px!important;}
 .al_new_wrapper_design .rating-text-box span {font-weight: 400;}.container_fluid_al .container.al_mobile-header {max-width: 100%;}
 .slick-slide .product-card-box h6{font-size: 10px;}.top-header.site-topbar.al_custom_head .container {max-width: 100%;padding: 0 12px !important;}.top-header.site-topbar.al_custom_head .container .row{margin: 0;}
 
+}
+@media(max-width:1280){
+    .shimmer_effect  .grid-row.grid-4-4{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        grid-gap:50px
+    }
+        .shimmer_effect .grid-row .cards:last-child{display: none;}
 }
 @media (max-width: 1199px){
 .top-header .header-dropdown li.onhover-dropdown {padding: 0 10px;}
@@ -18,7 +28,7 @@
     .home-slider-wrapper .banner-img-outer img{border-radius:20px;}
 }
 @media (max-width: 767px){
-    .recent-orders{padding:0 12px}.al_desktop_banner{display:none}.al_mobile_banner{display:block!important;height:80px}.sm.slick-initialized .slick-slide div{width:max-content}.al_menu-drawer.open li.onhover-dropdown ul.onhover-show-div li{display:block;padding:10px 30px}.al_menu-drawer.open li.onhover-dropdown ul.onhover-show-div li a{font-size:12px}#al_new_design .pixelstrap a,#al_new_design .pixelstrap a:active,#al_new_design .pixelstrap a:hover,#al_new_design .pixelstrap li a{font-size:12px}body .royo_whatsapp_img{bottom:10%}body .tap-top.top-cls{bottom:10%;z-index:9999}
+    .recent-orders{padding:0 12px}.al_desktop_banner{display:none}.al_mobile_banner{display:block!important;height:120px}.sm.slick-initialized .slick-slide div{width:max-content}.al_menu-drawer.open li.onhover-dropdown ul.onhover-show-div li{display:block;padding:10px 30px}.al_menu-drawer.open li.onhover-dropdown ul.onhover-show-div li a{font-size:12px}#al_new_design .pixelstrap a,#al_new_design .pixelstrap a:active,#al_new_design .pixelstrap a:hover,#al_new_design .pixelstrap li a{font-size:12px}body .royo_whatsapp_img{bottom:10%}body .tap-top.top-cls{bottom:10%;z-index:9999}
     .al_count_tabs_new_design.al_tab_mobile li a.nav-link .al_tabsIcons{display:block;margin-bottom:0;width:40px;height:40px;line-height:40px}.product-m.slick-slider .slick-slide>div{margin:0}.royo_whatsapp_img img{width:35px}
 }
 
@@ -46,9 +56,37 @@ article#content-wrap{padding-bottom:0 !important}body .footer-theme .sub-title h
 .product-wrapper-grid a.product-box img{width: 100%;}
 .collection-product-wrapper{position: relative;}
 .collection-product-wrapper .product-top-filter{position: absolute;}
-
+.scrollspy-menu {
+    top: auto;
+    bottom: 120px;
+    width: 100%;
+    height: auto;
+    position: fixed;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    background: #fff;
+    right: 80px;
+    box-shadow: 0 0 35px 0 rgb(154 161 171 / 15%);
+    transition: all .3s;
 }
-@media only screen and (max-width : 768px) {
+.side-menu-open {
+    bottom: 125px;
+    opacity: 1;
+    visibility: visible;
+    right: 0;
+    height: max-content;
+}
+.cart-box-outer.al_white_bg_round.product_row{position: relative;}
+.cart-box-outer.al_white_bg_round.product_row .rating-text-box{
+    position: absolute;
+    top: -50px;
+}
+.product-bottom-bar{
+    position: relative;
+}
+}
+@media only screen and (max-width : 1340px) {
     .aos-animate {
         /*CSS transitions*/
         -o-transition-property: none !important;

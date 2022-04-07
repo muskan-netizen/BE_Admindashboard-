@@ -44,7 +44,7 @@
                 <div class="card-box h-100">
                     <div class="row ">
                         <div class="col-md-6">
-                            <h3 class="mb-1">{{ __("Royo Dispatcher") }}</h3>
+                            <h3 class="mb-1">{{getNomenclatureName('Royo Dispatcher')}}</h3>
                         </div>
                         <div class="col-md-6 mt-2 text-right">
                             <button class="btn btn-info waves-effect waves-light save_btn" type="submit" name="last_mile_submit_btn" value ="1"> {{ __("Save") }}</button>

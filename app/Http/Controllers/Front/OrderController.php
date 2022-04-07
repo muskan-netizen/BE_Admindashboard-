@@ -789,7 +789,7 @@ class OrderController extends FrontController
                 $OrderVendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                 $OrderVendor->save();
                 //
-                CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+              
 
                 $vendorProductIds = array();
                 foreach ($vendor_cart_products as $vendor_cart_product) {
@@ -1069,6 +1069,7 @@ class OrderController extends FrontController
                     'schedule_type' => null, 'scheduled_date_time' => null,
                     'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
                 ]);
+                CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                 CartAddon::where('cart_id', $cart->id)->delete();
                 CartCoupon::where('cart_id', $cart->id)->delete();
                 CartProduct::where('cart_id', $cart->id)->delete();
@@ -1622,6 +1623,7 @@ class OrderController extends FrontController
             );
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
@@ -1726,6 +1728,7 @@ class OrderController extends FrontController
             );
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
@@ -1877,6 +1880,7 @@ class OrderController extends FrontController
 
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,

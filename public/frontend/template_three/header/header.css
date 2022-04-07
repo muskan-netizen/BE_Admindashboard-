@@ -258,14 +258,13 @@
      transform: scale(1);
      letter-spacing: 0;
 }
- #al_new_design .pixelstrap a, #al_new_design .pixelstrap a:active, #al_new_design .pixelstrap a:hover, #al_new_design .pixelstrap li a{
+#al_new_design.fixed-bar .pixelstrap a{width: max-content;}
+ #al_new_design .pixelstrap a,
+ #al_new_design .pixelstrap a:active,
+ #al_new_design .pixelstrap a:hover,
+ #al_new_design .pixelstrap li a{
      padding: 0;
-     width: auto;
      font-size: 16px;
-     width: max-content;
-}
- #al_new_design .pixelstrap a, #al_new_design .pixelstrap a:active, #al_new_design .pixelstrap a:hover{
-     padding: 0;
 }
  .menu-navigation_al li.al_main_category a .nav-cate-img{
      border-radius: 50%;

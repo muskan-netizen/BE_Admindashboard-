@@ -36,7 +36,6 @@ ul.onhover-show-div.open{
     -webkit-transition:all .5s;
     -moz-transition:all .5s;
     transition:all .5s;
-    display:block
 }
 .pixelstrap li a,.product-card-box{
     -webkit-transition:.3s ease-in-out;
