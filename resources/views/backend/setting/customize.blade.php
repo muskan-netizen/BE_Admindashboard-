@@ -897,7 +897,7 @@
                             </div>
                             @endforeach
                         </div>
-                        {{-- @if($want_to_tip_nomenclature)  --}}
+                        @if($want_to_tip_nomenclature) 
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
@@ -916,8 +916,8 @@
                             </div>
                             @endforeach
                         </div>
-                        {{-- @endif --}}
-                        {{-- @if(!empty($fixed_fee->id)) --}}
+                        @endif
+                        @if(!empty($fixed_fee->id))
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
@@ -936,7 +936,7 @@
                             </div>
                             @endforeach
                         </div>
-                        {{-- @endif --}}
+                        @endif
 
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
