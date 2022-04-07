@@ -85,13 +85,13 @@ class CategoryController extends FrontController{
                                 break;
                             }
                             elseif(count($category_vendors) == $index){
-                                abort(404);
+                               // abort(404);
                             }
                             $index++;
                         }
                     }
                     else{
-                        abort(404);
+                       // abort(404);
                     }
                 }
 

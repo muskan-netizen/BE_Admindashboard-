@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc};
+use App\Models\{Order, OrderProduct,UserDocs, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments};
 use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\OrderTrait;
 
@@ -167,7 +167,7 @@ class OrderController extends BaseController
                     $order->is_gift = $request->is_gift ?? 0;
                     $order->save();
                   
-                    CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+                  
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                     $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
@@ -442,8 +442,9 @@ class OrderController extends BaseController
                     $res = $this->sendSuccessEmail($request, $order);
                     // pr($res);
                     // exit();
-                    $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree
+                    $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz
                     if (!in_array($request->payment_option_id, $ex_gateways)) {
+                        CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
@@ -785,6 +786,7 @@ class OrderController extends BaseController
             );
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
@@ -893,6 +895,7 @@ class OrderController extends BaseController
             );
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
@@ -1044,6 +1047,7 @@ class OrderController extends BaseController
  
  
              $postdata =  [
+                'order_number' =>  $order->order_number,
                  'customer_name' => $customer->name ?? 'Dummy Customer',
                  'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                  'customer_email' => $customer->email ?? null,
@@ -1381,7 +1385,7 @@ class OrderController extends BaseController
             $order_id = $request->order_id;
             $vendor_id = $request->vendor_id;
             if ($vendor_id) {
-                $order = Order::with(['driver_rating',
+                $order = Order::with(['driver_rating','reports',
                     'vendors' => function ($q) use ($vendor_id) {
                         $q->where('vendor_id', $vendor_id);
                     },
@@ -1422,6 +1426,7 @@ class OrderController extends BaseController
                 $order = Order::with(
                     [   
                         'driver_rating',
+                        'reports',
                         'vendors.vendor',
                         'vendors.products.translation' => function ($q) use ($language_id) {
                             $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
@@ -1590,7 +1595,12 @@ class OrderController extends BaseController
             ->whereHas('user_document', function($q) use($user_id){
                 $q->where('user_id', $user_id);
             })->get();
-            $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
+             $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
+
+            // $category_KYC_document = CategoryKycDocuments::with('category_doc','primary')
+            // ->whereHas('category_doc', function($q) use($order){
+            //     $q->where('ordre_id',$order->id);
+            // })->get();
 
            // $order['user_document_value'] =  $user_docs;
             $order['user_document_list'] =  $user_registration_documents;
@@ -2196,12 +2206,7 @@ class OrderController extends BaseController
 
                 $orderPlaced = true;
                 $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
-                \Log::info('in request =');
-                \Log::info(json_encode($request->all()));
-
                 if ($request->order_status_option_id == 2) {
-                    \Log::info(json_encode($orderData));
-                    
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
@@ -2211,9 +2216,8 @@ class OrderController extends BaseController
                             $orderPlaced = true;
                         }
                     }elseif($orderData->shipping_delivery_type=='L'){
-                    \Log::info('In lalamove');
                         //Create Shipping place order request for Lalamove
-                        $orderPlaced = $this->placeOrderRequestlalamove($request);
+                        //$orderPlaced = $this->placeOrderRequestlalamove($request);
                     }elseif($orderData->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
                         $orderPlaced = $this->placeOrderRequestShiprocket($request);
@@ -2226,6 +2230,11 @@ class OrderController extends BaseController
                     }
                     $orderData->accepted_by = auth()->id();
                     $orderData->save();
+                }
+
+                if ($request->order_status_option_id == 4 && $orderData->shipping_delivery_type=='L'){
+                        //Create Shipping place order request for Lalamove
+                        $orderPlaced = $this->placeOrderRequestlalamove($request);
                 }
 
                 if($orderPlaced){

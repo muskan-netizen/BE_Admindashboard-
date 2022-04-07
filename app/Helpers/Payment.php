@@ -24,6 +24,9 @@ class Payment{
     */
     public static function initiate_payment($params, $merchant_key, $salt, $env){
         $result = self::_payment($params, $merchant_key, $salt, $env);
+        return  $result;
+        // echo "initiate_payment";
+        // pr($result);
         self::_paymentResponse((object)$result);
     }
 
@@ -143,7 +146,6 @@ class Payment{
 
         // process to start pay
         $pay_result = self::_pay($postedArray, $salt, $URL);
-
         return $pay_result;
     }
 
@@ -627,6 +629,7 @@ class Payment{
     *
     */
     public static function _paymentResponse($result){
+        
 
         if ($result->status === 1){
             // first way

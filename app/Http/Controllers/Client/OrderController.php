@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc};
+use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -27,6 +27,7 @@ use Log;
 use Carbon\Carbon;
 class OrderController extends BaseController
 {
+    private $folderName = '/order/reports';
 
     use ApiResponser;
     use \App\Http\Traits\OrderTrait;
@@ -147,7 +148,9 @@ class OrderController extends BaseController
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors','fixedFee'));
+        $accounting = ThirdPartyAccounting::where('status',1)->get();
+        $del_order_count = OrderVendor::has('accounting', '<', 1)->where('order_status_option_id',6)->count();
+        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors','fixedFee','accounting','del_order_count'));
     }
 
     public function postOrderFilter(Request $request, $domain = '')
@@ -353,6 +356,33 @@ class OrderController extends BaseController
 
         return $this->successResponse(['orders' => $orders, 'pending_orders' => $pending_orders, 'active_orders' => $active_orders, 'orders_history' => $orders_history], '', 201);
     }
+
+    public function uploadReport(Request $request)
+    {    
+        $checkpreviousrecord = OrderVendorReport::where(['order_id'=>$request->order_id])->first();
+        if($checkpreviousrecord)
+        {
+            $vendorreport = OrderVendorReport::where('id',$checkpreviousrecord->id)->first();
+        }else{
+            $vendorreport = new OrderVendorReport();
+        }        
+        if ($request->hasFile('file_name')) {    /* upload logo file */
+            $file = $request->file('file_name');
+            $vendorreport->report = Storage::disk('s3')->put($this->folderName, $file, 'public');
+        }
+        $vendorreport->order_id = $request->order_id;
+        $vendorreport->vendor_id = $request->vendor_id;
+        $vendorreport->save();
+        return redirect()->back()->with('success', __("Report added successfully"));
+    }
+
+
+    public function deleteReport(Request $request, $domain = '', $reportId = 0)
+    {
+        $report = OrderVendorReport::findOrfail($reportId);        
+        $report->delete();
+        return redirect()->back()->with('success', 'Report deleted successfully!');
+    }
     /**
      * Display the order.
      *
@@ -388,9 +418,10 @@ class OrderController extends BaseController
                 $qry->where('language_id', $langId);
             },
             'vendors.dineInTable.category',
-            'vendors.cancel_request'
+            'vendors.cancel_request',
+            'reports'
         ))->findOrFail($order_id);
-       
+    //    return $order;
        
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
@@ -456,6 +487,8 @@ class OrderController extends BaseController
         }
         $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
+        // $rr = OrderVendorReport::first();
+         //return $vendor_order_statuses;
         
 
         //pr($order->KYC_document->toArray());
@@ -484,6 +517,7 @@ class OrderController extends BaseController
     public function changeStatus(Request $request, $domain = '') 
     {
         $orderPlaced = true;
+        $orderPlacedNo = '';
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
         try {
@@ -514,7 +548,8 @@ class OrderController extends BaseController
                         }
                     }elseif($orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
-                        $orderPlaced = $this->placeOrderRequestlalamove($request);
+                        //$orderPlaced = $this->placeOrderRequestlalamove($request);
+
                     }elseif($orderData->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
                         $orderPlaced = $this->placeOrderRequestShiprocket($request);
@@ -527,9 +562,14 @@ class OrderController extends BaseController
                     }
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
-
-
                 }
+                
+                if($request->status_option_id == 4  && $orderData->shipping_delivery_type=='L'){
+                    //Create Shipping place order request for Lalamove when order in processing state
+                    $orderPlaced = $this->placeOrderRequestlalamove($request);
+                    $orderPlacedNo = $orderPlaced;
+               }
+
                 if($orderPlaced){
 
                     $vendor_order_status = new VendorOrderStatus();
@@ -574,7 +614,7 @@ class OrderController extends BaseController
                 return response()->json([
                     'status' => 'success',
                     'created_date' => convertDateTimeInTimeZone($vendor_order_status->created_at, $timezone, 'l, F d, Y, H:i A'),
-                    'message' => __('Order Status Updated Successfully.')
+                    'message' => __('Order Status Updated Successfully.'.(($orderPlacedNo)? ' Order No : '.$orderPlacedNo:''))
                 ]);
             }
         } catch (\Exception $e) {
@@ -725,10 +765,9 @@ class OrderController extends BaseController
             $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id,$checkOrder->user_id,$checkOrder->id);
             }
             if (isset($order_lalamove->orderRef)){
-                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                 OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
-
-                return 1;
+                return $order_lalamove->orderRef;
             }
         return false;
     }
@@ -872,6 +911,7 @@ class OrderController extends BaseController
             );
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
@@ -976,6 +1016,7 @@ class OrderController extends BaseController
             );
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
@@ -1120,6 +1161,7 @@ class OrderController extends BaseController
 
 
             $postdata =  [
+                'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,

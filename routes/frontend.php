@@ -105,11 +105,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/mobbex', 'Front\MobbexGatewayController@mobbexPurchase')->name('payment.mobbexPurchase');
 	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
 
-	//
-	// EasebuzzController payment test
-	Route::get('/easebuzz-gateway', 'Front\EasebuzzController@easebuzz_gateway');
-    Route::post('/order', 'Front\EasebuzzController@order')->name('easebuzz.order');
-    Route::post('easebuzz-webhook', 'Front\EasebuzzController@easebuzz_webhook');
+	
 
 
 	//GCash
@@ -138,6 +134,14 @@ Route::group(['middleware' => ['domain']], function () {
 	//Authorize.Net
 	Route::match(['get','post'],'payment/authorize_net/page','Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
 	Route::post('payment/authorize','Front\AuthorizeGatewayController@createPayment')->name('payment.authorize.createPayment');
+
+	// toyyibpay
+	Route::match(['get','post'],'payment/toyyib', 'Front\ToyyibPayController@index')->name('payment.toyyibpay.index');
+	//Route::post('payment/webhook/toyyib', 'Front\ToyyibPayController@webhook')->name('payment.webhook.toyyibpay');
+
+	Route::post('payment/toyyib/callback', 'Front\ToyyibPayController@callback')->name('payment.toyyibpay.callback');
+
+	Route::get('payment/toyyib/callback-success/{payment_form}', 'Front\ToyyibPayController@callbackSuccess')->name('payment.toyyibpay.callbackSuccess');
 
 	// Checkout
 	Route::post('payment/checkout', 'Front\CheckoutGatewayController@checkoutPurchase')->name('payment.checkoutPurchase');
@@ -201,6 +205,12 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/cashfree/return/app', 'Front\CashfreeGatewayController@cashfreeReturnApp')->name('payment.cashfree.return.app');
 	Route::post('payment/cashfree/notify', 'Front\CashfreeGatewayController@cashfreeNotify')->name('payment.cashfree.notify');
 
+	// EasebuzzController payment test
+	Route::get('/easebuzz-gateway', 'Front\EasebuzzController@easebuzz_gateway')->name('easebuzz-gateway');
+    Route::post('payment/easebuzz/request', 'Front\EasebuzzController@order')->name('easebuzz.order');
+    Route::match(['get','post'],'easebuzz_respont', 'Front\EasebuzzController@easebuzz_respont')->name('easebuzz_respont');
+	Route::any('payment/easebuzz/notify', 'Front\EasebuzzController@easybuzzNotify')->name('payment.easebuzz.easybuzzNotify');
+	Route::any('payment/easebuzz/api', 'Front\EasebuzzController@easebuzz_respontAPP')->name('easebuzz.webview');
 
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
@@ -292,6 +302,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('stripe/make', 'Front\PaymentController@makePayment')->name('stripe.makePayment');
 	Route::post('inquiryMode/store', 'Front\ProductInquiryController@store')->name('inquiryMode.store');
 	Route::get('viewcart', 'Front\CartController@showCart')->name('showCart');
+	Route::get('checkSlotOrders', 'Front\CartController@checkSlotOrders')->name('checkSlotOrders'); //Added by Ovi
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
 
@@ -348,6 +359,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('remove/promocode', 'Front\PromoCodeController@postRemovePromoCode')->name('remove.promocode');
 	Route::get('order/success/{order_id}', 'Front\OrderController@getOrderSuccessPage')->name('order.success');
 	Route::get('order/return/success', 'Front\OrderController@getOrderSuccessReturnPage')->name('order.return.success');
+
+
+
 	Route::post('promocode/list', 'Front\PromoCodeController@postPromoCodeList')->name('verify.promocode.list');
 	Route::post('promocode/validate_code', 'Front\PromoCodeController@validate_code')->name('verify.promocode.validate_code');
 	Route::post('payment/option/list', 'Front\PaymentController@index')->name('payment.option.list');

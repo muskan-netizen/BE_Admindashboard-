@@ -22,11 +22,15 @@ class VerifyCsrfToken extends Middleware
         'passbase/webhook',
         'webhook/dunzo',
         'webhook/ahoy',
-        'easebuzz-webhook',
+        'easebuzz_respont',
+        'payment/easebuzz/notify',
+        'payment/easebuzz/api',
+        
         'ccavenue/success',
         'payment/cashfree/notify',
 
         /** routes for edit order **/
-        'edit-order/*'
+        'edit-order/*',
+        'payment/webhook/*'
     ];
 }

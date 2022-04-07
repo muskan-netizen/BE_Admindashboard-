@@ -33,23 +33,34 @@ class HomeController extends BaseController
         try {
             $homeData = array();
             $client_language = ClientLanguage::select('language_id')->where(['is_primary' => 1, 'is_active' => 1])->first();
+            
             $langId = ($request->hasHeader('language') && !empty($request->header('language'))) ? $request->header('language') : (($client_language) ? $client_language->language_id : 1);
             $homeData['profile'] = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email','custom_domain')->first();
+            //dd(Client::with('getPreference')->first()->getPreference->auto_implement_5_percent_tip);
             $app_styling_detail = AppStyling::getSelectedData();
             foreach ($app_styling_detail as $app_styling) {
                 $key = $app_styling['key'];
                 $homeData['profile']->preferences->$key = __($app_styling['value']);
             }
+            //dd($homeData['profile']);
             $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
             $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
             $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
+            $fixed_fee_nomenclature = $this->getNomenclatureName('fixed_fee', $langId, false);
+            $want_to_tip = $this->getNomenclatureName('want_to_tip', $langId, false);
+            $fixed_fee_nomenclature=ucwords(str_replace("_"," ",$fixed_fee_nomenclature));
+            $want_to_tip=ucwords(str_replace("_"," ",$want_to_tip));
+
             $homeData['profile']->preferences->delivery_nomenclature = $delivery_nomenclature;
             $homeData['profile']->preferences->dinein_nomenclature = $dinein_nomenclature;
             $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
             $homeData['profile']->preferences->search_nomenclature = $search_nomenclature;
             $homeData['profile']->preferences->vendors_nomenclature = $vendors_nomenclature;
+            $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
+            $homeData['profile']->preferences->want_to_tip_nomenclature = $want_to_tip;
+
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
             $banners = Banner::select("id", "name", "description", "image", "image_mobile", "link", 'redirect_category_id', 'redirect_vendor_id')
                 ->where('status', 1)->where('validity_on', 1)

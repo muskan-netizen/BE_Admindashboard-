@@ -13,6 +13,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     -webkit-transform: translate(0px, -50%);
     transform: translate(0px, -50%);
 }
+.accounting_upload .btn.btn-info{
+    border-radius : 10px!important;
+}
 </style>
 
 <script type="text/template" id="order_page_template">
@@ -325,10 +328,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     <% } %>
 </script>
 <div class="container-fluid order-page">
-    <div class="row">
+    <div class="row d-flex align-items-center justify-content-between">
 
-        <div class="page-title-box d-flex align-items-center justify-content-between">
-            <h4 class="page-title">{{ __('Orders') }}</h4>
+        <div class="page-title-box d-flex justify-content-between">
+            <h4 class="page-title mr-3">{{ __('Orders') }}</h4>
             <div class="d-flex align-items-center">
                 <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
                     <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
@@ -342,6 +345,15 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 </a>
             </div>
         </div>
+        @if($client_preference_detail->third_party_accounting)
+        @foreach($accounting as $accounting)
+        <div class="pull-right accounting_upload">
+        @if($accounting->code == 'xero') 
+        <a class="btn btn-info" href="{{route('xero_auth')}}">Upload to Xero ({{$del_order_count}})</a>
+        @endif
+        </div>
+        @endforeach
+        @endif
 
 
         <div class="col-sm-12 mb-2 d-flex justify-content-end">

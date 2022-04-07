@@ -136,9 +136,14 @@ class VendorImport implements ToCollection
                         $latitude = 0;
                         $longitude = 0;
                         if ($da[6] && $mapApiKey) {
-                            $geoInfo = Geocoder::setApiKey($mapApiKey)->getCoordinatesForAddress($da[6]);
-                            $latitude = $geoInfo['lat'] ?? '';
-                            $longitude = $geoInfo['lng'] ?? '';
+                            try{
+                                $geoInfo = Geocoder::setApiKey($mapApiKey)->getCoordinatesForAddress($da[6]);
+                                $latitude = $geoInfo['lat'] ?? '';
+                                $longitude = $geoInfo['lng'] ?? '';
+                            }catch (Exception $e) {
+                               
+                            }
+                            
                         }
                         $insert_vendor_details = array(
                             'logo' => ($da[0] == "") ? NULL : trim($da[0]),

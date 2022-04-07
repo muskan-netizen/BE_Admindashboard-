@@ -887,7 +887,7 @@
                                     <input type="hidden" name="zipCode_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="zipCode_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 8)}}">
                                     @if($k == 0)
-                                        @if($errors->has('Zip-Code.0'))
+                                        @if($errors->has('zipCode_name.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -897,7 +897,7 @@
                             </div>
                             @endforeach
                         </div>
-                        @if($want_to_tip_nomenclature) 
+                        {{-- @if($want_to_tip_nomenclature)  --}}
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
@@ -906,9 +906,9 @@
                                     <input type="hidden" name="wantToTip_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="wantToTip_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, $want_to_tip_nomenclature->id)}}">
                                     @if($k == 0)
-                                        @if($errors->has('Zip-Code.0'))
+                                        @if($errors->has('wantToTip_name.0'))
                                             <span class="text-danger" role="alert">
-                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                                <strong>{{ __("The want To Tip field is required.") }}</strong>
                                             </span>
                                         @endif
                                     @endif
@@ -916,7 +916,8 @@
                             </div>
                             @endforeach
                         </div>
-                        @endif
+                        {{-- @endif --}}
+                        {{-- @if(!empty($fixed_fee->id)) --}}
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
@@ -925,7 +926,27 @@
                                     <input type="hidden" name="FixedFee_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="FixedFee_name[]" class="form-control al_box_height" value="{{ ($fixed_fee) ? \App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, $fixed_fee->id) : ''}}">
                                     @if($k == 0)
-                                        @if($errors->has('Zip-Code.0'))
+                                        @if($errors->has('FixedFee_name.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The Fixed Fee field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        {{-- @endif --}}
+
+                        <div class="row mb-2 flex-nowrap">
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-3">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Royo Dispatcher") }}({{$client_language->langName}})</label>
+                                    <input type="hidden" name="royo_dispatcher_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="royo_dispatcher_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 11)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('royo_dispatcher_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>

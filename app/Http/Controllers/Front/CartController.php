@@ -14,7 +14,7 @@ use App\Http\Traits\{ApiResponser,CartManager};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption};
 use Log;
 class CartController extends FrontController
 {
@@ -112,11 +112,48 @@ class CartController extends FrontController
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
         } 
-        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
+
+        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data'))->with($data,$client_preference_detail,$client_detail);
+       // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
 
 
+     // Added By Ovi
+    // Check if the order slots is full
+    public function checkSlotOrders(Request $request)
+    {
+        // Get Logged in user
+       $user = Auth::user();
+       $schedule_datetime = $request->schedule_datetime;
+       $schedule_slot     = $request->schedule_slot;
+       $vendor_id         = $request->vendor_id;
+
+        // Get current vendor
+        $vendor = Vendor::find($vendor_id);
+        $orders_per_slot = $vendor->orders_per_slot;
+        $orderCount = 0;
+        // Get Vendor orders
+        $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
+        foreach($orderVendors as $orderVendor){
+            // Get orders of current vendor where scheduled_slot and schedule_pickup_datetime is same as received from frontend.
+            $order = Order::where('id', $orderVendor->order_id)->where('scheduled_slot', $schedule_slot)->first();
+            if($order){
+                $schedule_pickup = Carbon::parse($order->scheduled_date_time);
+                $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $user->timezone, 'Y-m-d');
+                if($schedule_pickup_final == $schedule_datetime){
+                    // Increment orderCount and return this count to front end for validation
+                    $orderCount++;
+                }
+            }
+        }
+     
+        // Return JSON Response
+        return response()->json([
+            'orderCount' => $orderCount,
+            'orders_per_slot' => $orders_per_slot,
+        ], 200);
+    }
 
 
 
@@ -1735,9 +1772,6 @@ class CartController extends FrontController
                     }
 
                 }
-
-               
-
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
                 $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
@@ -1762,13 +1796,28 @@ class CartController extends FrontController
                 'comment_for_vendor' => $request->comment_for_vendor??null,
                 'schedule_pickup' => $request->schedule_pickup??null,
                 'schedule_dropoff' => $request->schedule_dropoff??null,
-                'scheduled_slot' => $request->schedule_time??null
+                // 'scheduled_slot' => $request->schedule_time??null
                 ]);
-                 CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
+                CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
 
                 DB::commit();
-                if ($user) {            
-                    $checkpreference = ClientPreference::select('verify_email','verify_phone')->first();
+                if ($user) { 
+                    $checkpreference = ClientPreference::select('verify_email','verify_phone','third_party_accounting')->first();
+                    $age_restriction = CartProduct::whereHas('product',function($q){
+                        $q->where('age_restriction',1);
+                    })->count();     
+                    $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+                    if($checkpreference->third_party_accounting == 1 && $passbase_check && $age_restriction)
+                    {
+                        if(is_null($user->passbase_verification)){
+                            return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alochol/Tobacco contents. It is mandatory to provide the verification documents to proceed']); 
+                        }elseif($user->passbase_verification->status == 'pending'){
+                            return response()->json(['status'=>'passbase_submitted', 'message'=>'We have recieved your request for verification. Check back soon and order OR remove Alcohol/Tobocco items']);
+                        }elseif($user->passbase_verification->status == 'approved'){
+                            return response()->json(['status'=>'passbase_rejected', 'message'=>'According to our terms and conditions and Company\'s Policies, your verification documents were not found upto the mark .Please upload them again and enjoy shoppping.' ]);
+                        }
+                    }
+
                     if($checkpreference->verify_email == 1 || $checkpreference->verify_phone == 1)
                     {             
                         if($checkpreference->verify_email == 1)

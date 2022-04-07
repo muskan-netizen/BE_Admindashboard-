@@ -921,6 +921,10 @@ $(document).ready(function () {
                 payWithCcAvenue('');
             } else if (payment_option_id == 24) {
                 paymentViaCashfree('');
+            } else if (payment_option_id == 26) {
+                paymentViaToyyibPay('');
+            } else if (payment_option_id == 25) {
+                payWithEasebuss('');
             }
         } else {
             _this.attr("disabled", false);
@@ -1137,7 +1141,6 @@ $(document).ready(function () {
 
     });
     $(document).on("click", "#order_placed_btn", function () {
-
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
@@ -1184,10 +1187,10 @@ $(document).ready(function () {
             }
 
             if (schedule_dt == '') {
-                success_error_alert('error', 'Schedule date time is required', ".cart_response");
+                success_error_alert('error', error_Schedule_date_is_required, ".cart_response");
                 return false;
             } else if (schedule_dt < now) {
-                success_error_alert('error', 'Invalid schedule date time', ".cart_response");
+                success_error_alert('error', error_Invalid_Schedule_date , ".cart_response");
                 return false;
             }
         } else {
@@ -1195,7 +1198,7 @@ $(document).ready(function () {
         }
         if (checkSlot == '1') {
             if (!slot) {
-                success_error_alert('error', 'Slot is required.', ".cart_response");
+                success_error_alert('error', error_Slot_is_required, ".cart_response");
                 return false;
             }
         }
@@ -1237,12 +1240,29 @@ $(document).ready(function () {
                 dataType: 'json',
                 url: update_cart_schedule,
                 data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, address: address },
-                success: function (response) {
-                    if (response.status == "Pending") {
-                        window.location.replace(verifyaccounturl);
-                    }
-                    if (response.status == "Success") {
-                        $.ajax({
+                success: function (response) { 
+                    if(response.status == "passbase_submitted"){
+                        Swal.fire({
+                            text: response.message,
+                            icon: "error",
+                            button: "OK",
+                        });
+                        return false;
+                    }else if(response.status == "passbase_rejected" || response.status == "passbase_pending"){
+                        Swal.fire({  
+                            text: response.message,    
+                            showCancelButton: true,  
+                            confirmButtonText: `Ok`,    
+                            }).then((result) => {  
+                                if (result.value) {
+                                    window.location.replace(passbase_page);
+                                }
+                            });
+                        return false;
+                    }else if (response.status == "Pending") {
+                        window.location.replace(verifyaccounturl); 
+                    }else if (response.status == "Success") {
+                        $.ajax({             
                             data: {},
                             type: "POST",
                             dataType: 'json',
@@ -1785,7 +1805,7 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-    $(document).on("click", ".proceed_to_pay", function () {
+    $(document).on("click", ".proceed_to_pay", function () {       
 
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -1961,11 +1981,31 @@ $(document).ready(function () {
             else {
                 return false;
             }
+        }else if (payment_option_id == 26) {
+           // alert(123);
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //alert(12345677888);
+                paymentViaToyyibPay(address_id, payment_option_id, order);
+            }
+            else {
+                return false;
+            }
         }else if (payment_option_id == 21) {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
                 //Viva Wallet
                 payWithVivaWallet(order);
+            }
+            else{
+                return false;
+            }
+        }
+        else if (payment_option_id == 25) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //Easebuzz payment gateway 
+                payWithEasebuss(address_id, payment_option_id, order);
             }
             else{
                 return false;
@@ -2162,7 +2202,15 @@ $(document).ready(function () {
             payWithCcAvenue('');
         } else if (payment_option_id == 24) {
             paymentViaCashfree('', payment_option_id, '');
+        }else if (payment_option_id == 26) {
+            paymentViaToyyibPay('', payment_option_id, '');
         }
+        else if (payment_option_id == 25) {
+            payWithEasebuss('', payment_option_id, '');
+        }
+
+
+        
 
     });
     $(document).on("click", ".remove_promo_code_btn", function () {
