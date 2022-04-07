@@ -17,6 +17,52 @@ class NomenclatureController extends BaseController
      */
     public function store(Request $request)
     {
+        NomenClature::updateOrCreate(['label' => 'vendors'], ['label' => 'vendors']);
+        NomenClature::updateOrCreate(['label' => 'Loyalty Cards'], ['label' => 'Loyalty Cards']);
+        NomenClature::updateOrCreate(['label' => 'Takeaway'], ['label' => 'Takeaway']);
+        NomenClature::updateOrCreate(['label' => 'Search'], ['label' => 'Search']);
+        NomenClature::updateOrCreate(['label' => 'Wishlist'], ['label' => 'Wishlist']);
+        NomenClature::updateOrCreate(['label' => 'Dine-In'], ['label' => 'Dine-In']);
+        NomenClature::updateOrCreate(['label' => 'Delivery'], ['label' => 'Delivery']);
+        NomenClature::updateOrCreate(['label' => 'Zip Code'], ['label' => 'Zip Code']);
+        NomenClature::updateOrCreate(['label' => 'Want To Tip'], ['label' => 'Want To Tip']);
+        NomenClature::updateOrCreate(['label' => 'Fixed Fee'], ['label' => 'Fixed Fee']);        
+        NomenClature::updateOrCreate(['label' => 'Royo Dispatcher'], ['label' => 'Royo Dispatcher']);
+        $label_array = ['vendors','Loyalty Cards','Takeaway','Search','Wishlist','Dine-In','Delivery','Zip Code','Want To Tip','Fixed Fee','Royo Dispatcher'];
+        $name_array = ['names','loyalty_cards_names','takeaway_names','search_names','wishlist_names','dinein_names','delivery_names','zipCode_name','wantToTip_name','FixedFee_name','royo_dispatcher_names'];
+        $lang_id_array = ['language_ids','loyalty_cards_language_ids','takeaway_language_ids','search_language_ids','wishlist_language_ids','dinein_language_ids','delivery_language_ids','zipCode_language_ids','wantToTip_language_ids','FixedFee_language_ids','royo_dispatcher_language_ids'];
+        $newrequest = $request->toArray();       
+        for($j=0;$j<count($label_array);$j++)
+        {
+            if (count($newrequest[$name_array[$j]]) > 0) {
+                $value_exists = [];
+                foreach ($newrequest[$name_array[$j]] as $singlename) {
+                    if ($singlename) {
+                        $value_exists[] = $singlename;
+                    }
+                }
+                $nomenclature = NomenClature::where('label', $label_array[$j])->first();
+                if (count($value_exists) > 0) {
+                    $this->validate($request, [
+                        $name_array[$j].'.0' => 'required|string',
+                    ]);
+                    $m=0;
+                    foreach ($newrequest[$name_array[$j]] as $single_name_array) {
+                        if ($single_name_array) {                         
+                            NomenclatureTranslation::updateOrCreate(['language_id' => $newrequest[$lang_id_array[$j]][$m], 'nomenclature_id' => $nomenclature->id], ['name' => $single_name_array]);
+                        }
+                        $m++;
+                    }
+                } else {
+                    NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
+                }
+            }
+        }
+        return redirect()->route('configure.customize')->with('success', 'Nomenclature Saved Successfully!');
+    }
+
+    public function store_backup(Request $request)
+    {       
         $names = $request->names;
         $loyalty_cards_language_ids = $request->loyalty_cards_language_ids;
         $loyalty_cards_names = $request->loyalty_cards_names;
@@ -29,27 +75,17 @@ class NomenclatureController extends BaseController
         $wantToTip_names = $request->wantToTip_name;
         $FixedFee_names = $request->FixedFee_name;
         $royo_dispatcher_names = $request->royo_dispatcher_names;
-        // NomenClature::updateOrCreate(['id' => 1], ['label' => 'vendors']);
-        // NomenClature::updateOrCreate(['id' => 2], ['label' => 'Loyalty Cards']);
-        // NomenClature::updateOrCreate(['id' => 3], ['label' => 'Takeaway']);
-        // NomenClature::updateOrCreate(['id' => 4], ['label' => 'Search']);
-        // NomenClature::updateOrCreate(['id' => 5], ['label' => 'Wishlist']);
-        // NomenClature::updateOrCreate(['id' => 6], ['label' => 'Dine-In']);
-        // NomenClature::updateOrCreate(['id' => 7], ['label' => 'Delivery']);
-        // NomenClature::updateOrCreate(['id' => 8], ['label' => 'Zip Code']);
-        // NomenClature::updateOrCreate(['id' => 11], ['label' => 'Royo Dispatcher']);
+        NomenClature::updateOrCreate(['id' => 1], ['label' => 'vendors']);
+        NomenClature::updateOrCreate(['id' => 2], ['label' => 'Loyalty Cards']);
+        NomenClature::updateOrCreate(['id' => 3], ['label' => 'Takeaway']);
+        NomenClature::updateOrCreate(['id' => 4], ['label' => 'Search']);
+        NomenClature::updateOrCreate(['id' => 5], ['label' => 'Wishlist']);
+        NomenClature::updateOrCreate(['id' => 6], ['label' => 'Dine-In']);
+        NomenClature::updateOrCreate(['id' => 7], ['label' => 'Delivery']);
+        NomenClature::updateOrCreate(['id' => 8], ['label' => 'Zip Code']);
+        NomenClature::updateOrCreate(['id' => 11], ['label' => 'Royo Dispatcher']);      
+        
 
-        NomenClature::updateOrCreate(['label' => 'vendors'], ['label' => 'vendors']);
-        NomenClature::updateOrCreate(['label' => 'Loyalty Cards'], ['label' => 'Loyalty Cards']);
-        NomenClature::updateOrCreate(['label' => 'Takeaway'], ['label' => 'Takeaway']);
-        NomenClature::updateOrCreate(['label' => 'Search'], ['label' => 'Search']);
-        NomenClature::updateOrCreate(['label' => 'Wishlist'], ['label' => 'Wishlist']);
-        NomenClature::updateOrCreate(['label' => 'Dine-In'], ['label' => 'Dine-In']);
-        NomenClature::updateOrCreate(['label' => 'Delivery'], ['label' => 'Delivery']);
-        NomenClature::updateOrCreate(['label' => 'Zip Code'], ['label' => 'Zip Code']);
-        NomenClature::updateOrCreate(['label' => 'Want To Tip'], ['label' => 'Want To Tip']);
-        NomenClature::updateOrCreate(['label' => 'Fixed Fee'], ['label' => 'Fixed Fee']);        
-        NomenClature::updateOrCreate(['label' => 'Royo Dispatcher'], ['label' => 'Royo Dispatcher']);
          if (count($names) > 0) {
             $names_value_exists = [];
             foreach ($names as $name) {
