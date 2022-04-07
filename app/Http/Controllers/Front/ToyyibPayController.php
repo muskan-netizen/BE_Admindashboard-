@@ -17,23 +17,24 @@ use Toyyibpay;
 use Auth;
 use Illuminate\Support\Facades\Log;
 
-class ToyyibPayController extends Controller
+class ToyyibPayController extends FrontController
 {
+    use ApiResponser;
     public $api_key;
     public $currency;
     public $url;
     public $base_url;
+    public $test_mode;
+    
     public function __construct()
     {
         $base_url = url('/');        
         $toyyib_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'toyyibpay')->where('status', 1)->first();        
         $creds_arr = json_decode($toyyib_creds->credentials);         
         $this->api_key = (isset($creds_arr->toyyibpay_api_key)) ? $creds_arr->toyyibpay_api_key : '';
-        $this->url = (isset($creds_arr->toyyibpay_redirect_uri)) ? $creds_arr->toyyibpay_redirect_uri : '';
-        
-        $testmode = (isset($toyyib_creds->test_mode) && ($toyyib_creds->test_mode == '1')) ? true : false;       
-        $this->gateway->setApiKey($api_key);
-        $this->gateway->setTestMode($testmode); //set it to 'false' when go live
+        $this->url = (isset($creds_arr->toyyibpay_redirect_uri)) ? $creds_arr->toyyibpay_redirect_uri : '';        
+        $testmode = (isset($toyyib_creds->test_mode) && ($toyyib_creds->test_mode == '1')) ? true : false;
+        $this->test_mode = $testmode; //set it to 'false' when go live
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
         
@@ -62,9 +63,8 @@ class ToyyibPayController extends Controller
           }
     }
 
-    public function createBill($codeCategory,$data){
-
-        try{
+    public function createBill($codeCategory,$data)
+    {   
 
             $rules = [
                 'amount'   => 'required',
@@ -72,14 +72,14 @@ class ToyyibPayController extends Controller
             ];
 
             $user = Auth::user();
-            $amount = $this->getDollarCompareAmount($request->amount);
-            $payment_form = $request->payment_form;
+            $amount = $this->getDollarCompareAmount($data['amount']);
+            $payment_form = $data['payment_form'];
 
             if(empty($user->phone_number)){
                 $rules['phone_number'] = 'required';
             }
 
-            $returnUrl = route('payment.toyyibpay.callback');
+            //$returnUrl = route('payment.toyyibpay.callbackSuccess',$data['payment_form']);
             $customer_data = array(
                 'customer_id' => 'customer_'.$user->id,
                 'customer_name' => $user->name,
@@ -88,13 +88,13 @@ class ToyyibPayController extends Controller
             );
             $order_tags = ['user_id' => strval($user->id), 'payment_form' => $payment_form];
             $reference_number = $description = '';
-            $returnUrlParams = '?order_id={order_id}&order_token={order_token}&gateway=cashfree&amount=' . $request->amount . '&payment_form=' . $payment_form;
+            $returnUrlParams = '?order_id={order_id}&order_token={order_token}&gateway=cashfree&amount=' . $data['amount'] . '&payment_form=' . $payment_form;
 
             if($payment_form == 'cart'){
                 $description = 'Order Checkout';
                 $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-                $request->request->add(['cart_id' => $cart->id]);
-                $reference_number = $request->order_number;
+                //$request->request->add(['cart_id' => $cart->id]);
+                $reference_number = $data['order_number'];
                 $order_tags['cart_id'] = strval($cart->id);
                 $order_tags['order_number'] = $reference_number;
 
@@ -103,29 +103,29 @@ class ToyyibPayController extends Controller
             }
             elseif($payment_form == 'wallet'){
                 $description = 'Wallet Checkout';
-                // $reference_number = $user->id;
+                 $reference_number = $user->id;
             }
             if($payment_form == 'tip'){
                 $description = 'Tip Checkout';
-                $order_tags['order_number'] = $request->order_number;
+                $order_tags['order_number'] = $data['order_number'];
                 
                 $order = Order::where('order_number', $reference_number)->first();
-                // $reference_number = $request->order_number;
-                // $returnUrlParams = $returnUrlParams . '&order_id=' .$reference_number. '&order_token=' .$reference_number;
+                 $reference_number = $data['order_number'];
+                 $returnUrlParams = $returnUrlParams . '&order_id=' .$reference_number. '&order_token=' .$reference_number;
             }
             elseif($payment_form == 'subscription'){
                 $description = 'Subscription Checkout';
                 if($request->has('subscription_id')){
-                    $slug = $request->subscription_id;
+                    $slug = $data['subscription_id'];
                     $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
                     $customer_data['subscription_id'] = $subscription_plan->id;
                     // $reference_number = $request->subscription_id;
                     $returnUrlParams = $returnUrlParams . '&subscription=' . $request->subscription_id;
-                    $order_tags['subscription_id'] = $request->subscription_id;
+                    $order_tags['subscription_id'] = $data['subscription_id'];
                 }
             }
 
-            $validator = Validator::make($request->all(), $rules, [
+            $validator = Validator::make($data, $rules, [
                 'amount.required' => 'Amount is required',
                 'payment_form.required' => 'Action is required',
                 'phone_number.required' => 'Phone number is required'
@@ -134,56 +134,59 @@ class ToyyibPayController extends Controller
                 return $this->errorResponse(__($validator->errors()->first()), 422);
             }
 
+            
+            $some_data = array(
+                'userSecretKey'=> $this->api_key,
+                'categoryCode'=> $codeCategory,
+                'billName'=> $data['product_name'],
+                'billDescription'=> $data['product_name'],
+                'billPriceSetting'=>0,
+                'billPayorInfo'=>1,
+                'billAmount'=>$data['amount']*100,
+                'billReturnUrl'=> route('payment.toyyibpay.callbackSuccess',$data['payment_form']),
+                'billCallbackUrl'=> route('payment.toyyibpay.callback'),
+                'billExternalReferenceNo' => $data['order_number'],
+                'billTo'=> $user->name,
+                'billEmail' => $user->email,
+                'billPhone'=>  $user->phone_number,
+                'billSplitPayment'=> 0,
+                'billSplitPaymentArgs'=> '',
+                'billPaymentChannel'=>'0',
+                'billContentEmail'=>'Thank you for purchasing our product!',
+                'billChargeToCustomer'=> 1,
+                'billExpiryDate'=>'',
+                'billExpiryDays'=>''
+              );                
+              
+              $curl = curl_init();
+              curl_setopt($curl, CURLOPT_POST, 1);
+              curl_setopt($curl, CURLOPT_URL, $this->url.'/index.php/api/createBill');  
+              curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+              curl_setopt($curl, CURLOPT_POSTFIELDS, $some_data);
+            
+              $result = curl_exec($curl);
+              $info = curl_getinfo($curl);
+              $err = curl_error($curl);  
+              curl_close($curl);
+    
+              $obj = json_decode($result);
+              if($obj){
+                return $obj[0]->BillCode;
+              // return $this->successResponse($obj[0]->BillCode, 'Order has been created successfully');
+              }else{
+                return $err->message;
+                //  dd($info);
+                //return $this->errorResponse($err->message, 400);
+              }
+    
 
 
-        }catch(\Exception $ex){
-            return $this->errorResponse($ex->getMessage(), 400);
-        }
+
+
+      
         
        
-        $some_data = array(
-            'userSecretKey'=> $this->api_key,
-            'categoryCode'=> $codeCategory,
-            'billName'=> $data['product_name'],
-            'billDescription'=> $data['product_name'],
-            'billPriceSetting'=>0,
-            'billPayorInfo'=>1,
-            'billAmount'=>$data['amount']*100,
-            'billReturnUrl'=> route('payment.toyyibpay.callbackSuccess',$data['payment_form']),
-            'billCallbackUrl'=> route('payment.toyyibpay.callback'),
-            'billExternalReferenceNo' => $data['order_number'],
-            'billTo'=> $user->name,
-            'billEmail' => $user->email,
-            'billPhone'=>  $user->phone_number,
-            'billSplitPayment'=> 0,
-            'billSplitPaymentArgs'=> '',
-            'billPaymentChannel'=>'0',
-            'billContentEmail'=>'Thank you for purchasing our product!',
-            'billChargeToCustomer'=> 1,
-            'billExpiryDate'=>'',
-            'billExpiryDays'=>''
-          );  
-          //dd($some_data);
-          $curl = curl_init();
-          curl_setopt($curl, CURLOPT_POST, 1);
-          curl_setopt($curl, CURLOPT_URL, $this->url.'/index.php/api/createBill');  
-          curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-          curl_setopt($curl, CURLOPT_POSTFIELDS, $some_data);
-        
-          $result = curl_exec($curl);
-          $info = curl_getinfo($curl);
-          $err = curl_error($curl);  
-          curl_close($curl);
-
-
-          $obj = json_decode($result);
-          if($obj){
-           // return $obj[0]->BillCode;
-           return $this->successResponse($obj[0]->BillCode, 'Order has been created successfully');
-          }else{
-            return $this->errorResponse($err->message, 400);
-          }
-
+       
     }
 
   
@@ -192,12 +195,15 @@ class ToyyibPayController extends Controller
 
         if(!empty($request->all())){
             $data = $request->all();
+            //dd($data);
             $codeCategory = $this->createCategory($data);
             if(!empty($codeCategory)){
                 $bill = $this->createBill($codeCategory,$data);
                 if(!empty($bill)){
-                    $payUrl = $this->url.'/'.$bill;
+                    $payUrl = $this->url.'/'.$bill;                    
                     return response()->json(['status' => 'Success', 'payment_link' => $payUrl]);
+                }else{
+                    return $this->errorResponse($err->message, 400);
                 }
             } 
         }
@@ -257,7 +263,7 @@ class ToyyibPayController extends Controller
                     }
                    
                 }
-                elseif($request->payment_form == 'subscription'){
+                elseif($data['payment_form'] == 'subscription'){
                     $returnUrl = route('user.subscription.plans');
                     if($toyyibPayRes['status_id'] == '2' ){
                         return Redirect::to(url($returnUrl))->with('success', 'Transaction has been pending');
