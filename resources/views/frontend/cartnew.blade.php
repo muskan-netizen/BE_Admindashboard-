@@ -466,7 +466,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <hr class="my-2">
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.gross_amount)+parseFloat(fixed_fee_amount)) %></div>
             </div>
             <% } %>
             <hr class="my-2">           
@@ -500,7 +500,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <% if(cart_details.total_payable_amount > 0) { %>
                             <input type="radio" class="tip_radio" id="control_01" name="select" value="<%= cart_details.tip_5_percent %>" <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %> checked <% } %>>
                             <label class="tip_label" for="control_01">
-                                <h5 class="m-0" id="tip_5">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.tip_5_percent) %></h5>
+                                <h5 class="m-0" id="tip_5">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.tip_5_percent)  %></h5>
                                 <p class="m-0">5%</p>
                             </label>
 
