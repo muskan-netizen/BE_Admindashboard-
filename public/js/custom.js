@@ -2207,6 +2207,8 @@ $(document).ready(function () {
         }
         else if (payment_option_id == 25) {
             payWithEasebuss('', payment_option_id, '');
+        }else if (payment_option_id == 27) {
+            paymentViaPaytab('', payment_option_id, '');
         }
 
 
