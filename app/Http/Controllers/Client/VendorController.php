@@ -237,7 +237,7 @@ class VendorController extends BaseController
      */
     public function save(Request $request, Vendor $vendor, $update = 'false'){
         $checks = array();
-        foreach ($request->only('name', 'address', 'latitude', 'longitude', 'desc') as $key => $value) {
+        foreach ($request->only('name', 'address', 'latitude', 'longitude', 'desc','short_desc') as $key => $value) {
             $vendor->{$key} = $value;
         }
         $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
@@ -366,7 +366,7 @@ class VendorController extends BaseController
         );
         //dd($request->all());
         $validation  = Validator::make($request->all(), $rules)->validate();
-        $vendor = Vendor::where('id', $id)->first();
+        $vendor = Vendor::where('id', $id)->first();        
         $saveVendor = $this->save($request, $vendor, 'true');
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         if ($vendor_registration_documents->count() > 0) {
