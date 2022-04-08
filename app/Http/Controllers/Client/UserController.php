@@ -27,7 +27,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
 use App\Models\UserDevice;
 use Session;
-use App\Models\{Payment, User, Client, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction,UserDocs,UserRegistrationDocuments};
+use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction,UserDocs,UserRegistrationDocuments};
 
 class UserController extends BaseController
 {
@@ -485,6 +485,18 @@ class UserController extends BaseController
             $clientData = 'empty';
             //return redirect()->back()->with('success', 'Password Changed successfully!');
             $data = array('type'=>'success','message'=>'Password Changed successfully!');
+            
+            
+            // $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username','mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
+            // $user = Auth()->user();
+            //     $phone_number = "+919999999999";
+            //     if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
+            //         $to = $phone_number;
+            //         $provider = $prefer->sms_provider;
+            //         $body = "Dear ".ucwords( $user->name)." password reset successfully.";
+            //         $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+            // }
+
             return json_encode($data);
         } else {
             $data = array('type'=>'error','message'=>'Wrong Old Password');

@@ -1461,7 +1461,7 @@ $(document).ready(function() {
             }
         });
     }
-});
+
 
 /////////////////////////////////////////////Paytab Pamyent Gateway /////////////////////////////////////////
     window.paymentViaPaytab = function paymentViaPaytab(address_id,order){
@@ -1503,5 +1503,4 @@ $(document).ready(function() {
         data._token = $('input[name=_token]').val(); 
         $.redirect(paytab_before_payment, data);
     }
-
-
+});
