@@ -129,14 +129,14 @@
                                         }*/ ?>
                                         <div class=" common-product-box scale-effect mb-2">
                                             <a class="row " href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                                <div class="col-4">
+                                                <div class="col-sm-4">
                                                     <div class="img-outer-box position-relative  pr-0">
                                                         <img class="blur-up lazyload p-0" data-src="{{$new['image_url']}}" alt="">
                                                         <div class="pref-timing"></div>
                                                         {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
                                                     </div>
                                                 </div>
-                                                <div class="col-8">
+                                                <div class="col-sm-8">
                                                     <div class="media-body align-self-center ">
                                                         <div class="inner_spacing px-0">
                                                             <div class="product-description">
