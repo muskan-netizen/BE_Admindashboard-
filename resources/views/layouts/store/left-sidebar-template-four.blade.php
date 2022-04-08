@@ -219,11 +219,11 @@ $pages = \App\Models\Page::with([
        <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
    </li> -->
     <% _.each(nav_categories, function(category, key){ %>
-    <% var icon_2_url = null;
+    <% var icon_two_url = null;
       if(category.icon_two != null){
-         icon_2_url =  category.icon_two.image_fit + '200/200' + category.icon_two.image_path;
+        icon_two_url =  category.icon_two.image_fit + '200/200' + category.icon_two.image_path;
       }else{
-         icon_2_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
+        icon_two_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
       }
     %>
     <li class="al_main_category" data-aos="zoom-in">

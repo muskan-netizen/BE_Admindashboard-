@@ -99,6 +99,9 @@
     var pagarme_before_payment = "{{route('payment.pagarme.beforePayment')}}";
     var pagarme_create_payment = "{{route('payment.pagarme.createPayment')}}";
 
+////////////Paytab payment Routes
+    var paytab_before_payment = "{{route('payment.paytab.beforePayment')}}";
+
 /////////////Authorize Payment Routes
     var authorize_before_payment = "{{route('payment.authorize.beforePayment')}}";
     var authorize_create_payment = "{{route('payment.authorize.createPayment')}}";

@@ -53,6 +53,11 @@ return [
             'level' => 'debug',
             'days' => 14,
         ],
+        'PayTabs' => [  
+            'driver' => 'single',  
+            'path' => storage_path('logs/paytabs.log'),  
+            'level' => 'info',  
+        ],
 
         'slack' => [
             'driver' => 'slack',

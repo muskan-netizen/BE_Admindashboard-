@@ -1580,6 +1580,8 @@ class OrderController extends BaseController
                 try {
                     $response = Http::get($request->new_dispatch_traking_url);
                 } catch (\Exception $ex) {
+                    \Log::info('Error:');
+                    \Log::info(json_encode($ex->getMessage()));
                 }
 
 

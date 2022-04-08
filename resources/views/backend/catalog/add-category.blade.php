@@ -20,7 +20,7 @@
                         <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
                     </div>
                     <div class="col-sm-6">
-                        <input type="file" accept="image/*" data-plugins="dropify" name="icon_2" class="dropify" data-default-file="" />
+                        <input type="file" accept="image/*" data-plugins="dropify" name="icon_two" class="dropify" data-default-file="" />
                         <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
                     </div>
                 </div>
