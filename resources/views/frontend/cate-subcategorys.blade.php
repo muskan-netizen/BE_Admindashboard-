@@ -20,31 +20,13 @@
             <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
+
                         @if(!empty($category->image))
                             <div class="common-banner"><img alt="" data-src="{{$category->image['proxy_url'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
+
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
-                            {{--@if(!empty($category->childs) && count($category->childs) > 0)
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="slide-6 no-arrow">
-                                            @foreach($category->childs->toArray() as $cate)
-                                            <div class="category-block">
-                                                <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                    <div class="category-image"><img alt="" class="blur-up lazyload" data-src="{{$cate['icon']['proxy_url'] . '100/80' . $cate['icon']['image_path']}}" ></div>
-                                                </a>
-                                                <div class="category-details">
-                                                    <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                        <h5>{{$cate['translation_name']}}</h5>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif--}}
                         </div>
                     </div>
                 </div>
@@ -65,6 +47,7 @@
                                     @foreach($newProds as $new)
                                         <?php $imagePath = '';
                                         foreach ($new['media'] as $k => $v) {
+                                            if(!is_null($v['image']))
                                             $imagePath = $v['image']['path']['proxy_url'].'300/300'.$v['image']['path']['image_path'];
                                         } ?>
                                         <div class="common-product-box scale-effect mb-2">
