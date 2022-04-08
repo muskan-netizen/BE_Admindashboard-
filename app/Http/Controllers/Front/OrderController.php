@@ -1054,7 +1054,7 @@ class OrderController extends FrontController
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20,21,24,25,26]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree
+            $ex_gateways = [4,7,8,9,10,12,13,15,17,18,19,20,21,24,25,26]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree
            
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 
