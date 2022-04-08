@@ -648,16 +648,16 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
        <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
    </li> -->
     <% _.each(nav_categories, function(category, key){ %>
-     <% var icon_2_url = null;
+     <% var icon_two_url = null;
       if(category.icon_two != null){
-         icon_2_url =  category.icon_two.image_fit + '200/200' + category.icon_two.image_path;
+        icon_two_url =  category.icon_two.image_fit + '200/200' + category.icon_two.image_path;
       }else{
-         icon_2_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
+        icon_two_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
       }
    %>
     <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
             @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div
-                class="nav-cate-img"> <img class="blur-up lazyload" data-icon_two="<%=icon_2_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>"
+                class="nav-cate-img"> <img class="blur-up lazyload" data-icon_two="<%=icon_two_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>"
                     data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif
             <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list">
             <% _.each(category.children, function(childs, key1){%> <li> <a
