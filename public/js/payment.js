@@ -1461,8 +1461,3 @@ $(document).ready(function() {
             }
         });
     }
-});
-
-
-
-
