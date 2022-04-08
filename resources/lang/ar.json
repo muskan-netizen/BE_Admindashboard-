@@ -961,5 +961,14 @@
   "Tip After Order": "نصيحة بعد الطلب",
   "Off Scheduling  Order": "طلب إيقاف الجدولة",
   "Select Parent Category" : "تحديد فئة رئيسية",
+  "Personal Details":" تفاصيل شخصية",
+  "ADVANCED DETAILS":"تفاصيل متقدمة",
+  "Optional" : "اختياري",
+  "Auto Reject Time(In minutes, 0 for no rejection)" : "وقت الرفض التلقائي (بالدقائق ، 0 لعدم الرفض",
+  "Slot Duration (In minutes)" : "مدة الفتحة (بالدقائق)",
+  "Absolute Min Order Value [AMOV]":"قيمة الحد الأدنى المطلق للطلب [AMOV]",
+  "Slot Duration":"مدة الفتحة",
+  " Minutes":"الدقائق ",
+  " Hour":"ساعة ",
   "Find Our App On Mobile" : "ابحث عن تطبيقنا على الهاتف المحمول"
 }
