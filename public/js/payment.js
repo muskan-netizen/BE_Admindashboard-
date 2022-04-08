@@ -1275,7 +1275,3 @@ $(document).ready(function() {
     }
 
 });
-
-
-
-
