@@ -340,7 +340,7 @@ use Illuminate\Support\Arr;
 
                                         <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif>
 
-                                        <h4 class="mb-2"><b>When would you like your service?</b></h4>
+                                        <h4 class="mb-2"><b>{{__('When would you like your service?')}}</b></h4>
                                         <div class="date-items radio-btns hide">
                                             @foreach ($period as $key => $date)
                                                 <div>
@@ -367,7 +367,7 @@ use Illuminate\Support\Arr;
                                         </div>
 
                                         <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
-                                            <h4 class="mt-4 mb-2"><b>What time would you like us to start?</b></h4>
+                                            <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
 
                                             <div class="booking-time radio-btns long-radio">
                                                 @foreach ($time_slots as $key => $date)
@@ -400,7 +400,7 @@ use Illuminate\Support\Arr;
                                     @endforeach
 
                                         <div class="booking-time-wrapper">
-                                            <h4 class="mt-4 mb-2"><b>Do you have any specific instructions?</b></h4>
+                                            <h4 class="mt-4 mb-2"><b>{{__('Do you have any specific instructions?')}}</b></h4>
                                             <textarea class="form-control" name="specific_instructions" id="specific_instructions" cols="30" rows="7"></textarea>
                                         </div>
 
