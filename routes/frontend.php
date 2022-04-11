@@ -135,6 +135,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/authorize_net/page','Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
 	Route::post('payment/authorize','Front\AuthorizeGatewayController@createPayment')->name('payment.authorize.createPayment');
 
+	//Paytab
+	Route::match(['get','post'],'payment/paytab/page','Front\PaytabController@beforePayment')->name('payment.paytab.beforePayment');
+	Route::post('payment/paytab','Front\PaytabController@createPayment')->name('payment.paytab.createPayment');
+
 	// toyyibpay
 	Route::match(['get','post'],'payment/toyyib', 'Front\ToyyibPayController@index')->name('payment.toyyibpay.index');
 	//Route::post('payment/webhook/toyyib', 'Front\ToyyibPayController@webhook')->name('payment.webhook.toyyibpay');

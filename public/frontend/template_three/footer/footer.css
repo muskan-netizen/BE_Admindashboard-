@@ -42,6 +42,7 @@ ul{margin: 0;}
     font-size: 22px;
     cursor: pointer;
     line-height: 50px;
+    z-index: 9999;
 }
 .tap-top.top-cls i.fa {
     color: #fff;
