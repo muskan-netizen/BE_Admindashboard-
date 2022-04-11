@@ -1604,7 +1604,7 @@ class CartController extends FrontController
                         $option = array_merge($option,$optionDunzo);
                     }
                 }
-
+                // \Log::info($vendorData->vendor->ahoy_location);
                 if(isset($vendorData->vendor->ahoy_location)){
                   //getAhoy (Masa) Delivery fee changes code
                   $ahoy = new AhoyController();

@@ -138,6 +138,7 @@ Route::group(['middleware' => ['domain']], function () {
 	//Paytab
 	Route::match(['get','post'],'payment/paytab/page','Front\PaytabController@beforePayment')->name('payment.paytab.beforePayment');
 	Route::post('payment/paytab','Front\PaytabController@createPayment')->name('payment.paytab.createPayment');
+	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback');
 
 	// toyyibpay
 	Route::match(['get','post'],'payment/toyyib', 'Front\ToyyibPayController@index')->name('payment.toyyibpay.index');
