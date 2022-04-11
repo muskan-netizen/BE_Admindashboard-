@@ -2718,12 +2718,20 @@ $(document).ready(function () {
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
+
         } else {
             amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
             $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
+        }
+        if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
+                $("#order_placed_btn").removeAttr("disabled");
+                $("#order_placed_btn").removeClass("d-none");
+        }else{
+            $("#order_placed_btn").attr("disabled", true);
+            $("#order_placed_btn").addClass("d-none");
         }
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     }

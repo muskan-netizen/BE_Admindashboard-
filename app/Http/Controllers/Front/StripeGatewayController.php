@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use Log;
 use Auth;
 use Session;
 use Omnipay\Omnipay;
@@ -15,13 +16,14 @@ use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
 use App\Http\Controllers\Front\PickupDeliveryController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
+use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
 
 class StripeGatewayController extends FrontController
 {
 
     use ApiResponser;
     public $gateway;
+    public $API_KEY;
     public $currency;
 
     public function __construct()
@@ -33,6 +35,7 @@ class StripeGatewayController extends FrontController
         $this->gateway = Omnipay::create('Stripe');
         $this->gateway->setApiKey($api_key);
         $this->gateway->setTestMode($testmode); //set it to 'false' when go live
+        $this->API_KEY = $api_key;
 
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
@@ -72,6 +75,11 @@ class StripeGatewayController extends FrontController
                 }
             }else {
                 $customer_id = $saved_payment_method->customerReference;
+                // \Stripe\Stripe::setApiKey($this->API_KEY);
+                // $retrieve_customer = \Stripe\Customer::retrieve(
+                //     $customer_id, 
+                //     []
+                // );
             }
             
 
@@ -157,6 +165,7 @@ class StripeGatewayController extends FrontController
                                 CartCoupon::where('cart_id', $cart_id)->delete();
                                 CartProduct::where('cart_id', $cart_id)->delete();
                                 CartProductPrescription::where('cart_id', $cart_id)->delete();
+                                CartDeliveryFee::where('cart_id', $cart_id)->delete();
         
                                 // Send Notification
                                 if (!empty($order->vendors)) {
@@ -213,7 +222,8 @@ class StripeGatewayController extends FrontController
                 return $this->errorResponse($authorizeResponse->getMessage(), 400);
             }
         } catch (\Exception $ex) {
-            return $this->errorResponse($ex->getMessage(), 400);
+            Log::info($ex->getMessage());
+            return $this->errorResponse('Server Error', $ex->getCode());
         }
     }
 
@@ -381,7 +391,8 @@ class StripeGatewayController extends FrontController
             return $this->successResponse($payment_intent->client_secret);
         }
         catch (\Exception $ex) {
-            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+            Log::info($ex->getMessage());
+            return $this->errorResponse('Server Error', $ex->getCode());
         }
     }
 
