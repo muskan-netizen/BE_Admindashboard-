@@ -15,13 +15,22 @@ class WebStylingOptionTempThreeSeeder extends Seeder
      */
     public function run()
     {
-        $app_styling_option = WebStylingOption::updateOrCreate([
+        WebStylingOption::updateOrCreate([
         	'image' => 'template-three.png',
         ],[
             'web_styling_id' => 1,
             'name' => 'Home Page 3',
             'is_selected' => '0',
             'template_id' => '3',
+        ]);
+
+        WebStylingOption::updateOrCreate([
+            'image' => 'template-four.png',
+        ],[
+            'web_styling_id' => 1,
+            'name' => 'Home Page 4',
+            'is_selected' => '0',
+            'template_id' => '4', 
         ]);
     }
 }

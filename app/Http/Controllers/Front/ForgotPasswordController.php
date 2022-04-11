@@ -51,10 +51,12 @@ class ForgotPasswordController extends FrontController{
                 'email' => 'required|email|exists:users',
             ],['email.required' => __('The email field is required.'),'email.exists' => __('You are not registered with us. Please sign up.')]);
             $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+            $user=User::where('email',$request->email)->first();
             $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
             if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
                 $token = Str::random(60);
+                // dd(url('/reset-password/'.$token));
                 $client_name = $client->name;
                 $mail_from = $data->mail_from;
                 DB::table('password_resets')->insert(['email' => $request->email, 'token' => $token, 'created_at' => Carbon::now()]);
@@ -74,6 +76,19 @@ class ForgotPasswordController extends FrontController{
                     'email_template_content' => $email_template_content,
                 ];
                 dispatch(new \App\Jobs\sendForgotPasswordEmail($data))->onQueue('forgot_password_email');
+               
+                /* Send sms to user */
+                $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username','mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
+                if ($user->dial_code == "971") {
+                    $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                } else {
+                    $to = '+' . $user->dial_code . $user->phone_number;
+                }
+                if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
+                    $provider = $prefer->sms_provider;
+                    $body = "Dear ".ucwords($user->name)." reset password link is: ".url('/reset-password/'.$token);
+                    $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                }
             }
             return $this->successResponse([],__('We have e-mailed your password reset link!'));
         } catch (Exception $e) {
