@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\AhoyController;
-
+use App\Http\Controllers\DunzoController;
 use DB;
 use Log;
 use Auth;
