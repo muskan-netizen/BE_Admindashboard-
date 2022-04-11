@@ -7,15 +7,15 @@ trait PaytabPaymentManager{
 
   public function createPaymentpage($data)
   {
-     $pay= paypage::sendPaymentCode('all')
-         ->sendTransaction('sale')
-          ->sendCart(10,1000,'test')
-         ->sendCustomerDetails('Walaa Elsaeed', 'w.elsaeed@paytabs.com', '0101111111', 'test', 'Nasr City', 'Cairo', 'EG', '1234','100.279.20.10')
-         ->sendShippingDetails('Walaa Elsaeed', 'w.elsaeed@paytabs.com', '0101111111', 'test', 'Nasr City', 'Cairo', 'EG', '1234','100.279.20.10')
-         ->sendURLs('https://sales.focushires.com', 'https://sales.focushires.com')
-         ->sendLanguage('en')
-         ->create_pay_page();
-  return $pay; 
+    $pay= paypage::sendPaymentCode('all')
+        ->sendTransaction('sale')
+        ->sendCart(10,1000,'test')
+        ->sendCustomerDetails('Walaa Elsaeed', 'w.elsaeed@paytabs.com', '0101111111', 'test', 'Nasr City', 'Cairo', 'EG', '1234','100.279.20.10')
+        ->sendShippingDetails('Walaa Elsaeed', 'w.elsaeed@paytabs.com', '0101111111', 'test', 'Nasr City', 'Cairo', 'EG', '1234','100.279.20.10')
+        ->sendURLs('https://sales.focushires.com', 'https://sales.focushires.com')
+        ->sendLanguage('en')
+        ->create_pay_page();
+    return $pay;
   }
   public function createPaytabPayment($data)
   {
