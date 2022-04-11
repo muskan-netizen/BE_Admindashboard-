@@ -4,9 +4,10 @@
 	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
 	Route::get('auth/xero','Front\XeroController@index')->name('xero_auth');
 	Route::any('auth/callback/xero','Front\XeroController@xero_callback')->name('callback_xero');
+	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback'); 
 	Route::get('/debug-sentry', function () {
-	throw new Exception('My first Sentry error!');
-});
+		throw new Exception('My first Sentry error!');
+	});
 
 
 Route::group(['middleware' => ['domain']], function () {

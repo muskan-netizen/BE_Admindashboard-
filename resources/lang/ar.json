@@ -970,5 +970,8 @@
   "Slot Duration":"مدة الفتحة",
   " Minutes":"الدقائق ",
   " Hour":"ساعة ",
+  "Min" : " الدقائق",
+  "Hours" : " ساعة",
+  "Upload Banner" : "تحميل لافتة",
   "Find Our App On Mobile" : "ابحث عن تطبيقنا على الهاتف المحمول"
 }

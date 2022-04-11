@@ -31,11 +31,24 @@ class PaytabController extends Controller
         if($request->isMethod('post'))
         {
             $data['come_from'] = 'web';
+        }else{
+            $user = User::where('auth_token', $request->auth_token)->first();
+            Auth::login($user);
         }
-        $pay = $this->createPaymentpage($data);
-        dd($pay);
-    	return view('frontend.payment_gatway.paytab_view')->with(['data' => $data]);
+        $user = Auth::user();
+        $response = $this->createPaymentpage($data,$user);
+        if(!is_null($response) && $response->gettargetUrl() != null)
+        {
+            return redirect($response->gettargetUrl());
+        }
+        dd($response);
+        return redirect()->back()->with('error','Something went wrong, Please try again later.');
     }
+    public function callback(Request $request)
+    {
+        Log::info("Paytab Callback url");
+        Log::info($request->all());
+    } 
     public function createPayment(Request $request)
     {
         Log::info("Paytab Create Payment");

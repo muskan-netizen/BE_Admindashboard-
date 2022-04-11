@@ -66,6 +66,8 @@ if(isset($set_template))
     $body_class = "al_body_template_two";
   elseif($set_template->template_id == 3)
     $body_class = "al_body_template_three";
+  elseif($set_template->template_id == 4)
+    $body_class = "al_body_template_four";
 }
 @endphp
 
@@ -87,6 +89,8 @@ if(isset($set_template))
     @include('layouts.store/left-sidebar-template-two')
     @elseif(isset($set_template)  && $set_template->template_id == 3)
     @include('layouts.store/left-sidebar-template-three')
+    @elseif(isset($set_template)  && $set_template->template_id == 4)
+    @include('layouts.store/left-sidebar-template-four')
     @else
     @include('layouts.store/left-sidebar-template-one')
     @endif
@@ -98,6 +102,8 @@ if(isset($set_template))
   @include('layouts.store/footer-content-template-two')
   @elseif(isset($set_template)  && $set_template->template_id == 3)
   @include('layouts.store/footer-content-template-three')
+  @elseif(isset($set_template)  && $set_template->template_id == 4)
+  @include('layouts.store/footer-content-template-four')
   @else
   @endif
   @include('layouts.store/footer')
