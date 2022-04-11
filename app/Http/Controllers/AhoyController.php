@@ -121,9 +121,9 @@ class AhoyController extends Controller
                 "orderLargeBoxQuantity"=> '0',
                 "orderMidBoxQuantity"=> '1',
                 "orderSmallBoxQuantity"=> '0',
-                'customerName' => $customer->name,  //+97 code is only for dubai and it's required
-				'customerPhone' => '971566134856', 
-				//'customerPhone' => ($customer->dial_code??'+97').$customer->phone_number,
+                'customerName' => $customer->name,  //+971 code is only for dubai and it's required
+				//'customerPhone' => '971566134856', 
+				'customerPhone' => ($customer->dial_code??'+971').$customer->phone_number,
 				'customerEmail' => $customer->email,
                 'customerAddress'=> $cus_address->address,
 				'customerLatitude' => $cus_address->latitude, //Required
@@ -209,8 +209,8 @@ class AhoyController extends Controller
                 "orderMidBoxQuantity"=> '1',
                 "orderSmallBoxQuantity"=> '0',
                 'customerName' => $customer->name,
-				// 'customerPhone' =>($customer->dial_code??'+97').$customer->phone_number,
-				'customerPhone' => '971566134856', 
+				'customerPhone' =>($customer->dial_code??'+971').$customer->phone_number,
+				//'customerPhone' => '971566134856', 
 				'customerEmail' => $customer->email,
                 'customerAddress'=> $cus_address->address,
 				'customerLatitude' => $cus_address->latitude, //Required
@@ -251,7 +251,7 @@ class AhoyController extends Controller
                 'latitude'=>$vendor_details->latitude ?? '',
                 'longitude'=>$vendor_details->longitude ?? '',
                 'locationType'=>$request->location_type??1,
-                'PhoneNumber'=>'97'.$vendor_details->phone_no ?? '',
+                'PhoneNumber'=>($vendor_details->dial_code??'+971').$vendor_details->phone_no ?? '',
                 'Email'=>$vendor_details->email ?? ''
             );
             //dd($data);
