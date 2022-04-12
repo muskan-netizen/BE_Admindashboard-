@@ -152,6 +152,11 @@
 .al_body_template_three label{
     font-weight:400
 }
+.al_body_template_three .product-wrapper-grid label{
+    font-weight: 400;
+    width: 100%;
+    text-align: center;
+}
 .product-wrapper-grid.list-view{
     margin-top:20px
 }
