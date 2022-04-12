@@ -21,7 +21,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
-                        @if(!empty($category->image))
+                        @if(!empty($category->image) && $category->image['is_original'])
                             <div class="common-banner"><img alt="" class="blur-up lazyload" data-src="{{$category->image['image_fit'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
                         <div class="top-banner-content small-section">
