@@ -8,7 +8,7 @@ use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, Wal
 use Auth, Log, Redirect;
 use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProduct};
 
-class PaytabController extends Controller
+class PaytabController extends FrontController
 {
     use \App\Http\Traits\PaytabPaymentManager;
 	use \App\Http\Traits\ApiResponser;
@@ -41,7 +41,6 @@ class PaytabController extends Controller
         {
             return redirect($response->gettargetUrl());
         }
-        dd($response);
         return redirect()->back()->with('error','Something went wrong, Please try again later.');
     }
     public function callback(Request $request, $domain="")
@@ -51,12 +50,9 @@ class PaytabController extends Controller
     } 
     public function returnBack(Request $request, $domain="")
     {
+        $user = User::where('auth_token', $request->auth_token)->first();
+        Auth::login($user);
         if($request['respStatus'] == 'A'){
-            if($request->come_from == "app")
-            {
-                $user = User::where('auth_token', $request->auth_token)->first();
-                Auth::login($user);
-            }
             $user = Auth::user();
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -78,17 +74,14 @@ class PaytabController extends Controller
                 $returnUrl = $this->sucessPayment($request);
             }else{
                 $returnUrl = $this->failedPayment($request);
-            }
-            return Redirect::to(url($returnUrl));
+            } 
+        }else{
+            $returnUrl = $this->failedPayment($request);
         }
+        return Redirect::to(url($returnUrl));
     }
     public function sucessPayment($request)
     {
-        if($request->come_from == "app")
-        {
-            $user = User::where('auth_token', $request->auth_token)->first();
-            Auth::login($user);
-        }
         $user = Auth::user();
     	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
@@ -172,6 +165,7 @@ class PaytabController extends Controller
             }else{
                 $returnUrl = route('user.subscription.plans');
             }
+            dd($returnUrl);
             return $returnUrl;
         }
         return Redirect::to(route('order.return.success'));
