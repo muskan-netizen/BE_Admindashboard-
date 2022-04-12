@@ -357,7 +357,7 @@ $(document).ready(function () {
                     }
                     else {
                         if ((latitude) && (longitude) && (selected_address)) {
-                            window.location.href = home_page_url;
+                            // window.location.href = home_page_url;
                         }
                     }
                 }
