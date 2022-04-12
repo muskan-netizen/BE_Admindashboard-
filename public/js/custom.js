@@ -3482,7 +3482,7 @@ $(document).ready(function () {
     $(document).on("click", "#next-button-ondemand-3", function () {
         $('.alert-danger').html('');
        //window.location.href = showCart;
-
+       
         var task_type = 'schedule';
         var schedule_date = $("input[name='booking_date']:checked").val();
         var schedule_time = $("input[name='booking_time']:checked").val();
