@@ -1048,7 +1048,6 @@ function initMap() {
 }
 
 function setLocationCoordinates(key, lat, lng) {
-    alert(key);
     const latitudeField = document.getElementById(key + "-" + "latitude");
     const longitudeField = document.getElementById(key + "-" + "longitude");
     latitudeField.value = lat;
