@@ -20,7 +20,7 @@ return [
      |
      */
 
-    'profile_id' => env('paytabs_profile_id', '62106'),
+    'profile_id' => env('paytabs_profile_id', '56491'),
 
     /*
    |--------------------------------------------------------------------------
@@ -31,7 +31,7 @@ return [
    |
    */
 
-    'server_key' => env('paytabs_server_key', 'SDJN92NJD2-JB6MW6ZZR9-66LMLTHTR6'),
+    'server_key' => env('paytabs_server_key', 'S6JN92NJN2-JBBMLRKHZM-HZLRDJBMMM'),
 
     /*
    |--------------------------------------------------------------------------

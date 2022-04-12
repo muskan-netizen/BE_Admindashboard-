@@ -14,44 +14,17 @@ trait PaytabPaymentManager{
     $pay = paypage::sendPaymentCode('all')
         ->sendTransaction('Auth')
         ->sendCart(mt_rand(10000000,99999999),(int)$data['amount'],'test1')
-        ->sendCustomerDetails($user->name??'', $user->email??'', '0101111111', $address->address??'', $address->city??'', $address->state??'', $address->country_code??'', $address->pincode??'','100.279.20.11')
+        ->sendCustomerDetails('Walaa Elsaeed', 'w.elsaeed@paytabs.com', '0101111111', 'test', 'Nasr City', 'Cairo', 'EG', '1234','100.279.20.10')
+        // ->sendCustomerDetails($user->name??'', $user->email??'', '0101111111', $address->address??'', $address->city??'', $address->state??'', $address->country_code??'', $address->pincode??'','100.279.20.11')
         ->sendShippingDetails('same as billing')
-        ->sendURLs(route('payment.paytab.callback'), route('payment.paytab.callback'))  
+        // ->sendURLs(route('payment.paytab.return'), route('payment.paytab.callback')) 
+        ->sendURLs('https://619a-112-196-88-218.ngrok.io/payment/paytab/return?amount='.(int)$data['amount'].'&payment_from='.$data['payment_from'].'&come_from='.$data['come_from'].'&order_number='.$data['order_number']??'', 'https://619a-112-196-88-218.ngrok.io/payment/paytab/callback') 
         ->sendLanguage('en')
         ->create_pay_page();
     return $pay;
   }
-  public function createPaytabPayment($data)
+  public function capturePayment($data)
   {
-    $client = $this->init();
-    $amount_money = new \Square\Models\Money();
-    $amount_money->setAmount($data['amount']);
-    $amount_money->setCurrency($data['currency']);
-
-    $body = new \Square\Models\CreatePaymentRequest(
-        $data['source_id'],
-        Uuid::uuid4(),
-        $amount_money
-    );
-    $body->setReferenceId($data['reference']);
-    $body->setLocationId($data['location_id']);
-    $body->setAutocomplete(true);
-    $body->setNote($data['description']);
-
-    $api_response = $client->getPaymentsApi()->createPayment($body);
-    $payment_id = null;
-    if ($api_response->isSuccess()) {
-        $result = $api_response->getResult();
-        if($result->getPayment()->getStatus() == "COMPLETED")
-        {
-          $payment_id = $result->getPayment()->getId();
-          return $payment_id;
-        }
-    } else {
-        $errors = $api_response->getErrors();
-    }
-    Log::info("Payment ID");
-    Log::info($payment_id);
-    return $payment_id;
+    return  Paypage::capture($data['tranRef'],$data['cartId'],(int)$data['amount'],$data['description']); 
   }
 }
