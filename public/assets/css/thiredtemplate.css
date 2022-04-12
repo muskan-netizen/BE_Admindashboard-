@@ -55,7 +55,7 @@ article#content-wrap{padding-bottom:0 !important}body .footer-theme .sub-title h
 .product-wrapper-grid a.product-box{padding: 0 !important;}
 .product-wrapper-grid a.product-box img{width: 100%;}
 .collection-product-wrapper{position: relative;}
-.collection-product-wrapper .product-top-filter{position: absolute;}
+.collection-product-wrapper .product-top-filter{position: absolute;z-index: 9999;}
 .scrollspy-menu {
     top: auto;
     bottom: 120px;

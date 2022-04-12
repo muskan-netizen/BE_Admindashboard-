@@ -8,8 +8,6 @@
  html, body{
      overflow-x: hidden;
      scroll-behavior: smooth;
-     font-family: 'Varela Round', sans-serif !important;
-     background-color: #fff;
 }
 .file.file--upload i.fa{color: #fff;}
  article#page-container .site-header{
