@@ -87,9 +87,11 @@ class Category extends Model
     public function getImageAttribute($value)
     {
       $values = array();
+      $values['is_original'] = false; 
       $img = 'default/default_image.png';
       if(!empty($value)){
         $img = $value;
+        $values['is_original'] = true; 
       }
       $ex = checkImageExtension($img);
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
