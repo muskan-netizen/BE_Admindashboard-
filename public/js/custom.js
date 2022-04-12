@@ -1,6 +1,6 @@
 jQuery(window).scroll(function () {
     var scroll = jQuery(window).scrollTop();
-    if (scroll <= 50) {
+    if (scroll <= 100) {
         jQuery(".site-header").removeClass("fixed-bar");
         jQuery(".al_offset-top-home").css('margin-top', '0px');
 
