@@ -78,9 +78,11 @@ class PaytabController extends Controller
                 $returnUrl = $this->sucessPayment($request);
             }else{
                 $returnUrl = $this->failedPayment($request);
-            }
-            return Redirect::to(url($returnUrl));
+            } 
+        }else{
+            $returnUrl = $this->failedPayment($request);
         }
+        return Redirect::to(url($returnUrl));
     }
     public function sucessPayment($request)
     {
