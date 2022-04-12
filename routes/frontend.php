@@ -5,6 +5,7 @@
 	Route::get('auth/xero','Front\XeroController@index')->name('xero_auth');
 	Route::any('auth/callback/xero','Front\XeroController@xero_callback')->name('callback_xero');
 	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback'); 
+	Route::match(['get','post'],'payment/paytab/return','Front\PaytabController@returnBack')->name('payment.paytab.return'); 
 	Route::get('/debug-sentry', function () {
 		throw new Exception('My first Sentry error!');
 	});

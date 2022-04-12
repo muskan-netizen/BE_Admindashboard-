@@ -309,14 +309,14 @@ class AhoyController extends Controller
         if(isset($json->statusId) && $json->statusId == '12')
         {
             $awb = $json->orderId;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            $details = OrderVendor::where('web_hook_code',$awb)->first();
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
        
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);
         }elseif(isset($json->statusId) && $json->statusId == '22')
         {
 			$awb = $json->orderId;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            $details = OrderVendor::where('web_hook_code',$awb)->first();
             //Update in vendor status
             VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'4']);
             
@@ -324,7 +324,7 @@ class AhoyController extends Controller
         }elseif(isset($json->statusId) && $json->statusId == '3')
         {
 			$awb = $json->orderId;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            $details = OrderVendor::where('web_hook_code',$awb)->first();
             //Update in vendor status
             VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'5']);
 
