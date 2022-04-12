@@ -8,8 +8,10 @@
  html, body{
      overflow-x: hidden;
      scroll-behavior: smooth;
-     font-family: 'Varela Round', sans-serif !important;
      background-color: #fff;
+}
+header{
+    box-shadow: 0 0 10px rgb(0 0 0 / 20%);
 }
 body i.fa{color: var(--theme-deafult);}
  article#page-container .site-header{
@@ -373,14 +375,14 @@ body i.fa{color: var(--theme-deafult);}
  .menu-slider .slick-next.slick-disabled, .menu-slider .slick-prev.slick-disabled{
      opacity: 0;
 }
- .pixelstrap ul{
+ /* .pixelstrap ul{
      position: absolute;
      width: 16em !important;
      border: none;
      box-shadow: 0 1px 6px 0 #ebebeb;
      border-radius: 0
-}
- .sm ul{
+} */
+ /* .sm ul{
      display: none;
      list-style: none;
      margin: 0;
@@ -388,7 +390,7 @@ body i.fa{color: var(--theme-deafult);}
      direction: ltr;
      text-align: left;
      padding: 0;
-}
+} */
  .al_main_category:hover ul.al_main_category_list{
      display: block;
      background-color: #fff;
@@ -490,19 +492,16 @@ h2.homepage-address{
     width: 100%;
     overflow: visible;
 }
-.menu_navigation_al_four li.al_main_category {
+
+.menu_navigation_al_four li.al_main_category{
     margin: 0 20px;
 }
-.menu_navigation_al_four li.al_main_category .al_main_category_list a{padding: 0;}
+.menu_navigation_al_four li.al_main_category .al_main_category_list a{padding: 10px !important; width: 100%;text-align: left;}
 .menu_navigation_al_four li.al_main_category a{
     padding: 0;
-    padding-bottom: 0;
     white-space: nowrap;
     width: fit-content;
     -webkit-transform: scale(1);transform: scale(1);
-}
-.menu_navigation_al_four li.al_main_category a:hover{
-    padding: 0;
 }
 .menu_navigation_al_four .slick-list{
     overflow-x: clip;
@@ -544,6 +543,7 @@ h2.homepage-address{
 .al_addCart li.onhover-div a i{
 color: #fff;
 }
+.al_addCart li.onhover-div a:hover i{color: #000;}
 .al_four_custom_head {
     display: block;
     padding: 5px 0;
@@ -585,7 +585,7 @@ color: #fff;
     background:none;
     border: none;
     cursor: pointer;
-    padding: 10px;
+    padding: 0 10px;line-height: normal;
 }
 .onhover-show-div li{
     display: block;
