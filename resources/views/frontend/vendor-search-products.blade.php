@@ -59,8 +59,8 @@
                             </a>
                         </div>
                         <div class="col-sm-10">
-                            <div class="row price_head pl-2">
-                                <div class="col-sm-12 pl-2">
+                            <div class="row price_head">
+                                <div class="col-sm-12">
                                     <div
                                         class="d-flex align-items-start justify-content-between">
                                         <h5 class="mt-0">

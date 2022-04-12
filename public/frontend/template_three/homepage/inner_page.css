@@ -1,7 +1,7 @@
 .al_body_template_three .breadcrumb-section.bg-transparent.pt-0{
     padding:0
 }
-.al_body_template_three .al_body_template_three .add-to-fav{
+.al_body_template_three .add-to-fav{
     display:none
 }
 .al_body_template_three .supplier-rating p.vendor-cate.ellips{
@@ -80,13 +80,7 @@
 .al_body_template_three nav.scrollspy-menu li a{
     color:#777
 }
-.al_body_template_three input.input-number{
-    border-color:var(--theme-deafult);
-    border-width:1px;
-    border-radius:25px;
-    text-align:center;
-    color:var(--theme-deafult)
-}
+
 .al_body_template_three .number span{
     color:var(--theme-deafult)
 }
@@ -924,7 +918,6 @@ h2.homepage-address{
     filter:unset;
     padding: 0;
     transition:opacity .25s ease 0s,transform .25s ease 0s
-
 }
 .al_body_template_three .add-to-fav{
     position:absolute;
@@ -938,7 +931,7 @@ h2.homepage-address{
     background:#fff;
     line-height:28px;
     border-radius:50%;
-    font-size:12px
+    font-size:12px;display: none;
 }
 .al_body_template_three .add-to-fav input[type=checkbox]{
     position:absolute;
@@ -1878,7 +1871,7 @@ body.dark .al_body_template_three .product-box,body.dark .al_body_template_three
     overflow-x:hidden
 }
  .top-header .header-dropdown .onhover-dropdown .onhover-show-div li a{
-    width: max-content;
+    width: 100% !important;
 }
 .dark .al_count_tabs_new_design.al_tab_mobile{
     background-color:#232323
