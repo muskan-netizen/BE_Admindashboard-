@@ -196,12 +196,14 @@ class CustomerAuthController extends FrontController
 
 
     /**     * Display register Form     */
-    public function register(SignupRequest $req, $domain = ''){
+    public function register(SignupRequest $req, $domain = ''){ 
         try {
+            $phonenumber= str_replace('-', '', $req->phone_number);
+            $req->phone_number = str_replace(' ', '', $phonenumber);
             if( (empty($req->email)) && (empty($req->phone_number)) ){
                 $validator = $req->validate([
                     'email'  => 'required',
-                    'phone_number'  => 'required'
+                    'phone_number'  => 'required|unique:users'
                 ],[
                     "email.required" => __('The email field is required.'),
                     "phone_number.required" => __('The phone number field is required.'),

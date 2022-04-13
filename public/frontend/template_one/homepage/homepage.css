@@ -520,7 +520,7 @@ label{
     width:100%
 }
 .al_body_template_one .btn-solid{
-    padding:5px 15px!important;
+    padding:5px 10px!important;
     font-size:10px!important;
     letter-spacing:2px;
     font-weight:500;
@@ -804,14 +804,7 @@ li.close-window i{
     color:var(--theme-deafult);
     font-size:20px
 }
-.al_body_template_one .btn-solid{
-    padding:5px 15px!important;
-    font-size:10px!important;
-    letter-spacing:2px;
-    font-weight:500;
-    text-shadow:none;
-    margin-left:5px
-}
+
 .order_detail:before{
     content:"";
     border-left:1px solid var(--theme-deafult);
