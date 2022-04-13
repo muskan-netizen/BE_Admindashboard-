@@ -203,7 +203,7 @@ return [
         App\Providers\MailConfigServiceProvider::class,
         // OwenIt\Auditing\AuditingServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
-        // Paytabscom\Laravel_paytabs\PaypageServiceProvider::class, 
+        Paytabscom\Laravel_paytabs\PaypageServiceProvider::class, 
     ],
 
     /*
