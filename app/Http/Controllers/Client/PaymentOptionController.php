@@ -30,11 +30,14 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz');
+        
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab');
         //,'easebuzz' 
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
+
+       
         return view('backend/payoption/index')->with(['payOption' => $payOption, 'payoutOption' => $payoutOption]);
     }
 
@@ -138,7 +141,25 @@ class PaymentOptionController extends BaseController
                         $json_creds = json_encode($stripe_arr);
                     }
 
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'toyyibpay')) {
+                    $validatedData = $request->validate([
+                        'toyyibpay_api_key'        => 'required',
+                        'toyyibpay_redirect_uri'   => 'required'
+                    ], [
+                        'toyyibpay_api_key.required' => 'Toyyibpay secret key field is required'
+                    ]);
+
+                    if($request->stripe_api_key != 'admin@640'){
+                        $toyyibpay_arr = array(
+                            'toyyibpay_api_key' => $request->toyyibpay_api_key,
+                            'toyyibpay_redirect_uri' => $request->toyyibpay_redirect_uri
+                        );
+                       
+                        $json_creds = json_encode($toyyibpay_arr);
+                    }
+
                 }
+
                 else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe_fpx')) {
                     $validatedData = $request->validate([
                         'stripe_fpx_secret_key' => 'required',
@@ -341,6 +362,17 @@ class PaymentOptionController extends BaseController
                     $json_creds = json_encode(array(
                         'easebuzz_merchant_key' => $request->easebuzz_merchant_key,
                         'easebuzz_salt' => $request->easebuzz_salt
+                    ));
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paytab')) {
+                    $validatedData = $request->validate([
+                        'paytab_profile_id' => 'required',
+                        'paytab_server_key' => 'required',
+                        'paytab_client_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'profile_id' => $request->paytab_profile_id,
+                        'server_key' => $request->paytab_server_key,
+                        'client_key' => $request->paytab_client_key
                     ));
                 }
             }

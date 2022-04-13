@@ -62,7 +62,7 @@ class WalletController extends FrontController
                     return $this->errorResponse('Transaction has already been done', 400);
                 }
 
-                $wallet->depositFloat($credit_amount, ['__("Wallet has been") <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
+                $wallet->depositFloat($credit_amount, [__("Wallet has been").' <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
 
                 $payment = new Payment();
                 $payment->date = date('Y-m-d');

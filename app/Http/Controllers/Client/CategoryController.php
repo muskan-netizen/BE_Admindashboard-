@@ -316,9 +316,9 @@ class CategoryController extends BaseController
                 $file = $request->file('icon');
                 $cate->icon = Storage::disk('s3')->put($this->folderName, $file, 'public');
             }
-            if ($request->hasFile('icon_2')) {
-                $file = $request->file('icon_2');
-                $cate->icon_2 = Storage::disk('s3')->put($this->folderName, $file, 'public');
+            if ($request->hasFile('icon_two')) {
+                $file = $request->file('icon_two');
+                $cate->icon_two = Storage::disk('s3')->put($this->folderName, $file, 'public');
             }
             if ($request->hasFile('image')) {
                 $file = $request->file('image');

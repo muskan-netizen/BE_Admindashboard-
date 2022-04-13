@@ -99,6 +99,9 @@
     var pagarme_before_payment = "{{route('payment.pagarme.beforePayment')}}";
     var pagarme_create_payment = "{{route('payment.pagarme.createPayment')}}";
 
+////////////Paytab payment Routes
+    var paytab_before_payment = "{{route('payment.paytab.beforePayment')}}";
+
 /////////////Authorize Payment Routes
     var authorize_before_payment = "{{route('payment.authorize.beforePayment')}}";
     var authorize_create_payment = "{{route('payment.authorize.createPayment')}}";
@@ -241,8 +244,11 @@
         });
     });
     jQuery(document).ready(function($) {
-        var footer_height = $('.footer-light').height();
-        $('article#content-wrap').css('padding-bottom',footer_height);
+        setTimeout(function(){
+            var footer_height = $('.footer-light').height();
+            console.log(footer_height);
+            $('article#content-wrap').css('padding-bottom',footer_height);
+        }, 500);
     });
     @if(isset($set_template)  && $set_template->template_id ==3 && \Request::route()->getName()=='categoryDetail')
     function changeImage(image2, check) {

@@ -18,7 +18,7 @@
     "The name may not be greater than 50 characters.": "The name may not be greater than 50 characters.",
     "The phone number field is required.": "The phone number field is required.",
     "The selected email is invalid.": "The selected email is invalid.",
-    "You are not registered with us. Please sign up.": "Please signup to proceed.",
+    "You are not registered with us. Please sign up.": "This account doesn't exist. Enter a different account or sign up for a new account",
     "Send Password Reset Link": "Send Password Reset Link",
     "We have e-mailed your password reset link!": "Your password reset link has been sent to your email.",
     "The password field is required.": "The password field is required.",

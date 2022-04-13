@@ -20,31 +20,13 @@
             <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
+
                         @if(!empty($category->image))
                             <div class="common-banner"><img alt="" data-src="{{$category->image['proxy_url'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
+
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
-                            {{--@if(!empty($category->childs) && count($category->childs) > 0)
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="slide-6 no-arrow">
-                                            @foreach($category->childs->toArray() as $cate)
-                                            <div class="category-block">
-                                                <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                    <div class="category-image"><img alt="" class="blur-up lazyload" data-src="{{$cate['icon']['proxy_url'] . '100/80' . $cate['icon']['image_path']}}" ></div>
-                                                </a>
-                                                <div class="category-details">
-                                                    <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                        <h5>{{$cate['translation_name']}}</h5>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif--}}
                         </div>
                     </div>
                 </div>
@@ -65,52 +47,57 @@
                                     @foreach($newProds as $new)
                                         <?php $imagePath = '';
                                         foreach ($new['media'] as $k => $v) {
+                                            if(!is_null($v['image']))
                                             $imagePath = $v['image']['path']['proxy_url'].'300/300'.$v['image']['path']['image_path'];
                                         } ?>
-
-                                        <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2 al"  href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                            <div class="row m-0">
-                                                <div class="col-sm-4 img-outer-box position-relative">
-                                                    <img class="blur-up lazyload w-100" data-src="{{$imagePath}}" alt="">
-                                                    <div class="pref-timing">
-                                                        <!--<span>5-10 min</span>-->
+                                        <div class="common-product-box scale-effect mb-2">
+                                            <a class="row"  href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                                <div class="col-sm-4">
+                                                    <div class=" img-outer-box position-relative">
+                                                        <img class="blur-up lazyload w-100" data-src="{{$imagePath}}" alt="">
+                                                        <div class="pref-timing">
+                                                            <!--<span>5-10 min</span>-->
+                                                        </div>
+                                                        {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
                                                     </div>
-                                                    {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
                                                 </div>
-                                                <div class="media-body align-self-center col-sm-8">
-                                                    <div class="inner_spacing px-0">
-                                                        <div class="product-description">
-                                                            <div class="d-flex align-items-center justify-content-between">
-                                                                <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
-                                                                <!--<span class="rating-number">2.0</span>-->
-                                                            </div>
-                                                            <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->
-                                                            <p>{{$new['vendor']['name']}}</p>
-                                                            <p class="pb-1">{{__('In')}} {{$new['category_name']}}</p>
-                                                            <div class="d-flex align-items-center justify-content-between">
-                                                                <b>
-                                                                    @if($new['inquiry_only'] == 0)
-                                                                        <?php $multiply = $new['variant_multiplier']; ?>
-                                                                        {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
-                                                                    @endif
-                                                                </b>
-
-                                                                <!-- @if($client_preference_detail)
-                                                                    @if($client_preference_detail->rating_check == 1)
-                                                                        @if($new['averageRating'] > 0)
-                                                                            <div class="rating-box">
-                                                                                <i class="fa fa-star" aria-hidden="true"></i>
-                                                                                <span>{{ $new['averageRating'] }}</span>
-                                                                            </div>
+                                                <div class="col-sm-8">
+                                                    <div class="media-body align-self-center">
+                                                        <div class="inner_spacing px-0">
+                                                            <div class="product-description">
+                                                                <div class="d-flex align-items-center justify-content-between">
+                                                                    <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                                    <!--<span class="rating-number">2.0</span>-->
+                                                                </div>
+                                                                <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->
+                                                                <p>{{$new['vendor']['name']}}</p>
+                                                                <p class="pb-1">{{__('In')}} {{$new['category_name']}}</p>
+                                                                <div class="d-flex align-items-center justify-content-between">
+                                                                    <b>
+                                                                        @if($new['inquiry_only'] == 0)
+                                                                            <?php $multiply = $new['variant_multiplier']; ?>
+                                                                            {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                         @endif
-                                                                    @endif
-                                                                @endif   -->
+                                                                    </b>
+
+                                                                    <!-- @if($client_preference_detail)
+                                                                        @if($client_preference_detail->rating_check == 1)
+                                                                            @if($new['averageRating'] > 0)
+                                                                                <div class="rating-box">
+                                                                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                                                                    <span>{{ $new['averageRating'] }}</span>
+                                                                                </div>
+                                                                            @endif
+                                                                        @endif
+                                                                    @endif   -->
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </a>
+
+                                            </a>
+                                        </div>
 
                                     @endforeach
                                     </div>
@@ -171,8 +158,8 @@
                                                 @if(!empty($category->childs) && count($category->childs) > 0)
                                                     @foreach($category->childs->toArray() as $cate)
                                                     <div class="col-xl-3 col-6 col-grid-box">
-                                                        <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect m-0">
-                                                            <div class="product-image p-0"><img width="100%" alt="" class="blur-up lazyload" data-src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>
+                                                        <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect m-0" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
+                                                            <div class="product-image p-0"><img width="100%" alt="" class="blur-up lazyload" data-icon_two="{{isset($cate['icon_two']) && !is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'500/500'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'500/500'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}500/500{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>
                                                             <div class="media-body align-self-center">
                                                                 <div class="inner_spacing w-100">
                                                                     <h3 class="d-flex align-items-center justify-content-between">
@@ -205,4 +192,24 @@
 </section>
 @endsection
 @section('script')
+<script type="text/javascript">
+	function changeImage(image2, check) {
+       var image = $(image2).children('.product-image').children("img");
+       var  icon = image.attr('data-icon');
+       var  icon_two = image.attr('data-icon_two');
+       if(check == 1)
+       {
+	        setTimeout(function () {
+	            image.attr('data-src',icon_two);
+	            image.attr('src',icon_two);
+	        },200);
+       }else if(check == 0){
+            setTimeout(function () {
+                image.attr('data-src',icon);
+                image.attr('src',icon);
+            },200);
+
+       }
+    }
+</script>
 @endsection
