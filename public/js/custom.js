@@ -1,6 +1,6 @@
 jQuery(window).scroll(function () {
     var scroll = jQuery(window).scrollTop();
-    if (scroll <= 50) {
+    if (scroll <= 100) {
         jQuery(".site-header").removeClass("fixed-bar");
         jQuery(".al_offset-top-home").css('margin-top', '0px');
 
@@ -286,7 +286,7 @@ window.initializeSlider = function initializeSlider() {
         responsive: [
             { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 3, infinite: true, dots: false, centerMode: false, } },
             { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 3, dots: false, centerMode: true, } },
-            { breakpoint: 767, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } }
+            { breakpoint: 767, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, } }
         ]
     });
     $('.al_t2_suppliers-slider').slick({
@@ -921,8 +921,9 @@ $(document).ready(function () {
                 payWithCcAvenue('');
             } else if (payment_option_id == 24) {
                 paymentViaCashfree('');
-            }
-            else if (payment_option_id == 25) {
+            } else if (payment_option_id == 26) {
+                paymentViaToyyibPay('');
+            } else if (payment_option_id == 25) {
                 payWithEasebuss('');
             }
         } else {
@@ -1058,7 +1059,7 @@ $(document).ready(function () {
                     $('#cart_product-order-form-modal').html(response);
                  });
     });
-    // category kyc verification 
+    // category kyc verification
     $(document).on("click", ".cl_category_kyc_form", function(e) {
         e.preventDefault();
        let category_ids = $(this).attr("data-category_id");
@@ -1075,17 +1076,17 @@ $(document).ready(function () {
                 $('#cart_product-order-form-modal').html(response);
             },
             error: function (error) {
-            
+
             }
             //$(this).prop('disabled', false);
         });
-        
+
     });
-    
+
     $(document).on('click', '#category_kycform_submit', function(e) {
         e.preventDefault();
         var input='';
-       
+
         var form = document.getElementById('category_kyc_form_in_cart');
         var formData = new FormData(form);
         var data_uri = post_category_kyc_document;
@@ -1145,7 +1146,7 @@ $(document).ready(function () {
         if (selected) {
             delivery_type = selected.value;
         }
-       
+
         if($("input[name='product_faq_ids']").length > 0){
             success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
             return false;
@@ -1186,10 +1187,10 @@ $(document).ready(function () {
             }
 
             if (schedule_dt == '') {
-                success_error_alert('error', 'Schedule date time is required', ".cart_response");
+                success_error_alert('error', error_Schedule_date_is_required, ".cart_response");
                 return false;
             } else if (schedule_dt < now) {
-                success_error_alert('error', 'Invalid schedule date time', ".cart_response");
+                success_error_alert('error', error_Invalid_Schedule_date , ".cart_response");
                 return false;
             }
         } else {
@@ -1197,7 +1198,7 @@ $(document).ready(function () {
         }
         if (checkSlot == '1') {
             if (!slot) {
-                success_error_alert('error', 'Slot is required.', ".cart_response");
+                success_error_alert('error', error_Slot_is_required, ".cart_response");
                 return false;
             }
         }
@@ -1804,7 +1805,7 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-    $(document).on("click", ".proceed_to_pay", function () {
+    $(document).on("click", ".proceed_to_pay", function () {       
 
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -1976,6 +1977,16 @@ $(document).ready(function () {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
                 paymentViaCashfree(address_id, payment_option_id, order);
+            }
+            else {
+                return false;
+            }
+        }else if (payment_option_id == 26) {
+           // alert(123);
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //alert(12345677888);
+                paymentViaToyyibPay(address_id, payment_option_id, order);
             }
             else {
                 return false;
@@ -2191,10 +2202,17 @@ $(document).ready(function () {
             payWithCcAvenue('');
         } else if (payment_option_id == 24) {
             paymentViaCashfree('', payment_option_id, '');
+        }else if (payment_option_id == 26) {
+            paymentViaToyyibPay('', payment_option_id, '');
         }
         else if (payment_option_id == 25) {
             payWithEasebuss('', payment_option_id, '');
+        }else if (payment_option_id == 27) {
+            paymentViaPaytab('', payment_option_id, '');
         }
+
+
+        
 
     });
     $(document).on("click", ".remove_promo_code_btn", function () {
@@ -2694,18 +2712,26 @@ $(document).ready(function () {
             if ((tip == '') || (isNaN(tip))) {
                 tip = 0;
             }
-            
+
             amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
             $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
+
         } else {
             amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
             $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
+        }
+        if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
+                $("#order_placed_btn").removeAttr("disabled");
+                $("#order_placed_btn").removeClass("d-none");
+        }else{
+            $("#order_placed_btn").attr("disabled", true);
+            $("#order_placed_btn").addClass("d-none");
         }
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     }
@@ -3453,18 +3479,18 @@ $(document).ready(function () {
 
     // **********************************************   all function for ondemand services   *****************************************  ////////////////////////
 
-    $(document).on("click", "#next-button-ondemand-3", function () {      
+    $(document).on("click", "#next-button-ondemand-3", function () {
         $('.alert-danger').html('');
        //window.location.href = showCart;
-
-        var task_type = 'schedule';        
+       
+        var task_type = 'schedule';
         var schedule_date = $("input[name='booking_date']:checked").val();
-        var schedule_time = $("input[name='booking_time']:checked").val();        
-        var specific_instructions = $("#specific_instructions").val(); 
-        var productid = $("#productid").val();  
+        var schedule_time = $("input[name='booking_time']:checked").val();
+        var specific_instructions = $("#specific_instructions").val();
+        var productid = $("#productid").val();
         //alert(schedule_date);
         //alert(schedule_time);
-       var schedule_dt = schedule_date;      
+       var schedule_dt = schedule_date;
         //alert(schedule_dt);
        // var schedule_dt = schedule_date +' '+schedule_time;
         if( (task_type == 'schedule') && (schedule_dt == '') ){
@@ -3476,7 +3502,7 @@ $(document).ready(function () {
             dataType: 'json',
             url: update_cart_schedule,
             data: { task_type: task_type, schedule_dt: schedule_dt ,specific_instructions:specific_instructions,productid:productid,schedule_time:schedule_time},
-            success: function (response) {               
+            success: function (response) {
                 if (response.status == "Success") {
                     window.location.href = showCart;
                 }
@@ -3705,9 +3731,9 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.selected-time', function () {
-       
+
         let selected_time   = $(this).html();
-        let cart_product_id = $(this).data("cart_product_id");        
+        let cart_product_id = $(this).data("cart_product_id");
         $("#show_time" + cart_product_id).html(selected_time);
         $("#message_of_time" + cart_product_id).html("Your service will start between " + selected_time);
         $("#next-button-ondemand-3").show();
@@ -3717,7 +3743,7 @@ $(document).ready(function () {
 
         //var schedule_date = $("#date_time_set_div" + cart_product_id + " input[name='booking_date']:checked").val();
         var schedule_date = $("input[name='booking_date']:checked").val();
-       // var schedule_time = $(this).data("value");        
+       // var schedule_time = $(this).data("value");
         //var specific_instructions = $("#specific_instructions").val();
        // alert(specific_instructions);
 

@@ -96,47 +96,52 @@
                                         foreach ($new['media'] as $k => $v) {
                                             $imagePath = $v['image']['path']['image_fit'].'300/300'.$v['image']['path']['image_path'];
                                         }*/ ?>
-
-                                        <a class="row common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                            <div class="img-outer-box position-relative col-sm-4 pr-0">
-                                                <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
-                                                <div class="pref-timing">
-                                                    <!--<span>5-10 min</span>-->
-                                                </div>
-                                                {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
-                                            </div>
-                                            <div class="media-body align-self-center col-sm-8">
-                                                <div class="inner_spacing px-0">
-                                                    <div class="product-description">
-                                                        <div class="d-flex align-items-center justify-content-between">
-                                                            <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
-                                                            <!--<span class="rating-number">2.0</span>-->
+                                        <div class="common-product-box scale-effect  mb-2">
+                                            <a class="row" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                                <div class="col-sm-4">
+                                                    <div class="img-outer-box position-relative  pr-0">
+                                                        <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
+                                                        <div class="pref-timing">
+                                                            <!--<span>5-10 min</span>-->
                                                         </div>
-                                                        <p>{{$new['vendor']['name']}}</p>
-                                                        <p class="pb-1">{{__('In')}} {{$new['category_name']}}</p>
-                                                        <div class="d-flex align-items-center justify-content-between">
-                                                            <b>
-                                                                @if($new['inquiry_only'] == 0)
-                                                                    <?php $multiply = $new['variant_multiplier']; ?>
-                                                                    {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
-                                                                @endif
-                                                            </b>
+                                                        {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <div class="media-body align-self-center ">
+                                                        <div class="inner_spacing px-0">
+                                                            <div class="product-description">
+                                                                <div class="d-flex align-items-center justify-content-between">
+                                                                    <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                                    <!--<span class="rating-number">2.0</span>-->
+                                                                </div>
+                                                                <p>{{$new['vendor']['name']}}</p>
+                                                                <p class="pb-1">{{__('In')}} {{$new['category_name']}}</p>
+                                                                <div class="d-flex align-items-center justify-content-between">
+                                                                    <b>
+                                                                        @if($new['inquiry_only'] == 0)
+                                                                            <?php $multiply = $new['variant_multiplier']; ?>
+                                                                            {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
+                                                                        @endif
+                                                                    </b>
 
-                                                            <!-- @if($client_preference_detail)
-                                                                @if($client_preference_detail->rating_check == 1)
-                                                                    @if($new['averageRating'] > 0)
-                                                                        <div class="rating-box">
-                                                                            <i class="fa fa-star" aria-hidden="true"></i>
-                                                                            <span>{{ $new['averageRating'] }}</span>
-                                                                        </div>
-                                                                    @endif
-                                                                @endif
-                                                            @endif   -->
+                                                                    <!-- @if($client_preference_detail)
+                                                                        @if($client_preference_detail->rating_check == 1)
+                                                                            @if($new['averageRating'] > 0)
+                                                                                <div class="rating-box">
+                                                                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                                                                    <span>{{ $new['averageRating'] }}</span>
+                                                                                </div>
+                                                                            @endif
+                                                                        @endif
+                                                                    @endif   -->
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </a>
+                                            </a>
+                                        </div>
 
                                         {{-- <div class="media">
                                             <a href="{{route('productDetail',[$new['vendor']['slug'],$new['sku']])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" data-src="{{$imagePath}}" alt="" ></a>

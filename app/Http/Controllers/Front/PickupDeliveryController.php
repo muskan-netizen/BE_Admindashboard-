@@ -619,6 +619,7 @@ class PickupDeliveryController extends FrontController{
                 $call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
 
                 $postdata =  [
+                    'order_number' =>  $order->order_number,
                     'barcode' => '',
                     'allocation_type' => 'a',
                     'task' => $request->tasks,
@@ -630,6 +631,7 @@ class PickupDeliveryController extends FrontController{
                     'cash_to_be_collected' => $payable_amount??0.00,
                     'schedule_time' => $request->schedule_time ?? null,
                     'task_description' => null,
+                    'order_number' =>  $order->order_number,
                     'order_time_zone' => $request->order_time_zone ??null,
                     'customer_name' => $customer->name ?? 'Dummy Customer',
                     'recipient_email' => $request->email ?? $customer->email,

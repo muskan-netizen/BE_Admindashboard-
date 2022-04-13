@@ -2,7 +2,7 @@
 <link rel="stylesheet" media="all" type="text/css" href="{{asset('front-assets/css/themify-icons.css')}}">
 
 
-<link rel="stylesheet"  href="{{asset('css/aos.css')}}">
+<!-- <link rel="stylesheet"  href="{{asset('css/aos.css')}}"> -->
 <link rel="stylesheet" media="all" type="text/css" href="{{asset('front-assets/css/icons-style.css')}}">
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css"media="all" id="bs-default-stylesheet" />
 
@@ -27,17 +27,19 @@
 <link rel="stylesheet"  href="{{asset('frontend/template_four/resposive/resposive.css')}}">--}}
 @endif
 
-
+<link rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
 @if(isset($set_template)  && $set_template->template_id == 1)
-<link rel="stylesheet"  href="{{asset('frontend/template_one/homepage/homepage.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_one/header/header.css')}}">
+<link rel="stylesheet"  href="{{asset('frontend/template_one/homepage/homepage.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_one/footer/footer.css')}}">
 @elseif(isset($set_template)  && $set_template->template_id == 2)
-<link rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
-<link rel="stylesheet"  href="{{asset('frontend/template_two/homepage/homepage.css')}}">
+
 <link rel="stylesheet"  href="{{asset('frontend/template_two/header/header.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_two/footer/footer.css')}}">
+<link rel="stylesheet"  href="{{asset('frontend/template_two/homepage/homepage.css')}}">
+<link rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 @elseif(isset($set_template)  && $set_template->template_id == 3)
+
 <link rel="stylesheet"  href="{{asset('frontend/template_three/homepage/homepage.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_three/header/header.css')}}">
 <link rel="stylesheet"  href="{{asset('frontend/template_three/footer/footer.css')}}">

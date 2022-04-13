@@ -526,24 +526,26 @@ class PickupDeliveryController extends BaseController{
                 $team_tag = $unique."_".$vendor;
                 $product = Product::find($request->product_id);
                 $order_agent_tag = $product->tags??'';
-                $postdata =  ['customer_name' => $customer->name ?? 'Dummy Customer',
-                                                    'customer_phone_number' => $customer->phone_number??rand(111111,11111),
-                                                    'customer_email' => $customer->email ?? '',
-                                                    'recipient_phone' => $request->phone_number ?? $customer->phone_number,
-                                                    'recipient_email' => $request->email ?? $customer->email,
-                                                    'task_description' => $request->task_description??null,
-                                                    'allocation_type' => 'a',
-                                                    'task_type' => $request->task_type,
-                                                    'schedule_time' => $request->schedule_time ?? null,
-                                                    'cash_to_be_collected' => $payable_amount??0.00,
-                                                    'barcode' => '',
-                                                    'call_back_url' => $call_back_url??null,
-                                                    'order_team_tag' => $team_tag,
-                                                    'order_agent_tag' => $order_agent_tag,
-                                                    'task' => $request->tasks,
-                                                    'order_time_zone' => $request->order_time_zone??null,
-                                                    'images_array' => $request->images_array??null
-                                                    ];
+                $postdata =  [
+                            'order_number' =>  $order->order_number,
+                            'customer_name' => $customer->name ?? 'Dummy Customer',
+                            'customer_phone_number' => $customer->phone_number??rand(111111,11111),
+                            'customer_email' => $customer->email ?? '',
+                            'recipient_phone' => $request->phone_number ?? $customer->phone_number,
+                            'recipient_email' => $request->email ?? $customer->email,
+                            'task_description' => $request->task_description??null,
+                            'allocation_type' => 'a',
+                            'task_type' => $request->task_type,
+                            'schedule_time' => $request->schedule_time ?? null,
+                            'cash_to_be_collected' => $payable_amount??0.00,
+                            'barcode' => '',
+                            'call_back_url' => $call_back_url??null,
+                            'order_team_tag' => $team_tag,
+                            'order_agent_tag' => $order_agent_tag,
+                            'task' => $request->tasks,
+                            'order_time_zone' => $request->order_time_zone??null,
+                            'images_array' => $request->images_array??null
+                            ];
 
 
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
