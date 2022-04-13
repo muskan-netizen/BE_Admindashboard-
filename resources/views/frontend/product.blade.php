@@ -190,9 +190,9 @@
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                         @if($product->inquiry_only == 0)
                                             <h3 id="productPriceValue" class="mb-md-3">
-                                                <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
+                                                <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2,".",",")}}</span></b>
                                                 @if($product->variant[0]->compare_at_price > 0 )
-                                                    <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
+                                                    <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{number_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier,2,".",",")}}</span></span>
                                                 @endif
                                             </h3>
                                         @endif
@@ -720,13 +720,13 @@
 </div>
 
 @endsection
-@section('script')
-
+@section('js-script')
+<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script> 
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
-
-
+@endsection
+@section('script')
 <script>
     $(document).on('click', '.submitInquiryForm', function(e) {
         e.preventDefault();

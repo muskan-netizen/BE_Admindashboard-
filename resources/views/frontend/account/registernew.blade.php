@@ -33,7 +33,7 @@
     </style>
 @endsection
 @section('content')
-    <section class="wrapper-main mb-5 py-lg-5">
+    <section class="wrapper-main py-lg-5 d-flex align-items-center">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 mb-lg-0 mb-3 text-center">
@@ -94,15 +94,16 @@
                                     <div class="col-md-6 mb-3">
                                         <label for="">{{ __('Phone No.') }}</label>
                                         <input type="tel"
-                                            class="form-control phone @error('phone_number') is-invalid @enderror"
+                                            class="form-control @error('phone_number') is-invalid @enderror"
                                             id="phone" placeholder="{{ __('Phone No.') }}" name="phone_number"
                                             value="{{ old('full_number') }}">
+                                            
                                         <input type="hidden" id="dialCode" name="dialCode"
                                             value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode', '1') }}">
                                         <input type="hidden" id="countryData" name="countryData"
                                             value="{{ old('countryData') ? old('countryData') : Session::get('default_country_code', 'US') }}">
-                                        @error('phone_number')
-                                            <span class="invalid-feedback" role="alert">
+                                            @error('phone_number')
+                                            <span class="invalid-feedback" role="alert" style="display:block">
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror

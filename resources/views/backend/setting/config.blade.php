@@ -1207,7 +1207,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                  </div>
                  <div class="col-md-4">
                     <div class="form-group d-flex justify-content-between mb-3">
-                       <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Categorie Kyc')}}<small class="d-block pr-5">{{__('Enable to show categories documents in cart.')}}</small></label>
+                       <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Category Kyc')}}<small class="d-block pr-5">{{__('Enable to show categories documents in cart.')}}</small></label>
                       <span> <input type="checkbox" data-plugin="switchery" name="category_kyc_documents" id="category_kyc_documents" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->category_kyc_documents == '1')) checked='checked' @endif>
                        </span>
                     </div>
@@ -1234,6 +1234,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="form-group d-flex justify-content-between mb-3">
                      <label for="db_audit_logs" class="mr-2 mb-0">{{__('Third Party Accounting')}}<small class="d-block pr-5">{{__('Enable to use third party accounting.')}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="third_party_accounting" id="third_party_accounting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->third_party_accounting == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Hide Order Preparation Time')}}<small class="d-block pr-5">{{__('Enable to hide order preparation time.')}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="hide_order_prepare_time" id="hide_order_prepare_time" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->hide_order_prepare_time == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>

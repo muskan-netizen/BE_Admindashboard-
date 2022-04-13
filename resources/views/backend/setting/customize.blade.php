@@ -541,7 +541,7 @@
         <!-- User Registration Documents start -->
         <div class="card-box pb-2">
             <div class="d-flex align-items-center justify-content-between">
-            <h4 class="header-title m-0">{{ __("Categorie Kyc Documents") }}</h4>
+            <h4 class="header-title m-0">{{ __("Category Kyc Documents") }}</h4>
             <a class="btn btn-info d-block" id="add_category_kyc_document_modal_btn">
                 <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
             </a>
@@ -572,9 +572,7 @@
                             $category_other='0';
                             @endphp
                             @foreach($category_kyc_document->categoryMapping as $category_ones)
-                           
-
-                             {{ ($category_other =='1') ? ", " : "" }}
+                            {{ ($category_other =='1') ? ", " : "" }}
                             {{ $category_ones->category->translation_one->name }}
                             @php
                             $category_other='1';
@@ -597,7 +595,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr align="center">
+                    <tr align ="center">
                         <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
                     </tr>
                     @endforelse
@@ -937,6 +935,25 @@
                             @endforeach
                         </div>
                         @endif
+
+                        <div class="row mb-2 flex-nowrap">
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-3">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Royo Dispatcher") }}({{$client_language->langName}})</label>
+                                    <input type="hidden" name="royo_dispatcher_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="royo_dispatcher_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 11)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('royo_dispatcher_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </form>

@@ -85,13 +85,13 @@ class CategoryController extends FrontController{
                                 break;
                             }
                             elseif(count($category_vendors) == $index){
-                                abort(404);
+                               // abort(404);
                             }
                             $index++;
                         }
                     }
                     else{
-                        abort(404);
+                       // abort(404);
                     }
                 }
 
@@ -100,7 +100,7 @@ class CategoryController extends FrontController{
             }
         }
 
-        $navCategories = $this->categoryNav($langId);
+        $navCategories = $this->categoryNav($langId); 
 
         if(isset($vendors)){
             $vendorIds = $vendors;
@@ -191,8 +191,7 @@ class CategoryController extends FrontController{
 
             if($page == 'laundry')
             $page = 'product';
-
-
+ 
             if(view()->exists('frontend/cate-'.$page.'s')){
                 return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets]);
             }else{

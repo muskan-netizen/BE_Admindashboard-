@@ -300,7 +300,7 @@
             contentType: false,
             processData: false,
             success: function(response) {
-                location.reload();
+                // location.reload();
                 if (response.status == 'success') {
                     $(".modal .close").click();
                     location.reload();

@@ -1,188 +1,138 @@
 @extends('layouts.store', ['title' => __('Home')])
+@section('css-links')
+{{--<link href="{{asset('css/aos.css')}}" rel="stylesheet">--}}
+@endsection
+@section('css')
+<style>
+.cardbanner {height:300px;}
+.shimmer_effect .grid-row .cards {margin-bottom: 40px;}
+.shimmer_effect .grid-row .card_icon{display:none;}
+.shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
+.al_tabs{height:50px;border-radius:30px;}
+</style>
+@endsection
 
 @section('content')
 
 
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
-@if(count($banners))
-<section class="home-slider-wrapper pt-md-3" data-aos="zoom-in">
-	<div class="container-fluid d-flex justify-content-center">
-
-		<div class="col-sm-10">
-			<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
-			<div class="carousel-inner">
-
-				@foreach($banners as $key => $banner)
-					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
-					<div class="carousel-item @if($key == 0) active @endif">
-					<a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/400' . $banner->image['image_path']}}">
-					</a>
-					</div>
-				@endforeach
-
-			</div>
-			<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
-				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">Previous</span>
-			</a>
-			<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
-			</a>
-		</div>
-
-		<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel" style="display:none;">
-			<div class="carousel-inner">
-
-				@foreach($mobile_banners as $key => $banner)
-					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
-					<div class="carousel-item @if($key == 0) active @endif">
-					<a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/400' . $banner->image['image_path']}}">
-					</a>
-					</div>
-				@endforeach
-
-			</div>
-			<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
-				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">Previous</span>
-			</a>
-			<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
-				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
-			</a>
-		</div>
-			</div>
-
-
-
-	</div>
-</section>
-
- @endif
 <!-- shimmer_effect start -->
-<section class="section-b-space_  p-0 ratio_asos ">
+<section class="section-b-space_  p-0 ratio_asos">
+	<div class="container-fliud mt-4 mb-5 shimmer_effect">
+		<div class="row mt-0">
+			<div class="col-md-2 offset-md-5 cards mb-3">
+				<div class="al_tabs loading"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-10 offset-md-1 cards">
+				<div class="cardbanner loading"></div>
+			</div>
+		</div>
+	</div>
 	<div class="container-fliud mb-5 shimmer_effect px-3">
 		<div class="row">
-			<div class="col-12 cards">
+			<div class="col-md-10 offset-md-1 cards">
 				<h2 class="h2-heading loading mb-3"></h2> </div>
 		</div>
-		<div class="grid-row grid-4-4">
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
+		<div class="col-md-10 offset-md-1">
+			<div class="grid-row grid-4-4">
+				<div class="cards">
+					<div class="card_image loading"></div>
+					<div class="d-flex align-items-center justify-content-between">
+						<div class="card_title loading"></div>
+						<div class="card_icon loading"></div>
+					</div>
+					<div class="card_content loading mt-0 w-75"></div>
+					<div class="card_content loading mt-0 w-50"></div>
+					<div class="card_line loading"></div>
+					<div class="card_price loading"></div>
 				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
+				<div class="cards">
+					<div class="card_image loading"></div>
+					<div class="d-flex align-items-center justify-content-between">
+						<div class="card_title loading"></div>
+						<div class="card_icon loading"></div>
+					</div>
+					<div class="card_content loading mt-0 w-75"></div>
+					<div class="card_content loading mt-0 w-50"></div>
+					<div class="card_line loading"></div>
+					<div class="card_price loading"></div>
 				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
+				<div class="cards">
+					<div class="card_image loading"></div>
+					<div class="d-flex align-items-center justify-content-between">
+						<div class="card_title loading"></div>
+						<div class="card_icon loading"></div>
+					</div>
+					<div class="card_content loading mt-0 w-75"></div>
+					<div class="card_content loading mt-0 w-50"></div>
+					<div class="card_line loading"></div>
+					<div class="card_price loading"></div>
 				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
+				<div class="cards">
+					<div class="card_image loading"></div>
+					<div class="d-flex align-items-center justify-content-between">
+						<div class="card_title loading"></div>
+						<div class="card_icon loading"></div>
+					</div>
+					<div class="card_content loading mt-0 w-75"></div>
+					<div class="card_content loading mt-0 w-50"></div>
+					<div class="card_line loading"></div>
+					<div class="card_price loading"></div>
 				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
 			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-		</div>
 
-		<div class="grid-row grid-4-4">
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
-				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
+			<div class="row">
+				<div class="col-md-10 cards">
+					<h2 class="h2-heading loading mb-3"></h2> </div>
 			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
+			<div class="grid-row grid-4-4">
+				<div class="cards">
+					<div class="card_image loading"></div>
+					<div class="d-flex align-items-center justify-content-between">
+						<div class="card_title loading"></div>
+						<div class="card_icon loading"></div>
+					</div>
+					<div class="card_content loading mt-0 w-75"></div>
+					<div class="card_content loading mt-0 w-50"></div>
+					<div class="card_line loading"></div>
+					<div class="card_price loading"></div>
 				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
+				<div class="cards">
+					<div class="card_image loading"></div>
+					<div class="d-flex align-items-center justify-content-between">
+						<div class="card_title loading"></div>
+						<div class="card_icon loading"></div>
+					</div>
+					<div class="card_content loading mt-0 w-75"></div>
+					<div class="card_content loading mt-0 w-50"></div>
+					<div class="card_line loading"></div>
+					<div class="card_price loading"></div>
 				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
+				<div class="cards">
+					<div class="card_image loading"></div>
+					<div class="d-flex align-items-center justify-content-between">
+						<div class="card_title loading"></div>
+						<div class="card_icon loading"></div>
+					</div>
+					<div class="card_content loading mt-0 w-75"></div>
+					<div class="card_content loading mt-0 w-50"></div>
+					<div class="card_line loading"></div>
+					<div class="card_price loading"></div>
 				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
-			</div>
-			<div class="cards">
-				<div class="card_image loading"></div>
-				<div class="d-flex align-items-center justify-content-between">
-					<div class="card_title loading"></div>
-					<div class="card_icon loading"></div>
+				<div class="cards">
+					<div class="card_image loading"></div>
+					<div class="d-flex align-items-center justify-content-between">
+						<div class="card_title loading"></div>
+						<div class="card_icon loading"></div>
+					</div>
+					<div class="card_content loading mt-0 w-75"></div>
+					<div class="card_content loading mt-0 w-50"></div>
+					<div class="card_line loading"></div>
+					<div class="card_price loading"></div>
 				</div>
-				<div class="card_content loading mt-0 w-75"></div>
-				<div class="card_content loading mt-0 w-50"></div>
-				<div class="card_line loading"></div>
-				<div class="card_price loading"></div>
 			</div>
 		</div>
 
@@ -192,6 +142,135 @@
 	</div>
 </section>
 <!-- shimmer_effect end -->
+<!-- gradinet sec start -->
+<article class="al_gradientSec">
+	@if($client_preference_detail->business_type != 'taxi')
+		<div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif">
+			<div class="container-fluid text-center py-3" >
+				<div class="row align-items-center justify-content-center position-initial">
+					<div class="al_count_tabs_fourdesign d-none d-sm-block" data-aos="zoom-in">
+								@if($mod_count > 1)
+								<ul class="nav nav-tabs navigation_tab_al nav-material tab-icons vendor_mods" id="top-tab" role="tablist">
+									@if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
+									<li class="navigation-tab-item" role="presentation">
+										<a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
+											{{$Delivery}}
+										</a>
+									</li>
+									@endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
+									<li class="navigation-tab-item " role="presentation">
+										<a class="nav-link al_dinein {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
+											{{$Dine_In}}
+										</a>
+									</li>
+									@endif @if($client_preference_detail->takeaway_check==1)
+									<li class="navigation-tab-item " role="presentation">
+										@php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
+										<a class="nav-link al_takeway {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
+											{{$Takeaway}}
+										</a>
+									</li>
+									@endif
+									<div class="navigation-tab-overlay_alnew_design"></div>
+								</ul>
+								@endif
+							</div>
+
+							<div class="al_count_tabs_new_design al_tab_mobile position-fixed d-block d-sm-none">
+								@if($mod_count > 1)
+								<ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods d-flex justify-content-around" id="top-tab" role="tablist">
+									@if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
+									<li class="navigation-tab-item pr-lg-3" role="presentation">
+										<a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
+											<span><img src="{{asset('images/al_custom3.png')}}" alt=""></span>
+											{{$Delivery}}
+										</a>
+									</li>
+									@endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
+									<li class="navigation-tab-item pr-lg-3 " role="presentation">
+										<a class="nav-link al_dinein {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
+											<span><img src="{{asset('images/al_custom1.png')}}" alt=""></span>
+											{{$Dine_In}}
+										</a>
+									</li>
+									@endif @if($client_preference_detail->takeaway_check==1)
+									<li class="navigation-tab-item  pr-lg-3" role="presentation">
+										@php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
+										<a class="nav-link al_takeway {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
+											<span><img src="{{asset('images/al_custom2.png')}}" alt=""></span>
+											{{$Takeaway}}
+										</a>
+									</li>
+									@endif
+								</ul>
+								@endif
+							</div>
+				</div>
+			</div>
+		</div>
+
+	@endif
+	@if(count($banners))
+	<section class="home-slider-wrapper" data-aos="zoom-in">
+		<div class="container-fluid d-flex justify-content-center">
+
+			<div class="col-sm-10">
+				<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
+				<div class="carousel-inner">
+
+					@foreach($banners as $key => $banner)
+						@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+						<div class="carousel-item @if($key == 0) active @endif">
+						<a class="banner-img-outer" href="{{$url??'#'}}">
+							<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/400' . $banner->image['image_path']}}">
+						</a>
+						</div>
+					@endforeach
+
+				</div>
+				<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					<span class="sr-only">Previous</span>
+				</a>
+				<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+					<span class="carousel-control-next-icon" aria-hidden="true"></span>
+					<span class="sr-only">Next</span>
+				</a>
+			</div>
+
+			<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel" style="display:none;">
+				<div class="carousel-inner">
+
+					@foreach($mobile_banners as $key => $banner)
+						@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+						<div class="carousel-item @if($key == 0) active @endif">
+						<a class="banner-img-outer" href="{{$url??'#'}}">
+							<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1920/400' . $banner->image['image_path']}}">
+						</a>
+						</div>
+					@endforeach
+
+				</div>
+				<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
+					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					<span class="sr-only">Previous</span>
+				</a>
+				<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
+					<span class="carousel-control-next-icon" aria-hidden="true"></span>
+					<span class="sr-only">Next</span>
+				</a>
+			</div>
+				</div>
+
+
+
+		</div>
+	</section>
+
+</article><!-- gradinet sec start -->
+
+ @endif
+
 
 <!-- no-store-wrapper start -->
 <section class="no-store-wrapper mb-3 d-none" >
@@ -207,31 +286,48 @@
  <!-- vendors_template start -->
 <script type="text/template" id="vendors_template" >
 	<% _.each(vendors, function(vendor, k){%>
-		<div class="product-card-box position-relative text-center al_custom_vendors_sec_al" data-aos="zoom-in">
-			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
-				<div class="suppliers-img-outer position-relative ">
-					<% if(vendor.is_vendor_closed==1){%>
-						<img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
-					<%}else{%>
-						<img  class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
-					<%}%>
+		<% if(k < 7){%>
+			<div class="col-sm-3">
+				<div class="product-card-box position-relative text-center al_custom_vendors_sec_al p-3">
+					<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
+						<div class="suppliers-img-outer position-relative " style="height:100px">
+							<% if(vendor.is_vendor_closed==1){%>
+								<img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+							<%}else{%>
+								<img  class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+							<%}%>
 
+						</div>
+						<div class="supplier-rating">
+							<h6 class="mb-1 ellips"><%=vendor.name %></h6>
+							{{--<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
+								<%=vendor.categoriesList %>
+							</p>--}}
+								<% if(vendor.timeofLineOfSightDistance !=undefined){%>
+									<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
+								<%}%>
+						</div>
+						@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+						<% if(vendor.vendorRating > 0){%> <span class="rating-number"><%=vendor.vendorRating %> </span>
+						<%}%> @endif @endif
+					</a>
 				</div>
-				<div class="supplier-rating">
-					<h6 class="mb-1 ellips"><%=vendor.name %></h6>
-					{{--<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
-						<%=vendor.categoriesList %>
-					</p>--}}
-						<% if(vendor.timeofLineOfSightDistance !=undefined){%>
-							<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
-						<%}%>
+			</div>
+		<%}%>
+		<% if(k == 7){%>
+			<div class="col-sm-3">
+				<div class="al_boxSeeAll">
+					<a class="al_boxSeeAllArea" href="{{route('vendor.all')}}">
+						<span style="">
+							<i class="fa fa-arrow-right"></i>
+						</span>
+						{{__("See all")}}
+					</a>
 				</div>
-				@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-				<% if(vendor.vendorRating > 0){%> <span class="rating-number"><%=vendor.vendorRating %> </span>
-				<%}%> @endif @endif
-			</a>
-		</div>
-		<% }); %>
+			</div>
+		<% return false;}%>
+
+	<% }); %>
 </script><!-- vendors_template end -->
 
 <!-- banner_template start -->
@@ -259,20 +355,18 @@
 				</div>
 				<div class="media-body align-self-start">
 					<div class="inner_spacing px-0">
-						<div class="product-description">
-							<div class="d-flex align-items-center justify-content-between">
-								<h6 class="card_title mb-1 ellips"><%=product.title %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+						<div class="product-description mt-2 text-left">
+							<div class="al_productName">
+								<p class="al_vendorName mb-0 ellips"><%=product.vendor_name %></p>
+							</div>
+							<h6 class="card_title m-0 ellips"><%=product.title %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
 								<% if(product.averageRating > 0){%>
-									<%}%> @endif @endif </div>
+									<%}%> @endif @endif
 							<div class="product-description_list">
-								<p class="al_vendorName">
-									<%=product.vendor_name %>
-								</p>
-
-								<p class="al_ratingNumber">
+								<p class="al_ratingNumber mb-0">
 									<span class="rating-number"><%=product.averageRating %></span>
 								</p>
-								<p class="al_product_category">
+								<p class="al_product_category mb-0">
 									<span>{{__('In')}} <%=product.category %></span>
 								</p>
 							</div>
@@ -415,21 +509,21 @@
 		<section class="suppliers-section al_fourthTemplateVender">
 			<div class="container mb-0" data-aos="zoom-in">
 					<div class="col-12 text-center top-heading">
-						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
-						<a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>
+						<h2 class="h2-heading mb-3">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
+
 					</div>
 					<div class="row">
-						<div class="col-12 p-0">
-						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
+						<div class="col-12 position-relative">
+							<div class="row product-m_ render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+						</div>
 					</div>
-				</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
 		<section class="suppliers-section">
 			<div class="container" data-aos="zoom-in">
 
-					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
-						<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
+					<div class="col-12 top-heading d-flex align-items-center justify-content-between ">
+						<h2 class="h2-heading w-100 text-center mb-3">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
 					<div class="row">
 						<div class="col-12 p-0">
 						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
@@ -437,13 +531,13 @@
 				</div>
 			</div>
 		</section> @else
-		<section class="container-fliud mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" data-aos="zoom-in">
+		<section class="container-fliud mb-0 render_full_{{$homePageLabel->slug}} " id="{{$homePageLabel->slug.$key}}" data-aos="zoom-in">
 
-				<div class="col-md-12 top-heading d-flex align-items-center justify-content-between">
-				<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
+				<div class=" col-md-10 offset-md-1 top-heading d-flex align-items-center justify-content-between">
+				<h2 class="h2-heading mb-3 "> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
 
 			<div class="row">
-				<div class="col-12"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
+				<div class="col-md-10 offset-md-1"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
 					<div class="product-5 product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@elseif($homePageLabel->slug=='recent_orders')
 					<div class="recent-orders product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@else
 					<div class="al product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif </div>
@@ -457,7 +551,7 @@
 <div class="modal age-restriction fade" id="age_restriction" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
-			<div class="modal-body text-center"> <img style="width: 150px;" class="blur-up lazyload" data-src="{{getImageUrl(asset('assets/images/age-img.svg'),'150/150')}}" alt="" title="">
+			<div class="modal-body text-center"> <img style="height: 150px;" class="blur-up lazyload" data-src="{{getImageUrl(asset('assets/images/age-img.svg'),'150/150')}}" alt="" title="">
 				<p class="mb-0 mt-3">{{$client_preference_detail ? $client_preference_detail->age_restriction_title : 'Are you 18 or older?'}}</p>
 				<p class="mb-0">Are you sure you want to continue?</p>
 			</div>
@@ -480,10 +574,15 @@
 
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
-@section('script')
+@section('js-script')
+<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+{{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
+@endsection
+@section('script')
 <script type="text/javascript">
+	// AOS.init();
 	function changeImage(image2, check) {
        var image = $(image2).children('.nav-cate-img').children("img");
        var  icon = image.attr('data-icon');

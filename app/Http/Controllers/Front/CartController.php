@@ -1604,7 +1604,7 @@ class CartController extends FrontController
                         $option = array_merge($option,$optionDunzo);
                     }
                 }
-
+                // \Log::info($vendorData->vendor->ahoy_location);
                 if(isset($vendorData->vendor->ahoy_location)){
                   //getAhoy (Masa) Delivery fee changes code
                   $ahoy = new AhoyController();
@@ -1749,7 +1749,8 @@ class CartController extends FrontController
     }
 
     public function updateSchedule(Request $request, $domain = '')
-    {       
+    {      
+        //pr($request->all());
         DB::beginTransaction();
         try{
             $user = Auth::user();
@@ -1772,9 +1773,6 @@ class CartController extends FrontController
                     }
 
                 }
-
-               
-
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
                 $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
@@ -1787,7 +1785,7 @@ class CartController extends FrontController
                     $cart_detail = Cart::where('unique_identifier', $new_session_token)->first();
                 }
 
-
+              //  pr($time);
                 $cart_detail = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,
                 'schedule_type' => $request->task_type,
                 'address_id' => $request->address,
@@ -1802,7 +1800,7 @@ class CartController extends FrontController
                 // 'scheduled_slot' => $request->schedule_time??null
                 ]);
                 CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
-
+               
                 DB::commit();
                 if ($user) { 
                     $checkpreference = ClientPreference::select('verify_email','verify_phone','third_party_accounting')->first();

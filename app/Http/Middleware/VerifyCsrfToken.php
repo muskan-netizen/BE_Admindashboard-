@@ -24,12 +24,16 @@ class VerifyCsrfToken extends Middleware
         'webhook/ahoy',
         'easebuzz_respont',
         'payment/easebuzz/notify',
+        'payment/easebuzz/api',
         
         'ccavenue/success',
         'payment/cashfree/notify',
 
         /** routes for edit order **/
         'edit-order/*',
-        'payment/webhook/*'
+        'payment/webhook/*',
+        
+        'payment/paytab/return',
+        'payment/paytab/callback'
     ];
 }

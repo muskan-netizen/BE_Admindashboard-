@@ -16,6 +16,7 @@ trait XeroManager{
             'clientId'                => $this->client_id,   
             'clientSecret'            => $this->secret_id,
             'redirectUri'             => route('callback_xero'),
+            // 'redirectUri'             => "https://d026-103-72-170-243.ngrok.io/auth/callback/xero",
             'urlAuthorize'            => 'https://login.xero.com/identity/connect/authorize',
             'urlAccessToken'          => 'https://identity.xero.com/connect/token',
             'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
@@ -177,11 +178,31 @@ trait XeroManager{
         } catch (Exception $e) {
           echo 'Exception when calling AccountingApi->updateOrCreateItems: ', $e->getMessage(), PHP_EOL;
         }
-    } 
+    }
+    public function createOtherItem($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp,$title)
+    {
+        $item = new XeroAPI\XeroPHP\Models\Accounting\Item;
+        //code length must be less than or equa lto 30 characters
+        $item->setCode(mt_rand(10000000,99999999));
+        $item->setName($title);
+        $item->setDescription($title);
+
+        $items = new XeroAPI\XeroPHP\Models\Accounting\Items;
+        $arr_items = [];
+        array_push($arr_items, $item);
+        $items->setItems($arr_items);
+
+        try {
+          $result = $apiInstance->updateOrCreateItems($xeroTenantId, $items, $summarizeErrors, $unitdp);
+          return $result[0];
+
+        } catch (Exception $e) {
+          echo 'Exception when calling AccountingApi->updateOrCreateItems: ', $e->getMessage(), PHP_EOL;
+        }
+    }
 
     public function createInvoice($order)
     {
-        // dd($order->products[0]);
         $apiInstance = $this->authorizedResource();
         $storage = new StorageClass();
         $xeroTenantId = (string)$storage->getSession()['tenant_id'];
@@ -211,12 +232,63 @@ trait XeroManager{
             $lineItem->setAccountCode('429'); //General Expense
             $lineItem->setItemCode($item['code']);
             $lineItem->setItem($item);
-            $lineItem->setTaxAmount($product->taxable_amount);
+            $lineItem->setTaxAmount(decimal_format($product->taxable_amount));
             $lineItem->setDiscountAmount(decimal_format($discount_price));
             // $lineItem->setLineAmount(decimal_format($product->quantity * $product_price - $discount_price));
             
             array_push($lineItems, $lineItem);
         }
+        //Add Shipping Charges
+        if($order->delivery_fee > 0)
+        {
+            $item = $this->createOtherItem($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp,'Shipping Charges');
+            $lineItem = new XeroAPI\XeroPHP\Models\Accounting\LineItem;
+            $lineItem->setDescription($item['description']);
+            $lineItem->setQuantity(1);
+            $lineItem->setUnitAmount(decimal_format($order->delivery_fee));
+            $lineItem->setAccountCode('429'); //General Expense
+            $lineItem->setItemCode($item['code']);
+            $lineItem->setItem($item);
+            $lineItem->setTaxAmount(0);
+            $lineItem->setDiscountAmount(0); 
+
+            array_push($lineItems, $lineItem); 
+        }
+        // Add Tip Amount
+        if($order->orderDetail->tip_amount > 0) 
+        {
+            $tip = 0;
+            if($order->orderDetail->total_amount > 0)
+            $tip = $order->subtotal_amount/$order->orderDetail->total_amount * $order->orderDetail->tip_amount;
+            $item = $this->createOtherItem($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp,'Tip Amount');
+            $lineItem = new XeroAPI\XeroPHP\Models\Accounting\LineItem;
+            $lineItem->setDescription($item['description']);
+            $lineItem->setQuantity(1);
+            $lineItem->setUnitAmount(decimal_format($tip));
+            $lineItem->setAccountCode('429'); //General Expense
+            $lineItem->setItemCode($item['code']);
+            $lineItem->setItem($item);
+            $lineItem->setTaxAmount(0);
+            $lineItem->setDiscountAmount(0);
+
+            array_push($lineItems, $lineItem); 
+        }
+        //Add Service Fee
+        if($order->service_fee_percentage_amount > 0){
+            $item = $this->createOtherItem($apiInstance, $xeroTenantId, $summarizeErrors, $unitdp,'Service Fee');
+            $lineItem = new XeroAPI\XeroPHP\Models\Accounting\LineItem;
+            $lineItem->setDescription($item['description']);
+            $lineItem->setQuantity(1);
+            $lineItem->setUnitAmount(decimal_format($order->service_fee_percentage_amount));
+            $lineItem->setAccountCode('429'); //General Expense
+            $lineItem->setItemCode($item['code']);
+            $lineItem->setItem($item);
+            $lineItem->setTaxAmount(0);
+            $lineItem->setDiscountAmount(0); 
+
+            array_push($lineItems, $lineItem); 
+        }
+
 
         $invoice = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
         $invoice->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCREC);
@@ -224,7 +296,7 @@ trait XeroManager{
         $invoice->setDate($dateValue);
         $invoice->setDueDate($dueDateValue);
         $invoice->setLineItems($lineItems);
-        $invoice->setReference(__('Payment Method').' : '.($order->paymentOption  ? $order->paymentOption->title : 'Cash On Delivery'));
+        $invoice->setReference(' ');
         $invoice->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_AUTHORISED); 
 
         $invoices = new XeroAPI\XeroPHP\Models\Accounting\Invoices;

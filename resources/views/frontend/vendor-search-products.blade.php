@@ -46,10 +46,10 @@
                     {{ $data->category->translation_one->name }}
                     ({{ $data->products_count }})</h2>
                 @forelse($data->products as $prod)
-                    <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-gutters mb-3 p-2"
+                    <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-sm-gutters mb-3 p-2"
                         data-p_sku="{{ $prod->sku }}"
                         data-slug="{{ $prod->url_slug }}">
-                        <div class="col-2">
+                        <div class="col-sm-2 mb-2">
                             <a target="_blank"
                                 href="{{ route('productDetail', [$prod->vendor->slug, $prod->url_slug]) }}">
                                 <div class="class_img product_image">
@@ -58,9 +58,9 @@
                                 </div>
                             </a>
                         </div>
-                        <div class="col-10">
-                            <div class="row price_head pl-2">
-                                <div class="col-sm-12 pl-2">
+                        <div class="col-sm-10">
+                            <div class="row price_head">
+                                <div class="col-sm-12">
                                     <div
                                         class="d-flex align-items-start justify-content-between">
                                         <h5 class="mt-0">

@@ -1,7 +1,9 @@
 @extends('layouts.store', ['title' => __('Home')]) @section('content')
-@section('css')
+@section('css-links')
 <link rel="stylesheet/less" type="text/css" href="{{ asset('front-assets/css/shimmer-less.less') }}">
-<link rel="stylesheet"  href="{{asset('css/aos.css')}}">
+{{--<link rel="stylesheet"  href="{{asset('css/aos.css')}}">--}} 
+@endsection
+@section('css')
 <style>
 .cardbanner {height:300px;}
 .shimmer_effect .grid-row .cards {margin-bottom: 20px;}
@@ -260,7 +262,7 @@
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
 					 <a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+						<img rel="preload" alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -283,7 +285,7 @@
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
 					 <a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+						<img rel="preload" alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -566,7 +568,7 @@
 <div class="modal age-restriction fade" id="age_restriction" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
-			<div class="modal-body text-center"> <img style="width: 150px;" class="blur-up lazyload" data-src="{{getImageUrl(asset('assets/images/age-img.svg'),'150/150')}}" alt="" title="">
+			<div class="modal-body text-center"> <img style="height: 150px;" class="blur-up lazyload" data-src="{{getImageUrl(asset('assets/images/age-img.svg'),'150/150')}}" alt="" title="">
 				<p class="mb-0 mt-3">{{$client_preference_detail ? $client_preference_detail->age_restriction_title : 'Are you 18 or older?'}}</p>
 				<p class="mb-0">Are you sure you want to continue?</p>
 			</div>
@@ -583,13 +585,17 @@
 		</div>
 	</div>
 </div>
-@endsection @section('script')
-<script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-<script src="https://cdn.jsdelivr.net/npm/less@4"></script>
-<script src="{{asset('js/aos.js')}}"></script>
+@endsection
+@section('js-script')
+<script type="text/javascript" src="{{asset('front-assets/js/slick.js')}}"></script> 
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/less@4"></script>
+{{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
+@endsection
+@section('script')
 <script type="text/javascript">
-     AOS.init();
+     // AOS.init();
 	$('.center').slick({
   centerMode: true,
   centerPadding: '60px',
