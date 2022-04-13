@@ -575,7 +575,6 @@
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
 @section('js-script')
-<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}

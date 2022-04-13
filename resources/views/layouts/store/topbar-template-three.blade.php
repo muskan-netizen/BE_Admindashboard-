@@ -1,17 +1,16 @@
 @php
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
 $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'];
+
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 $preference = $client_preference_detail;
+$applocale = 'en';
+if(session()->has('applocale')){
+    $applocale = session()->get('applocale');
+}
 @endphp
-@php
-    $applocale = 'en';
-    if(session()->has('applocale')){
-        $applocale = session()->get('applocale');
-    }
-    @endphp
 <div class="top-header site-topbar al_custom_head">
     <nav class="navbar navbar-expand-lg p-0 ">
         <div class="container ">
