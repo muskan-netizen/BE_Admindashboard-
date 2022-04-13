@@ -117,7 +117,7 @@
             </div>
         </div>
     </div>
-</section> 
+</section>
 @endsection
 @section('script')
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
