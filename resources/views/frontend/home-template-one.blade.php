@@ -1,7 +1,9 @@
 @extends('layouts.store', ['title' => __('Home')]) @section('content')
-@section('css')
+@section('css-links')
 <link rel="stylesheet/less" type="text/css" href="{{ asset('front-assets/css/shimmer-less.less') }}">
-<link rel="stylesheet"  href="{{asset('css/aos.css')}}">
+{{--<link rel="stylesheet"  href="{{asset('css/aos.css')}}">--}} 
+@endsection
+@section('css')
 <style>
 .cardbanner {height:300px;}
 .shimmer_effect .grid-row .cards {margin-bottom: 20px;}
@@ -583,13 +585,17 @@
 		</div>
 	</div>
 </div>
-@endsection @section('script')
-<script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-<script src="https://cdn.jsdelivr.net/npm/less@4"></script>
-<script src="{{asset('js/aos.js')}}"></script>
+@endsection
+@section('js-script')
+<script type="text/javascript" src="{{asset('front-assets/js/slick.js')}}"></script> 
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/less@4"></script>
+{{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
+@endsection
+@section('script')
 <script type="text/javascript">
-     AOS.init();
+     // AOS.init();
 	$('.center').slick({
   centerMode: true,
   centerPadding: '60px',

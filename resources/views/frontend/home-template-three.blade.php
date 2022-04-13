@@ -1,11 +1,16 @@
 @extends('layouts.store', ['title' => __('Home')])
-<style>
+@section('css-links')
+{{--<link href="{{asset('css/aos.css')}}" rel="stylesheet">--}}
+@endsection
+@section('css')
+<style type="text/css">
 .cardbanner {border-radius:50px;height:300px;}
 .shimmer_effect .grid-row .cards {margin-bottom: 40px;}
 .shimmer_effect .grid-row .card_icon{display:none;}
 .shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
 @media(max-width:767px){.cardbanner {border-radius:20px;height:80px;}}
 </style>
+@endsection
 @section('content')
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
@@ -501,7 +506,6 @@
 <section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div" >
 	<div class="vendors"> @foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') @elseif($homePageLabel->slug == 'brands')
 		<section class="container popular-brands left-shape_ position-relative " data-aos="zoom-in">
-
 			<div class="al_top_heading d-flex justify-content-between">
 				<h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
 					{{-- <a class="" href="">See All</a> --}}
@@ -577,10 +581,15 @@
 
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
-@section('script')
+@section('js-script')
+<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+{{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
+@endsection
+@section('script')
 <script type="text/javascript">
+    // AOS.init();
 	function changeImage(image2, check) {
        var image = $(image2).children('.nav-cate-img').children("img");
        var  icon = image.attr('data-icon');
