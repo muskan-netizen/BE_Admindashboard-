@@ -31,6 +31,10 @@ a.common-product-box.text-center{
     position: absolute;
     display: none;
 }
+.productAddonOptionspan_checked {
+    background: var(--theme-deafult);
+    color: #fff;
+}
 /*end here*/
 ul.onhover-show-div.open{
     background-color:#fff;

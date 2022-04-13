@@ -179,6 +179,10 @@
                     {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
                     {!! Form::textarea('desc', $vendor->desc, ['class' => 'form-control', 'rows' => '3']) !!}
                 </div>
+                <div class="form-group" id="descInput">
+                    {!! Form::label('title', __('Short Description'),['class' => 'control-label']) !!}
+                    {!! Form::textarea('short_desc', $vendor->short_desc, ['class' => 'form-control', 'rows' => '2']) !!}
+                </div>
             </div>
 
             <div class="col-md-6">
