@@ -233,9 +233,9 @@
                                                                                             <span
                                                                                                 class="ml-2">{{ (($order->scheduled_slot)?dateTimeInUserTimeZone($order->scheduled_date_time, $timezone).'. Slot: '.$order->scheduled_slot:dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) ) }}</span>
                                                                                         @elseif(!empty($vendor->ETA))
-                                                                                            <span class="ml-2">{{__('Your
-                                                                                                order will arrive by')}}
-                                                                                                {{ $vendor->ETA }}</span>
+                                                                                            @if($clientPreference->hide_order_prepare_time!=1)
+                                                                                                <span class="ml-2">{{__('Your order will arrive by')}} {{ $vendor->ETA }}</span>
+                                                                                            @endif
                                                                                         @endif
                                                                                         @if ($order->is_gift == '1')
                                                                                             <div class="gifted-icon">
