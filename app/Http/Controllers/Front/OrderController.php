@@ -766,6 +766,7 @@ class OrderController extends FrontController
             $total_discount = 0;
             $taxable_amount = 0;
             $payable_amount = 0;
+            $tax_rate = 0;
             $tax_category_ids = [];
             $vendor_ids = [];
             $total_service_fee = 0;
@@ -809,6 +810,7 @@ class OrderController extends FrontController
                                 $tax_category_ids[] = $tax_rate_detail->id;
                             }
                             $rate = round($tax_rate_detail->tax_rate);
+                            $tax_rate += $rate;
                             $tax_amount = ($price_in_dollar_compare * $rate) / 100;
                             $product_tax = $quantity_price * $rate / 100;
                             $product_taxable_amount += $product_tax;
@@ -973,15 +975,17 @@ class OrderController extends FrontController
                 $OrderVendor->delivery_fee = $delivery_fee;
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
-                $OrderVendor->taxable_amount   = $vendor_taxable_amount;
+                $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
+                // $OrderVendor->taxable_amount   = $vendor_taxable_amount;
+                $OrderVendor->taxable_amount = $new_vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
-                    if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
-                        $OrderVendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($vendor_payable_amount / 100), 2);
+                    if (($vendor_info->commission_percent) != null && $actual_amount > 0) {
+                        $OrderVendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($actual_amount / 100), 2);
                     }
-                    if (($vendor_info->commission_fixed_per_order) != null && $vendor_payable_amount > 0) {
+                    if (($vendor_info->commission_fixed_per_order) != null && $actual_amount > 0) {
                         $OrderVendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                     }
                 }
@@ -1002,7 +1006,9 @@ class OrderController extends FrontController
 
             $order->total_amount = $total_amount;
             $order->total_discount = $total_discount;
-            $order->taxable_amount = $taxable_amount;
+             // $order->taxable_amount = $taxable_amount;
+            $new_taxable_amount = number_format(($actual_amount * $tax_rate) / 100, 2);
+            $order->taxable_amount = $new_taxable_amount;
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
             if ($loyalty_amount_saved > 0) {
                 if ($loyalty_amount_saved > $payable_amount) {

@@ -117,7 +117,9 @@
                                     <th>{{ __('Subtotal Amount') }}</th>
                                     <th>{{ __('Promo Code Discount') }}</th>
                                     <th>{{ __('Admin Commission') }} [{{ __("Fixed") }}]</th>
-                                    <th>{{ __('Admin Commission') }} [%{{ __("Age") }}]</th>
+                                    <th>{{ __('Admin Commission') }} [%{{ __("Age") }}]
+                                    <a href="javascript:void(0);" onclick="alert('First, it shows the total admin commission of the sub total amount then it shows the total percentage value.');" rel="noopener noreferrer"> <i class="fa fa-info-circle"></i> </a>
+                                    </th>
                                     <th>{{ __('Final Amount') }}</th>
                                     <th>{{ __('Payment Method') }}</th>
                                     <th>{{ __('Order Status') }}</th>
@@ -141,9 +143,10 @@
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        function getPercentageAmount(percent,amouny){
+        function getPercentageAmount(percent,amount){
 
-            var totalPercent = (percent/amouny * 100);
+            // var totalPercent = (percent/amount * 100);
+            var totalPercent = (amount*percent) / 100; // Added by ovi
 
             return parseFloat(totalPercent).toFixed(2);
         }
@@ -236,9 +239,10 @@
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
                             }},
-                            {data: 'admin_commission_percentage_amount', name: 'action', orderable: false, searchable: false,
+                            {data: 'admin_commission', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
-                                return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
+                                return data;
+                                // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
                             {data: 'payable_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
