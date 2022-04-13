@@ -281,6 +281,9 @@
 @section('script')
     <script src="{{ asset('assets/js/intlTelInput.js') }}"></script>
     <script>
+        jQuery(window.document).ready(function () {
+                jQuery("body").addClass("register_body");
+            });
         var input = document.querySelector("#phone");
         window.intlTelInput(input, {
             separateDialCode: true,

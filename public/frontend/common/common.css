@@ -4,3 +4,7 @@
 #edit-address .address-input-group .pac-container{top:75px!important;left:0!important}
 .address-input-group{position:relative}
 .address-input-group .pac-container{top:35px!important;left:0!important}
+body.login_body article#content-wrap,
+body.register_body article#content-wrap{padding-bottom: 60px!important;}
+body.login_body footer#footer,
+body.register_body footer#footer {position: relative;}
