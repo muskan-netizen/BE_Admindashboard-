@@ -24,7 +24,7 @@ $applocale = session()->get('applocale');
                     @if($client_preference_detail->show_contact_us == 1)
                     <div class="col-12 d-block d-md-none">
                         <div class="footer-contant">
-                            <div class="store-btn mb-3 d-flex align-items-center justify-content-center">
+                            <div class="store-btn mb-3 d-flex align-items-center justify-content-start">
                                 @if($client_preference_detail->show_qr_on_footer)
 
                                 <ul class="row">
@@ -110,7 +110,7 @@ $applocale = session()->get('applocale');
                                     <div class="footer-contant">
                                         <ul class="contact-list al">
                                             <li class="pl-0">
-                                            <i class='fa fa-solid fa-location-dot'></i>
+                                            <i class='fa fa-map-marker'></i>
                                                 <span>{{$clientData ? ($clientData->contact_address ?? $clientData->company_address)  : ''}}</span>
                                             </li>
                                             <li class="pl-0">

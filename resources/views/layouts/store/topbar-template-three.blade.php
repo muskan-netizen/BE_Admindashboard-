@@ -140,7 +140,7 @@ $preference = $client_preference_detail;
     </nav>
 
 
-    <div class="mobile-menu main-menu position-fixed d-none">
+    {{--<div class="mobile-menu main-menu position-fixed d-none">
         <div class="menu-right_">
             <ul class="header-dropdown icon-nav d-flex justify-content-around">
                 <li class="onhover-div mobile-setting">
@@ -207,7 +207,7 @@ $preference = $client_preference_detail;
                 @endif
             </ul>
         </div>
-    </div>
+    </div>--}}
 </div>
 <div class="al_mobile_menu al_new_mobile_header">
                 <a class="al_toggle-menu" href="#">

@@ -1,6 +1,6 @@
 <div class="tap-top top-cls">
     <div>
-        <i class="fa fa-solid fa-angles-up"></i>
+        <i class="fa fa-angle-double-up"></i>
     </div>
 </div>
 <div class="d-none" id ="nearmap">
