@@ -35,11 +35,11 @@ class WebStylingOptionSeeder extends Seeder
             }
             else{
                 foreach ($web_styling_options as $option) {
-                    $option = WebStylingOption::where('image', $option['image'])->first();
-                    if ($option !== null) {
-                        $option->update(['web_styling_id' => $web_styling, 'name' => $option['name'], 'template_id' => $option['template_id']]);
+                    $webStylingOption = WebStylingOption::where('image', $option['image'])->first();
+                    if ($webStylingOption !== null) {
+                        $webStylingOption->update(['web_styling_id' => $web_styling, 'name' => $option['name'], 'template_id' => $option['template_id']]);
                     } else {
-                        $web_style_option = WebStylingOption::create([
+                        WebStylingOption::create([
                             'name' => $option['name'],
                             'image' => $option['image'],
                             'is_selected' => $option['is_selected'],
