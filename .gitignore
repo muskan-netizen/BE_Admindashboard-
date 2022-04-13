@@ -17,5 +17,4 @@ storage/debugbar/
 composer.lock
 package-lock.json
 /storage
-storage
-
+/public/storage

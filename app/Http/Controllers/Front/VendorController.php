@@ -50,7 +50,7 @@ class VendorController extends FrontController
             $categoriesList = '';
             foreach($vendorCategories as $key => $category){
                 if($category->category){
-                    $categoriesList = $categoriesList . $category->category->translation_one->name??'';
+                    $categoriesList = $categoriesList . (!is_null($category->category->translation_one) ? $category->category->translation_one->name : '');
                     if( $key !=  $vendorCategories->count()-1 ){
                         $categoriesList = $categoriesList . ', ';
                     }
@@ -438,7 +438,7 @@ class VendorController extends FrontController
                             ->where('product_variant_sets.product_id', $p_id);
                         }])->where('id', $p_id)->first();
                         $value->variantSet = $variantData->variantSet;
-                        $value->product_image = ($value->media->isNotEmpty()) ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                        $value->product_image = ($value->media->isNotEmpty() && !is_null($value->media->first()->image)) ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                         $value->translation_title = ($value->translation->isNotEmpty()) ? $value->translation->first()->title : $value->sku;
                         $value->translation_description = ($value->translation->isNotEmpty()) ? html_entity_decode(strip_tags($value->translation->first()->body_html)) : '';
                         $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;

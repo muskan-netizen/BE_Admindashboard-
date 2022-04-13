@@ -355,6 +355,16 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+                                                                                            @if ($order->fixed_fee_amount > 0)
+                                                                                                <li
+                                                                                                    class="d-flex align-items-center justify-content-between">
+                                                                                                    <label
+                                                                                                        class="m-0">{{ __($fixedFee) }}</label>
+                                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->fixed_fee_amount
+                                                                                                        *
+                                                                                                        $clientCurrency->doller_compare)}}</span>
+                                                                                                </li>
+                                                                                            @endif
                                                                                             @if ($vendor->delivery_fee > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
@@ -373,7 +383,7 @@
                                                                                                     $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
                                                                                                     $subtotal_order_price += $product_subtotal_amount;
                                                                                                 @endphp
-                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount
+                                                                                                <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount+$order->fixed_fee_amount
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
@@ -474,6 +484,16 @@
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
+                                                                                @if ($order->fixed_fee_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __($fixedFee) }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->fixed_fee_amount
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
                                                                                 @if ($order->tip_amount > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -518,7 +538,7 @@
                                                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
-                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount)}}</span>
+                                                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount+$order->fixed_fee_amount)}}</span>
                                                                                 </li>
                                                                             </ul>
                                                                         </div>
@@ -683,8 +703,10 @@
                                                                                                 @endforeach
                                                                                             </ul>
                                                                                         </div>
-                                                                                        @if($order->vendors[0]->dispatch_traking_url!=null && $order->vendors[0]->dispatch_traking_url!="")
+                                                                                        
                                                                                         <div class="col-6 col-sm-6">
+                                                                                        @if($order->vendors[0]->dispatch_traking_url!=null && $order->vendors[0]->dispatch_traking_url!="")
+                                                                                        
                                                                                             <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
                                                                                                 @php
                                                                                                 $driverrating = $order->driver_rating->rating ?? 0;
@@ -707,9 +729,17 @@
                                                                                                             class="fa fa-star{{ $driverrating >= 5 ? '' : '-o' }}"></i>
                                                                                                     </label>
                                                                                                 </li>
+                                                                                                
                                                                                             </ul>
-                                                                                        </div>
+                                                                                        
                                                                                         @endif
+
+                                                                                        @if($order->reports!=null)
+                                                                                        <div class="order-past-report text-center">                                                                                                                    
+                                                                                            <a target="_blank" href="{{$order->reports->report['original']}}" download><i class="fa fa-download" aria-hidden="true"></i> Report</a>
+                                                                                        </div>
+                                                                                    @endif
+                                                                                    </div>
 
                                                                                     </div>
                                                                                     <div class="col-md-5 mt-md-0 mt-sm-2">

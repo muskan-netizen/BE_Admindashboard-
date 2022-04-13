@@ -112,6 +112,13 @@
                     </div>
                     </div>
 
+                    <div class="col-md-12 mb-2">
+                        <div class="form-group" id="orders_per_slotInput">
+                            {!! Form::label('title', 'Maximum Orders Per Slot',['class' => 'control-label']) !!}
+                            <input class="form-control" onkeypress="return isNumberKey(event)" name="orders_per_slot" type="text" value="{{$vendor->orders_per_slot}}">
+                        </div>
+                    </div>
+
                     @endif
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
@@ -121,6 +128,10 @@
                     <div class="col-md-12 mb-2 align-items-center justify-content-between" style="display:{{$vendor->fixed_fee == 0 ? 'none!important' : 'block'}}" id="fixed_fee_amount">
                     {!! Form::label('title', 'Fixed Fee Amount',['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="fixed_fee_amount" type="text" value="{{$vendor->fixed_fee_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Hide Price bifurcation'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="price_bifurcation" class="form-control" data-color="#43bee1" @if($vendor->price_bifurcation == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}

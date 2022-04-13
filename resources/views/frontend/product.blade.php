@@ -278,7 +278,7 @@
 
                                         <div id="addon-table">
                                             @foreach($product->addOn as $row => $addon)
-                                                <div class="addon-product mb-3">
+                                                <div class="addon-product">
                                                     <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
                                                         @php
                                                             $min_select = '';

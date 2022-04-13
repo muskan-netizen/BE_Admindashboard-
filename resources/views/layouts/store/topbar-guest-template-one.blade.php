@@ -11,7 +11,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         <div class="row align-items-center justify-content-center">
             <div class="col-sm-4">
                 <div class="d-flex align-items-center justify-content-start">
-                    <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}" height="60"></a>
+                    <a class="navbar-brand mr-sm-3 d-block d-sm-none" style="height:60px" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}"></a>
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
                             <div class="location-bar d-none d-sm-flex align-items-center justify-content-start my-2 my-lg-0" href="#edit-address" data-toggle="modal">
@@ -131,34 +131,10 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
             <ul class="header-dropdown icon-nav d-flex justify-content-around">
                 <li class="onhover-div mobile-setting">
                     <div data-toggle="modal" data-target="#setting_modal"><i class="ti-settings"></i></div>
-                    <!-- <div class="show-div setting">
-                        <h6>language</h6>
-                        <ul>
-                        @foreach($languageList as $key => $listl)
-                            <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
-                            </li>
-                        @endforeach
-                        </ul>
-                        <h6>currency</h6>
-                        <ul class="list-inline">
-                            @foreach($currencyList as $key => $listc)
-                                <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
-                                    <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
-                                </li>
-                            @endforeach
-                        </ul>
-                        <h6>Change Theme</h6>
-                        @if($client_preference_detail->show_dark_mode == 1)
-                        <ul class="list-inline">
-                            <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
-                        </ul>
-                        @endif
-                    </div> -->
                 </li>
 
                 <li class="onhover-dropdown mobile-account  d-inline d-sm-none"> <i class="fa fa-user" aria-hidden="true"></i>
-                    {{__('My Account')}}
+
                     <ul class="onhover-show-div">
                         @if(Auth::user())
                             @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)

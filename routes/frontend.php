@@ -2,8 +2,8 @@
 	Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
 	Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
-	Route::get('auth/xero','Front\XeroController@index');
-	Route::any('auth/callback/xero','Front\XeroController@xero_callback');
+	Route::get('auth/xero','Front\XeroController@index')->name('xero_auth');
+	Route::any('auth/callback/xero','Front\XeroController@xero_callback')->name('callback_xero');
 	Route::get('/debug-sentry', function () {
 	throw new Exception('My first Sentry error!');
 });
@@ -105,11 +105,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/mobbex', 'Front\MobbexGatewayController@mobbexPurchase')->name('payment.mobbexPurchase');
 	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
 
-	//
-	// EasebuzzController payment test
-	Route::get('/easebuzz-gateway', 'Front\EasebuzzController@easebuzz_gateway');
-    Route::post('/order', 'Front\EasebuzzController@order')->name('easebuzz.order');
-    Route::post('easebuzz-webhook', 'Front\EasebuzzController@easebuzz_webhook');
+	
 
 
 	//GCash
@@ -201,6 +197,11 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/cashfree/return/app', 'Front\CashfreeGatewayController@cashfreeReturnApp')->name('payment.cashfree.return.app');
 	Route::post('payment/cashfree/notify', 'Front\CashfreeGatewayController@cashfreeNotify')->name('payment.cashfree.notify');
 
+	// EasebuzzController payment test
+	Route::get('/easebuzz-gateway', 'Front\EasebuzzController@easebuzz_gateway')->name('easebuzz-gateway');
+    Route::post('payment/easebuzz/request', 'Front\EasebuzzController@order')->name('easebuzz.order');
+    Route::match(['get','post'],'easebuzz_respont', 'Front\EasebuzzController@easebuzz_respont')->name('easebuzz_respont');
+	Route::any('payment/easebuzz/notify', 'Front\EasebuzzController@easybuzzNotify')->name('payment.easebuzz.easybuzzNotify');
 
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
@@ -292,6 +293,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('stripe/make', 'Front\PaymentController@makePayment')->name('stripe.makePayment');
 	Route::post('inquiryMode/store', 'Front\ProductInquiryController@store')->name('inquiryMode.store');
 	Route::get('viewcart', 'Front\CartController@showCart')->name('showCart');
+	Route::get('checkSlotOrders', 'Front\CartController@checkSlotOrders')->name('checkSlotOrders'); //Added by Ovi
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
 

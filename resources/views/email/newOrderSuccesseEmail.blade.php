@@ -60,7 +60,7 @@
                <thead>
                   <tr>
                      <th style="text-align: center;padding: 0 0 40px;">
-                        <img src="https://imgproxy.royoorders.com/insecure/fit/150/92/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/612e24163debe.png" alt="">
+                        <img src="https://images.royoorders.com/insecure/fit/150/92/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/612e24163debe.png" alt="">
                      </th>
                   </tr>
                   <tr>

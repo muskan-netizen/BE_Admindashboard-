@@ -20,7 +20,7 @@ class WebStylingController extends BaseController{
     public function index()
     {
         $client_preferences = ClientPreference::first();
-
+       
         switch($client_preferences->business_type){
             case "taxi":
             $home_page_labels = HomePageLabel::whereIn('slug',['dynamic_page','pickup_delivery'])->with('translations')->orderBy('order_by');
@@ -57,12 +57,13 @@ class WebStylingController extends BaseController{
         $homepage_style = WebStyling::where('name', 'Home Page Style')->first();
         if ($homepage_style) {
             $homepage_style_options = WebStylingOption::where('web_styling_id', $homepage_style->id)->get();
+        $themeId = WebStylingOption::where(['web_styling_id'=> $homepage_style->id,'is_selected'=>'1'])->first('id');
+        $themeId = $themeId->id??1;
         }
-
         $user = Auth::user();
         $client = Client::where('code', $user->code)->first();
 
-        return view('backend/web_styling/index')->with(['clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs]);
+        return view('backend/web_styling/index')->with(['clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'themeId'=>$themeId]);
     }
 
 
@@ -126,6 +127,16 @@ class WebStylingController extends BaseController{
             if($request->has('favicon')){
                 $client_preferences->favicon = Storage::disk('s3')->put('favicon', $request->favicon, 'public');
             }
+            if($request->has('deliveryIcon')){
+                $client_preferences->deliveryicon = Storage::disk('s3')->put('deliveryIcon', $request->deliveryIcon, 'public');
+            }
+            if($request->has('takewayIcon')){
+                $client_preferences->takewayicon = Storage::disk('s3')->put('takewayIcon', $request->takewayIcon, 'public');
+            }
+            if($request->has('dineinIcon')){
+                $client_preferences->dineinicon = Storage::disk('s3')->put('dineinIcon', $request->dineinIcon, 'public');
+            }
+
             $client_preferences->web_color = $request->primary_color;
             $client_preferences->cart_enable = $request->cart_enable == 'on' ? 1 : 0;
             $client_preferences->age_restriction = $request->age_restriction == 'on' ? 1 : 0;
@@ -502,6 +513,7 @@ class WebStylingController extends BaseController{
         $font->save();
         return response()->json([
             'status' => 'success',
+            'theme'  => $font->id,
             'message' => 'Updated successfully!'
         ]);
     }
