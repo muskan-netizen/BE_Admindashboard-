@@ -1,11 +1,13 @@
 @extends('layouts.store', ['title' => __('Home')])
-<style>
+@section('css')
+<style type="text/css">
 .cardbanner {border-radius:50px;height:300px;}
 .shimmer_effect .grid-row .cards {margin-bottom: 40px;}
 .shimmer_effect .grid-row .card_icon{display:none;}
 .shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
 @media(max-width:767px){.cardbanner {border-radius:20px;height:80px;}}
 </style>
+@endsection
 @section('content')
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
@@ -577,10 +579,15 @@
 
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
-@section('script')
+@section('js-script')
+<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+{{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
+@endsection
+@section('script')
 <script type="text/javascript">
+    // AOS.init();
 	function changeImage(image2, check) {
        var image = $(image2).children('.nav-cate-img').children("img");
        var  icon = image.attr('data-icon');
