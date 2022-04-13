@@ -1,5 +1,5 @@
 @php
-$clientData = \App\Models\Client::select('id', 'logo')
+$clientData = \App\Models\Client::select('id', 'logo') 
     ->where('id', '>', 0)
     ->first();
 $urlImg = $clientData ? $clientData->logo['original'] : ' ';
@@ -27,6 +27,7 @@ $pages = \App\Models\Page::with([
 
 <header id="al_new_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
     @include('layouts.store/topbar-template-three')
+    @if($client_preference_detail->business_type == 'taxi')
     <!-- Start Cab Booking Header From Here -->
     <div class="cab-booking-header">
         <div class="container">
@@ -144,7 +145,7 @@ $pages = \App\Models\Page::with([
       </div>
    </div>
    <!-- End Cab Booking Header From Here -->
-   @if($client_preference_detail->business_type != 'taxi')
+   @else
     <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif">
         <div class="container_fluid_al d-block" >
             <div class="row align-items-center justify-content-center position-initial">
@@ -440,9 +441,9 @@ $pages = \App\Models\Page::with([
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
                   <li class="al_main_category" data-aos="zoom-in">
-                     <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
+                     <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}">
                         @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='categoryDetail'))
-                        <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
+                        <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>
                         @endif
                         {{$cate['name']}}
                      </a>
@@ -472,8 +473,6 @@ $pages = \App\Models\Page::with([
         </div>
     </div>
    @endif
-
-    {{-- @endif --}}
 </header>
 
 <div class=" @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset al_offset-top @else al_offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>
@@ -491,10 +490,10 @@ $pages = \App\Models\Page::with([
     %>
 
     <li class="al_main_category" data-aos="zoom-in">
-        <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category[0]) && $category->slug == $cate[0]['slug'] ? 'current_category' : ''}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
+        <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category[0]) && $category->slug == $cate[0]['slug'] ? 'current_category' : ''}}">
             @if($client_preference_detail->show_icons==1)
             <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}}">
-                <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="<%=icon_two_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
+                <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="<%=icon_two_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""  onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
             </div>
             @endif
             <%=category.name %>
