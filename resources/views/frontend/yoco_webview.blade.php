@@ -113,6 +113,7 @@
 
             }).catch(function(error) {
                 // Re-enable button now that request is complete
+                $('.spinner-overlay').show();
                 submitButton.disabled = false;
                 Swal.fire({
                    // title: "Warning!",
