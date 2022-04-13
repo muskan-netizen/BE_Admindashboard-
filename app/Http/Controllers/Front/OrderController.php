@@ -256,11 +256,12 @@ class OrderController extends FrontController
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         }
 
+        $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
         //   dd($activeOrders->toArray());
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('frontend/account/orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency,'fixedFee'=>$fixedFee]);
+        return view('frontend/account/orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee]);
     }
 
     public function getOrderSuccessPage(Request $request)
