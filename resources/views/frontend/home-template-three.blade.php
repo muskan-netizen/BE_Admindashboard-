@@ -1,4 +1,7 @@
 @extends('layouts.store', ['title' => __('Home')])
+@section('css-links')
+{{--<link href="{{asset('css/aos.css')}}" rel="stylesheet">--}}
+@endsection
 @section('css')
 <style type="text/css">
 .cardbanner {border-radius:50px;height:300px;}
