@@ -611,7 +611,6 @@
 </div>
 @endsection
 @section('js-script')
-<script type="text/javascript" src="{{asset('front-assets/js/slick.js')}}"></script> 
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
@@ -619,21 +618,19 @@
 @section('script')
 <script type="text/javascript">
     // AOS.init();
-    function changeImage(image2, check) {
-        var image = $(image2).children("img");
-       var  icon = image.attr('data-icon');
-       var  icon_two = image.attr('data-icon_two');
+    function changeImage(image, check) {
+       var  icon = $(image).attr('data-icon');
+       var  icon_two = $(image).attr('data-icon_two');
        if(check == 1)
        {
         setTimeout(function () {
-            image.attr('data-src',icon_two);
-            image.attr('src',icon_two);
+            $(image).attr('data-src',icon_two);
+            $(image).attr('src',icon_two);
         },200);
        }else if(check == 0){
             setTimeout(function () {
-                console.log(icon);
-                image.attr('data-src',icon);
-                image.attr('src',icon);
+                $(image).attr('data-src',icon);
+                $(image).attr('src',icon);
             },200);
 
        }

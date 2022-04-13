@@ -35,9 +35,10 @@
 <script type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
+
 <script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/location.js')}}"></script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
 
 {{--
 <!-- All js merged -->

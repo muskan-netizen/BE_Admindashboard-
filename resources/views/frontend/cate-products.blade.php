@@ -224,12 +224,12 @@
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="product-filter-content">
-                                                    <div class="collection-view">
+                                                    <!-- <div class="collection-view">
                                                         <ul>
                                                             <li><i class="fa fa-th grid-layout-view"></i></li>
                                                             <li><i class="fa fa-list-ul list-layout-view"></i></li>
                                                         </ul>
-                                                    </div>
+                                                    </div> -->
                                                     {{-- <div class="collection-grid-view">
                                                         <ul>
                                                             <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
@@ -282,7 +282,7 @@
                                                 }*/ ?>
                                                 <div class="col-xl-3 col-md-4 col-grid-box mt-3">
                                                     <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="product-box scale-effect mt-0">
-                                                        <div class="product-image p-0">
+                                                        <div class="product-image p-0"  style="height:200px">
                                                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                                                         </div>
                                                         <div class="media-body align-self-center">
