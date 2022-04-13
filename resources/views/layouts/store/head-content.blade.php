@@ -2,7 +2,7 @@
 <link rel="stylesheet" media="all" type="text/css" href="{{asset('front-assets/css/themify-icons.css')}}">
 
 
-<link rel="stylesheet"  href="{{asset('css/aos.css')}}">
+<!-- <link rel="stylesheet"  href="{{asset('css/aos.css')}}"> -->
 <link rel="stylesheet" media="all" type="text/css" href="{{asset('front-assets/css/icons-style.css')}}">
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css"media="all" id="bs-default-stylesheet" />
 

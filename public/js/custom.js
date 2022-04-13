@@ -1,6 +1,6 @@
 jQuery(window).scroll(function () {
     var scroll = jQuery(window).scrollTop();
-    if (scroll <= 50) {
+    if (scroll <= 100) {
         jQuery(".site-header").removeClass("fixed-bar");
         jQuery(".al_offset-top-home").css('margin-top', '0px');
 
@@ -2010,6 +2010,13 @@ $(document).ready(function () {
             else{
                 return false;
             }
+        }else if(payment_option_id == 27){
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaPaytab(address_id, order);
+            } else {
+                return false;
+            }
         }
 
 
@@ -2207,6 +2214,8 @@ $(document).ready(function () {
         }
         else if (payment_option_id == 25) {
             payWithEasebuss('', payment_option_id, '');
+        }else if (payment_option_id == 27) {
+            paymentViaPaytab('', payment_option_id, '');
         }
 
 
@@ -2716,12 +2725,20 @@ $(document).ready(function () {
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
+
         } else {
             amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
             $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
+        }
+        if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
+                $("#order_placed_btn").removeAttr("disabled");
+                $("#order_placed_btn").removeClass("d-none");
+        }else{
+            $("#order_placed_btn").attr("disabled", true);
+            $("#order_placed_btn").addClass("d-none");
         }
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     }
@@ -3472,7 +3489,7 @@ $(document).ready(function () {
     $(document).on("click", "#next-button-ondemand-3", function () {
         $('.alert-danger').html('');
        //window.location.href = showCart;
-
+       
         var task_type = 'schedule';
         var schedule_date = $("input[name='booking_date']:checked").val();
         var schedule_time = $("input[name='booking_time']:checked").val();

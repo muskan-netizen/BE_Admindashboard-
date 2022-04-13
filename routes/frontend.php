@@ -4,9 +4,11 @@
 	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
 	Route::get('auth/xero','Front\XeroController@index')->name('xero_auth');
 	Route::any('auth/callback/xero','Front\XeroController@xero_callback')->name('callback_xero');
+	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback'); 
+	Route::match(['get','post'],'payment/paytab/return','Front\PaytabController@returnBack')->name('payment.paytab.return'); 
 	Route::get('/debug-sentry', function () {
-	throw new Exception('My first Sentry error!');
-});
+		throw new Exception('My first Sentry error!');
+	});
 
 
 Route::group(['middleware' => ['domain']], function () {
@@ -134,6 +136,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//Authorize.Net
 	Route::match(['get','post'],'payment/authorize_net/page','Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
 	Route::post('payment/authorize','Front\AuthorizeGatewayController@createPayment')->name('payment.authorize.createPayment');
+
+	//Paytab
+	Route::match(['get','post'],'payment/paytab/page','Front\PaytabController@beforePayment')->name('payment.paytab.beforePayment');
+	Route::post('payment/paytab','Front\PaytabController@createPayment')->name('payment.paytab.createPayment');
 
 	// toyyibpay
 	Route::match(['get','post'],'payment/toyyib', 'Front\ToyyibPayController@index')->name('payment.toyyibpay.index');

@@ -35,7 +35,7 @@ class UserhomeController extends FrontController
     }
     public function getConfig()
     {
-        $client_preferences = ClientPreference::first();
+        $client_preferences = ClientPreference::first()->makeHidden(['customer_support_key','delivery_service_key','fcm_server_key','fcm_api_key','mail_username','mail_password','sms_key','sms_secret','sms_credentials','fb_client_secret','fcm_storage_bucket','customer_support_application_id','pickup_delivery_service_key']);
         return response()->json(['success' => true, 'client_preferences' => $client_preferences]);
 
     }
@@ -345,6 +345,8 @@ class UserhomeController extends FrontController
                 $view_page = "home-template-two";
             }elseif(isset($set_template)  && $set_template->template_id == 3){
                 $view_page = "home-template-three";
+            }elseif(isset($set_template)  && $set_template->template_id == 4){
+                $view_page = "home-template-four";
             }
             return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
 

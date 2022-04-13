@@ -137,6 +137,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then ')}} {{Session::get('currencySymbol')}}<%= Helper.formatPrice(product.vendor.order_min_amount) %>
                         </div>
+                        <div id="mov" style="display:none;"><%= product.vendor.order_min_amount %> </div>
                     </div>
                 <% } %>
 

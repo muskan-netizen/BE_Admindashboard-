@@ -927,7 +927,7 @@ class OrderController extends BaseController
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks
             ];
-
+            \Log::info(json_encode( $postdata));
 
             $client = new Client([
                 'headers' => [
@@ -938,6 +938,8 @@ class OrderController extends BaseController
             ]);
 
             $url = $dispatch_domain->delivery_service_key_url;
+            \Log::info( $url);
+
             $res = $client->post(
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
