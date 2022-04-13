@@ -15,8 +15,7 @@ class VnpayController  extends FrontController
 {
     use ApiResponser;
 
-    private $MERCHANT_KEY;
-    private $SALT;
+  
     private $vnp_TmnCode;
     private $vnp_HashSecret;
     private $vnp_Url;
@@ -26,15 +25,20 @@ class VnpayController  extends FrontController
     private $expire;
     
     public function __construct() {
-        // $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'easebuzz')->where('status', 1)->first();
-        // $json = json_decode($payOpt->credentials);
-        // $this->MERCHANT_KEY =  $json->easebuzz_merchant_key ?? null; 
-        // $this->SALT =  $json->easebuzz_salt ?? null;
-        // $this->ENV = ($payOpt->test_mode == 1) ?  "test" : 'prod' ; 
-        $this->vnp_TmnCode = "COCOSIN"; //Website ID in VNPAY System
-        $this->vnp_HashSecret = "RAOEXHYVSDDIIENYWSLDIIZTANXUXZFJ"; //Secret key
-        $this->vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $this->vnp_apiUrl = "http://sandbox.vnpayment.vn/merchant_webapi/merchant.html";
+        $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'vnpay')->where('status', 1)->first();
+        $json = json_decode($payOpt->credentials);
+        
+        $this->vnp_TmnCode = $json->vnpay_website_id ?? null;//"COCOSIN"; //Website ID in VNPAY System
+        $this->vnp_HashSecret =  $json->vnpay_server_key ?? null ;//"RAOEXHYVSDDIIENYWSLDIIZTANXUXZFJ"; //Secret key
+        if($payOpt->test_mode == 1){
+            $this->vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+            $this->vnp_apiUrl = "http://sandbox.vnpayment.vn/merchant_webapi/merchant.html";
+        }else{
+            // change url for production mode
+            $this->vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+            $this->vnp_apiUrl = "http://sandbox.vnpayment.vn/merchant_webapi/merchant.html";
+        }
+       
         //Config input format
         //Expire
         $this->startTime = date("YmdHis");
