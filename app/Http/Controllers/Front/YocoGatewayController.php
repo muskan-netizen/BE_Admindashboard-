@@ -89,7 +89,7 @@ class YocoGatewayController extends FrontController
             $checkout_data = array(
                 'token' => $token,
                 'amountInCents' => $amount,
-                'currency' => 'ZAR', //$this->currency
+                'currency' => $this->currency,
                 'description' => $description,
                 'reference' => $reference_number,
                 'redirect' => false,
@@ -134,13 +134,13 @@ class YocoGatewayController extends FrontController
                 $order->save();
                 $payment_exists = Payment::where('transaction_id', $transactionId)->first();
                 if (!$payment_exists) {
-                    Payment::insert([
-                        'date' => date('Y-m-d'),
-                        'order_id' => $order->id,
-                        'transaction_id' => $transactionId,
-                        'balance_transaction' => $request->amount,
-                        'type' => 'cart'
-                    ]);
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->order_id = $order->id;
+                    $payment->transaction_id = $transactionId;
+                    $payment->balance_transaction = $request->amount;
+                    $payment->type = 'cart';
+                    $payment->save();
 
                     // Auto accept order
                     $orderController = new OrderController();
@@ -153,6 +153,7 @@ class YocoGatewayController extends FrontController
                     CartCoupon::where('cart_id', $request->cart_id)->delete();
                     CartProduct::where('cart_id', $request->cart_id)->delete();
                     CartProductPrescription::where('cart_id', $request->cart_id)->delete();
+                    CartDeliveryFee::where('cart_id', $request->cart_id)->delete();
 
                     // Send Notification
                     if (!empty($order->vendors)) {
@@ -221,6 +222,7 @@ class YocoGatewayController extends FrontController
             );
             $reference_number = $description = '';
 
+            $request->request->add(['user_id' => $user->id]);
             if($request->payment_form == 'cart'){
                 $description = 'Order Checkout';
                 $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
@@ -254,7 +256,7 @@ class YocoGatewayController extends FrontController
             $checkout_data = array(
                 'token' => $token,
                 'amountInCents' => $amount,
-                'currency' => 'ZAR',
+                'currency' => $this->currency,
                 'description' => $description,
                 'reference' => $reference_number,
                 'redirect' => false,
@@ -299,12 +301,13 @@ class YocoGatewayController extends FrontController
                 $order->save();
                 $payment_exists = Payment::where('transaction_id', $transactionId)->first();
                 if (!$payment_exists) {
-                    Payment::insert([
-                        'date' => date('Y-m-d'),
-                        'order_id' => $order->id,
-                        'transaction_id' => $transactionId,
-                        'balance_transaction' => $request->amount,
-                    ]);
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->order_id = $order->id;
+                    $payment->transaction_id = $transactionId;
+                    $payment->balance_transaction = $request->amount;
+                    $payment->type = 'cart';
+                    $payment->save();
 
                     // Auto accept order
                     $orderController = new OrderController();
@@ -317,6 +320,7 @@ class YocoGatewayController extends FrontController
                     CartCoupon::where('cart_id', $request->cart_id)->delete();
                     CartProduct::where('cart_id', $request->cart_id)->delete();
                     CartProductPrescription::where('cart_id', $request->cart_id)->delete();
+                    CartDeliveryFee::where('cart_id', $request->cart_id)->delete();
 
                     // Send Notification
                     if (!empty($order->vendors)) {
