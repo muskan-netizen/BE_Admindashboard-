@@ -2010,6 +2010,13 @@ $(document).ready(function () {
             else{
                 return false;
             }
+        }else if(payment_option_id == 27){
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaPaytab(address_id, order);
+            } else {
+                return false;
+            }
         }
 
 
