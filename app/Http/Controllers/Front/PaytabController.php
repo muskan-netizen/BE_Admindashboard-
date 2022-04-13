@@ -75,10 +75,12 @@ class PaytabController extends FrontController
             }else{
                 $returnUrl = $this->failedPayment($request);
             } 
+            return Redirect::to(url($returnUrl));
         }else{
             $returnUrl = $this->failedPayment($request);
-        }
-        return Redirect::to(url($returnUrl));
+            return Redirect::to(url($returnUrl))->with('error',$request->respMessage);
+        } 
+        return Redirect::to(url($returnUrl))->with('error','Something went wrong, Please try again later'); 
     }
     public function sucessPayment($request)
     {

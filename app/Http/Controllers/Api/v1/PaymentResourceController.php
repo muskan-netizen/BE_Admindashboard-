@@ -156,7 +156,7 @@ class PaymentResourceController extends BaseController
             return $result;
 
         }else{
-            return response()->json('error', 'Sorry, We cannot procees your payment.');
+            return response()->json('error', __('Sorry, We cannot procees your payment.'));
         }
       
     }

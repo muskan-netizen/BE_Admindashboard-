@@ -383,7 +383,7 @@
                     <div class="col-12">
                         <div class="product-banner-img">
                             @if (!empty($vendor->banner))
-                                <img alt=""
+                                <img rel="preload" alt=""
                                     src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}">
                             @endif
                         </div>
@@ -581,8 +581,8 @@
 
                                                             </div>
                                                             <div class="col-sm-10">
-                                                                <div class="row price_head pl-2">
-                                                                    <div class="col-sm-12 pl-2">
+                                                                <div class="row price_head">
+                                                                    <div class="col-sm-12">
                                                                         <div
                                                                             class="d-flex align-items-start justify-content-between">
                                                                             <h5 class="mt-0">
@@ -851,7 +851,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="show-div shopping-cart flex-fill w-100"
-                                                    id="header_cart_main_ul_ondemand sd"></div>
+                                                    id="header_cart_main_ul_ondemand"></div>
                                             </div>
                                         </div>
                                     </div>
