@@ -85,7 +85,7 @@
                                 </div>
                             </div>
 
-                     
+
                         <div  style="display:{{(($themeId==3)?'block':'none')}}" class="card changeIcon">
                             <div class="card-body al_custom_control">
                                 {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
@@ -135,7 +135,7 @@
                                 <h4 class="header-title">{{ __("Home Page Style") }}</h4>
                                 <div class="row">
                                     @foreach($homepage_style_options as $homepage_style)
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
                                         <div class="card mb-0">
                                             <div class="card-body p-0">
                                                 <div class="col-sm-12 custom-control custom-radio radio_new p-0">

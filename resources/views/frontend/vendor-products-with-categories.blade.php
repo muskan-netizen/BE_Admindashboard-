@@ -567,10 +567,10 @@
                                                         ({{ $data->products_count }})
                                                     </h2>
                                                     @forelse($data->products as $prod)
-                                                        <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-gutters mb-3 p-2"
+                                                        <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-sm-gutters mb-3 p-2"
                                                             data-p_sku="{{ $prod->sku }}"
                                                             data-slug="{{ $prod->url_slug }}">
-                                                            <div class="col-2">
+                                                            <div class="col-sm-2 mb-2">
                                                                 <a target="_blank"
                                                                     href="{{ route('productDetail', [$prod->vendor->slug, $prod->url_slug]) }}">
                                                                     <div class="class_img product_image">
@@ -580,7 +580,7 @@
                                                                 </a>
 
                                                             </div>
-                                                            <div class="col-10">
+                                                            <div class="col-sm-10">
                                                                 <div class="row price_head pl-2">
                                                                     <div class="col-sm-12 pl-2">
                                                                         <div
@@ -779,10 +779,10 @@
                                                                     @endif
 
                                                                     <p class="mb-1 product_price">
-                                                                        {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier) }}
+                                                                        {{ Session::get('currencySymbol') . number_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
                                                                         @if ($prod->variant[0]->compare_at_price > 0)
                                                                             <span
-                                                                                class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
+                                                                                class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .number_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
                                                                         @endif
                                                                     </p>
                                                                     <div class="member_no d-block mb-0">
@@ -851,7 +851,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="show-div shopping-cart flex-fill w-100"
-                                                    id="header_cart_main_ul_ondemand"></div>
+                                                    id="header_cart_main_ul_ondemand sd"></div>
                                             </div>
                                         </div>
                                     </div>

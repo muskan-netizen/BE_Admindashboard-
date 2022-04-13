@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserAddress;
 use App\Models\Vendor;
 use App\Models\VendorOrderDispatcherStatus;
+use App\Models\VendorOrderStatus;
 use App\Models\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -120,8 +121,9 @@ class AhoyController extends Controller
                 "orderLargeBoxQuantity"=> '0',
                 "orderMidBoxQuantity"=> '1',
                 "orderSmallBoxQuantity"=> '0',
-                'customerName' => $customer->name,  //+97 code is only for dubai and it's required
-				'customerPhone' => ($customer->dial_code??'+97').$customer->phone_number,
+                'customerName' => $customer->name,  //+971 code is only for dubai and it's required
+				//'customerPhone' => '971566134856', 
+				'customerPhone' => ($customer->dial_code??'+971').$customer->phone_number,
 				'customerEmail' => $customer->email,
                 'customerAddress'=> $cus_address->address,
 				'customerLatitude' => $cus_address->latitude, //Required
@@ -207,7 +209,8 @@ class AhoyController extends Controller
                 "orderMidBoxQuantity"=> '1',
                 "orderSmallBoxQuantity"=> '0',
                 'customerName' => $customer->name,
-				'customerPhone' => ($customer->dial_code??'+97').$customer->phone_number,
+				'customerPhone' =>($customer->dial_code??'+971').$customer->phone_number,
+				//'customerPhone' => '971566134856', 
 				'customerEmail' => $customer->email,
                 'customerAddress'=> $cus_address->address,
 				'customerLatitude' => $cus_address->latitude, //Required
@@ -223,9 +226,9 @@ class AhoyController extends Controller
                 "unit"=> null,
                 "temperatureTypeId"=> 0
             );
-            //\Log::info(json_encode($data));
+            \Log::info(json_encode($data));
             $orderSuc = $this->createPreOrder($data);
-            //\Log::info(json_encode($orderSuc));
+            \Log::info(json_encode($orderSuc));
             if($orderSuc->preOrderId != ''){
                // $this->confirmOrderPreRequestAhoy($orderSuc);
                 return $orderSuc->onDemand->price;
@@ -248,7 +251,7 @@ class AhoyController extends Controller
                 'latitude'=>$vendor_details->latitude ?? '',
                 'longitude'=>$vendor_details->longitude ?? '',
                 'locationType'=>$request->location_type??1,
-                'PhoneNumber'=>'97'.$vendor_details->phone_no ?? '',
+                'PhoneNumber'=>($vendor_details->dial_code??'+971').$vendor_details->phone_no ?? '',
                 'Email'=>$vendor_details->email ?? ''
             );
             //dd($data);
@@ -271,56 +274,62 @@ class AhoyController extends Controller
 
 	public function ahoyWebhook(Request $request)
     {
-		//1-AWB Assigned
-		//2-Label Generated
-		//3-Pickup Scheduled/Generated
-		//19-Out For Pickup 
-		//42-Picked Up 
-		//6-Shipped 
-		//7-Delivered 
-		//8-Cancelled 
-		//11-Pending 
-		//17-Out For Delivery 
-		//18-In Transit 
-		//38-Reached Destination Hub 
+        // {
+        //     "orderId": 87231,
+        //     "statusId": 12,
+        //     "orderStatusName": "Assigned to job",
+        //     "companyOrderTrackId": "1165-1103-40",
+        //     "updateTime": 1649400020000
+        //   }
 
+        // {
+        //     "orderId": 87231,
+        //     "statusId": 22,
+        //     "orderStatusName": "Out For Delivery",
+        //     "companyOrderTrackId": "1165-1103-40",
+        //     "updateTime": 1649400425000
+        //   }
+
+        // {
+        //     "orderId": 87231,
+        //     "statusId": 3,
+        //     "orderStatusName": "Delivered",
+        //     "companyOrderTrackId": "1165-1103-40",
+        //     "updateTime": 1649400466000
+        //   }
+
+    try{
         $trackingId = '';
         $json = json_decode($request->getContent());
 
         if($request){
-            Webhook::create(['tracking_order_id'=>(($json->awb)?$json->awb:''),'response'=>$request->getContent()]);
+            Webhook::create(['tracking_order_id'=>(($json->orderId)?$json->orderId:''),'response'=>$request->getContent()]);
            }
            
-        if(isset($json->shipment_status_id) && $json->shipment_status_id == '1')
+        if(isset($json->statusId) && $json->statusId == '12')
         {
-            $awb = $json->awb;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            $awb = $json->orderId;
+            $details = OrderVendor::where('web_hook_code',$awb)->first();
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
-        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '3')
-        {
-			$awb = $json->awb;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+       
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);
-        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '19')
+        }elseif(isset($json->statusId) && $json->statusId == '22')
         {
-			$awb = $json->awb;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+			$awb = $json->orderId;
+            $details = OrderVendor::where('web_hook_code',$awb)->first();
             //Update in vendor status
             VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'4']);
             
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
-        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '42')
+        }elseif(isset($json->statusId) && $json->statusId == '3')
         {
-			$awb = $json->awb;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+			$awb = $json->orderId;
+            $details = OrderVendor::where('web_hook_code',$awb)->first();
             //Update in vendor status
             VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'5']);
 
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
-        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '7')
-        {
-            $awb = $json->awb;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+     
            
             //Update in vendor status
             VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'6']);
@@ -329,9 +338,13 @@ class AhoyController extends Controller
         }
 
         if($request && isset($json)){
-         Webhook::create(['tracking_order_id'=>(($json->awb)?$json->awb:''),'response'=>$request->getContent()]);
+         Webhook::create(['tracking_order_id'=>(($json->orderId)?$json->orderId:''),'response'=>$request->getContent()]);
         }
-
+            
+        }catch(\Exception $e){
+            \Log::info($e->getMessage());
+            return response([],200);
+        }
         return response([],200);
 
     }
