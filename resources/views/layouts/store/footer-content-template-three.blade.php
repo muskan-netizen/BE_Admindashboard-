@@ -60,7 +60,6 @@ $applocale = session()->get('applocale');
                             </div>
                         </div>
                     </div>
-
                 @endif
                 @if(count($pages))
                 <div class="col-lg-2 col-md-6 pt-md-4 pt-lg-0">
