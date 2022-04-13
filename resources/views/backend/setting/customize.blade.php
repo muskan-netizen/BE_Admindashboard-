@@ -541,7 +541,7 @@
         <!-- User Registration Documents start -->
         <div class="card-box pb-2">
             <div class="d-flex align-items-center justify-content-between">
-            <h4 class="header-title m-0">{{ __("Categorie Kyc Documents") }}</h4>
+            <h4 class="header-title m-0">{{ __("Category Kyc Documents") }}</h4>
             <a class="btn btn-info d-block" id="add_category_kyc_document_modal_btn">
                 <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
             </a>
@@ -572,9 +572,7 @@
                             $category_other='0';
                             @endphp
                             @foreach($category_kyc_document->categoryMapping as $category_ones)
-                           
-
-                             {{ ($category_other =='1') ? ", " : "" }}
+                            {{ ($category_other =='1') ? ", " : "" }}
                             {{ $category_ones->category->translation_one->name }}
                             @php
                             $category_other='1';
@@ -597,7 +595,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr align="center">
+                    <tr align ="center">
                         <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
                     </tr>
                     @endforelse

@@ -1,5 +1,7 @@
 @extends('layouts.store', ['title' => __('Home')])
-<link href="{{asset('css/aos.css')}}" rel="stylesheet">
+@section('css-links')
+{{--<link href="{{asset('css/aos.css')}}" rel="stylesheet">--}}
+@endsection
 @section('css')
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}
@@ -608,27 +610,15 @@
     </div>
 </div>
 @endsection
+@section('js-script')
+<script type="text/javascript" src="{{asset('front-assets/js/slick.js')}}"></script> 
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+{{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
+@endsection
 @section('script')
-
-<script src="{{asset('js/aos.js')}}"></script>
-<script>
-  AOS.init();
-</script>
-<script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
-
-        $("#doneeee").click(function() {
-            console.log("nejhbfe");
-            // $(".hide_div").hide();
-        });
-    });
-    // $(".mobile-back").on("click", function() {
-    //     $(".sm-horizontal").css("right", "-410px");
-    // });
-    //alert();
-
+    // AOS.init();
     function changeImage(image2, check) {
         var image = $(image2).children("img");
        var  icon = image.attr('data-icon');
