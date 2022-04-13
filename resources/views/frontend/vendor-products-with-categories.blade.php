@@ -383,7 +383,7 @@
                     <div class="col-12">
                         <div class="product-banner-img">
                             @if (!empty($vendor->banner))
-                                <img alt=""
+                                <img rel="preload" alt=""
                                     src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}">
                             @endif
                         </div>
@@ -402,6 +402,7 @@
                                                     <h4 title="{{ $vendor->desc }}" style="line-height: 24px">
                                                         {{ substr($vendor->desc, 0, 80) . '...' }}</h4>
                                                 @endif
+                                                <p>{{ $vendor->short_desc }}</p>
                                                 <ul class="vendor-info">
                                                     {{-- <li class="d-block food-items">
                                             <i class="icon-ic_eat"></i>
@@ -581,8 +582,8 @@
 
                                                             </div>
                                                             <div class="col-sm-10">
-                                                                <div class="row price_head pl-2">
-                                                                    <div class="col-sm-12 pl-2">
+                                                                <div class="row price_head">
+                                                                    <div class="col-sm-12">
                                                                         <div
                                                                             class="d-flex align-items-start justify-content-between">
                                                                             <h5 class="mt-0">

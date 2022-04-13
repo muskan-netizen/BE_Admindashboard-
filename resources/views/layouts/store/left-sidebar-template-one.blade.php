@@ -235,10 +235,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                         <li class="onhover-div pl-0 shake-effect">
                                             @if($client_preference_detail)
                                             @if($client_preference_detail->cart_enable==1)
-                                            <a class="btn btn-solid d-flex align-items-center "
+                                            <a class="btn btn-solid_al d-flex align-items-center "
                                                 href="{{route('showCart')}}">
                                                 <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i>
-                                                <span>{{__('Cart')}}•</span>
+                                                <!-- <span>{{__('Cart')}}•</span> -->
                                                 <span id="cart_qty_span"></span>
                                             </a> @endif @endif
                                             <script type="text/template" id="header_cart_template">
@@ -365,11 +365,11 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                             <li class="onhover-div pl-0 shake-effect">
                                                                 @if($client_preference_detail)
                                                                 @if($client_preference_detail->cart_enable==1)
-                                                                <a class="btn btn-solid d-flex align-items-center "
+                                                                <a class="btn btn-solid_al d-flex align-items-center "
                                                                     href="{{route('showCart')}}">
                                                                     <i class="fa fa-shopping-cart mr-1 "
                                                                         aria-hidden="true"></i>
-                                                                    <span>{{__('Cart')}}•</span>
+                                                                    <!-- <span>{{__('Cart')}}</span> -->
                                                                     <span id="cart_qty_span">
                                                                     </span>
                                                                 </a>

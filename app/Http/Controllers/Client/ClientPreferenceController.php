@@ -276,6 +276,7 @@ class ClientPreferenceController extends BaseController{
             $preference->category_kyc_documents = ($request->has('category_kyc_documents') && $request->category_kyc_documents == 'on') ? 1 : 0;
             $preference->vendor_return_request = ($request->has('vendor_return_request') && $request->vendor_return_request == 'on') ? 1 : 0;
             $preference->third_party_accounting = ($request->has('third_party_accounting') && $request->third_party_accounting == 'on') ? 1 : 0;
+            $preference->hide_order_prepare_time = ($request->has('hide_order_prepare_time') && $request->hide_order_prepare_time == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){

@@ -8,7 +8,7 @@ use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, Wal
 use Auth, Log, Redirect;
 use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProduct};
 
-class PaytabController extends Controller
+class PaytabController extends FrontController
 {
     use \App\Http\Traits\PaytabPaymentManager;
 	use \App\Http\Traits\ApiResponser;
@@ -41,70 +41,49 @@ class PaytabController extends Controller
         {
             return redirect($response->gettargetUrl());
         }
-        dd($response);
         return redirect()->back()->with('error','Something went wrong, Please try again later.');
     }
-    public function callback(Request $request)
+    public function callback(Request $request, $domain="")
     {
         Log::info("Paytab Callback url");
         Log::info($request->all());
     } 
-    public function createPayment(Request $request)
+    public function returnBack(Request $request, $domain="")
     {
-        Log::info("Paytab Create Payment");
-        Log::info($request->all());
-        if($request->come_from == "app")
-        {
-            $user = User::where('auth_token', $request->auth_token)->first();
-            Auth::login($user);
-        }
-    	$user = Auth::user();
-    	$cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-        $amount = $this->getDollarCompareAmount($request->amount);
-    	$data = $request->all();
-    	$request['amount'] = $amount*100;
-    	
-        if($request->payment_from == 'cart'){
-            $request['description'] = 'Order Checkout';
-            if($request->has('order_number')){
-                $request['reference'] = $request->order_number;
+        $user = User::where('auth_token', $request->auth_token)->first();
+        Auth::login($user);
+        if($request['respStatus'] == 'A'){
+            $user = Auth::user();
+            $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+            $amount = $this->getDollarCompareAmount($request->amount);
+            $data = $request->all();
+            if($request->payment_from == 'cart'){
+                $request['description'] = 'Order Checkout';
             }
-        }
-        elseif($request->payment_from == 'wallet'){
-            $request['description'] = 'Wallet Checkout';
-            $request['reference'] = $user->id;
-        }
-        elseif($request->payment_from == 'tip'){
-            $request['description'] = 'Tip Checkout';
-            if($request->has('order_number')){
-                $request['reference'] = $request->order_number;
+            elseif($request->payment_from == 'wallet'){
+                $request['description'] = 'Wallet Checkout';
             }
-        }
-        elseif($request->payment_from == 'subscription'){
-            $request['description'] = 'Subscription Checkout';
-            if($request->has('subscription_id')){
-                $request['reference'] = $request->subscription_id;
+            elseif($request->payment_from == 'tip'){
+                $request['description'] = 'Tip Checkout';
             }
-        }
-    	$payment_id = $this->createPaytabPayment($request->all());
-    	$request['amount'] = $amount;
-	    if(isset($payment_id) && !is_null($payment_id))
-	    {
-	        $returnUrl = $this->sucessPayment($request,$payment_id);
-	    }
-	    else {
-	        $returnUrl = $this->failedPayment($request);
-	    }
-    	
-        return Redirect::to(url($returnUrl));
+            elseif($request->payment_from == 'subscription'){
+                $request['description'] = 'Subscription Checkout';
+            }
+            $response = $this->capturePayment($request->all());
+            if(!is_null($response)){
+                $returnUrl = $this->sucessPayment($request);
+            }else{
+                $returnUrl = $this->failedPayment($request);
+            } 
+            return Redirect::to(url($returnUrl));
+        }else{
+            $returnUrl = $this->failedPayment($request);
+            return Redirect::to(url($returnUrl))->with('error',$request->respMessage);
+        } 
+        return Redirect::to(url($returnUrl))->with('error','Something went wrong, Please try again later'); 
     }
-    public function sucessPayment($request, $transactionId)
+    public function sucessPayment($request)
     {
-        if($request->come_from == "app")
-        {
-            $user = User::where('auth_token', $request->auth_token)->first();
-            Auth::login($user);
-        }
         $user = Auth::user();
     	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
@@ -112,12 +91,12 @@ class PaytabController extends Controller
             if ($order) {
                 $order->payment_status = 1;
                 $order->save();
-                $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                $payment_exists = Payment::where('transaction_id', $request->tranRef)->first();
                 if (!$payment_exists) {
                     Payment::insert([
                         'date' => date('Y-m-d'),
                         'order_id' => $order->id,
-                        'transaction_id' => $transactionId,
+                        'transaction_id' => $request->tranRef,
                         'balance_transaction' => $request->amount,
                         'type' => 'cart'
                     ]);
@@ -148,46 +127,47 @@ class PaytabController extends Controller
                 }
                 if($request->come_from == 'app')
                 {
-                    $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$transactionId.'&order='.$order_number;
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$request->tranRef.'&order='.$order_number;
                 }else{
                     $returnUrl = route('order.return.success');
                 }
                 return $returnUrl;
             }
         } elseif($request->payment_from == 'wallet'){
-            $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $transactionId]);
+            $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $request->tranRef]);
             $walletController = new WalletController();
             $walletController->creditWallet($request);
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$transactionId;
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$request->tranRef;
             }else{
                 $returnUrl = route('user.wallet');
             }
             return $returnUrl;
         }
         elseif($request->payment_from == 'tip'){
-            $request->request->add(['order_number' => $request->order_number, 'tip_amount' => $request->amount, 'transaction_id' => $transactionId]);
+            $request->request->add(['order_number' => $request->order_number, 'tip_amount' => $request->amount, 'transaction_id' => $request->tranRef]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$transactionId;
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$request->tranRef;
             }else{
                 $returnUrl = route('user.orders');
             }
             return $returnUrl;
         }
         elseif($request->payment_from == 'subscription'){
-            $request->request->add(['payment_option_id' => 13, 'transaction_id' => $transactionId]);
+            $request->request->add(['payment_option_id' => 13, 'transaction_id' => $request->tranRef]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$transactionId;
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$request->tranRef;
             }else{
                 $returnUrl = route('user.subscription.plans');
             }
+            dd($returnUrl);
             return $returnUrl;
         }
         return Redirect::to(route('order.return.success'));

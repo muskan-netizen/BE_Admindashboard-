@@ -241,7 +241,7 @@ $timezone = Auth::user()->timezone;
 
 
 
-                            @if(isset($order->vendors) && ($order->vendors->first()->dispatch_traking_url !=null || $order->vendors->first()->lalamove_tracking_url !=null))
+                            @if(isset($order->vendors) && ($order->vendors->first()->dispatch_traking_url !=null || $order->vendors->first()->lalamove_tracking_url !=null || $order->vendors->first()->web_hook_code !=null ))
                             <div class="col-lg-6">
                                 <ul class="list-unstyled remove-curser">
                                     @foreach($dispatcher_status_options as $dispatcher_status_option)

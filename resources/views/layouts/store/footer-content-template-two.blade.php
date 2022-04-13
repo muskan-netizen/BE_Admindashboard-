@@ -105,7 +105,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 <h4 class="mt-0">{{ __('Find Our App On Mobile') }}</h4>
                             </div>
                             <div class="footer-contant">
-                                <div class="store-btn mb-3 d-flex align-items-center justify-content-center">
+                                <div class="store-btn mb-3 d-flex align-items-left justify-content-start">
                                     @if($client_preference_detail->show_qr_on_footer)
 
                                     <ul class="row">
@@ -145,7 +145,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
                 @endif
                 <div class="col-lg-3 col-md-6 mb-md-0 mb-3 text-right d-none">
-                    <div class="store-btn mb-3 d-flex align-items-center justify-content-center">
+                    <div class="store-btn mb-3 d-flex align-items-left justify-content-start">
                         @if($client_preference_detail->show_qr_on_footer)
 
                         <ul class="row">

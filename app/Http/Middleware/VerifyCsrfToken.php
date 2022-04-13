@@ -32,6 +32,9 @@ class VerifyCsrfToken extends Middleware
 
         /** routes for edit order **/
         'edit-order/*',
-        'payment/webhook/*'
+        'payment/webhook/*',
+        
+        'payment/paytab/return',
+        'payment/paytab/callback'
     ];
 }

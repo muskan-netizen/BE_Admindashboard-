@@ -720,13 +720,13 @@
 </div>
 
 @endsection
-@section('script')
-
+@section('js-script')
+<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script> 
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
-
-
+@endsection
+@section('script')
 <script>
     $(document).on('click', '.submitInquiryForm', function(e) {
         e.preventDefault();
