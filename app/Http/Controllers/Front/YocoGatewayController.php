@@ -89,7 +89,7 @@ class YocoGatewayController extends FrontController
             $checkout_data = array(
                 'token' => $token,
                 'amountInCents' => $amount,
-                'currency' => $this->currency,
+                'currency' => $this->currency, //ZAR
                 'description' => $description,
                 'reference' => $reference_number,
                 'redirect' => false,
@@ -256,7 +256,7 @@ class YocoGatewayController extends FrontController
             $checkout_data = array(
                 'token' => $token,
                 'amountInCents' => $amount,
-                'currency' => $this->currency,
+                'currency' => $this->currency, //ZAR
                 'description' => $description,
                 'reference' => $reference_number,
                 'redirect' => false,
