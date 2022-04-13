@@ -1,7 +1,9 @@
 @extends('layouts.store', ['title' => __('Home')]) @section('content')
-@section('css')
+@section('css-links')
 <link rel="stylesheet/less" type="text/css" href="{{ asset('front-assets/css/shimmer-less.less') }}">
-<link rel="stylesheet"  href="{{asset('css/aos.css')}}">
+{{--<link rel="stylesheet"  href="{{asset('css/aos.css')}}">--}} 
+@endsection
+@section('css')
 <style>
 .cardbanner {height:300px;}
 .shimmer_effect .grid-row .cards {margin-bottom: 20px;}
