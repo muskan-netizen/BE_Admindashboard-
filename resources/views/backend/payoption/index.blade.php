@@ -94,6 +94,8 @@
                 $toyyibpay_redirect_uri = (isset($creds->toyyibpay_redirect_uri)) ? $creds->toyyibpay_redirect_uri : '';
                 $easebuzz_merchant_key = (isset($creds->easebuzz_merchant_key)) ? $creds->easebuzz_merchant_key : '';
                 $easebuzz_salt = (isset($creds->easebuzz_salt)) ? $creds->easebuzz_salt : '';
+                $vnpay_website_id = (isset($creds->vnpay_website_id)) ? $creds->vnpay_website_id : '';
+                $vnpay_server_key = (isset($creds->vnpay_server_key)) ? $creds->vnpay_server_key : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -630,6 +632,25 @@
                                     <input type="text" name="paytab_client_key" id="paytab_client_key" class="form-control" value="{{$client_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'vnpay') )
+                    <div class="mt-2" id="vnpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="vnpay_website_id" class="mr-3">{{ __("Website ID") }}</label>
+                                    <input type="text" name="vnpay_website_id" id="vnpay_website_id" class="form-control" value="{{$vnpay_website_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="vnpay_server_key" class="mr-3">{{ __("Server Key") }}</label>
+                                    <input type="text" name="vnpay_server_key" id="vnpay_server_key" class="form-control" value="{{$vnpay_server_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            
                         </div>
                     </div>
                     @endif
