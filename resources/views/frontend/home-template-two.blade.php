@@ -1,5 +1,7 @@
 @extends('layouts.store', ['title' => __('Home')])
-<link href="{{asset('css/aos.css')}}" rel="stylesheet">
+@section('css-links')
+{{--<link href="{{asset('css/aos.css')}}" rel="stylesheet">--}}
+@endsection
 @section('css')
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}
@@ -609,7 +611,6 @@
 </div>
 @endsection
 @section('js-script')
-<script type="text/javascript" src="{{asset('front-assets/js/slick.js')}}"></script> 
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}

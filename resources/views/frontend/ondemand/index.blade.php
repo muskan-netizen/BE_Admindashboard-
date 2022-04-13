@@ -13,21 +13,21 @@ use Illuminate\Support\Arr;
 
                     <div class="step step1 @if(app('request')->input('step') >= '1' || empty(app('request')->input('step'))) active @endif">
                         <div class="step-icon">1</div>
-                        <p>Service Details</p>
+                        <p>{{__('Service Details')}}</p>
                     </div>
 
                     <div class="indicator-line  @if(app('request')->input('step') >= '1' && !empty(app('request')->input('step'))) active @endif"></div>
 
                     <div class="step step2  @if(app('request')->input('step') >= '2' && !empty(app('request')->input('step'))) active @endif">
                         <div class="step-icon">2</div>
-                        <p>Date & Time</p>
+                        <p>{{__('Date & Time')}}</p>
                     </div>
 
                     <div class="indicator-line  @if(app('request')->input('step') == '3' && !empty(app('request')->input('step'))) active @endif"></div>
 
                     <div class="step step3   @if(app('request')->input('step') == '3' && !empty(app('request')->input('step'))) active @endif">
                         <div class="step-icon">3</div>
-                        <p>Payment</p>
+                        <p>{{__('Payment')}}</p>
                     </div>
 
                 </div>
@@ -288,7 +288,7 @@ use Illuminate\Support\Arr;
                                                             @php $checked = ''; @endphp
                                                             @foreach ($cart_data->addon as $value)
                                                                @if($checked != 'checked')
-                                                                    @if($addon->addOnName->id == $value->addon_id && $value->option_id == $option->id  && $value->cart_product_id  == $cart_data->id)
+                                                                    @if($addon->addon_id == $value->addon_id && $value->option_id == $option->id  && $value->cart_product_id  == $cart_data->id)
                                                                     @php $checked = 'checked'; @endphp
                                                                     @else
                                                                     @php $checked = ''; @endphp
@@ -298,9 +298,9 @@ use Illuminate\Support\Arr;
                                                             @endforeach
                                                             <div>
                                                                 <div class="radios">
-                                                                <input type="{{$type_input}}" class="productAddonOption" {{ $checked }} id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}" class="productAddonOption"  name="addonData{{$row}}[{{$cart_data->id}}][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}"/>
+                                                                <input type="{{$type_input}}" class="productAddonOption " {{ $checked }} id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}"  class="productAddonOption"  name="addonData{{$row}}[{{$cart_data->id}}][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}"/>
                                                                     <label for='inlineCheckbox_{{$key}}{{$row.'_'.$k}}'>
-                                                                        <span class="customCheckbox" aria-hidden="true">{{$option->title .' ($'.$option->price.')' }} </span>
+                                                                        <span class="customCheckbox productAddonOptionspan_{{ $checked }}" aria-hidden="true">{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price,',').')' }} </span>
                                                                     </label>
                                                                 </div>
                                                             </div>

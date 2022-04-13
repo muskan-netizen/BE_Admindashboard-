@@ -1,198 +1,15 @@
-#edit-address .address-input-group .pac-container{top:75px!important;left:0!important}#destination_location_add_temp,.address-input-group{position:relative}
+#destination_location_add_temp,.address-input-group{position:relative}
 .address-input-group .pac-container{top:35px!important;left:0!important}
 #destination_location_add_temp .pac-container{top:75px!important;left:15px!important}img.al_img_opacity{opacity:.4}
 #edit-address .address-input-group .pac-container{top:75px!important;left:0!important}
-.address-input-group{position:relative}
-.address-input-group .pac-container{top:35px!important;left:0!important}
-.h2-heading{text-transform: capitalize;}
-.radio {
-    display: block;
-    position: relative;
-    padding-left: 30px;
-    cursor: pointer;
-    font-size: 20px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    color: #000;
-    font-size: 16px;
-    font-weight: 300;
-    letter-spacing: 0;
-    line-height: 24px;
-}
-.radio input[type=radio] {
-    position: absolute;
-    opacity: 0;
-}
-.checkround {
-    position: absolute;
-    top: 4px;
-    left: 0;
-    height: 20px;
-    width: 20px;
-    background-color: #fff;
-    border-radius: 50%;
-    border: 1px solid #979797;
-}
-.radio .checkround:after {
-    left: 0;
-    right: 0;
-    margin: auto;
-    top: 0;
-    bottom: 0;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--theme-deafult);
-}
-.radio input:checked~.checkround:after {
-    display: block;
-}
-#wallet_topup_form button.btn.btn-solid.mb-2.custom_amount {
-    padding: 5px 10px;
-    font-size: 16px;
-    font-weight: 100;
-    border-radius: 5px;
-}
-.modal-header.border-bottom {
-    background-color:var(--theme-deafult);
-    color: #fff;
-}
-.file .update_pic {
-    height: 80px;
-    width: 80px;
-    background: url(../images/user_pic.jpg) no-repeat center;
-    border-radius: 50%;
-    background-size: cover;
-    overflow: hidden;
-    display: block;
-}
-.file .update_pic img{height: 100%;}
-.file>label {
-    cursor: pointer;
-    outline: 0;
-    margin-bottom: 0;
-    width: 80px;
-    display: inline-block;
-    position: relative;
-}
-label {
-    font-weight: 400;
-    display: block;
-}
-.name_location {
-    margin-bottom: 20px;
-    margin-top: 10px;
-    box-shadow: 0 4px 25px 0 rgb(138 129 124 / 3%);
-    padding: 10px 16px 15px;
-}
-.dashboard-right .card-box {
-    box-shadow: 0 0.75rem 6rem rgb(56 65 74 / 7%);
-    border-radius: 16px;
-}
-#editProfileBox label{display: block;}
-.iti.iti--allow-dropdown.iti--separate-dial-code {
-    width: 100%;
-}
-span.file-icon::before{
-    content: "\f1c5";
-    font-family: ;
-    font-size: 20px;
-}
-.number .counter-container {
-    border: 1px solid var(--theme-deafult);
-    border-radius: 4px;
-    width: fit-content;
-}
-.minus, .plus {
-    display: inline-block;
-    height: 30px;
-    text-align: center;
-    line-height: 30px!important;
-    padding: 0 8px;
-    cursor: pointer;
-    color: var(--theme-deafult);
-}
-.categories-product-list .number {
-    border: 0.5px solid #ed5a6b;
-    border-radius: 8px;
-}
-.number input {
-    height: 30px;
-    min-width: 30px;
-    max-width: 60px;
-    width: 100%;
-    display: inline-block;
-    text-align: center;
-    border: 0;
-    border-left: 1px solid var(--theme-deafult);
-    border-right: 1px solid var(--theme-deafult);
-}
-.tip_radio:not(:disabled)~label {
-    cursor: pointer;
-}
-.tip_label {
-    display: inline-block;
-    background: white;
-    border: 1px solid var(--theme-deafult);
-    border-radius: 5px;
-    padding: 5px 10px;
-    margin-bottom: 1rem;
-    text-align: center;
-    position: relative;
-}
-input[type=radio], input[type=checkbox] {
-    cursor: pointer!important;
-}
-.tip_radio {
-    display: none;
-}
-.tip_radio:checked+.tip_label {
-    background: var(--theme-deafult);
-    box-shadow: 0 0 5px var(--theme-deafult);
-}
-.tip_radio:checked+.tip_label h5, .tip_radio:checked+.tip_label p {
-    color: #fff;
-}
-.collection-filter .theme-card .offer-slider img{padding: 0;height: auto;}
-.order-address .outer-box.border-dashed {
-    border-style: dashed;
-    border-width: 2px;
-    height: 100%;
-}
-.outer-box {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    flex-direction: column;
-    padding: 15px;
-    background-color: #fff;
-    box-shadow: 0 4px 25px 0 rgb(138 129 124 / 3%);
-}
-.outer-box .fa-plus-circle.d-block {
-    font-size: 26px;
-    color: var(--theme-deafult);
-}
-.outer-box h6 i {
-    color: var(--theme-deafult);
-    font-size: 20px;
-}
-.dashboard-right p {
-    color: #5f5f5f;
-    line-height: 20px;
-}
-a.btn.btn-solid.add_edit_address_btn {
-    margin: 0 10px;
-}
-body .btn-solid {
-    padding: 5px 10px!important;
-    font-size: 10px!important;
-    letter-spacing: 2px;
-    font-weight: 500;
-    text-shadow: none;
-    border-radius: 4px;
-    border-width: 1px;
-}
+
+body.login_body article#content-wrap,
+body.register_body article#content-wrap{padding-bottom: 60px!important;}
+body.login_body footer#footer,
+body.register_body footer#footer {position: relative;}
+
+.address-input-group{position:relative}.address-input-group .pac-container{top:35px!important;left:0!important}.h2-heading{text-transform:capitalize}.radio{display:block;position:relative;padding-left:30px;cursor:pointer;font-size:20px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;color:#000;font-size:16px;font-weight:300;letter-spacing:0;line-height:24px}.radio input[type=radio]{position:absolute;opacity:0}.checkround{position:absolute;top:4px;left:0;height:20px;width:20px;background-color:#fff;border-radius:50%;border:1px solid #979797}.radio .checkround:after{left:0;right:0;margin:auto;top:0;bottom:0;width:14px;height:14px;border-radius:50%;background:var(--theme-deafult)}.radio input:checked~.checkround:after{display:block}#wallet_topup_form button.btn.btn-solid.mb-2.custom_amount{padding:5px 10px;font-size:16px;font-weight:100;border-radius:5px}.modal-header.border-bottom{background-color:var(--theme-deafult);color:#fff}.file .update_pic{height:80px;width:80px;background:url(../images/user_pic.jpg) no-repeat center;border-radius:50%;background-size:cover;overflow:hidden;display:block}.file .update_pic img{height:100%}.file>label{cursor:pointer;outline:0;margin-bottom:0;width:80px;display:inline-block;position:relative}label{font-weight:400;display:block}.name_location{margin-bottom:20px;margin-top:10px;box-shadow:0 4px 25px 0 rgb(138 129 124 / 3%);padding:10px 16px 15px}.dashboard-right .card-box{box-shadow:0 .75rem 6rem rgb(56 65 74 / 7%);border-radius:16px}#editProfileBox label{display:block}.iti.iti--allow-dropdown.iti--separate-dial-code{width:100%}span.file-icon::before{content:"\f1c5";font-size:20px}.number .counter-container{border:1px solid var(--theme-deafult);border-radius:4px;width:fit-content}.minus,.plus{display:inline-block;height:30px;text-align:center;line-height:30px!important;padding:0 8px;cursor:pointer;color:var(--theme-deafult)}.categories-product-list .number{border:.5px solid #ed5a6b;border-radius:8px}.number input{height:30px;min-width:30px;max-width:60px;width:100%;display:inline-block;text-align:center;border:0;border-left:1px solid var(--theme-deafult);border-right:1px solid var(--theme-deafult)}.tip_radio:not(:disabled)~label{cursor:pointer}.tip_label{display:inline-block;background:#fff;border:1px solid var(--theme-deafult);border-radius:5px;padding:5px 10px;margin-bottom:1rem;text-align:center;position:relative}input[type=checkbox],input[type=radio]{cursor:pointer!important}.tip_radio{display:none}.tip_radio:checked+.tip_label{background:var(--theme-deafult);box-shadow:0 0 5px var(--theme-deafult)}.tip_radio:checked+.tip_label h5,.tip_radio:checked+.tip_label p{color:#fff}.collection-filter .theme-card .offer-slider img{padding:0;height:auto}.order-address .outer-box.border-dashed{border-style:dashed;border-width:2px;height:100%}.outer-box{border:1px solid #ddd;border-radius:4px;flex-direction:column;padding:15px;background-color:#fff;box-shadow:0 4px 25px 0 rgb(138 129 124 / 3%)}.outer-box .fa-plus-circle.d-block{font-size:26px;color:var(--theme-deafult)}.outer-box h6 i{color:var(--theme-deafult);font-size:20px}.dashboard-right p{color:#5f5f5f;line-height:20px}a.btn.btn-solid.add_edit_address_btn{margin:0 10px}
+body .btn-solid{padding:5px 10px!important;font-size:10px!important;letter-spacing:2px;font-weight:500;text-shadow:none;border-radius:4px;border-width:1px}
 /* Cab booking Page Css */
 .cab-banner-area{background:url(https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_1903,h_644/v1613521692/assets/d9/ce6c00-32b0-4b93-9f0d-6f927d93da08/original/Rider_Home_bg_desktop2x.png) no-repeat center center;background-size:cover;margin:30px 0}.p-64{padding:64px!important}.cab-banner-area .card-box{padding:48px;border-radius:0}.cab-banner-area h1{font-size:52px;text-transform:initial!important;font-weight:600;margin:0;line-height:64px}.cab-input{margin:31px 0 13px;position:relative}.cab-input input.form-control{background-color:#f6f6f6;padding:11px 30px 11px 40px;height:auto;min-height:52px;border:0;border-radius:0!important;font-size:16px}.cab-input .form-control::-webkit-input-placeholder{color:rgb(0,0,0 / .9)}.cab-input .form-control::-ms-input-placeholder{color:rgb(0,0,0 / .9)}.cab-input .form-control::placeholder{color:rgb(0,0,0 / .9)}.input-line{width:1px;height:46px;background:#000;position:absolute;top:33px;left:22px}.input-line:after{width:7px;height:7px;border:1px solid #000;content:"";position:absolute;bottom:-10px;left:-3px}.input-line:before{content:"";width:7px;height:7px;border:1px solid #000;border-radius:50%;position:absolute;top:-10px;left:-3px}.location-btn{position:absolute;right:15px;top:50%;transform:translateY(-50%)}.cab-footer{margin:19px 0 0}.btn.btn-solid.new-btn{min-height:48px;line-height:48px;border-radius:0;padding:0 17px;margin-top:12px}.cab-footer .btn.btn-solid:last-child{margin-right:0}
 section.royo-business{background-repeat:no-repeat;background-position:center;background-size:cover}.title-36{font-size:36px;line-height:44px;font-weight:500}
@@ -200,3 +17,6 @@ section.royo-business .title-36{margin-bottom:24px}.description-text{margin-bott
 .return-wrapper{width:100%;margin-left:auto}.footer-return-box{text-align:left;padding-left:50px;position:relative}.return-icon{position:absolute;left:0;top:50%;transform:translateY(-50%)}.return-text h4{font-weight:600;font-size:16px;line-height:16px}.return-text p{line-height:normal;font-size:14px;color:#777}body .footer-theme .sub-title h4{color:#000;font-size:18px;font-weight:600;line-height:26px;margin-bottom:15px}.theme-card h5{padding-bottom:18px}.breadcrumb-section .breadcrumb{justify-content:flex-start}.breadcrumb-section.bg-transparent{padding-bottom:0}.collection-filter .img-outer-box img{border:0}.offer-slider .img-outer-box+.media-body{width:calc(100% - 100px)}.list-view .supplier-rating{padding-left:20px;width:calc(100% - 100px)}.section-b-space+section,.section-b-space+.container{margin-top:40px}
 /* Jet Taxi Home Page Css */
 .jet-taxi-banner{background:linear-gradient(180deg,#f8f2ff,#fff 99.91%);padding:63px 0 36px}.jet-banner-right{height:430px;margin:auto;width:auto}.jet-banner-right img{height:100%}.jet-taxi-banner h1{color:#000;font-size:56px;font-weight:600;letter-spacing:0;margin-bottom:21px;line-height:67px}.jet-taxi-banner p{color:#3a3a3a;font-size:24px;letter-spacing:0;line-height:32px;margin-bottom:23px}.work-box{border:1px solid rgba(151,151,151,0.22);border-radius:4px;background-color:#fdfbff;box-shadow:0 15px 25px 0 rgba(70,44,103,0.07);padding:40px 28px;height:100%}.work-box h3{color:#000;font-size:24px;font-weight:600;letter-spacing:0;margin:32px 0 12px;line-height:29px}.work-box p{color:#3a3a3a;font-size:18px;letter-spacing:0;line-height:22px;text-align:center}.app-content{width:270px;max-width:100%}.app-content .number{height:56px;line-height:56px;width:56px;border-radius:3.2px;background-color:rgba(207,172,255,0.29);color:#7c1eff;font-size:25.6px;font-weight:600;letter-spacing:0;text-align:center}.app-content h4{color:#000;font-size:20px;font-weight:600;letter-spacing:0;line-height:24px}.app-content p{opacity:.68;color:#000;font-size:16px;letter-spacing:0;line-height:19px}.home-slider-wrapper .loading{height:300px;border-radius:4px}
+.divider_line {height: 1.2px;width: 353px;border: 1.2px solid #979797;opacity: .24;background-color: #979797;}
+.divider_line span {height: 25.15px;width: 25.15px;line-height: 21.15px;border: 1.2px solid #dfe2e6;box-shadow: 0 0 4px 0 rgb(0, 0, 0 / 5%);font-size: 9.56px;font-weight: bold;border-radius: 50%;text-align: center;display: block;margin: -13px auto;background: #fff;}
+ul.social-links.d-flex.align-items-center.mx-auto.mb-4.mt-3 {text-align: center;margin: 0 auto;width: max-content;}

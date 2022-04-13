@@ -33,7 +33,7 @@
     </style>
 @endsection
 @section('content')
-    <section class="wrapper-main">
+    <section class="wrapper-main py-lg-5 d-flex align-items-center">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 mb-lg-0 mb-3 text-center">
@@ -282,6 +282,9 @@
 @section('script')
     <script src="{{ asset('assets/js/intlTelInput.js') }}"></script>
     <script>
+        jQuery(window.document).ready(function () {
+                jQuery("body").addClass("register_body");
+            });
         var input = document.querySelector("#phone");
         window.intlTelInput(input, {
             separateDialCode: true,

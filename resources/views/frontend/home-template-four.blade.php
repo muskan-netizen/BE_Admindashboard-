@@ -1,6 +1,8 @@
 @extends('layouts.store', ['title' => __('Home')])
-
-@section('content')
+@section('css-links')
+{{--<link href="{{asset('css/aos.css')}}" rel="stylesheet">--}}
+@endsection
+@section('css')
 <style>
 .cardbanner {height:300px;}
 .shimmer_effect .grid-row .cards {margin-bottom: 40px;}
@@ -8,6 +10,10 @@
 .shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
 .al_tabs{height:50px;border-radius:30px;}
 </style>
+@endsection
+
+@section('content')
+
 
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
@@ -569,7 +575,6 @@
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
 @section('js-script')
-<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
