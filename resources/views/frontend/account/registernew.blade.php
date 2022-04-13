@@ -33,7 +33,7 @@
     </style>
 @endsection
 @section('content')
-    <section class="wrapper-main py-lg-5 d-flex align-items-center">
+    <section class="wrapper-main pt-lg-3 alSectionTop d-flex align-items-center">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 mb-lg-0 mb-3 text-center">
@@ -97,7 +97,7 @@
                                             class="form-control @error('phone_number') is-invalid @enderror"
                                             id="phone" placeholder="{{ __('Phone No.') }}" name="phone_number"
                                             value="{{ old('full_number') }}">
-                                            
+
                                         <input type="hidden" id="dialCode" name="dialCode"
                                             value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode', '1') }}">
                                         <input type="hidden" id="countryData" name="countryData"
