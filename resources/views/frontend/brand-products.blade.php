@@ -187,12 +187,12 @@
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="product-filter-content border-left">
-                                                    <div class="collection-view border-left">
+                                                    {{-- <div class="collection-view border-left">
                                                         <ul>
                                                             <li><i class="fa fa-th grid-layout-view"></i></li>
                                                             <li><i class="fa fa-list-ul list-layout-view"></i></li>
                                                         </ul>
-                                                    </div>
+                                                    </div> --}}
                                                     {{-- <div class="collection-grid-view">
                                                         <ul>
                                                             <li><img class="blur-up lazyload" data-src=" " alt="" class="product-2-layout-view"></li>
