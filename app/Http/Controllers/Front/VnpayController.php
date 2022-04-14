@@ -15,7 +15,8 @@ class VnpayController  extends FrontController
 {
     use ApiResponser;
 
-  
+    private $MERCHANT_KEY;
+    private $SALT;
     private $vnp_TmnCode;
     private $vnp_HashSecret;
     private $vnp_Url;
@@ -72,7 +73,9 @@ class VnpayController  extends FrontController
         $vnp_Locale =  $request->language ?? null ;
         $vnp_BankCode = $request->bank_code ?? null  ;
         $vnp_IpAddr =  $request->REMOTE_ADDR ?? null ;
+
         //Add Params of 2.0.1 Version
+        
         $vnp_ExpireDate =  $request->txtexpire ?? null ;
         //Billing
         $vnp_Bill_Mobile =  $request->txt_billing_mobile ?? null ;
