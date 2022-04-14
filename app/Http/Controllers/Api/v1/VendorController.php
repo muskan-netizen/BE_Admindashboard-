@@ -2018,7 +2018,7 @@ class VendorController extends BaseController{
                 });
             });
         }
-        $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->distinct('id')->paginate($limit, $page);
+        $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->paginate($limit, $page);
 
         foreach ($vendorData as $vendor) {
             unset($vendor->products);
