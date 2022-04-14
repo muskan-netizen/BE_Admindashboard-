@@ -13,11 +13,11 @@
                 </div>
             </div>
             <div class="col-10">
-                <div class="row price_head pl-2">
-                    <div class="col-sm-12 pl-2">
+                <div class="row price_head">
+                    <div class="col-sm-12">
                         <div class="d-flex align-items-start justify-content-between">
                             <h5 class="mt-0">
-                                {{$cart->product->translation_title}} 
+                                {{$cart->product->translation_title}}
                             </h5>
                             <div class="product_variant_quantity_wrapper">
                             @php
@@ -31,27 +31,27 @@
                                 $total_variant_price = $data->total_variant_price;
                                 $variant_quantity = $data->quantity;
                             @endphp
-                            
+
                             @if($data->is_vendor_closed == 0)
 
                                 <div class="number" id="show_plus_minus{{$cart_product_id}}">
                                     <span class="minus qty-minus-product remove-customize m-open"
-                                        data-variant_id="{{$variant_id}}" 
-                                        data-parent_div_id="show_plus_minus{{$cart_product_id}}" 
-                                        data-id="{{$cart_product_id}}" 
-                                        data-base_price="{{$variant_price}}" 
+                                        data-variant_id="{{$variant_id}}"
+                                        data-parent_div_id="show_plus_minus{{$cart_product_id}}"
+                                        data-id="{{$cart_product_id}}"
+                                        data-base_price="{{$variant_price}}"
                                         data-vendor_id="{{$vendor_id}}"
-                                        data-product_id="{{$product_id}}" 
+                                        data-product_id="{{$product_id}}"
                                         data-cart="{{$cart_id}}">
                                         <i class="fa fa-minus" aria-hidden="true"></i>
                                     </span>
                                     <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$variant_quantity}}" class="input-number addon_variant_quantity_{{$cart_product_id}}" step="0.01" readonly>
-                                    <span class="plus qty-plus-product repeat-customize m-open" 
-                                        data-variant_id="{{$variant_id}}" 
-                                        data-id="{{$cart_product_id}}" 
-                                        data-base_price="{{$variant_price}}" 
+                                    <span class="plus qty-plus-product repeat-customize m-open"
+                                        data-variant_id="{{$variant_id}}"
+                                        data-id="{{$cart_product_id}}"
+                                        data-base_price="{{$variant_price}}"
                                         data-vendor_id="{{$vendor_id}}"
-                                        data-product_id="{{$product_id}}" 
+                                        data-product_id="{{$product_id}}"
                                         data-cart="{{$cart_id}}">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </span>
@@ -71,7 +71,7 @@
                         <small>
                             @if($cart->addon_set)
                                 @foreach ($cart->addon_set as $set)
-                                    {{$set->addon_set_translation_title}} : 
+                                    {{$set->addon_set_translation_title}} :
                                     @foreach ($set->options as $option)
                                         {{$option->option_translation_title}} <br>
                                     @endforeach

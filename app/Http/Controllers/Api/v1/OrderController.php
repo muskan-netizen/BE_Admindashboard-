@@ -203,6 +203,7 @@ class OrderController extends BaseController
                             $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
 
                             $total_container_charges = $total_container_charges + $quantity_container_charges;
+                            
                             $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
                             $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;

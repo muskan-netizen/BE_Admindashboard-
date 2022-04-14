@@ -105,21 +105,31 @@ class ProfileController extends FrontController
      */
     public function updateAccount(Request $request, $domain = '')
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|min:3|max:80',
-            'phone_number' => 'required'
-        ]);
-        $messages = array(
-            'name.required' => __('The name field is required'),
-            'phone_number.required' => __('Phone number field is required')
-        );
+
+        $phonenumber= str_replace('-', '', $request->phone_number);
+        $request->phone_number = str_replace(' ', '', $phonenumber);
+        $user = User::where('id', Auth::user()->id)->first();
+        
+        if($user->phone_number!=$request->phone_number){
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|min:3|max:80',
+                'phone_number' => 'required|unique:users'
+            ]);
+        }else{
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|min:3|max:80',
+                'phone_number' => 'required'
+            ]);
+        }
+
         if ($validator->fails()) {
             foreach ($validator->errors()->toArray() as $error_key => $error_value) {
                 $errors['error'] = $error_value[0];
                 return redirect()->back()->withInput()->withErrors($errors);
             }
         }
-        $user = User::where('id', Auth::user()->id)->first();
+
+
         if ($user){
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
@@ -129,11 +139,10 @@ class ProfileController extends FrontController
             $user->timezone = $request->timezone;
             $user->dial_code = $request->dialCode;
             $user->description = $request->description;
-            $phonenumber = str_replace('-', '', $request->phone_number);
-            $phonenumber = str_replace(' ', '', $phonenumber);
-            $user->phone_number = $phonenumber;
+            $user->phone_number = $request->phone_number;
+            
             $user->save();
-
+            
             $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
             if ($user_registration_documents->count() > 0) {
                 foreach ($user_registration_documents as $user_registration_document) {
@@ -177,7 +186,7 @@ class ProfileController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function editAccount(Request $request){
-        $user = User::select('id', 'name', 'email', 'description', 'phone_number', 'dial_code', 'image', 'type', 'country_id')->where('id', Auth::user()->id)->first();
+        $user = User::select('id', 'name', 'email', 'description', 'phone_number', 'dial_code', 'image', 'type', 'country_id','timezone')->where('id', Auth::user()->id)->first();
         $user_addresses = UserAddress::where('user_id', Auth::user()->id)->get();
         $timezone_list = Timezonelist::create('timezone', $user->timezone, [
             'id'    => 'timezone',
@@ -194,7 +203,7 @@ class ProfileController extends FrontController
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     */
+     */ 
     public function changePassword(Request $request, $domain = ''){
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);

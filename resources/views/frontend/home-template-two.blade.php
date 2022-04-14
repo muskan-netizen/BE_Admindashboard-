@@ -1,5 +1,7 @@
 @extends('layouts.store', ['title' => __('Home')])
-<link href="{{asset('css/aos.css')}}" rel="stylesheet">
+@section('css-links')
+{{--<link href="{{asset('css/aos.css')}}" rel="stylesheet">--}}
+@endsection
 @section('css')
 <style type="text/css">
 .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}
@@ -590,7 +592,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body text-center">
-                <img class="img-fluid blur-up lazyload" data-src="{{asset('assets/images/18.png')}}" alt="">
+                <img style="height:150px" class="img-fluid blur-up lazyload" data-src="{{asset('assets/images/18.png')}}" alt="">
                 <p class="mb-0 mt-3">{{ $client_preference_detail ? $client_preference_detail->age_restriction_title : 'Are you 18 or older?' }}</p>
                 <p class="mb-0">{{__('Are you sure you want to continue?')}}</p>
             </div>
@@ -608,42 +610,27 @@
     </div>
 </div>
 @endsection
+@section('js-script')
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+{{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
+@endsection
 @section('script')
-
-<script src="{{asset('js/aos.js')}}"></script>
-<script>
-  AOS.init();
-</script>
-<script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
-
-        $("#doneeee").click(function() {
-            console.log("nejhbfe");
-            // $(".hide_div").hide();
-        });
-    });
-    // $(".mobile-back").on("click", function() {
-    //     $(".sm-horizontal").css("right", "-410px");
-    // });
-    //alert();
-
-    function changeImage(image2, check) {
-        var image = $(image2).children("img");
-       var  icon = image.attr('data-icon');
-       var  icon_two = image.attr('data-icon_two');
+    // AOS.init();
+    function changeImage(image, check) {
+       var  icon = $(image).attr('data-icon');
+       var  icon_two = $(image).attr('data-icon_two');
        if(check == 1)
        {
         setTimeout(function () {
-            image.attr('data-src',icon_two);
-            image.attr('src',icon_two);
+            $(image).attr('data-src',icon_two);
+            $(image).attr('src',icon_two);
         },200);
        }else if(check == 0){
             setTimeout(function () {
-                console.log(icon);
-                image.attr('data-src',icon);
-                image.attr('src',icon);
+                $(image).attr('data-src',icon);
+                $(image).attr('src',icon);
             },200);
 
        }
