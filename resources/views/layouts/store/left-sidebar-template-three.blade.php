@@ -275,7 +275,7 @@ $pages = \App\Models\Page::with([
                                                     <div class="row">
                                                         <div class="col-xl-12">
                                                         <form>
-                                                            <div class="form-group"> <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Search a Product"> </div>
+                                                            <div class="form-group"> <input type="text" class="form-control" placeholder="Search a Product"> </div>
                                                             <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
                                                         </form>
                                                         </div>
@@ -383,7 +383,7 @@ $pages = \App\Models\Page::with([
                                                                             <div class="col-xl-12">
                                                                                 <form>
                                                                                     <div class="form-group"> <input type="text" class="form-control"
-                                                                                            id="exampleInputPassword1" placeholder="Search a Product"> </div>
+                                                                                             placeholder="Search a Product"> </div>
                                                                                     <button type="submit" class="btn btn-primary"><i
                                                                                             class="fa fa-search"></i></button>
                                                                                 </form>
