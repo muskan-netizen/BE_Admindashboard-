@@ -306,13 +306,13 @@ gtag('config', 'G-5LPF1QP3Y3');
             $('#page-container').toggleClass("al_fixed");
         });
     });
-    jQuery(document).ready(function($) {
-        setTimeout(function(){
-            var footer_height = $('.footer-light').height();
-            console.log(footer_height);
-            $('article#content-wrap').css('padding-bottom',footer_height);
-        }, 500);
-    });
+    //jQuery(document).ready(function($) {
+    //    setTimeout(function(){
+    //        var footer_height = $('.footer-light').height();
+    //        console.log(footer_height);
+    //        $('article#content-wrap').css('padding-bottom',footer_height);
+    //    }, 500);
+    //});
     @if(isset($set_template)  && $set_template->template_id ==3 && \Request::route()->getName()=='categoryDetail')
     function changeImage(image2, check) {
        var image = $(image2).children('.nav-cate-img').children("img");

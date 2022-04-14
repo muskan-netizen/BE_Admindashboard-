@@ -283,8 +283,15 @@
     <script src="{{ asset('assets/js/intlTelInput.js') }}"></script>
     <script>
         jQuery(window.document).ready(function () {
-                jQuery("body").addClass("register_body");
-            });
+            jQuery("body").addClass("register_body");
+        });
+        jQuery(document).ready(function($) {
+            setTimeout(function(){
+                var footer_height = $('.footer-light').height();
+                console.log(footer_height);
+                $('article#content-wrap').css('padding-bottom',footer_height);
+            }, 500);
+        });
         var input = document.querySelector("#phone");
         window.intlTelInput(input, {
             separateDialCode: true,
