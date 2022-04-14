@@ -1216,7 +1216,7 @@
         jQuery(window).scroll(function() {
 
             var scroll = jQuery(window).scrollTop();
-            if (scroll >= 900) {
+            if (scroll >= 400) {
                 jQuery(".categories-product-list").addClass("fixed-bar");
             } else {
                 jQuery(".categories-product-list").removeClass("fixed-bar");
