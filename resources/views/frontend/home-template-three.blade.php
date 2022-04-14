@@ -258,7 +258,8 @@
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
 					 <a class="banner-img-outer" href="{{$url??'#'}}">
-						<img rel="preload" alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -576,16 +577,12 @@
 	</div>
 </div><!-- age-restriction end -->
 
-
-
-
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
 @section('js-script')
-<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
+{{--<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-{{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
+<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
 @endsection
 @section('script')
 <script type="text/javascript">

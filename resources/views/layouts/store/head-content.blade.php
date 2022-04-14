@@ -3,14 +3,14 @@
 <link rel="stylesheet"  href="{{asset('css/aos.css')}}">--}}
 
 <link defer type="text/css" rel="stylesheet" media="all" href="{{asset('front-assets/css/icons-style.css')}}">
-<link defer type="text/css" href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" media="all" id="bs-default-stylesheet" />
+<link defer type="text/css" href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
 
 
 
 {{--<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/color1.css')}}" media="screen" id="color">
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/style.css')}}">--}}
 
-<link defer type="text/css" rel="stylesheet"  media="all" href="{{asset('front-assets/css/color1-style.css')}}">
+<link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">
 {{--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
@@ -21,28 +21,29 @@
 {{--<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom-template-one.css')}}">--}}
 @endif
 
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
 @if(isset($set_template)  && $set_template->template_id == 1)
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/header/header.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/homepage/homepage.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/footer/footer.css')}}">
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/header/header.css')}}">
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/homepage/homepage.css')}}">
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/footer/footer.css')}}">
 @elseif(isset($set_template)  && $set_template->template_id == 2)
-
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/header/header.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/footer/footer.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/homepage/homepage.css')}}">
-<link defer type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/header/header.css')}}">
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/footer/footer.css')}}">
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/homepage/homepage.css')}}">
+<link type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 @elseif(isset($set_template)  && $set_template->template_id == 3)
-
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/homepage.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/header/header.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/footer/footer.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/inner_page.css')}}">
-<link defer type="text/css" rel="stylesheet" href="{{asset('assets/css/thiredtemplate.css')}}"   />
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/header/header.css')}}">
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/footer/footer.css')}}">
+@if(Route::currentRouteName() == "userHome")
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/homepage.css')}}">
+@else
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/inner_page.css')}}">
+@endif
+<link type="text/css" rel="stylesheet" href="{{asset('assets/css/thiredtemplate.css')}}"   />
 @elseif(isset($set_template)  && $set_template->template_id == 4)
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/homepage/homepage.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/header/header.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/footer/footer.css')}}">
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/homepage/homepage.css')}}">
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/header/header.css')}}">
+<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/footer/footer.css')}}">
 @endif
 <meta name="_token" content="{{ csrf_token() }}">
 
