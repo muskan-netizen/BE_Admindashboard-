@@ -38,8 +38,4 @@ color: #ff0000;
 .slick-next:before, .slick-prev:before{font-family: 'FontAwesome';color: #000 !important;opacity: 1;}
 body.login_body footer#footer,
 body.register_body footer#footer {position: absolute;}
-@media(max-width:1400px){
-.alSectionTop{
-    padding: 200px 0;
-}
-}
+body.login_body #al_new_design, body.register_body #al_new_design{position: relative !important;}
