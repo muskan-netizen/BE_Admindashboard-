@@ -64,6 +64,73 @@
 <script defer type="text/javascript" src="{{asset('front-assets/js/custom-template-one.js')}}"></script>
 @endif
 @yield('js-script')
+@if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
+<script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+<script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+<script>
+    var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
+    var firebaseConfig = {
+        apiKey: firebaseCredentials.fcm_api_key,
+        authDomain: firebaseCredentials.fcm_auth_domain,
+        projectId: firebaseCredentials.fcm_project_id,
+        storageBucket: firebaseCredentials.fcm_storage_bucket,
+        messagingSenderId: firebaseCredentials.fcm_messaging_sender_id,
+        appId: firebaseCredentials.fcm_app_id,
+        measurementId: firebaseCredentials.fcm_measurement_id
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    const messaging = firebase.messaging();
+
+    function initFirebaseMessagingRegistration() {
+        messaging.requestPermission().then(function() {
+            return messaging.getToken()
+        }).then(function(token) {
+            $.ajax({
+                url: "{{ route('user.save_fcm') }}",
+                type: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    fcm_token: token,
+                },
+                success: function(response) {
+
+                },
+            });
+            console.log(token);
+
+        }).catch(function(err) {
+            console.log(`Token Error :: ${err}`);
+        });
+    }
+    @if(empty(Session::get('current_fcm_token')))
+    initFirebaseMessagingRegistration();
+    @endif
+    messaging.onMessage(function(payload) {
+        if (!("Notification" in window)) {
+            console.log("This browser does not support system notifications.");
+        } else if (Notification.permission === "granted") {
+            if (payload && payload.data && payload.data.type && (payload.data.type == "order_status_change" || payload.data.type == "reminder_notification")) {
+                var notificationTitle = payload.notification.title;
+                var notificationOptions = {
+                    body: payload.notification.body,
+                    icon: payload.notification.icon
+                };
+                var push_notification = new Notification(
+                    notificationTitle,
+                    notificationOptions
+                );
+                push_notification.onclick = function(event) {
+                    event.preventDefault();
+                    window.open(payload.notification.click_action, "_blank");
+                    push_notification.close();
+                };
+            }
+        }
+    });
+</script>
+@endif
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
 <script type="text/javascript">
@@ -267,72 +334,5 @@ gtag('config', 'G-5LPF1QP3Y3');
     }
     @endif
 </script>
-@if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
-<script defer type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
-<script defer type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
-<script>
-    var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
-    var firebaseConfig = {
-        apiKey: firebaseCredentials.fcm_api_key,
-        authDomain: firebaseCredentials.fcm_auth_domain,
-        projectId: firebaseCredentials.fcm_project_id,
-        storageBucket: firebaseCredentials.fcm_storage_bucket,
-        messagingSenderId: firebaseCredentials.fcm_messaging_sender_id,
-        appId: firebaseCredentials.fcm_app_id,
-        measurementId: firebaseCredentials.fcm_measurement_id
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-
-    const messaging = firebase.messaging();
-
-    function initFirebaseMessagingRegistration() {
-        messaging.requestPermission().then(function() {
-            return messaging.getToken()
-        }).then(function(token) {
-            $.ajax({
-                url: "{{ route('user.save_fcm') }}",
-                type: "POST",
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    fcm_token: token,
-                },
-                success: function(response) {
-
-                },
-            });
-            console.log(token);
-
-        }).catch(function(err) {
-            console.log(`Token Error :: ${err}`);
-        });
-    }
-    @if(empty(Session::get('current_fcm_token')))
-    initFirebaseMessagingRegistration();
-    @endif
-    messaging.onMessage(function(payload) {
-        if (!("Notification" in window)) {
-            console.log("This browser does not support system notifications.");
-        } else if (Notification.permission === "granted") {
-            if (payload && payload.data && payload.data.type && (payload.data.type == "order_status_change" || payload.data.type == "reminder_notification")) {
-                var notificationTitle = payload.notification.title;
-                var notificationOptions = {
-                    body: payload.notification.body,
-                    icon: payload.notification.icon
-                };
-                var push_notification = new Notification(
-                    notificationTitle,
-                    notificationOptions
-                );
-                push_notification.onclick = function(event) {
-                    event.preventDefault();
-                    window.open(payload.notification.click_action, "_blank");
-                    push_notification.close();
-                };
-            }
-        }
-    });
-</script>
-@endif
 
 @yield('script')
