@@ -132,7 +132,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                 <% } %>
 
-                <% if(  (parseFloat(cart_details.total_payable_amount)+parseFloat(fixed_fee_amount) > parseFloat(product.vendor.order_min_amount)) ) { %>
+                <% if( (parseFloat(product.vendor.order_min_amount) > 0) &&  (parseFloat(cart_details.total_payable_amount)+parseFloat(fixed_fee_amount) < parseFloat(product.vendor.order_min_amount)) ) { %>
                     <div class="col-12">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then ')}} {{Session::get('currencySymbol')}}<%= Helper.formatPrice(product.vendor.order_min_amount) %>
@@ -166,7 +166,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     <div class="col-8 col-md-10">
                         <div class="row align-items-md-center">
-                            <div class="col-md-3 order-0">123456
+                            <div class="col-md-3 order-0">
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
