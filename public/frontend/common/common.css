@@ -33,12 +33,11 @@ span.org_price.ml-1.font-14 {
 text-decoration: line-through;
 color: #ff0000;
 }
+.pref-timing:empty{display: none;}
 .dark .slick-next:before, .dark .slick-prev:before{color: #fff !important;}
 .slick-next:before, .slick-prev:before{font-family: 'FontAwesome';color: #000 !important;opacity: 1;}
-/* body.login_body article#content-wrap,
-body.register_body article#content-wrap{padding-bottom: 60px!important;}
 body.login_body footer#footer,
-body.register_body footer#footer {position: relative;} */
+body.register_body footer#footer {position: absolute;}
 @media(max-width:1400px){
 .alSectionTop{
     padding: 200px 0;
