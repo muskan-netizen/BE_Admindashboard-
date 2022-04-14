@@ -1473,16 +1473,8 @@ a.vehical-view-box.row.no-gutters{
 }
 
 @media (min-width: 1400px){
-.ds{
-    position: absolute;
-    left: calc(((100vw - 1440px) / 2) + 24px);
-}
-.booking-experience{
-    height: calc(100vh - 150px);
-    position: absolute;
-    width: 400px;
-    top: 50px;
-}
+.ds{position: absolute;left: calc(((100vw - 1440px) / 2) + 24px);}
+.booking-experience{height: calc(100vh - 150px);position: absolute;width: 400px;top: 50px;}
 }
 
 
@@ -1502,50 +1494,16 @@ section.royo-business .title-36{margin-bottom:24px}.description-text{margin-bott
 
 
 
-.displayProducts .product-wrapper-grid .inner_spacing span.rating{
-    top: 12px;
-    position: absolute;
-    right: 12px;
-    height: 22px;
-    width: 50px;
-    background-color: #409a40;
-    line-height: 22px;
-    border-radius: 6px;
-    box-shadow: 0 0 10px rgb(0 0 0 / 5%);
-    color: #fff;
-    text-align: center;
-    padding-right: 0;
-    font-size: 12px;
-}
-a.product-box.scale-effect.mt-0{
-    position: relative;
-    display: block;
-}
-.displayProducts .product-image img{
-    height: 100%;
-    object-fit: cover;
-    width: 100%;
-    border-radius: 10px 10px 0 0;
-}
+.displayProducts .product-wrapper-grid .inner_spacing span.rating{top: 12px;position: absolute;right: 12px;height: 22px;width: 50px;background-color: #409a40;line-height: 22px;border-radius: 6px;box-shadow: 0 0 10px rgb(0 0 0 / 5%);color: #fff;text-align: center;padding-right: 0;font-size: 12px;}
+a.product-box.scale-effect.mt-0{position: relative;display: block;}
+.displayProducts .product-image img{height: 100%;object-fit: cover;width: 100%;border-radius: 10px 10px 0 0;}
 .pref-timing:empty{display: none;}
 .offer-slider.al .img-outer-box img{border-radius: 7px;}
 .offer-slider.al .inner_spacing h6{margin-top: 0;}
 .offer-slider.al .inner_spacing p{margin-bottom: 5px;}
 .offer-slider.al .inner_spacing{padding: 0;}
-.offer-slider.al .inner_spacing p.pb-1{
-    background-color: #eee;
-    padding: 2px 8px 0!important;
-    font-size: 12px;
-    border-radius: 3px;
-    color: var(--theme-deafult);
-    opacity: 1;
-    display: inline-block;
-}
-.collection-filter .common-product-box.scale-effect{
-    background-color: #ffff;
-    padding: 10px;
-    border-radius: 10px;
-}
+.offer-slider.al .inner_spacing p.pb-1{background-color: #eee;padding: 2px 8px 0!important;font-size: 12px;border-radius: 3px;color: var(--theme-deafult);opacity: 1;display: inline-block;}
+.collection-filter .common-product-box.scale-effect{background-color: #ffff;padding: 10px;border-radius: 10px;}
 .displayProducts .col-grid-box a.product-box{background-color: #fff;border-radius: 10px;}
 .displayProducts .col-grid-box a.product-box .inner_spacing p{font-size: 12px;line-height: 1.5;}
 .displayProducts .product-card-box{-webkit-transform: scale(1);transform: scale(1);}

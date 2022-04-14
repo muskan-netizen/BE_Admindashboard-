@@ -185,6 +185,7 @@ window.initializeSlider = function initializeSlider() {
         ]
     });
 
+
     $(".product-4-featured_products").slick({
         dots: false,
         infinite: true,
@@ -365,7 +366,7 @@ window.initializeSlider = function initializeSlider() {
     });
 
     if ($('body').attr('dir') == 'rtl') {
-        $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .al_t2_suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
+        $(".product-4_al, .slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .al_t2_suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
     }
 }
 
@@ -1240,7 +1241,7 @@ $(document).ready(function () {
                 dataType: 'json',
                 url: update_cart_schedule,
                 data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, address: address },
-                success: function (response) { 
+                success: function (response) {
                     if(response.status == "passbase_submitted"){
                         Swal.fire({
                             text: response.message,
@@ -1249,20 +1250,20 @@ $(document).ready(function () {
                         });
                         return false;
                     }else if(response.status == "passbase_rejected" || response.status == "passbase_pending"){
-                        Swal.fire({  
-                            text: response.message,    
-                            showCancelButton: true,  
-                            confirmButtonText: `Ok`,    
-                            }).then((result) => {  
+                        Swal.fire({
+                            text: response.message,
+                            showCancelButton: true,
+                            confirmButtonText: `Ok`,
+                            }).then((result) => {
                                 if (result.value) {
                                     window.location.replace(passbase_page);
                                 }
                             });
                         return false;
                     }else if (response.status == "Pending") {
-                        window.location.replace(verifyaccounturl); 
+                        window.location.replace(verifyaccounturl);
                     }else if (response.status == "Success") {
-                        $.ajax({             
+                        $.ajax({
                             data: {},
                             type: "POST",
                             dataType: 'json',
@@ -1805,7 +1806,7 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-    $(document).on("click", ".proceed_to_pay", function () {       
+    $(document).on("click", ".proceed_to_pay", function () {
 
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -2004,7 +2005,7 @@ $(document).ready(function () {
         else if (payment_option_id == 25) {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
-                //Easebuzz payment gateway 
+                //Easebuzz payment gateway
                 payWithEasebuss(address_id, payment_option_id, order);
             }
             else{
@@ -2219,7 +2220,7 @@ $(document).ready(function () {
         }
 
 
-        
+
 
     });
     $(document).on("click", ".remove_promo_code_btn", function () {
@@ -3489,7 +3490,7 @@ $(document).ready(function () {
     $(document).on("click", "#next-button-ondemand-3", function () {
         $('.alert-danger').html('');
        //window.location.href = showCart;
-       
+
         var task_type = 'schedule';
         var schedule_date = $("input[name='booking_date']:checked").val();
         var schedule_time = $("input[name='booking_time']:checked").val();

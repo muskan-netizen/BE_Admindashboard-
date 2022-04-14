@@ -611,7 +611,7 @@
         </div>
     </div>
     <div class="container pb-4">
-        <div class="product-4 product-m no-arrow related-products pb-2">
+        <div class="product-4 product-m  related-products pb-2">
             @forelse($product->related_products as $related_product)
             <div>
 				<a class="common-product-box scale-effect text-center"
@@ -721,7 +721,7 @@
 
 @endsection
 @section('js-script')
-<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script> 
+<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
