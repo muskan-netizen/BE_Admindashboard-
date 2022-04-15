@@ -258,7 +258,8 @@
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
 					 <a class="banner-img-outer" href="{{$url??'#'}}">
-						<img rel="preload" alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -281,7 +282,8 @@
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
 					 <a class="banner-img-outer" href="{{$url??'#'}}">
-						<img rel="preload" alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -320,6 +322,7 @@
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative ">
 					<% if(vendor.is_vendor_closed==1){%>
+                        <link rel="preload" as="image" href="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" />
 						<img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 					<%}else{%>
 						<img  class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
@@ -400,7 +403,7 @@
 		<div class="product-card-box position-relative text-center al_custom_vendors_sec" data-aos="zoom-in">
 			<a class="suppliers-box al_vendors_template2 d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative ">
-					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+					<% if(vendor.is_vendor_closed==1){%><link rel="preload" as="image" href="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" /> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 						<%}else{%> <img class="fluid-img mx-auto blur-up lazyload w-100" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 							<%}%>
 				</div>
@@ -576,16 +579,12 @@
 	</div>
 </div><!-- age-restriction end -->
 
-
-
-
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
 @section('js-script')
-<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
+{{--<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-{{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
+<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
 @endsection
 @section('script')
 <script type="text/javascript">

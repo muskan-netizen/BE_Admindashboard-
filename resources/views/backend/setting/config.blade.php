@@ -616,6 +616,19 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         @endif
                      </div>
                   </div>
+
+                  <div class="col-12">
+                     <div class="form-group mb-2">
+                        <label for="map_key_for_app">{{ __("API KEY FOR APP") }}</label>
+                        <input type="password" name="map_key_for_app" id="map_key_for_app" placeholder="" class="form-control" value="{{ old('map_key_for_app', $preference->map_key_for_app ?? '')}}">
+                        @if($errors->has('map_key_for_app'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('map_key_for_app') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                  </div>
+
                </div>
             </div>
          </form><!-- Map Configuration end -->
@@ -1200,13 +1213,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                  </div>
                  <div class="col-md-4">
                     <div class="form-group d-flex justify-content-between mb-3">
-                       <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Show Apps QR On Footer')}}<small class="d-block pr-5">{{__('Enable to show qr for Mobile apps in footer.')}}</small></label>
-                      <span> <input type="checkbox" data-plugin="switchery" name="show_qr_on_footer" id="show_qr_on_footer" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->show_qr_on_footer == '1')) checked='checked' @endif>
-                       </span>
-                    </div>
-                 </div>
-                 <div class="col-md-4">
-                    <div class="form-group d-flex justify-content-between mb-3">
                        <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Category Kyc')}}<small class="d-block pr-5">{{__('Enable to show categories documents in cart.')}}</small></label>
                       <span> <input type="checkbox" data-plugin="switchery" name="category_kyc_documents" id="category_kyc_documents" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->category_kyc_documents == '1')) checked='checked' @endif>
                        </span>
@@ -1220,15 +1226,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </span>
                      </div>
                   </div>
-                
-
-                 <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3">
-                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Database Audit Logs')}}<small class="d-block pr-5">{{__('Enable/Disable audit logs for the admin')}}</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="db_audit_logs" id="address_is_car" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->db_audit_logs == '1')) checked='checked' @endif>
-                     </span>
-                  </div>
-               </div>
 
                <div class="col-md-4">
                   <div class="form-group d-flex justify-content-between mb-3">
