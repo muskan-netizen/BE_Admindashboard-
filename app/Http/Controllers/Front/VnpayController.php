@@ -66,7 +66,7 @@ class VnpayController  extends FrontController
         $vnp_HashSecret =$this->vnp_HashSecret;
         $vnp_TmnCode = $this->vnp_TmnCode;
        // pr($vnp_HashSecret);
-        $vnp_Returnurl =route('vnpay_respont') . '?cart_id=12';
+        $vnp_Returnurl =route('vnpay_respont');
         $vnp_TxnRef    = $request->order_number ?? generateOrderNo();// order number 
         $vnp_OrderInfo = $request->order_desc ?? null ;
         $vnp_OrderType = $request->order_type ?? 'billpayment' ;
@@ -107,7 +107,19 @@ class VnpayController  extends FrontController
         $startTime = date("YmdHis");
         $expire = date('YmdHis',strtotime('+15 minutes',strtotime($startTime)));
         $payment_form = $request->payment_form ?? 'cart';
-       
+        $cart_id  = '';
+      
+        if($payment_form == 'cart'){
+            $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+            $cart_id =   $cart->id;
+        }
+        $order_info = [
+            'payment_form'=> $request->payment_form,
+            'user_id'=> auth()->user()->id,
+            'subscription_id' =>$request->subscription_id ?? '',
+            'cart_id' =>$cart_id,
+        ];
+        $vnp_OrderInfo = json_encode($order_info);
         $inputData = array(
             "vnp_Version" => "2.1.0",
             "vnp_TmnCode" => $vnp_TmnCode,
@@ -117,7 +129,7 @@ class VnpayController  extends FrontController
             "vnp_CurrCode" => "VND",
             "vnp_IpAddr" => $vnp_IpAddr,
             "vnp_Locale" => $vnp_Locale,
-            "vnp_OrderInfo" => $payment_form,
+            "vnp_OrderInfo" => $vnp_OrderInfo,
             "vnp_OrderType" => 'other',
             "vnp_ReturnUrl" => $vnp_Returnurl,
             "vnp_TxnRef" => $vnp_TxnRef,
@@ -163,7 +175,7 @@ class VnpayController  extends FrontController
        
         $inputData = array();
         $vnp_HashSecret = $this->vnp_HashSecret;
-        $cart_id = $request->cart_id;
+       
         foreach ($request->all() as $key => $value) {
             if (substr($key, 0, 4) == "vnp_") {
                 $inputData[$key] = $value;
@@ -187,7 +199,10 @@ class VnpayController  extends FrontController
 
            
         $order_number = $inputData['vnp_TxnRef'];
-        $payment_form = $inputData['vnp_OrderInfo'];
+        $meta_data = json_decode($inputData['vnp_OrderInfo']);
+
+        $cart_id = $meta_data->cart_id ? $request->cart_id : '';
+        $payment_form = $$meta_data->payment_form;
        
         if($inputData['vnp_ResponseCode'] == '00' || $inputData['vnp_TransactionStatus'] == '00' ){
            
@@ -310,7 +325,7 @@ class VnpayController  extends FrontController
            
             $inputData = array();
             $vnp_HashSecret = $this->vnp_HashSecret;
-            $cart_id = $request->cart_id;
+            
             foreach ($request->all() as $key => $value) {
                 if (substr($key, 0, 4) == "vnp_") {
                     $inputData[$key] = $value;
@@ -329,17 +344,21 @@ class VnpayController  extends FrontController
                     $i = 1;
                 }
             }
-    
+            $meta_data = json_decode($inputData['vnp_OrderInfo']);
+        
+            $cart_id = $meta_data->cart_id ? $request->cart_id : '';
+            $payment_form = $meta_data->payment_form;
+            $subscription_id = $meta_data->subscription_id;
             $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
-    
+            $user_id =  $meta_data->user_id;
                
             $order_number = $inputData['vnp_TxnRef'];
-            $payment_form = $inputData['vnp_OrderInfo'];
+          
            
             Log::info('result from vnp:=');
             Log::info($inputData);
             
-            if ($payment_form == q){  
+            if ($payment_form == "cart"){  
 
                 // udf1 for payment_form
                 // udf2 for user id 
@@ -351,10 +370,10 @@ class VnpayController  extends FrontController
                 $payment_form = $request->udf1;
                 $cart_id = $data->udf3;
                 $status = $data->status;
-                $amount =  $data->amount ;
-                $user_id = $data->udf2 ;
+                $amount = ($inputData['vnp_Amount'] / 100 );
+               
                 $transactionId = $inputData['vnp_TransactionNo'] ;
-                $subscription_id = $data->udf4;
+             
                 if($inputData['vnp_ResponseCode'] == '00' || $inputData['vnp_TransactionStatus'] == '00'){
                     if($payment_form == 'cart'){
                         $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
@@ -409,7 +428,7 @@ class VnpayController  extends FrontController
                         $orderController->tipAfterOrder($request);
                     }
                     elseif($payment_form == 'subscription'){
-                        $request->request->add(['user_id' => $user_id, 'payment_option_id' => 24, 'amount' => $amount, 'transaction_id' => $transactionId]);
+                        $request->request->add(['user_id' => $user_id, 'payment_option_id' => 28, 'amount' => $amount, 'transaction_id' => $transactionId]);
                         $subscriptionController = new UserSubscriptionController();
                         $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription_id);
                     }
