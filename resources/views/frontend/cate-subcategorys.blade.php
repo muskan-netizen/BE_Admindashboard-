@@ -52,7 +52,7 @@
                                         } ?>
                                         <div class="common-product-box scale-effect mb-2">
                                             <a class="row"  href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                                <div class="col-sm-4">
+                                                <div class="col-4">
                                                     <div class=" img-outer-box position-relative">
                                                         <img class="blur-up lazyload w-100" data-src="{{$imagePath}}" alt="">
                                                         <div class="pref-timing">
@@ -61,7 +61,7 @@
                                                         {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-8">
+                                                <div class="col-8">
                                                     <div class="media-body align-self-center">
                                                         <div class="inner_spacing px-0">
                                                             <div class="product-description">
@@ -159,7 +159,7 @@
                                                     @foreach($category->childs->toArray() as $cate)
                                                     <div class="col-xl-3 col-6 col-grid-box">
                                                         <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect m-0" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
-                                                            <div class="product-image p-0"><img width="100%" alt="" class="blur-up lazyload" data-icon_two="{{isset($cate['icon_two']) && !is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'500/500'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'500/500'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}500/500{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>
+                                                            <div class="product-image p-0"  style="height:200px"><img width="100%" alt="" class="blur-up lazyload" data-icon_two="{{isset($cate['icon_two']) && !is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'500/500'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'500/500'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}500/500{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>
                                                             <div class="media-body align-self-center">
                                                                 <div class="inner_spacing w-100">
                                                                     <h3 class="d-flex align-items-center justify-content-between">

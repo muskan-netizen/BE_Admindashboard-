@@ -97,24 +97,7 @@ window.easyZoomInitialize = function easyZoomInitialize() {
 
 window.loadMainMenuSlider = function loadMainMenuSlider() {
     $('.menu-slider').css("display", "flex");
-    $(".menu-slider").slick({
-        arrows: true,
-        dots: false,
-        infinite: false,
-        variableWidth: true,
-        autoplay: false,
-        speed: 300,
-        slidesToShow: 15,
-        slidesToScroll: 3,
-        responsive: [
-            { breakpoint: 1400, settings: { slidesToShow: 12, slidesToScroll: 2 } },
-            { breakpoint: 1367, settings: { slidesToShow: 8, slidesToScroll: 2 } },
-            { breakpoint: 991, settings: { slidesToShow: 6, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 4, slidesToScroll: 2 } },
-            { breakpoint: 576, settings: { slidesToShow: 3, slidesToScroll: 2 } },
-            // { breakpoint: 1200, settings: "unslick" },
-        ],
-    });
+    $(".menu-slider").slick({arrows:!0,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:15,slidesToScroll:3,responsive:[{breakpoint:1400,settings:{slidesToShow:12,slidesToScroll:2}},{breakpoint:1367,settings:{slidesToShow:8,slidesToScroll:2}},{breakpoint:991,settings:{slidesToShow:6,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:4,slidesToScroll:2}},{breakpoint:576,settings:{slidesToShow:3,slidesToScroll:2}}]});
 }
 
 // loadMainMenuSlider();
@@ -153,216 +136,19 @@ if ($(window).width() < 767) {
 }
 
 window.initializeSlider = function initializeSlider() {
-    $(".slide-6").slick({
-        arrows: true,
-        dots: false,
-        infinite: true,
-        speed: 300,
-        centerMode: true,
-        centerPadding: '60px',
-        slidesToShow: 5,
-        slidesToScroll: 3,
-        responsive: [
-            { breakpoint: 1367, settings: { slidesToShow: 5, slidesToScroll: 5, infinite: !0 } },
-            { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
-            { breakpoint: 767, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 3, infinite: !0 } },
-            { breakpoint: 480, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-    $(".product-4").slick({
-        dots: false,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        centerMode: true,
-        centerPadding: '20px',
-        slidesToScroll: 4,
-        arrows: true,
-        responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-
-    $(".product-4-featured_products").slick({
-        dots: false,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        centerMode: true,
-        centerPadding: '60px',
-        slidesToScroll: 4,
-        arrows: true,
-        responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-
-    $(".product-4-new_products").slick({
-        dots: false,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        centerMode: true,
-        centerPadding: '60px',
-        slidesToScroll: 4,
-        arrows: true,
-        responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-    $(".al_mobile_banner").slick({
-        dots: false,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        centerMode: true,
-        centerPadding: '60px',
-        slidesToScroll: 4,
-        arrows: true,
-        responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-
-    $(".product-4-on_sale").slick({
-        dots: false,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        centerMode: true,
-        centerPadding: '60px',
-        slidesToScroll: 4,
-        arrows: true,
-        responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-
-    $(".recent-orders").slick({
-        arrows: true,
-        dots: false,
-        infinite: true,
-        speed: 300,
-        // centerMode: true,
-        // centerPadding: '60px',
-        slidesToShow: 2,
-        slidesToScroll: 1,
-        responsive: [
-            { breakpoint: 1199, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-    $(".brand-slider").slick({
-        arrows: true,
-        dots: false,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        slidesToScroll: 3,
-        responsive: [
-            { breakpoint: 1367, settings: { slidesToScroll: 2, infinite: true } },
-            { breakpoint: 991, settings: { slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToScroll: 1 } }
-        ]
-    });
-    $('.suppliers-slider').slick({
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        centerMode: false,
-        centerPadding: '60px',
-        arrows: true,
-        dots: false,
-        responsive: [
-            { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 3, infinite: true, dots: false, centerMode: false, } },
-            { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 3, dots: false, centerMode: true, } },
-            { breakpoint: 767, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true, } }
-        ]
-    });
-    $('.al_t2_suppliers-slider').slick({
-        infinite: true,
-        speed: 300,
-        slidesToShow: 6,
-        slidesToScroll: 1,
-        centerMode: false,
-        centerPadding: '0',
-        arrows: true,
-        dots: false,
-        responsive: [
-            { breakpoint: 1367, settings: { slidesToShow: 4, slidesToScroll: 2, infinite: true } },
-            { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 1 } },
-            { breakpoint: 767, settings: { slidesToShow: 2, slidesToScroll: 1 } },
-            { breakpoint: 360, settings: { slidesToShow: 1, slidesToScroll: 1 } }
-        ]
-    });
-    $(".product-5").slick({
-        arrows: true,
-        dots: false,
-        infinite: true,
-        dots: false,
-        speed: 300,
-        slidesToShow: 6,
-        slidesToScroll: 3,
-        responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } },
-            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-    $('.vendor-product').slick({
-        infinite: true,
-        speed: 300,
-        arrows: true,
-        dots: false,
-        slidesToShow: 4,
-        slidesToScroll: 2,
-        autoplay: true,
-        autoplaySpeed: 5000,
-        rtl: false,
-        responsive: [{
-            breakpoint: 1200,
-            settings: {
-                slidesToShow: 3,
-                slidesToScroll: 3
-            }
-        },
-        {
-            breakpoint: 767,
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                arrows: true
-            }
-        }
-        ]
-    });
-
-
-    $(".booking-time").slick({
-        dots: false,
-        arrows: true,
-        infinite: !0,
-        speed: 300,
-        slidesToShow: 3,
-        slidesToScroll: 3,
-        responsive: [
-            { breakpoint: 1367, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
-            { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
-            { breakpoint: 767, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 3, infinite: !0 } },
-            { breakpoint: 480, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
+    $(".slide-6").slick({arrows:!0,dots:!1,infinite:!0,speed:300,centerMode:!0,centerPadding:"60px",slidesToShow:5,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:5,slidesToScroll:5,infinite:!0}},{breakpoint:1024,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:767,settings:{slidesToShow:3,arrows:!0,slidesToScroll:3,infinite:!0}},{breakpoint:480,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".product-4").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".product-4-featured_products").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".product-4-new_products").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".al_mobile_banner").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".product-4-on_sale").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".recent-orders").slick({arrows:!0,dots:!1,infinite:!0,speed:300,slidesToShow:2,slidesToScroll:1,responsive:[{breakpoint:1199,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".brand-slider").slick({arrows:!0,dots:!1,infinite:!0,speed:300,slidesToShow:4,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToScroll:2,infinite:!0}},{breakpoint:991,settings:{slidesToScroll:2}},{breakpoint:767,settings:{slidesToScroll:1}}]});
+    $(".suppliers-slider").slick({infinite:!0,speed:300,slidesToShow:4,slidesToScroll:1,centerMode:!1,centerPadding:"60px",arrows:!0,dots:!1,responsive:[{breakpoint:1199,settings:{slidesToShow:4,slidesToScroll:3,infinite:!0,dots:!1,centerMode:!1}},{breakpoint:991,settings:{slidesToShow:3,slidesToScroll:3,dots:!1,centerMode:!0}},{breakpoint:767,settings:{slidesToShow:1,slidesToScroll:1,dots:!1,centerMode:!0}}]});
+    $(".al_t2_suppliers-slider").slick({infinite:!0,speed:300,slidesToShow:6,slidesToScroll:1,centerMode:!1,centerPadding:"0",arrows:!0,dots:!1,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:2,infinite:!0}},{breakpoint:991,settings:{slidesToShow:3,slidesToScroll:1}},{breakpoint:767,settings:{slidesToShow:2,slidesToScroll:1}},{breakpoint:360,settings:{slidesToShow:1,slidesToScroll:1}}]});
+    $(".product-5").slick({arrows:!0,dots:!1,infinite:!0,dots:!1,speed:300,slidesToShow:6,slidesToScroll:3,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}},{breakpoint:420,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".vendor-product").slick({infinite:!0,speed:300,arrows:!0,dots:!1,slidesToShow:4,slidesToScroll:2,autoplay:!0,autoplaySpeed:5e3,rtl:!1,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:767,settings:{slidesToShow:1,slidesToScroll:1,arrows:!0}}]});
+    $(".booking-time").slick({dots:!1,arrows:!0,infinite:!0,speed:300,slidesToShow:3,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:1024,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:767,settings:{slidesToShow:3,arrows:!0,slidesToScroll:3,infinite:!0}},{breakpoint:480,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
 
     if ($('body').attr('dir') == 'rtl') {
         $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .al_t2_suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
@@ -371,193 +157,15 @@ window.initializeSlider = function initializeSlider() {
 
 
 window.initializeSliderNew = function initializeSliderNew() {
-
-
-
-    $(".product-4-featured_products").slick({
-        dots: false,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        centerMode: true,
-        centerPadding: '60px',
-        slidesToScroll: 4,
-        arrows: true,
-        responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-
-    $(".product-4-new_products").slick({
-        dots: false,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        centerMode: true,
-        centerPadding: '60px',
-        slidesToScroll: 4,
-        arrows: true,
-        responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-
-    $(".product-4-on_sale").slick({
-        dots: false,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        centerMode: true,
-        centerPadding: '60px',
-        slidesToScroll: 4,
-        arrows: true,
-        responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-
-    $(".recent-orders").slick({
-        arrows: true,
-        dots: false,
-        infinite: true,
-        speed: 300,
-        // centerMode: true,
-        // centerPadding: '60px',
-        slidesToShow: 2,
-        slidesToScroll: 1,
-        responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 2 } },
-            { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } },
-            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-    $(".brand-slider").slick({
-        arrows: true,
-        dots: false,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 4,
-        slidesToScroll: 3,
-        responsive: [
-            { breakpoint: 1367, settings: { slidesToShow: 4, slidesToScroll: 2, infinite: true } },
-            { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 1 } },
-            { breakpoint: 767, settings: { slidesToShow: 2, slidesToScroll: 1 } },
-            { breakpoint: 360, settings: { slidesToShow: 1, slidesToScroll: 1 } }
-        ]
-    });
-    $('.suppliers-slider-trending_vendors').slick({
-        infinite: true,
-        speed: 300,
-        slidesToShow: 6,
-        slidesToScroll: 1,
-        centerMode: false,
-        centerPadding: '60px',
-        arrows: true,
-        dots: false,
-        responsive: [{
-            breakpoint: 1199,
-            settings: {
-                slidesToShow: 4,
-                slidesToScroll: 3,
-                infinite: true,
-                dots: false,
-                centerMode: false,
-            }
-        },
-        {
-            breakpoint: 991,
-            settings: {
-                slidesToShow: 3,
-                slidesToScroll: 3,
-                dots: false,
-                centerMode: true,
-            }
-        },
-        {
-            breakpoint: 767,
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                dots: false,
-                centerMode: true,
-            }
-        },
-        {
-            breakpoint: 576,
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                dots: false,
-                centerMode: true,
-            }
-        }
-        ]
-    });
-    $(".product-5").slick({
-        arrows: true,
-        dots: false,
-        infinite: true,
-        dots: false,
-        speed: 300,
-        slidesToShow: 6,
-        slidesToScroll: 3,
-        responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } },
-            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
-    $('.vendor-product').slick({
-        infinite: true,
-        speed: 300,
-        arrows: true,
-        dots: false,
-        slidesToShow: 4,
-        slidesToScroll: 2,
-        autoplay: true,
-        autoplaySpeed: 5000,
-        rtl: false,
-        responsive: [{
-            breakpoint: 1200,
-            settings: {
-                slidesToShow: 3,
-                slidesToScroll: 3
-            }
-        },
-        {
-            breakpoint: 767,
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                arrows: true
-            }
-        }
-        ]
-    });
-
-
-    $(".booking-time").slick({
-        dots: false,
-        arrows: true,
-        infinite: !0,
-        speed: 300,
-        slidesToShow: 3,
-        slidesToScroll: 3,
-        responsive: [
-            { breakpoint: 1367, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
-            { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
-            { breakpoint: 767, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 3, infinite: !0 } },
-            { breakpoint: 480, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
-        ]
-    });
+    $(".product-4-featured_products").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".product-4-new_products").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".product-4-on_sale").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".recent-orders").slick({arrows:!0,dots:!1,infinite:!0,speed:300,slidesToShow:2,slidesToScroll:1,responsive:[{breakpoint:1200,settings:{slidesToShow:4,slidesToScroll:2}},{breakpoint:991,settings:{slidesToShow:3,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}},{breakpoint:420,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".brand-slider").slick({arrows:!0,dots:!1,infinite:!0,speed:300,slidesToShow:4,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:2,infinite:!0}},{breakpoint:991,settings:{slidesToShow:3,slidesToScroll:1}},{breakpoint:767,settings:{slidesToShow:2,slidesToScroll:1}},{breakpoint:360,settings:{slidesToShow:1,slidesToScroll:1}}]});
+    $(".suppliers-slider-trending_vendors").slick({infinite:!0,speed:300,slidesToShow:6,slidesToScroll:1,centerMode:!1,centerPadding:"60px",arrows:!0,dots:!1,responsive:[{breakpoint:1199,settings:{slidesToShow:4,slidesToScroll:3,infinite:!0,dots:!1,centerMode:!1}},{breakpoint:991,settings:{slidesToShow:3,slidesToScroll:3,dots:!1,centerMode:!0}},{breakpoint:767,settings:{slidesToShow:1,slidesToScroll:1,dots:!1,centerMode:!0}},{breakpoint:576,settings:{slidesToShow:1,slidesToScroll:1,dots:!1,centerMode:!0}}]});
+    $(".product-5").slick({arrows:!0,dots:!1,infinite:!0,dots:!1,speed:300,slidesToShow:6,slidesToScroll:3,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}},{breakpoint:420,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".vendor-product").slick({infinite:!0,speed:300,arrows:!0,dots:!1,slidesToShow:4,slidesToScroll:2,autoplay:!0,autoplaySpeed:5e3,rtl:!1,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:767,settings:{slidesToShow:1,slidesToScroll:1,arrows:!0}}]});
+    $(".booking-time").slick({dots:!1,arrows:!0,infinite:!0,speed:300,slidesToShow:3,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:1024,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:767,settings:{slidesToShow:3,arrows:!0,slidesToScroll:3,infinite:!0}},{breakpoint:480,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
 
     if ($('body').attr('dir') == 'rtl') {
         $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
@@ -572,35 +180,13 @@ $(document).ready(function () {
     //     $("body").toggleClass("overflow-hidden");
     // });
 
-    $(".toggle-password").click(function () {
-        $(this).toggleClass("eye");
-        var input = $($(this).attr("toggle"));
-        if (input.attr("type") == "password") {
-            input.attr("type", "text");
-        } else {
-            input.attr("type", "password");
-        }
-    });
-
-
-    $(".mobile-search-btn").click(function () {
-        $(".radius-bar").slideToggle();
-    });
-
-    $("#side_menu_toggle").click(function () {
-        $(".manu-bars").toggleClass("menu-btn");
-        $(".scrollspy-menu").toggleClass("side-menu-open");
-        $("body").toggleClass("overflow-hidden");
-    });
-
-    $('#myModal').on('show.bs.modal', function (e) {
-        document.querySelector('meta[name="viewport"]').content = 'width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0';
-    });
+    $(".toggle-password").click(function(){$(this).toggleClass("eye");var t=$($(this).attr("toggle"));"password"==t.attr("type")?t.attr("type","text"):t.attr("type","password")});
+    $(".mobile-search-btn").click(function () { $(".radius-bar").slideToggle(); });
+    $("#side_menu_toggle").click(function () { $(".manu-bars").toggleClass("menu-btn"); $(".scrollspy-menu").toggleClass("side-menu-open"); $("body").toggleClass("overflow-hidden"); });
+    $('#myModal').on('show.bs.modal', function (e) { document.querySelector('meta[name="viewport"]').content = 'width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0';});
 
     $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-        }
+        headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
     });
     $("#main_search_box").blur(function (e) {
         setTimeout(function () {
@@ -1240,7 +826,7 @@ $(document).ready(function () {
                 dataType: 'json',
                 url: update_cart_schedule,
                 data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, address: address },
-                success: function (response) { 
+                success: function (response) {
                     if(response.status == "passbase_submitted"){
                         Swal.fire({
                             text: response.message,
@@ -1249,20 +835,20 @@ $(document).ready(function () {
                         });
                         return false;
                     }else if(response.status == "passbase_rejected" || response.status == "passbase_pending"){
-                        Swal.fire({  
-                            text: response.message,    
-                            showCancelButton: true,  
-                            confirmButtonText: `Ok`,    
-                            }).then((result) => {  
+                        Swal.fire({
+                            text: response.message,
+                            showCancelButton: true,
+                            confirmButtonText: `Ok`,
+                            }).then((result) => {
                                 if (result.value) {
                                     window.location.replace(passbase_page);
                                 }
                             });
                         return false;
                     }else if (response.status == "Pending") {
-                        window.location.replace(verifyaccounturl); 
+                        window.location.replace(verifyaccounturl);
                     }else if (response.status == "Success") {
-                        $.ajax({             
+                        $.ajax({
                             data: {},
                             type: "POST",
                             dataType: 'json',
@@ -1805,7 +1391,7 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-    $(document).on("click", ".proceed_to_pay", function () {       
+    $(document).on("click", ".proceed_to_pay", function () {
 
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -2004,7 +1590,7 @@ $(document).ready(function () {
         else if (payment_option_id == 25) {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
-                //Easebuzz payment gateway 
+                //Easebuzz payment gateway
                 payWithEasebuss(address_id, payment_option_id, order);
             }
             else{
@@ -2219,7 +1805,7 @@ $(document).ready(function () {
         }
 
 
-        
+
 
     });
     $(document).on("click", ".remove_promo_code_btn", function () {
@@ -3489,7 +3075,7 @@ $(document).ready(function () {
     $(document).on("click", "#next-button-ondemand-3", function () {
         $('.alert-danger').html('');
        //window.location.href = showCart;
-       
+
         var task_type = 'schedule';
         var schedule_date = $("input[name='booking_date']:checked").val();
         var schedule_time = $("input[name='booking_time']:checked").val();
