@@ -169,7 +169,7 @@
             </div>
          </div>--}}
          @endforeach
-         <div class="col-12" data-aos="zoom-in">
+         <div class="col-12"  >
             <div class="pagination pagination-rounded justify-content-end mb-0">
                @if(!empty($vendors))
                {{ $vendors->links() }}

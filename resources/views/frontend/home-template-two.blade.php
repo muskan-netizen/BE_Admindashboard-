@@ -549,7 +549,7 @@
         @else
         <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
-                <div class="col-12"  data-aos="zoom-in">
+                <div class="col-12"   >
                     @if($homePageLabel->slug == 'vendors')
                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @elseif($homePageLabel->slug == 'trending_vendors')
