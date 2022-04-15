@@ -222,6 +222,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/vnpay-gateway', 'Front\VnpayController@VnPay_gateway')->name('vnpay-gateway');
 	Route::post('payment/vnpay/request', 'Front\VnpayController@order')->name('vnpay.order');
 	Route::match(['get','post'],'vnpay_respont', 'Front\VnpayController@vnpay_respont')->name('vnpay_respont');
+	Route::any('payment/vnpay/notify', 'Front\VnpayController@VnpayNotify')->name('payment.vnpay.VnpayNotify');
 
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
