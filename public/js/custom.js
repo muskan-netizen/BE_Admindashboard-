@@ -2729,9 +2729,11 @@ $(document).ready(function () {
         if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");
-        }else{
-            $("#order_placed_btn").attr("disabled", true);
-            $("#order_placed_btn").addClass("d-none");
+                $("#MOV_Notification").addClass("d-none");
+            }else{
+                $("#order_placed_btn").attr("disabled", true);
+                $("#order_placed_btn").addClass("d-none");
+                $("#MOV_Notification").removeClass("d-none");
         }
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     }

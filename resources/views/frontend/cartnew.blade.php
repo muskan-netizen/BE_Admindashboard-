@@ -133,7 +133,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <% } %>
 
                 <% if( (parseFloat(product.vendor.order_min_amount) > 0) &&  (parseFloat(cart_details.total_payable_amount)+parseFloat(fixed_fee_amount) < parseFloat(product.vendor.order_min_amount)) ) { %>
-                    <div class="col-12">
+                    <div class="col-12" id="MOV_Notification">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then ')}} {{Session::get('currencySymbol')}}<%= Helper.formatPrice(product.vendor.order_min_amount) %>
                         </div>
