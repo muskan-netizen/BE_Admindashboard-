@@ -353,7 +353,6 @@ class VnpayController  extends FrontController
             $subscription_id = $meta_data->subscription_id;
             $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
             $user_id =  $meta_data->user_id;
-               
             $order_number = $inputData['vnp_TxnRef'];
           
            
@@ -362,16 +361,7 @@ class VnpayController  extends FrontController
             
             if ($payment_form == "cart"){  
 
-                // udf1 for payment_form
-                // udf2 for user id 
-                // udf3 for cart id 
-                // txnid is order_number
-                
-                $data = $response->data;
-                $order_number = $data->txnid;
-                $payment_form = $request->udf1;
-                $cart_id = $data->udf3;
-                $status = $data->status;
+             
                 $amount = ($inputData['vnp_Amount'] / 100 );
                
                 $transactionId = $inputData['vnp_TransactionNo'] ;
