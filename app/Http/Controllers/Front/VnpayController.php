@@ -358,92 +358,92 @@ class VnpayController  extends FrontController
            
             Log::info('result from vnp:=');
             Log::info($inputData);
+             
+            $amount = ($inputData['vnp_Amount'] / 100 );
             
-            if ($payment_form == "cart"){  
-
-             
-                $amount = ($inputData['vnp_Amount'] / 100 );
-               
-                $transactionId = $inputData['vnp_TransactionNo'] ;
-             
-                if($inputData['vnp_ResponseCode'] == '00' || $inputData['vnp_TransactionStatus'] == '00'){
-                    if($payment_form == 'cart'){
-                        $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-                        if ($order) {
-                            $order->payment_status = 1;
-                            $order->save();
-                            $payment_exists = Payment::where('transaction_id', $transactionId)->first();
-                            if (!$payment_exists) {
-                                $payment = new Payment();
-                                $payment->date = date('Y-m-d');
-                                $payment->order_id = $order->id;
-                                $payment->transaction_id = $transactionId;
-                                $payment->balance_transaction = $amount;
-                                $payment->type = 'cart';
-                                $payment->save();
-        
-                                // Auto accept order
-                                $orderController = new OrderController();
-                                $orderController->autoAcceptOrderIfOn($order->id);
-        
-                                // Remove cart
-                                Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-                                CartAddon::where('cart_id', $cart_id)->delete();
-                                CartCoupon::where('cart_id', $cart_id)->delete();
-                                CartProduct::where('cart_id', $cart_id)->delete();
-                                CartProductPrescription::where('cart_id', $cart_id)->delete();
-        
-                                // Send Notification
-                                if (!empty($order->vendors)) {
-                                    foreach ($order->vendors as $vendor_value) {
-                                        $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
-                                        $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
-                                        $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
-                                    }
-                                }
-                                $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
-                                $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                                $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-                            }
-        
-                            // Send Email
-                            //   $this->successMail();
-                        }
-                    } elseif($payment_form == 'wallet'){
-                        $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
-                        $walletController = new WalletController();
-                        $walletController->creditWallet($request);
-                    }
-                    elseif($payment_form == 'tip'){
-                        $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
-                        $orderController = new OrderController();
-                        $orderController->tipAfterOrder($request);
-                    }
-                    elseif($payment_form == 'subscription'){
-                        $request->request->add(['user_id' => $user_id, 'payment_option_id' => 28, 'amount' => $amount, 'transaction_id' => $transactionId]);
-                        $subscriptionController = new UserSubscriptionController();
-                        $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription_id);
-                    }
-                }
-                else{
-                    $user = User::find($user_id);
-                    
-                    if($payment_form == 'cart'){
-                        $order = Order::where('order_number', $order_number)->first();
-                        if($order){
-                            $wallet_amount_used = $order->wallet_amount_used;
-                            if($wallet_amount_used > 0){
-                                $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                                if(!$transaction){
-                                    $wallet = $user->wallet;
-                                    $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+            $transactionId = $inputData['vnp_TransactionNo'] ;
+            
+            if($inputData['vnp_ResponseCode'] == '00' || $inputData['vnp_TransactionStatus'] == '00'){
+                if($payment_form == 'cart'){
+                    Log::info('in cart');
+                    Log::info('result from order_number:=');
+                    Log::info($order_number);
+                    $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                    if ($order) {
+                        $order->payment_status = 1;
+                        $order->save();
+                        $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                        if (!$payment_exists) {
+                            $payment = new Payment();
+                            $payment->date = date('Y-m-d');
+                            $payment->order_id = $order->id;
+                            $payment->transaction_id = $transactionId;
+                            $payment->balance_transaction = $amount;
+                            $payment->type = 'cart';
+                            $payment->save();
+    
+                            // Auto accept order
+                            $orderController = new OrderController();
+                            $orderController->autoAcceptOrderIfOn($order->id);
+    
+                            // Remove cart
+                            Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                            CartAddon::where('cart_id', $cart_id)->delete();
+                            CartCoupon::where('cart_id', $cart_id)->delete();
+                            CartProduct::where('cart_id', $cart_id)->delete();
+                            CartProductPrescription::where('cart_id', $cart_id)->delete();
+    
+                            // Send Notification
+                            if (!empty($order->vendors)) {
+                                foreach ($order->vendors as $vendor_value) {
+                                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                                    $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                                    $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                                 }
                             }
+                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                            $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                            $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                         }
-                    } 
+    
+                        // Send Email
+                        //   $this->successMail();
+                    }
+                } elseif($payment_form == 'wallet'){
+                    $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
+                    $walletController = new WalletController();
+                    $walletController->creditWallet($request);
                 }
-            
+                elseif($payment_form == 'tip'){
+                    $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
+                    $orderController = new OrderController();
+                    $orderController->tipAfterOrder($request);
+                }
+                elseif($payment_form == 'subscription'){
+                    $request->request->add(['user_id' => $user_id, 'payment_option_id' => 28, 'amount' => $amount, 'transaction_id' => $transactionId]);
+                    $subscriptionController = new UserSubscriptionController();
+                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription_id);
+                }
             }
+            else{
+                $user = User::find($user_id);
+                
+                if($payment_form == 'cart'){
+                    $order = Order::where('order_number', $order_number)->first();
+                    if($order){
+                        $wallet_amount_used = $order->wallet_amount_used;
+                        if($wallet_amount_used > 0){
+                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                            if(!$transaction){
+                                $wallet = $user->wallet;
+                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                            }
+                        }
+                    }
+                } 
+            }
+            
+            
            
         }
         catch(Exception $ex){
