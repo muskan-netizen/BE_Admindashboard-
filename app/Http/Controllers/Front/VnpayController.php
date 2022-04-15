@@ -200,9 +200,11 @@ class VnpayController  extends FrontController
            
         $order_number = $inputData['vnp_TxnRef'];
         $meta_data = json_decode($inputData['vnp_OrderInfo']);
-
+        Log::info('result from :=');
+        Log::info($inputData['vnp_OrderInfo']);
+            
         $cart_id = $meta_data->cart_id ? $request->cart_id : '';
-        $payment_form = $$meta_data->payment_form;
+        $payment_form = $meta_data->payment_form;
        
         if($inputData['vnp_ResponseCode'] == '00' || $inputData['vnp_TransactionStatus'] == '00' ){
            
