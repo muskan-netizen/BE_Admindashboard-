@@ -1,4 +1,4 @@
-<div class="row al_new_vendor_form d-none" data-aos="zoom-in">
+<div class="row al_new_vendor_form d-none"  >
 
     <div class="al_count_tabs_new_design col-md-10 offset-md-1 ">
 

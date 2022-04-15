@@ -250,7 +250,7 @@
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
-<section class="home-slider-wrapper pt-md-3" data-aos="zoom-in">
+<section class="home-slider-wrapper pt-md-3"  >
 	<div class="container">
 		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<div class="carousel-inner">
@@ -317,7 +317,7 @@
  <!-- vendors_template start -->
 <script type="text/template" id="vendors_template" >
 	<% _.each(vendors, function(vendor, k){%>
-		<div class="product-card-box position-relative text-center al_custom_vendors_sec" data-aos="zoom-in">
+		<div class="product-card-box position-relative text-center al_custom_vendors_sec"  >
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative ">
 					<% if(vendor.is_vendor_closed==1){%>
@@ -347,7 +347,7 @@
 <!-- banner_template start -->
 <script type="text/template" id="banner_template" >
 	<% _.each(brands, function(brand, k){%>
-		<div data-aos="zoom-in">
+		<div  >
 			<a class="brand-box d-block black-box" href="<%=brand.redirect_url %>">
 				<div class="brand-ing"> <img class="blur-up lazyload" data-src="<%=brand.image.image_fit %>260/260<%=brand.image.image_path %>" alt="" title=""> </div>
 				<h6><%=brand.translation_title %></h6> </a>
@@ -358,7 +358,7 @@
 <!-- products_template start -->
 <script type="text/template" id="products_template" >
 	<% _.each(products, function(product, k){ %>
-		<div class="product-card-box position-relative al_box_third_template al" data-aos="zoom-in">
+		<div class="product-card-box position-relative al_box_third_template al"  >
 			{{--<div class="add-to-fav 12">
 				<input id="fav_pro_one" type="checkbox">
 				<label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
@@ -398,7 +398,7 @@
 <!-- trending_vendors_template start -->
 <script type="text/template" id="trending_vendors_template" >
 	<% _.each(trending_vendors, function(vendor, k){%>
-		<div class="product-card-box position-relative text-center al_custom_vendors_sec" data-aos="zoom-in">
+		<div class="product-card-box position-relative text-center al_custom_vendors_sec"  >
 			<a class="suppliers-box al_vendors_template2 d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative ">
 					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
@@ -425,12 +425,12 @@
 </script><!-- trending_vendors_template end -->
 
 <!-- recent_orders_template start -->
-<script type="text/template" id="recent_orders_template" data-aos="zoom-in">
+<script type="text/template" id="recent_orders_template"  >
 	<% _.each(recent_orders, function(order, k){ %>
 		<% subtotal_order_price = total_order_price = total_tax_order_price = 0; %>
 			<% _.each(order.vendors, function(vendor, k){ %>
 				<%   product_total_count = product_subtotal_amount = product_taxable_amount = 0; %>
-					<div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0" data-aos="zoom-in">
+					<div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0"  >
 						<% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){%>
 							<div class="progress-order font-12">
 								<% if(order.scheduled_slot==null){%>
@@ -506,7 +506,7 @@
 <!-- our_vendor_main_div start -->
 <section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div" >
 	<div class="vendors"> @foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') @elseif($homePageLabel->slug == 'brands')
-		<section class="container popular-brands left-shape_ position-relative " data-aos="zoom-in">
+		<section class="container popular-brands left-shape_ position-relative "  >
 			<div class="al_top_heading d-flex justify-content-between">
 				<h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
 					{{-- <a class="" href="">See All</a> --}}
@@ -518,7 +518,7 @@
 				</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'vendors')
-		<section class="suppliers-section container " data-aos="zoom-in">
+		<section class="suppliers-section container "  >
 			<div class=" top-heading d-flex justify-content-between align-self-center">
 				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
 				<a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>
@@ -527,7 +527,7 @@
 				<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
-		<section class="suppliers-section container " data-aos="zoom-in">
+		<section class="suppliers-section container "  >
 			<div class=" top-heading ">
 				<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
 			<div class="row">
@@ -536,7 +536,7 @@
 				</div>
 			</div>
 		</section> @else
-		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" data-aos="zoom-in">
+		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
 
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a>
