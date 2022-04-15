@@ -366,14 +366,17 @@ class VnpayController  extends FrontController
             if($inputData['vnp_ResponseCode'] == '00' || $inputData['vnp_TransactionStatus'] == '00'){
                 if($payment_form == 'cart'){
                     Log::info('in cart');
-                    Log::info('result from order_number:=');
-                    Log::info($order_number);
+                    
+                    Log::info($transactionId);
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
+                        Log::info('result from order:=');
+                        Log::info($order);
                         $order->payment_status = 1;
                         $order->save();
                         $payment_exists = Payment::where('transaction_id', $transactionId)->first();
                         if (!$payment_exists) {
+                            
                             $payment = new Payment();
                             $payment->date = date('Y-m-d');
                             $payment->order_id = $order->id;
@@ -392,7 +395,7 @@ class VnpayController  extends FrontController
                             CartCoupon::where('cart_id', $cart_id)->delete();
                             CartProduct::where('cart_id', $cart_id)->delete();
                             CartProductPrescription::where('cart_id', $cart_id)->delete();
-    
+                            Log::info('delete vcart');
                             // Send Notification
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {
