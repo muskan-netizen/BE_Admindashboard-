@@ -14,20 +14,20 @@
 @section('content')
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
-	<div class="container mt-3 mb-5 shimmer_effect">
+	<div class="container mt-3 mb-md-5 md-3 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">
 				<div class="cardbanner loading"></div>
 			</div>
 		</div>
 	</div>
-	<div class="container mb-5 shimmer_effect">
+	<div class="container mb-md-5 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">
 				<h2 class="h2-heading loading mb-3"></h2> </div>
 		</div>
         <div class="row">
-            <div class="col-1 grid-row px-sm-3 p-0">
+            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -37,7 +37,7 @@
                 <div class="card_line loading"></div>
                 <div class="card_price loading"></div>
             </div>
-            <div class="col-10">
+            <div class="col-sm-10">
                 <div class="grid-row grid-4-4">
                     <div class="cards">
                         <div class="card_image loading"></div>
@@ -85,7 +85,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-1 grid-row px-sm-3 p-0">
+            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -98,7 +98,7 @@
             </div>
         </div>
 		<div class="row">
-            <div class="col-1 grid-row px-sm-3 p-0">
+            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -108,7 +108,7 @@
                 <div class="card_line loading"></div>
                 <div class="card_price loading"></div>
             </div>
-            <div class="col-10">
+            <div class="col-sm-10">
                 <div class="grid-row grid-4-4">
                     <div class="cards">
                         <div class="card_image loading"></div>
@@ -156,7 +156,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-1 grid-row px-sm-3 p-0">
+            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -169,7 +169,7 @@
             </div>
         </div>
 		<div class="row">
-            <div class="col-1 grid-row px-sm-3 p-0">
+            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -179,7 +179,7 @@
                 <div class="card_line loading"></div>
                 <div class="card_price loading"></div>
             </div>
-            <div class="col-10">
+            <div class="col-sm-10">
                 <div class="grid-row grid-4-4">
                     <div class="cards">
                         <div class="card_image loading"></div>
@@ -227,7 +227,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-1 grid-row px-sm-3 p-0">
+            <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="card_title loading"></div>
@@ -282,8 +282,7 @@
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
 					 <a class="banner-img-outer" href="{{$url??'#'}}">
-                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}">
+						<img rel="preload" alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}">
 					</a>
 					</div>
 				@endforeach
@@ -322,7 +321,6 @@
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative ">
 					<% if(vendor.is_vendor_closed==1){%>
-                        <link rel="preload" as="image" href="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" />
 						<img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 					<%}else{%>
 						<img  class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
@@ -403,7 +401,7 @@
 		<div class="product-card-box position-relative text-center al_custom_vendors_sec" data-aos="zoom-in">
 			<a class="suppliers-box al_vendors_template2 d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative ">
-					<% if(vendor.is_vendor_closed==1){%><link rel="preload" as="image" href="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" /> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 						<%}else{%> <img class="fluid-img mx-auto blur-up lazyload w-100" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 							<%}%>
 				</div>
