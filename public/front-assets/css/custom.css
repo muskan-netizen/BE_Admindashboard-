@@ -129,7 +129,9 @@ body.dark .al_count_tabs_new_design .nav-tabs .nav-link.active{background-color:
 body .product-right .product-buttons a:last-child {margin-left: 0;}.img-outer-box .fav-heart {top: 10px;right: 10px;}
 /* ------------------------------- al css start end ----------------------------- */
 /* fixed footer all pages start */
-article#page-container .site-header {position: relative;}article#page-container header.site-header.fixed-bar{position: fixed;}article#page-container {position: relative;min-height: 100vh;overflow: hidden;}footer#footer {position: absolute;bottom: 0;width: 100%;}
+article#page-container .site-header {position: relative;}article#page-container header.site-header.fixed-bar{position: fixed;}
+article#page-container {position: relative;min-height: 100vh;overflow: hidden;}
+footer#footer {position: relative;bottom: 0;width: 100%;}
  /* Footer height */
 article#page-container .offset-top,article#page-container .offset-top.inner-pages-offset{margin: 0 !important;}
 
@@ -151,7 +153,6 @@ article#page-container .offset-top,article#page-container .offset-top.inner-page
 .dark .al_template_two_content .scale-effect,
 .dark .al_template_two_content .scale-effect:hover {background-color: transparent;}
 .dark .al_template_two_content .inner_spacing a span{color: #fff;}
-footer#footer.footer-light.al_footer_template_two {height: 255px;}
 .cart-page-layout .items-price {word-break: break-all;}
 /* template two common css */
 .al_new_wrapper_design .rating-number,body .al_new_wrapper_design .inner_spacing .rating{top:14px;right:14px}.al_new_wrapper_design .modal-header{border-radius:0}.al_menu-drawer.open .cart_qty_cls{top:-3px;right:-40px}body .round_img .dropify-wrapper{height:150px!important}.language-input.style-4{overflow:auto;max-width:fit-content;width:500px}body #page-container .al_new_wrapper_design .footer-theme .sub-title .contact-list li span{padding-left:0}body #page-container .footer-theme .sub-title .contact-list li span{padding-left:40px}.render_full_brands a.barnd-img-outer{position:relative;padding-bottom:56%;border-radius:0}.al_template_one .homepage-address{width:auto}.render_full_brands a.barnd-img-outer img.blur-up.lazyloaded{position:absolute;margin:0 auto;top:0;height:100%;width:100%;object-fit:contain}body .popular-brands,body .royo-recommends{margin-bottom:0;padding:0!important;z-index:1}body #page-container section,body .vendors section{padding-bottom:0}body #page-container .h2-heading{margin:0}body #page-container .vendors>.container{margin-bottom:0}body #page-container .vendors .slick-slider .slick-slide{margin:20px 0}body #page-container .vendors{margin-bottom:20px}body #page-container .small-slider .home-slider .home{max-height:550px;height:100%}
@@ -182,7 +183,6 @@ body[dir="rtl"] .payment-card.mobile-border {padding-right: 68px !important;}
 .al_custom_search button.btn {padding: 7px 6px 0 0;}
 .al_template_one_menu .sm .al_main_category{margin: 0 20px;}
 .al_template_one_menu .sm .al_main_category a{width: max-content;}
-footer#footer.footer-light.al_footer_template_two {height: auto;}
 body .royo_whatsapp_img {bottom: 11%;}
 body .tap-top.top-cls { bottom: 11%;}
 }
@@ -353,7 +353,7 @@ body .cab-booking #map_canvas, body .cab-booking #booking-map {height: 50vh!impo
 .al_template_one .onhover-dropdown:before,.al_template_two .onhover-dropdown:before {right: -7px;}.al_template_one .map-icon.mr-1 span,.al_template_two .map-icon.mr-1 span {display: none;}.al_template_one .homepage-address,.al_template_two .homepage-address {width: 100%;}
 }
 @media (max-width:767px){
-footer#footer {position: relative;}article#content-wrap {padding-bottom:20px;}.footer-theme .sub-title .contact-list i {position: relative !important;margin-right: 10px;}.footer-theme .sub-title li{font-size: 14px;}body .al_footer_template_two .footer-theme .sub-title .contact-list li i {top: 0;position: relative;font-size: 14px;}
+.footer-theme .sub-title .contact-list i {position: relative !important;margin-right: 10px;}.footer-theme .sub-title li{font-size: 14px;}body .al_footer_template_two .footer-theme .sub-title .contact-list li i {top: 0;position: relative;font-size: 14px;}
 }
 
 
