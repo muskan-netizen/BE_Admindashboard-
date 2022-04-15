@@ -395,6 +395,7 @@ class VnpayController  extends FrontController
                             CartCoupon::where('cart_id', $cart_id)->delete();
                             CartProduct::where('cart_id', $cart_id)->delete();
                             CartProductPrescription::where('cart_id', $cart_id)->delete();
+                            Log::info($cart_id);
                             Log::info('delete vcart');
                             // Send Notification
                             if (!empty($order->vendors)) {
