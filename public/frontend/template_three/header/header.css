@@ -19,3 +19,5 @@ h2.homepage-address{text-overflow:ellipsis;white-space:nowrap;overflow:hidden;fo
 .al_toggle-menu.active i:nth-child(1){top:25px;-webkit-transform:rotateZ(45deg);transform:rotateZ(45deg)}
 .al_toggle-menu.active i:nth-child(2){background:0 0}
 .al_toggle-menu.active i:nth-child(3){top:25px;-webkit-transform:rotateZ(-45deg);transform:rotateZ(-45deg)}
+.al_body_template_three .onhover-dropdown:before{top: 50%;
+    -webkit-transform: translate(0, -50%);transform: translate(0, -50%);}
