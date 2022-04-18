@@ -383,8 +383,8 @@
                     <div class="col-12">
                         <div class="product-banner-img">
                             @if (!empty($vendor->banner))
-                                <img rel="preload" alt=""
-                                    src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}">
+                            <link rel="preload" as="image" href="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" />
+                            <img alt="" src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}">
                             @endif
                         </div>
                         <div class="product-bottom-bar">
