@@ -272,7 +272,8 @@
             <a href="{{$url}}">
                 @endif
                 <div class="home text-center">
-                    <img  rel="preload" src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
+                    <link rel="preload" as="image" href="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" />
+                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
                 </div>
                 @if($url)
             </a>
@@ -304,7 +305,8 @@
             <a href="{{$url}}">
                 @endif
                 <div class="home text-center">
-                    <img rel="preload" src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
+                    <link rel="preload" as="image" href="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" />
+                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
                 </div>
                 @if($url)
             </a>
