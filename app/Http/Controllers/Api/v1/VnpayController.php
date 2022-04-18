@@ -98,7 +98,7 @@ class VnpayController  extends BaseController
         $vnp_TxnRef    = $request->order_number ?? generateOrderNo();// order number 
         $vnp_OrderInfo = $vnp_OrderInfo ;
         $vnp_OrderType = $request->order_type ?? 'billpayment' ;
-        $vnp_Amount    = "1806000";//$vnp_Amount ; //
+        $vnp_Amount    = $vnp_Amount ; //"1806000";//
         $vnp_Locale   = ($primeLang->language->sort_code == 'en') ? 'en' : 'vn';
         $vnp_BankCode = $request->bank_code ?? null  ;
         $vnp_IpAddr   = $request->ip(); // $_SERVER['REMOTE_ADDR'] ;
