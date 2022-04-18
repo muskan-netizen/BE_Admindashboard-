@@ -189,6 +189,6 @@ h6.d-flex.justify-content-center.badge.badge-light.font-14{
     z-index: 9999999;
     position: relative;
 }
-.dark article#page-container .site-header{background-color: transparent;}
-.dark  .product-m .slick-next:before, .dark .product-m .slick-prev:before{background-color: #000;}
+.dark article#page-container .site-header{background-color: #2b2b2b;}
+.dark  .product-m .slick-next:before, .dark .product-m .slick-prev:before{background-color: #2b2b2b;}
 .cart-sub-total.d-flex.align-items-center.justify-content-between span{font-weight: 600;}
