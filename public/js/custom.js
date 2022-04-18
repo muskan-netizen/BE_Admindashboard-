@@ -1611,6 +1611,16 @@ $(document).ready(function () {
                 return false;
             }
         }
+        else if (payment_option_id == 28) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //Easebuzz payment gateway 
+                payWithVNpay(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
+        }
 
 
     });
@@ -1809,6 +1819,9 @@ $(document).ready(function () {
             payWithEasebuss('', payment_option_id, '');
         }else if (payment_option_id == 27) {
             paymentViaPaytab('', payment_option_id, '');
+        }
+        else if (payment_option_id == 28) {
+            payWithVNpay('', payment_option_id, '');
         }
 
 

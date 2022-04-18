@@ -20,7 +20,7 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
-<IfModule mod_expires.c>
+<IfModule mod_headers.c>
   ExpiresActive On
 
   ExpiresDefault "access plus 1 year"
@@ -28,6 +28,7 @@
   # CSS, JavaScript
   ExpiresByType text/css "access plus 1 year"
   ExpiresByType text/javascript "access plus 1 year"
+  #ExpiresByType text/template "access plus 1 year"
   ExpiresByType application/javascript "access plus 1 year"
 
  # Images

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\{Order, User, Cart, ClientCurrency, CartProduct};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController};
+use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController};
 
 class PaymentController extends FrontController{
 
@@ -135,6 +135,11 @@ class PaymentController extends FrontController{
     }
     public function postPaymentVia_easebuzz(Request $request){
         $gateway = new EasebuzzController();
+        return $gateway->order($request);
+    }
+
+    public function postPaymentVia_vnpay(Request $request){
+        $gateway = new VnpayController();
         return $gateway->order($request);
     }
 }

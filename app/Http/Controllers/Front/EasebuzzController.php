@@ -73,7 +73,7 @@ class EasebuzzController  extends FrontController
             "udf2" => $user->id,
             "udf3" => $cart_id, 
              //subscription_id
-            "udf4" => "aaaa", 
+            "udf4" => $request->subscription_id ?? '', 
             "udf5" =>  'aaa',
             "address1" =>  $user->address->first()->address,
             "address2" =>  $user->address->first()->address,
@@ -316,7 +316,7 @@ class EasebuzzController  extends FrontController
                         $orderController->tipAfterOrder($request);
                     }
                     elseif($payment_form == 'subscription'){
-                        $request->request->add(['user_id' => $user_id, 'payment_option_id' => 24, 'amount' => $amount, 'transaction_id' => $transactionId]);
+                        $request->request->add(['user_id' => $user_id, 'payment_option_id' => 25, 'amount' => $amount, 'transaction_id' => $transactionId]);
                         $subscriptionController = new UserSubscriptionController();
                         $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription_id);
                     }
