@@ -3,7 +3,7 @@
 @section('content')
     <!-- Start Content-->
     <div class="container-fluid">
-        
+
         <!-- start page title -->
         <div class="row">
             <div class="col-12">
@@ -18,8 +18,8 @@
                     <h4 class="page-title">Pricing</h4>
                 </div>
             </div>
-        </div>     
-        <!-- end page title --> 
+        </div>
+        <!-- end page title -->
 
 
         <div class="row justify-content-center">
@@ -34,7 +34,7 @@
                 </div>
 
                 <!-- Plans -->
-                <div class="row my-3">
+                <div class="row my-md-3">
                     <div class="col-md-4">
                         <div class="card card-pricing">
                             <div class="card-body text-center">
@@ -103,6 +103,6 @@
             </div> <!-- end col-->
         </div>
         <!-- end row -->
-        
+
     </div> <!-- container -->
 @endsection

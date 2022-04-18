@@ -83,7 +83,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                 </div>
             </div>
         </div>
-        <div class="row my-3">
+        <div class="row my-md-3">
             <div class="col-lg-3 profile-sidebar">
                 <div class="account-sidebar"><a class="popup-btn">{{__('My Account')}}</a></div>
                 <div class="dashboard-left mb-3">

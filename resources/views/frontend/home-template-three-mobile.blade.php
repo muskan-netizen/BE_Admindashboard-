@@ -145,14 +145,14 @@ if(session()->has('applocale')){
                             <li class="onhover-dropdown_al mobile-account_al">
                                 <ul class="onhover-show-div">
                                     @if(Auth::user())
-                                        @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
-                                        <li>
-                                            <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
-                                        </li>
-                                        @endif
-                                        <li>
-                                            <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
-                                        </li>
+                                    @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                                    <li>
+                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                    </li>
+                                    @endif
+                                    <li>
+                                        <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
+                                    </li>
                                     @else
                                     <li>
                                         <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
@@ -209,9 +209,10 @@ if(session()->has('applocale')){
 
                                     @endif
                                     <li class="onhover-dropdown change-language">
-                                        <a href="javascript:void(0)">{{$applocale}}
-                                        <span class="lnr-earth align-middle"></span>
-                                        <span class="language ml-1 align-middle">{{ __("Language") }}</span>
+                                        <a href="javascript:void(0)">
+                                            <span class="alLanguageSign">{{$applocale}}</span>
+                                            <span class="lnr-earth align-middle"></span>
+                                            <span class="language ml-1 align-middle">{{ __("Language") }}</span>
                                         </a>
                                         <ul class="onhover-show-div">
                                             @foreach($languageList as $key => $listl)
