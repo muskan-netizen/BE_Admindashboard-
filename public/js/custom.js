@@ -1820,6 +1820,9 @@ $(document).ready(function () {
         }else if (payment_option_id == 27) {
             paymentViaPaytab('', payment_option_id, '');
         }
+        else if (payment_option_id == 28) {
+            payWithVNpay('', payment_option_id, '');
+        }
 
 
 

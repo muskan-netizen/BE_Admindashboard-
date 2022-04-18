@@ -70,7 +70,7 @@ class VnpayController  extends FrontController
         $vnp_TxnRef    = $request->order_number ?? generateOrderNo();// order number 
         $vnp_OrderInfo = $request->order_desc ?? null ;
         $vnp_OrderType = $request->order_type ?? 'billpayment' ;
-        $vnp_Amount =  "1806000";// $amount * 100;
+        $vnp_Amount    = $amount * 100; //"1806000";//
         //pr($vnp_Amount);
         $vnp_Locale   = ($primeLang->language->sort_code == 'en') ? 'en' : 'vn';
         $vnp_BankCode = $request->bank_code ?? null  ;
@@ -78,32 +78,6 @@ class VnpayController  extends FrontController
 
         // //Add Params of 2.0.1 Version
         
-        // $vnp_ExpireDate =  $request->txtexpire ?? null ;
-        // //Billing
-        // $vnp_Bill_Mobile =  $request->txt_billing_mobile ?? null ;
-        // $vnp_Bill_Email =  $request->txt_billing_email ?? null ;
-        // $fullName = trim( $request->txt_billing_fullname ?? null);
-
-        // $vnp_Bill_FirstName = '';
-        // $vnp_Bill_LastName = '';
-        // if (isset($fullName) && trim($fullName) != '') {
-        //     $name = explode(' ', $fullName);
-        //     $vnp_Bill_FirstName = array_shift($name);
-        //     $vnp_Bill_LastName = array_pop($name);
-        // }
-        // $vnp_Bill_Address=  $request->txt_inv_addr1 ?? null ;
-        // $vnp_Bill_City= $request->txt_bill_city ?? null ;
-        // $vnp_Bill_Country= $request->txt_bill_country ?? null;
-        // $vnp_Bill_State= $request->txt_bill_state ?? null ;
-        // // Invoice
-        // $vnp_Inv_Phone= $request->txt_inv_mobile ?? null ;
-        // $vnp_Inv_Email= $request->txt_inv_email ?? null ;
-        // $vnp_Inv_Customer= $request->txt_inv_customer ?? null ;
-        // $vnp_Inv_Address= $request->txt_inv_addr1 ?? null ;
-        // $vnp_Inv_Company= $request->txt_inv_company ?? null ;
-        // $vnp_Inv_Taxcode=$request->txt_inv_taxcode ?? null ;
-        // $vnp_Inv_Type= $request->cbo_inv_type ?? null ;
-        //date_default_timezone_set('Asia/Ho_Chi_Minh');
         $startTime = date("YmdHis");
         $expire = date('YmdHis',strtotime('+15 minutes',strtotime($startTime)));
         $payment_form = $request->payment_form ?? 'cart';
@@ -113,8 +87,9 @@ class VnpayController  extends FrontController
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $cart_id =   $cart->id;
         }
+        
         $order_info = [
-            'payment_form'=> $request->payment_form,
+            'payment_form'=>  $payment_form ,
             'user_id'=> auth()->user()->id,
             'subscription_id' =>$request->subscription_id ?? '',
             'cart_id' =>$cart_id,
@@ -200,8 +175,6 @@ class VnpayController  extends FrontController
            
         $order_number = $inputData['vnp_TxnRef'];
         $meta_data = json_decode($inputData['vnp_OrderInfo']);
-        Log::info('result from :=');
-        Log::info($inputData['vnp_OrderInfo']);
             
         $cart_id = $meta_data->cart_id ? $request->cart_id : '';
         $payment_form = $meta_data->payment_form;
@@ -264,63 +237,77 @@ class VnpayController  extends FrontController
             }
         }
     }
-
-    function easebuzz_respontAPP(Request $request){
-        //login user with user id 
-      
-        $easebuzzObj = new Easebuzz($MERCHANT_KEY = null, $this->SALT, $ENV = null);
-        $result = $easebuzzObj->easebuzzResponse($request->all());
-        $res = json_decode($result);
-        $status = $res->status;
-        if ($status == 1){  
-            $returnUrl = url('payment/gateway/returnResponse');
-            // udf1 for payment_form
-            // udf2 for user id 
-
-            // pr($request->all());
-            
-            $data = $res->data;
-            $order_number = $data->txnid;
-            $status = $data->status;
-            $user_id = $data->udf2 ;
-            $cart_id = $data->udf3 ;
-      
-            if($status == 'success'){
-                $returnUrlParams = '?status=200&gateway=easebuzz&action=' . $request->udf1;
-                if($request->udf1 == 'cart'){
-                    $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-                    if ($order) {
-                        CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
-                        $returnUrlParams = $returnUrlParams . '&order=' . $order_number;
-                    }
-                } 
-                return Redirect::to(url($returnUrl . $returnUrlParams));
-            }
-            else{
-                $returnUrlParams = '?status=0&gateway=easebuzz&action=' .$request->payment_form;
-                $user = User::find($user_id);
-                if($request->udf1 == 'cart'){
-                    $order = Order::where('order_number', $request->order_id)->first();
-                    if($order){
-                        $wallet_amount_used = $order->wallet_amount_used;
-                        if($wallet_amount_used > 0){
-                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                            if(!$transaction){
-                                $wallet = $user->wallet;
-                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
-                            }else{
-                                return $this->errorResponse(__('Your order has already been cancelled'), 400);
-                            }
-                        }
-                    }
-                    $returnUrlParams = $returnUrlParams . '&order=' .  $order_number;
-                   
-                }
-                return Redirect::to(url($returnUrl . $returnUrlParams));
+    function vnpay_respontAPP(Request $request){
+       
+      // pr($request->all());
+        $inputData = array();
+        $vnp_HashSecret = $this->vnp_HashSecret;
+       
+        foreach ($request->all() as $key => $value) {
+            if (substr($key, 0, 4) == "vnp_") {
+                $inputData[$key] = $value;
             }
         }
-    }  
+        
+        unset($inputData['vnp_SecureHash']);
+        ksort($inputData);
+        $i = 0;
+        $hashData = "";
+        foreach ($inputData as $key => $value) {
+            if ($i == 1) {
+                $hashData = $hashData . '&' . urlencode($key) . "=" . urlencode($value);
+            } else {
+                $hashData = $hashData . urlencode($key) . "=" . urlencode($value);
+                $i = 1;
+            }
+        }
 
+        $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
+
+           
+        $order_number = $inputData['vnp_TxnRef'];
+        $meta_data = json_decode($inputData['vnp_OrderInfo']);
+            
+        $cart_id = $meta_data->cart_id ? $request->cart_id : '';
+        $payment_form = $meta_data->payment_form;
+       
+        if($inputData['vnp_ResponseCode'] == '00' || $inputData['vnp_TransactionStatus'] == '00' ){
+            $returnUrl = url('payment/gateway/returnResponse');
+            $returnUrlParams = '?status=200&gateway=vnpay&action=' . $payment_form;
+            if($payment_form == 'cart'){
+                $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                if ($order) {
+                    CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+                    $returnUrlParams = $returnUrlParams . '&order=' . $order_number;
+                }
+                return Redirect::to(url($returnUrl . $returnUrlParams));
+               
+            } 
+        }
+        else{
+            $returnUrlParams = '?status=0&gateway=vnpay&action=' .$request->payment_form;
+            
+            if($payment_form == 'cart'){
+                $order = Order::where('order_number', $order_number)->first();
+                if($order){
+                    $user= user::find($order->user_id);
+                    $wallet_amount_used = $order->wallet_amount_used;
+                    if($wallet_amount_used > 0){
+                        $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                        if(!$transaction){
+                            $wallet = $user->wallet;
+                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                        }else{
+                            return $this->errorResponse(__('Your order has already been cancelled'), 400);
+                        }
+                    }
+                }
+                $returnUrlParams = $returnUrlParams . '&order=' .  $order_number;
+  
+            } 
+            return Redirect::to(url($returnUrl . $returnUrlParams));
+        }
+    }
     public function VnpayNotify(Request $request, $domain = '')
     {
         try{
@@ -354,24 +341,16 @@ class VnpayController  extends FrontController
             $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
             $user_id =  $meta_data->user_id;
             $order_number = $inputData['vnp_TxnRef'];
-          
-           
-            Log::info('result from vnp:=');
-            Log::info($inputData);
-             
+ 
             $amount = ($inputData['vnp_Amount'] / 100 );
             
             $transactionId = $inputData['vnp_TransactionNo'] ;
             
             if($inputData['vnp_ResponseCode'] == '00' || $inputData['vnp_TransactionStatus'] == '00'){
                 if($payment_form == 'cart'){
-                    Log::info('in cart');
-                    
-                    Log::info($transactionId);
+                   
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
-                        Log::info('result from order:=');
-                        Log::info($order);
                         $order->payment_status = 1;
                         $order->save();
                         $payment_exists = Payment::where('transaction_id', $transactionId)->first();
@@ -395,8 +374,6 @@ class VnpayController  extends FrontController
                             CartCoupon::where('cart_id', $cart_id)->delete();
                             CartProduct::where('cart_id', $cart_id)->delete();
                             CartProductPrescription::where('cart_id', $cart_id)->delete();
-                            Log::info($cart_id);
-                            Log::info('cart id');
                             // Send Notification
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {
