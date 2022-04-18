@@ -65,7 +65,7 @@ class VnpayController  extends FrontController
        
         $vnp_HashSecret =$this->vnp_HashSecret;
         $vnp_TmnCode = $this->vnp_TmnCode;
-       // pr($vnp_HashSecret);
+        // pr($vnp_HashSecret);
         $vnp_Returnurl =route('vnpay_respont');
         $vnp_TxnRef    = $request->order_number ?? generateOrderNo();// order number 
         $vnp_OrderInfo = $request->order_desc ?? null ;

@@ -508,7 +508,7 @@
                                     </div>
                                     <div class="col-md-8 col-lg-6">
                                             <div class="row my-2 d-flex align-items-center">
-                                                <div class="col-sm-6 vendor-search-bar mb-sm-0 mb-2">
+                                                <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
                                                     <div class="radius-bar w-100">
                                                         <div class="search_form d-flex align-items-center justify-content-between border">
                                                             <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
@@ -519,7 +519,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-6 text-right">{{ __('Sort By') }} :
+                                                <div class="col-5 text-right pl-0"><span > {{ __('Sort By') }} :</span>
                                                     <select name="order_type" id='order_type' class="product_tag_filter p-1">
                                                         <option value="featured">{{ __('Featured') }}</option>
                                                         <option value="a_to_z">{{ __('A to Z') }}</option>
@@ -773,13 +773,14 @@
                                                                     @endif
 
                                                                     <p class="mb-1 product_price">
-                                                                        {{ Session::get('currencySymbol') . number_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
+                                                                        {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
                                                                         @if ($prod->variant[0]->compare_at_price > 0)
                                                                             <span
-                                                                                class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .number_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
+                                                                                class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
                                                                         @endif
                                                                     </p>
                                                                     <div class="member_no d-block mb-0">
+
                                                                         <span>{!! $prod->translation_description !!}</span>
                                                                     </div>
                                                                     <div id="product_variant_options_wrapper">
@@ -1229,7 +1230,7 @@
                 var lastContent = content.substr(showChar, content.length - showChar);
 
                 var html = firstContent + '<span class="moreellipses">' + ellipsestext +
-                    '&nbsp;</span><span class="morecontent"><span>' + lastContent +
+                    '&nbsp;</span><span class="morecontent"><span style="display:none;">' + lastContent +
                     '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
 
                 $(this).html(html);
