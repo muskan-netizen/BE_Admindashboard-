@@ -55,7 +55,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                 </div>
             </div>
         </div>
-        <div class="row my-3">
+        <div class="row my-md-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">my account</a></div>
                 @include('layouts.store/profile-sidebar')
@@ -408,6 +408,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
     });
 </script>
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
+<script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script src="{{asset('js/payment.js')}}"></script>
 
 @endsection
