@@ -1217,38 +1217,38 @@
 
         var addonids = [];
         var addonoptids = [];
-        var showChar = 140;
-        var ellipsestext = "...";
-        var moretext = "Read more";
-        var lesstext = "Read less";
-        $('.price_head .member_no span').each(function() {
-            var content = $(this).html();
-            if (content.length > showChar) {
+        // var showChar = 140;
+        // var ellipsestext = "...";
+        // var moretext = "Read lss";
+        // var lesstext = "Read less";
+        // $('.price_head .member_no span').each(function() {
+        //     var content = $(this).html();
+        //     if (content.length > showChar) {
 
-                var firstContent = content.substr(0, showChar);
-                var lastContent = content.substr(showChar, content.length - showChar);
+        //         var firstContent = content.substr(0, showChar);
+        //         var lastContent = content.substr(showChar, content.length - showChar);
 
-                var html = firstContent + '<span class="moreellipses">' + ellipsestext +
-                    '&nbsp;</span><span class="morecontent"><span>' + lastContent +
-                    '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+        //         var html = firstContent + '<span class="moreellipses">' + ellipsestext +
+        //             '&nbsp;</span><span class="morecontent"><span>' + lastContent +
+        //             '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
 
-                $(this).html(html);
-            }
+        //         $(this).html(html);
+        //     }
 
-        });
+        // });
 
-        $(".morelink").click(function() {
-            if ($(this).hasClass("less")) {
-                $(this).removeClass("less");
-                $(this).html(moretext);
-            } else {
-                $(this).addClass("less");
-                $(this).html(lesstext);
-            }
-            $(this).parent().prev().toggle();
-            $(this).prev().toggle();
-            return false;
-        });
+        // $(".morelink").click(function() {
+        //     if ($(this).hasClass("less")) {
+        //         $(this).removeClass("less");
+        //         $(this).html(moretext);
+        //     } else {
+        //         $(this).addClass("less");
+        //         $(this).html(lesstext);
+        //     }
+        //     $(this).parent().prev().toggle();
+        //     $(this).prev().toggle();
+        //     return false;
+        // });
 
         $(document).delegate(".product_tag_filter", "change", function() {
             vendorProductsSearchResults();
