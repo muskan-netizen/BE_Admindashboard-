@@ -280,9 +280,8 @@ class VnpayController  extends FrontController
                     CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                     $returnUrlParams = $returnUrlParams . '&order=' . $order_number;
                 }
-                return Redirect::to(url($returnUrl . $returnUrlParams));
-               
             } 
+            return Redirect::to(url($returnUrl . $returnUrlParams));
         }
         else{
             $returnUrlParams = '?status=0&gateway=vnpay&action=' .$request->payment_form;
