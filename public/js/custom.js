@@ -518,6 +518,8 @@ $(document).ready(function () {
                 paymentViaToyyibPay('');
             } else if (payment_option_id == 25) {
                 payWithEasebuss('');
+            }else if (payment_option_id == 27) {
+                paymentViaPaytab('','');
             }
         } else {
             _this.attr("disabled", false);

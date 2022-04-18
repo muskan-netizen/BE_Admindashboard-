@@ -618,5 +618,6 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     };
 </script>
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
+<script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script src="{{asset('js/payment.js')}}"></script>
 @endsection

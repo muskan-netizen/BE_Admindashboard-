@@ -43,8 +43,8 @@
                     <input type="checkbox"
                         class="switch switch-bootstrap product_tag_filter status"
                         name="tag_id" id="product_tag_filter_{{ $key }}"
-                        data-tag_id="{{ $tag->id }}"" value="
-                        {{ $tag->id }}">
+                        data-tag_id="{{ $tag->id }}" value="
+                        {{ $tag->id }}" {{!is_null($tagId) && in_array($tag->id, $tagId) ? 'checked' : ''}}>
                     <span class="lable">
                         @if (isset($tag->icon) && !empty($tag->icon))
                             <img class="ml-1"
@@ -250,7 +250,7 @@
                             @endif
                         </p>
                         <div class="member_no d-block mb-0">
-                            <span>{!! $prod->translation_description !!}</span>
+                            <span>{!! strlen($prod->translation_description) > 140 ? substr($prod->translation_description, 0, 140) : $prod->translation_description !!}<span class="moreellipses">...&nbsp;</span><span class="morecontent"><span style="display:none;"> {!! substr($prod->translation_description, 140) !!} </span>&nbsp;&nbsp;<a href="" class="morelink">Read more</a></span></span>
                         </div>
                         <div id="product_variant_options_wrapper">
                             @if (!empty($prod->variantSet))
