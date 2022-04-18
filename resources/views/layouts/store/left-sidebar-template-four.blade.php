@@ -297,18 +297,18 @@ $pages = \App\Models\Page::with([
                                         <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
                                             @foreach($navCategories as $cate)
                                             @if($cate['name'])
-                                            <li class="al_main_category" data-aos="zoom-in">
+                                            <li class="">
                                                 <a href="{{route('categoryDetail', $cate['slug'])}}">
 
                                                     {{$cate['name']}}
                                                 </a>
                                                 @if(!empty($cate['children']))
-                                                <ul class="al_main_category_list">
+                                                <ul class="">
                                                     @foreach($cate['children'] as $childs)
                                                     <li>
                                                     <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
                                                         @if(!empty($childs['children']))
-                                                    <ul class="al_main_category_sub_list">
+                                                    <ul class="">
                                                         @foreach($childs['children'] as $chld)
                                                         <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
                                                         @endforeach
@@ -352,7 +352,7 @@ $pages = \App\Models\Page::with([
         icon_two_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
       }
     %>
-    <li class="al_main_category" data-aos="zoom-in">
+    <li class="al_main_category"  >
         <a href="{{route('categoryDetail')}}/<%=category.slug %>">
             <%=category.name %>
         </a>

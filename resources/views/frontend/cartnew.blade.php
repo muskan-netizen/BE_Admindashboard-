@@ -104,6 +104,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     let price_bifurcation=0;
 
     _.each(cart_details.products, function(product, key){
+        <!-- console.log(cart_details); -->
         fixed_fee=product.vendor.fixed_fee;
         fixed_fee_amount=product.vendor.fixed_fee_amount;
         total_fixed_fee_amount=parseFloat(total_fixed_fee_amount)+parseFloat(product.vendor.fixed_fee_amount);
@@ -132,7 +133,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                 <% } %>
 
-                <% if( (parseFloat(product.vendor.order_min_amount) > 0) &&  (parseFloat(cart_details.total_payable_amount)+parseFloat(fixed_fee_amount) < parseFloat(product.vendor.order_min_amount)) ) { %>
+                <% if( (parseFloat(product.vendor.order_min_amount) > 0) &&  (parseFloat(cart_details.wallet_amount_used)+parseFloat(cart_details.total_payable_amount)+parseFloat(fixed_fee_amount) < parseFloat(product.vendor.order_min_amount)) ) { %>
                     <div class="col-12" id="MOV_Notification">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then ')}} {{Session::get('currencySymbol')}}<%= Helper.formatPrice(product.vendor.order_min_amount) %>
@@ -488,7 +489,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(cart_details.wallet_amount_used > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Wallet Amount')}}</div>
-                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.wallet_amount_used) %></div>
+                    <div class="col-6 text-right" id="wallet_amount_used">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.wallet_amount_used) %></div>
                 </div>
                 <hr class="my-2">
             <% } %>

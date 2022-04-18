@@ -23,21 +23,20 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 @endphp
 <header class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
     @include('layouts.store/topbar-template-one')
+
+    @if($client_preference_detail->business_type == 'taxi')
     <!-- Start Cab Booking Header From Here -->
     <div class="cab-booking-header">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-sm-3 col-md-2">
-                    <a class="navbar-brand mr-0" style="height:60px" href="{{ route('userHome') }}">
-                        <img height="60" alt="" src="{{ $urlImg }}"></a>
+                    <a class="navbar-brand mr-0" style="height:60px" href="{{ route('userHome') }}"><img height="60" alt="" src="{{ $urlImg }}"></a>
                 </div>
                 <div class="col-sm-9 col-md-10 top-header bg-transparent">
                     <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
                         @if ($client_preference_detail->header_quick_link == 1)
                         <li class="onhover-dropdown quick-links quick-links">
-
                             <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
-                            </a>
                             <ul class="onhover-show-div">
 
 
@@ -137,9 +136,9 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             </div>
         </div>
     </div>
-    </div>
     <!-- End Cab Booking Header From Here -->
-    @if($client_preference_detail->business_type != 'taxi')
+
+    @else
     <div class="main-menu al_template_one_menu">
         <div class="container-fluid d-block">
             <div class="container align-items-center justify-content-center position-initial">
@@ -180,11 +179,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                         </div>
 
                         <div class=" ipad-view">
-                            <div
-                                class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
-                                @if( (Session::get('preferences'))) @if(
-                                (isset(Session::get('preferences')->is_hyperlocal)) &&
-                                (Session::get('preferences')->is_hyperlocal==1) )
+                            <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
+                               @if(Session::get('preferences') && (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
                                 <div class="location-bar d-none align-items-center justify-content-start ml-md-2 my-2 my-lg-0 dropdown-toggle"
                                     href="#edit-address" data-toggle="modal">
                                     <div class="map-icon mr-md-1"><i class="fa fa-map-marker" aria-hidden="true"></i>
@@ -196,7 +192,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     </div>
                                     <div class="down-icon"> <i class="fa fa-angle-down" aria-hidden="true"></i> </div>
                                 </div>
-                                @endif @endif
+                                @endif
                                 <div class="radius-bar d-xl-inline al_custom_search mr-sm-2">
                                     <div class="search_form d-flex align-items-start justify-content-start"> <button
                                             class="btn"><i class="fa fa-search" aria-hidden="true"></i></button> @php
@@ -219,11 +215,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                             </div>
                                         </a> <%}); %>
                                     </div>
-                                </script> @if(auth()->user()) @if($client_preference_detail->show_wishlist==1)
-                                <div class="icon-nav mr-2 d-none d-sm-block"> <a class="fav-button"
-                                        href="{{route('user.wishlists')}}"> <i class="fa fa-heart"
-                                            aria-hidden="true"></i> </a> </div>
-                                @endif @endif
+                                </script>
+                                @if(auth()->user() && $client_preference_detail->show_wishlist==1)
+                                <div class="icon-nav mr-2 d-none d-sm-block"> <a class="fav-button" href="{{route('user.wishlists')}}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
+                                @endif
                                 <div class="icon-nav d-none d-sm-inline-block">
                                     <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}">
                                         @csrf <input type="hidden" id="cliLang" name="cliLang"
@@ -235,10 +230,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                         <li class="onhover-div pl-0 shake-effect">
                                             @if($client_preference_detail)
                                             @if($client_preference_detail->cart_enable==1)
-                                            <a class="btn btn-solid d-flex align-items-center "
+                                            <a class="btn btn-solid_al d-flex align-items-center "
                                                 href="{{route('showCart')}}">
                                                 <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i>
-                                                <span>{{__('Cart')}}•</span>
+                                                <!-- <span>{{__('Cart')}}•</span> -->
                                                 <span id="cart_qty_span"></span>
                                             </a> @endif @endif
                                             <script type="text/template" id="header_cart_template">
@@ -365,11 +360,11 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                                             <li class="onhover-div pl-0 shake-effect">
                                                                 @if($client_preference_detail)
                                                                 @if($client_preference_detail->cart_enable==1)
-                                                                <a class="btn btn-solid d-flex align-items-center "
+                                                                <a class="btn btn-solid_al d-flex align-items-center "
                                                                     href="{{route('showCart')}}">
                                                                     <i class="fa fa-shopping-cart mr-1 "
                                                                         aria-hidden="true"></i>
-                                                                    <span>{{__('Cart')}}•</span>
+                                                                    <!-- <span>{{__('Cart')}}</span> -->
                                                                     <span id="cart_qty_span">
                                                                     </span>
                                                                 </a>
@@ -592,9 +587,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                     </div>
                 </div>
             </div>
-                @endif
-                {{--@if(count($navCategories) > 0)--}}
-                <div class="menu-navigation al">
+            <div class="menu-navigation al">
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12">
@@ -603,10 +596,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     @foreach($navCategories as $cate)
                                     @if($cate['name'])
                                     <li class="al_main_category">
-                                        <a href="{{route('categoryDetail', $cate['slug'])}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
+                                        <a href="{{route('categoryDetail', $cate['slug'])}}" >
                                             @if($client_preference_detail->show_icons==1 &&
                                             \Request::route()->getName()=='userHome')
-                                            <div class="nav-cate-img"> <img class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
+                                            <div class="nav-cate-img"> <img class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>
                                             @endif{{$cate['name']}}
                                         </a>
                                         @if(!empty($cate['children']))
@@ -634,11 +627,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                             </div>
                         </div>
                     </div>
-                </div>
-                {{-- @endif --}}
-
-                                                    </div>
-                                                    </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </header>
 <div
     class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @else offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif">
@@ -655,10 +647,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
         icon_two_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
       }
    %>
-    <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
+    <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>" >
             @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div
                 class="nav-cate-img"> <img class="blur-up lazyload" data-icon_two="<%=icon_two_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>"
-                    data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif
+                    data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>@endif
             <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list">
             <% _.each(category.children, function(childs, key1){%> <li> <a
                     href="{{route('categoryDetail')}}/<%=childs.slug %>"><span

@@ -1,5 +1,5 @@
 @php
-$clientData = \App\Models\Client::select('id', 'logo')
+$clientData = \App\Models\Client::select('id', 'logo') 
     ->where('id', '>', 0)
     ->first();
 $urlImg = $clientData ? $clientData->logo['original'] : ' ';
@@ -27,6 +27,7 @@ $pages = \App\Models\Page::with([
 
 <header id="al_new_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
     @include('layouts.store/topbar-template-three')
+    @if($client_preference_detail->business_type == 'taxi')
     <!-- Start Cab Booking Header From Here -->
     <div class="cab-booking-header">
         <div class="container">
@@ -144,13 +145,13 @@ $pages = \App\Models\Page::with([
       </div>
    </div>
    <!-- End Cab Booking Header From Here -->
-   @if($client_preference_detail->business_type != 'taxi')
+   @else
     <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif">
         <div class="container_fluid_al d-block" >
             <div class="row align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
                     <div class="container al_mobile-header d-flex align-items-center justify-content-between position-relative">
-                        <div class="al_count_tabs_new_design d-none d-sm-block" data-aos="zoom-in">
+                        <div class="al_count_tabs_new_design d-none d-sm-block"  >
                             @if($mod_count > 1)
                             <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods" id="top-tab" role="tablist">
                                 @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
@@ -211,7 +212,7 @@ $pages = \App\Models\Page::with([
                             @endif
                         </div>
 
-                        <div class="al_new_ipad_view ipad-view" data-aos="zoom-in">
+                        <div class="al_new_ipad_view ipad-view"  >
                             <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                                 @if( (Session::get('preferences')))
                                 @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
@@ -274,7 +275,7 @@ $pages = \App\Models\Page::with([
                                                     <div class="row">
                                                         <div class="col-xl-12">
                                                         <form>
-                                                            <div class="form-group"> <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Search a Product"> </div>
+                                                            <div class="form-group"> <input type="text" class="form-control" placeholder="Search a Product"> </div>
                                                             <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
                                                         </form>
                                                         </div>
@@ -352,7 +353,8 @@ $pages = \App\Models\Page::with([
                                                         @if($client_preference_detail)
                                                             @if($client_preference_detail->cart_enable==1)
                                                             <a class="btn btn-solid d-flex align-items-center " href="{{route('showCart')}}">
-                                                                <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i> <span>{{__('Cart')}}•</span>
+                                                                <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i>
+                                                                <!-- <span>{{__('Cart')}}•</span> -->
                                                                 <span id="cart_qty_span">
                                                                 </span>
                                                             </a>
@@ -381,7 +383,7 @@ $pages = \App\Models\Page::with([
                                                                             <div class="col-xl-12">
                                                                                 <form>
                                                                                     <div class="form-group"> <input type="text" class="form-control"
-                                                                                            id="exampleInputPassword1" placeholder="Search a Product"> </div>
+                                                                                             placeholder="Search a Product"> </div>
                                                                                     <button type="submit" class="btn btn-primary"><i
                                                                                             class="fa fa-search"></i></button>
                                                                                 </form>
@@ -438,10 +440,10 @@ $pages = \App\Models\Page::with([
                <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
-                  <li class="al_main_category" data-aos="zoom-in">
-                     <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
+                  <li class="al_main_category"  >
+                     <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}">
                         @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='categoryDetail'))
-                        <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
+                        <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>
                         @endif
                         {{$cate['name']}}
                      </a>
@@ -471,8 +473,6 @@ $pages = \App\Models\Page::with([
         </div>
     </div>
    @endif
-
-    {{-- @endif --}}
 </header>
 
 <div class=" @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset al_offset-top @else al_offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>
@@ -489,11 +489,11 @@ $pages = \App\Models\Page::with([
       }
     %>
 
-    <li class="al_main_category" data-aos="zoom-in">
-        <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category[0]) && $category->slug == $cate[0]['slug'] ? 'current_category' : ''}}" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
+    <li class="al_main_category"  >
+        <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category[0]) && $category->slug == $cate[0]['slug'] ? 'current_category' : ''}}">
             @if($client_preference_detail->show_icons==1)
             <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}}">
-                <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="<%=icon_two_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
+                <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="<%=icon_two_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""  onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
             </div>
             @endif
             <%=category.name %>

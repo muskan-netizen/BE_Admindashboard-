@@ -35,7 +35,7 @@ class UserhomeController extends FrontController
     }
     public function getConfig()
     {
-        $client_preferences = ClientPreference::first();
+        $client_preferences = ClientPreference::first()->makeHidden(['customer_support_key','delivery_service_key','fcm_server_key','fcm_api_key','mail_username','mail_password','sms_key','sms_secret','sms_credentials','fb_client_secret','fcm_storage_bucket','customer_support_application_id','pickup_delivery_service_key']);
         return response()->json(['success' => true, 'client_preferences' => $client_preferences]);
 
     }

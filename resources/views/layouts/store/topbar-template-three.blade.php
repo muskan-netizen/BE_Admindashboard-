@@ -1,32 +1,29 @@
 @php
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
 $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'];
+
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 $preference = $client_preference_detail;
+$applocale = 'en';
+if(session()->has('applocale')){
+    $applocale = session()->get('applocale');
+}
 @endphp
-@php
-    $applocale = 'en';
-    if(session()->has('applocale')){
-        $applocale = session()->get('applocale');
-    }
-    @endphp
 <div class="top-header site-topbar al_custom_head">
     <nav class="navbar navbar-expand-lg p-0 ">
         <div class="container ">
             <div class="row d-flex align-items-center justify-content-between w-100">
-
-                <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start"  data-aos="zoom-in">
-
+                <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start"   >
                     <a class="navbar-brand mr-xl-3 mr-0" style="height:60px" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
-                                <div class=" col location-bar d-inline-flex align-items-center position-relative p-0 mr-2" href="#edit-address" data-toggle="modal">
-                                        <i class="fa fa-solid fa-location-dot" aria-hidden="true"></i>
-                                        <h2 class="homepage-address"><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
-                                </div>
+                        <div class=" col location-bar d-inline-flex align-items-center position-relative p-0 mr-2" href="#edit-address" data-toggle="modal">
+                            <i class="fa fa-solid fa-location-dot" aria-hidden="true"></i>
+                            <h2 class="homepage-address"><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
+                        </div>
                             @endif
                         @endif
                         <div class="col d-inline-flex align-items-center justify-content-start p-0 position-relative">
@@ -39,43 +36,37 @@ $preference = $client_preference_detail;
                     </div>
                 </div>
 
-                <div class="col-lg-6 text-right ml-auto al_z_index p-0" data-aos="zoom-in">
-
-
+                <div class="col-lg-6 text-right ml-auto al_z_index p-0"  >
                     <ul class="header-dropdown ml-auto">
                         @if($client_preference_detail->header_quick_link == 1)
                         <li class="onhover-dropdown quick-links quick-links">
-
                             <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
-                            </a>
                             <ul class="onhover-show-div">
-
-
                                 @foreach($pages as $page)
-                                    @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
-                                    @if(isset($last_mile_common_set) && $last_mile_common_set != false)
-                                    <li>
-                                        <a href="{{route('extrapage',['slug' => $page->slug])}}">
-                                            @if(isset($page->translations) && $page->translations->first()->title != null)
-                                            {{ $page->translations->first()->title ?? ''}}
-                                            @else
-                                            {{ $page->primary->title ?? ''}}
-                                            @endif
-                                        </a>
-                                    </li>
-                                    @endif
-                                    @else
-                                    <li>
-                                        <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
-                                            @if(isset($page->translations) && $page->translations->first()->title != null)
-                                            {{ $page->translations->first()->title ?? ''}}
-                                            @else
-                                            {{ $page->primary->title ?? ''}}
-                                            @endif
-                                        </a>
-                                    </li>
-                                    @endif
-                                    @endforeach
+                                @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
+                                @if(isset($last_mile_common_set) && $last_mile_common_set != false)
+                                <li>
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">
+                                        @if(isset($page->translations) && $page->translations->first()->title != null)
+                                        {{ $page->translations->first()->title ?? ''}}
+                                        @else
+                                        {{ $page->primary->title ?? ''}}
+                                        @endif
+                                    </a>
+                                </li>
+                                @endif
+                                @else
+                                <li>
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
+                                        @if(isset($page->translations) && $page->translations->first()->title != null)
+                                        {{ $page->translations->first()->title ?? ''}}
+                                        @else
+                                        {{ $page->primary->title ?? ''}}
+                                        @endif
+                                    </a>
+                                </li>
+                                @endif
+                                @endforeach
                             </ul>
                         </li>
                         @endif
@@ -148,7 +139,7 @@ $preference = $client_preference_detail;
     </nav>
 
 
-    <div class="mobile-menu main-menu position-fixed d-none">
+    {{--<div class="mobile-menu main-menu position-fixed d-none">
         <div class="menu-right_">
             <ul class="header-dropdown icon-nav d-flex justify-content-around">
                 <li class="onhover-div mobile-setting">
@@ -215,7 +206,7 @@ $preference = $client_preference_detail;
                 @endif
             </ul>
         </div>
-    </div>
+    </div>--}}
 </div>
 <div class="al_mobile_menu al_new_mobile_header">
                 <a class="al_toggle-menu" href="#">

@@ -33,7 +33,7 @@
     </style>
 @endsection
 @section('content')
-    <section class="wrapper-main">
+    <section class="wrapper-main pt-lg-3 alSectionTop d-flex align-items-center">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 mb-lg-0 mb-3 text-center">
@@ -97,7 +97,7 @@
                                             class="form-control @error('phone_number') is-invalid @enderror"
                                             id="phone" placeholder="{{ __('Phone No.') }}" name="phone_number"
                                             value="{{ old('full_number') }}">
-                                            
+
                                         <input type="hidden" id="dialCode" name="dialCode"
                                             value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode', '1') }}">
                                         <input type="hidden" id="countryData" name="countryData"
@@ -282,6 +282,16 @@
 @section('script')
     <script src="{{ asset('assets/js/intlTelInput.js') }}"></script>
     <script>
+        jQuery(window.document).ready(function () {
+            jQuery("body").addClass("register_body");
+        });
+        jQuery(document).ready(function($) {
+            setTimeout(function(){
+                var footer_height = $('.footer-light').height();
+                console.log(footer_height);
+                $('article#content-wrap').css('padding-bottom',footer_height);
+            }, 500);
+        });
         var input = document.querySelector("#phone");
         window.intlTelInput(input, {
             separateDialCode: true,

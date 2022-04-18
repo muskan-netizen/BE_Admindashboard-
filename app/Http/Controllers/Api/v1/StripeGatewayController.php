@@ -309,6 +309,29 @@ class StripeGatewayController extends BaseController
 
             $user = Auth::user();
 
+            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+           
+            if (!$saved_payment_method) {
+                $customerResponse = $stripe->customers->create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone_number,
+                    'description' => 'Creating Customer',
+                    'metadata' => [
+                        'user_id' => $user->id
+                    ]
+                ]);
+
+                // Find the card ID
+                $customer_id = $customerResponse->id;
+                if ($customer_id) {
+                    $request->request->set('customerReference', $customer_id);
+                    $save_payment_method_response = $this->saveUserPaymentMethod($request);
+                }
+            }else {
+                $customer_id = $saved_payment_method->customerReference;
+            }
+
             $description = '';
             $payment_form = $request->payment_form;
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -324,6 +347,10 @@ class StripeGatewayController extends BaseController
                     'payment_form' => $payment_form
                 ]
             ];
+
+            if(isset($customer_id) && !empty($customer_id)){
+                $postdata['customer'] = $customer_id;
+            }
 
             if($payment_form == 'cart'){
                 $address_id = $request->address_id;

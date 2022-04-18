@@ -87,9 +87,11 @@ class Category extends Model
     public function getImageAttribute($value)
     {
       $values = array();
+      $values['is_original'] = false; 
       $img = 'default/default_image.png';
       if(!empty($value)){
         $img = $value;
+        $values['is_original'] = true; 
       }
       $ex = checkImageExtension($img);
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
@@ -105,8 +107,9 @@ class Category extends Model
       if(!empty($value)){
         $img = $value;
       }
+      $ex = checkImageExtension($img);
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }
@@ -116,8 +119,9 @@ class Category extends Model
       $values = array();
       if(!empty($value)){
         $img = $value;
+        $ex = checkImageExtension($img);
         $values['proxy_url'] = \Config::get('app.IMG_URL1');
-        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
         $values['image_fit'] = \Config::get('app.FIT_URl');
         return $values;
       }

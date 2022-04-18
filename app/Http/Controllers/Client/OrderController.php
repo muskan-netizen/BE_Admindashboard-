@@ -5,9 +5,6 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\AhoyController;
 use Auth;
 use Session;
-use App\Models\Tax;
-use App\Models\Order;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -15,8 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
-use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund};
+use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -595,6 +591,11 @@ class OrderController extends BaseController
                         $orderRefund->amount=$order->payable_amount;
                         $orderRefund->paid_to_wallet=1;
                         $orderRefund->save();
+
+                        $wallet=Wallet::where('holder_id',Auth()->user()->id);
+                        $previousWalletAmount=$wallet->first()->amount;
+
+                        Wallet::where('holder_id',Auth()->user()->id)->update(['amount'=>($order->payable_amount+$previousWalletAmount)]);
                     }
                 }
                 if ($request->status_option_id == 3) {

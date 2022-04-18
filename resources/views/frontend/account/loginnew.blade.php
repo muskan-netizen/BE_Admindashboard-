@@ -7,7 +7,7 @@
 
 @section('content')
 
-<section class="wrapper-main py-lg-2 d-flex align-items-center">
+<section class="wrapper-main py-lg-5 d-flex align-items-center">
     <div class="container">
         <div class="row align-items-center h-100" id="login-section">
             <div class="col-lg-6 mb-lg-0 mb-3 text-center border-right pb-4 pb-sm-0">
@@ -166,6 +166,16 @@
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
+    jQuery(window.document).ready(function () {
+        jQuery("body").addClass("login_body");
+    });
+    jQuery(document).ready(function($) {
+        setTimeout(function(){
+            var footer_height = $('.footer-light').height();
+            console.log(footer_height);
+            $('article#content-wrap').css('padding-bottom',footer_height);
+        }, 500);
+    });
     var login_via_username_url = "{{route('customer.loginViaUsername')}}";
     var forgot_password_url = "{{route('customer.forgotPass')}}";
     // var firebaseConfig = {

@@ -31,7 +31,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay');
         //,'easebuzz' 
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
@@ -373,6 +373,16 @@ class PaymentOptionController extends BaseController
                         'profile_id' => $request->paytab_profile_id,
                         'server_key' => $request->paytab_server_key,
                         'client_key' => $request->paytab_client_key
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'vnpay')) {
+                    $validatedData = $request->validate([
+                        'vnpay_website_id' => 'required',
+                        'vnpay_server_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'vnpay_website_id' => $request->vnpay_website_id,
+                        'vnpay_server_key' => $request->vnpay_server_key
                     ));
                 }
             }
