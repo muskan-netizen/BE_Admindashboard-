@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport};
+use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -580,6 +580,22 @@ class OrderController extends BaseController
                     $vendor_order_status->save();
 
                     OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
+
+
+                    $order = Order::find($request->order_id);
+                    //Refund to wallet
+                    if($order->payment_option_id!=1 && $order->payment_status==1){
+                        $wallet = Auth()->user()->wallet;
+                        $wallet->depositFloat($order->payable_amount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                        $orderRefund=new OrderRefund();
+                        $orderRefund->user_id=$order->user_id;
+                        $orderRefund->order_id=$order->id;
+                        $orderRefund->payment_id=$order->payment->id;
+                        $orderRefund->payment_option_id=$order->payment_option_id;
+                        $orderRefund->amount=$order->payable_amount;
+                        $orderRefund->paid_to_wallet=1;
+                        $orderRefund->save();
+                    }
                 }
                 if ($request->status_option_id == 3) {
                     if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {

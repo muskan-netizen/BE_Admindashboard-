@@ -65,8 +65,12 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     }
 
     public function address(){
-       return $this->hasMany('App\Models\UserAddress');
-    }
+        return $this->hasMany('App\Models\UserAddress');
+     }
+
+     public function refund(){
+        return $this->hasMany('App\Models\OrderRefund', 'user_id', 'id');
+     }
 
     public function role(){
        return $this->belongsTo('App\Models\Role')->select('id', 'role');

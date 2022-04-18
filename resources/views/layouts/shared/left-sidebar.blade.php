@@ -150,6 +150,9 @@
                                                 <li>
                                                     <a href="{{route('account.vendor.payout.requests')}}">{{ __('Payout Requests') }}</a>
                                                 </li>
+                                                <li>
+                                                    <a href="{{route('backend.order.refund')}}">{{ __('Order Refunds') }}</a>
+                                                </li>
                                             @endif
                                         </ul>
                                     </div>
