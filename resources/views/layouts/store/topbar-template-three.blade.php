@@ -15,7 +15,7 @@ if(session()->has('applocale')){
     <nav class="navbar navbar-expand-lg p-0 ">
         <div class="container ">
             <div class="row d-flex align-items-center justify-content-between w-100">
-                <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start"  data-aos="zoom-in">
+                <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start"   >
                     <a class="navbar-brand mr-xl-3 mr-0" style="height:60px" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))
@@ -36,7 +36,7 @@ if(session()->has('applocale')){
                     </div>
                 </div>
 
-                <div class="col-lg-6 text-right ml-auto al_z_index p-0" data-aos="zoom-in">
+                <div class="col-lg-6 text-right ml-auto al_z_index p-0"  >
                     <ul class="header-dropdown ml-auto">
                         @if($client_preference_detail->header_quick_link == 1)
                         <li class="onhover-dropdown quick-links quick-links">

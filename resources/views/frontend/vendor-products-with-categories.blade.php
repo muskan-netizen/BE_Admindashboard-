@@ -383,8 +383,8 @@
                     <div class="col-12">
                         <div class="product-banner-img">
                             @if (!empty($vendor->banner))
-                                <img rel="preload" alt=""
-                                    src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}">
+                            <link rel="preload" as="image" href="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" />
+                            <img alt="" src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}">
                             @endif
                         </div>
 
@@ -773,13 +773,14 @@
                                                                     @endif
 
                                                                     <p class="mb-1 product_price">
-                                                                        {{ Session::get('currencySymbol') . number_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
+                                                                        {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
                                                                         @if ($prod->variant[0]->compare_at_price > 0)
                                                                             <span
-                                                                                class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .number_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
+                                                                                class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
                                                                         @endif
                                                                     </p>
                                                                     <div class="member_no d-block mb-0">
+
                                                                         <span>{!! $prod->translation_description !!}</span>
                                                                     </div>
                                                                     <div id="product_variant_options_wrapper">
@@ -1217,38 +1218,38 @@
 
         var addonids = [];
         var addonoptids = [];
-        // var showChar = 140;
-        // var ellipsestext = "...";
-        // var moretext = "Read lss";
-        // var lesstext = "Read less";
-        // $('.price_head .member_no span').each(function() {
-        //     var content = $(this).html();
-        //     if (content.length > showChar) {
+        var showChar = 140;
+        var ellipsestext = "...";
+        var moretext = "Read more";
+        var lesstext = "Read less";
+        $('.price_head .member_no span').each(function() {
+            var content = $(this).html();
+            if (content.length > showChar) {
 
-        //         var firstContent = content.substr(0, showChar);
-        //         var lastContent = content.substr(showChar, content.length - showChar);
+                var firstContent = content.substr(0, showChar);
+                var lastContent = content.substr(showChar, content.length - showChar);
 
-        //         var html = firstContent + '<span class="moreellipses">' + ellipsestext +
-        //             '&nbsp;</span><span class="morecontent"><span>' + lastContent +
-        //             '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+                var html = firstContent + '<span class="moreellipses">' + ellipsestext +
+                    '&nbsp;</span><span class="morecontent"><span style="display:none;">' + lastContent +
+                    '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
 
-        //         $(this).html(html);
-        //     }
+                $(this).html(html);
+            }
 
-        // });
+        });
 
-        // $(".morelink").click(function() {
-        //     if ($(this).hasClass("less")) {
-        //         $(this).removeClass("less");
-        //         $(this).html(moretext);
-        //     } else {
-        //         $(this).addClass("less");
-        //         $(this).html(lesstext);
-        //     }
-        //     $(this).parent().prev().toggle();
-        //     $(this).prev().toggle();
-        //     return false;
-        // });
+        $(".morelink").click(function() {
+            if ($(this).hasClass("less")) {
+                $(this).removeClass("less");
+                $(this).html(moretext);
+            } else {
+                $(this).addClass("less");
+                $(this).html(lesstext);
+            }
+            $(this).parent().prev().toggle();
+            $(this).prev().toggle();
+            return false;
+        });
 
         $(document).delegate(".product_tag_filter", "change", function() {
             vendorProductsSearchResults();
