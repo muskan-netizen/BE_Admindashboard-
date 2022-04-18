@@ -773,13 +773,14 @@
                                                                     @endif
 
                                                                     <p class="mb-1 product_price">
-                                                                        {{ Session::get('currencySymbol') . number_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
+                                                                        {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
                                                                         @if ($prod->variant[0]->compare_at_price > 0)
                                                                             <span
-                                                                                class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .number_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
+                                                                                class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
                                                                         @endif
                                                                     </p>
                                                                     <div class="member_no d-block mb-0">
+
                                                                         <span>{!! $prod->translation_description !!}</span>
                                                                     </div>
                                                                     <div id="product_variant_options_wrapper">
@@ -1229,7 +1230,7 @@
                 var lastContent = content.substr(showChar, content.length - showChar);
 
                 var html = firstContent + '<span class="moreellipses">' + ellipsestext +
-                    '&nbsp;</span><span class="morecontent"><span>' + lastContent +
+                    '&nbsp;</span><span class="morecontent"><span style="display:none;">' + lastContent +
                     '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
 
                 $(this).html(html);
