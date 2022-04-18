@@ -151,7 +151,7 @@ $pages = \App\Models\Page::with([
             <div class="row align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
                     <div class="container al_mobile-header d-flex align-items-center justify-content-between position-relative">
-                        <div class="al_count_tabs_new_design d-none d-sm-block" data-aos="zoom-in">
+                        <div class="al_count_tabs_new_design d-none d-sm-block"  >
                             @if($mod_count > 1)
                             <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods" id="top-tab" role="tablist">
                                 @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
@@ -212,7 +212,7 @@ $pages = \App\Models\Page::with([
                             @endif
                         </div>
 
-                        <div class="al_new_ipad_view ipad-view" data-aos="zoom-in">
+                        <div class="al_new_ipad_view ipad-view"  >
                             <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                                 @if( (Session::get('preferences')))
                                 @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
@@ -440,7 +440,7 @@ $pages = \App\Models\Page::with([
                <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
-                  <li class="al_main_category" data-aos="zoom-in">
+                  <li class="al_main_category"  >
                      <a href="{{route('categoryDetail', $cate['slug'])}}" class="{{isset($category) && $category->slug == $cate['slug'] ? 'current_category' : ''}}">
                         @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='categoryDetail'))
                         <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}} " > <img style="height:100px;width:100px;" class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>
@@ -489,7 +489,7 @@ $pages = \App\Models\Page::with([
       }
     %>
 
-    <li class="al_main_category" data-aos="zoom-in">
+    <li class="al_main_category"  >
         <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category[0]) && $category->slug == $cate[0]['slug'] ? 'current_category' : ''}}">
             @if($client_preference_detail->show_icons==1)
             <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}}">

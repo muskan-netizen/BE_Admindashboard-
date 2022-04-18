@@ -383,20 +383,31 @@
                     <div class="col-12">
                         <div class="product-banner-img">
                             @if (!empty($vendor->banner))
-                                <img rel="preload" alt=""
-                                    src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}">
+                            <link rel="preload" as="image" href="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" />
+                            <img alt="" src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}">
                             @endif
                         </div>
+
+
                         <div class="product-bottom-bar">
-                            <div class="row d-flex align-items-center">
-                                <div class="col-md-8 col-lg-5 order-0">
-                                    <div class="card-box vendor-details-left px-2 py-3">
-                                        <div class="d-sm-flex align-items-center">
-                                            <div class="vender-icon mr-sm-1 text-center text-sm-left mb-2 mb-sm-0">
-                                                <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}"
-                                                    class="rounded-circle avatar-lg" alt="profile-image">
+                            <div class="row ">
+                                <div class="col-12 vendor-details-left px-sm-4 px-2 d-sm-flex align-items-center">
+                                    <div class="vendor-reviwes">
+                                        @if ($vendor->vendorRating > 0)
+                                            <div class="rating-text-box ml-sm-auto">
+                                                <span>{{ $vendor->vendorRating }}</span>
+                                                <i class="fa fa-star" aria-hidden="true"></i>
                                             </div>
-                                            <div class="ml-sm-1">
+                                        @endif
+                                        {{-- <div class="review-text">
+                                                <div class="reviw-number">409</div>
+                                                <div class="reviews-text">Delivery Reviews</div>
+                                            </div> --}}
+                                    </div>
+                                    <div class="vender-icon mr-3">
+                                        <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image">
+                                    </div>
+                                    <div class="ml-sm-1">
                                                 <h3>{{ $vendor->name }}</h3>
                                                 @if (!empty($vendor->desc))
                                                     <h4 title="{{ $vendor->desc }}" style="line-height: 24px">
@@ -405,12 +416,12 @@
                                                 <p>{{ $vendor->short_desc }}</p>
                                                 <ul class="vendor-info">
                                                     {{-- <li class="d-block food-items">
-                                            <i class="icon-ic_eat"></i>
-                                                @forelse($listData as $key => $data)
-                                                    {{ $data->category->translation_one->name . (( $key !=  count($listData)-1 ) ? ',' : '') }}
-                                                @empty
-                                                @endforelse
-                                        </li> --}}
+                                                            <i class="icon-ic_eat"></i>
+                                                            @forelse($listData as $key => $data)
+                                                                {{ $data->category->translation_one->name . (( $key !=  count($listData)-1 ) ? ',' : '') }}
+                                                            @empty
+                                                            @endforelse
+                                                    </li> --}}
 
                                                     @if ($vendor->is_show_vendor_details == 1)
                                                         <li class="d-block vendor-location">
@@ -447,7 +458,7 @@
                                                         @endif
                                                         </span>
                                                         {{-- <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></span>
-                                            <span class="tooltip-text d-none">Mon-Sun : 11am - 11pm</span> --}}
+                                                                <span class="tooltip-text d-none">Mon-Sun : 11am - 11pm</span> --}}
                                                         </span>
 
                                                     </li>
@@ -457,47 +468,17 @@
                                                     @endif
                                                 </ul>
                                             </div>
-                                        </div>
-                                    </div>
                                 </div>
-                                <div class="col-lg-4 col-xl-5 order-lg-1 order-2">
-                                    <div class="vendor-search-bar">
-                                        <div class="radius-bar w-100">
-                                            <div class="search_form d-flex align-items-center justify-content-between border">
-                                                <button class="btn"><i class="fa fa-search"
-                                                        aria-hidden="true"></i></button>
-                                                <input class="form-control border-0 typeahead" type="search"
-                                                    placeholder="{{ __('Search') }}" id="vendor_search_box">
-                                            </div>
-                                            <div class="list-box style-4" style="display:none;" id="search_box_main_div">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-lg-3 col-xl-2 order-xl-2 order-1">
-                                    <div class="vendor-reviwes">
-                                        <div class="row">
-                                            <div class="col-12 d-flex align-items-center">
-                                                @if ($vendor->vendorRating > 0)
-                                                    <div class="rating-text-box ml-sm-auto">
-                                                        <span>{{ $vendor->vendorRating }}</span>
-                                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                                    </div>
-                                                @endif
-                                                {{-- <div class="review-text">
-                                    <div class="reviw-number">409</div>
-                                    <div class="reviews-text">Delivery Reviews</div>
-                                 </div> --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            </div>
+
+
+
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="position-relative">
-                    <div class="categories-product-list">
+                <div class="position-relative container">
+                    <div class="categories-product-list mt-sm-4">
 
                         <a id="side_menu_toggle" class="d-md-none d-flex" href="javascript:void(0)">
                             <div class="manu-bars">
@@ -526,8 +507,32 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6">
-                                        <div class="row mb-3 d-flex align-items-center">
-                                            <div class="col">
+                                            <div class="row my-2 d-flex align-items-center">
+                                                <div class="col-sm-6 vendor-search-bar mb-sm-0 mb-2">
+                                                    <div class="radius-bar w-100">
+                                                        <div class="search_form d-flex align-items-center justify-content-between border">
+                                                            <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                                            <input class="form-control border-0 typeahead" type="search"
+                                                                placeholder="{{ __('Search') }}" id="vendor_search_box">
+                                                        </div>
+                                                        <div class="list-box style-4" style="display:none;" id="search_box_main_div">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 text-right">{{ __('Sort By') }} :
+                                                    <select name="order_type" id='order_type' class="product_tag_filter p-1">
+                                                        <option value="featured">{{ __('Featured') }}</option>
+                                                        <option value="a_to_z">{{ __('A to Z') }}</option>
+                                                        <option value="z_to_a">{{ __('Z to A') }}</option>
+                                                        <option value="low_to_high">{{ __('Cost : Low to High') }}</option>
+                                                        <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
+                                                        <option value="rating">{{ __('Avg. Customer Review') }}</option>
+                                                        <option value="newly_added">{{ __('Newest Arrivals') }}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 d-flex justify-content-start mb-2 p-0">
                                                 @if (isset($tags) && !empty($tags))
                                                     @foreach ($tags as $key => $tag)
                                                         <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
@@ -548,30 +553,18 @@
                                                     @endforeach
                                                 @endif
                                             </div>
-                                            <div class="col text-right">{{ __('Sort By') }} :
-                                                <select name="order_type" id='order_type' class="product_tag_filter p-1">
-                                                    <option value="featured">{{ __('Featured') }}</option>
-                                                    <option value="a_to_z">{{ __('A to Z') }}</option>
-                                                    <option value="z_to_a">{{ __('Z to A') }}</option>
-                                                    <option value="low_to_high">{{ __('Cost : Low to High') }}</option>
-                                                    <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
-                                                    <option value="rating">{{ __('Avg. Customer Review') }}</option>
-                                                    <option value="newly_added">{{ __('Newest Arrivals') }}</option>
-                                                </select>
-                                            </div>
-                                        </div>
                                         @forelse($listData as $key => $data)
                                             <section class="scrolling_section " id="{{ $data->category->slug }}">
                                                 @if (!empty($data->products))
-                                                    <h2 class="category-head mt-0 mb-3 pl-2">
+                                                    <h2 class="category-head mt-0 mb-3">
                                                         {{ $data->category->translation_one->name }}
                                                         ({{ $data->products_count }})
                                                     </h2>
                                                     @forelse($data->products as $prod)
-                                                        <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-sm-gutters mb-3 p-2"
+                                                        <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-gutters mb-2 pb-2 border-bottom"
                                                             data-p_sku="{{ $prod->sku }}"
                                                             data-slug="{{ $prod->url_slug }}">
-                                                            <div class="col-sm-2 mb-2">
+                                                            <div class=" col-sm-2 col-4 mb-2">
                                                                 <a target="_blank"
                                                                     href="{{ route('productDetail', [$prod->vendor->slug, $prod->url_slug]) }}">
                                                                     <div class="class_img product_image">
@@ -581,7 +574,7 @@
                                                                 </a>
 
                                                             </div>
-                                                            <div class="col-sm-10">
+                                                            <div class="col-sm-10 col-8  pl-md-3 pl-2">
                                                                 <div class="row price_head">
                                                                     <div class="col-sm-12">
                                                                         <div
@@ -776,7 +769,7 @@
 
                                                                     @if ($prod->minimum_order_count > 0)
                                                                         {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $prod->minimum_order_count }} </p>
-                                <p class="mb-1 product_price">   {{__('Batch') }} : {{ $prod->batch_count }} </p> --}}
+                                                                        <p class="mb-1 product_price">   {{__('Batch') }} : {{ $prod->batch_count }} </p> --}}
                                                                     @endif
 
                                                                     <p class="mb-1 product_price">
@@ -841,8 +834,7 @@
                                     </div>
                                     <div class="col-12 col-lg-3 d-lg-inline-block d-none">
                                         <div class="card-box p-0 cart-main-box">
-                                            <div
-                                                class="p-2 d-flex align-items-center justify-content-between border-bottom">
+                                            <div class="p-2 d-flex align-items-center justify-content-between border-bottom">
                                                 <h4 class="right-card-title">{{ __('Cart') }}</h4>
                                             </div>
                                             <div class="cart-main-box-inside d-flex align-items-center">

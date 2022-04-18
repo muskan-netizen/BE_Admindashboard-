@@ -13,31 +13,30 @@
 <link defer type="text/css" rel="stylesheet" media="all" href="{{asset('front-assets/css/icons-style.css')}}">
 <link defer type="text/css" href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
 <link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
 @if(isset($set_template)  && $set_template->template_id == 1)
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/header/header.css')}}">
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/homepage/homepage.css')}}">
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/footer/footer.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/header/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/homepage/homepage.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/footer/footer.css')}}">
 @elseif(isset($set_template)  && $set_template->template_id == 2)
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/header/header.css')}}">
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/footer/footer.css')}}">
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/homepage/homepage.css')}}">
-<link type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/header/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/footer/footer.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/homepage/homepage.css')}}">
+<link defer type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 @elseif(isset($set_template)  && $set_template->template_id == 3)
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/header/header.css')}}">
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/footer/footer.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/header/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/footer/footer.css')}}">
 @if(Route::currentRouteName() == "userHome")
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/homepage.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/homepage.css')}}">
 @else
 @endif
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/inner_page.css')}}">
-<link type="text/css" rel="stylesheet" href="{{asset('assets/css/thiredtemplate.css')}}"   />
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/inner_page.css')}}">
+<link defer type="text/css" rel="stylesheet" href="{{asset('assets/css/thiredtemplate.css')}}"   />
 @elseif(isset($set_template)  && $set_template->template_id == 4)
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/homepage/homepage.css')}}">
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/header/header.css')}}">
-<link type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/footer/footer.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/homepage/homepage.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/header/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/footer/footer.css')}}">
 @endif
-<meta name="_token" content="{{ csrf_token() }}">
 
 @yield('css-links')
 <style type="text/css">
@@ -57,8 +56,8 @@
         .cab-booking-header img.img-fluid {height: auto !important;}
       }
       @media(max-width:767px){.cab-booking-header a.navbar-brand.mr-0 {margin: 10px auto 0;text-align: center;display: block;}}
-      @else
+    @else
        .cab-booking-header{display: none;}
-      @endif
-  </style>
+    @endif
+</style>
   @yield('css')
