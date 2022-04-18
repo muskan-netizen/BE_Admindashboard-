@@ -348,7 +348,7 @@ class VnpayController  extends FrontController
             }
             $meta_data = json_decode($inputData['vnp_OrderInfo']);
         
-            $cart_id = $meta_data->cart_id ? $request->cart_id : '';
+            $cart_id = $meta_data->cart_id ;
             $payment_form = $meta_data->payment_form;
             $subscription_id = $meta_data->subscription_id;
             $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
@@ -396,7 +396,7 @@ class VnpayController  extends FrontController
                             CartProduct::where('cart_id', $cart_id)->delete();
                             CartProductPrescription::where('cart_id', $cart_id)->delete();
                             Log::info($cart_id);
-                            Log::info('delete vcart');
+                            Log::info('cart id');
                             // Send Notification
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {
