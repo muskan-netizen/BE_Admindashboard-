@@ -1,3 +1,7 @@
+var footer_height = $('.footer-light').height();
+var header_height = $('.site-header').height();
+var window_height = $(window).height();
+var header_content_width = $('.al_new_wrapper_design').height();
 jQuery(window).scroll(function () {
     var scroll = jQuery(window).scrollTop();
     if (scroll <= 100) {
@@ -6,7 +10,11 @@ jQuery(window).scroll(function () {
 
     } else {
         jQuery(".site-header").addClass("fixed-bar");
-        jQuery(".al_offset-top-home").css('margin-top', '260px');
+        if(window_height < header_content_width + footer_height){
+            jQuery(".al_offset-top-home").css('margin-top', header_height+'px');
+        }else{
+            jQuery(".al_offset-top-home").css('margin-top', '0px');
+        }
     }
 });
 
