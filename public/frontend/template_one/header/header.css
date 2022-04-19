@@ -233,6 +233,11 @@ article#page-container header.site-header.fixed-bar{
      width: 100%;
      object-fit: cover;
 }
+.nav-tabs .nav-link{
+    font-weight: 500;
+    padding: 5px 0;
+    font-size: 14px;
+}
  .category-list li.active a, .category-list li:hover a, .top-header .header-dropdown .onhover-dropdown .onhover-show-div li:hover a {
      border-color: var(--theme-deafult);
      background:linear-gradient(90deg,var(--theme-deafult) -540%,#fff 100%)
