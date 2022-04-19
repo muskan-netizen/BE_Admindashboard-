@@ -516,6 +516,7 @@ class OrderController extends BaseController
         $orderPlacedNo = '';
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
+        $orderPlaced = true;
         try {
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
@@ -576,26 +577,43 @@ class OrderController extends BaseController
                     $vendor_order_status->save();
 
                     OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
-
-
+                    
                     $order = Order::find($request->order_id);
+
                     //Refund to wallet
                     if($order->payment_option_id!=1 && $order->payment_status==1){
-                        $wallet = Auth()->user()->wallet;
-                        $wallet->depositFloat($order->payable_amount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                        
                         $orderRefund=new OrderRefund();
                         $orderRefund->user_id=$order->user_id;
                         $orderRefund->order_id=$order->id;
-                        $orderRefund->payment_id=$order->payment->id;
+                        $payment_id=Order::select('payments.id')
+                            ->leftJoin('payments','payments.order_id','=','orders.id')
+                            ->where('orders.id',$order->id)->first()->id;
+                            
+                        if(!empty($payment_id)){
+                            $orderRefund->payment_id=$payment_id;
+                        }else{
+                            $orderRefund->payment_id=0;
+                        }
                         $orderRefund->payment_option_id=$order->payment_option_id;
-                        $orderRefund->amount=$order->payable_amount;
+                        $orderRefund->amount=$order->wallet_amount_used+$order->payable_amount;
                         $orderRefund->paid_to_wallet=1;
                         $orderRefund->save();
 
-                        $wallet=Wallet::where('holder_id',Auth()->user()->id);
-                        $previousWalletAmount=$wallet->first()->amount;
 
-                        Wallet::where('holder_id',Auth()->user()->id)->update(['amount'=>($order->payable_amount+$previousWalletAmount)]);
+                        $previousWalletAmount=Wallet::where('holder_id',$order->user_id)->first()->balance;
+                        if(empty($previousWalletAmount)){
+                            $refundAmount=($order->wallet_amount_used+$order->payable_amount);
+                        }else{
+                            $refundAmount=(($order->wallet_amount_used+$order->payable_amount)+($previousWalletAmount/100));
+                        }
+                        
+                        $wallet = User::find($order->user_id)->wallet;
+                        $wallet->depositFloat($refundAmount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $refundAmount]);
+
+                        $order->payment_status=2;
+                        $order->save();
+                        
                     }
                 }
                 if ($request->status_option_id == 3) {

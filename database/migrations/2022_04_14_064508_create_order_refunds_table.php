@@ -20,7 +20,6 @@ class CreateOrderRefundsTable extends Migration
             $table->bigInteger('order_id')->unsigned();
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->bigInteger('payment_id')->unsigned();
-            $table->foreign('payment_id')->references('id')->on('payments')->onDelete('cascade');
             $table->bigInteger('payment_option_id')->unsigned();
             $table->foreign('payment_option_id')->references('id')->on('payment_options')->onDelete('cascade');
             $table->string('transaction_id')->nullable();

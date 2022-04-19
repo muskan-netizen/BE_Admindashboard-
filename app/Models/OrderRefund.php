@@ -22,8 +22,5 @@ class OrderRefund extends Model
         return $this->belongsTo('App\Models\Order');
     }
 
-    public function payment()
-    {
-        return $this->belongsTo('App\Models\Payment');
-    }
+    
 }

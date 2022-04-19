@@ -12,7 +12,6 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderVendorListTaxExport;
 use App\Models\{User,Vendor,OrderVendor,OrderStatusOption,DispatcherStatusOption,OrderRefund,Payment,Order};
 use DB;
-use stdClass;
 
 class OrderController extends Controller{
     use ApiResponser;
@@ -201,7 +200,7 @@ class OrderController extends Controller{
             $refunds[$c]['paid_to_wallet']=$row->paid_to_wallet ? "wallet": "";
             $refunds[$c]['order_id']=$row->order_id;
             $refunds[$c]['orderNumber']=$row->order->order_number;
-            $refunds[$c]['transactionId']=$row->payment->transaction_id;
+            $refunds[$c]['transactionId']=$row->transaction_id;
             $refunds[$c]['vendor_id']=OrderVendor::where('order_id',$row->order_id)->first()->vendor_id;
             $c++;
         }
