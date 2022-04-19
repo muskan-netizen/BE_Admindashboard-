@@ -12,7 +12,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <div class="top-banner-wrapper mb-4">
+                    <div class="top-banner-wrapper mb-sm-4 mb-2">
                         @if(!empty($vendor->banner))
                             <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1920/1080' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
@@ -24,7 +24,7 @@
                                             <div class="file file--upload">
                                                 <label>
                                                     <span class="update_pic border-0">
-                                                    <img src="{{$vendor->logo['proxy_url'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
+                                                    <img src="{{$vendor->logo['proxy_url'] . '200/200' . $vendor->logo['image_path']}}" alt="">
                                                     </span>
                                                 </label>
                                             </div>
@@ -39,6 +39,9 @@
                                                     <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
                                                     @if($vendor->website)
                                                         <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
+                                                    @endif
+                                                    @if($vendor->instagram_url)
+                                                        <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>                                                    
                                                     @endif
                                                 </div>
                                             @endif
@@ -70,7 +73,7 @@
             </div>
         </div>
         <div class="container">
-            <div class="row mb-5">
+            <div class="row mb-sm-5 mb-2">
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
@@ -83,7 +86,7 @@
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
                                     @foreach($newProds as $new)
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 p-0">
                                     <?php /*$imagePath = '';
                                     foreach ($new['media'] as $k => $v) {
                                         $imagePath = $v['image']['path']['image_fit'] . '300/300' . $v['image']['path']['image_path'];
@@ -91,7 +94,7 @@
 
                                     <div class="common-product-box scale-effect mb-2">
                                         <a class="row" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                            <div class="col-sm-4">
+                                            <div class="col-4">
                                                 <div class="img-outer-box position-relative">
                                                         <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
                                                         <div class="pref-timing">
@@ -100,7 +103,7 @@
                                                         {{-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> --}}
                                                     </div>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-8">
                                                 <div class="media-body align-self-center ">
                                                     <div class="inner_spacing px-0">
                                                         <div class="product-description">
@@ -146,83 +149,81 @@
                 <div class="collection-content col-lg-9">
                     <div class="page-main-content">
                         <div class="row">
-                            <div class="col-sm-12">
-                                <div class="collection-product-wrapper">
-                                    <div class="product-top-filter">
-                                        <div class="row">
-                                            <div class="col-xl-12">
-                                                <div class="filter-main-btn">
-                                                    <span class="filter-btn btn btn-theme">
-                                                        <i class="fa fa-filter" aria-hidden="true"></i>{{__('Filter')}}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="product-filter-content">
-                                                    <!-- <div class="collection-view">
-                                                        <ul>
-                                                            <li><i class="fa fa-th grid-layout-view"></i></li>
-                                                            <li><i class="fa fa-list-ul list-layout-view"></i></li>
-                                                        </ul>
-                                                    </div> -->
-                                                    {{-- <div class="collection-grid-view">
-                                                        <ul>
-                                                            <li><img src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/3.png')}}" alt="" class="product-3-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
-                                                        </ul>
-                                                    </div> --}}
-                                                    {{-- <div class="product-page-per-view">
-                                                        <?php $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 8; ?>
-                                                        <select class="customerPaginate">
-                                                            <option value="8" @if($pagiNate == 8) selected @endif>Show 8
-                                                            </option>
-                                                            <option value="12" @if($pagiNate == 12) selected @endif>Show 12
-                                                            </option>
-                                                            <option value="24" @if($pagiNate == 24) selected @endif>Show 24
-                                                            </option>
-                                                            <option value="48" @if($pagiNate == 48) selected @endif>Show 48
-                                                            </option>
-                                                        </select>
-                                                    </div> --}}
-                                                </div>
+                            <div class="collection-product-wrapper">
+                                <div class="product-top-filter">
+                                    <div class="row">
+                                        <div class="col-xl-12">
+                                            <div class="filter-main-btn">
+                                                <span class="filter-btn btn btn-theme">
+                                                    <i class="fa fa-filter" aria-hidden="true"></i>{{__('Filter')}}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="displayCategories">
-                                        <div class="categories-wrapper-grid">
-                                            <div class="row margin-res">
-                                            @if($listData->isNotEmpty())
-                                                @foreach($listData as $key => $cate)
-                                                <div class="col-xl-3 col-6 col-grid-box mt-3">
-                                                    <div class="product-box">
-                                                        <div class="img-wrapper">
-                                                            <a href="{{ route('vendorCategoryProducts', [$vendor->slug, $cate['slug']]) }}">
-                                                                <div class="category-image "><img alt="" src="{{$cate['icon']['proxy_url'] . '300/300' . $cate['icon']['image_path']}}" ></div>
-                                                            </a>
-                                                        </div>
-                                                        <div class="product-detail">
-                                                            <a href="{{ route('vendorCategoryProducts', [$vendor->slug, $cate['slug']]) }}">
-                                                                <h5>{{$cate['translation_name']}}</h5>
-                                                            </a>
-                                                        </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="product-filter-content">
+                                                <!-- <div class="collection-view">
+                                                    <ul>
+                                                        <li><i class="fa fa-th grid-layout-view"></i></li>
+                                                        <li><i class="fa fa-list-ul list-layout-view"></i></li>
+                                                    </ul>
+                                                </div> -->
+                                                {{-- <div class="collection-grid-view">
+                                                    <ul>
+                                                        <li><img src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
+                                                        <li><img src="{{asset('front-assets/images/icon/3.png')}}" alt="" class="product-3-layout-view"></li>
+                                                        <li><img src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
+                                                        <li><img src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
+                                                    </ul>
+                                                </div> --}}
+                                                {{-- <div class="product-page-per-view">
+                                                    <?php $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 8; ?>
+                                                    <select class="customerPaginate">
+                                                        <option value="8" @if($pagiNate == 8) selected @endif>Show 8
+                                                        </option>
+                                                        <option value="12" @if($pagiNate == 12) selected @endif>Show 12
+                                                        </option>
+                                                        <option value="24" @if($pagiNate == 24) selected @endif>Show 24
+                                                        </option>
+                                                        <option value="48" @if($pagiNate == 48) selected @endif>Show 48
+                                                        </option>
+                                                    </select>
+                                                </div> --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="displayCategories">
+                                    <div class="categories-wrapper-grid">
+                                        <div class="row margin-res">
+                                        @if($listData->isNotEmpty())
+                                            @foreach($listData as $key => $cate)
+                                            <div class="col-md-3 col-6 col-grid-box mt-3">
+                                                <div class="product-box">
+                                                    <div class="img-wrapper">
+                                                        <a href="{{ route('vendorCategoryProducts', [$vendor->slug, $cate['slug']]) }}">
+                                                            <div class="category-image "><img alt="" src="{{$cate['icon']['proxy_url'] . '300/300' . $cate['icon']['image_path']}}" ></div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="product-detail">
+                                                        <a href="{{ route('vendorCategoryProducts', [$vendor->slug, $cate['slug']]) }}">
+                                                            <h5>{{$cate['translation_name']}}</h5>
+                                                        </a>
                                                     </div>
                                                 </div>
-                                                @endforeach
-                                            @else
-                                                <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">{{__('Details Not Available')}}</h5></div>
-                                            @endif
                                             </div>
-                                        </div>
-                                        @if(count($listData))
-                                        <div class="pagination pagination-rounded justify-content-end mb-0">
-                                            {{ $listData->links() }}
-                                        </div>
+                                            @endforeach
+                                        @else
+                                            <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">{{__('Details Not Available')}}</h5></div>
                                         @endif
+                                        </div>
                                     </div>
+                                    @if(count($listData))
+                                    <div class="pagination pagination-rounded justify-content-end mb-0">
+                                        {{ $listData->links() }}
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

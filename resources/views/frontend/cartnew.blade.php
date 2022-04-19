@@ -82,7 +82,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h3 class="page-title text-uppercase mt-4">{{__('Cart')}}</h3>
+                <h3 class="page-title text-uppercase mt-sm-4">{{__('Cart')}}</h3>
             </div>
             <div class="cart_response mt-3 mb-3 d-none">
                 <div class="alert p-0" role="alert"></div>
@@ -155,7 +155,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <div id="tbody_<%= product.vendor.id %>">
             <% _.each(product.vendor_products, function(vendor_product, vp){%>
                 <div class="row align-items-md-center vendor_products_tr" id="tr_vendor_products_<%= vendor_product.id %>">
-                    <div class="product-img col-4 col-md-2 pr-0 al">
+                    <div class="product-img col-3 col-md-2 pr-0 al">
                         <% if(vendor_product.pvariant.media_one) { %>
                             <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
                         <% }else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){ %>
@@ -164,7 +164,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <img class='blur-up lazyload w-100' data-src="<%= vendor_product.image_url %>">
                         <% } %>
                     </div>
-                    <div class="col-8 col-md-10">
+                    <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
                             <div class="col-md-3 order-0">
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
@@ -178,7 +178,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <div class="col-md-2 text-md-center order-1 mb-1 mb-md-0">
                                 <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></div>
                             </div>
-                            <div class="col-8 col-md-4 text-md-center order-3 order-md-2">
+                            <div class="col-7 col-md-4 text-md-center order-3 order-md-2">
                                 <div class="number d-flex justify-content-md-center">
                                     <div class="counter-container d-flex align-items-center">
                                         <span class="minus qty-minus" data-minimum_order_count="<%= vendor_product.product.minimum_order_count %>"
@@ -204,7 +204,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 </a>
                             </div>
-                            <div class="col-4 col-md-2 text-right order-4">
+                            <div class="col-5 col-md-2 text-right order-4">
                                 <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_price) %></div>
                             </div>
                         </div>
@@ -217,7 +217,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </div>
                             <% _.each(vendor_product.addon, function(addon, ad){%>
                             <% if(addon.option){%>
-                                <div class="row">
+                                <div class="row no-gutters">
                                     <div class="col-md-3 col col-sm-4 items-details text-left">
                                         <p class="p-0 m-0"><%= addon.option.title %></p>
                                     </div>
@@ -295,37 +295,35 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <hr>
             <% }); %>
             <div class="row">
+                 @if(!$guest_user)
+                 <% if(product.is_promo_code_available > 0) { %>
                 <div class="col-lg-6 mb-3 mb-lg-0 d-flex align-items-start">
-                    @if(!$guest_user)
-                        <% if(product.is_promo_code_available > 0) { %>
-                            <div class="coupon_box w-100">
-                                <img class="blur-up lazyload" data-src="{{ asset('assets/images/discount_icon.svg') }}">
-                                <label class="mb-0 ml-2">
-                                    <% if(product.coupon) { %>
-                                        <%= product.coupon.promo.name %>
-                                    <% }else{ %>
-                                        <a href="javascript:void(0)" class="promo_code_list_btn ml-1" data-vendor_id="<%= product.vendor.id %>" data-cart_id="<%= cart_details.id %>" data-amount="<%= product.product_sub_total_amount  %>">{{__('Select a promo code')}}</a>
-                                    <% } %>
-                                </label>
-                            </div>
+                    <div class="coupon_box w-100">
+                        <img class="blur-up lazyload" data-src="{{ asset('assets/images/discount_icon.svg') }}">
+                        <label class="mb-0 ml-2">
                             <% if(product.coupon) { %>
-                                <label class="p-1 m-0"><a href="javascript:void(0)" class="remove_promo_code_btn ml-1" data-coupon_id="<%= product.coupon ? product.coupon.promo.id : '' %>" data-cart_id="<%= cart_details.id %>">Remove</a></label>
+                                <%= product.coupon.promo.name %>
+                            <% }else{ %>
+                                <a href="javascript:void(0)" class="promo_code_list_btn ml-1" data-vendor_id="<%= product.vendor.id %>" data-cart_id="<%= cart_details.id %>" data-amount="<%= product.product_sub_total_amount  %>">{{__('Select a promo code')}}</a>
                             <% } %>
-                        <% } %>
-                    @endif
+                        </label>
+                    </div>
+                    <% if(product.coupon) { %>
+                        <label class="p-1 m-0"><a href="javascript:void(0)" class="remove_promo_code_btn ml-1" data-coupon_id="<%= product.coupon ? product.coupon.promo.id : '' %>" data-cart_id="<%= cart_details.id %>">Remove</a></label>
+                    <% } %>
                 </div>
+                <% } %>
+                @endif
                 <div class="col-lg-6">
-
                     <% if(product.delOptions) { %>
                         <div class="row mb-1 d-flex align-items-center">
-                            <div class="col-md-5 text-lg-right">
+                            <div class="col-5 text-lg-right">
                                 <label class="m-0 radio">
                                     {{__('Delivery Fee')}} :</label>
                                 </div>
-                            <div class="col-md-7">
+                            <div class="col-7">
                                 <%= product.delOptions %>
                             </div>
-                            
                         </div>
                     <% } %>
                     <% if(product.vendor.fixed_fee_amount>0) { %>
@@ -334,19 +332,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <label class="m-0 radio">
                                     {{__($fixedFee)}} :</label>
                                 </div>
-                            <div class="col-md-7">
+                            <div class="col-7">
                                 <%= product.vendor.fixed_fee_amount %>
                             </div>
-                            
+
                         </div>
                     <% } %>
                     <div class="row mb-1">
-                        <div class="col-md-5 text-lg-right">
+                        <div class="col-5 text-lg-right">
                             <% if(product.coupon_amount_used > 0) { %>
                                 <label class="m-0 radio">{{__('Coupon Discount')}} :</label>
                             <% } %>
                         </div>
-                        <div class="col-md-7 text-right">
+                        <div class="col-7 text-right">
                             <% if(product.coupon_amount_used > 0) { %>
                                 <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.coupon_amount_used) %></p>
                                 <% } %>
@@ -355,10 +353,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                     <div class="row">
                         <% if(cart_details.vendorCnt>1) { %>
-                            <div class="col-md-5 text-lg-right">
+                            <div class="col-5 text-lg-right">
                                 <label class="m-0 radio">{{__('Sub Total')}} :</label>
                             </div>
-                            <div class="col-md-7 text-right">
+                            <div class="col-7 text-right">
                                 <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(parseFloat(product.product_total_amount)+parseFloat(product.vendor.fixed_fee_amount)) %></p>
                             </div>
 
@@ -450,14 +448,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <hr class="my-2">
             <% } %>
-            
+
             <% if(cart_details.total_container_charges > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Total Container Charges')}}</div>
                     <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_container_charges) %></div>
                 </div>
                 <hr class="my-2">
-            <% } 
+            <% }
             if(price_bifurcation!=1){ %>
             <div class="row">
                 <div class="col-6">{{__('Tax')}}</div>
@@ -470,7 +468,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.gross_amount)+parseFloat(fixed_fee_amount)) %></div>
             </div>
             <% } %>
-            <hr class="my-2">           
+            <hr class="my-2">
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
@@ -1951,7 +1949,5 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 @endif
-<script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
-<script src="{{asset('js/payment.js')}}"></script>
 
 @endsection

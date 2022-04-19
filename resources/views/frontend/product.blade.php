@@ -62,7 +62,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="container-fluid">
-                        <div class="row">
+                        {{--<div class="row">
                             <div class="col-xl-12">
                                 <div class="filter-main-btn mb-2">
                                     <span class="filter-btn">
@@ -70,7 +70,7 @@
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </div>--}}
                         <div class="row">
                             <div class="col-lg-5 pl-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
