@@ -7,7 +7,7 @@
         $label = 'Delivery';
     }
 @endphp
-<div class="row  mb-3 ">
+<div class="row  mb-sm-3 mb-1">
     @if($action != 'dine_in' && $action != 'takeaway')
     <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
         <h4 class="page-title m-0">{{ __($label)  }} {{ ($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</h4>
@@ -50,10 +50,10 @@
         </div>
     @endif
 @else
-    <div class="row mb-4" id="address_template_main_div">
+    <div class="row mb-sm-4" id="address_template_main_div">
         @forelse($addresses as $k => $address)
         <div class="col-md-12">
-            <div class="delivery_box p-0 mb-3">
+            <div class="delivery_box p-0 mb-sm-3 mb-1">
                 <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
                     @if($address->is_primary)
                     <input type="radio" name="address_id" value="{{$address->id}}" checked="checked">
@@ -83,7 +83,7 @@
                         <label for="type">{{__('Address Type')}}</label>
                     </div>
                     <div class="col-md-3">
-                        <div class="delivery_box pt-0 pl-0  pb-3">
+                        <div class="delivery_box pt-0 pl-0  pb-sm-3 pb-1">
                             <label class="radio m-0">{{__('Home')}}
                                 <input type="radio" checked="checked" name="address_type" value="1">
                                 <span class="checkround"></span>
@@ -91,7 +91,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="delivery_box pt-0 pl-0  pb-3">
+                        <div class="delivery_box pt-0 pl-0  pb-sm-3 pb-1">
                             <label class="radio m-0">{{__('Office')}}
                                 <input type="radio" name="address_type" value="2">
                                 <span class="checkround"></span>
@@ -99,7 +99,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="delivery_box pt-0 pl-0  pb-3">
+                        <div class="delivery_box pt-0 pl-0  pb-sm-3 pb-1">
                             <label class="radio m-0">{{__('Others')}}
                                 <input type="radio" name="address_type" value="3">
                                 <span class="checkround"></span>

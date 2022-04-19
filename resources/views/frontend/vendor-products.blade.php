@@ -128,7 +128,7 @@
                         @endforeach
                         @endif
                         @if($show_range == 1)
-                        <div class="collection-collapse-block border-0 mb-2 pt-2 open">
+                        <div class="collection-collapse-block border-0 mb-2 open">
                             <h3 class="collapse-block-title">{{__('Price')}}</h3>
                             <div class="collection-collapse-block-content">
                                 <div class="wrapper mt-3">
@@ -152,7 +152,7 @@
                                 @foreach($newProducts as $newProds)
 
                                     @foreach($newProds as $new)
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 p-0">
                                     <?php /*$imagePath = '';
                                     foreach ($new['media'] as $k => $v) {
                                         $imagePath = $v['image']['path']['image_fit'] . '300/300' . $v['image']['path']['image_path'];
@@ -160,7 +160,7 @@
 
                                     <div class="common-product-box scale-effect mb-2">
                                         <a class="row" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                            <div class="col-sm-4">
+                                            <div class="col-4">
                                                 <div class="img-outer-box position-relative">
                                                         <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
                                                         <div class="pref-timing">
@@ -169,7 +169,7 @@
                                                         {{-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> --}}
                                                     </div>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-8">
                                                 <div class="media-body align-self-center ">
                                                     <div class="inner_spacing px-0">
                                                         <div class="product-description">
@@ -271,7 +271,7 @@
 
                                             </select>
                                         </div>
-                                        <div class="product-wrapper-grid">
+                                        <div class="product-wrapper-grid alVender">
                                             <div class="row margin-res">
                                                 @if($listData->isNotEmpty())
                                                     @foreach($listData as $key => $data)
@@ -283,7 +283,7 @@
                                                         }
                                                         $imagePath2 = $data->media[$i]->image->path['image_fit'] . '600/600' . $data->media[$i]->image->path['image_path'];
                                                     }*/ ?>
-                                                    <div class="col-md-3 col-6 col-grid-box mt-4">
+                                                    <div class="col-md-3 col-6 col-grid-box mt-2">
                                                         <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="common-product-box scale-effect mt-0">
                                                             <div class="img-outer-box position-relative">
                                                                 <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">

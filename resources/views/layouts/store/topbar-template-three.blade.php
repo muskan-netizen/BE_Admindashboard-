@@ -210,6 +210,17 @@ if(session()->has('applocale')){
     </div>--}}
 </div>
 <div class="al_mobile_menu al_new_mobile_header">
+                <div class="al_new_cart">
+                    @if($client_preference_detail->cart_enable == 1)
+                    <div class="onhover-dropdown_al onhover-div mobile-cart">
+                        <a href="{{route('showCart')}}" style="position: relative">
+                            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                            <span class="cart_qty_cls" style="display:none"></span>
+                        </a>
+                        <ul class="show-div shopping-cart"></ul>
+                    </div>
+                    @endif
+                </div>
                 <a class="al_toggle-menu" href="#">
                     <i></i>
                     <i></i>

@@ -24,9 +24,8 @@ h2.homepage-address{text-overflow:ellipsis;white-space:nowrap;overflow:hidden;fo
 .al_toggle-menu.active i:nth-child(3){top:25px;-webkit-transform:rotateZ(-45deg);transform:rotateZ(-45deg)}
 .al_body_template_three .onhover-dropdown:before{top: 50%;-webkit-transform: translate(0, -50%);transform: translate(0, -50%);}
 .dark a.fav-button{color: #fff;}
-.al_custom_head.top-header .header-dropdown li a span{
-    height: 30px !important;
-    display: inline-block;
-    vertical-align: middle !important;
-    line-height: 30px;
+.al_custom_head.top-header .header-dropdown li a span{height: 30px !important;display: inline-block;vertical-align: middle !important;line-height: 30px;}
+li.onhover-dropdown.change-language{padding-bottom: 2px !important;display: inline-block;}
+.top-header .header-dropdown li.onhover-dropdown{
+    color: #999;
 }

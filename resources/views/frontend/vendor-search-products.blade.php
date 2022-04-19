@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <div class="col-12 d-flex justify-content-start mb-2 p-0">
+    <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
         @if (isset($tags) && !empty($tags))
             @foreach ($tags as $key => $tag)
                 <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
