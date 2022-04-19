@@ -546,7 +546,7 @@
                                                             <input type="checkbox"
                                                                 class="switch switch-bootstrap product_tag_filter status"
                                                                 name="tag_id" id="product_tag_filter_{{ $key }}"
-                                                                data-tag_id="{{ $tag->id }}"" value="
+                                                                data-tag_id="{{ $tag->id }}" value="
                                                                 {{ $tag->id }}">
                                                             <span class="lable">
                                                                 @if (isset($tag->icon) && !empty($tag->icon))
