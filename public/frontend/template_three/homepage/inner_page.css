@@ -197,10 +197,7 @@ font-weight: 400;
 #header_cart_main_ul img.mr-2.blur-up.lazyloaded{
 border-radius: 60px;
 }
-.al_new_wrapper_design header{
-z-index: 10;
-position: relative;
-}
+
 .collection-collapse-block {
     padding-bottom: 0;
 }

@@ -91,23 +91,7 @@ select#order_type {font-size: 12px;height: 30px;padding: 0 5px !important;margin
 .grid-row.grid-4-4 .cards{display: block;}
 .grid-row.grid-4-4 .cards:first-child{display: inline-block;}}
 @media(max-width:767px){.al_body_template_three .btn.btn-solid{font-size: 12px;}
-ul.timing-box_al{display: block;}
-.timing-box_al li:last-child {
-    margin-right: 0;
-    margin-top: 5px;
-}
-.al_body_template_three ul.timing-box li {
-    display: block;
-    margin-bottom: 5px;
-}
-.al_body_template_three ul.timing-box li small {
-    display: inline-block !important;
-    margin: 0 !important;
-}
-.al_body_template_three ul.timing-box li:last-child {
-    margin-right: 0;
-    float: left;
-}
+
 .al_body_template_three .common-banner,
 .al_body_template_three .product-banner-img{height:120px;border-radius:20px}.collection-collapse-block{padding:15px 10px;background-color:#fff}.collection-collapse-block-content{padding:0 20px}.collection-collapse-block .collapse-block-title,
 .collection-filter .theme-card h5.title-border{font-size:14px}.theme-card span.filter-back{font-size:12px;text-transform:capitalize;font-weight:300;color:var(--theme-deafult)}.al_body_template_three .small-section{padding:0}.al_new_wrapper_design .top-banner-wrapper.text-center .common-banner img{width:100%;height:100%;object-fit:cover}
