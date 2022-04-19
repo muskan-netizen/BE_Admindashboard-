@@ -12,7 +12,7 @@ use App\Http\Controllers\Api\v1\OrderController;
 use App\Http\Controllers\Api\v1\WalletController;
 use App\Http\Controllers\Api\v1\PickupDeliveryController;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
+use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
 
 class StripeGatewayController extends BaseController
 {
@@ -116,12 +116,64 @@ class StripeGatewayController extends BaseController
                 // ])->send();
                 if ($response->isSuccessful()) {
                 // $this->successMail();
-               
-                $request->request->add(['transaction_id' => $response->getTransactionReference()]);
+                    $transactionId = $response->getTransactionReference();
+                    $request->request->add(['transaction_id' => $transactionId]);
                     if($request->action == 'cart'){
-                        $orderController = new OrderController();
-                        $orderResponse = $orderController->postPlaceOrder($request);
-                        return $orderResponse;
+                        // // $orderController = new OrderController();
+                        // // $orderResponse = $orderController->postPlaceOrder($request);
+                        // return $orderResponse;
+
+                        $order_number = $request->order_number;
+                        $cart_id = $cart ? $cart->id : 0 ;
+                        $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                        if ($order) {
+                            $order->payment_status = 1;
+                            $order->save();
+                            $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                            if (!$payment_exists) {
+                                $payment = new Payment();
+                                $payment->date = date('Y-m-d');
+                                $payment->order_id = $order->id;
+                                $payment->transaction_id = $transactionId;
+                                $payment->balance_transaction = $amount;
+                                $payment->type = 'cart';
+                                $payment->save();
+        
+                                // Auto accept order
+                                $orderController = new OrderController();
+                                $orderController->autoAcceptOrderIfOn($order->id);
+        
+                                // Remove cart
+                                Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                                CartAddon::where('cart_id', $cart_id)->delete();
+                                CartCoupon::where('cart_id', $cart_id)->delete();
+                                CartProduct::where('cart_id', $cart_id)->delete();
+                                CartProductPrescription::where('cart_id', $cart_id)->delete();
+                                CartDeliveryFee::where('cart_id', $cart_id)->delete();
+        
+                                // Send Notification
+                                if (!empty($order->vendors)) {
+                                    foreach ($order->vendors as $vendor_value) {
+                                        $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                                        $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                                        $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                                    }
+                                }
+                                $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                                $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                                $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+                                $request->request->add(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
+                                //Send Email to customer
+                                $orderController->sendSuccessEmail($request, $order);
+                                //Send Email to Vendor
+                                foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                                    $orderController->sendSuccessEmail($request, $order, $vendor_id);
+                                }
+                            }
+                            // Send Email
+                            //   $this->successMail();
+                        }
                     }
                     else if($request->action == 'wallet'){
                         $walletController = new WalletController();
@@ -257,6 +309,29 @@ class StripeGatewayController extends BaseController
 
             $user = Auth::user();
 
+            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+           
+            if (!$saved_payment_method) {
+                $customerResponse = $stripe->customers->create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone_number,
+                    'description' => 'Creating Customer',
+                    'metadata' => [
+                        'user_id' => $user->id
+                    ]
+                ]);
+
+                // Find the card ID
+                $customer_id = $customerResponse->id;
+                if ($customer_id) {
+                    $request->request->set('customerReference', $customer_id);
+                    $save_payment_method_response = $this->saveUserPaymentMethod($request);
+                }
+            }else {
+                $customer_id = $saved_payment_method->customerReference;
+            }
+
             $description = '';
             $payment_form = $request->payment_form;
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -272,6 +347,10 @@ class StripeGatewayController extends BaseController
                     'payment_form' => $payment_form
                 ]
             ];
+
+            if(isset($customer_id) && !empty($customer_id)){
+                $postdata['customer'] = $customer_id;
+            }
 
             if($payment_form == 'cart'){
                 $address_id = $request->address_id;

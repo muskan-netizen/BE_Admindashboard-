@@ -197,7 +197,6 @@ function dateTimeInUserTimeZone24($date, $timezone, $showDate=true, $showTime=tr
     if($showTime){
     $timeFormat = 'HH:mm:ss';
     }
-    
     $format = $dateFormat . $timeFormat;
     return $date->isoFormat($format);
     }
@@ -652,6 +651,7 @@ function getDynamicMail(){
     \Config::set('mail.mailers.smtp', $config);
     return 2;
 }
+
 function getDynamicTypeName($name)
 {
     $new_name = getNomenclatureName($name, true);

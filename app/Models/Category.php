@@ -10,7 +10,7 @@ class Category extends Model
 {
   use SoftDeletes;
 
-    protected $fillable = ['slug','icon','icon_2', 'image', 'is_visible', 'status', 'position', 'is_core', 'can_add_products', 'parent_id', 'vendor_id', 'client_code', 'display_mode', 'type_id','warning_page_id', 'template_type_id', 'warning_page_design'];
+    protected $fillable = ['slug','icon','icon_two', 'image', 'is_visible', 'status', 'position', 'is_core', 'can_add_products', 'parent_id', 'vendor_id', 'client_code', 'display_mode', 'type_id','warning_page_id', 'template_type_id', 'warning_page_design'];
     public $timestamps = true;
 
     public function translation(){
@@ -66,7 +66,7 @@ class Category extends Model
 
     public function childs()
     {
-        return $this->hasMany(Category::class, 'parent_id', 'id')->select('id', 'slug', 'parent_id', 'icon', 'icon_2','image','type_id');
+        return $this->hasMany(Category::class, 'parent_id', 'id')->select('id', 'slug', 'parent_id', 'icon', 'icon_two','image','type_id');
     }
     public function products()
     {
@@ -87,9 +87,11 @@ class Category extends Model
     public function getImageAttribute($value)
     {
       $values = array();
+      $values['is_original'] = false; 
       $img = 'default/default_image.png';
       if(!empty($value)){
         $img = $value;
+        $values['is_original'] = true; 
       }
       $ex = checkImageExtension($img);
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
@@ -105,8 +107,9 @@ class Category extends Model
       if(!empty($value)){
         $img = $value;
       }
+      $ex = checkImageExtension($img);
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }
@@ -116,8 +119,9 @@ class Category extends Model
       $values = array();
       if(!empty($value)){
         $img = $value;
+        $ex = checkImageExtension($img);
         $values['proxy_url'] = \Config::get('app.IMG_URL1');
-        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
         $values['image_fit'] = \Config::get('app.FIT_URl');
         return $values;
       }

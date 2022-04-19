@@ -4,9 +4,11 @@
 	Route::get('/sitemap.xml', 'HomeController@createSitmap')->name('sitemap.xml');
 	Route::get('auth/xero','Front\XeroController@index')->name('xero_auth');
 	Route::any('auth/callback/xero','Front\XeroController@xero_callback')->name('callback_xero');
+	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback'); 
+	Route::match(['get','post'],'payment/paytab/return','Front\PaytabController@returnBack')->name('payment.paytab.return'); 
 	Route::get('/debug-sentry', function () {
-	throw new Exception('My first Sentry error!');
-});
+		throw new Exception('My first Sentry error!');
+	});
 
 
 Route::group(['middleware' => ['domain']], function () {
@@ -135,6 +137,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/authorize_net/page','Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
 	Route::post('payment/authorize','Front\AuthorizeGatewayController@createPayment')->name('payment.authorize.createPayment');
 
+	//Paytab
+	Route::match(['get','post'],'payment/paytab/page','Front\PaytabController@beforePayment')->name('payment.paytab.beforePayment');
+	Route::post('payment/paytab','Front\PaytabController@createPayment')->name('payment.paytab.createPayment');
+
 	// toyyibpay
 	Route::match(['get','post'],'payment/toyyib', 'Front\ToyyibPayController@index')->name('payment.toyyibpay.index');
 	//Route::post('payment/webhook/toyyib', 'Front\ToyyibPayController@webhook')->name('payment.webhook.toyyibpay');
@@ -212,6 +218,12 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('payment/easebuzz/notify', 'Front\EasebuzzController@easybuzzNotify')->name('payment.easebuzz.easybuzzNotify');
 	Route::any('payment/easebuzz/api', 'Front\EasebuzzController@easebuzz_respontAPP')->name('easebuzz.webview');
 
+	// test VNPAY payment gateway
+	Route::get('/vnpay-gateway', 'Front\VnpayController@VnPay_gateway')->name('vnpay-gateway');
+	Route::post('payment/vnpay/request', 'Front\VnpayController@order')->name('vnpay.order');
+	Route::match(['get','post'],'vnpay_respont', 'Front\VnpayController@vnpay_respont')->name('vnpay_respont');
+	Route::any('payment/vnpay/notify', 'Front\VnpayController@VnpayNotify')->name('payment.vnpay.VnpayNotify');
+	Route::any('payment/vnpay/api', 'Front\VnpayController@vnpay_respontAPP')->name('.vnpay.webview');
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');

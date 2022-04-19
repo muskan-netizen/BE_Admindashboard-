@@ -472,7 +472,7 @@
                                         <a
                                             href="{{ url('file-download' . '/tamil_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
 
-                                        @elseif(session()->get("applocale_admin") == "ar")
+                                        @elseif(session()->get("applocale_admin") == "am")
                                         <a
                                             href="{{ url('file-download' . '/arabic_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
 

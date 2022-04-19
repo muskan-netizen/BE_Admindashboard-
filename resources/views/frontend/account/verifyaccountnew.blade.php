@@ -55,6 +55,9 @@
                                 <div class="row text-center mt-2">
                                     <div class="col-12 resend_txt">
                                         <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
+                                        
+                                        <div class="countdown text-danger"></div>
+                                        
                                         <a class="verifyEmail" href="javascript:void(0)"><u>{{__('RESEND')}}</u></a>
                                     </div>
                                     <div class="col-md-12 mt-3">
@@ -100,6 +103,7 @@
                         <div class="row text-center mt-2">
                             <div class="col-12 resend_txt">
                                 <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
+                                <div class="phonecountdown text-danger"></div>
                                 <a class="verifyPhone" href="javascript:void(0)"><u>{{__('RESEND')}}</u></a>
                             </div>
                             <div class="col-md-12 mt-3">
@@ -117,7 +121,7 @@
             </div>
         </div>
     </div>
-</section> 
+</section>
 @endsection
 @section('script')
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
@@ -208,8 +212,29 @@
             success: function(response) {
                 if($type == 'email'){
                     $('.verifyEmail').removeClass('disabled').html(resend_text);
+                    
+                    $('.verifyEmail').css('display','none');
+                    $('.countdown').html('');
+                    $('.countdown').css('display','');
+                    startEmailTimer();
+                    setTimeout( function() {
+                        $('.verifyEmail').css('display','');
+                        $('.countdown').css('display','none');
+                        $('.countdown').html('');
+                    }, 61000 );
+
                 }else{
                     $('.verifyPhone').removeClass('disabled').html(resend_text);
+                    
+                    $('.verifyPhone').css('display','none');
+                    $('.phonecountdown').html('');
+                    $('.phonecountdown').css('display','');
+                    startPhoneTimer();
+                    setTimeout( function() {
+                        $('.verifyPhone').css('display','');
+                        $('.phonecountdown').css('display','none');
+                        $('.phonecountdown').html('');
+                    }, 61000 );
                 }
                 if($type == 'email'){
                     $('.edit_email_feedback').html(response.message);
@@ -290,5 +315,51 @@
             },
         });
     });
+
+    function startEmailTimer()
+    {
+        var timer2 = "1:01";
+        var interval = setInterval(function() {
+
+
+        var timer = timer2.split(':');
+        //by parsing integer, I avoid all extra string processing
+        var minutes = parseInt(timer[0], 10);
+        var seconds = parseInt(timer[1], 10);
+        --seconds;
+        minutes = (seconds < 0) ? --minutes : minutes;
+        if (minutes < 0) clearInterval(interval);
+        seconds = (seconds < 0) ? 59 : seconds;
+        seconds = (seconds < 10) ? '0' + seconds : seconds;
+        //minutes = (minutes < 10) ?  minutes : minutes;
+        $('.countdown').html(minutes + ':' + seconds);
+        timer2 = minutes + ':' + seconds;
+        }, 1000);
+    }
+
+    function startPhoneTimer()
+    {
+        var timer2 = "1:01";
+        var interval = setInterval(function() {
+
+
+        var timer = timer2.split(':');
+        //by parsing integer, I avoid all extra string processing
+        var minutes = parseInt(timer[0], 10);
+        var seconds = parseInt(timer[1], 10);
+        --seconds;
+        minutes = (seconds < 0) ? --minutes : minutes;
+        if (minutes < 0) clearInterval(interval);
+        seconds = (seconds < 0) ? 59 : seconds;
+        seconds = (seconds < 10) ? '0' + seconds : seconds;
+        //minutes = (minutes < 10) ?  minutes : minutes;
+        $('.phonecountdown').html(minutes + ':' + seconds);
+        timer2 = minutes + ':' + seconds;
+        }, 1000);
+    }
+
+    
+                                            
+                                        
 </script>
 @endsection

@@ -10,23 +10,19 @@
     </nav>
 </div>
 <div class="col-md-8 col-lg-6">
-    <div class="row d-flex align-items-center">
-        <div class="col-6">
-            @if (isset($tags) && !empty($tags))
-                @foreach ($tags as $key => $tag)
-                    <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
-                        <input type="checkbox"
-                            class="switch switch-bootstrap product_tag_filter status"
-                            name="tag_id" id="product_tag_filter_{{ $key }}"
-                            data-tag_id="{{ $tag->id }}" value="
-                            {{ $tag->id }}" {{!is_null($tagId) && in_array($tag->id, $tagId) ? 'checked' : ''}}>
-                        <span class="lable"> @if (isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}" alt="">@endif <span
-                                class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span></span>
-                    </label>
-                @endforeach
-            @endif
+    <div class="row my-2 d-flex align-items-center">
+        <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
+            <div class="radius-bar w-100">
+                <div class="search_form d-flex align-items-center justify-content-between border">
+                    <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    <input class="form-control border-0 typeahead" type="search"
+                        placeholder="{{ __('Search') }}" id="vendor_search_box" value="{{$input['keyword']??''}}">
+                </div>
+                <div class="list-box style-4" style="display:none;" id="search_box_main_div">
+                </div>
+            </div>
         </div>
-        <div class="col-6 text-right">{{ __('Sort By:')}}
+        <div class="col-5 text-right pl-0"><span > {{ __('Sort By') }} :</span>
             <select name="order_type" id='order_type' class="product_tag_filter p-1">
                 <option value="">{{__('Please Select')}}</option>
                 <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
@@ -39,6 +35,28 @@
             </select>
         </div>
     </div>
+
+    <div class="col-12 d-flex justify-content-start mb-2 p-0">
+        @if (isset($tags) && !empty($tags))
+            @foreach ($tags as $key => $tag)
+                <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
+                    <input type="checkbox"
+                        class="switch switch-bootstrap product_tag_filter status"
+                        name="tag_id" id="product_tag_filter_{{ $key }}"
+                        data-tag_id="{{ $tag->id }}" value="
+                        {{ $tag->id }}" {{!is_null($tagId) && in_array($tag->id, $tagId) ? 'checked' : ''}}>
+                    <span class="lable">
+                        @if (isset($tag->icon) && !empty($tag->icon))
+                            <img class="ml-1"
+                                src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}"
+                                alt="">
+                        @endif <span
+                            class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span>
+                    </span>
+                </label>
+            @endforeach
+        @endif
+    </div>
     @forelse($listData as $key => $data)
         <section class="scrolling_section " id="{{ $data->category->slug }}">
             @if (!empty($data->products))
@@ -46,10 +64,10 @@
                     {{ $data->category->translation_one->name }}
                     ({{ $data->products_count }})</h2>
                 @forelse($data->products as $prod)
-                    <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-gutters mb-3 p-2"
+                    <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-sm-gutters mb-3 p-2"
                         data-p_sku="{{ $prod->sku }}"
                         data-slug="{{ $prod->url_slug }}">
-                        <div class="col-2">
+                        <div class="col-sm-2 mb-2">
                             <a target="_blank"
                                 href="{{ route('productDetail', [$prod->vendor->slug, $prod->url_slug]) }}">
                                 <div class="class_img product_image">
@@ -58,9 +76,9 @@
                                 </div>
                             </a>
                         </div>
-                        <div class="col-10">
-                            <div class="row price_head pl-2">
-                                <div class="col-sm-12 pl-2">
+                        <div class="col-sm-10">
+                            <div class="row price_head">
+                                <div class="col-sm-12">
                                     <div
                                         class="d-flex align-items-start justify-content-between">
                                         <h5 class="mt-0">
@@ -232,7 +250,7 @@
                             @endif
                         </p>
                         <div class="member_no d-block mb-0">
-                            <span>{!! $prod->translation_description !!}</span>
+                            <span>{!! strlen($prod->translation_description) > 140 ? substr($prod->translation_description, 0, 140) : $prod->translation_description !!}<span class="moreellipses">...&nbsp;</span><span class="morecontent"><span style="display:none;"> {!! substr($prod->translation_description, 140) !!} </span>&nbsp;&nbsp;<a href="" class="morelink">Read more</a></span></span>
                         </div>
                         <div id="product_variant_options_wrapper">
                             @if (!empty($prod->variantSet))

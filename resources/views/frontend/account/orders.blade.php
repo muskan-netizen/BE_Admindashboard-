@@ -97,7 +97,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row my-3">
+            <div class="row my-md-3">
                 <div class="col-lg-3">
                     <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
                     <div class="dashboard-left mb-3">
@@ -233,9 +233,9 @@
                                                                                             <span
                                                                                                 class="ml-2">{{ (($order->scheduled_slot)?dateTimeInUserTimeZone($order->scheduled_date_time, $timezone).'. Slot: '.$order->scheduled_slot:dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) ) }}</span>
                                                                                         @elseif(!empty($vendor->ETA))
-                                                                                            <span class="ml-2">{{__('Your
-                                                                                                order will arrive by')}}
-                                                                                                {{ $vendor->ETA }}</span>
+                                                                                            @if($clientPreference->hide_order_prepare_time!=1)
+                                                                                                <span class="ml-2">{{__('Your order will arrive by')}} {{ $vendor->ETA }}</span>
+                                                                                            @endif
                                                                                         @endif
                                                                                         @if ($order->is_gift == '1')
                                                                                             <div class="gifted-icon">
@@ -703,10 +703,10 @@
                                                                                                 @endforeach
                                                                                             </ul>
                                                                                         </div>
-                                                                                        
+
                                                                                         <div class="col-6 col-sm-6">
                                                                                         @if($order->vendors[0]->dispatch_traking_url!=null && $order->vendors[0]->dispatch_traking_url!="")
-                                                                                        
+
                                                                                             <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
                                                                                                 @php
                                                                                                 $driverrating = $order->driver_rating->rating ?? 0;
@@ -729,13 +729,13 @@
                                                                                                             class="fa fa-star{{ $driverrating >= 5 ? '' : '-o' }}"></i>
                                                                                                     </label>
                                                                                                 </li>
-                                                                                                
+
                                                                                             </ul>
-                                                                                        
+
                                                                                         @endif
 
                                                                                         @if($order->reports!=null)
-                                                                                        <div class="order-past-report text-center">                                                                                                                    
+                                                                                        <div class="order-past-report text-center">
                                                                                             <a target="_blank" href="{{$order->reports->report['original']}}" download><i class="fa fa-download" aria-hidden="true"></i> Report</a>
                                                                                         </div>
                                                                                     @endif
@@ -1728,7 +1728,9 @@
     <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
     @endif
     <script src="{{ asset('js/tip_after_order.js') }}"></script>
+    @if(in_array('kongapay',$client_payment_options))
     <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
+    @endif
     <script src="{{ asset('js/payment.js') }}"></script>
     <script type="text/javascript">
         $(document).delegate(".topup_wallet_btn_tip", "click", function() {

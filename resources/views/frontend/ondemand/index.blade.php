@@ -13,21 +13,21 @@ use Illuminate\Support\Arr;
 
                     <div class="step step1 @if(app('request')->input('step') >= '1' || empty(app('request')->input('step'))) active @endif">
                         <div class="step-icon">1</div>
-                        <p>Service Details</p>
+                        <p>{{__('Service Details')}}</p>
                     </div>
 
                     <div class="indicator-line  @if(app('request')->input('step') >= '1' && !empty(app('request')->input('step'))) active @endif"></div>
 
                     <div class="step step2  @if(app('request')->input('step') >= '2' && !empty(app('request')->input('step'))) active @endif">
                         <div class="step-icon">2</div>
-                        <p>Date & Time</p>
+                        <p>{{__('Date & Time')}}</p>
                     </div>
 
                     <div class="indicator-line  @if(app('request')->input('step') == '3' && !empty(app('request')->input('step'))) active @endif"></div>
 
                     <div class="step step3   @if(app('request')->input('step') == '3' && !empty(app('request')->input('step'))) active @endif">
                         <div class="step-icon">3</div>
-                        <p>Payment</p>
+                        <p>{{__('Payment')}}</p>
                     </div>
 
                 </div>
@@ -288,7 +288,7 @@ use Illuminate\Support\Arr;
                                                             @php $checked = ''; @endphp
                                                             @foreach ($cart_data->addon as $value)
                                                                @if($checked != 'checked')
-                                                                    @if($addon->addOnName->id == $value->addon_id && $value->option_id == $option->id  && $value->cart_product_id  == $cart_data->id)
+                                                                    @if($addon->addon_id == $value->addon_id && $value->option_id == $option->id  && $value->cart_product_id  == $cart_data->id)
                                                                     @php $checked = 'checked'; @endphp
                                                                     @else
                                                                     @php $checked = ''; @endphp
@@ -298,9 +298,9 @@ use Illuminate\Support\Arr;
                                                             @endforeach
                                                             <div>
                                                                 <div class="radios">
-                                                                <input type="{{$type_input}}" class="productAddonOption" {{ $checked }} id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}" class="productAddonOption"  name="addonData{{$row}}[{{$cart_data->id}}][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}"/>
+                                                                <input type="{{$type_input}}" class="productAddonOption " {{ $checked }} id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}"  class="productAddonOption"  name="addonData{{$row}}[{{$cart_data->id}}][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}"/>
                                                                     <label for='inlineCheckbox_{{$key}}{{$row.'_'.$k}}'>
-                                                                        <span class="customCheckbox" aria-hidden="true">{{$option->title .' ($'.$option->price.')' }} </span>
+                                                                        <span class="customCheckbox productAddonOptionspan_{{ $checked }}" aria-hidden="true">{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price,',').')' }} </span>
                                                                     </label>
                                                                 </div>
                                                             </div>
@@ -340,7 +340,7 @@ use Illuminate\Support\Arr;
 
                                         <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif>
 
-                                        <h4 class="mb-2"><b>When would you like your service?</b></h4>
+                                        <h4 class="mb-2"><b>{{__('When would you like your service?')}}</b></h4>
                                         <div class="date-items radio-btns hide">
                                             @foreach ($period as $key => $date)
                                                 <div>
@@ -367,7 +367,7 @@ use Illuminate\Support\Arr;
                                         </div>
 
                                         <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
-                                            <h4 class="mt-4 mb-2"><b>What time would you like us to start?</b></h4>
+                                            <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
 
                                             <div class="booking-time radio-btns long-radio">
                                                 @foreach ($time_slots as $key => $date)
@@ -400,7 +400,7 @@ use Illuminate\Support\Arr;
                                     @endforeach
 
                                         <div class="booking-time-wrapper">
-                                            <h4 class="mt-4 mb-2"><b>Do you have any specific instructions?</b></h4>
+                                            <h4 class="mt-4 mb-2"><b>{{__('Do you have any specific instructions?')}}</b></h4>
                                             <textarea class="form-control" name="specific_instructions" id="specific_instructions" cols="30" rows="7"></textarea>
                                         </div>
 

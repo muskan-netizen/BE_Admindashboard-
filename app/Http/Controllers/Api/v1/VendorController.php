@@ -1567,6 +1567,10 @@ class VendorController extends BaseController{
                 {
                     $vendordetail->desc = $request->desc;
                 }
+                if($request->short_desc)
+                {
+                    $vendordetail->short_desc = $request->short_desc;
+                }
                 if($request->email)
                 {
                     $vendordetail->email = $request->email;

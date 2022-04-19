@@ -85,7 +85,7 @@
                                 </div>
                             </div>
 
-                     
+
                         <div  style="display:{{(($themeId==3)?'block':'none')}}" class="card changeIcon">
                             <div class="card-body al_custom_control">
                                 {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
@@ -135,7 +135,7 @@
                                 <h4 class="header-title">{{ __("Home Page Style") }}</h4>
                                 <div class="row">
                                     @foreach($homepage_style_options as $homepage_style)
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
                                         <div class="card mb-0">
                                             <div class="card-body p-0">
                                                 <div class="col-sm-12 custom-control custom-radio radio_new p-0">
@@ -210,6 +210,12 @@
                                     <h4 class="header-title mb-2">{{ __("Quick Link in Header") }}</h4>
                                     <div class="mb-0">
                                         <input type="checkbox" id="header_quick_link" data-plugin="switchery" name="header_quick_link" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->header_quick_link == 1 ? 'checked' : ''}}>
+                                    </div>
+                                </li>
+                                <li class="d-flex align-items-center justify-content-between mt-2">
+                                    <h4 class="header-title mb-2">{{__('Show Apps QR On Footer')}}</h4>
+                                    <div class="mb-0">
+                                        <input type="checkbox" id="show_qr_on_footer" data-plugin="switchery" name="show_qr_on_footer" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->show_qr_on_footer == 1 ? 'checked' : ''}}>
                                     </div>
                                 </li>
                             </ul>
@@ -345,6 +351,7 @@
                                         @endforeach
                                         <input class="form-control" value="{{$exist == 1 ? $value : '' }}" type="text" name="names[]" placeholder="{{ $lang->langName }}">
                                     </div>
+                                    
                                     @endforeach
 
                                 </div>

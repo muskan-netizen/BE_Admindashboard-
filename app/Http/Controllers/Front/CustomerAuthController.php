@@ -56,10 +56,10 @@ class CustomerAuthController extends FrontController
 
     public function sendNotification(){
         // $token = ["fXC1tzHiywg:APA91bGj3YXxPXuiBjCSAhlt0leikG2eq2gIJm3EFtSjkfp4c6akzpeDOqq2XfvUxxX99i36aCPf8gFsJIZrU7Ywcx6ZCIMh9vAPJctpxyU0_pagKF-wgVURZ2Z6C6XMaWAFZCDlas3L"];
-        $token = ["SYyGlsuFhM:APA91bHT-EWdEXBqn9hqpTLObtI8VNf49QTatYDSFaYeI4OZG6vGrxKyfPZUe2b8h0KMhwS-pZCC1stmHlqCqMKdLD5baCjnCusdHZys9Z31gpykmUg2fS5PwmcfAYHB11EAZi_dHHqq"];
+        $token = ["eeYu6qYp4Uknu9TiiXY-AQ:APA91bGE-MSY_KRBOBoZcBtUUgVZtFFHRcQAHK0dad-7J0X9JvX4r9fS7Ywrj700nOM1tm4IMVA4jG9P6nOHgae0HnmxFkY62U4cRDpOq_7HIZuNVs8lWqvrZ6_IssydzMw375GDyum_"];
        //previous
     //    $from = 'AAAA-gxQcf4:APA91bF2-7wHcDDUpdnOAjPkRECMcMqZyto1g3CloNTSvp4tvaM6yX2H1H3FFWQj3mHE_t0LkKKu5M_ASTjIaKvvuLDTrXe9eO7Xi7k8YbH6M355gz7x0GTbK7E9F7I7CAQS3AILs4J_';
-        $from = 'AAAA8Aea-wU:APA91bEKYAjmXEjMg4u-fdxZuDtmwtM_rdkJ8d06mQfGtAiZnZIBYrH5LvYLTWh9VJjMD3pAHaJzjbvL-ckV43xJBHXrLxBvop0SAOwUSQ6Un7_OAEmuzbrHbjBpq045nyWYz4d5zP6b';
+        $from = 'AAAAA_v18xQ:APA91bFEvE7X7b8xFL6sV5F8iT1-RDRHLniD6mVypmx39XLtDavdE25910WJMig0y43Mp3kJPuhRphXKA1SERhkH_u_lzuujc0Gpf4BGN-wdC80ddDqcccGOKfplwV9LQ5qZVyKuWZRx';
 
         $notification_content = NotificationTemplate::where('id', 3)->first();
         if($notification_content){
@@ -196,12 +196,14 @@ class CustomerAuthController extends FrontController
 
 
     /**     * Display register Form     */
-    public function register(SignupRequest $req, $domain = ''){
+    public function register(SignupRequest $req, $domain = ''){ 
         try {
+            $phonenumber= str_replace('-', '', $req->phone_number);
+            $req->phone_number = str_replace(' ', '', $phonenumber);
             if( (empty($req->email)) && (empty($req->phone_number)) ){
                 $validator = $req->validate([
                     'email'  => 'required',
-                    'phone_number'  => 'required'
+                    'phone_number'  => 'required|unique:users'
                 ],[
                     "email.required" => __('The email field is required.'),
                     "phone_number.required" => __('The phone number field is required.'),

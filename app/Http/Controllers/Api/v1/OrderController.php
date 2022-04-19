@@ -203,6 +203,7 @@ class OrderController extends BaseController
                             $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
 
                             $total_container_charges = $total_container_charges + $quantity_container_charges;
+                            
                             $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
                             $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
@@ -442,7 +443,7 @@ class OrderController extends BaseController
                     $res = $this->sendSuccessEmail($request, $order);
                     // pr($res);
                     // exit();
-                    $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz
+                    $ex_gateways = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25,28]; // if Stripe, paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz,vnpay
                     if (!in_array($request->payment_option_id, $ex_gateways)) {
                         CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
@@ -1580,6 +1581,8 @@ class OrderController extends BaseController
                 try {
                     $response = Http::get($request->new_dispatch_traking_url);
                 } catch (\Exception $ex) {
+                    \Log::info('Error:');
+                    \Log::info(json_encode($ex->getMessage()));
                 }
 
 

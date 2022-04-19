@@ -1,6 +1,6 @@
 <div class="tap-top top-cls">
     <div>
-        <i class="fa fa-solid fa-angles-up"></i>
+        <i class="fa fa-angle-double-up"></i>
     </div>
 </div>
 <div class="d-none" id ="nearmap">
@@ -15,7 +15,6 @@
         </div>
     </div>
   </div>
-
 @php
     $mapKey = '1234';
     $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
@@ -23,16 +22,125 @@
         $mapKey = $theme->map_key;
     }
     $webColor = '#ff4c3b';
-    $darkMode = '';
-    if(isset(Session::get('preferences')->theme_admin) && ucwords(session('preferences')->theme_admin) == 'Dark'){
-        $darkMode = 'dark';
-    }
-
     \Session::forget('success');
 @endphp
 
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('assets/js/constants.js')}}"></script>
+<script defer type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script> 
+<script defer type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
+
+<script defer type="text/javascript" src="{{asset('js/custom.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('js/location.js')}}"></script>
+
+{{--
+<!-- All js merged -->
+<script type="text/javascript" src="{{asset('front-assets/js/all-min.js')}}" defer></script>
+<!-- shift to product detail page -->
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
+<!-- duplicate script -->
+<script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
+<!-- Extra javascript , which is not used -->
+<script type="text/javascript" src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/libs/bootstrap-colorpicker/bootstrap-colorpicker.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
+
+<!-- Waitme loader script -->
+<script type="text/javascript" src="{{asset('js/waitMe.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
+--}}
+
+<script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
+@if(isset($set_template)  && $set_template->template_id == 1)
+<script defer type="text/javascript" src="{{asset('front-assets/js/custom-template-one.js')}}"></script>
+@endif
+@yield('js-script')
+@if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
+<script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+<script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+<script>
+    var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
+    var firebaseConfig = {
+        apiKey: firebaseCredentials.fcm_api_key,
+        authDomain: firebaseCredentials.fcm_auth_domain,
+        projectId: firebaseCredentials.fcm_project_id,
+        storageBucket: firebaseCredentials.fcm_storage_bucket,
+        messagingSenderId: firebaseCredentials.fcm_messaging_sender_id,
+        appId: firebaseCredentials.fcm_app_id,
+        measurementId: firebaseCredentials.fcm_measurement_id
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    const messaging = firebase.messaging();
+
+    function initFirebaseMessagingRegistration() {
+        messaging.requestPermission().then(function() {
+            return messaging.getToken()
+        }).then(function(token) {
+            $.ajax({
+                url: "{{ route('user.save_fcm') }}",
+                type: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    fcm_token: token,
+                },
+                success: function(response) {
+
+                },
+            });
+            console.log(token);
+
+        }).catch(function(err) {
+            console.log(`Token Error :: ${err}`);
+        });
+    }
+    @if(empty(Session::get('current_fcm_token')))
+    initFirebaseMessagingRegistration();
+    @endif
+    messaging.onMessage(function(payload) {
+        if (!("Notification" in window)) {
+            console.log("This browser does not support system notifications.");
+        } else if (Notification.permission === "granted") {
+            if (payload && payload.data && payload.data.type && (payload.data.type == "order_status_change" || payload.data.type == "reminder_notification")) {
+                var notificationTitle = payload.notification.title;
+                var notificationOptions = {
+                    body: payload.notification.body,
+                    icon: payload.notification.icon
+                };
+                var push_notification = new Notification(
+                    notificationTitle,
+                    notificationOptions
+                );
+                push_notification.onclick = function(event) {
+                    event.preventDefault();
+                    window.open(payload.notification.click_action, "_blank");
+                    push_notification.close();
+                };
+            }
+        }
+    });
+</script>
+@endif
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
+<script type="text/javascript">
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-5LPF1QP3Y3');
+</script>
+<!-- End googletagmanager -->
+
 <script type="text/javascript">
     var is_hyperlocal = 0;
     var selected_address = 0;
@@ -98,6 +206,9 @@
 /////////////Pagarme Payment Routes
     var pagarme_before_payment = "{{route('payment.pagarme.beforePayment')}}";
     var pagarme_create_payment = "{{route('payment.pagarme.createPayment')}}";
+
+////////////Paytab payment Routes
+    var paytab_before_payment = "{{route('payment.paytab.beforePayment')}}";
 
 /////////////Authorize Payment Routes
     var authorize_before_payment = "{{route('payment.authorize.beforePayment')}}";
@@ -171,16 +282,7 @@
         return x;
         }
     };
-    @php
-        $mapurl = "https://maps.googleapis.com/maps/api/js?key=".$mapKey."&v=3.exp&libraries=places,drawing";
-    @endphp
-</script>
 
-
-<script type="text/javascript" src="{{asset('assets/js/constants.js')}}"></script>
-<script type="text/javascript" src="{{$mapurl}}"></script>
-
-<script>
     var bindLatlng, bindmapProp, bindMap = '';
     function bindLatestCoords(userLatitude, userLongitude){
         bindLatlng = new google.maps.LatLng(userLatitude, userLongitude);
@@ -192,47 +294,11 @@
         bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
     }
     bindLatestCoords(userLatitude, userLongitude);
-</script>
 
-{{-- <script type="text/javascript" src="{{asset('front-assets/js/all-min.js')}}" defer></script> --}}
-<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
-
-{{--
-<!-- shift to product detail page -->
-<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
-<!-- duplicate script -->
-<script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
---}}
-
-@if(isset($set_template)  && $set_template->template_id ==3)
-<script src="{{asset('js/aos.js')}}"></script>
-<script type="text/javascript">
-    AOS.init();
-</script>
-@endif
-<script type="text/javascript" src="{{asset('js/location.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/libs/bootstrap-colorpicker/bootstrap-colorpicker.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
-
-<!--WaitMe Loader Script -->
-<script type="text/javascript" src="{{asset('js/waitMe.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
-<!--WaitMe Loader Script -->
-
-
-
-<script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
-<script>
+    @if($client_preference_detail->hide_nav_bar == 1 || $set_common_business_type == 'taxi')
+      $('.main-menu').addClass('d-none').removeClass('d-block');
+      $('.menu-navigation').addClass('d-none').removeClass('d-block');
+    @endif
     $(function() {
         $(".al_toggle-menu").click(function() {
             $(this).toggleClass("active");
@@ -240,13 +306,13 @@
             $('#page-container').toggleClass("al_fixed");
         });
     });
-    jQuery(document).ready(function($) {
-        setTimeout(function(){
-            var footer_height = $('.footer-light').height();
-            console.log(footer_height);
-            $('article#content-wrap').css('padding-bottom',footer_height);
-        }, 500);
-    });
+    //jQuery(document).ready(function($) {
+    //    setTimeout(function(){
+    //        var footer_height = $('.footer-light').height();
+    //        console.log(footer_height);
+    //        $('article#content-wrap').css('padding-bottom',footer_height);
+    //    }, 500);
+    //});
     @if(isset($set_template)  && $set_template->template_id ==3 && \Request::route()->getName()=='categoryDetail')
     function changeImage(image2, check) {
        var image = $(image2).children('.nav-cate-img').children("img");
@@ -268,79 +334,5 @@
     }
     @endif
 </script>
-@if (Auth::check())
-@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
-<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
-<script>
 
-    // var tag = document.createElement('script');
-    // tag.src = "{{asset('front-assets/js/all-min.js')}}";
-    // tag.setAttribute('defer','');
-    // var firstScriptTag = document.getElementsByTagName('script')[0];
-    // firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
-    var firebaseConfig = {
-        apiKey: firebaseCredentials.fcm_api_key,
-        authDomain: firebaseCredentials.fcm_auth_domain,
-        projectId: firebaseCredentials.fcm_project_id,
-        storageBucket: firebaseCredentials.fcm_storage_bucket,
-        messagingSenderId: firebaseCredentials.fcm_messaging_sender_id,
-        appId: firebaseCredentials.fcm_app_id,
-        measurementId: firebaseCredentials.fcm_measurement_id
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-
-    const messaging = firebase.messaging();
-
-    function initFirebaseMessagingRegistration() {
-        messaging.requestPermission().then(function() {
-            return messaging.getToken()
-        }).then(function(token) {
-            $.ajax({
-                url: "{{ route('user.save_fcm') }}",
-                type: "POST",
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    fcm_token: token,
-                },
-                success: function(response) {
-
-                },
-            });
-            console.log(token);
-
-        }).catch(function(err) {
-            console.log(`Token Error :: ${err}`);
-        });
-    }
-    @if(empty(Session::get('current_fcm_token')))
-    initFirebaseMessagingRegistration();
-    @endif
-    messaging.onMessage(function(payload) {
-        if (!("Notification" in window)) {
-            console.log("This browser does not support system notifications.");
-        } else if (Notification.permission === "granted") {
-            if (payload && payload.data && payload.data.type && (payload.data.type == "order_status_change" || payload.data.type == "reminder_notification")) {
-                var notificationTitle = payload.notification.title;
-                var notificationOptions = {
-                    body: payload.notification.body,
-                    icon: payload.notification.icon
-                };
-                var push_notification = new Notification(
-                    notificationTitle,
-                    notificationOptions
-                );
-                push_notification.onclick = function(event) {
-                    event.preventDefault();
-                    window.open(payload.notification.click_action, "_blank");
-                    push_notification.close();
-                };
-            }
-        }
-    });
-</script>
-@endif
-@endif
+@yield('script')

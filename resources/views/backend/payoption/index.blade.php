@@ -82,9 +82,11 @@
                 $merchant_account = (isset($creds->merchant_account)) ? $creds->merchant_account : '';
                 $multiplier = (isset($creds->multiplier)) ? $creds->multiplier : '';
                 $login_id = (isset($creds->login_id)) ? $creds->login_id : '';
+                $profile_id = (isset($creds->profile_id)) ? $creds->profile_id : '';
                 $transaction_key = (isset($creds->transaction_key)) ? $creds->transaction_key : '';
                 $client_id = (isset($creds->client_id)) ? $creds->client_id : '';
                 $client_key = (isset($creds->client_key)) ? $creds->client_key : '';
+                $server_key = (isset($creds->server_key)) ? $creds->server_key : '';
                 $access_code = (isset($creds->access_code)) ? $creds->access_code : '';
                 $enc_key = (isset($creds->enc_key)) ? $creds->enc_key : '';
                 $easypaisa_store_id = (isset($creds->easypaisa_store_id)) ? $creds->easypaisa_store_id : '';
@@ -92,6 +94,8 @@
                 $toyyibpay_redirect_uri = (isset($creds->toyyibpay_redirect_uri)) ? $creds->toyyibpay_redirect_uri : '';
                 $easebuzz_merchant_key = (isset($creds->easebuzz_merchant_key)) ? $creds->easebuzz_merchant_key : '';
                 $easebuzz_salt = (isset($creds->easebuzz_salt)) ? $creds->easebuzz_salt : '';
+                $vnpay_website_id = (isset($creds->vnpay_website_id)) ? $creds->vnpay_website_id : '';
+                $vnpay_server_key = (isset($creds->vnpay_server_key)) ? $creds->vnpay_server_key : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -604,6 +608,49 @@
                                     <input type="text" name="easebuzz_salt" id="easebuzz_salt" class="form-control" value="{{$easebuzz_salt}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'paytab') )
+                    <div class="mt-2" id="paytab_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="paytab_profile_id" class="mr-3">{{ __("Profile ID") }}</label>
+                                    <input type="text" name="paytab_profile_id" id="paytab_profile_id" class="form-control" value="{{$profile_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="paytab_server_key" class="mr-3">{{ __("Server Key") }}</label>
+                                    <input type="text" name="paytab_server_key" id="paytab_server_key" class="form-control" value="{{$server_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="paytab_client_key" class="mr-3">{{ __("Client Key") }}</label>
+                                    <input type="text" name="paytab_client_key" id="paytab_client_key" class="form-control" value="{{$client_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'vnpay') )
+                    <div class="mt-2" id="vnpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="vnpay_website_id" class="mr-3">{{ __("Website ID") }}</label>
+                                    <input type="text" name="vnpay_website_id" id="vnpay_website_id" class="form-control" value="{{$vnpay_website_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="vnpay_server_key" class="mr-3">{{ __("Server Key") }}</label>
+                                    <input type="text" name="vnpay_server_key" id="vnpay_server_key" class="form-control" value="{{$vnpay_server_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            
                         </div>
                     </div>
                     @endif

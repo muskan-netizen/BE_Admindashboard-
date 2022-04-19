@@ -357,7 +357,7 @@ $(document).ready(function () {
                     }
                     else {
                         if ((latitude) && (longitude) && (selected_address)) {
-                            window.location.href = home_page_url;
+                            // window.location.href = home_page_url;
                         }
                     }
                 }
@@ -474,9 +474,9 @@ $(document).ready(function () {
                                     dots: false,
                                     responsive: [
                                         { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 3, infinite: true, dots: false, centerMode: true,}},
-                                        { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, }},
-                                        { breakpoint: 767, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true,}},
-                                        { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true,}}
+                                        { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, }},
+                                        { breakpoint: 767, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,}},
+                                        { breakpoint: 576, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,centerPadding: '0px',}}
                                     ]
                                 });
                                 $("#our_vendor_main_div").show();
@@ -498,10 +498,10 @@ $(document).ready(function () {
                                     arrows: true,
                                     dots: false,
                                     responsive: [
-                                        { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 3, infinite: true,dots: false,centerMode: true,}},
-                                        { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 3, dots: false, centerMode: true,}},
-                                        { breakpoint: 767, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true,}},
-                                        { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true,}}
+                                        { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 1, infinite: true,dots: false,centerMode: true,}},
+                                        { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,}},
+                                        { breakpoint: 767, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,}},
+                                        { breakpoint: 576, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,centerPadding: '0',}}
                                     ]
                                 });
                                 $('#our_vendor_main_div').removeClass('d-none');
@@ -525,8 +525,8 @@ $(document).ready(function () {
                                     arrows: true,
                                     responsive: [
                                         { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                                        { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-                                        { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+                                        { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2 } },
+                                        { breakpoint: 767, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 1 ,centerPadding: '0px',} }
                                     ]
                                 });
                                 if (response.data.feature_products.length > 0) {
@@ -558,7 +558,7 @@ $(document).ready(function () {
                                     responsive: [
                                         { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
                                         { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-                                        { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+                                        { breakpoint: 767, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 1,centerPadding: '0px' } }
                                     ]
                                 });
                               break;
@@ -580,7 +580,7 @@ $(document).ready(function () {
                                     responsive: [
                                         { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
                                         { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-                                        { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+                                        { breakpoint: 767, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 1,centerPadding: '0px', } }
                                     ]
                                 });
                                 if (response.data.on_sale_products.length > 0) {
@@ -619,8 +619,8 @@ $(document).ready(function () {
                                     responsive: [
                                         {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
                                         {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
-                                        {breakpoint: 767,settings: {slidesToShow: 2,slidesToScroll: 1}},
-                                        {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
+                                        {breakpoint: 767,settings: {slidesToShow: 3,slidesToScroll: 1}},
+                                        {breakpoint: 360,settings: {slidesToShow: 3,slidesToScroll: 1}}
                                     ]
                                 });
                                break;
@@ -696,16 +696,16 @@ $(document).ready(function () {
         let selectedPlaceId = $("#address-place-id").val();
         let selectedAddress = $("#address-input").val();
         if((lat != '') && (long != '')){
-            displayLocation(lat, long, selectedPlaceId, selectedAddress);
+            // displayLocation(lat, long, selectedPlaceId, selectedAddress);
         }else{
             let lat = position.coords.latitude;
             let long = position.coords.longitude;
-            displayLocation(lat, long);
+            // displayLocation(lat, long);
         }
     }
 
     function defaultPosition(){
-        displayLocation(defaultLatitude, defaultLongitude, '', defaultLocationName);
+        // displayLocation(defaultLatitude, defaultLongitude, '', defaultLocationName);
     }
 
     if (is_hyperlocal) {
@@ -774,64 +774,64 @@ $(document).ready(function () {
         });
     }
 
-    function displayLocation(latitude, longitude, placeId='', location='') {
-        var geocoder;
-        geocoder = new google.maps.Geocoder();
-        var latlng = new google.maps.LatLng(latitude, longitude);
+    // function displayLocation(latitude, longitude, placeId='', location='') {
+    //     var geocoder;
+    //     geocoder = new google.maps.Geocoder();
+    //     var latlng = new google.maps.LatLng(latitude, longitude);
 
-        const map = new google.maps.Map(document.getElementById('address-map'), {
-            center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-            zoom: 13
-        });
+    //     const map = new google.maps.Map(document.getElementById('address-map'), {
+    //         center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
+    //         zoom: 13
+    //     });
 
-        const marker = new google.maps.Marker({
-            map: map,
-            position: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-        });
+    //     const marker = new google.maps.Marker({
+    //         map: map,
+    //         position: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
+    //     });
 
-        var geodata = { 'latLng': latlng };
-        if(placeId != ''){
-            geodata = { 'placeId': placeId };
-            // geodata.placeId = placeId;
-        }
+    //     var geodata = { 'latLng': latlng };
+    //     if(placeId != ''){
+    //         geodata = { 'placeId': placeId };
+    //         // geodata.placeId = placeId;
+    //     }
 
-        geocoder.geocode(geodata,
-            function (results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    if (results[0]) {
-                        var add = results[0].formatted_address;
-                        var value = add.split(",");
-                        if(placeId == ''){
-                            placeId = results[0].place_id;
-                        }
-                        if(location != ''){
-                            add = location;
-                        }
+    //     geocoder.geocode(geodata,
+    //         function (results, status) {
+    //             if (status == google.maps.GeocoderStatus.OK) {
+    //                 if (results[0]) {
+    //                     var add = results[0].formatted_address;
+    //                     var value = add.split(",");
+    //                     if(placeId == ''){
+    //                         placeId = results[0].place_id;
+    //                     }
+    //                     if(location != ''){
+    //                         add = location;
+    //                     }
 
-                        count = value.length;
-                        country = value[count - 1];
-                        state = value[count - 2];
-                        city = value[count - 3];
-                        if (!selected_address) {
-                            $("#address-place-id").val(placeId);
-                            $("#address-input").val(add);
-                            $("#address-latitude").val(latitude);
-                            $("#address-longitude").val(longitude);
-                            $(".homepage-address span").text(value).attr({ "title": value, "data-original-title": value });
-                            getHomePageCategoryMenu(latitude, longitude);
-                            getHomePage(latitude, longitude);
-                        }
-                    }
-                    else {
-                        // $("#address-input").val("address not found");
-                    }
-                }
-                else {
-                    $("#address-input").val("Geocoder failed due to: " + status);
-                }
-            }
-        );
-    }
+    //                     count = value.length;
+    //                     country = value[count - 1];
+    //                     state = value[count - 2];
+    //                     city = value[count - 3];
+    //                     if (!selected_address) {
+    //                         $("#address-place-id").val(placeId);
+    //                         $("#address-input").val(add);
+    //                         $("#address-latitude").val(latitude);
+    //                         $("#address-longitude").val(longitude);
+    //                         $(".homepage-address span").text(value).attr({ "title": value, "data-original-title": value });
+    //                         getHomePageCategoryMenu(latitude, longitude);
+    //                         getHomePage(latitude, longitude);
+    //                     }
+    //                 }
+    //                 else {
+    //                     // $("#address-input").val("address not found");
+    //                 }
+    //             }
+    //             else {
+    //                 $("#address-input").val("Geocoder failed due to: " + status);
+    //             }
+    //         }
+    //     );
+    // }
 
 
     ////////////// *****************   home page category icon **************** //////////////////
@@ -918,7 +918,7 @@ function initMap() {
     const locationInputs = document.getElementsByClassName("map-input");
 
     const autocompletes = [];
-    const geocoder = new google.maps.Geocoder;
+    let geocoder = new google.maps.Geocoder;
     for (let i = 0; i < locationInputs.length; i++) {
 
         const input = locationInputs[i];
@@ -935,6 +935,7 @@ function initMap() {
         const marker = new google.maps.Marker({
             map: map,
             position: { lat: latitude, lng: longitude },
+            draggable:true
         });
 
         marker.setVisible(isEdit);
@@ -947,7 +948,7 @@ function initMap() {
 
     for (let i = 0; i < autocompletes.length; i++) {
         const input = autocompletes[i].input;
-        const autocomplete = autocompletes[i].autocomplete;
+        let autocomplete = autocompletes[i].autocomplete;
         const map = autocompletes[i].map;
         const marker = autocompletes[i].marker;
 
@@ -957,13 +958,15 @@ function initMap() {
 
             geocoder.geocode({ 'placeId': place.place_id }, function (results, status) {
                 if (status === google.maps.GeocoderStatus.OK) {
-                    const lat = results[0].geometry.location.lat();
-                    const lng = results[0].geometry.location.lng();
+                    let lat = results[0].geometry.location.lat();
+                    let lng = results[0].geometry.location.lng();
+
                     $("#address-place-id").val(place.place_id);
                     // $(".homepage-address span").text(place.formatted_address);
                     setLocationCoordinates(autocomplete.key, lat, lng);
                 }
             });
+
 
             if (!place.geometry) {
                 window.alert("No details available for input: '" + place.name + "'");
@@ -981,6 +984,63 @@ function initMap() {
             marker.setVisible(true);
 
         });
+
+
+        google.maps.event.addListener(marker, 'dragend', function() {
+            geocoder.geocode({'latLng': marker.getPosition()}, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                        var address_components = results[0].address_components;
+                        var components={};
+                        jQuery.each(address_components, function(k,v1) {jQuery.each(v1.types, function(k2, v2){components[v2]=v1.long_name});});
+                        var city;
+                        var postal_code;
+                        var state;
+                        var country;
+
+                        if(components.locality) {
+                            city = components.locality;
+                        }
+
+                        if(!city) {
+                            city = components.administrative_area_level_1;
+                        }
+
+                        if(components.postal_code) {
+                            postal_code = components.postal_code;
+                        }
+
+                        if(components.administrative_area_level_1) {
+                            state = components.administrative_area_level_1;
+                        }
+
+                        if(components.country) {
+                            country = components.country;
+                        }
+
+                        // $.ajax({
+                        //     url : 'url',
+                        //     data: {state : state, country : country},
+                        //     type: 'POST',
+                        //     success: function(data) {
+                        //         $('#input-country').val(data['country']);
+                        //         $('#input-zone').val(data['zone']);
+                        //     }
+                        // });
+
+                        console.log(city);
+                        console.log(state);
+                        console.log(country);
+                        console.log(postal_code);
+                        console.log(marker.getPosition().lat());
+                        console.log(marker.getPosition().lng());
+                        $('#address-input').val(results[0].formatted_address);
+                        setLocationCoordinates(autocomplete.key, marker.getPosition().lat(), marker.getPosition().lng());
+                    }
+                }
+            });
+        });
+
         setTimeout(function(){
             $(".pac-container").appendTo("#edit-address .address-input-group");
         }, 300);

@@ -137,6 +137,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then ')}} {{Session::get('currencySymbol')}}<%= Helper.formatPrice(product.vendor.order_min_amount) %>
                         </div>
+                        <div id="mov" style="display:none;"><%= product.vendor.order_min_amount %> </div>
                     </div>
                 <% } %>
 
@@ -165,7 +166,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     <div class="col-8 col-md-10">
                         <div class="row align-items-md-center">
-                            <div class="col-md-3 order-0">123456
+                            <div class="col-md-3 order-0">
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
@@ -1283,9 +1284,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 @endif
 
-<script src="{{asset('assets/js/intlTelInput.js')}}"></script>
-<script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
 
 <script type="text/javascript">
     var stripe_fpx = '';
@@ -1944,10 +1947,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
-
-
 </script>
+@if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
+@endif
 <script src="{{asset('js/payment.js')}}"></script>
 
 @endsection
