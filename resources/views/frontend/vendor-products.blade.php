@@ -42,6 +42,9 @@
                                                     @if($vendor->website)
                                                         <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
                                                     @endif
+                                                    @if($vendor->instagram_url)
+                                                        <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>                                                    
+                                                    @endif
                                                 </div>
                                             @endif
                                         </div>
