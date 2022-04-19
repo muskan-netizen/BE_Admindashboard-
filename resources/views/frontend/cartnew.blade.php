@@ -1951,7 +1951,5 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 @endif
-<script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
-<script src="{{asset('js/payment.js')}}"></script>
 
 @endsection
