@@ -37,18 +37,17 @@ $(function () {
 
 $(window).scroll(function () {
     var windscroll = $(window).scrollTop();
-    var windowheight = $(window).height() - 250;
+    var windowheight = $(window).height();
     if (windscroll >= windowheight) {
         $('section.scrolling_section').each(function (i) {
             // The number at the end of the next line is how pany pixels you from the top you want it to activate.
-            if ($(this).position().top <= windscroll - windowheight) {
+            if ($(this).position().top <= windscroll - windowheight + 800 ) {
+
                 $('.scrollspy-menu li.active').removeClass('active');
                 $('.scrollspy-menu li').eq(i).addClass('active');
             }
         });
-
     } else {
-
         $('.scrollspy-menu li.active').removeClass('active');
         $('.scrollspy-menu li:first').addClass('active');
     }
@@ -518,6 +517,8 @@ $(document).ready(function () {
                 paymentViaToyyibPay('');
             } else if (payment_option_id == 25) {
                 payWithEasebuss('');
+            }else if (payment_option_id == 27) {
+                paymentViaPaytab('','');
             }
         } else {
             _this.attr("disabled", false);
@@ -1611,6 +1612,16 @@ $(document).ready(function () {
                 return false;
             }
         }
+        else if (payment_option_id == 28) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //Easebuzz payment gateway 
+                payWithVNpay(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
+        }
 
 
     });
@@ -1809,6 +1820,9 @@ $(document).ready(function () {
             payWithEasebuss('', payment_option_id, '');
         }else if (payment_option_id == 27) {
             paymentViaPaytab('', payment_option_id, '');
+        }
+        else if (payment_option_id == 28) {
+            payWithVNpay('', payment_option_id, '');
         }
 
 
@@ -2276,6 +2290,7 @@ $(document).ready(function () {
                 // console.log(response);
                 var latest_price = parseInt(base_price) * parseInt(quantity);
                 $('#product_total_amount_' + cartproduct_id).html('$' + latest_price);
+                // return false;
                 cartHeader();
             },
             error: function (err) {
@@ -2313,25 +2328,35 @@ $(document).ready(function () {
                 tip = 0;
             }
 
-            amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+            // return false;
+            // amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+            amount_payable = parseFloat(amount_payable) + parseFloat(tip);
             $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
-
+            if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
+                $("#order_placed_btn").removeAttr("disabled");
+                $("#order_placed_btn").removeClass("d-none");
+            }else{
+                $("#order_placed_btn").attr("disabled", true);
+                $("#order_placed_btn").addClass("d-none");
+        }
         } else {
-            amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
+            // amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
             $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
+            
         }
-        if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
-                $("#order_placed_btn").removeAttr("disabled");
-                $("#order_placed_btn").removeClass("d-none");
+       
+       
+        
+        if((parseFloat(amount_payable)+parseFloat($('#wallet_amount_used').val()))>=parseFloat($('#mov').text())){
+            $("#MOV_Notification").addClass("d-none");
         }else{
-            $("#order_placed_btn").attr("disabled", true);
-            $("#order_placed_btn").addClass("d-none");
+            $("#MOV_Notification").removeClass("d-none");
         }
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     }
@@ -2347,10 +2372,24 @@ $(document).ready(function () {
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
         var amount_payable = amount_elem.val();
-        amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+        // amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+        
+        // alert("wallet amount available"+$('total_wallet_amount_available'))
+        amount_payable = parseFloat(amount_payable) + parseFloat(tip);
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
         $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+
+        
+            if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
+                $("#order_placed_btn").removeAttr("disabled");
+                $("#order_placed_btn").removeClass("d-none");
+                $("#MOV_Notification").addClass("d-none");
+            }else{
+                $("#order_placed_btn").attr("disabled", true);
+                $("#order_placed_btn").addClass("d-none");
+                $("#MOV_Notification").removeClass("d-none");
+            }
     });
     $(document).on('click', '.qty-minus', function () {
         let base_price = $(this).data('base_price');

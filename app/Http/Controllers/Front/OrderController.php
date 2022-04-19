@@ -273,7 +273,7 @@ class OrderController extends FrontController
         // dd($order->toArray());
 
         $langId = Session::get('customerLanguage');
-        $fixedFee = $this->fixedFee($langId);
+        $fixedFeeNomenclatures = $this->fixedFee($langId);
         $order_vendors =  OrderVendor::where('order_id', $request->order_id)->whereNotNull('dispatch_traking_url')->get();
         if (count($order_vendors)) {
             $home_service = ClientPreference::where('business_type', 'home_service')->where('id', '>', 0)->first();
@@ -284,7 +284,7 @@ class OrderController extends FrontController
 
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-        return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFee'));
+        return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
     }
 
     // public function getOrderToyyibPaySuccessPage(Request $request)
@@ -811,8 +811,8 @@ class OrderController extends FrontController
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                    $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
-
+                    $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges+$fixed_fee_amount;
+                    
                     //$payable_amount = $payable_amount + $quantity_price;
                     //$vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     //$vendor_payable_amount = $vendor_payable_amount + $quantity_price;
@@ -1071,7 +1071,7 @@ class OrderController extends FrontController
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [4,7,8,9,10,12,13,15,17,18,19,20,21,24,25,26]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree
+            $ex_gateways = [4,7,8,9,10,12,13,15,17,18,19,20,21,24,25,26,28]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay
            
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 

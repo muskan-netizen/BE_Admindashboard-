@@ -438,6 +438,11 @@
                                                                 <i class="fa fa-home"></i> {{ $vendor->website }}
                                                             </li>
                                                         @endif
+                                                        @if($vendor->instagram_url)
+                                                            <li class="d-block vendor-instagram">
+                                                                <i class="fa fa-instagram"></i> <a target="_blank" href="{{$vendor->instagram_url}}">Visit Instagram</a>
+                                                            </li>                                                            
+                                                        @endif
                                                     @endif
 
                                                     @php
@@ -445,7 +450,7 @@
                                                     @endphp
 
                                                     <li class="d-block vendor-timing">
-                                                        <i class="icon-time"></i>
+                                                        <i class="icon-time"></i>                                                        
                                                         @if ($vendor->is_vendor_closed == 0 && $vendor->show_slot == 0)
                                                             {{ $vendor->opening_time }} – {{ $vendor->closing_time }}
                                                             <span class="badge badge-success">Open</span>
@@ -467,6 +472,7 @@
                                                         <span class="badge badge-danger">{{ __('Minimum order value') }}
                                                             {{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
                                                     @endif
+                                                    
                                                 </ul>
                                             </div>
                                 </div>
