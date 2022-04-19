@@ -2088,15 +2088,6 @@ class VendorController extends BaseController{
             'data' => $vendorData
         ]);
 
-<<<<<<< HEAD
-        $newCollection = collect([
-            'current_page' => $page,
-            'per_page' => $limit,
-            'data' => $vendorData
-        ]);
-
-=======
->>>>>>> c7a3b69345f7b70919efa59ffc54757a44202b83
         return $this->successResponse($newCollection);
     }
 
