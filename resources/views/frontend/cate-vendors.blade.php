@@ -119,7 +119,7 @@
                                             <div class="col-xl-12">
                                                 <div class="filter-main-btn">
                                                     <span class="filter-btn btn btn-theme">
-                                                        <i class="fa fa-filter" aria-hidden="true"></i>{{__('Filter')}}
+                                                        </i> {{__('New Product')}} >
                                                     </span>
                                                 </div>
                                             </div>
