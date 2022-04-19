@@ -9,8 +9,8 @@
 
 <section class="wrapper-main py-lg-5 d-flex align-items-center">
     <div class="container">
-        <div class="row align-items-top h-100" id="login-section">
-            <div class="col-lg-6 mb-lg-0 mb-3 text-center border-right pb-4 pb-sm-0">
+        <div class="row align-items-center h-100" id="login-section">
+            <div class="col-lg-6 mb-lg-0 mb-3 text-center border-right pb-sm-0">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
                 @if(session('preferences'))
                 @if(@session('preferences')->fb_login == 1 || @session('preferences')->twitter_login == 1 || @session('preferences')->google_login == 1 || @session('preferences')->apple_login == 1)
