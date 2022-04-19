@@ -131,7 +131,7 @@
                                                     <p class="mb-1">{{$add->country  ? $add->country : ''}}</p>
                                                 </div>
                                             </div>
-                                            <div class="address-btn d-flex align-items-center justify-content-end w-100 mt-4 px-2">
+                                            <div class="address-btn d-flex align-items-center justify-content-end w-100 mt-sm-4 px-2">
                                                 @if($add->is_primary == 1)
                                                     <a class="btn btn-solid disabled" href="#">{{ __('Primary') }}</a>
                                                 @else
