@@ -1284,9 +1284,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 @endif
 
-<script src="{{asset('assets/js/intlTelInput.js')}}"></script>
-<script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
 
 <script type="text/javascript">
     var stripe_fpx = '';
@@ -1945,10 +1947,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
-
-
 </script>
+@if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
+@endif
 <script src="{{asset('js/payment.js')}}"></script>
 
 @endsection

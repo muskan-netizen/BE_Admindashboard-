@@ -69,6 +69,9 @@ body .dropify-wrapper .dropify-clear{top:auto;bottom:5px}button.btn.btn-secondar
 #sidebar-menu .menuitem-active .active svg, #sidebar-menu .menuitem-active .active svg path {fill: #fff !important;}
 .language-input.style-4 {overflow: auto;max-width: fit-content;width: 500px;}
 span.icon-verification-options svg path {fill: #6e768e;}
+span.icon-estimation svg path {
+    fill: #6e768e;
+}
 .content-page .content{padding-top: 0;}
 :root {
     --textDark_color: #744c3f;

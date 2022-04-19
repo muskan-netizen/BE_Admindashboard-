@@ -208,7 +208,7 @@
             </div>
 
             <h4 class="header-title mb-3">Allocation</h4>
-            <div class="row my-3" id="rediodiv">
+            <div class="row my-md-3" id="rediodiv">
                 <div class="col-md-12">
                     <div class="login-form">
                         <ul class="list-inline">
