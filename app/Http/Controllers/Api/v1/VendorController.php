@@ -1998,7 +1998,7 @@ class VendorController extends BaseController{
             $vendorData = $vendorData->whereIn('id', $ses_vendors);
             //if($venderFilternear && ($venderFilternear == 1) ){
                 //->orderBy('vendorToUserDistance', 'ASC')
-                $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
+                // $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
             //}
         }
 
@@ -2018,7 +2018,7 @@ class VendorController extends BaseController{
                 });
             });
         }
-        $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->paginate($limit, $page);
+        $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->paginate($limit, $page)->sortBy('vendorToUserDistance')->values();
 
         foreach ($vendorData as $vendor) {
             unset($vendor->products);
@@ -2078,7 +2078,13 @@ class VendorController extends BaseController{
         //     $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
         // }
 
-        return $this->successResponse($vendorData);
+        $newCollection = collect([
+            'current_page' => $page,
+            'per_page' => $limit,
+            'data' => $vendorData
+        ]);
+
+        return $this->successResponse($newCollection);
     }
 
 
