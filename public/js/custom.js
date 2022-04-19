@@ -37,18 +37,23 @@ $(function () {
 
 $(window).scroll(function () {
     var windscroll = $(window).scrollTop();
-    var windowheight = $(window).height() - 250;
+    var windowheight = $(window).height();
+    console.log('+++++++++++++++++++');
+    console.log(windscroll);
+    console.log(windowheight);
     if (windscroll >= windowheight) {
         $('section.scrolling_section').each(function (i) {
+            console.log('----------------------');
+            console.log($(this).position().top);
+            console.log(windscroll - windowheight);
             // The number at the end of the next line is how pany pixels you from the top you want it to activate.
-            if ($(this).position().top <= windscroll - windowheight) {
+            if ($(this).position().top <= windscroll - windowheight + 750 ) {
+
                 $('.scrollspy-menu li.active').removeClass('active');
                 $('.scrollspy-menu li').eq(i).addClass('active');
             }
         });
-
     } else {
-
         $('.scrollspy-menu li.active').removeClass('active');
         $('.scrollspy-menu li:first').addClass('active');
     }
