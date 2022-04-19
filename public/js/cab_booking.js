@@ -1,5 +1,9 @@
    ////////   **************  cab details page  *****************  ////////
 
+   $.ajaxSetup({
+    headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')}
+    });
+
    $(document).delegate(".cab_payment_method_selection", "click", function(){
         $.ajax({
             type: "GET",
