@@ -4,7 +4,8 @@
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
-<link href="{{asset('assets/libs/flatpickr/flatpickr.min.css')}}" rel="stylesheet" type="text/css" />
+
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css"/> -->
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style type="text/css">
@@ -421,7 +422,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <% if(cart_details.dropoff_delay_date != 0) { %>
                         <input type="datetime-local" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_dropoff != '') ? cart_details.schedule_dropoff : '') %>" min="<%= ((cart_details.dropoff_delay_date != '0') ? cart_details.dropoff_delay_date : '') %>">
                     <% } else { %>
-                            <input type="datetime-local" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_dropoff??'' }}" min="{{ $now }}">
+                            <!-- <input type="date" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_dropoff??'' }}" min="{{ $now }}"> -->
+                            <input type="text" name="date17" value="" id="schedule_datetime_dropoff">
                     <% } %>
                 </div>
             </div>
@@ -1268,6 +1270,31 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @endsection
 
 @section('script')
+<script type="text/javascript" src="{{asset('assets/libs/simple-dtpicker/jquery.simple-dtpicker.js')}}"></script>
+<link href="{{asset('assets/libs/simple-dtpicker/jquery.simple-dtpicker.css')}}" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+   $(document).ready(function(){
+    setTimeout( function(){ 
+    // Do something after 1 second 
+    $('input[name=date17]').click(function(){
+    $('input[name=date17]').appendDtpicker({
+        "inline": true,
+        "futureOnly": true,
+        "minTime":"08:30",
+        "maxTime":"19:15"
+    });
+});
+}  , 2000 );
+});
+        // $("#username").keypress(function(e) {
+        //     if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+        //         return false;
+        //     }
+        //     return true;
+        // });
+       
+    
+</script>
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
 </script>
 
