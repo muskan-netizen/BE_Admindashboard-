@@ -441,7 +441,7 @@
                                                         @if($vendor->instagram_url)
                                                             <li class="d-block vendor-instagram">
                                                                 <i class="fa fa-instagram"></i> <a target="_blank" href="{{$vendor->instagram_url}}">Visit Instagram</a>
-                                                            </li>                                                            
+                                                            </li>
                                                         @endif
                                                     @endif
 
@@ -450,7 +450,7 @@
                                                     @endphp
 
                                                     <li class="d-block vendor-timing">
-                                                        <i class="icon-time"></i>                                                        
+                                                        <i class="icon-time"></i>
                                                         @if ($vendor->is_vendor_closed == 0 && $vendor->show_slot == 0)
                                                             {{ $vendor->opening_time }} – {{ $vendor->closing_time }}
                                                             <span class="badge badge-success">Open</span>
@@ -472,7 +472,7 @@
                                                         <span class="badge badge-danger">{{ __('Minimum order value') }}
                                                             {{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
                                                     @endif
-                                                    
+
                                                 </ul>
                                             </div>
                                 </div>
@@ -889,10 +889,11 @@
                                                     <span>
 
                                                         {{ Session::get('currencySymbol') }}<%=  Helper.formatPrice(vendor_product.quantity_price) %>
-                                                        <a class="action-icon remove_product_via_cart text-danger" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
+
+                                                    </span>
+                                                    <a class="action-icon remove_product_via_cart text-danger" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                         </a>
-                                                    </span>
                                                 </h6>
                                             </div>
                                         </li>
