@@ -1,4 +1,4 @@
-<div class="col-12 text-right mt-2">{{ __('Sort By:')}}
+<div class="col-12 text-right mt-2">
     <select name="order_type" id='order_type' class="sortingFilter p-1">
      <option value="">{{__('Please Select')}}</option>
         <option value="featured" {{isset($data['order_type']) && $data['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
@@ -14,7 +14,7 @@
     <div class="row margin-res">
       @if($listData->isNotEmpty())
         @foreach($listData as $key => $data)
-        <div class="col-xl-3 col-6 col-grid-box mt-3">
+        <div class="col-xl-3 col-md-3 col-6 col-grid-box mt-3">
             <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="product-box scale-effect mt-0">
                 <div class="product-image p-0"  style="height:200px">
                     <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">

@@ -126,6 +126,10 @@ ul.sm.pixelstrap.sm-horizontal{
     border-radius:40px;
     background-color:#eee
 }
+.navigation-tab .nav-link{
+    font-weight: 400;
+    font-size: 16px;
+}
 .navigation-tab .nav-link.active{
     color:#fff;
     background-color:var(--theme-deafult);
@@ -233,11 +237,7 @@ article#page-container header.site-header.fixed-bar{
      width: 100%;
      object-fit: cover;
 }
-.nav-tabs .nav-link{
-    font-weight: 500;
-    padding: 5px 0;
-    font-size: 14px;
-}
+
  .category-list li.active a, .category-list li:hover a, .top-header .header-dropdown .onhover-dropdown .onhover-show-div li:hover a {
      border-color: var(--theme-deafult);
      background:linear-gradient(90deg,var(--theme-deafult) -540%,#fff 100%)
@@ -253,6 +253,12 @@ article#page-container header.site-header.fixed-bar{
          margin: auto;
          display: none;
          border-radius: 0!important;
+    }
+    .pixelstrap a .sub-arrow{display: none;}
+    .nav-tabs .nav-link{
+        font-weight: 500;
+        padding: 5px 10px;
+        font-size: 14px;
     }
      .top-header .mobile-menu.main-menu .header-dropdown li.al_iconsMb ul.onhover-show-div{
         position: absolute;
@@ -331,7 +337,7 @@ article#page-container header.site-header.fixed-bar{
         float:left;
         text-overflow:ellipsis
     }
-    .menu-slider .slick-next,.menu-slider .slick-prev{
+    /* .menu-slider .slick-next,.menu-slider .slick-prev{
         background-image:url(https://img.icons8.com/ios/50/000000/expand-arrow--v2.png);
         background-repeat:no-repeat;
         background-size:20px;
@@ -342,17 +348,18 @@ article#page-container header.site-header.fixed-bar{
         height:20px;
         width:20px;
         z-index:999
-    }
+    } */
     .menu-slider .slick-next{
         right:-23px
     }
-    .menu-slider .slick-prev{
+    /* .menu-slider .slick-prev{
         -webkit-transform:translate(0,-50%) rotate(90deg);
         transform:translate(0,-50%) rotate(90deg)
-    }
+    } */
     .nav.nav-tabs.navigation-tab.nav-material.tab-icons.vendor_mods{
-        width:100%;
-        display:block
+        width: 100%;
+        display: flex;
+        align-items: center;
     }
     .al_count_tabs.my-1{
         width:100%;

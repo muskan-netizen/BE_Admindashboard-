@@ -216,7 +216,7 @@
                                             <div class="col-xl-12">
                                                 <div class="filter-main-btn">
                                                     <span class="filter-btn btn btn-theme">
-                                                        <i class="fa fa-filter" aria-hidden="true"></i>{{__('Filter')}}
+                                                       {{__('New Product')}} >
                                                     </span>
                                                 </div>
                                             </div>
@@ -256,7 +256,7 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts" id="category_products_filter">
-                                        <div class="col-12 text-right mt-2">{{__('Sort By')}}
+                                        <div class="col-12 text-right mt-2">
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="">{{__('Please Select')}}</option>
                                                 <option value="featured">{{_('Featured')}}</option>
@@ -280,7 +280,7 @@
                                                     }
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 }*/ ?>
-                                                <div class="col-xl-3 col-md-4 col-grid-box mt-3">
+                                                <div class="col-xl-3 col-md-4 col-6 mt-3">
                                                     <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="product-box scale-effect mt-0">
                                                         <div class="product-image p-0"  style="height:200px">
                                                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
