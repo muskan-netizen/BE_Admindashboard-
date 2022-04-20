@@ -1,13 +1,23 @@
-jQuery(window).scroll(function () {
-    var scroll = jQuery(window).scrollTop();
-    if (scroll <= 100) {
-        jQuery(".site-header").removeClass("fixed-bar");
-        jQuery(".al_offset-top-home").css('margin-top', '0px');
+$(document).ready(function () {
+    var footer_height = $('.footer-light').height();
+    var header_height = $('.site-header').height();
+    var window_height = $(window).height();
+    var header_content_width = $('#content-wrap').height();
+    jQuery(window).scroll(function () {
+        var scroll = jQuery(window).scrollTop();
+        if (scroll <= 100) {
+            jQuery(".site-header").removeClass("fixed-bar");
+            jQuery(".al_offset-top-home").css('margin-top', '0px');
 
-    } else {
-        jQuery(".site-header").addClass("fixed-bar");
-        jQuery(".al_offset-top-home").css('margin-top', '260px');
-    }
+        } else {
+            jQuery(".site-header").addClass("fixed-bar");
+            if(window_height < header_content_width + footer_height){
+                jQuery(".al_offset-top-home").css('margin-top', header_height+'px');
+            }else{
+                jQuery(".al_offset-top-home").css('margin-top', '0px');
+            }
+        }
+    });
 });
 
 $(".mobile-account .fa").click(function(){
@@ -2290,6 +2300,7 @@ $(document).ready(function () {
                 // console.log(response);
                 var latest_price = parseInt(base_price) * parseInt(quantity);
                 $('#product_total_amount_' + cartproduct_id).html('$' + latest_price);
+                // return false;
                 cartHeader();
             },
             error: function (err) {
@@ -2327,25 +2338,35 @@ $(document).ready(function () {
                 tip = 0;
             }
 
-            amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+            // return false;
+            // amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+            amount_payable = parseFloat(amount_payable) + parseFloat(tip);
             $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
-
+            if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
+                $("#order_placed_btn").removeAttr("disabled");
+                $("#order_placed_btn").removeClass("d-none");
+            }else{
+                $("#order_placed_btn").attr("disabled", true);
+                $("#order_placed_btn").addClass("d-none");
+        }
         } else {
-            amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
+            // amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
             $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
+            
         }
-        if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
-                $("#order_placed_btn").removeAttr("disabled");
-                $("#order_placed_btn").removeClass("d-none");
+       
+       
+        
+        if((parseFloat(amount_payable)+parseFloat($('#wallet_amount_used').val()))>=parseFloat($('#mov').text())){
+            $("#MOV_Notification").addClass("d-none");
         }else{
-            $("#order_placed_btn").attr("disabled", true);
-            $("#order_placed_btn").addClass("d-none");
+            $("#MOV_Notification").removeClass("d-none");
         }
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     }
@@ -2361,10 +2382,24 @@ $(document).ready(function () {
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
         var amount_payable = amount_elem.val();
-        amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+        // amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+        
+        // alert("wallet amount available"+$('total_wallet_amount_available'))
+        amount_payable = parseFloat(amount_payable) + parseFloat(tip);
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
         $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+
+        
+            if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
+                $("#order_placed_btn").removeAttr("disabled");
+                $("#order_placed_btn").removeClass("d-none");
+                $("#MOV_Notification").addClass("d-none");
+            }else{
+                $("#order_placed_btn").attr("disabled", true);
+                $("#order_placed_btn").addClass("d-none");
+                $("#MOV_Notification").removeClass("d-none");
+            }
     });
     $(document).on('click', '.qty-minus', function () {
         let base_price = $(this).data('base_price');

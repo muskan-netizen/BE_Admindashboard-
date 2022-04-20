@@ -3,18 +3,14 @@
 namespace App\Http\Controllers\Client\Accounting;
 use DataTables;
 use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Vendor;
-use App\Models\OrderVendor;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
-use App\Models\OrderStatusOption;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\DispatcherStatusOption;
 use App\Exports\OrderVendorListTaxExport;
+use App\Models\{User,Vendor,OrderVendor,OrderStatusOption,DispatcherStatusOption,OrderRefund,Payment,Order};
 use DB;
 
 class OrderController extends Controller{
@@ -185,5 +181,38 @@ class OrderController extends Controller{
 
     public function export(Request $request) {
         return Excel::download(new OrderVendorListTaxExport($request), 'order_list.xlsx');
+    }
+
+    public function backendOrderRefund(Request $request){
+        return view('backend.accounting.refund');
+    }
+
+
+    public function backendOrderRefundFilter(Request $request){
+      
+        $orderRefund = OrderRefund::get();
+        $refunds=array();
+        $c=1;
+        foreach($orderRefund as $row){
+            $refunds[$c]['user']=$row->user->name." | ".$row->user->email." | ".$row->user->phone_number;
+            $refunds[$c]['amount']=$row->amount;
+            $refunds[$c]['Refund_id']="None";
+            $refunds[$c]['paid_to_wallet']=$row->paid_to_wallet ? "wallet": "";
+            $refunds[$c]['order_id']=$row->order_id;
+            $refunds[$c]['orderNumber']=$row->order->order_number;
+            $refunds[$c]['transactionId']=$row->transaction_id;
+            $refunds[$c]['vendor_id']=OrderVendor::where('order_id',$row->order_id)->first()->vendor_id;
+            $c++;
+        }
+        return Datatables::of($refunds)
+        ->addIndexColumn()
+        ->addColumn('view_url', function($refunds) {
+            if(!empty($refunds['order_id']) && !empty($refunds['vendor_id'])){
+                return route('order.show.detail', [$refunds['order_id'], $refunds['vendor_id']]);
+            }else{
+                return '';
+            }
+        })
+        ->rawColumns(['action'])->make(true);
     }
 }
