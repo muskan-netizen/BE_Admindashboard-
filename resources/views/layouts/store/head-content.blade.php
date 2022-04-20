@@ -18,7 +18,7 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/homepage/homepage.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/footer/footer.css')}}">
-<!-- <link defer type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}"> -->
+<link defer type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 @elseif(isset($set_template)  && $set_template->template_id == 2)
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/footer/footer.css')}}">

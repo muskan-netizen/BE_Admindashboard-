@@ -391,10 +391,10 @@ label{
 }
 @keyframes loading{
     100%{
-        transform:translateX(100%)
+        -webkit-transform:translateX(100%);transform:translateX(100%);
     }
 }
-.custom-checkbox .custom-control-input:checked~.custom-control-label::after{
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::after{
     background-color:var(--theme-deafult)
 }
 .product-order span.ellips{
@@ -881,8 +881,8 @@ li.close-window i{
 .product_list li{
     position:relative;
     list-style:none;
-    height:50px;
-    width:50px;
+    height:60px;
+    width:60px;
     margin:0 0 30px 10px
 }
 #orders_wrapper{
