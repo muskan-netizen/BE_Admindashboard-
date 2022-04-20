@@ -209,6 +209,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     <div class="row mx-0">
                                         <% _.each(results, function(result, k){%>
                                         <a class="col-12 text-center al_search_results list-items pt-2" href="<%=result.redirect_url %>">
+
                                             <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt="">
                                             <div class="result-item-name">
                                                 <b><%=result.name %></b>
@@ -633,7 +634,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
     @endif
 </header>
 <div
-    class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @else offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif">
+    class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @else al_offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif">
 </div>
 <script type="text/template" id="nav_categories_template">
     <!-- <li>

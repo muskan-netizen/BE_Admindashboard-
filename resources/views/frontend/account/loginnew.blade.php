@@ -166,16 +166,16 @@
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
-    jQuery(window.document).ready(function () {
-        jQuery("body").addClass("login_body");
-    });
-    jQuery(document).ready(function($) {
-        setTimeout(function(){
-            var footer_height = $('.footer-light').height();
-            console.log(footer_height);
-            $('article#content-wrap').css('padding-bottom',footer_height);
-        }, 500);
-    });
+    // jQuery(window.document).ready(function () {
+    //     jQuery("body").addClass("login_body");
+    // });
+    // jQuery(document).ready(function($) {
+    //     setTimeout(function(){
+    //         var footer_height = $('.footer-light').height();
+    //         console.log(footer_height);
+    //         $('article#content-wrap').css('padding-bottom',footer_height);
+    //     }, 500);
+    // });
     var login_via_username_url = "{{route('customer.loginViaUsername')}}";
     var forgot_password_url = "{{route('customer.forgotPass')}}";
     // var firebaseConfig = {
