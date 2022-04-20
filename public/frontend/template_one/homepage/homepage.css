@@ -1520,3 +1520,9 @@ a.product-box.scale-effect.mt-0{position: relative;display: block;}
 .dark .fixed-bar .category-head{padding:10px}
 .dark .category-head{background:rgb(255 255 255 / 62%);padding:10px;color:#000}
 /* .fixed-bar .category-head{position: fixed;padding: 10px;} */
+
+
+@media(max-width:767px){
+    .suppliers-box .suppliers-img-outer{height: 100px;}
+    .product-card-box .img-outer-box.position-relative{height: 100px;}
+}

@@ -185,6 +185,13 @@
                         </div>
                     </div>
                     @endif
+
+                    <div class="col-md-12">
+                        <div class="form-group" id="social_link">
+                            {!! Form::label('title', 'Instagram URL',['class' => 'control-label']) !!}
+                            <input class="form-control" name="instagram_url" type="url" value="{{$vendor->instagram_url}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    </div>
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
                     </div>

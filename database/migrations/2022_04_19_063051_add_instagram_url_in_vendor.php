@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddPaymentStatusToOrders extends Migration
+class AddInstagramUrlInVendor extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddPaymentStatusToOrders extends Migration
      */
     public function up()
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->tinyInteger('payment_status')->nullable()->default(0)->comment('0=Pending, 1=Paid, 2=Refunded');
+        Schema::table('vendors', function (Blueprint $table) {
+            $table->string('instagram_url')->nullable()->comment('vendor instagram page link');
         });
     }
 
@@ -25,8 +25,8 @@ class AddPaymentStatusToOrders extends Migration
      */
     public function down()
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('payment_status');
+        Schema::table('vendors', function (Blueprint $table) {
+            $table->dropColumn('instagram_url');
         });
     }
 }

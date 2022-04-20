@@ -985,6 +985,10 @@ class VendorController extends BaseController
         //     $vendor->service_fee_percent         = $request->service_fee_percent;
         //     $msg = 'commission configuration';
         // }
+        if ($request->has('instagram_url')) {
+            $vendor->instagram_url = $request->has('instagram_url') ? $request->instagram_url : NULL;
+        }
+        
         $vendor->save();
         $return_json   = $request->has('return_json') && $request->return_json ? $request->return_json : 0;
         if($return_json ==  1 ){
