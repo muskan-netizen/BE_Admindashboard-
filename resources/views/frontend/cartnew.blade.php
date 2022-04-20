@@ -698,7 +698,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
                         <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> </a>
                     </div>
+
+                   
+
                     <div class="col-sm-6 col-lg-8 text-sm-right">
+
+                        @if($client_preference_detail->yoti_age_verification ==1)
+                            <button id="verify_yourself" class="btn btn-solid " type="button" >{{__('Age Verification')}}</button>
+                        @endif
+
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
                     </div>
                 </div>
