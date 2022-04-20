@@ -16,7 +16,7 @@ if(session()->has('applocale')){
         <div class="container ">
             <div class="row d-flex align-items-center justify-content-between w-100">
                 <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start"   >
-                    <a class="navbar-brand mr-xl-3 mr-0" style="height:60px" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}"></a>
+                    <a class="navbar-brand mr-xl-3 mr-0" style="height:60px;" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
@@ -210,6 +210,17 @@ if(session()->has('applocale')){
     </div>--}}
 </div>
 <div class="al_mobile_menu al_new_mobile_header">
+                <div class="al_new_cart">
+                    @if($client_preference_detail->cart_enable == 1)
+                    <div class="onhover-dropdown_al onhover-div mobile-cart">
+                        <a href="{{route('showCart')}}" style="position: relative">
+                            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                            <span class="cart_qty_cls" style="display:none"></span>
+                        </a>
+                        <ul class="show-div shopping-cart"></ul>
+                    </div>
+                    @endif
+                </div>
                 <a class="al_toggle-menu" href="#">
                     <i></i>
                     <i></i>

@@ -190,6 +190,7 @@
             slidesToScroll: 1,
             autoplay: !0,
             autoplaySpeed: 3e3,
+            arrows: true,
             responsive: [
                 { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
                 { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
@@ -343,7 +344,7 @@
                   settings: {
                     slidesToShow: 2,
                     arrows: false,
-                    slidesToScroll: 1 
+                    slidesToScroll: 1
                   }
                 },
                 {
@@ -694,7 +695,7 @@
     $(".color-box li").click(function () {
         $(this).addClass("active").siblings().removeClass("active");
     })
-    
+
 var body_event = $("body");
 function openNav() {
     document.getElementById("mySidenav").classList.add("open-side");

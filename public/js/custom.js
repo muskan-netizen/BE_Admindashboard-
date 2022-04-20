@@ -38,16 +38,10 @@ $(function () {
 $(window).scroll(function () {
     var windscroll = $(window).scrollTop();
     var windowheight = $(window).height();
-    console.log('+++++++++++++++++++');
-    console.log(windscroll);
-    console.log(windowheight);
     if (windscroll >= windowheight) {
         $('section.scrolling_section').each(function (i) {
-            console.log('----------------------');
-            console.log($(this).position().top);
-            console.log(windscroll - windowheight);
             // The number at the end of the next line is how pany pixels you from the top you want it to activate.
-            if ($(this).position().top <= windscroll - windowheight + 750 ) {
+            if ($(this).position().top <= windscroll - windowheight + 800 ) {
 
                 $('.scrollspy-menu li.active').removeClass('active');
                 $('.scrollspy-menu li').eq(i).addClass('active');
@@ -142,7 +136,7 @@ if ($(window).width() < 767) {
 
 window.initializeSlider = function initializeSlider() {
     $(".slide-6").slick({arrows:!0,dots:!1,infinite:!0,speed:300,centerMode:!0,centerPadding:"60px",slidesToShow:5,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:5,slidesToScroll:5,infinite:!0}},{breakpoint:1024,settings:{slidesToShow:4,slidesToScroll:4,infinite:!0}},{breakpoint:767,settings:{slidesToShow:3,arrows:!0,slidesToScroll:3,infinite:!0}},{breakpoint:480,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
-    $(".product-4").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
+    $(".product-4").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}}]});
     $(".product-4-featured_products").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
     $(".product-4-new_products").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
     $(".al_mobile_banner").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
@@ -153,7 +147,7 @@ window.initializeSlider = function initializeSlider() {
             {slidesToScroll:2,infinite:!0}},
             {breakpoint:991,settings:{slidesToScroll:2}},
             {breakpoint:767,settings:{slidesToShow:4,slidesToScroll:1,}}]});
-    
+
     $(".suppliers-slider").slick({infinite:!0,speed:300,slidesToShow:4,slidesToScroll:1,centerMode:!1,centerPadding:"60px",arrows:!0,dots:!1,responsive:[{breakpoint:1199,settings:{slidesToShow:4,slidesToScroll:3,infinite:!0,dots:!1,centerMode:!1}},{breakpoint:991,settings:{slidesToShow:3,slidesToScroll:3,dots:!1,centerMode:!0}},{breakpoint:767,settings:{slidesToShow:1,slidesToScroll:1,dots:!1,centerMode:!0}}]});
     $(".al_t2_suppliers-slider").slick({infinite:!0,speed:300,slidesToShow:6,slidesToScroll:1,centerMode:!1,centerPadding:"0",arrows:!0,dots:!1,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:2,infinite:!0}},{breakpoint:991,settings:{slidesToShow:3,slidesToScroll:1}},{breakpoint:767,settings:{slidesToShow:2,slidesToScroll:1}},{breakpoint:360,settings:{slidesToShow:1,slidesToScroll:1}}]});
     $(".product-5").slick({arrows:!0,dots:!1,infinite:!0,dots:!1,speed:300,slidesToShow:6,slidesToScroll:3,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}},{breakpoint:420,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
@@ -171,9 +165,9 @@ window.initializeSliderNew = function initializeSliderNew() {
     $(".product-4-new_products").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
     $(".product-4-on_sale").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"60px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
     $(".recent-orders").slick({arrows:!0,dots:!1,infinite:!0,speed:300,slidesToShow:2,slidesToScroll:1,responsive:[{breakpoint:1200,settings:{slidesToShow:4,slidesToScroll:2}},{breakpoint:991,settings:{slidesToShow:3,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}},{breakpoint:420,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
-    
+
     $(".brand-slider").slick({arrows:!0,dots:!1,infinite:!0,speed:300,slidesToShow:4,slidesToScroll:3,responsive:[{breakpoint:1367,settings:{slidesToShow:4,slidesToScroll:2,infinite:!0}},{breakpoint:991,settings:{slidesToShow:3,slidesToScroll:1}},{breakpoint:767,settings:{slidesToShow:4,slidesToScroll:1}},{breakpoint:360,settings:{slidesToShow:4,slidesToScroll:1}}]});
-    
+
     $(".suppliers-slider-trending_vendors").slick({infinite:!0,speed:300,slidesToShow:6,slidesToScroll:1,centerMode:!1,centerPadding:"60px",arrows:!0,dots:!1,responsive:[{breakpoint:1199,settings:{slidesToShow:4,slidesToScroll:3,infinite:!0,dots:!1,centerMode:!1}},{breakpoint:991,settings:{slidesToShow:3,slidesToScroll:3,dots:!1,centerMode:!0}},{breakpoint:767,settings:{slidesToShow:1,slidesToScroll:1,dots:!1,centerMode:!0}},{breakpoint:576,settings:{slidesToShow:1,slidesToScroll:1,dots:!1,centerMode:!0}}]});
     $(".product-5").slick({arrows:!0,dots:!1,infinite:!0,dots:!1,speed:300,slidesToShow:6,slidesToScroll:3,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}},{breakpoint:420,settings:{slidesToShow:1,arrows:!0,slidesToScroll:1}}]});
     $(".vendor-product").slick({infinite:!0,speed:300,arrows:!0,dots:!1,slidesToShow:4,slidesToScroll:2,autoplay:!0,autoplaySpeed:5e3,rtl:!1,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:767,settings:{slidesToShow:1,slidesToScroll:1,arrows:!0}}]});
@@ -2296,6 +2290,7 @@ $(document).ready(function () {
                 // console.log(response);
                 var latest_price = parseInt(base_price) * parseInt(quantity);
                 $('#product_total_amount_' + cartproduct_id).html('$' + latest_price);
+                // return false;
                 cartHeader();
             },
             error: function (err) {
@@ -2333,25 +2328,35 @@ $(document).ready(function () {
                 tip = 0;
             }
 
-            amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+            // return false;
+            // amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+            amount_payable = parseFloat(amount_payable) + parseFloat(tip);
             $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
-
+            if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
+                $("#order_placed_btn").removeAttr("disabled");
+                $("#order_placed_btn").removeClass("d-none");
+            }else{
+                $("#order_placed_btn").attr("disabled", true);
+                $("#order_placed_btn").addClass("d-none");
+        }
         } else {
-            amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
+            // amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
             $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
+            
         }
-        if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
-                $("#order_placed_btn").removeAttr("disabled");
-                $("#order_placed_btn").removeClass("d-none");
+       
+       
+        
+        if((parseFloat(amount_payable)+parseFloat($('#wallet_amount_used').val()))>=parseFloat($('#mov').text())){
+            $("#MOV_Notification").addClass("d-none");
         }else{
-            $("#order_placed_btn").attr("disabled", true);
-            $("#order_placed_btn").addClass("d-none");
+            $("#MOV_Notification").removeClass("d-none");
         }
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     }
@@ -2367,10 +2372,24 @@ $(document).ready(function () {
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
         var amount_payable = amount_elem.val();
-        amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+        // amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
+        
+        // alert("wallet amount available"+$('total_wallet_amount_available'))
+        amount_payable = parseFloat(amount_payable) + parseFloat(tip);
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
         $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+
+        
+            if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
+                $("#order_placed_btn").removeAttr("disabled");
+                $("#order_placed_btn").removeClass("d-none");
+                $("#MOV_Notification").addClass("d-none");
+            }else{
+                $("#order_placed_btn").attr("disabled", true);
+                $("#order_placed_btn").addClass("d-none");
+                $("#MOV_Notification").removeClass("d-none");
+            }
     });
     $(document).on('click', '.qty-minus', function () {
         let base_price = $(this).data('base_price');

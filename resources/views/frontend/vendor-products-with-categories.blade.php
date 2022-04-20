@@ -392,19 +392,20 @@
                         <div class="product-bottom-bar">
                             <div class="row ">
                                 <div class="col-12 vendor-details-left px-sm-4 px-2 d-sm-flex align-items-center">
-                                    <div class="vendor-reviwes">
-                                        @if ($vendor->vendorRating > 0)
-                                            <div class="rating-text-box ml-sm-auto">
-                                                <span>{{ $vendor->vendorRating }}</span>
-                                                <i class="fa fa-star" aria-hidden="true"></i>
-                                            </div>
-                                        @endif
-                                        {{-- <div class="review-text">
-                                                <div class="reviw-number">409</div>
-                                                <div class="reviews-text">Delivery Reviews</div>
-                                            </div> --}}
-                                    </div>
-                                    <div class="vender-icon mr-3">
+
+                                    <div class="vender-icon mr-sm-3">
+                                        <div class="vendor-reviwes">
+                                            @if ($vendor->vendorRating > 0)
+                                                <div class="rating-text-box ml-sm-auto">
+                                                    <span>{{ $vendor->vendorRating }}</span>
+                                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                                </div>
+                                            @endif
+                                            {{-- <div class="review-text">
+                                                    <div class="reviw-number">409</div>
+                                                    <div class="reviews-text">Delivery Reviews</div>
+                                                </div> --}}
+                                        </div>
                                         <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image">
                                     </div>
                                     <div class="ml-sm-1">
@@ -513,7 +514,7 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6">
-                                            <div class="row my-2 d-flex align-items-center">
+                                            <div class="row mt-2 d-flex align-items-center mb-sm-2">
                                                 <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
                                                     <div class="radius-bar w-100">
                                                         <div class="search_form d-flex align-items-center justify-content-between border">
@@ -538,7 +539,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-12 d-flex justify-content-start mb-2 p-0">
+                                            <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
                                                 @if (isset($tags) && !empty($tags))
                                                     @foreach ($tags as $key => $tag)
                                                         <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
