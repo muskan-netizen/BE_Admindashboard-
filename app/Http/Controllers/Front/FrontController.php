@@ -139,9 +139,9 @@ class FrontController extends Controller
     public function fixedFee($lang_id){
         if(Nomenclature::where('label','Fixed Fee')->exists()){
             $nomenclatures_translation_id=Nomenclature::where('label','Fixed Fee')->first()->id;
-            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee";
+            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee Per Order";
         }else{
-            return "Fixed Fee";
+            return "Fixed Fee Per Order";
         }
     }
 
