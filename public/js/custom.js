@@ -678,20 +678,21 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '#category_kycform_submit', function(e) {
+        $('#proceed_to_pay_loader').show();
         e.preventDefault();
         var input='';
-
+     
+        $(this).attr("disabled", true);
         var form = document.getElementById('category_kyc_form_in_cart');
         var formData = new FormData(form);
         var data_uri = post_category_kyc_document;
-        // console.log(data_uri);
-        //  return false;
+       
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
         });
-
+       
         $.ajax({
             type: "post",
             headers: {
@@ -703,11 +704,14 @@ $(document).ready(function () {
             processData: false,
             success: function(response) {
                 if (response.status == 'success') {
+                    $('#category_kycform_submit').attr("disabled", false);
                     $(".modal .close").click();
                     location.reload();
                 } else {
+                    $('#category_kycform_submit').attr("disabled", false);
                     $(".show_all_error.invalid-feedback").show();
                     $(".show_all_error.invalid-feedback").text(response.message);
+                   
                 }
                 return response;
             },
@@ -718,6 +722,7 @@ $(document).ready(function () {
                 $(".loader_box").hide();
             },
             error: function(response) {
+                $('#category_kycform_submit').attr("disabled", false);
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
                     Object.keys(errors).forEach(function(key) {
