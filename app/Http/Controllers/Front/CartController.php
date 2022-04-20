@@ -1113,7 +1113,7 @@ class CartController extends FrontController
                 'scheduled_date_time'=>(($cart->scheduled_slot)?date('Y-m-d',strtotime($cart->scheduled_date_time)):$cart->scheduled_date_time),'slot'=>$cart->scheduled_slot,
             );
             $cart->deliver_status = $delivery_status;
-            $cart->total_wallet_amount_available = $user->balanceFloat;
+            //$cart->total_wallet_amount_available = $user->balanceFloat;
             $cart->vendorCnt = $cartData->count();
             $cart->scheduled = $scheduled;
             $cart->schedule_type =  $cart->schedule_type;
