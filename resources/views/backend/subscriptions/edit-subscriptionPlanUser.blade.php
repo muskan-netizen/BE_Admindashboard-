@@ -32,14 +32,29 @@
                             </span>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    @php
+                    $feature_percent_value = '';
+                    @endphp
+                    <div class="col-md-6 features_wrapper">
                         <div class="form-group">
                             <label for="">{{ __("Features") }}</label>
-                            <select class="form-control select2-multiple" name="features[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required="required">
+                            <select class="form-control select2-multiple subscription_features" name="features[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required="required">
                                 @foreach($features as $feature)
-                                    <option value="{{$feature->id}}" {{ (in_array($feature->id, $subPlanFeatures)) ? "selected" : "" }}> {{$feature->title}} </option>
+                                    @php
+                                    if(in_array(2, $subPlanFeaturesIds)){
+                                        $off_on_order_feature = $planFeatures->where('feature_id', 2)->first();
+                                        $feature_percent_value = $off_on_order_feature ? $off_on_order_feature->percent_value : '';
+                                    }
+                                    @endphp
+                                    <option value="{{$feature->id}}" {{ (in_array($feature->id, $subPlanFeaturesIds)) ? "selected" : "" }}> {{$feature->title}} </option>
                                 @endforeach
                             </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12 percentage_value_wrapper" style="{{ (in_array(2, $subPlanFeaturesIds)) ? 'display:block' : '' }}">
+                        <div class="form-group">
+                            <label for="percent_value">{{ __('Percent Value') }}</label>
+                            <input class="form-control" type="number" id="percent_value" name="percent_value" min="0" value="{{$feature_percent_value}}" placeholder="Percent Value" onKeyPress="if(this.value.length==6) return false;">
                         </div>
                     </div>
                     <div class="col-md-6">
