@@ -49,6 +49,7 @@ class HomeController extends BaseController
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
             $fixed_fee_nomenclature = $this->getNomenclatureName('fixed_fee', $langId, false);
+            $referral_code = $this->getNomenclatureName('Referral Code', $langId, false);
             $want_to_tip = $this->getNomenclatureName('want_to_tip', $langId, false);
             $fixed_fee_nomenclature=ucwords(str_replace("_"," ",$fixed_fee_nomenclature));
             $want_to_tip=ucwords(str_replace("_"," ",$want_to_tip));
@@ -60,6 +61,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->vendors_nomenclature = $vendors_nomenclature;
             $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
             $homeData['profile']->preferences->want_to_tip_nomenclature = $want_to_tip;
+            $homeData['profile']->preferences->referral_code = $referral_code;
 
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
             $banners = Banner::select("id", "name", "description", "image", "image_mobile", "link", 'redirect_category_id', 'redirect_vendor_id')

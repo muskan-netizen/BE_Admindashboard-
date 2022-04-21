@@ -7,6 +7,11 @@
 <link href="{{asset('assets/libs/flatpickr/flatpickr.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
 
+<style>
+    .percentage_value_wrapper{
+        display: none;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -189,14 +194,20 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 features_wrapper">
                                     <div class="form-group">
                                         <label for="">{{ __("Features") }}</label>
-                                        <select class="form-control select2-multiple" name="features[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required="required">
+                                        <select class="form-control select2-multiple subscription_features" name="features[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required="required">
                                             @foreach($features as $feature)
                                                 <option value="{{$feature->id}}"> {{$feature->title}} </option>
                                             @endforeach
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 percentage_value_wrapper">
+                                    <div class="form-group">
+                                        <label for="percent_value">{{ __('Percent Value') }}</label>
+                                        <input class="form-control" type="number" id="percent_value" name="percent_value" min="0" placeholder="Percent Value"  onKeyPress="if(this.value.length==6) return false;">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -290,6 +301,17 @@
                 return response;
             }
         });
+    });
+
+    $(document).on("input", ".subscription_features", function(e){
+        var features = $(this).val();
+        if(features.includes('2')){
+            $(this).parents('.features_wrapper').next().show();
+            $(this).parents('.features_wrapper').next().find('input').attr('required', true);
+        }else{
+            $(this).parents('.features_wrapper').next().hide();
+            $(this).parents('.features_wrapper').next().find('input').removeAttr('required');
+        }
     });
 
 </script>

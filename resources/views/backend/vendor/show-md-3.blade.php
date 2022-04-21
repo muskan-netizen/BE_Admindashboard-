@@ -122,15 +122,15 @@
                     @endif
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', __('Fixed Fee'),['class' => 'control-label']) !!}
+                        {!! Form::label('title', __($vendor->fixedFeeNomenclatures),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="fixed_fee" class="form-control" data-color="#43bee1" @if($vendor->fixed_fee == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <div class="col-md-12 mb-2 align-items-center justify-content-between" style="display:{{$vendor->fixed_fee == 0 ? 'none!important' : 'block'}}" id="fixed_fee_amount">
-                    {!! Form::label('title', 'Fixed Fee Amount',['class' => 'control-label']) !!}
+                    {!! Form::label('title',  __($vendor->fixedFeeNomenclatures).' value',['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="fixed_fee_amount" type="text" value="{{$vendor->fixed_fee_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', __('Hide Price bifurcation'),['class' => 'control-label']) !!}
+                        {!! Form::label('title', __('Hide Price Bifurcation'),['class' => 'control-label']) !!}<div style="float:left" title="Hide Fixed Price, Service Fee, Container Charges, Taxes, Subtotal"><i class="fa fa-info-circle" ></i></div>
                         <input type="checkbox" data-plugin="switchery" name="price_bifurcation" class="form-control" data-color="#43bee1" @if($vendor->price_bifurcation == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">

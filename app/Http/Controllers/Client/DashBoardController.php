@@ -149,12 +149,15 @@ class DashBoardController extends BaseController{
                 foreach ($order->products as $product) {
                     $category = Category::with('english')->where('id', $product->category_id)->first();
                     if ($category) {
-                        if (in_array($category->slug, $temp_array)) {
-                            $categories[Str::limit($category->english->name, 5, '..')] += 1;
-                        } else {
-                            $temp_array[] = $category->slug;
-                            $categories[Str::limit($category->english->name, 5, '..')] = 1;
+                        if($category->english){
+                            if (in_array($category->slug, $temp_array)) {
+                                $categories[Str::limit($category->english->name, 5, '..')] += 1;
+                            } else {
+                                $temp_array[] = $category->slug;
+                                $categories[Str::limit($category->english->name, 5, '..')] = 1;
+                            }
                         }
+                        
                     }
                 }
             }

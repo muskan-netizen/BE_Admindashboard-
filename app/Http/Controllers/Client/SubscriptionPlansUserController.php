@@ -59,7 +59,11 @@ class SubscriptionPlansUserController extends BaseController
                 if($plan->features->isNotEmpty()){
                     $planFeaturesList = array();
                     foreach($plan->features as $feature){
-                        $planFeaturesList[] = $feature->feature->title;
+                        $title = $feature->feature->title;
+                        if($feature->feature_id == 2){
+                            $title = $feature->percent_value . $title;
+                        }
+                        $planFeaturesList[] = $title;
                     }
                     unset($plan->features);
                     $features = implode(', ', $planFeaturesList);
@@ -118,20 +122,27 @@ class SubscriptionPlansUserController extends BaseController
         $plan->save();
         $planId = $plan->id;
         if( ($request->has('features')) && (!empty($request->features)) ){
+            $plan->subFeatures()->sync($request->features);
             foreach($request->features as $key => $val){
-                if(!empty($slug)){
-                    $subFeature = SubscriptionPlanFeaturesUser::where('subscription_plan_id', $planId)->where('feature_id', $val)->first();
-                    if($subFeature){
-                        continue;
-                    }
+
+                if($val == 2){
+                    $plan->subFeatures()->updateExistingPivot(['feature_id' => $val], ['percent_value' => $request->percent_value]);
                 }
-                $feature = array(
-                    'subscription_plan_id' => $planId,
-                    'feature_id' => $val,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now()
-                );
-                SubscriptionPlanFeaturesUser::insert($feature);
+
+                // if(!empty($slug)){
+                //     $subFeature = SubscriptionPlanFeaturesUser::where('subscription_plan_id', $planId)->where('feature_id', $val)->first();
+                //     if($subFeature){
+                //         continue;
+                //     }else{
+                //         $subFeature = new SubscriptionPlanFeaturesUser();
+                //         $subFeature->subscription_plan_id = $planId;
+                //         $subFeature->feature_id = $val;
+                //         if($val == 2){
+                //             $subFeature->percent_value = $request->percent_value;
+                //         }
+                //     }
+                //     $subFeature->save();
+                // }
             }
         }
         return redirect()->back()->with('success', 'Subscription has been '.$message.' successfully.');
@@ -146,13 +157,13 @@ class SubscriptionPlansUserController extends BaseController
     public function editSubscriptionPlan(Request $request, $domain = '', $slug='')
     {
         $plan = SubscriptionPlansUser::where('slug', $slug)->firstOrFail();
-        $planFeatures = SubscriptionPlanFeaturesUser::select('feature_id')->where('subscription_plan_id', $plan->id)->get();
+        $planFeatures = SubscriptionPlanFeaturesUser::select('feature_id', 'percent_value')->where('subscription_plan_id', $plan->id)->get();
         $featuresList = SubscriptionFeaturesListUser::where('status', 1)->get();
-        $subPlanFeatures = array();
+        $subPlanFeaturesIds = array();
         foreach($planFeatures as $feature){
-            $subPlanFeatures[] = $feature->feature_id;
+            $subPlanFeaturesIds[] = $feature->feature_id;
         }
-        $returnHTML = view('backend.subscriptions.edit-subscriptionPlanUser')->with(['features'=>$featuresList, 'plan' => $plan, 'subPlanFeatures'=>$subPlanFeatures])->render();
+        $returnHTML = view('backend.subscriptions.edit-subscriptionPlanUser')->with(['features'=>$featuresList, 'plan' => $plan, 'planFeatures' => $planFeatures, 'subPlanFeaturesIds'=>$subPlanFeaturesIds])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 
