@@ -26,6 +26,7 @@
 @endphp
 
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.cookie.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('assets/js/constants.js')}}"></script>
 <script defer type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script> 
