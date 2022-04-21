@@ -22,6 +22,9 @@
                 transform:rotate(360deg);
             }
         }
+        .err_message{
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -41,7 +44,9 @@
                             <!-- Yoco Inline form will be added here -->
                         </div>
                     </div>
-                    <br><br>
+                    <br>
+                    <div class="err_message text-left text-danger"></div>
+                    <br>
                     <button class="btn btn-info" type="submit" id="pay-button">Pay</button>
                     <button class="btn btn-danger" type="button" id="cancel-button">Cancel</button>
                 </form>
@@ -162,6 +167,7 @@
             },
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
+                $('.err_message').text(response.message).show();
                 // success_error_alert('error', response.message, ".success-payment-message");
             },
             complete: function(data) {

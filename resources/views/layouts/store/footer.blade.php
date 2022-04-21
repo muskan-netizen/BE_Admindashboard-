@@ -26,19 +26,20 @@
 @endphp
 
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.cookie.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/js/constants.js')}}"></script>
-<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script> 
-<script type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('assets/js/constants.js')}}"></script>
+<script defer type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script> 
+<script defer type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
 
-<script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/location.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('js/custom.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('js/location.js')}}"></script>
 
 {{--
 <!-- All js merged -->
@@ -59,11 +60,78 @@
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 --}}
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
+<script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 @if(isset($set_template)  && $set_template->template_id == 1)
-<script src="{{asset('front-assets/js/custom-template-one.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/custom-template-one.js')}}"></script>
 @endif
 @yield('js-script')
+@if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
+<script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+<script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+<script>
+    var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
+    var firebaseConfig = {
+        apiKey: firebaseCredentials.fcm_api_key,
+        authDomain: firebaseCredentials.fcm_auth_domain,
+        projectId: firebaseCredentials.fcm_project_id,
+        storageBucket: firebaseCredentials.fcm_storage_bucket,
+        messagingSenderId: firebaseCredentials.fcm_messaging_sender_id,
+        appId: firebaseCredentials.fcm_app_id,
+        measurementId: firebaseCredentials.fcm_measurement_id
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    const messaging = firebase.messaging();
+
+    function initFirebaseMessagingRegistration() {
+        messaging.requestPermission().then(function() {
+            return messaging.getToken()
+        }).then(function(token) {
+            $.ajax({
+                url: "{{ route('user.save_fcm') }}",
+                type: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    fcm_token: token,
+                },
+                success: function(response) {
+
+                },
+            });
+            console.log(token);
+
+        }).catch(function(err) {
+            console.log(`Token Error :: ${err}`);
+        });
+    }
+    @if(empty(Session::get('current_fcm_token')))
+    initFirebaseMessagingRegistration();
+    @endif
+    messaging.onMessage(function(payload) {
+        if (!("Notification" in window)) {
+            console.log("This browser does not support system notifications.");
+        } else if (Notification.permission === "granted") {
+            if (payload && payload.data && payload.data.type && (payload.data.type == "order_status_change" || payload.data.type == "reminder_notification")) {
+                var notificationTitle = payload.notification.title;
+                var notificationOptions = {
+                    body: payload.notification.body,
+                    icon: payload.notification.icon
+                };
+                var push_notification = new Notification(
+                    notificationTitle,
+                    notificationOptions
+                );
+                push_notification.onclick = function(event) {
+                    event.preventDefault();
+                    window.open(payload.notification.click_action, "_blank");
+                    push_notification.close();
+                };
+            }
+        }
+    });
+</script>
+@endif
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
 <script type="text/javascript">
@@ -239,13 +307,13 @@ gtag('config', 'G-5LPF1QP3Y3');
             $('#page-container').toggleClass("al_fixed");
         });
     });
-    jQuery(document).ready(function($) {
-        setTimeout(function(){
-            var footer_height = $('.footer-light').height();
-            console.log(footer_height);
-            $('article#content-wrap').css('padding-bottom',footer_height);
-        }, 500);
-    });
+    //jQuery(document).ready(function($) {
+    //    setTimeout(function(){
+    //        var footer_height = $('.footer-light').height();
+    //        console.log(footer_height);
+    //        $('article#content-wrap').css('padding-bottom',footer_height);
+    //    }, 500);
+    //});
     @if(isset($set_template)  && $set_template->template_id ==3 && \Request::route()->getName()=='categoryDetail')
     function changeImage(image2, check) {
        var image = $(image2).children('.nav-cate-img').children("img");
@@ -267,72 +335,5 @@ gtag('config', 'G-5LPF1QP3Y3');
     }
     @endif
 </script>
-@if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
-<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
-<script>
-    var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
-    var firebaseConfig = {
-        apiKey: firebaseCredentials.fcm_api_key,
-        authDomain: firebaseCredentials.fcm_auth_domain,
-        projectId: firebaseCredentials.fcm_project_id,
-        storageBucket: firebaseCredentials.fcm_storage_bucket,
-        messagingSenderId: firebaseCredentials.fcm_messaging_sender_id,
-        appId: firebaseCredentials.fcm_app_id,
-        measurementId: firebaseCredentials.fcm_measurement_id
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-
-    const messaging = firebase.messaging();
-
-    function initFirebaseMessagingRegistration() {
-        messaging.requestPermission().then(function() {
-            return messaging.getToken()
-        }).then(function(token) {
-            $.ajax({
-                url: "{{ route('user.save_fcm') }}",
-                type: "POST",
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    fcm_token: token,
-                },
-                success: function(response) {
-
-                },
-            });
-            console.log(token);
-
-        }).catch(function(err) {
-            console.log(`Token Error :: ${err}`);
-        });
-    }
-    @if(empty(Session::get('current_fcm_token')))
-    initFirebaseMessagingRegistration();
-    @endif
-    messaging.onMessage(function(payload) {
-        if (!("Notification" in window)) {
-            console.log("This browser does not support system notifications.");
-        } else if (Notification.permission === "granted") {
-            if (payload && payload.data && payload.data.type && (payload.data.type == "order_status_change" || payload.data.type == "reminder_notification")) {
-                var notificationTitle = payload.notification.title;
-                var notificationOptions = {
-                    body: payload.notification.body,
-                    icon: payload.notification.icon
-                };
-                var push_notification = new Notification(
-                    notificationTitle,
-                    notificationOptions
-                );
-                push_notification.onclick = function(event) {
-                    event.preventDefault();
-                    window.open(payload.notification.click_action, "_blank");
-                    push_notification.close();
-                };
-            }
-        }
-    });
-</script>
-@endif
 
 @yield('script')

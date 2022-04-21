@@ -17,4 +17,14 @@ class Nomenclature extends Model
       $langData = $this->hasMany('App\Models\NomenclatureTranslation');
       return $langData;
     }
+
+
+    public static function getIdByName($label){
+      $id = 0;
+      $result = Nomenclature::where('label', $label)->first();
+      if($result){
+          $id = $result->id;
+      }
+      return $id;
+    }
 }

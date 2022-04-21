@@ -80,7 +80,7 @@
                 </div>
             </div>
         </div>
-        <div class="row my-3">
+        <div class="row my-md-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
                 <div class="dashboard-left mb-3">
@@ -131,7 +131,7 @@
                                                     <p class="mb-1">{{$add->country  ? $add->country : ''}}</p>
                                                 </div>
                                             </div>
-                                            <div class="address-btn d-flex align-items-center justify-content-end w-100 mt-4 px-2">
+                                            <div class="address-btn d-flex align-items-center justify-content-end w-100 mt-sm-4 px-2">
                                                 @if($add->is_primary == 1)
                                                     <a class="btn btn-solid disabled" href="#">{{ __('Primary') }}</a>
                                                 @else

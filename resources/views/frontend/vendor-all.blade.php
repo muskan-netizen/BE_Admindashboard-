@@ -141,7 +141,7 @@
                </div>
             </a>
          </div>
-         {{--<div class="col-xl-3 col-6 col-grid-box mt-3">
+         {{--<div class="col-md-3 col-6 col-grid-box mt-3">
             <div class="product-box scale-effect text-center">
                <div class="img-wrapper">
                   <div class="front">
@@ -169,7 +169,7 @@
             </div>
          </div>--}}
          @endforeach
-         <div class="col-12" data-aos="zoom-in">
+         <div class="col-12"  >
             <div class="pagination pagination-rounded justify-content-end mb-0">
                @if(!empty($vendors))
                {{ $vendors->links() }}

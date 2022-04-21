@@ -474,9 +474,9 @@ $(document).ready(function () {
                                     dots: false,
                                     responsive: [
                                         { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 3, infinite: true, dots: false, centerMode: true,}},
-                                        { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, }},
-                                        { breakpoint: 767, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true,}},
-                                        { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true,}}
+                                        { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, }},
+                                        { breakpoint: 767, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,}},
+                                        { breakpoint: 576, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,centerPadding: '0px',}}
                                     ]
                                 });
                                 $("#our_vendor_main_div").show();
@@ -498,10 +498,10 @@ $(document).ready(function () {
                                     arrows: true,
                                     dots: false,
                                     responsive: [
-                                        { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 3, infinite: true,dots: false,centerMode: true,}},
-                                        { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 3, dots: false, centerMode: true,}},
-                                        { breakpoint: 767, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true,}},
-                                        { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1, dots: false, centerMode: true,}}
+                                        { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 1, infinite: true,dots: false,centerMode: true,}},
+                                        { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,}},
+                                        { breakpoint: 767, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,}},
+                                        { breakpoint: 576, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,centerPadding: '0',}}
                                     ]
                                 });
                                 $('#our_vendor_main_div').removeClass('d-none');
@@ -525,8 +525,8 @@ $(document).ready(function () {
                                     arrows: true,
                                     responsive: [
                                         { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                                        { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-                                        { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+                                        { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2 } },
+                                        { breakpoint: 767, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 1 ,centerPadding: '0px',} }
                                     ]
                                 });
                                 if (response.data.feature_products.length > 0) {
@@ -558,7 +558,7 @@ $(document).ready(function () {
                                     responsive: [
                                         { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
                                         { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-                                        { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+                                        { breakpoint: 767, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 1,centerPadding: '0px' } }
                                     ]
                                 });
                               break;
@@ -580,7 +580,7 @@ $(document).ready(function () {
                                     responsive: [
                                         { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
                                         { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-                                        { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+                                        { breakpoint: 767, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 1,centerPadding: '0px', } }
                                     ]
                                 });
                                 if (response.data.on_sale_products.length > 0) {
@@ -619,8 +619,8 @@ $(document).ready(function () {
                                     responsive: [
                                         {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
                                         {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
-                                        {breakpoint: 767,settings: {slidesToShow: 2,slidesToScroll: 1}},
-                                        {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
+                                        {breakpoint: 767,settings: {slidesToShow: 3,slidesToScroll: 1}},
+                                        {breakpoint: 360,settings: {slidesToShow: 3,slidesToScroll: 1}}
                                     ]
                                 });
                                break;
@@ -960,7 +960,7 @@ function initMap() {
                 if (status === google.maps.GeocoderStatus.OK) {
                     let lat = results[0].geometry.location.lat();
                     let lng = results[0].geometry.location.lng();
-                    
+
                     $("#address-place-id").val(place.place_id);
                     // $(".homepage-address span").text(place.formatted_address);
                     setLocationCoordinates(autocomplete.key, lat, lng);
@@ -1017,7 +1017,7 @@ function initMap() {
                         if(components.country) {
                             country = components.country;
                         }
-                        
+
                         // $.ajax({
                         //     url : 'url',
                         //     data: {state : state, country : country},
@@ -1040,7 +1040,7 @@ function initMap() {
                 }
             });
         });
-    
+
         setTimeout(function(){
             $(".pac-container").appendTo("#edit-address .address-input-group");
         }, 300);

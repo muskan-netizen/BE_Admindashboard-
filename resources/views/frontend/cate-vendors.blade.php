@@ -34,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-5">
+            <div class="row mb-sm-5">
                 <div class="collection-filter col-lg-3 al">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
@@ -119,7 +119,7 @@
                                             <div class="col-xl-12">
                                                 <div class="filter-main-btn">
                                                     <span class="filter-btn btn btn-theme">
-                                                        <i class="fa fa-filter" aria-hidden="true"></i>{{__('Filter')}}
+                                                        </i> {{__('New Product')}} >
                                                     </span>
                                                 </div>
                                             </div>
@@ -176,7 +176,7 @@
                                                         $vendor_url = route('vendorDetail', $data->slug);
                                                     }
                                                     @endphp
-                                                    <div class="col-xl-3 col-md-4 col-grid-box mt-3 " >
+                                                    <div class=" col-md-3 col-6 col-grid-box mt-sm-3 mt-1" >
                                                         <div class="product-card-box position-relative">
                                                             <div class="add-to-fav">
                                                                 <input id="fav_pro_one" type="checkbox">
@@ -187,12 +187,12 @@
                                                                     <img class="w-100 img-fluid mx-auto blur-up lazyload" data-src="{{$imagePath}}" alt="">
                                                                 </div>
                                                                 <div class="supplier-rating">
-                                                                    <h6 class="mb-1 ellips">{{$data->name}}</h6>
+                                                                    <h6 class="mb-0 ellips">{{$data->name}}</h6>
                                                                     @if($client_preference_detail && $client_preference_detail->rating_check == 1 && $data->vendorRating > 0)
                                                                     <span class="rating-number">{{$data->vendorRating}}</span>
                                                                     @endif
 
-                                                                    <p title="{{$data->categoriesList}}" class="vendor-cate {{ (($client_preference_detail->rating_check ==1) || ($data->is_show_vendor_details == 1) ) ? 'border-bottom' : '' }} pb-1 mb-1 ellips">{{$data->categoriesList}}</p>
+                                                                    <p title="{{$data->categoriesList}}" class="vendor-cate {{ (($client_preference_detail->rating_check ==1) || ($data->is_show_vendor_details == 1) ) ? 'border-bottom' : '' }} pb-0 mb-1 ellips">{{$data->categoriesList}}</p>
                                                                     <!-- <h6 class="mb-1">{{$data->name}}</h6> -->
                                                                     <div class="product-timing">
                                                                         @if ($data->is_show_vendor_details == 1)

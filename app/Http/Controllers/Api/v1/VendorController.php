@@ -1567,6 +1567,10 @@ class VendorController extends BaseController{
                 {
                     $vendordetail->desc = $request->desc;
                 }
+                if($request->short_desc)
+                {
+                    $vendordetail->short_desc = $request->short_desc;
+                }
                 if($request->email)
                 {
                     $vendordetail->email = $request->email;
@@ -2077,7 +2081,7 @@ class VendorController extends BaseController{
         // if($venderFilterOpen && ($venderFilterOpen == 1) ){
         //     $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
         // }
-
+        
         $newCollection = collect([
             'current_page' => $page,
             'per_page' => $limit,
