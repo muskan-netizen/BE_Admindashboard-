@@ -204,24 +204,24 @@
                             <div class="col-12">
                                 <label for="type">{{ __('Address Type') }}</label>
                             </div>
-                            <div class="col-md-3">
-                                <div class="delivery_box pt-0 pl-0  pb-3">
+                            <div class="col-3">
+                                <div class="delivery_box pt-0 pl-0  pb-2">
                                     <label class="radio m-0">{{ __('Home') }}
                                         <input type="radio" name="type" <%= (typeof address != 'undefined') ? ((address.type == 1) ? 'checked="checked"' : '') : 'checked="checked"' %> value="1">
                                         <span class="checkround"></span>
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                            <div class="delivery_box pt-0 pl-0  pb-3">
+                            <div class="col-3">
+                            <div class="delivery_box pt-0 pl-0  pb-2">
                                 <label class="radio m-0">{{ __('Office') }}
                                     <input type="radio" name="type" <%= ((typeof address != 'undefined') && (address.type == 2)) ? 'checked="checked"' : '' %> value="2">
                                     <span class="checkround"></span>
                                 </label>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="delivery_box pt-0 pl-0  pb-3">
+                        <div class="col-3">
+                            <div class="delivery_box pt-0 pl-0  pb-2">
                                 <label class="radio m-0">{{ __('Others') }}
                                     <input type="radio" name="type" <%= ((typeof address != 'undefined') && (address.type == 3)) ? 'checked="checked"' : '' %> value="3">
                                     <span class="checkround"></span>

@@ -150,7 +150,7 @@
                                                 <div class="material-border"></div>
                                             </li>
                                         </ul>
-                                        <div class="tab-content nav-material" id="top-tabContent">
+                                        <div class="tab-content nav-material al" id="top-tabContent">
                                             <div class="tab-pane fade {{ Request::query('pageType') === null || Request::query('pageType') == 'activeOrders' ? 'active show' : '' }}"
                                                 id="active-orders" role="tabpanel" aria-labelledby="active-orders-tab">
                                                 <div class="row">
@@ -160,20 +160,36 @@
                                                                 <div class="row no-gutters order_head">
                                                                     <div class="col-md-3">
                                                                         <h4>{{ __('Order Number') }}</h4>
+                                                                        <span>#{{ $order->order_number }}</span>
                                                                     </div>
                                                                     <div class="col-md-3">
                                                                         <h4>{{ __('Date & Time') }}</h4>
+                                                                        <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                                                                     </div>
                                                                     <div class="col-md-3">
                                                                         <h4>{{ __('Customer Name') }}</h4>
+                                                                        <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
+                                                                            <span class="ellipsis" data-toggle="tooltip"
+                                                                                data-placement="top" title="">
+                                                                                @if ($order->address)
+                                                                                    {{ $order->address->address }},
+                                                                                    {{ $order->address->street }},
+                                                                                    {{ $order->address->city }},
+                                                                                    {{ $order->address->state }},
+                                                                                    {{ $order->address->country }}
+                                                                                    {{ $order->address->pincode }}
+                                                                                @else
+                                                                                    NA
+                                                                                @endif
+                                                                            </span>
                                                                         </div>
                                                                     @endif
                                                                 </div>
-                                                                <div class="row no-gutters order_data">
+                                                                <div class="row no-gutters order_data d-none">
                                                                     <div class="col-md-3">#{{ $order->order_number }}
                                                                     </div>
                                                                     {{-- <div class="col-md-3">{{convertDateTimeInTimeZone($order->created_at, $timezone, 'l, F d, Y, h:i A')}}</div> --}}
