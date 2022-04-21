@@ -171,7 +171,7 @@ $preference = $client_preference_detail;
                                     <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
                                         @foreach($navCategories as $cate)
                                         @if($cate['name'])
-                                        <li class="al_main_category" data-aos="zoom-in">
+                                        <li class="al_main_category"  >
                                             <a href="{{route('categoryDetail', $cate['slug'])}}">
 
                                                 {{$cate['name']}}
@@ -212,7 +212,7 @@ $preference = $client_preference_detail;
         <div class="container ">
             <div class="row d-flex align-items-center justify-content-between w-100">
 
-                <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start"  data-aos="zoom-in">
+                <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start"   >
 
                     <a class="navbar-brand mr-xl-3 mr-0" style="max-width:150px;" href="{{ route('userHome') }}"><img alt="" class="w-100" src="{{$urlImg}}"></a>
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
@@ -234,7 +234,7 @@ $preference = $client_preference_detail;
                     </div>
                 </div>
 
-                <div class="col-2 col-lg-6 text-right ml-auto al_z_index" data-aos="zoom-in">
+                <div class="col-2 col-lg-6 text-right ml-auto al_z_index"  >
 
 
                     <ul class="header-dropdown ml-auto">
@@ -571,7 +571,7 @@ $preference = $client_preference_detail;
                                     <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
                                         @foreach($navCategories as $cate)
                                         @if($cate['name'])
-                                        <li class="al_main_category" data-aos="zoom-in">
+                                        <li class="al_main_category"  >
                                             <a href="{{route('categoryDetail', $cate['slug'])}}">
 
                                                 {{$cate['name']}}

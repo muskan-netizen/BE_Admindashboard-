@@ -256,11 +256,12 @@ class OrderController extends FrontController
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         }
 
+        $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
         //   dd($activeOrders->toArray());
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
-        return view('frontend/account/orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency,'fixedFee'=>$fixedFee]);
+        return view('frontend/account/orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency, 'clientPreference' => $client_preferences, 'fixedFee'=>$fixedFee]);
     }
 
     public function getOrderSuccessPage(Request $request)
@@ -272,7 +273,7 @@ class OrderController extends FrontController
         // dd($order->toArray());
 
         $langId = Session::get('customerLanguage');
-        $fixedFee = $this->fixedFee($langId);
+        $fixedFeeNomenclatures = $this->fixedFee($langId);
         $order_vendors =  OrderVendor::where('order_id', $request->order_id)->whereNotNull('dispatch_traking_url')->get();
         if (count($order_vendors)) {
             $home_service = ClientPreference::where('business_type', 'home_service')->where('id', '>', 0)->first();
@@ -283,7 +284,7 @@ class OrderController extends FrontController
 
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-        return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFee'));
+        return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
     }
 
     // public function getOrderToyyibPaySuccessPage(Request $request)
@@ -771,6 +772,8 @@ class OrderController extends FrontController
             $total_service_fee = 0;
             $total_delivery_fee = 0;
             $total_subscription_discount = 0;
+            $total_container_charges = 0;
+            $vendor_total_container_charges = 0;
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
                 $delivery_fee = 0;
@@ -797,11 +800,22 @@ class OrderController extends FrontController
                     $quantity_price = 0;
                     $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                     $price_in_currency = $variant->price / $divider;
+                    $container_charges_in_currency = $variant->container_charges / $divider;
+                    $price_container_charges = $variant->container_charges;
                     $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
+                    $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
                     $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
-                    $payable_amount = $payable_amount + $quantity_price;
-                    $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
-                    $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
+                    $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
+                    $total_container_charges = $total_container_charges + $quantity_container_charges;
+
+                    $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
+                    $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
+                    $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
+                    $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges+$fixed_fee_amount;
+                    
+                    //$payable_amount = $payable_amount + $quantity_price;
+                    //$vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
+                    //$vendor_payable_amount = $vendor_payable_amount + $quantity_price;
 
                     if (isset($vendor_cart_product->product->taxCategory)) {
                         foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
@@ -857,6 +871,7 @@ class OrderController extends FrontController
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
                     $order_product->price = $variant->price;
+                    $order_product->container_charges = $variant->container_charges;
                     $order_product->order_vendor_id = $OrderVendor->id;
                     $order_product->taxable_amount = $product_taxable_amount;
                     $order_product->quantity = $vendor_cart_product->quantity;
@@ -976,6 +991,7 @@ class OrderController extends FrontController
                 $OrderVendor->taxable_amount   = $vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
+                $OrderVendor->total_container_charges = $vendor_total_container_charges;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -1048,13 +1064,14 @@ class OrderController extends FrontController
             $order->scheduled_slot = (($cart->scheduled_slot)?$cart->scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
             $order->payable_amount = $payable_amount;
+            $order->total_container_charges = $total_container_charges;
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status = 1;
             }
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [4,7,8,9,10,12,13,15,17,18,19,20,21,24,25,26]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree
+            $ex_gateways = [4,7,8,9,10,12,13,15,17,18,19,20,21,24,25,26,28]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay
            
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 

@@ -967,6 +967,19 @@
     "Enter reason for rejecting the order." : "Spécifiez la raison de l'annulation",
     "Free Delivery" : "Livraison gratuite",
     "Maximum 1 selection allowed" : "un choix maximum permis",
+    "Personal Details":"Détails personnels",
+    "ADVANCED DETAILS":"DÉTAILS AVANCÉS",
+    "Optional" : "Optionnel",
+    "Auto Reject Time(In minutes, 0 for no rejection)" : "Temps de rejet automatique (en minutes, 0 pour aucun rejet)",
+    "Slot Duration (In minutes)" : "Durée du créneau (en minutes)",
+    "Absolute Min Order Value [AMOV]":"Valeur de commande minimale absolue [AMOV]",
+    "Slot Duration":"Durée de l'emplacement",
+    " Minutes":"Minutes",
+    " Hour":"Heure",
+    "Min" : "Min",
+    "Hours" : "Les heures",
+    "Upload Banner" : "Télécharger la bannière",
+ 
     "You can only buy products for single vendor. Do you want to remove all your cart products to continue?" : "Vous ne pouvez acheter que les produits d’un seul restaurants. Voulez-vous supprimer tous les produits de votre panier pour continuer ?"
 
 }

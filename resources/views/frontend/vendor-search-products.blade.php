@@ -10,23 +10,19 @@
     </nav>
 </div>
 <div class="col-md-8 col-lg-6">
-    <div class="row d-flex align-items-center">
-        <div class="col-6">
-            @if (isset($tags) && !empty($tags))
-                @foreach ($tags as $key => $tag)
-                    <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
-                        <input type="checkbox"
-                            class="switch switch-bootstrap product_tag_filter status"
-                            name="tag_id" id="product_tag_filter_{{ $key }}"
-                            data-tag_id="{{ $tag->id }}" value="
-                            {{ $tag->id }}" {{!is_null($tagId) && in_array($tag->id, $tagId) ? 'checked' : ''}}>
-                        <span class="lable"> @if (isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}" alt="">@endif <span
-                                class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span></span>
-                    </label>
-                @endforeach
-            @endif
+    <div class="row my-2 d-flex align-items-center">
+        <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
+            <div class="radius-bar w-100">
+                <div class="search_form d-flex align-items-center justify-content-between border">
+                    <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    <input class="form-control border-0 typeahead" type="search"
+                        placeholder="{{ __('Search') }}" id="vendor_search_box" value="{{$input['keyword']??''}}">
+                </div>
+                <div class="list-box style-4" style="display:none;" id="search_box_main_div">
+                </div>
+            </div>
         </div>
-        <div class="col-6 text-right">{{ __('Sort By:')}}
+        <div class="col-5 text-right pl-0"><span > {{ __('Sort By') }} :</span>
             <select name="order_type" id='order_type' class="product_tag_filter p-1">
                 <option value="">{{__('Please Select')}}</option>
                 <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
@@ -39,34 +35,59 @@
             </select>
         </div>
     </div>
-    @forelse($listData as $key => $data)
-        <section class="scrolling_section " id="{{ $data->category->slug }}">
-            @if (!empty($data->products))
-                <h2 class="category-head mt-0 mb-3 pl-2">
-                    {{ $data->category->translation_one->name }}
-                    ({{ $data->products_count }})</h2>
-                @forelse($data->products as $prod)
-                    <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-sm-gutters mb-3 p-2"
-                        data-p_sku="{{ $prod->sku }}"
-                        data-slug="{{ $prod->url_slug }}">
-                        <div class="col-sm-2 mb-2">
-                            <a target="_blank"
-                                href="{{ route('productDetail', [$prod->vendor->slug, $prod->url_slug]) }}">
-                                <div class="class_img product_image">
-                                    <img src="{{ $prod->product_image }}"
-                                        alt="{{ $prod->translation_title }}">
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-sm-10">
-                            <div class="row price_head">
-                                <div class="col-sm-12">
-                                    <div
-                                        class="d-flex align-items-start justify-content-between">
-                                        <h5 class="mt-0">
-                                            {{ $prod->translation_title }}
-                                        </h5>
-                                        <div class="product_variant_quantity_wrapper">
+
+    <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
+        @if (isset($tags) && !empty($tags))
+            @foreach ($tags as $key => $tag)
+                <label class="label-switch switch-primary product_tag_filter mr-2 mb-0">
+                    <input type="checkbox"
+                        class="switch switch-bootstrap product_tag_filter status"
+                        name="tag_id" id="product_tag_filter_{{ $key }}"
+                        data-tag_id="{{ $tag->id }}" value="
+                        {{ $tag->id }}" {{!is_null($tagId) && in_array($tag->id, $tagId) ? 'checked' : ''}}>
+                    <span class="lable">
+                        @if (isset($tag->icon) && !empty($tag->icon))
+                            <img class="ml-1"
+                                src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}"
+                                alt="">
+                        @endif <span
+                            class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span>
+                    </span>
+                </label>
+            @endforeach
+        @endif
+    </div>
+@forelse($listData as $key => $data) 
+    <section class="scrolling_section " id="{{ $data->category->slug }}">
+        @if (!empty($data->products))
+            <h2 class="category-head mt-0 mb-3">
+                {{ $data->category->translation_one->name }}
+                ({{ $data->products_count }})
+            </h2>
+            @forelse($data->products as $prod)
+                <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-gutters mb-2 pb-2 border-bottom"
+                    data-p_sku="{{ $prod->sku }}"
+                    data-slug="{{ $prod->url_slug }}">
+                    <div class=" col-sm-2 col-4 mb-2">
+                        <a target="_blank"
+                            href="{{ route('productDetail', [$prod->vendor->slug, $prod->url_slug]) }}">
+                            <div class="class_img product_image">
+                                <img src="{{ $prod->product_image }}"
+                                    alt="{{ $prod->translation_title }}">
+                            </div>
+                        </a>
+
+                    </div>
+                    <div class="col-sm-10 col-8  pl-md-3 pl-2">
+                        <div class="row price_head">
+                            <div class="col-sm-12">
+                                <div
+                                    class="d-flex align-items-start justify-content-between">
+                                    <h5 class="mt-0">
+                                        {{ $prod->translation_title }}
+
+                                    </h5>
+                                    <div class="product_variant_quantity_wrapper">
                                         @php
                                             $data = $prod;
                                             $productVariantInCart = 0;
@@ -99,7 +120,7 @@
                                                     $vendor_id = $data->vendor_id;
                                                     $product_id = $data->id;
                                                     $batch_count = $data->batch_count;
-                                                    $variant_price = $var->price * $data->variant_multiplier;
+                                                    $variant_price = decimal_format($var->price * $data->variant_multiplier);
                                                     if (count($var->checkIfInCart) > 1) {
                                                         $productVariantInCartWithDifferentAddons = 1;
                                                     }
@@ -107,66 +128,79 @@
                                                         $variant_quantity = $variant_quantity + $cartVar['quantity'];
                                                     }
                                                 @endphp
-                                                @break;
-                                            @endif
-                                        @endforeach
+                                            @break
 
-                                        @if ($vendor->is_vendor_closed == 0 || ($vendor->closed_store_order_scheduled != 0 && $checkSlot !=0) )
-                                            @php
-                                                $is_customizable = false;
-                                                if ($isAddonExist > 0 && ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)) {
-                                                    $is_customizable = true;
-                                                }
-                                            @endphp
-                                            @if ($productVariantInCart > 0)
+                                            ;
+                                        @endif
+                                    @endforeach
+
+                                    @if ($vendor->is_vendor_closed == 0 || ($vendor->closed_store_order_scheduled != 0 && $checkSlot != 0))
+                                        @php
+                                            $is_customizable = false;
+                                            if ($isAddonExist > 0 && ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)) {
+                                                $is_customizable = true;
+                                            }
+                                        @endphp
+
+                                        @if ($productVariantInCart > 0)
                                             {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                            <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href{{ $cartProductId }}"
-                                            data-variant_id="{{$productVariantIdInCart}}"
-                                            data-add_to_cart_url="{{ route('addToCart') }}"
-                                            data-vendor_id="{{ $vendor_id }}"
-                                            data-product_id="{{ $product_id }}"
-                                            data-addon="{{ $isAddonExist }}"
+                                            <a class="add-cart-btn add_vendor_product"
+                                                style="display:none;"
+                                                id="add_button_href{{ $cartProductId }}"
+                                                data-variant_id="{{ $productVariantIdInCart }}"
+                                                data-add_to_cart_url="{{ route('addToCart') }}"
+                                                data-vendor_id="{{ $vendor_id }}"
+                                                data-product_id="{{ $product_id }}"
+                                                data-addon="{{ $isAddonExist }}"
                                                 data-minimum_order_count="{{ $minimum_order_count }}"
                                                 data-batch_count="{{ $batch_count }}"
                                                 href="javascript:void(0)">{{ __('Add') }}
-                                            @if ($minimum_order_count > 0) ({{ $minimum_order_count }}) @endif</a>
-                                                <div class="number"
-                                                    id="show_plus_minus{{ $cartProductId }}">
-                                                    <span
-                                                        class="minus qty-minus-product {{ $productVariantInCartWithDifferentAddons ? 'remove-customize' : '' }}"
-                                                        data-variant_id="{{ $productVariantIdInCart }}"
-                                                        data-parent_div_id="show_plus_minus{{ $cartProductId }}"
-                                                        data-id="{{ $cartProductId }}"
-                                                        data-base_price="{{ $variant_price }}"
-                                                        data-vendor_id="{{ $vendor_id }}"
-                                                        data-product_id="{{ $product_id }}"
-                                                        data-cart="{{ $cart_id }}"
-                                                        data-addon="{{ $isAddonExist }}"
-                                                        data-minimum_order_count="{{ $minimum_order_count }}"
-                                                        data-batch_count="{{ $batch_count }}">
-                                                        <i class="fa fa-minus" aria-hidden="true"></i>
-                                                    </span>
-                                                    <input
-                                                        style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
-                                                        placeholder="1" type="text"
-                                                        value="{{ $variant_quantity }}"
-                                                        class="input-number" step="0.01"
-                                                        id="quantity_ondemand_{{ $cartProductId }}" readonly>
-                                                    <span
-                                                        class="plus qty-plus-product {{ $is_customizable ? 'repeat-customize' : '' }}"
-                                                        data-variant_id="{{ $productVariantIdInCart }}"
-                                                        data-id="{{ $cartProductId }}"
-                                                        data-base_price="{{ $variant_price }}"
-                                                        data-vendor_id="{{ $vendor_id }}"
-                                                        data-product_id="{{ $product_id }}"
-                                                        data-cart="{{ $cart_id }}"
-                                                        data-addon="{{ $isAddonExist }}"
-                                                        data-batch_count="{{ $batch_count }}">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                                    </span>
-                                                </div>
-                                            @else
-                                                @if ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1))
+                                                @if ($minimum_order_count > 0)
+                                                    ({{ $minimum_order_count }})
+                                                @endif
+                                            </a>
+                                            <div class="number"
+                                                id="show_plus_minus{{ $cartProductId }}">
+                                                <span
+                                                    class="minus qty-minus-product {{ $productVariantInCartWithDifferentAddons ? 'remove-customize' : '' }}"
+                                                    data-variant_id="{{ $productVariantIdInCart }}"
+                                                    data-parent_div_id="show_plus_minus{{ $cartProductId }}"
+                                                    data-id="{{ $cartProductId }}"
+                                                    data-base_price="{{ $variant_price }}"
+                                                    data-vendor_id="{{ $vendor_id }}"
+                                                    data-product_id="{{ $product_id }}"
+                                                    data-cart="{{ $cart_id }}"
+                                                    data-addon="{{ $isAddonExist }}"
+                                                    data-minimum_order_count="{{ $minimum_order_count }}"
+                                                    data-batch_count="{{ $batch_count }}">
+                                                    <i class="fa fa-minus"
+                                                        aria-hidden="true"></i>
+                                                </span>
+                                                <input
+                                                    style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
+                                                    placeholder="1" type="text"
+                                                    value="{{ $variant_quantity }}"
+                                                    class="input-number"
+                                                    step="0.01"
+                                                    id="quantity_ondemand_{{ $cartProductId }}"
+                                                    readonly>
+                                                <span
+                                                    class="plus qty-plus-product {{ $is_customizable ? 'repeat-customize' : '' }}"
+                                                    data-variant_id="{{ $productVariantIdInCart }}"
+                                                    data-id="{{ $cartProductId }}"
+                                                    data-base_price="{{ $variant_price }}"
+                                                    data-vendor_id="{{ $vendor_id }}"
+                                                    data-product_id="{{ $product_id }}"
+                                                    data-cart="{{ $cart_id }}"
+                                                    data-addon="{{ $isAddonExist }}"
+                                                    data-batch_count="{{ $batch_count }}">
+                                                    <i class="fa fa-plus"
+                                                        aria-hidden="true"></i>
+                                                </span>
+                                            </div>
+                                        @else
+                                            @if ($prod->has_inventory == 0 || ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1))
+                                                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                                 <a class="add-cart-btn add_vendor_product"
                                                     id="aadd_button_href{{ $data->id }}"
                                                     data-variant_id="{{ $data->variant[0]->id }}"
@@ -176,105 +210,139 @@
                                                     data-addon="{{ $isAddonExist }}"
                                                     data-batch_count="{{ $batch_count }}"
                                                     data-minimum_order_count="{{ $minimum_order_count }}"
-                                                    href="javascript:void(0)">{{ __('Add') }}@if ($minimum_order_count > 1) ({{ $minimum_order_count }}) @endif</a>
-                                                <div class="number" style="display:none;"
+                                                    href="javascript:void(0)">{{ __('Add') }}
+                                                    @if ($minimum_order_count > 1)
+                                                        ({{ $minimum_order_count }})
+                                                    @endif
+                                                </a>
+                                                <div class="number"
+                                                    style="display:none;"
                                                     id="ashow_plus_minus{{ $data->id }}">
-                                                    <span class="minus qty-minus-product"
+                                                    <span
+                                                        class="minus qty-minus-product"
                                                         data-parent_div_id="show_plus_minus{{ $data->id }}"
                                                         data-id="{{ $data->id }}"
-                                                        data-base_price="{{ $data->variant_price * $data->variant_multiplier }}"
+                                                        data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
                                                         data-vendor_id="{{ $data->vendor_id }}"
                                                         data-batch_count="{{ $batch_count }}"
                                                         data-minimum_order_count="{{ $minimum_order_count }}">
-                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                        <i class="fa fa-minus"
+                                                            aria-hidden="true"></i>
                                                     </span>
                                                     <input
                                                         style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
                                                         id="quantity_ondemand_d{{ $data->id }}"
-                                                        readonly placeholder="{{ $minimum_order_count }}"
-                                                        type="text" value="{{ $minimum_order_count }}"
-                                                        class="input-number input_qty" step="0.01">
-                                                    <span class="plus qty-plus-product" data-id=""
-                                                        data-base_price="{{ $data->variant_price * $data->variant_multiplier }}"
+                                                        readonly
+                                                        placeholder="{{ $minimum_order_count }}"
+                                                        type="text"
+                                                        value="{{ $minimum_order_count }}"
+                                                        class="input-number input_qty"
+                                                        step="0.01">
+                                                    <span
+                                                        class="plus qty-plus-product"
+                                                        data-id=""
+                                                        data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
                                                         data-vendor_id="{{ $data->vendor_id }}"
                                                         data-batch_count="{{ $batch_count }}"
                                                         data-minimum_order_count="{{ $minimum_order_count }}">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        <i class="fa fa-plus"
+                                                            aria-hidden="true"></i>
                                                     </span>
                                                 </div>
-                                                @else
-                                                <span class="text-danger">{{ __('Out of stock') }}</span>
-                                                @endif
-                                            @endif
-                                            @if ($is_customizable)
-                                                <div class="customizable-text">{{ __('customizable') }}</div>
+                                            @else
+                                                <span
+                                                    class="text-danger">{{ __('Out of stock') }}</span>
                                             @endif
                                         @endif
-                                        </div>
-                                    </div>
-                                    @if ($prod->averageRating > 0)
-                                        <div class="rating-text-box">
-                                            <span>{{ number_format($prod->averageRating, 1, '.', '') }} </span>
-                                            <i class="fa fa-star" aria-hidden="true"></i>
-                                        </div>
+                                        @if ($is_customizable)
+                                            <div class="customizable-text">
+                                                {{ __('customizable') }}
+                                            </div>
+                                        @endif
                                     @endif
+                                </div>
+                            </div>
+                            @if ($prod->averageRating > 0)
+                                <div class="rating-text-box">
+                                    <span>{{ number_format($prod->averageRating, 1, '.', '') }}
+                                    </span>
+                                    <i class="fa fa-star"
+                                        aria-hidden="true"></i>
+                                </div>
+                            @endif
 
-                        @if ($prod->minimum_order_count > 0)
-                            {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $prod->minimum_order_count }} </p>
-                        <p class="mb-1 product_price">   {{__('Batch') }} : {{ $prod->batch_count }} </p> --}}
-                        @endif
+                            @if ($prod->minimum_order_count > 0)
+                                {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $prod->minimum_order_count }} </p>
+                                <p class="mb-1 product_price">   {{__('Batch') }} : {{ $prod->batch_count }} </p> --}}
+                            @endif
 
-                        <p class="mb-1 product_price">
-                            {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier) }}
-                            @if ($prod->variant[0]->compare_at_price > 0)
+                            <p class="mb-1 product_price">
+                                {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
+                                @if ($prod->variant[0]->compare_at_price > 0)
+                                    <span
+                                        class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
+                                @endif
+                            </p>
+                            <div class="member_no d-block mb-0">
+
+                                <span>{!! strlen($prod->translation_description) > 140 ? substr($prod->translation_description, 0, 140) : $prod->translation_description !!}<span class="moreellipses">...&nbsp;</span><span class="morecontent"><span style="display:none;"> {!! substr($prod->translation_description, 140) !!} </span>&nbsp;&nbsp;<a href="" class="morelink">Read more</a></span></span>
+                            </div>
+                            <div id="product_variant_options_wrapper">
+                                @if (!empty($prod->variantSet))
+                                    @php
+                                        $selectedVariant = $productVariantIdInCart > 0 ? $productVariantIdInCart : $prod->variant_id;
+                                    @endphp
+                                    @foreach ($prod->variantSet as $key => $variant)
+                                        @if ($variant->type == 1 || $variant->type == 2)
+                                            <?php $var_id = $variant->variant_type_id; ?>
+                                            <select
+                                                name="{{ 'var_' . $var_id }}"
+                                                vid="{{ $var_id }}"
+                                                class="changeVariant dataVar{{ $var_id }}">
+                                                <option value="" disabled>
+                                                    {{ $variant->title }}
+                                                </option>
+                                                @foreach ($variant->option2 as $k => $optn)
+                                                    <?php
+                                                    $opt_id = $optn->variant_option_id;
+                                                    $selected = $selectedVariant == $optn->product_variant_id ? 'selected' : '';
+                                                    ?>
+                                                    <option
+                                                        value="{{ $opt_id }}"
+                                                        {{ $selected }}>
+                                                        {{ $optn->title }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @else
+                                        @endif
+                                    @endforeach
+                                @endif
+                            </div>
+                            <div class="variant_response">
                                 <span
-                                    class="org_price ml-1 font-14">{{ Session::get('currencySymbol') . decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
-                            @endif
-                        </p>
-                        <div class="member_no d-block mb-0">
-                            <span>{!! $prod->translation_description !!}</span>
-                        </div>
-                        <div id="product_variant_options_wrapper">
-                            @if (!empty($prod->variantSet))
-                                @php
-                                    $selectedVariant = $productVariantIdInCart > 0 ? $productVariantIdInCart : $prod->variant_id;
-                                @endphp
-                                @foreach ($prod->variantSet as $key => $variant)
-                                    @if ($variant->type == 1 || $variant->type == 2)
-                                        <?php $var_id = $variant->variant_type_id; ?>
-                                        <select name="{{ 'var_' . $var_id }}" vid="{{ $var_id }}"
-                                            class="changeVariant dataVar{{ $var_id }}">
-                                            <option value="" disabled>{{ $variant->title }}</option>
-                                            @foreach ($variant->option2 as $k => $optn)
-                                                <?php
-                                                $opt_id = $optn->variant_option_id;
-                                                $selected = $selectedVariant == $optn->product_variant_id ? 'selected' : '';
-                                                ?>
-                                                <option value="{{ $opt_id }}" {{ $selected }}>
-                                                    {{ $optn->title }}</option>
-                                            @endforeach
-                                        </select>
-                                    @else
-                                    @endif
-                                @endforeach
-                            @endif
-                        </div>
-                        <div class="variant_response">
-                            <span class="text-danger mb-2 mt-2 font-14"></span>
+                                    class="text-danger mb-2 mt-2 font-14"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         @empty
-            @endforelse
-        @else
-            <h4 class="mt-3 mb-3 text-center">No product found</h4>
-            @endif
+        @endforelse
+    @else
+        <h4 class="mt-3 mb-3 text-center">No product found</h4>
+    @endif
 </section>
 @empty
-<h4 class="mt-3 mb-3 text-center">No product found</h4>
+    <h4 class="mt-3 mb-3 text-center">No product found</h4>
 @endforelse
+
+
+
+
+
+
+
 </div>
 {{--@endif--}}
         <div class="col-12 col-lg-3 d-lg-inline-block d-none">

@@ -462,7 +462,7 @@ class CartController extends BaseController
             }
             $cart = $cart->where('unique_identifier', $user->system_user);
         } else {
-            $cart = $cart->where('user_id', 1);
+            $cart = $cart->where('user_id', $user_id);
         }
         $cart->delete();
         return response()->json(['message' => __('Empty cart successfully.')]);
