@@ -60,9 +60,44 @@
                         <div class="col-sm-12">
                             <div class="form-group d-flex justify-content-between">
                                 <label for="verify_phone" class="mr-3 mb-0">{{ __("Verify Phone") }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif>
+                                <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif> 
                             </div>
+                        </div> 
+                        @foreach($verify_options as $key => $opt)
+                        @php $creds = json_decode($opt->credentials); @endphp
+                        <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
+                        <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
+                        <div class="col-sm-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="verify_phone" class="mr-3 mb-0">{{ __("Verify Via") }} {{$opt->title}}</label>
+                                <input type="checkbox" data-plugin="switchery" name="active[{{$opt->id}}]" class="form-control verification_options" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-color="#43bee1" @if( $opt->status == '1') checked='checked' @endif>
+                            </div>
+                            @if(strtolower($opt->code) == 'passbase')
+                            <div class="verification_creds mt-2" id="passbase_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group d-flex justify-content-between">
+                                            <label for="age_restriction_on_product_mode" class="mr-3 mb-0">{{ __("Age Restricted") }}</label>
+                                            <input type="checkbox" data-plugin="switchery" name="age_restriction_on_product_mode" class="form-control" @if( (isset($preference) && $preference->age_restriction_on_product_mode == '1')) checked='checked' @endif> 
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group mb-2">
+                                            <label for="passbase_publish_key" class="mr-3">{{ __("Publishable API key") }}</label>
+                                            <input type="text" name="passbase_publish_key" id="passbase_publish_key" class="form-control" value="{{$creds->publish_key ?? ''}}" @if($opt->status == 1) required @endif>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group mb-2">
+                                            <label for="passbase_secret_key" class="mr-3">{{ __("Secret API Key") }}</label>
+                                            <input type="password" name="passbase_secret_key" id="passbase_secret_key" class="form-control" value="{{$creds->secret_key ?? ''}}" @if($opt->status == 1) required @endif>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
                         </div>
+                        @endforeach
                     </div>
                 </div>
             </form>
@@ -143,24 +178,24 @@
                         </tr>
                     </thead>
                     <tbody id="post_list">
-                        @forelse($user_registration_documents as $user_registration_documents)
+                        @forelse($user_registration_documents as $user_registration_document)
                         <tr>
                             <td>
-                            <a class="edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}" href="javascript:void(0)">
-                                {{$user_registration_documents->primary ? $user_registration_documents->primary->name : ''}}
+                            <a class="edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_document->id}}" href="javascript:void(0)">
+                                {{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}
                             </a>
                             </td>
-                            <td>{{$user_registration_documents->file_type}}</td>
-                            <td>{{ ($user_registration_documents->is_required == 1)?__('Yes'):__('No') }}</td>
+                            <td>{{$user_registration_document->file_type}}</td>
+                            <td>{{ ($user_registration_document->is_required == 1)?__('Yes'):__('No') }}</td>
                             <td>
                             <div>
                                 <div class="inner-div" style="float: left;">
-                                    <a class="action-icon edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}" href="javascript:void(0)">
+                                    <a class="action-icon edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_document->id}}" href="javascript:void(0)">
                                         <i class="mdi mdi-square-edit-outline"></i>
                                     </a>
                                 </div>
                                 <div class="inner-div">
-                                    <button type="button" class="btn btn-primary-outline action-icon delete_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}">
+                                    <button type="button" class="btn btn-primary-outline action-icon delete_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_document->id}}">
                                         <i class="mdi mdi-delete"></i>
                                     </button>
                                 </div>
@@ -2902,5 +2937,18 @@
         var new_value = value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, $1);
         $(obj).val(new_value);
     }
+    //for verification options
+    $('.verification_options').change(function() {
+        var id = $(this).data('id');
+        var title = $(this).data('title');
+        var code = title.toLowerCase();
+        if ($(this).is(":checked")) {
+            $("#" + code + "_fields_wrapper").show();
+            $("#" + code + "_fields_wrapper").find('input').attr('required', true);
+        } else {
+            $("#" + code + "_fields_wrapper").hide();
+            $("#" + code + "_fields_wrapper").find('input').removeAttr('required');
+        }
+    });
 </script>
 @endsection

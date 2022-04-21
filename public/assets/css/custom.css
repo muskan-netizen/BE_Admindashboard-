@@ -231,6 +231,10 @@ body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}.faq_
     -webkit-transform: rotateY(180deg);
     transform: rotateY(180deg);
   }
+  .verification_creds{
+  	padding: 10px 20px;
+    background-color: rgb(238, 238, 238);
+  }
 
 
 
