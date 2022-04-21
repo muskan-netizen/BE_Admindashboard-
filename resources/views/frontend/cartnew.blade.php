@@ -41,7 +41,11 @@
 </style>
 
 @endsection
-
+@foreach($vendorWeeklySlotDay as $row)
+@if(($row['day']-1)==(int)date('w'))
+@php $today=['start_time'=>$row['start_time'],'end_time'=>$row['end_time']]; @endphp
+@endif
+@endforeach
 @section('content')
 @php
 $now = \Carbon\Carbon::now()->format('Y-m-d\TH:i');
@@ -412,18 +416,18 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="col-md-6">
                     <label for="">{{__('Schedule Pickup ')}}</label>
                     <% if(cart_details.pickup_delay_date != 0) { %>
-                        <input type="datetime-local" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_pickup != '') ? cart_details.schedule_pickup : '') %>" min="<%= ((cart_details.pickup_delay_date != '0') ? cart_details.pickup_delay_date : '') %>">
+                        <input type="text" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_pickup != '') ? cart_details.schedule_pickup : '') %>" min="<%= ((cart_details.pickup_delay_date != '0') ? cart_details.pickup_delay_date : '') %>">
                     <% } else { %>
-                            <input type="datetime-local" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_pickup??'' }}" min="{{ $now }}">
+                            <input type="text" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_pickup??'' }}" min="{{ $now }}">
                     <% } %>
                 </div>
                 <div class="col-md-6">
                     <label for="">{{__('Schedule Dropoff ')}} </label>
                     <% if(cart_details.dropoff_delay_date != 0) { %>
-                        <input type="datetime-local" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_dropoff != '') ? cart_details.schedule_dropoff : '') %>" min="<%= ((cart_details.dropoff_delay_date != '0') ? cart_details.dropoff_delay_date : '') %>">
+                        <input type="text" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_dropoff != '') ? cart_details.schedule_dropoff : '') %>" min="<%= ((cart_details.dropoff_delay_date != '0') ? cart_details.dropoff_delay_date : '') %>">
                     <% } else { %>
                             <!-- <input type="date" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_dropoff??'' }}" min="{{ $now }}"> -->
-                            <input type="text" name="date17" value="" id="schedule_datetime_dropoff">
+                            <input type="text" name="schedule_dropoff" id="schedule_datetime_dropoff" class="form-control"  value="{{ $cart->schedule_dropoff??'' }}" min="{{ $now }}">
                     <% } %>
                 </div>
             </div>
@@ -1273,26 +1277,43 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 <script type="text/javascript" src="{{asset('assets/libs/simple-dtpicker/jquery.simple-dtpicker.js')}}"></script>
 <link href="{{asset('assets/libs/simple-dtpicker/jquery.simple-dtpicker.css')}}" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
-   $(document).ready(function(){
-    setTimeout( function(){ 
-    // Do something after 1 second 
-    $('input[name=date17]').click(function(){
-    $('input[name=date17]').appendDtpicker({
-        "inline": true,
-        "futureOnly": true,
-        "minTime":"08:30",
-        "maxTime":"19:15"
+
+$(document).ready(function(){
+    $('.datepicker_timelist').click(function(){
+        alert("here");
     });
-});
-}  , 2000 );
-});
-        // $("#username").keypress(function(e) {
-        //     if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-        //         return false;
-        //     }
-        //     return true;
-        // });
-       
+});  
+  
+setTimeout( function(){ 
+    $('#schedule_datetime_dropoff').click(function(){
+        $('#schedule_datetime_dropoff').appendDtpicker({
+            "inline": true,
+            "futureOnly": true,
+            "minuteInterval": 15,
+            "minTime":"{{$today['start_time']}}",
+            "maxTime":"{{$today['end_time']}}",
+            "allowWdays": [1, 2, 3, 4, 5]
+        });
+    });
+    $('#schedule_datetime_pickup').click(function(){
+        $('#schedule_datetime_pickup').appendDtpicker({
+            "inline": true,
+            "futureOnly": true,
+            "minuteInterval": 15,
+            "minTime":"{{$today['start_time']}}",
+            "maxTime":"{{$today['end_time']}}",
+            "allowWdays": [1, 2, 3, 4, 5]
+        });
+    });
+},2000);
+    
+// $("#username").keypress(function(e) {
+//     if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+//         return false;
+//     }
+//     return true;
+// });
+
     
 </script>
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
