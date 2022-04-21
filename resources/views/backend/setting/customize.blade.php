@@ -25,8 +25,846 @@
             </div>
         </div>
     </div>
+
+<!-- New Customize Page -->
+
+
+    <!--User onbarding start -->
+    <div class="row">
+      <div class="col-12">
+         <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __("User Onboarding ") }}</h4>
+         </div>
+      </div>
+    </div>
     <div class="row col-spacing">
-        <div class="col-lg-3 col-xl-3 mb-3">
+       <!-- User Authentication start-->
+        <div class="col-md-3 mb-3">
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}"> 
+                <input type="hidden" name="verify_config" id="verify_config" value="1">
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                @csrf
+                <div class="card-box mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title mb-0">{{ __("User Authentication") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <h4 class="header-title text-uppercase"></h4>
+                    <div class="row align-items-start">
+                        <div class="col-sm-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="verify_email" class="mr-3 mb-0">{{ __("Verify Email") }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="verify_email" id="verify_email" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_email == '1')) checked='checked' @endif>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="verify_phone" class="mr-3 mb-0">{{ __("Verify Phone") }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- User Authentication end-->
+        <!-- Vendor Registration Documents start -->
+        <div class="col-md-4">
+            <div class="card-box pb-2">
+                <div class="d-flex align-items-center justify-content-between">
+                   <h4 class="header-title m-0">{{ __("Vendor Registration Documents") }}</h4>
+                   <a class="btn btn-info d-block" id="add_vendor_registration_document_modal_btn">
+                      <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+                   </a>
+                </div>
+                <div class="table-responsive mt-3 mb-1">
+                   <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                      <thead>
+                         <tr>
+                            <th>{{ __("Name") }}</th>
+                            <th>{{ __("Type") }}</th>
+                            <th>{{ __("Is Required?") }}</th>
+                            <th>{{ __("Action") }}</th>
+                         </tr>
+                      </thead>
+                      <tbody id="post_list">
+                         @forelse($vendor_registration_documents as $vendor_registration_document)
+                         <tr>
+                            <td>
+                               <a class="edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">
+                                  {{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}
+                               </a>
+                            </td>
+                            <td>{{$vendor_registration_document->file_type}}</td>
+                            <td>{{ ($vendor_registration_document->is_required == 1)?__('Yes'):__('No') }}</td>
+                            <td>
+                               <div>
+                                  <div class="inner-div" style="float: left;">
+                                     <a class="action-icon edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">
+                                        <i class="mdi mdi-square-edit-outline"></i>
+                                     </a>
+                                  </div>
+                                  <div class="inner-div">
+                                     <button type="button" class="btn btn-primary-outline action-icon delete_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}">
+                                        <i class="mdi mdi-delete"></i>
+                                     </button>
+                                  </div>
+                               </div>
+                            </td>
+                         </tr>
+                         @empty
+                         <tr align="center">
+                            <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                         </tr>
+                         @endforelse
+                      </tbody>
+                   </table>
+                </div>
+            </div>
+        </div>
+        <!-- Vendor Registration Documents end -->
+        <!-- User Registration Documents start -->
+        <div class="col-md-4">
+            <div class="card-box pb-2">
+                <div class="d-flex align-items-center justify-content-between">
+                <h4 class="header-title m-0">{{ __("User Registration Documents") }}</h4>
+                <a class="btn btn-info d-block" id="add_user_registration_document_modal_btn">
+                    <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+                </a>
+                </div>
+                <div class="table-responsive mt-3 mb-1">
+                <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                    <thead>
+                        <tr>
+                            <th>{{ __("Name") }}</th>
+                            <th>{{ __("Type") }}</th>
+                            <th>{{ __("Is Required?") }}</th>
+                            <th>{{ __("Action") }}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="post_list">
+                        @forelse($user_registration_documents as $user_registration_documents)
+                        <tr>
+                            <td>
+                            <a class="edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}" href="javascript:void(0)">
+                                {{$user_registration_documents->primary ? $user_registration_documents->primary->name : ''}}
+                            </a>
+                            </td>
+                            <td>{{$user_registration_documents->file_type}}</td>
+                            <td>{{ ($user_registration_documents->is_required == 1)?__('Yes'):__('No') }}</td>
+                            <td>
+                            <div>
+                                <div class="inner-div" style="float: left;">
+                                    <a class="action-icon edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}" href="javascript:void(0)">
+                                        <i class="mdi mdi-square-edit-outline"></i>
+                                    </a>
+                                </div>
+                                <div class="inner-div">
+                                    <button type="button" class="btn btn-primary-outline action-icon delete_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}">
+                                        <i class="mdi mdi-delete"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr align="center">
+                            <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+        <!-- USer Registration Documents end -->
+   </div>
+   <!--User onbarding end -->
+
+   <!--Localization start -->
+    <div class="row">
+      <div class="col-12">
+         <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __("Localization ") }}</h4>
+         </div>
+      </div>
+    </div>
+    <div class="row col-spacing">
+        <!-- Date & Time sec start -->
+        <div class="col-lg-4 col-xl-3 mb-3">
+            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <div class="card-box mb-0 h-100 pb-0">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title mb-0">{{ __("Format") }}</h4>
+                        <input type="hidden" name="send_to" id="send_to" value="customize">
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <p class="sub-header">
+                        {{ __("View and update the date, time & decimal format.") }}
+                    </p>
+                    <div class="row mb-2">
+                        <div class="col-md-12">
+                            <div class="form-group mb-2">
+                                <label for="date_format">{{ __("Date Format") }}</label>
+                                <select class="form-control al_box_height al_box_height" id="date_format" name="date_format">
+                                    <option value="DD-MM-YYYY" {{ ($preference && $preference->date_format =="DD-MM-YYYY")? "selected" : "" }}>
+                                        DD-MM-YYYY</option>
+                                    {{-- <option value="DD/MM/YYYY" {{ ($preference && $preference->date_format =="DD/MM/YYYY")? "selected" : "" }}>
+                                        DD/MM/YYYY</option> --}}
+                                    <option value="YYYY-MM-DD" {{ ($preference && $preference->date_format =="YYYY-MM-DD")? "selected" : "" }}>
+                                        YYYY-MM-DD</option>
+                                    <option value="MM/DD/YYYY" {{ ($preference && $preference->date_format =="MM/DD/YYYY")? "selected" : "" }}>
+                                        MM/DD/YYYY</option>
+                                </select>
+                                @if($errors->has('date_format'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('date_format') }}</strong>
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group mb-2">
+                                <label for="time_format">{{ __("Time Format") }}</label>
+                                <select class="form-control al_box_height al_box_height" id="time_format" name="time_format">
+                                    <option value="12" {{ ($preference && $preference->time_format =="12")? "selected" : "" }}>12 {{ __("hours") }}
+                                    </option>
+                                    <option value="24" {{ ($preference && $preference->time_format =="24")? "selected" : "" }}>24 {{ __("hours") }}
+                                    </option>
+                                </select>
+                                @if($errors->has('time_format'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('time_format') }}</strong>
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group mb-2">
+                                <label for="time_format">{{ __("Decimal Format (Digit After Decimal)") }}</label>
+                                <select class="form-control al_box_height al_box_height" id="digit_after_decimal" name="digit_after_decimal">
+                                    <option value="0" {{ ($preference && $preference->digit_after_decimal == 0)? "selected" : "" }}> {{ __("No Decimal") }}
+                                    </option>
+                                    @for($i=1; $i<=8; $i++)
+                                    <option value="{{$i}}" {{ ($preference && $preference->digit_after_decimal == $i)? "selected" : "" }}>{{$i}} {{ __("Digit") }}
+                                    </option>
+                                    @endfor
+                                </select>
+                                @if($errors->has('time_format'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('time_format') }}</strong>
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- Date & Time sec end -->
+        <!--Vendor Type &  Distance to Time Calculator start -->
+        <div class="col-lg-4 col-xl-3 mb-3">
+            <form method="POST" class="mt-2" action="{{route('configure.update', Auth::user()->code)}}">
+                <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box mb-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="header-title mb-0">{{__('Distance to Time Calculator')}}</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="row mt-2">
+                    <div class="col-12 mb-2">
+                        <label class="primaryCurText">{{__('Distance Unit')}}</label>
+                        <select class="form-control" id="distance_unit_for_time" name="distance_unit_for_time">
+                            <option value="">{{__('Select unit')}}</option>
+                            <option value="kilometer" @if((isset($preference) && $preference->distance_unit_for_time == 'kilometer')) selected @endif>{{__('Kilometer')}}</option>
+                            <option value="mile" @if((isset($preference) && $preference->distance_unit_for_time == 'mile')) selected @endif>{{__('Mile')}}</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="primaryCurText">{{__('Distance to Time Multiplier (Per 1 distance unit)')}}</label>
+                        <input class="form-control" type="number" id="distance_to_time_multiplier" name="distance_to_time_multiplier" value="{{ old('distance_to_time_multiplier', $preference->distance_to_time_multiplier  ?? '')}}" min="0">
+                    </div>
+                    </div>
+                </div>
+            </form>
+            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <input type="hidden" name="verify_vendor_type" id="verify_vendor_type" value="1">
+                <div class="card-box mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="row align-items-start">
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="dinein_check" class="mr-3 mb-0">{{getDynamicTypeName('Dine-In')}}</label>
+                                <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
+                                <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
+                                <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            @endif
+        </div>
+        <!--Vendor Type &  Distance to Time Calculator end -->
+        <!-- Localization start -->
+        <div class="col-lg-5 col-xl-6 mb-3">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <div class="card-box mb-0 h-100 pb-0">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title mb-0">{{ __("Localization") }}</h4>
+                        <input type="hidden" name="send_to" id="send_to" value="customize">
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <p class="sub-header">
+                        {{ __("Define and update the localization") }}
+                    </p>
+                    <div class="row col-spacing">
+                        <div class="col-sm-4 mb-2">
+                            <label for="languages">{{ __("Primary Language") }}</label>
+                            <select class="form-control al_box_height" id="primary_language" name="primary_language">
+                                @php
+                                   $primary_language_id =  $preference->primarylang ? $preference->primarylang->language_id : '';
+                                @endphp
+                                @foreach($languages as $lang)
+                                    <option {{(isset($preference) && ($lang->id == $primary_language_id))? "selected" : "" }} value="{{$lang->id}}"> {{$lang->name}} </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-sm-8 mb-2">
+                            <label for="languages">{{ __("Additional Languages") }}</label>
+                            <select class="form-control al_box_height select2-multiple" id="languages" name="languages[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
+                                @foreach($languages as $lang)
+                                @if($lang->id != $primary_language_id)
+                                    <option value="{{$lang->id}}" {{ (isset($preference) && in_array($lang->id, $cli_langs))? "selected" : "" }}>{{$lang->name ??''}} ({{$lang->nativeName??''}})</option>
+                                @endif
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-sm-4 mb-2">
+                            <label for="primary_currency">{{ __("Primary Currency") }}</label>
+                            <select class="form-control al_box_height" id="primary_currency" name="primary_currency">
+                                @foreach($currencies as $currency)
+                                <option iso="{{$currency->iso_code.' '.$currency->symbol}}" {{ (isset($preference) && $preference->primary->currency->id == $currency->id) ? "selected" : ""}} value="{{$currency->id}}"> {{$currency->iso_code.' '.$currency->symbol}} </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-sm-8">
+                            <label for="currency">{{ __("Additional Currency") }}</label>
+                            <select class="form-control al_box_height select2-multiple" id="currency" name="currency_data[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
+                                @foreach($currencies as $currency)
+                                @if($preference->primary->currency->id != $currency->id)
+                                <option value="{{$currency->id}}" iso="{{$currency->iso_code}}" {{ (isset($preference) && in_array($currency->id, $cli_currs))? "selected" : "" }}> {{$currency->iso_code}} {{!empty($currency->symbol) ? $currency->symbol : ''}} </option>
+                                @endif
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <div class="row multiplierData">
+                                @if($preference->currency)
+                                @foreach($preference->currency as $ac)
+                                <div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-{{$ac->currency->id}}">
+                                    <label class="primaryCurText">1 {{$preference->primary->currency->iso_code}} {{!empty($preference->primary->currency->symbol) ? $preference->primary->currency->symbol : ''}} = </label>
+                                    <input class="form-control al_box_height w-50 d-inline-block" type="text" value="{{$ac->doller_compare}}" step=".0001" name="multiply_by[{{$ac->currency->id}}]" oninput="changeCurrencyValue(this)"> {{$ac->currency->iso_code}} {{!empty($ac->currency->symbol) ? $ac->currency->symbol : ''}}
+                                    <input type="hidden" name="cuid[]" class="curr_id" value="{{ $ac->currency->id }}">
+                                </div>
+                                @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- Localization end -->
+    </div>
+    <!--Localization end -->
+
+    <!-- Links Start -->
+    <div class="row">
+      <div class="col-12">
+         <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __("Links") }}</h4>
+         </div>
+      </div>
+    </div>
+    <div class="row col-spacing">
+        <!-- Start custom domain & app link  -->
+        <div class="col-lg-3 col-lg-3 mb-3">
+            <form method="POST" action="{{route('client.updateDomain', Auth::user()->code)}}">
+                @csrf
+                <div class="card-box mb-0 ">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title mb-0">{{ __("Custom Domain") }}</h4>
+                        <input type="hidden" name="send_to" id="send_to" value="customize">
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <p class="sub-header">{{ __("Update custom domain here.") }}</p>
+                    <label for="custom_domain">*{{__("Make sure you already pointed to IP")}} ({{\env('IP')}}) {{__("from your domain.")}}</label>
+                    <div class="row mb-2">
+                        <div class="col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="custom_domain">{{ __("Custom Domain") }}</label>
+                                <div class="domain-outer d-flex align-items-center">
+                                    <div class="domain_name">https://</div>
+                                    <input type="text" name="custom_domain" id="custom_domain" placeholder="" class="form-control al_box_height" value="{{ old('custom_domain', $preference->domain->custom_domain ?? '')}}">
+                                </div>
+                                @if($errors->has('custom_domain'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('custom_domain') }}</strong>
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="card-box pb-2 mt-3">
+                <div class="table-responsive mb-1">
+                    <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                        <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
+                        @csrf
+                        <input type="hidden" name="send_to" id="send_to" value="customize">
+                        <div class="card-box mb-0 py-0 px-2">
+                           <div class="d-flex align-items-center justify-content-between">
+                              <h4 class="header-title mb-0">{{ __("Android/IOS Link") }}</h4>
+                              <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                           </div>
+                           <div class="row mt-2">
+                              <div class="col-12 mb-2">
+                                 <label class="primaryCurText">{{__('Android App Link')}}</label>
+                                 <input class="form-control" type="text" id="android_app_link" name="android_app_link" value="{{ old('android_app_link', $preference->android_app_link  ?? '')}}">
+                              </div>
+                              <div class="col-12">
+                                 <label class="primaryCurText">{{__('IOS App Link')}}</label>
+                                 <input class="form-control" type="text" id="ios_link" name="ios_link" value="{{ old('ios_link', $preference->ios_link  ?? '')}}" >
+                              </div>
+                           </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- End custom domain & app link  -->
+        <!-- Start Social Link -->
+        <div class="col-lg-3 mb-3">
+            <div class="card-box mb-0 h-100 pb-1">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title mb-0">{{ __("Social Media") }}</h4>
+                    <button class="btn btn-info d-block" id="add_social_media_modal_btn">
+                        <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+                    </button>
+                </div>
+                <div class="table-responsive mt-3">
+                    <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                        <thead>
+                            <tr>
+                                <th>{{ __("Icon") }}</th>
+                                <th>{{ __("URL") }}</th>
+                                <th>{{ __("Action") }}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="post_list">
+                            @forelse($social_media_details as $social_media_detail)
+                            <tr>
+                                <td>
+                                    <i class="fab fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
+                                </td>
+                                <td>
+                                    <a href="{{$social_media_detail->url}}" target="_blank">{{$social_media_detail->url}}</a>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="inner-div" style="float: left;">
+                                            <a class="action-icon edit_social_media_option_btn" data-social_media_detail_id="{{$social_media_detail->id}}">
+                                                <i class="mdi mdi-square-edit-outline"></i>
+                                            </a>
+                                        </div>
+                                        <div class="inner-div">
+                                            <button type="button" class="btn btn-primary-outline action-icon delete_social_media_option_btn" data-social_media_detail_id="{{$social_media_detail->id}}">
+                                                <i class="mdi mdi-delete"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr align="center">
+                                <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- End Social Link -->
+    </div>
+    <!-- Links End -->
+
+    <!-- Miscellaneous Start  -->
+    <div class="row">
+      <div class="col-12">
+         <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __("Miscellaneous") }}</h4>
+         </div>
+      </div>
+    </div>
+    <div class="row col-spacing">
+        <!-- Order Email Notification start -->
+        <div class="col-lg-3 col-lg-3 mb-3">
+            <form method="POST" class="mt-2" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box pb-1">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title ">{{ __('Order Email Notification') }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-xl-12 my-2 p-0" id="addCur-160">
+                        <label class="primaryCurText">{{ __('Email') }}</label>
+                        <input class="form-control" type="email" id="admin_email" name="admin_email" value="{{ old('admin_email', $preference->admin_email)}}">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- Order Email Notification end -->
+        <!-- Start Refer and earn -->
+        <div class="col-lg-3 mb-3">
+            <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box mb-0 pb-1">
+                    <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="header-title">Refer and Earn</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-xl-12 my-2" id="addCur-160">
+                    <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
+                    <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', decimal_format($reffer_to) ?? '')}}" min="0" step="any"> 
+                    </div>
+                    <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
+                    <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
+                    <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', decimal_format($reffer_by) ?? '')}}" min="0" step="any">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- End refer and earn -->
+    </div>
+    <!-- Miscellaneous End  -->
+
+    <!-- Nomenclature Start  -->
+    <div class="row">
+      <div class="col-12">
+         <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __("Nomenclature") }}</h4>
+         </div>
+      </div>
+    </div>
+    <div class="row col-spacing">
+        <div class="col-lg-12 col-lg-12 mb-3">
+            <form method="POST" class="h-100" action="{{route('nomenclature.store', Auth::user()->code)}}"> 
+                @csrf
+                <div class="card-box mb-0 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title mb-0">{{ __("Nomenclature") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <p class="sub-header">{{ __("View and update the naming") }}</p>
+                    <div class="table-responsive">
+                        <div class="row mb-2 flex-nowrap">
+                            <div class="col-sm-2"></div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{$client_language->langName}}</label>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Vendors") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 1)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Loyalty Cards") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="loyalty_cards_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="loyalty_cards_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 2)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('loyalty_cards_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Takeaway") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="takeaway_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 3)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('takeaway_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Search") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="search_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="search_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 4)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('search_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Wishlist") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="wishlist_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="wishlist_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 5)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('wishlist_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Dine-In") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="dinein_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="dinein_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 6)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('dinein_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Delivery") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="delivery_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="delivery_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 7)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('delivery_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Zip Code") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="zipCode_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="zipCode_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 8)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('zipCode_name.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @if($want_to_tip_nomenclature) 
+                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Do you want to give a tip") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="wantToTip_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="wantToTip_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, $want_to_tip_nomenclature->id)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('wantToTip_name.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The want To Tip field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
+                        @if(!empty($fixed_fee->id))
+                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Fixed Fee") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="FixedFee_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="FixedFee_name[]" class="form-control al_box_height" value="{{ ($fixed_fee) ? \App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, $fixed_fee->id) : ''}}">
+                                    @if($k == 0)
+                                        @if($errors->has('FixedFee_name.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The Fixed Fee field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
+
+                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Royo Dispatcher") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="royo_dispatcher_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="royo_dispatcher_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 11)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('royo_dispatcher_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+<!-- End New Customize page -->
+
+
+
+
+
+
+    <div class="row col-spacing">
+        <div class="col-lg-e col-xl-3 mb-3">
             <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <!-- Panel Theme title -->
@@ -293,7 +1131,6 @@
             <input type="hidden" name="send_to" id="send_to" value="customize">
             @csrf
             <!-- User Authentication start -->
-
             <div class="card-box mb-2">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h4 class="header-title mb-0">{{ __("User Authentication") }}</h4>
