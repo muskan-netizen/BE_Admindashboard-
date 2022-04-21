@@ -1,19 +1,27 @@
 var footer_height = $('.footer-light').height();
 var header_height = $('.site-header').height();
 var window_height = $(window).height();
-var header_content_width = $('.al_new_wrapper_design').height();
+var header_content_width = $('#content-wrap').height();
+$(document).ready(function () {
+    jQuery(".al_offset-top-home, .al_offset-top").css('margin-top', header_height+'px');
+    jQuery("#content-wrap").css('margin-bottom', footer_height+'px');
+});
+
 jQuery(window).scroll(function () {
     var scroll = jQuery(window).scrollTop();
     if (scroll <= 100) {
         jQuery(".site-header").removeClass("fixed-bar");
-        jQuery(".al_offset-top-home").css('margin-top', '0px');
+        // jQuery(".al_offset-top-home").css('margin-top', '0px');
 
     } else {
-        jQuery(".site-header").addClass("fixed-bar");
-        if(window_height < header_content_width + footer_height){
+
+        if(window_height < header_content_width + footer_height - 100){
+            jQuery(".site-header").addClass("fixed-bar");
             jQuery(".al_offset-top-home").css('margin-top', header_height+'px');
         }else{
+            jQuery(".site-header").removeClass("fixed-bar");
             jQuery(".al_offset-top-home").css('margin-top', '0px');
+
         }
     }
 });
@@ -21,6 +29,7 @@ jQuery(window).scroll(function () {
 $(".mobile-account .fa").click(function(){
     $(".onhover-show-div").toggleClass("open");
   });
+
 
 
 
@@ -55,9 +64,11 @@ $(window).scroll(function () {
                 $('.scrollspy-menu li').eq(i).addClass('active');
             }
         });
+        jQuery(".alScrollspyProduct").css('margin-top', (header_height + 100)+'px');
     } else {
         $('.scrollspy-menu li.active').removeClass('active');
         $('.scrollspy-menu li:first').addClass('active');
+        jQuery(".alScrollspyProduct").css('margin-top', '0px');
     }
 
 }).scroll();
@@ -1623,7 +1634,7 @@ $(document).ready(function () {
         else if (payment_option_id == 28) {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
-                //Easebuzz payment gateway 
+                //Easebuzz payment gateway
                 payWithVNpay(address_id, payment_option_id, order);
             }
             else{
@@ -2356,11 +2367,11 @@ $(document).ready(function () {
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
-            
+
         }
-       
-       
-        
+
+
+
         if((parseFloat(amount_payable)+parseFloat($('#wallet_amount_used').val()))>=parseFloat($('#mov').text())){
             $("#MOV_Notification").addClass("d-none");
         }else{
@@ -2381,14 +2392,14 @@ $(document).ready(function () {
         var currency = amount_elem.attr('data-curr');
         var amount_payable = amount_elem.val();
         // amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
-        
+
         // alert("wallet amount available"+$('total_wallet_amount_available'))
         amount_payable = parseFloat(amount_payable) + parseFloat(tip);
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
         $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
 
-        
+
             if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");

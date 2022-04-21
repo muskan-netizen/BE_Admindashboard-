@@ -147,11 +147,10 @@ body .modal-backdrop{z-index: 12;}
 body .product-right .product-buttons a:last-child {margin-left: 0;}.img-outer-box .fav-heart {top: 10px;right: 10px;}
 /* ------------------------------- al css start end ----------------------------- */
 /* fixed footer all pages start */
-article#page-container .site-header {position: relative;}article#page-container header.site-header.fixed-bar{position: fixed;}
-article#page-container {position: relative;min-height: 100vh;overflow: hidden;}
-footer#footer {position: relative;bottom: 0;width: 100%;}
+/* article#page-container .site-header {position: relative;}article#page-container header.site-header.fixed-bar{position: fixed;} */
+/* article#page-container {position: relative;min-height: 100vh;overflow: hidden;} */
  /* Footer height */
-article#page-container .offset-top,article#page-container .offset-top.inner-pages-offset{margin: 0 !important;}
+/* article#page-container .offset-top,article#page-container .offset-top.inner-pages-offset{margin: 0 !important;} */
 
 /* fixed footer all pages start */
 #address-map-container {width: 100%;height: 250px;border-radius: 10px !important;overflow: hidden;}.dark .list-box{background-color: #232323;}

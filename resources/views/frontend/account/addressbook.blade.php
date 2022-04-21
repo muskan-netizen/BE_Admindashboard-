@@ -105,7 +105,7 @@
                         </div>
                         <div class="box-account box-info order-address">
                             <div class="row">
-                                <div class="col-xl-4 col-md-6 text-center mt-3">
+                                <div class="col-xl-4 col-md-6 text-center mt-md-2">
                                     <a class="outer-box border-dashed d-flex align-items-center justify-content-center add_edit_address_btn" href="javascript:void(0)" data-toggle="modal" data-target="#add_edit_address">
                                         <i class="fa fa-plus-circle d-block mr-1" aria-hidden="true"></i>
                                         <h6 class="m-0">
@@ -118,7 +118,7 @@
                                     </a>
                                 </div>
                                 @foreach($useraddress as $add)
-                                    <div class="col-xl-4 col-md-6 mt-3">
+                                    <div class="col-xl-4 col-md-6 mt-2">
                                         <div class="outer-box  px-0">
                                             <div class="address-type w-100">
                                                 <div class="default_address border-bottom mb-1 px-2">

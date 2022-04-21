@@ -4,7 +4,7 @@
 @endsection
 @section('css')
 <style type="text/css">
-.cardbanner {border-radius:50px;height:300px;}
+.cardbanner {border-radius:50px;height:300px;margin-top:30px;}
 .shimmer_effect .grid-row .cards {margin-bottom: 40px;}
 .shimmer_effect .grid-row .card_icon{display:none;}
 .shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
