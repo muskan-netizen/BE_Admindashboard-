@@ -1086,6 +1086,7 @@ class CartController extends BaseController
             $cart->closed_store_order_scheduled = 0;
         }
         $cart->category_kyc_count = 0;
+        $cart->without_category_kyc = 0;
         $cart->category_ids = '';
         if( $preferences->category_kyc_documents ==1 ){
                       
@@ -1102,6 +1103,20 @@ class CartController extends BaseController
             if( $category_kyc_count  > 0 && ($is_alrady_submit  !=  $category_kyc_count )){
                 $cart->category_kyc_count = $category_kyc_count;
                 $cart->category_ids = implode( ',',$category_array);
+            }
+
+            $ALLcategory_kyc_documents =CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_array){
+                $q->whereIn('category_id',$category_array);
+            })->with('primary')->get();
+            foreach ($ALLcategory_kyc_documents as $vendor_registration_document) {
+                if($vendor_registration_document->is_required == 1){
+                  
+                    $check = CaregoryKycDoc::where(['cart_id'=>$cartID,'category_kyc_document_id'=>$vendor_registration_document->id])->first();
+                    if($check)
+                    {  
+                        $cart->without_category_kyc = 1;
+                    }
+                }
             }
         }
 
@@ -1558,6 +1573,14 @@ class CartController extends BaseController
     }
 
     public function updateCartCategoryKyc(Request $request){
+        $user = Auth::user();
+        if (!$user->id) {
+            $cart = Cart::where('unique_identifier', $user->system_user);
+        } else {
+            $cart = Cart::where('user_id', $user->id);
+        }
+        $cart = $cart->first();
+
         $rules=[];
         $category_ids = explode(",",$request->category_ids);
 
@@ -1566,7 +1589,8 @@ class CartController extends BaseController
         })->with('primary')->get();
         foreach ($category_kyc_documents as $vendor_registration_document) {
             if($vendor_registration_document->is_required == 1){
-                if(isset($vendor_registration_document->primary) && !empty($vendor_registration_document->primary))
+                $check = CaregoryKycDoc::where(['cart_id'=>$cart->id,'category_kyc_document_id'=>$vendor_registration_document->id])->first();
+                if(isset($vendor_registration_document->primary) && !empty($vendor_registration_document->primary) && !$check )
                 {
                     $rules[$vendor_registration_document->primary->slug] = 'required';
                 }
@@ -1575,13 +1599,7 @@ class CartController extends BaseController
 
         $validation  = Validator::make($request->all(), $rules)->validate();
 
-        $user = Auth::user();
-        if (!$user->id) {
-            $cart = Cart::where('unique_identifier', $user->system_user);
-        } else {
-            $cart = Cart::where('user_id', $user->id);
-        }
-        $cart = $cart->first();
+        
     
         //pr($category_ids);
         $user_product_order_form = null;
@@ -1599,7 +1617,6 @@ class CartController extends BaseController
                     if ($vendor_registration_document->file_type != "Text" && $vendor_registration_document->file_type != "selector") {
                         $check = CaregoryKycDoc::where(['cart_id'=>$cart->id,'category_kyc_document_id'=>$vendor_registration_document->id])->first();
                         if ($request->hasFile($doc_name) && !$check) {
-                        
                             $vendor_docs =  new CaregoryKycDoc();
                             $vendor_docs->user_id = $user->id;
                             $vendor_docs->category_kyc_document_id = $vendor_registration_document->id;
@@ -1610,16 +1627,6 @@ class CartController extends BaseController
                             $vendor_docs->save();
                         }
                     } 
-                    //else {
-                    //     if (!empty($request->$doc_name)) {
-                    //         $vendor_docs =  new CaregoryKycDoc();
-                    //         $vendor_docs->user_id = $user->id;
-                    //         $vendor_docs->category_kyc_document_id = $vendor_registration_document->id;
-                    //         $vendor_docs->file_name = $request->$doc_name;
-                    //         $vendor_docs->cart_id = $cart->id;
-                    //         $vendor_docs->save();
-                    //     }
-                    //}
                 }
             }
         }
