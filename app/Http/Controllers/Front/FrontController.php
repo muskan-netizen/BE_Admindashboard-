@@ -177,7 +177,7 @@ class FrontController extends Controller
                         $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
                             $q->where('category_translations.language_id', $langId);
                         }])->where('vendor_id', $vid)->where('category_id', $child->id)->where('status', 1)->first();
-                        if($vendorCategory){
+                        if ($vendorCategory) {
                             $category_list[] = $vendorCategory;
                         }
                         $this->getChildCategoriesForVendor($child->id, $langId, $vid);
@@ -185,10 +185,10 @@ class FrontController extends Controller
                 }
             
 
-                $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
+                $vendorCategory = VendorCategory::with(['category.translation' => function ($q) use ($langId) {
                     $q->where('category_translations.language_id', $langId);
                 }])->where('vendor_id', $vid)->where('category_id', $cate->id)->where('status', 1)->first();
-                if($vendorCategory){
+                if ($vendorCategory) {
                     $category_list[] = $vendorCategory;
                 }
                 $this->getChildCategoriesForVendor($cate->id, $langId, $vid);
