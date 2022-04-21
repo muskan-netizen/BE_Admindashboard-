@@ -709,8 +709,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                     <div class="col-sm-6 col-lg-8 text-sm-right">
 
-                        @if($client_preference_detail->yoti_age_verification ==1)
-                            <button id="verify_yourself" class="btn btn-solid " type="button" >{{__('Age Verification')}}</button>
+                        @if(isset($ageVerify->status) && $ageVerify->status == 1)
+                            {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
                         @endif
 
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>

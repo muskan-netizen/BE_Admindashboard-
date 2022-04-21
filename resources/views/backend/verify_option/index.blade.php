@@ -51,7 +51,6 @@
 
                 <?php
                 $creds = json_decode($opt->credentials);
-
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -65,13 +64,23 @@
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
                             </div>
                         </div>
+                        @if ( (strtolower($opt->code) != 'yoti'))
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label>
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="sandbox[{{$opt->id}}]" class="chk_box" data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
                             </div>
                         </div>
+                        @endif
+
+                        {{-- <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label>
+                                <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="sandbox[{{$opt->id}}]" class="chk_box" data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
+                            </div>
+                        </div> --}}
                     </div>
+
                     @if ( (strtolower($opt->code) == 'passbase') )
                     <div class="mt-2" id="passbase_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
@@ -91,8 +100,30 @@
                     </div>
                     @endif
 
+
+                    @if ( (strtolower($opt->code) == 'yoti') )
+                    <div class="mt-2" id="yoti_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="yoti_auth_key" class="mr-3">{{ __("Authorization key") }}</label>
+                                    <input type="text" name="yoti_auth_key" id="yoti_auth_key" class="form-control" value="{{$creds->yoti_auth_key ?? ''}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="yoti_sdk_id" class="mr-3">{{ __("Yoti SDK Id") }}</label>
+                                    <input type="text" name="yoti_sdk_id" id="yoti_sdk_id" class="form-control" value="{{$creds->yoti_sdk_id ?? ''}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
             </div>
+
+
             @endforeach
         </div>
     </form>
