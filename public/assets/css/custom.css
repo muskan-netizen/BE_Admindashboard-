@@ -127,8 +127,8 @@ body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}.faq_
   .toggle__bg {
     width: 64px;
     height: 26px;
-    background: hsla(199, 43%, 59%, 1);
-    background: linear-gradient(to right, hsla(199, 9%, 24%, 1) 50%, hsla(193, 72%, 57%, 1) 50% 100%);
+    background: #fff;
+    background: linear-gradient(to right, #fff 50%, #777 50% 100%);
     background-size: 200% 100%;
     background-position: 100%;
     border-radius: 50px;
@@ -143,8 +143,8 @@ body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}.faq_
     position: relative;
     height: 25px;
     width: 25px;
-    background: hsla(18, 100%, 62%, 1);
-    background: linear-gradient(to right, hsla(199, 9%, 24%, 1) 50%, hsla(193, 72%, 57%, 1) 50% 100%);
+    background: #777;
+    background: linear-gradient(to right, #fff 50%, #777 50% 100%);
     border-radius: 50%;
     transform-origin: top left;
     transform: translateY(0px);
@@ -163,7 +163,7 @@ body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}.faq_
     height: 100%;
     background: transparent;
     border-radius: 50%;
-    box-shadow: inset 0px -20px 20px 10px hsla(0, 0%, 0%, 0.1)
+    box-shadow: inset 0px -20px 20px 10px hsla(0, 0%, 0%, 0)
   }
 
   .toggle__sphere-bg {
@@ -187,17 +187,17 @@ body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}.faq_
   }
 
   .toggle__sphere-bg:before {
-    background-color: rgb(0, 200, 255);
+    background-color: #fff;
     border-radius: 50%;
-    background-image: url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 20 20'%3E%3Cpath d='M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm.5-9.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm0 11a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm5-5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm-11 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9.743-4.036a.5.5 0 1 1-.707-.707.5.5 0 0 1 .707.707zm-7.779 7.779a.5.5 0 1 1-.707-.707.5.5 0 0 1 .707.707zm7.072 0a.5.5 0 1 1 .707-.707.5.5 0 0 1-.707.707zM3.757 4.464a.5.5 0 1 1 .707-.707.5.5 0 0 1-.707.707z'/%3E%3C/svg%3E" );
+    background-image: url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='Black'  viewBox='0 0 20 20'%3E%3Cpath d='M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm.5-9.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm0 11a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm5-5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm-11 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9.743-4.036a.5.5 0 1 1-.707-.707.5.5 0 0 1 .707.707zm-7.779 7.779a.5.5 0 1 1-.707-.707.5.5 0 0 1 .707.707zm7.072 0a.5.5 0 1 1 .707-.707.5.5 0 0 1-.707.707zM3.757 4.464a.5.5 0 1 1 .707-.707.5.5 0 0 1-.707.707z'/%3E%3C/svg%3E" );
     background-size: 123%;
   }
 
   .toggle__sphere-bg:after {
-    background-color: hsla(199, 9%, 24%, 1);
+    background-color: #fff;
     transform: rotateY(180deg);
     border-radius: 50%;
-    background-image: url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 20 20'%3E%3Cpath d='M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278zM4.858 1.311A7.269 7.269 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.316 7.316 0 0 0 5.205-2.162c-.337.042-.68.063-1.029.063-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286z'/%3E%3C/svg%3E");
+    background-image: url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='Black' viewBox='0 0 20 20'%3E%3Cpath d='M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278zM4.858 1.311A7.269 7.269 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.316 7.316 0 0 0 5.205-2.162c-.337.042-.68.063-1.029.063-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286z'/%3E%3C/svg%3E");
     background-position: 3px 2px;
     background-repeat: no-repeat;
   }
