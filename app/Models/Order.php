@@ -46,6 +46,10 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\Payment', 'order_id', 'id');
     }
+    
+    public function refund(){
+        return $this->hasMany('App\Models\OrderRefund', 'order_id', 'id');
+    }
     public function loyaltyCard()
     {
         return $this->hasOne('App\Models\LoyaltyCard', 'id', 'loyalty_membership_id');
