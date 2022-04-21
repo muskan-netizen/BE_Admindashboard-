@@ -30,7 +30,7 @@ INSERT INTO `addon_sets` (`id`, `title`, `min_select`, `max_select`, `position`,
 
 INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`, `status`, `position`, `is_core`, `can_add_products`, `parent_id`, `vendor_id`, `client_code`, `display_mode`, `warning_page_id`, `template_type_id`, `warning_page_design`, `created_at`, `updated_at`, `deleted_at`, `show_wishlist`) VALUES
 (1, NULL, 'Root', 3, NULL, 0, 1, 1, 1, 0, NULL, NULL, NULL, '1', NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(2, 'category/icon/KT5Rqx0kwl2nyhMheq9mAigrOddSxJREl8w9RLZ3.svg', 'Delivery', 7, 'category/image/AYBCHNuQ7TSu8CousGVCAhqr28PYK0JFl9qrlEeJ.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-09-29 07:00:41', NULL, 1),
+(2, '6865aa/category/icon/q1bE1uHlWfqXbMZhGV3Fynt7M44cDHaknzwVxCt0.png', 'Delivery', 7, 'category/image/AYBCHNuQ7TSu8CousGVCAhqr28PYK0JFl9qrlEeJ.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-09-29 07:00:41', NULL, 1),
 (3, NULL, 'Restaurant', 1, NULL, 1, 1, 1, 1, 1, 1, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-29 06:44:29', '2021-09-29 06:44:29', 1),
 (4, NULL, 'Supermarket', 1, NULL, 1, 1, 1, 1, 1, 1, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-29 06:44:37', '2021-09-29 06:44:37', 1),
 (5, NULL, 'Pharmacy', 1, NULL, 1, 1, 1, 1, 1, 1, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-29 06:44:42', '2021-09-29 06:44:42', 1),
