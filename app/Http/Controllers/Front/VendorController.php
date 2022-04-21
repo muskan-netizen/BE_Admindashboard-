@@ -81,7 +81,7 @@ class VendorController extends FrontController
         $tag_id = $request->has('tag') && $request->tag ? $request->tag : null;
         $preferences = Session::get('preferences');
         $vendor = Vendor::with('slot.day', 'slotDate')
-            ->select('id','email', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled')->where('slug', $slug)->where('status', 1)->firstOrFail();
+            ->select('id','email', 'name', 'slug', 'desc','short_desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled','instagram_url')->where('slug', $slug)->where('status', 1)->firstOrFail();
         $vendor->is_vendor_closed = 0;
         if($vendor->show_slot == 0){
             if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
@@ -831,7 +831,7 @@ class VendorController extends FrontController
                         ->where('product_variant_sets.product_id', $p_id);
                     }])->where('id', $p_id)->first();
                     $value->variantSet = $variantData->variantSet;
-                    $value->product_image = ($value->media->isNotEmpty()) ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                    $value->product_image = ($value->media->isNotEmpty() && isset($value->media->first()->image)) ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                     $value->translation_title = ($value->translation->isNotEmpty()) ? $value->translation->first()->title : $value->sku;
                     $value->translation_description = ($value->translation->isNotEmpty()) ? strip_tags($value->translation->first()->body_html) : '';
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;

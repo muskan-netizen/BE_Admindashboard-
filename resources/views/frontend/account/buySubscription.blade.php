@@ -42,7 +42,7 @@
                 </div>
             </div>
         </div>
-        <div class="row my-3">
+        <div class="row my-md-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">my account</a></div>
                 @include('layouts.store/profile-sidebar')

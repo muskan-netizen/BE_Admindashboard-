@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser};
+use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser};
 
 class YocoGatewayController extends FrontController
 {
@@ -274,18 +274,20 @@ class YocoGatewayController extends FrontController
             // send to yoco
             $result = curl_exec($ch);
             $result = json_decode($result);
-            if ($result->status == 'successful') {
+            if (isset($result->status) && ($result->status == 'successful')) {
                 if ($request->payment_form == '') {
                     return $this->successResponse($result);
                 }
                 $this->yocoSuccessApp($request, $result);
                 return $this->successResponse($result);
             } else {
-                $this->yocoFailApp($request);
-                return $this->errorResponse($result->status, 400);
+                // $this->yocoFailApp($request);
+                Log::info($result->errorMessage);
+                return $this->errorResponse(__('Server Error'), 400);
             }
         } catch (\Exception $ex) {
-            return $this->errorResponse($ex->getMessage(), 400);
+            Log::info($ex->getMessage());
+            return $this->errorResponse(__('Server Error'), 400);
         }
     }
 
@@ -356,16 +358,18 @@ class YocoGatewayController extends FrontController
         if ($request->payment_form == 'cart') {
             $order_number = $request->order_number;
             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-            $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-            foreach ($order_products as $order_prod) {
-                OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+            if($order){
+                // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                // foreach ($order_products as $order_prod) {
+                //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                // }
+                // OrderProduct::where('order_id', $order->id)->delete();
+                // OrderProductPrescription::where('order_id', $order->id)->delete();
+                // VendorOrderStatus::where('order_id', $order->id)->delete();
+                // OrderVendor::where('order_id', $order->id)->delete();
+                // OrderTax::where('order_id', $order->id)->delete();
+                // Order::where('id', $order->id)->delete();
             }
-            OrderProduct::where('order_id', $order->id)->delete();
-            OrderProductPrescription::where('order_id', $order->id)->delete();
-            VendorOrderStatus::where('order_id', $order->id)->delete();
-            OrderVendor::where('order_id', $order->id)->delete();
-            OrderTax::where('order_id', $order->id)->delete();
-            Order::where('id', $order->id)->delete();
         }
         elseif ($request->payment_form == 'wallet') {
             

@@ -13,7 +13,11 @@ class SubscriptionPlansUser extends Model
     protected $table = "subscription_plans_user";
 
     public function features(){
-        return $this->hasMany('App\Models\SubscriptionPlanFeaturesUser', 'subscription_plan_id', 'id')->select('id','subscription_plan_id', 'feature_id');
+        return $this->hasMany('App\Models\SubscriptionPlanFeaturesUser', 'subscription_plan_id', 'id');
+    }
+
+    public function subFeatures(){
+        return $this->belongsToMany('App\Models\SubscriptionFeaturesListUser', 'subscription_plan_features_user', 'subscription_plan_id', 'feature_id');
     }
 
     public function getImageAttribute($value)

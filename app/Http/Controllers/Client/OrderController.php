@@ -5,9 +5,6 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\AhoyController;
 use Auth;
 use Session;
-use App\Models\Tax;
-use App\Models\Order;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -15,8 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
-use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport};
+use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -581,6 +577,44 @@ class OrderController extends BaseController
                     $vendor_order_status->save();
 
                     OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
+                    
+                    $order = Order::find($request->order_id);
+
+                    //Refund to wallet
+                    if($order->payment_option_id!=1 && $order->payment_status==1){
+                        
+                        $orderRefund=new OrderRefund();
+                        $orderRefund->user_id=$order->user_id;
+                        $orderRefund->order_id=$order->id;
+                        $payment_id=Order::select('payments.id')
+                            ->leftJoin('payments','payments.order_id','=','orders.id')
+                            ->where('orders.id',$order->id)->first()->id;
+                            
+                        if(!empty($payment_id)){
+                            $orderRefund->payment_id=$payment_id;
+                        }else{
+                            $orderRefund->payment_id=0;
+                        }
+                        $orderRefund->payment_option_id=$order->payment_option_id;
+                        $orderRefund->amount=$order->wallet_amount_used+$order->payable_amount;
+                        $orderRefund->paid_to_wallet=1;
+                        $orderRefund->save();
+
+
+                        $previousWalletAmount=Wallet::where('holder_id',$order->user_id)->first()->balance;
+                        if(empty($previousWalletAmount)){
+                            $refundAmount=($order->wallet_amount_used+$order->payable_amount);
+                        }else{
+                            $refundAmount=(($order->wallet_amount_used+$order->payable_amount)+($previousWalletAmount/100));
+                        }
+                        
+                        $wallet = User::find($order->user_id)->wallet;
+                        $wallet->depositFloat($refundAmount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $refundAmount]);
+
+                        $order->payment_status=2;
+                        $order->save();
+                        
+                    }
                 }
                 if ($request->status_option_id == 3) {
                     if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {

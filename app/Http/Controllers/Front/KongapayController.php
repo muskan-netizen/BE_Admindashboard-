@@ -292,7 +292,7 @@ class KongapayController extends Controller
               $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
+              return Redirect::to(route('user.subscription.plans'))->with('success',$request->message);
             }
           }else{
             $data->delete();

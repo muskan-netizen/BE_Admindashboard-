@@ -28,12 +28,12 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="product-filter-content">
-                                                <div class="collection-view">
+                                            {{-- <div class="collection-view">
                                                     <ul>
                                                         <li><i class="fa fa-th grid-layout-view"></i></li>
                                                         <li><i class="fa fa-list-ul list-layout-view"></i></li>
                                                     </ul>
-                                                </div>
+                                                </div> --}}
                                                 {{-- <div class="collection-grid-view">
                                                     <ul>
                                                         <li><img src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
@@ -65,7 +65,7 @@
                                         <div class="row margin-res">
                                             @if(!empty($listData))
                                             @foreach($listData as $key => $data)
-                                            <div class="col-xl-3 col-6 col-grid-box mt-3">
+                                            <div class="col-md-3 col-6 col-grid-box mt-3">
                                                 <div class="product-box scale-effect mt-0">
                                                     <div class="img-wrapper">
                                                         <div class="front">
