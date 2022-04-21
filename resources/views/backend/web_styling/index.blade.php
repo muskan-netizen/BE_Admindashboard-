@@ -212,6 +212,12 @@
                                         <input type="checkbox" id="header_quick_link" data-plugin="switchery" name="header_quick_link" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->header_quick_link == 1 ? 'checked' : ''}}>
                                     </div>
                                 </li>
+                                <li class="d-flex align-items-center justify-content-between mt-2">
+                                    <h4 class="header-title mb-2">{{__('Show Apps QR On Footer')}}</h4>
+                                    <div class="mb-0">
+                                        <input type="checkbox" id="show_qr_on_footer" data-plugin="switchery" name="show_qr_on_footer" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->show_qr_on_footer == 1 ? 'checked' : ''}}>
+                                    </div>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -345,6 +351,7 @@
                                         @endforeach
                                         <input class="form-control" value="{{$exist == 1 ? $value : '' }}" type="text" name="names[]" placeholder="{{ $lang->langName }}">
                                     </div>
+                                    
                                     @endforeach
 
                                 </div>

@@ -272,7 +272,8 @@
             <a href="{{$url}}">
                 @endif
                 <div class="home text-center">
-                    <img  rel="preload" src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
+                    <link rel="preload" as="image" href="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" />
+                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
                 </div>
                 @if($url)
             </a>
@@ -304,7 +305,8 @@
             <a href="{{$url}}">
                 @endif
                 <div class="home text-center">
-                    <img rel="preload" src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
+                    <link rel="preload" as="image" href="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" />
+                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
                 </div>
                 @if($url)
             </a>
@@ -549,7 +551,7 @@
         @else
         <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
-                <div class="col-12"  data-aos="zoom-in">
+                <div class="col-12"   >
                     @if($homePageLabel->slug == 'vendors')
                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}" ></div>
                     @elseif($homePageLabel->slug == 'trending_vendors')
@@ -611,7 +613,6 @@
 </div>
 @endsection
 @section('js-script')
-<script type="text/javascript" src="{{asset('front-assets/js/slick.js')}}"></script> 
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 {{--<script type="text/javascript" src="{{asset('js/aos.js')}}"></script>--}}
@@ -619,21 +620,19 @@
 @section('script')
 <script type="text/javascript">
     // AOS.init();
-    function changeImage(image2, check) {
-        var image = $(image2).children("img");
-       var  icon = image.attr('data-icon');
-       var  icon_two = image.attr('data-icon_two');
+    function changeImage(image, check) {
+       var  icon = $(image).attr('data-icon');
+       var  icon_two = $(image).attr('data-icon_two');
        if(check == 1)
        {
         setTimeout(function () {
-            image.attr('data-src',icon_two);
-            image.attr('src',icon_two);
+            $(image).attr('data-src',icon_two);
+            $(image).attr('src',icon_two);
         },200);
        }else if(check == 0){
             setTimeout(function () {
-                console.log(icon);
-                image.attr('data-src',icon);
-                image.attr('src',icon);
+                $(image).attr('data-src',icon);
+                $(image).attr('src',icon);
             },200);
 
        }

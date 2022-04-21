@@ -352,7 +352,7 @@ $pages = \App\Models\Page::with([
         icon_two_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
       }
     %>
-    <li class="al_main_category" data-aos="zoom-in">
+    <li class="al_main_category"  >
         <a href="{{route('categoryDetail')}}/<%=category.slug %>">
             <%=category.name %>
         </a>

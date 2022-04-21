@@ -3,6 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="_token" content="{{ csrf_token() }}">
 <!-- Page tags -->
 <meta name="title" content="{{$meta_title ?? ''}}">
 <meta name="keywords" content="{{$meta_keyword ?? 'Royoorders'}}">

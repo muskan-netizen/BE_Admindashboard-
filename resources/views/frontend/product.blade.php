@@ -40,7 +40,7 @@
     </div>
   </div> -->
 
-<section class="section-b-space">
+<section class="section-b-space alSingleProducts">
     <div class="collection-wrapper al">
         <div class="container">
             <div class="row">
@@ -62,7 +62,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="container-fluid">
-                        <div class="row">
+                        {{--<div class="row">
                             <div class="col-xl-12">
                                 <div class="filter-main-btn mb-2">
                                     <span class="filter-btn">
@@ -70,7 +70,7 @@
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </div>--}}
                         <div class="row">
                             <div class="col-lg-5 pl-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
@@ -168,7 +168,7 @@
                                 </div>
                             </div>
 
-                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text">
+                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
                                 <div class="product-right inner_spacing pl-sm-3 p-0">
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -602,16 +602,16 @@
 @if($product->related_products->count() > 0)
 
 
-<section class="section-b-space ratio_asos">
+<section class="section-b-space ratio_asos alProductsPage">
     <div class="container">
         <div class="row m-0">
-            <div class="col-12 ">
+            <div class="col-12 p-0">
                 <h3>{{__('Related products')}}</h3>
             </div>
         </div>
     </div>
-    <div class="container pb-4">
-        <div class="product-4 product-m no-arrow related-products pb-2">
+    <div class="container pb-md-4">
+        <div class="product-4 product-m  related-products pb-2">
             @forelse($product->related_products as $related_product)
             <div>
 				<a class="common-product-box scale-effect text-center"
@@ -721,7 +721,7 @@
 
 @endsection
 @section('js-script')
-<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script> 
+<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>

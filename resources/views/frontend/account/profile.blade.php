@@ -77,7 +77,7 @@
                 </div>
             </div>
         </div>
-        <div class="row my-3">
+        <div class="row my-md-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
                 @include('layouts.store/profile-sidebar')
@@ -102,12 +102,12 @@
                                         <h5 class="mt-0 mb-1">{{$user->name}}</h5>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 text-center text-md-right mt-3 mt-md-0">
+                                <div class="col-sm-6 text-right mt-0 mt-md-0">
                                     <button type="button" class="btn btn-solid openProfileModal">{{ __('Edit Profile') }}</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-box p-4 mb-3">
+                        <div class="card-box">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <h6 class="m-0">{{ __('About Me') }}</h6>
                             </div>

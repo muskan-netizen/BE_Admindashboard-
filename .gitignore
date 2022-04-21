@@ -2,7 +2,6 @@
 /node_modules
 /vendor
 /resources/js
-/routes/web.php
 .env
 .env.backup
 .phpunit.result.cache
@@ -17,4 +16,5 @@ storage/debugbar/
 composer.lock
 package-lock.json
 /storage
+.DS_Store
 /public/storage

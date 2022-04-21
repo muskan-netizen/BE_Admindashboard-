@@ -26,7 +26,6 @@ class CategoryController extends FrontController{
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0)
     {
-
         $preferences = Session::get('preferences');
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -100,7 +99,7 @@ class CategoryController extends FrontController{
             }
         }
 
-        $navCategories = $this->categoryNav($langId); 
+        $navCategories = $this->categoryNav($langId);
 
         if(isset($vendors)){
             $vendorIds = $vendors;
@@ -191,7 +190,7 @@ class CategoryController extends FrontController{
 
             if($page == 'laundry')
             $page = 'product';
- 
+
             if(view()->exists('frontend/cate-'.$page.'s')){
                 return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets]);
             }else{
@@ -631,7 +630,7 @@ class CategoryController extends FrontController{
            return \Response::json(\View::make('frontend.ondemand.time-slots-for-date', array('time_slots' => $time_slots,'cart_product_id'=> $cart_product_id))->render());
         }
     }
-    # get product faq 
+    # get product faq
     public function getcategoryKycDocument(Request $request,$domain = ''){
         $user = Auth::user();
         if ($user) {
@@ -644,15 +643,15 @@ class CategoryController extends FrontController{
             $is_alrady_submit = CaregoryKycDoc::where('cart_id',$cart->id)->pluck('category_kyc_document_id');
             $is_alrady_submit = $is_alrady_submit->isNotEmpty() ? $is_alrady_submit->toArray() : [];
         }
-       
+
         $category_ids = explode(",",$request->category_ids);
-       
+
         $langId = Session::get('customerLanguage');
-        
+
         if(empty($langId))
         $langId = ClientLanguage::orderBy('is_primary','desc')->value('language_id');
         $product_faqs=[];
-        
+
         $category_kyc_documents = CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_ids){
             $q->whereIn('category_id',$category_ids);
            })->with(['translations' => function ($qs) use($langId){

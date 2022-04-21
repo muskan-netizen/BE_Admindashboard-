@@ -139,9 +139,9 @@ class FrontController extends Controller
     public function fixedFee($lang_id){
         if(Nomenclature::where('label','Fixed Fee')->exists()){
             $nomenclatures_translation_id=Nomenclature::where('label','Fixed Fee')->first()->id;
-            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee";
+            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee Per Order";
         }else{
-            return "Fixed Fee";
+            return "Fixed Fee Per Order";
         }
     }
 
@@ -474,9 +474,9 @@ class FrontController extends Controller
         $payment_method = new UserSavedPaymentMethods;
         $payment_method->user_id = Auth::user()->id;
         $payment_method->payment_option_id = $request->payment_option_id;
-        $payment_method->card_last_four_digit = $request->card_last_four_digit;
-        $payment_method->card_expiry_month = $request->card_expiry_month;
-        $payment_method->card_expiry_year = $request->card_expiry_year;
+        $payment_method->card_last_four_digit = $request->card_last_four_digit ?? NULL;
+        $payment_method->card_expiry_month = $request->card_expiry_month ?? NULL;
+        $payment_method->card_expiry_year = $request->card_expiry_year ?? NULL;
         $payment_method->customerReference = ($request->has('customerReference')) ? $request->customerReference : NULL;
         $payment_method->cardReference = ($request->has('cardReference')) ? $request->cardReference : NULL;
         $payment_method->save();

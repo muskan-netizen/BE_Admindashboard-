@@ -27,6 +27,10 @@ class VerifyCsrfToken extends Middleware
         'payment/easebuzz/api',
         
         'ccavenue/success',
+        'vnpay_respont',
+        'payment/vnpay/api',
+        'payment/vnpay/notify', 
+        
         'payment/cashfree/notify',
 
         /** routes for edit order **/
