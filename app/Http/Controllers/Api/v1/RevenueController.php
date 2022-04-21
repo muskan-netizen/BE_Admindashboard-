@@ -31,6 +31,7 @@ class RevenueController extends Controller
 			$validator = Validator::make($request->all(), [
 				'vendor_id' => 'required',	
 			]);
+            $vendor_id = $request->vendor_id;
 
 			if ($validator->fails()) {			
 				return $this->errorResponse($validator->errors()->first(), 422);
@@ -85,7 +86,9 @@ class RevenueController extends Controller
                 $total_categories->whereBetween('created_at', [$from_date, $end_date]);
             }
             $total_categories = $total_categories->where('id', '>', '1')->where('deleted_at', NULL)->count();
-            $total_revenue = Order::orderBy('id','desc');
+            $total_revenue = Order::whereHas('vendors', function($q) use($vendor_id){
+                $q->where('vendor_id', $vendor_id);
+            })->orderBy('id','desc');
             if (Auth::user()->is_superadmin == 0) {
                 $total_revenue = $total_revenue->whereHas('vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -175,7 +178,9 @@ class RevenueController extends Controller
                 $labels[] = $key;
                 $series[] = $value;
             }
-            $monthly_sales_query = Order::select(\DB::raw('sum(payable_amount) as y'), \DB::raw('count(*) as z'), \DB::raw('date(created_at) as x'), 'address_id');
+            $monthly_sales_query = Order::whereHas('vendors', function($q) use($vendor_id){
+                $q->where('vendor_id', $vendor_id);
+            })->select(\DB::raw('sum(payable_amount) as y'), \DB::raw('count(*) as z'), \DB::raw('date(created_at) as x'), 'address_id');
             if (Auth::user()->is_superadmin == 0) {
                 $monthly_sales_query = $monthly_sales_query->whereHas('vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);

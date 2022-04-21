@@ -597,15 +597,15 @@
 @section('script')
 <script type="text/javascript">
      // AOS.init();
-	$('.center').slick({
-  centerMode: true,
-  centerPadding: '60px',
-  slidesToShow: 2,
-  responsive: [
-    {breakpoint: 768, settings: { arrows: false, centerMode: true, centerPadding: '40px', slidesToShow: 2}},
-    {breakpoint: 480, settings: { arrows: false, centerMode: true, centerPadding: '40px', slidesToShow: 1}}
-  ]
-});
+// 	$('.center').slick({
+//   centerMode: true,
+//   centerPadding: '60px',
+//   slidesToShow: 2,
+//   responsive: [
+//     {breakpoint: 768, settings: { arrows: false, centerMode: true, centerPadding: '40px', slidesToShow: 2}},
+//     {breakpoint: 480, settings: { arrows: false, centerMode: true, centerPadding: '40px', slidesToShow: 1}}
+//   ]
+// });
 	function changeImage(image, check) {
        var  icon = $(image).attr('data-icon');
        var  icon_two = $(image).attr('data-icon_two');
