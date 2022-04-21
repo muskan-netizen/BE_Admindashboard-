@@ -307,10 +307,10 @@
         var features = $(this).val();
         if(features.includes('2')){
             $(this).parents('.features_wrapper').next().show();
-            $(this).parents('.features_wrapper').next().attr('required', true);
+            $(this).parents('.features_wrapper').next().find('input').attr('required', true);
         }else{
             $(this).parents('.features_wrapper').next().hide();
-            $(this).parents('.features_wrapper').next().removeAttr('required');
+            $(this).parents('.features_wrapper').next().find('input').removeAttr('required');
         }
     });
 

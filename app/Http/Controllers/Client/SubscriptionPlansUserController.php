@@ -59,10 +59,11 @@ class SubscriptionPlansUserController extends BaseController
                 if($plan->features->isNotEmpty()){
                     $planFeaturesList = array();
                     foreach($plan->features as $feature){
+                        $title = $feature->feature->title;
                         if($feature->feature_id == 2){
-                            $feature->feature->title = $feature->percent_value . $feature->feature->title;
+                            $title = $feature->percent_value . $title;
                         }
-                        $planFeaturesList[] = $feature->feature->title;
+                        $planFeaturesList[] = $title;
                     }
                     unset($plan->features);
                     $features = implode(', ', $planFeaturesList);

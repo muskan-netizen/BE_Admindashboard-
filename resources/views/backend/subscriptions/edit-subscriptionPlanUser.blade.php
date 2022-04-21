@@ -54,7 +54,7 @@
                     <div class="col-md-12 percentage_value_wrapper" style="{{ (in_array(2, $subPlanFeaturesIds)) ? 'display:block' : '' }}">
                         <div class="form-group">
                             <label for="percent_value">{{ __('Percent Value') }}</label>
-                            <input class="form-control" type="number" id="percent_value" name="percent_value" min="0" value="{{$feature_percent_value}}" placeholder="Percent Value" onKeyPress="if(this.value.length==6) return false;">
+                            <input class="form-control" type="number" id="percent_value" name="percent_value" min="0" value="{{$feature_percent_value}}" placeholder="Percent Value" onKeyPress="if(this.value.length==6) return false;" {{ (in_array(2, $subPlanFeaturesIds)) ? 'required=true' : '' }}>
                         </div>
                     </div>
                     <div class="col-md-6">
