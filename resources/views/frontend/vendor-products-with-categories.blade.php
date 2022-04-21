@@ -513,7 +513,7 @@
                                             </ul>
                                         </nav>
                                     </div>
-                                    <div class="col-md-8 col-lg-6">
+                                    <div class="col-md-8 col-lg-6 alScrollspyProduct">
                                             <div class="row mt-2 d-flex align-items-center mb-sm-2">
                                                 <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
                                                     <div class="radius-bar w-100">

@@ -95,7 +95,12 @@ span.icon-estimation svg path {fill: #6e768e;}
     --card_color_j: #d2d1e3;
     --text_color_j: #1e1772;
 }
-body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}.faq_section .option_section:nth-child(even){background-color:#f3f7f9;border-radius:15px;padding-top:15px;margin-bottom:15px}body button.update_order_status{border-radius:30px;padding:3px 12px;border:none}body #update-single-status{text-align:right}.al_custom_control label.custom-control-label{height:100px;overflow:hidden;transition:.5s}.al_custom_control label.custom-control-label img{position:relative;transition:1.5s ease-in-out;vertical-align:top;top:0}.al_custom_control label.custom-control-label:hover img{top:-250px}
+body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}.faq_section .option_section:nth-child(even){background-color:#f3f7f9;border-radius:15px;padding-top:15px;margin-bottom:15px}body button.update_order_status{border-radius:30px;padding:3px 12px;border:none}body #update-single-status{text-align:right}.al_custom_control label.custom-control-label{height:100px;overflow:hidden;transition:.5s}.al_custom_control label.custom-control-label img{position:relative;transition:1.5s ease-in-out;vertical-align:top;top:0}
+.al_custom_control label.custom-control-label[for="1"]:hover img{top:-120px}
+.al_custom_control label.custom-control-label[for="2"]:hover img{top:-120px}
+.al_custom_control label.custom-control-label[for="3"]:hover img{top:-120px}
+.al_custom_control label.custom-control-label[for="4"]:hover img{top:-223px}
+.al_custom_control .card{overflow: hidden;}
 #sidebar-menu ul#side-menu li span svg {vertical-align: top;}
 .main-customer-page .dt-buttons.btn-group.flex-wrap {top: 0;}
 .al_new_export_table .dataTables_scroll {overflow: hidden;width: 100%;}
@@ -109,7 +114,6 @@ span.icon-payment-option_s.aldelivery svg {height: 18px;margin-top: 5px;}
 body .modal-body{padding-bottom: 0;}
 body p:empty{display: none;}
 #sidebar-menu ul#side-menu li span svg {vertical-align: top;}
-body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}.faq_section .option_section:nth-child(even){background-color:#f3f7f9;border-radius:15px;padding-top:15px;margin-bottom:15px}body button.update_order_status{border-radius:30px;padding:3px 12px;border:none}body #update-single-status{text-align:right}.al_custom_control label.custom-control-label{height:100px;overflow:hidden;transition:.5s}.al_custom_control label.custom-control-label img{position:relative;transition:1.5s ease-in-out;vertical-align:top;top:0}.al_custom_control label.custom-control-label:hover img{top:-210px}
 
 .altoggle {
     display: flex;
