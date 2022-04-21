@@ -319,3 +319,17 @@ padding-bottom: 5px;}
 
 }
 
+@media (max-width: 1366px){
+    .ds{position: absolute;left:10px;}
+    /* .booking-experience{height: calc(100vh - 150px);position: absolute;width: 400px;top: 50px;} */
+    .booking-experience{position: absolute;width: 400px;top: 50px;}
+    .al_body_template_three .cab-image-box{width: 200px;}
+
+    
+    }
+
+@media (max-width: 767px){
+    .ds{position: absolute;left: calc(((100vw - 1366px) / 2) + 24px);}
+    .booking-experience{position: absolute;width: auto;top: 50px;left: 10px;}
+    .al_body_template_three .cab-image-box{width: 190px;}
+    }
