@@ -920,7 +920,7 @@
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
                                 <div class="form-group mb-0">
-                                    <label for="custom_domain">{{ __("Fixed Fee") }}({{$client_language->langName}})</label>
+                                    <label for="custom_domain">{{ __("Fixed Fee Per Order") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="FixedFee_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="FixedFee_name[]" class="form-control al_box_height" value="{{ ($fixed_fee) ? \App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, $fixed_fee->id) : ''}}">
                                     @if($k == 0)
