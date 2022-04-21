@@ -139,9 +139,9 @@ class FrontController extends Controller
     public function fixedFee($lang_id){
         if(Nomenclature::where('label','Fixed Fee')->exists()){
             $nomenclatures_translation_id=Nomenclature::where('label','Fixed Fee')->first()->id;
-            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee";
+            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee Per Order";
         }else{
-            return "Fixed Fee";
+            return "Fixed Fee Per Order";
         }
     }
 
@@ -177,7 +177,7 @@ class FrontController extends Controller
                         $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
                             $q->where('category_translations.language_id', $langId);
                         }])->where('vendor_id', $vid)->where('category_id', $child->id)->where('status', 1)->first();
-                        if($vendorCategory){
+                        if ($vendorCategory) {
                             $category_list[] = $vendorCategory;
                         }
                         $this->getChildCategoriesForVendor($child->id, $langId, $vid);
@@ -185,10 +185,10 @@ class FrontController extends Controller
                 }
             
 
-                $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
+                $vendorCategory = VendorCategory::with(['category.translation' => function ($q) use ($langId) {
                     $q->where('category_translations.language_id', $langId);
                 }])->where('vendor_id', $vid)->where('category_id', $cate->id)->where('status', 1)->first();
-                if($vendorCategory){
+                if ($vendorCategory) {
                     $category_list[] = $vendorCategory;
                 }
                 $this->getChildCategoriesForVendor($cate->id, $langId, $vid);

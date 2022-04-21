@@ -572,7 +572,7 @@ class VendorController extends BaseController
         $vendor  =  $vendor->first();
         if(empty($vendor))
         abort(404);
-
+        $vendor->fixedFeeNomenclatures = $this->fixedFee($langId);
         $VendorCategory = VendorCategory::where('vendor_id', $id)->where('status', 1)->pluck('category_id')->toArray();
 
         $check_pickup_delivery_service = Category::whereIn('id',$VendorCategory)->where('type_id',7)->count();
