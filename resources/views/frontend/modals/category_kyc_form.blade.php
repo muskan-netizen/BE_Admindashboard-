@@ -47,7 +47,8 @@
         <span class="text-danger category_kyc_form_error mb-2" id="error-msg"></span>
         <span class="text-success" id="success-msg"></span>
         <div class="col-md-12">
-            <button class="btn btn-solid buttonload" type="submit"  data-dev_remove_id="category_kyc_dev_{{$category_id}}" data-category_id="{{$category_id}}" id="category_kycform_submit">{{__('Submit')}}</button>
+            <button class="btn btn-solid w-100 buttonload" type="submit"   data-dev_remove_id="category_kyc_dev_{{$category_id}}" data-category_id="{{$category_id}}" id="category_kycform_submit">{{__('Submit')}} <img style="width:5%; display:none;" id="proceed_to_pay_loader" src="{{asset('front-assets/images/loader.gif')}}"/></button>
+            
         </div>
     </div>
 </form>
