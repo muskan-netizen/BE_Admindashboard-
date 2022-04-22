@@ -89,15 +89,15 @@ class PaymentResourceController extends BaseController
             $order_number = $request->order_number;
 
             $postdata['description'] = 'Order Checkout';
-            $postdata['metadata']['cart_id'] = $cart->id;
+            $postdata['metadata']['cart_id'] = ($cart) ? $cart->id : 'N/A';
             $postdata['metadata']['order_number'] = $order_number;
-            $postdata['shipping']['name'] = $user->name;
+            $postdata['shipping']['name'] = ($user->name) ? $user->name : 'N/A';
             $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
-            $postdata['shipping']['address']['line1'] = $user_address->street;
-            $postdata['shipping']['address']['city'] = $user_address->city;
-            $postdata['shipping']['address']['state'] = $user_address->state;
-            $postdata['shipping']['address']['country'] = $user_address->country;
-            $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
+            $postdata['shipping']['address']['line1'] = ($user_address) ? ($user_address->street != "") ? $user_address->street : 'N/A' : 'N/A';
+            $postdata['shipping']['address']['city'] = ($user_address) ? ($user_address->city != "") ? $user_address->city : 'N/A' : 'N/A';
+            $postdata['shipping']['address']['state'] = ($user_address) ? ($user_address->state != "") ? $user_address->state : 'N/A' : 'N/A';
+            $postdata['shipping']['address']['country'] = ($user_address) ? ($user_address->country != "") ? $user_address->country : 'N/A' : 'N/A';
+            $postdata['shipping']['address']['postal_code'] = ($user_address) ? ($user_address->pincode != "") ? $user_address->pincode : 'N/A' : 'N/A';
         }
         elseif($payment_form == 'wallet'){
             $postdata['description'] = 'Wallet Checkout';
