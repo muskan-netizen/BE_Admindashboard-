@@ -1169,6 +1169,8 @@ class CartController extends FrontController
                 $cart->slots = [];
                 $cart->vendor_id =  0;
             }
+            $cart->without_category_kyc = 0;
+            
             if( $preferences->category_kyc_documents ==1 ){
                       
                 $category_query =  CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_array){
@@ -1190,6 +1192,20 @@ class CartController extends FrontController
                     $cart->category_kyc_count = $category_kyc_count;
                     $cart->category_rendem_id = rand(9,10);
                     $cart->category_ids = implode( ',',$category_array);
+                }
+
+                $ALLcategory_kyc_documents =CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_array){
+                    $q->whereIn('category_id',$category_array);
+                })->with('primary')->get();
+                foreach ($ALLcategory_kyc_documents as $vendor_registration_document) {
+                    if($vendor_registration_document->is_required == 1){
+                      
+                        $check = CaregoryKycDoc::where(['cart_id'=>$cart_id,'category_kyc_document_id'=>$vendor_registration_document->id])->first();
+                        if($check)
+                        {  
+                            $cart->without_category_kyc = 1;
+                        }
+                    }
                 }
             }
             $cart->slotsCnt = count((array)$slots);
@@ -1770,7 +1786,9 @@ class CartController extends FrontController
         //pr($request->all());
         DB::beginTransaction();
         try{
-            $user = Auth::user();
+            $user = Auth::user();            
+            $client_timezone = DB::table('clients')->first('timezone'); 
+            $user->timezone = $client_timezone->timezone ?? $user->timezone;
             $new_session_token = session()->get('_token');
             if ($user || $new_session_token) {                
                 if($request->task_type == 'now'){

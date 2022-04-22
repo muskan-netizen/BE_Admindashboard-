@@ -270,9 +270,9 @@ class VnpayController  extends FrontController
             
         $cart_id = $meta_data->cart_id ? $request->cart_id : '';
         $payment_form = $meta_data->payment_form;
+        $returnUrl = url('payment/gateway/returnResponse');
        
         if($inputData['vnp_ResponseCode'] == '00' || $inputData['vnp_TransactionStatus'] == '00' ){
-            $returnUrl = url('payment/gateway/returnResponse');
             $returnUrlParams = '?status=200&gateway=vnpay&action=' . $payment_form;
             if($payment_form == 'cart'){
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();

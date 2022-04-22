@@ -70,6 +70,11 @@ class OrderController extends FrontController
     public function orders(Request $request, $domain = '')
     {
         $user = Auth::user();
+        if(empty($user->timezone))
+        {
+            $client_timezone = DB::table('clients')->first('timezone'); 
+            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+        }        
         $currency_id = Session::get('customerCurrency');
 
         $langId = Session::get('customerLanguage');

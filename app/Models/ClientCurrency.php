@@ -12,4 +12,14 @@ class ClientCurrency extends Model
     {
       return $this->belongsTo('App\Models\Currency','currency_id','id')->select('id', 'name', 'iso_code', 'symbol');
     }
+
+
+    public static function getAdminCurrencySymbol(){        
+      $currencysymbol = '$';      
+      $result = ClientCurrency::join('currencies', 'client_currencies.currency_id', 'currencies.id')->select('currencies.symbol')->where('client_currencies.is_primary',1)->first();
+      if($result){
+          $currencysymbol = $result->symbol;
+      }
+      return $currencysymbol;
+    }
 }
