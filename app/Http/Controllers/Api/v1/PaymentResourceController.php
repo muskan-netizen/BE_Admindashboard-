@@ -179,7 +179,7 @@ class PaymentResourceController extends BaseController
                 // $orderController = new OrderController();
                 // $result = $orderController->postPlaceOrder($request);
                 // $returnUrl = $result;
-
+                $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
                 $cart_id = $cart ? $cart->id : 0 ;
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                 if ($order) {
