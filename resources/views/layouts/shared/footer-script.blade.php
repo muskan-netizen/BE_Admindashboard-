@@ -175,6 +175,7 @@ if (Session::has('toaster')) {
             },
             success: function(response) {
                 if (response.status == 'Success') {
+                    //console.log(response);
                     if (response.data.orders.data.length != 0) {
                         $("#received_new_orders").find(".modal-body").html('');
                         let latest_order_template = _.template($('#latest_order_template').html());

@@ -151,7 +151,9 @@ class OrderController extends BaseController
 
     public function postOrderFilter(Request $request, $domain = '')
     {
-        $user = Auth::user();
+      $user = Auth::user();
+      $client_timezone = DB::table('clients')->first('timezone'); 
+      $user->timezone = $client_timezone->timezone ?? $user->timezone;
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $orders = Order::with(['vendors.products'=>function($q){
@@ -348,9 +350,9 @@ class OrderController extends BaseController
                 $orders->forget($key);
             }
         }
+        $admincurrency = ClientCurrency::getAdminCurrencySymbol();
 
-
-        return $this->successResponse(['orders' => $orders, 'pending_orders' => $pending_orders, 'active_orders' => $active_orders, 'orders_history' => $orders_history], '', 201);
+        return $this->successResponse(['orders' => $orders, 'pending_orders' => $pending_orders, 'active_orders' => $active_orders, 'orders_history' => $orders_history,'admin_currency' => $admincurrency], '', 201);
     }
 
     public function uploadReport(Request $request)
