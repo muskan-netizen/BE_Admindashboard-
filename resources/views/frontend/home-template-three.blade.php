@@ -3,28 +3,24 @@
 {{--<link href="{{asset('css/aos.css')}}" rel="stylesheet">--}}
 @endsection
 @section('css')
-<style type="text/css">
-.cardbanner {border-radius:50px;height:300px;margin-top:30px;}
-.shimmer_effect .grid-row .cards {margin-bottom: 40px;}
-.shimmer_effect .grid-row .card_icon{display:none;}
-.shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
-@media(max-width:767px){.cardbanner {border-radius:20px;height:80px;}}
-</style>
+
 @endsection
 @section('content')
 <!-- shimmer_effect start -->
-<section class="section-b-space_  p-0 ratio_asos">
-	<div class="container mt-3 mb-md-5 md-3 shimmer_effect">
-		<div class="row">
-			<div class="col-12 cards">
-				<div class="cardbanner loading"></div>
+<section class="section-b-space_  p-0 ratio_asos ">
+	<div class="container shimmer_effect">
+			<div class="row">
+				<div class="col-12 cards">
+					<div class="cardbanner loading"></div>
+				</div>
 			</div>
 		</div>
-	</div>
+
 	<div class="container mb-md-5 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">
-				<h2 class="h2-heading loading mb-3"></h2> </div>
+				<h2 class="h2-heading loading mb-3"></h2>
+			</div>
 		</div>
         <div class="row">
             <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
@@ -97,7 +93,15 @@
                 <div class="card_price loading"></div>
             </div>
         </div>
+
+	</div>
+	<div class="container mb-md-5 shimmer_effect">
 		<div class="row">
+			<div class="col-12 cards">
+				<h2 class="h2-heading loading mb-3"></h2>
+			</div>
+		</div>
+        <div class="row">
             <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
@@ -168,7 +172,15 @@
                 <div class="card_price loading"></div>
             </div>
         </div>
+
+	</div>
+	<div class="container mb-md-5 shimmer_effect">
 		<div class="row">
+			<div class="col-12 cards">
+				<h2 class="h2-heading loading mb-3"></h2>
+			</div>
+		</div>
+        <div class="row">
             <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
                 <div class="card_image loading"></div>
                 <div class="d-flex align-items-center justify-content-between">
@@ -242,8 +254,6 @@
 
 	</div>
 
-
-	</div>
 </section>
 <!-- shimmer_effect end -->
 
@@ -317,6 +327,7 @@
 </section><!-- no-store-wrapper end -->
  <!-- vendors_template start -->
 <script type="text/template" id="vendors_template" >
+
 	<% _.each(vendors, function(vendor, k){%>
 		<div class="product-card-box position-relative text-center al_custom_vendors_sec"  >
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
@@ -519,13 +530,16 @@
 				</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'vendors')
-		<section class="suppliers-section container "  >
+		<section class="suppliers-section container ">
+
 			<div class=" top-heading d-flex justify-content-between align-self-center">
 				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
 				<a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>
 			</div>
 			<div class="col-12 p-0">
-				<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
+
+				<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+				</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
 		<section class="suppliers-section container "  >

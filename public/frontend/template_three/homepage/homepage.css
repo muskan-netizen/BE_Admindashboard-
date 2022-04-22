@@ -22,8 +22,38 @@ color: #777!important;font-size: 14px!important;}
 .dark .dark-light{background-color:#fff}body.dark{background-color:#2b2b2b;-webkit-transition:all .5s ease;transition:all .5s ease;color:#cfd4da}body.dark .al_body_template_three,body.dark .top-header.site-topbar.al_custom_head,body.dark article#page-container .site-header{background-color:#2b2b2b}body.dark .al_body_template_three .al_custom_brand .brand-box h6,body.dark .al_body_template_three .product-description h6.card_title,body.dark .h1,body.dark .h2,body.dark .h3,body.dark .h4,body.dark .h5,body.dark .h6,body.dark h1,body.dark h2,body.dark h3,body.dark h4,body.dark h5,body.dark h6{color:#fff}body.dark .al_box_third_template:hover,body.dark .al_footer_template_three{background-color:#0b0b0b;border-color:#000}body.dark.al_body_template_three .al_custom_brand .brand-box h6,body.dark.al_body_template_three .product-description h6.card_title{color:#fff}
 
 /* shimmer_effect start */
-.shimmer_effect .grid-row .card_image{border-radius:12px;height:200px!important}.shimmer_effect .menu-slider span .loading{width:calc(100% - 20px);height:10px;display:block;margin:auto}.shimmer_effect{overflow:hidden}.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(4,1fr);grid-gap:50px}.shimmer_effect .card_image{width:100%;height:100%}.shimmer_effect .card_image.loading{width:100%;height:100px;margin-bottom:10px}.shimmer_effect .card_title.loading{width:50%;height:10px;margin:10px 0;border-radius:3px;position:relative}.shimmer_effect .card_content.loading{width:80%;height:10px;margin:10px 0;border-radius:3px;position:relative}.shimmer_effect .card_description{padding:8px;font-size:16px}.shimmer_effect .card_description.loading{height:2rem;margin:10px 0;border-radius:3px}.shimmer_effect .loading{position:relative;background:#cccccc86;overflow:hidden}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}.shimmer_effect h2.h2-heading{width:260px;height:20px}.shimmer_effect .card_icon{width:30px;height:30px;-webkit-border-radius:50px;-moz-border-radius:50px;border-radius:50px}.shimmer_effect .card_price{width:50px;height:20px}.shimmer_effect .card_line{height:1px;width:100%;margin:10px 0}
+.shimmer_effect .grid-row .card_image{border-radius:12px;height:200px!important}
+.shimmer_effect .menu-slider span .loading{width:calc(100% - 20px);height:10px;display:block;margin:auto}
+.shimmer_effect{overflow:hidden}
+.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(4,1fr);grid-gap:50px}
+.shimmer_effect .card_image{width:100%;height:100%}
+.shimmer_effect .card_image.loading{width:100%;height:100px;margin-bottom:10px}
+.shimmer_effect .card_title.loading{width:50%;height:10px;margin:10px 0;border-radius:3px;position:relative}
+.shimmer_effect .card_content.loading{width:80%;height:10px;margin:10px 0;border-radius:3px;position:relative}
+.shimmer_effect .card_description{padding:8px;font-size:16px}
+.shimmer_effect .card_description.loading{height:2rem;margin:10px 0;border-radius:3px}
+.shimmer_effect .loading{position:relative;background:#ccc;overflow:hidden}
+.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:loading .8s infinite}
+.shimmer_effect h2.h2-heading{width:260px;height:20px}
+.shimmer_effect .card_icon{width:30px;height:30px;-webkit-border-radius:50px;-moz-border-radius:50px;border-radius:50px}
+.shimmer_effect .card_price{width:50px;height:20px}
+.shimmer_effect .card_line{height:1px;width:100%;margin:10px 0}
+.cardbanner{height: 300px;border-radius: 50px;margin-top: 24px;}
+section.section-b-space_.p-0.ratio_asos{position: absolute;z-index: 1;width: 100%;}
+.container.mb-md-5.shimmer_effect{
+    margin-top: 58px;
+}
+.container.mb-md-5.shimmer_effect .col-12.cards{
+    margin-bottom: 20px;
+}
+.card_icon.loading {
+    display: none;
+}
+.shimmer_effect .card_price {
+    width: 80px;
+}
 @keyframes loading{100%{transform:translateX(100%)}}
+
 
 /* shimmer_effect end */
 @media(max-width: 1400px){ section#our_vendor_main_div .vendors{padding: 0 20px;}}

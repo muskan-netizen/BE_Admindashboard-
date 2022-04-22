@@ -117,7 +117,8 @@ body .navigation-tab,body .navigation-tab-overlay{
     margin:auto;
     justify-content:center;
     white-space:nowrap;
-    justify-content:center
+    justify-content:center;
+    min-height: 100px;
 }
 ul.sm.pixelstrap.sm-horizontal{
     text-align:center
