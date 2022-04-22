@@ -1203,6 +1203,8 @@ class CartController extends FrontController
                         }
                     }
                 }
+            }else{
+                $cart->without_category_kyc = 1;
             }
             $cart->slotsCnt = count((array)$slots);
             $cart->total_service_fee = decimal_format($total_service_fee);
