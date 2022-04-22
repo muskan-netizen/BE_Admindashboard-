@@ -759,11 +759,11 @@ class OrderController extends FrontController
                     ->where('user_id', $user->id)
                     ->where('end_date', '>', $now)
                     ->orderBy('end_date', 'desc')->first();
-                if ($user_subscription) {
-                    foreach ($user_subscription->features as $feature) {
-                        $subscription_features[] = $feature->feature_id;
-                    }
-                }
+                // if ($user_subscription) {
+                //     foreach ($user_subscription->features as $feature) {
+                //         $subscription_features[] = $feature->feature_id;
+                //     }
+                // }
             }
             $cart_products = CartProduct::select('*')->with(['vendor', 'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                 $query->where('cart_id', $cart->id);
@@ -1016,9 +1016,23 @@ class OrderController extends FrontController
             }
 
             $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
-            if (in_array(1, $subscription_features)) {
-                $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
+
+            // calculate subscription discount
+            if ($user_subscription) {
+                foreach ($user_subscription->features as $feature) {
+                    if ($feature->feature_id == 1) {
+                        $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
+                    }
+                    elseif ($feature->feature_id == 2) {
+                        $off_percentage_discount = ($feature->percent_value * $payable_amount / 100);
+                        $total_subscription_discount = $total_subscription_discount + $off_percentage_discount;
+                    }
+                }
             }
+
+            // if (in_array(1, $subscription_features)) {
+            //     $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
+            // }
             $total_discount = $total_discount + $total_subscription_discount;
 
             $order->total_amount = $total_amount;

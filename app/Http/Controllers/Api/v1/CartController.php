@@ -534,11 +534,11 @@ class CartController extends BaseController
                 ->where('user_id', $cart->user_id)
                 ->where('end_date', '>', $now)
                 ->orderBy('end_date', 'desc')->first();
-            if ($user_subscription) {
-                foreach ($user_subscription->features as $feature) {
-                    $subscription_features[] = $feature->feature_id;
-                }
-            }
+            // if ($user_subscription) {
+            //     foreach ($user_subscription->features as $feature) {
+            //         $subscription_features[] = $feature->feature_id;
+            //     }
+            // }
             $user = User::find($cart->user_id);
             $cart->scheduled_date_time = !empty($cart->scheduled_date_time) ? convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i') : NULL;
             $cart->schedule_pickup = !empty($cart->schedule_pickup) ? convertDateTimeInTimeZone($cart->schedule_pickup, $user->timezone, 'Y-m-d\TH:i') : NULL;
@@ -1005,10 +1005,10 @@ class CartController extends BaseController
                     unset($vendorData->coupon->promo);
                 }
 
-                if (in_array(1, $subscription_features)) {
-                    $subscription_discount = $subscription_discount + $deliver_charge;
-                }
-                $total_subscription_discount = $total_subscription_discount + $subscription_discount;
+                // if (in_array(1, $subscription_features)) {
+                //     $subscription_discount = $subscription_discount + $deliver_charge;
+                // }
+                // $total_subscription_discount = $total_subscription_discount + $subscription_discount;
                 if (isset($serviceArea)) {
                     if ($serviceArea->isEmpty()) {
                         $vendorData->isDeliverable = 0;
@@ -1053,7 +1053,20 @@ class CartController extends BaseController
             ++$vondorCnt;
         }//End cart Vendor loop
 
+        // calculate subscription discount
+        if ($user_subscription) {
+            foreach ($user_subscription->features as $feature) {
+                if ($feature->feature_id == 1) {
+                    $subscription_discount = $subscription_discount + $total_delivery_amount;
+                }
+                elseif ($feature->feature_id == 2) {
+                    $off_percentage_discount = ($feature->percent_value * $total_paying / 100);
+                    $subscription_discount = $subscription_discount + $off_percentage_discount;
+                }
+            }
+        }
         
+        $total_subscription_discount = $total_subscription_discount + $subscription_discount;
 
         $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id')->first();
         if ($cart_product_luxury_id) {
@@ -1062,7 +1075,7 @@ class CartController extends BaseController
                 $cart->address = $vendor_address->address;
             }
         }
-        if (!empty($subscription_features)) {
+        if ($total_subscription_discount > 0) {
             $total_disc_amount = $total_disc_amount + $total_subscription_discount;
             $cart->total_subscription_discount = $total_subscription_discount * $clientCurrency->doller_compare;
         }
