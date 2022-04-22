@@ -305,15 +305,22 @@
  @endif
 
 <!-- no-store-wrapper start -->
-<section class="no-store-wrapper mb-3 d-none" >
-	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
+<section class="no-store-wrapper mb-3" >
+	<div class="container">
+        @if(count($for_no_product_found_html))
+            @foreach($for_no_product_found_html as $key => $homePageLabel)
+                @include('frontend.included_files.dynamic_page')
+            @endforeach
+        @else
 		<div class="row">
 			<div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur-up lazyload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>
 		</div>
 		<div class="row">
 			<div class="col-12 text-center mt-2">
 				<h4>{{__('There are no stores available in your area currently.')}}</h4> </div>
-		</div> @endif </div>
+		</div>
+        @endif
+    </div>
 </section><!-- no-store-wrapper end -->
  <!-- vendors_template start -->
 <script type="text/template" id="vendors_template" >
