@@ -374,7 +374,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <hr>
     <% }); %>
     <div class="row">
-
+    <input type="hidden" name="without_category_kyc" value="<%= cart_details.without_category_kyc %>">
         @if($client_preference_detail->category_kyc_documents ==1)
             <% if( (cart_details.category_kyc_count > 0 ) ) { %>
             <div class=" col-3 <%= cart_details.category_kyc_count %>  " id="category_kyc_dev_<%= cart_details.category_rendem_id %>">
