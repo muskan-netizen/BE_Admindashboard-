@@ -100,7 +100,7 @@
 
                 <div class="card-box h-100 mb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">{{$opt->title}}</h4>
+                        <h4 class="header-title mb-0"><span class="alPaymentImage" style="height:24px;width:24px;display:inline-block;"> <img style="width:100%;" src="{{asset('paymentsLogo/'.$opt->code.'.png')}}" alt=""></span> {{$opt->title}}</h4>
                     </div>
                     <div class="row">
                         <div class="col-6">

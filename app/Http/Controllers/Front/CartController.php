@@ -113,7 +113,9 @@ class CartController extends FrontController
             $public_key_yoco= $public_key_yoco->public_key??'';
         } 
 
-        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data'))->with($data,$client_preference_detail,$client_detail);
+        $ageVerify= VerificationOption::where('code','yoti')->first();
+
+        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify'))->with($data,$client_preference_detail,$client_detail);
        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
@@ -1093,11 +1095,7 @@ class CartController extends FrontController
                 $total_discount_amount = $total_discount_amount + $total_subscription_discount;
                 $cart->total_subscription_discount = decimal_format($total_subscription_discount);
             }
-            $fixedFeeAmount=0.00;
-            if(isset($vendorData->vendor->fixed_fee_amount)){
-                $fixedFeeAmount=$vendorData->vendor->fixed_fee_amount;
-            }
-            $total_payable_amount = $total_payable_amount - $total_discount_amount+$fixedFeeAmount;
+            $total_payable_amount = $total_payable_amount - $total_discount_amount;
             if ($loyalty_amount_saved > 0) {
                 if ($loyalty_amount_saved > $total_payable_amount) {
                     $loyalty_amount_saved =  $total_payable_amount;
@@ -1105,7 +1103,6 @@ class CartController extends FrontController
                 $total_payable_amount = $total_payable_amount - $loyalty_amount_saved;
             }
             $wallet_amount_used = 0;
-           
             if($user){
                 if($user->balanceFloat > 0){
                     $wallet_amount_used = $user->balanceFloat;
@@ -1124,7 +1121,6 @@ class CartController extends FrontController
                 'scheduled_date_time'=>(($cart->scheduled_slot)?date('Y-m-d',strtotime($cart->scheduled_date_time)):$cart->scheduled_date_time),'slot'=>$cart->scheduled_slot,
             );
             $cart->deliver_status = $delivery_status;
-            //$cart->total_wallet_amount_available = $user->balanceFloat;
             $cart->vendorCnt = $cartData->count();
             $cart->scheduled = $scheduled;
             $cart->schedule_type =  $cart->schedule_type;
