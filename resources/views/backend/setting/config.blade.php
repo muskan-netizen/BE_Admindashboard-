@@ -1206,13 +1206,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                  </div>
                  <div class="col-md-4">
                     <div class="form-group d-flex justify-content-between mb-3">
-                       <label for="age_restriction_on_product_mode" class="mr-2 mb-0">{{__('Age Restriction On Product')}}<small class="d-block pr-5">{{__('Enable to add age restriction on products.')}}</small></label>
-                      <span> <input type="checkbox" data-plugin="switchery" name="age_restriction_on_product_mode" id="age_restriction_on_product_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->age_restriction_on_product_mode == '1')) checked='checked' @endif>
-                       </span>
-                    </div>
-                 </div>
-                 <div class="col-md-4">
-                    <div class="form-group d-flex justify-content-between mb-3">
                        <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Category Kyc')}}<small class="d-block pr-5">{{__('Enable to show categories documents in cart.')}}</small></label>
                       <span> <input type="checkbox" data-plugin="switchery" name="category_kyc_documents" id="category_kyc_documents" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->category_kyc_documents == '1')) checked='checked' @endif>
                        </span>
@@ -1229,7 +1222,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
                <div class="col-md-4">
                   <div class="form-group d-flex justify-content-between mb-3">
-                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Third Party Accounting')}}<small class="d-block pr-5">{{__('Enable to use third party accounting.')}}</small></label>
+                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Xero Integration')}}<small class="d-block pr-5">{{__('Enable to use xero integration for accounting.')}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="third_party_accounting" id="third_party_accounting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->third_party_accounting == '1')) checked='checked' @endif>
                      </span>
                   </div>
@@ -1239,6 +1232,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="form-group d-flex justify-content-between mb-3">
                      <label for="db_audit_logs" class="mr-2 mb-0">{{__('Hide Order Preparation Time')}}<small class="d-block pr-5">{{__('Enable to hide order preparation time.')}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="hide_order_prepare_time" id="hide_order_prepare_time" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->hide_order_prepare_time == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Order Cancellation By User')}}<small class="d-block pr-5">{{__('Enable to give permission to user for cancelling order.')}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_cancel_order_user" id="is_cancel_order_user" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_cancel_order_user == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>

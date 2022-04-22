@@ -239,6 +239,9 @@ body p:empty{display: none;}
   	padding: 10px 20px;
     background-color: rgb(238, 238, 238);
   }
+  .row.catalog_box.al_catalog_box .card-box {
+    position: relative;
+}
 
 
 

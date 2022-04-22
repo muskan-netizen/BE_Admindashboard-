@@ -270,6 +270,25 @@ if (Session::has('toaster')) {
 @endif
 @endif
 <script>
+    $(document).on("change",".admin_panel_theme", function(){
+        if($(this).prop('checked')){
+            var theme_admin = 'dark';
+        }else{
+            var theme_admin = 'light';
+        }
+        $.ajax({
+            url: "{{route('configure.update', Auth::user()->code)}}",
+            type: "POST",
+            data: {
+                theme_admin: theme_admin,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(response) {
+                location.reload();
+            },
+        });
+
+    });
     $(document).on("click", ".update_order_status", function() {
         Swal.fire({
             title: "{{__('Are you Sure?')}}",

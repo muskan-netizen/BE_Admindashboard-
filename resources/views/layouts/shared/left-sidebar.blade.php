@@ -328,7 +328,7 @@
                             </a>
                         </li>
                         @endif
-                        @if(Auth::user()->is_superadmin == 1)
+                        {{-- @if(Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('verifyoption.index')}}"> 
                                     <span class="icon-verification-options">
@@ -338,7 +338,7 @@
                                     <span> {{ __('Verification Options') }} </span>
                                 </a>
                             </li>
-                        @endif
+                        @endif --}}
                     </ul>
                 </li>
                 @endif

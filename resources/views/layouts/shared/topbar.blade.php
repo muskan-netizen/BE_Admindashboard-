@@ -1,6 +1,13 @@
 @php
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
+
+$urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
+$clientData = \App\Models\Client::select('id', 'logo','custom_domain','code')->with('getPreference')->where('id', '>', 0)->first();
+if($clientData){
+$urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'];
+}
+                    
 @endphp
 <!-- Topbar Start -->
 <audio id="orderAudio">
@@ -15,7 +22,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <ul class="top-site-links d-flex align-items-center p-0 mb-0 mr-lg-2 mr-auto">
             <li class="alToggleSwitch">
                 <label class="altoggle">
-                    <input type="checkbox">
+                    <input type="checkbox" class="admin_panel_theme" {{$clientData->getPreference->theme_admin == "dark" ? 'checked' : ''}}>
                     <div class="toggle__bg">
                         <div class="toggle__sphere">
                             <div class="toggle__sphere-bg">
@@ -27,13 +34,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </li>
             <li class="d_none">
                 <div class="logo-box">
-                    @php
-                    $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
-                    $clientData = \App\Models\Client::select('id', 'logo','custom_domain','code')->with('getPreference')->where('id', '>', 0)->first();
-                    if($clientData){
-                    $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'];
-                    }
-                    @endphp
                     <a href="{{route('client.dashboard')}}" class="logo logo-dark text-center">
                         <span class="logo-sm">
                             <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="50">

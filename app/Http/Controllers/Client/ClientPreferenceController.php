@@ -282,15 +282,13 @@ class ClientPreferenceController extends BaseController{
             $preference->vendor_return_request = ($request->has('vendor_return_request') && $request->vendor_return_request == 'on') ? 1 : 0;
             $preference->third_party_accounting = ($request->has('third_party_accounting') && $request->third_party_accounting == 'on') ? 1 : 0;
             $preference->hide_order_prepare_time = ($request->has('hide_order_prepare_time') && $request->hide_order_prepare_time == 'on') ? 1 : 0;
+            $preference->is_cancel_order_user = ($request->has('is_cancel_order_user') && $request->is_cancel_order_user == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
          $preference->is_edit_order_admin = ($request->has('is_edit_order_admin') && $request->is_edit_order_admin == 'on') ? 1 : 0;
          $preference->is_edit_order_vendor = ($request->has('is_edit_order_vendor') && $request->is_edit_order_vendor == 'on') ? 1 : 0;
          $preference->is_edit_order_driver = ($request->has('is_edit_order_driver') && $request->is_edit_order_driver == 'on') ? 1 : 0;
-        }
-        if($request->has('cancel_order_modes') && $request->cancel_order_modes == '1'){
-            $preference->is_cancel_order_user = ($request->has('is_cancel_order_user') && $request->is_cancel_order_user == 'on') ? 1 : 0;
         }
         if($request->has('distance_to_time_calc_config') && $request->distance_to_time_calc_config == '1'){
             $preference->distance_unit_for_time = (($request->has('distance_unit_for_time')) && ($request->distance_unit_for_time != '')) ? $request->distance_unit_for_time : 'kilometer';
