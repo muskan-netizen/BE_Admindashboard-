@@ -1133,6 +1133,8 @@ class CartController extends BaseController
                     }
                 }
             }
+        }else{
+            $cart->without_category_kyc = 1; 
         }
 
         $cart->total_service_fee = decimal_format($total_service_fee);

@@ -282,18 +282,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </div>
                         <% } %>
                     @endif
-<!--
-                    @if($client_preference_detail->category_kyc_documents ==1)
-                        <% if( (vendor_product.category_kyc_count > 0 ) ) { %>
-                        <div class=" col-3 <%= vendor_product.category_kyc_count %>  " id="category_kyc_dev_<%= vendor_product.category_id %>">
-                            <input type="hidden" name="category_kyc_ids" value="<%= vendor_product.category_id %>">
-                            <div class="text-center my-3 btn-category_kyc-div">
-                                <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= vendor_product.category_id %>" data-category_id="<%= vendor_product.category_id %>" >{{__('Category KYC Form')}}</button>
-                            </div>
-                        </div>
-
-                        <% } %>
-                    @endif -->
 
                 </div>
 
