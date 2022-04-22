@@ -354,7 +354,7 @@ use Illuminate\Support\Arr;
                                                     <div class="radios">
                                                         <p>{{date('D', strtotime($date))}}</p>
 
-                                                        <input type="radio" class="check-time-slots" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' @if($key == 0) checked @endif />
+                                                        <input type="radio" class="check-time-slots" data-cart_product_id = "{{$cart_data->id}}"  data-product_vendor_id ="{{$cart_data->vendor_id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' @if($key == 0) checked @endif />
 
 
                                                         <label for='radio{{$cd}}{{$key}}'>
