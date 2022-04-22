@@ -7,15 +7,15 @@
 @endsection
 @section('content')
 <div class="container-fluid" id="alRowBGColor">
-    <div class="row">
+    {{--<div class="row">
         <div class="col-12">
             <div class="page-title-box">
                 <h4 class="page-title">{{ __("Customize") }}</h4>
             </div>
         </div>
-    </div>
+    </div>--}}
     @if (\Session::has('success'))
-    <div class="row mb-2">
+    <div class="row mb-2 mt-2">
         <div class="col-sm-12">
             <div class="text-sm-left">
                 
