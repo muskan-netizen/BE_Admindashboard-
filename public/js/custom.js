@@ -2,16 +2,17 @@ $(document).ready(function () {
   var ft =  $('.footer-light').height();
   var ht =  $('.site-header').height();
   var sm = $('section.section-b-space_.p-0.ratio_asos').height();
+  var windowheight = $(window).height();
 //   var ct =  $('#content-wrap').height();
 
     jQuery(".site-header").removeClass("fixed-bar");
     jQuery(".al_offset-top-home, .inner-pages-offset, .al_offset-top-home").css('margin-top', ht);
     jQuery("#content-wrap").css('padding-bottom', ft);
-    jQuery("#content-wrap").css('min-height', sm);
+    jQuery("#content-wrap").css('min-height', windowheight);
     jQuery("section.section-b-space_.p-0.ratio_asos").css('top', ht);
     // jQuery(".al_offset-top-home").css('margin-top', ht);
 
-    var window_height = $(window).height();;
+
     jQuery(window).scroll(function () {
         var scroll = jQuery(window).scrollTop();
         if (scroll <= 100) {
