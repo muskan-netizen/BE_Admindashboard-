@@ -13,7 +13,7 @@
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
-<section class="home-slider-wrapper pt-md-3"  >
+<section class="home-slider-wrapper pt-md-3 pb-0">
 	<section class="section-b-space_  p-0 ratio_asos banner_shimmer">
 		<div class="container shimmer_effect">
 				<div class="row">

@@ -61,7 +61,10 @@ section.section-b-space_.p-0.ratio_asos.banner_shimmer{
 #our_vendor_main_div .vendors section.suppliers-section,
 #our_vendor_main_div .vendors section.popular-brands{min-height: 320px;}
 #our_vendor_main_div .vendors section{min-height: 490px;}
+
 footer#footer{position: absolute;bottom: 0;width: 100%;}
+
+
 @keyframes loading{100%{transform:translateX(100%)}}
 
 
