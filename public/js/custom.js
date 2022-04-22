@@ -3,11 +3,15 @@ $(document).ready(function () {
     var header_height = $('.site-header').height();
     var window_height = $(window).height();
     var header_content_width = $('#content-wrap').height();
+
+
+    jQuery(".al_offset-top-home, .inner-pages-offset, .al_offset-top-home").css('margin-top', header_height);
+    jQuery("#content-wrap").css('padding-bottom', footer_height);
+
     jQuery(window).scroll(function () {
         var scroll = jQuery(window).scrollTop();
         if (scroll <= 100) {
             jQuery(".site-header").removeClass("fixed-bar");
-            jQuery(".al_offset-top-home").css('margin-top', '0px');
 
         } else {
             jQuery(".site-header").addClass("fixed-bar");
