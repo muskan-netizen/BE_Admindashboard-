@@ -3,13 +3,14 @@
     <div class="col-md-12">
         <div class="row mb-6">
             <div class="col-sm-3">
-                <label>{{ __("Upload Category Icon") }}</label>
                 <div class="row">
                     <div class="col-sm-6">
+                        <label>{{ __("Category Icon") }}</label>
                         <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify" data-default-file="{{$category->icon['proxy_url'].'400/400'.$category->icon['image_path']}}" />
                         <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
                     </div>
                     <div class="col-sm-6">
+                        <label>{{ __("Hover Icon") }}</label>
                         <input type="file" accept="image/*" data-plugins="dropify" name="icon_two" class="dropify" data-default-file="{{ !is_null($category->icon_two ) ? $category->icon_two['proxy_url'].'400/400'.$category->icon_two['image_path'] : ''}}" />
                         <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
                     </div>
@@ -18,7 +19,7 @@
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label> --}}
             </div>
             <div class="col-sm-3">
-                <label>Upload Category image</label>
+                <label>Category image</label>
                 <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$category->image['proxy_url'].'1000/200'.$category->image['image_path']}}" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
             </div>
