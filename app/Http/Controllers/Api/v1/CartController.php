@@ -25,9 +25,11 @@ use App\Http\Controllers\ShiprocketController;
 use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc};
 use GuzzleHttp\Client as GCLIENT;
 use Log;
+use App\Http\Traits\MpesaStkpush;
+
 class CartController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser,MpesaStkpush;
 
     private $field_status = 2;
 
@@ -1630,6 +1632,49 @@ class CartController extends BaseController
             'message' => 'document submit Successfully!',
         ]);
     
+    }
+
+
+
+     //Initiate STK Push
+     public function stkPushRequest(Request $request){
+        $accountReference='Transaction#'.Str::random(10);
+
+        $amount= $request->amount;
+        $phone=$this->formatPhone($request->phone_number);
+
+        $stk=$this->lipaNaMpesa(1,$phone,$accountReference);
+        $invalid=json_decode($stk);
+         dd($invalid);
+
+        if(@$invalid->errorCode){
+            Session::flash('mpesa-error', 'Invalid phone number!');
+            Session::flash('alert-class', 'alert-danger');
+
+            return back();
+        }
+        echo '/confirm/'.encrypt($accountReference); die;
+    }
+
+    public function checkTransactionStatus($transactionCode){
+
+        $status=$this->status($transactionCode);
+
+        $tStatus = $status->{'ResponseCode'};
+
+        return $tStatus;
+    }
+
+    public function formatPhone($phone)
+    {
+        $phone = 'hfhsgdgs' . $phone;
+        $phone = str_replace('hfhsgdgs0', '', $phone);
+        $phone = str_replace('hfhsgdgs', '', $phone);
+        $phone = str_replace('+', '', $phone);
+        if (strlen($phone) == 9) {
+            $phone = '254' . $phone;
+        }
+        return $phone;
     }
 
 
