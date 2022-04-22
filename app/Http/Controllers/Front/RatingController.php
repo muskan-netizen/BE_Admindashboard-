@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\Web\OrderProductRatingRequest;
 use App\Http\Requests\Web\OrderDriverRatingRequest;
 use App\Http\Requests\Web\CheckImageRequest;
-use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,OrderDriverRating,OrderVendor};
+use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,OrderDriverRating,OrderVendor,ClientPreference};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 class RatingController extends FrontController{
