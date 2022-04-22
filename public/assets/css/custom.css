@@ -119,8 +119,8 @@ body p:empty{display: none;}
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 70px;
-    height: 30px;
+    width: 40px;
+    height: 20px;
     background: #eee;
     border-radius: 50px;
     border: solid 0px transparent;
@@ -129,8 +129,8 @@ body p:empty{display: none;}
     margin: 0;
   }
   .toggle__bg {
-    width: 64px;
-    height: 26px;
+    width: 34px;
+    height: 16px;
     background: #fff;
     background: linear-gradient(to right, #fff 50%, #777 50% 100%);
     background-size: 200% 100%;
@@ -145,8 +145,8 @@ body p:empty{display: none;}
 
   .toggle__sphere {
     position: relative;
-    height: 25px;
-    width: 25px;
+    height: 15px;
+    width: 15px;
     background: #777;
     background: linear-gradient(to right, #fff 50%, #777 50% 100%);
     border-radius: 50%;
@@ -218,8 +218,8 @@ body p:empty{display: none;}
   }
 
   .altoggle input:checked + .toggle__bg .toggle__sphere {
-    -webkit-transform: translateX(40px) translateY(0px);
-    transform: translateX(40px) translateY(0px);
+    -webkit-transform: translateX(20px) translateY(0px);
+    transform: translateX(20px) translateY(0px);
     box-shadow:
       -2px 0px 5px 1px hsla(18, 77%, 15%, 0.05),
       0px 5px 5px 1px hsla(18, 77%, 15%, 0.2),
