@@ -44,7 +44,7 @@
                 <div class="card-box h-100">
                     <div class="row ">
                         <div class="col-md-6">
-                            <h3 class="mb-1">{{getNomenclatureName('Royo Dispatcher')}}</h3>
+                            <h3 class="mb-1"> <span class="alPaymentImage" style="height:50px;width:50px;display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/royoDis.png')}}" alt=""></span> {{getNomenclatureName('Royo Dispatcher')}}</h3>
                         </div>
                         <div class="col-md-6 mt-2 text-right">
                             <button class="btn btn-info waves-effect waves-light save_btn" type="submit" name="last_mile_submit_btn" value ="1"> {{ __("Save") }}</button>
@@ -123,7 +123,7 @@
         @endif
         <!-- End Last Mile Delivery for Dispatcher -->
 
-        <div class="col-md-6 mb-3">
+        <div class="col-md-6 ">
             <form method="POST" id="payment_option_form" action="{{route('deliveryoption.store')}}" class="h-100">
                 @csrf
                 @method('POST')
@@ -145,9 +145,9 @@
                     $distance = (isset($creds->distance)) ? $creds->distance : '';
                     $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '';
                     ?>
-                    <div class="row mb-3">
+                    <div class="row">
                     <div class="col-md-6">
-                        <h3 class="mb-1">{{$delOption->title}}</h3>
+                        <h3 class="mb-1"> <span class="alPaymentImage" style="height:50px;width:50px;display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$delOption->code.'.png')}}" alt=""></span>  {{$delOption->title}}</h3>
                     </div>
                     <div class="col-md-6 mt-2 text-right">
                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
@@ -190,8 +190,8 @@
                             </div>
                             <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-0">
-                                    <label for="lalamove_country_key class="mr-3">{{ __("Country") }}</label>
+                                <div class="form-group mt-3 mb-0">
+                                    <label for="lalamove_country_key" class="mr-3">{{ __("Country") }}</label>
 
                                     <select name="country_key" class="form-control" id="lalamove_country_key" @if($delOption->status == 1) required @endif>
                                     <option value="">{{ __("Please Select Country") }}</option>
@@ -202,8 +202,8 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group mb-0">
-                                    <label for="lalamove_country_key class="mr-3">{{ __("Country Region") }}</label>
+                                <div class="form-group mt-3 mb-0">
+                                    <label for="lalamove_country_key" class="mr-3">{{ __("Country Region") }}</label>
 
                                     <select name="country_region" class="form-control" id="lalamove_country_region" @if($delOption->status == 1) required @endif>
                                     <option value="">{{ __("Please Select Country Region") }}</option>
@@ -217,8 +217,8 @@
                             </div>
                             <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group mb-0">
-                                    <label for="lalamove_locale_key class="mr-3">{{ __("Locale Region") }}</label>
+                                <div class="form-group mt-3 mb-0">
+                                    <label for="lalamove_locale_key" class="mr-3">{{ __("Locale Region") }}</label>
 
                                     <select name="locale_key" class="form-control" id="lalamove_locale_key" @if($delOption->status == 1) required @endif>
                                     <option value="">{{ __("Please Select Locale Region") }}</option>
@@ -231,8 +231,8 @@
 
 
                             <div class="col-md-6">
-                                <div class="form-group mb-0">
-                                    <label for="lalamove_service_type class="mr-3">{{ __("Service Type") }}</label>
+                                <div class="form-group mt-3 mb-0">
+                                    <label for="lalamove_service_type" class="mr-3">{{ __("Service Type") }}</label>
 
                                     <select name="service_type" class="form-control" id="lalamove_service_type" @if($delOption->status == 1) required @endif>
                                     <option value="">{{ __("Please Select Service Type") }}</option>
@@ -278,21 +278,21 @@
                             <div class="col-md-4">
                                 <div class="form-group mb-0">
                                     <label for="lalamove_base_price" class="mr-3">{{ __("Base Price") }}</label>
-                                    <input type="text" name="base_price" id="lalamove_base_price" class="form-control" value="{{@$base_price}}" >
+                                    <input type="text" name="base_price" id="lalamove_base_price" class="form-control" value="{{$base_price ?? 0}}" >
                                 </div>
                             </div>
 
                             <div class="col-md-4">
                                 <div class="form-group mb-0">
                                     <label for="lalamove_distance" class="mr-3">{{ __("Distance") }}</label>
-                                    <input type="text" name="distance" id="lalamove_distance" class="form-control" value="{{@$distance}}" >
+                                    <input type="text" name="distance" id="lalamove_distance" class="form-control" value="{{$distance ?? 0}}" >
                                 </div>
                             </div>
 
                             <div class="col-md-4">
                                 <div class="form-group mb-0">
                                     <label for="lalamove_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
-                                    <input type="text" name="amount_per_km" id="lalamove_amount_per_km" class="form-control" value="{{@$amount_per_km}}" >
+                                    <input type="text" name="amount_per_km" id="lalamove_amount_per_km" class="form-control" value="{{$amount_per_km ?? 0}}" >
                                 </div>
                             </div>
 
@@ -331,9 +331,9 @@
                     $width = (isset($creds->width)) ? $creds->width : '';
                     $weight = (isset($creds->weight)) ? $creds->weight : '';
                     ?>
-                    <div class="row mb-3">
+                    <div class="row">
                     <div class="col-md-6 ">
-                        <h3 class="mb-1">{{$opt->title}}</h3>
+                        <h3 class="mb-1"><span class="alPaymentImage" style="height:60px;width:60px;display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$opt->code.'.png')}}" alt=""></span>  {{$opt->title}}</h3>
                     </div>
                     <div class="col-md-6 text-right">
                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
@@ -461,7 +461,7 @@
 
 
 
-        <!--- Ahoy Code -->
+        <!--- Dunzo Code -->
 
         @if($optDunzo)
         <div class="col-md-6 mb-3">
@@ -486,9 +486,9 @@
                     $distance = (isset($creds->distance)) ? $creds->distance : '0';
                     $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
                     ?>
-                    <div class="row mb-3">
+                    <div class="row">
                     <div class="col-md-6">
-                        <h3 class="mb-1">{{__($optDunzo->title)}}</h3>
+                        <h3 class="mb-1"> <span class="alPaymentImage" style="height:60px;width:60px;display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$optDunzo->code.'.png')}}" alt=""></span>  {{__($optDunzo->title)}}</h3>
                     </div>
                     <div class="col-md-6 text-right">
                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
@@ -519,7 +519,7 @@
                         <hr>
                         <div class="col-12 mt-3">
 
-                            <h5 class="d-inline-block mt-3">
+                            <h5 class="d-inline-block ">
                                 <span>{{ __('Webhook Url') }} : </span>
                                 <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('dunzoWebhook')}}</span></a>
                             </h5>
@@ -619,9 +619,9 @@
                     $distance = (isset($creds->distance)) ? $creds->distance : '0';
                     $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
                     ?>
-                    <div class="row mb-3">
+                    <div class="row">
                     <div class="col-md-6">
-                        <h3 class="mb-1">{{$optAhoy->title}}</h3>
+                        <h3 class="mb-1"> <span class="alPaymentImage" style="height:60px;width:60px;display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$optAhoy->code.'.png')}}" alt=""></span>  {{$optAhoy->title}}</h3>
                     </div>
                     <div class="col-md-6 text-right">
                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
