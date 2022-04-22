@@ -231,7 +231,7 @@ class ProductsImport implements ToCollection{
                         if($row[23] != ""){
 
                             foreach (explode(',', $row[23]) as $titleKey => $Addontitle) {
-                                $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->first();
+                                $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->where('vendor_id', $this->vendor_id)->first();
                                 if(!$vendorAddonSetExists){
                                     $error[] = "Row " . $i . " : Addon doesn't exist";
                                     $checker = 1;
