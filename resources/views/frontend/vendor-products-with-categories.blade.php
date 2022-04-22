@@ -1230,23 +1230,27 @@
         var ellipsestext = "...";
         var moretext = "Read more";
         var lesstext = "Read less";
-        $('.price_head .member_no span').each(function() {
-            var content = $(this).html();
-            if (content.length > showChar) {
 
-                var firstContent = content.substr(0, showChar);
-                var lastContent = content.substr(showChar, content.length - showChar);
+        function addReadMoreLink(){
+            $('.price_head .member_no span').each(function() {
+                var content = $(this).html();
+                if (content.length > showChar) {
 
-                var html = firstContent + '<span class="moreellipses">' + ellipsestext +
-                    '&nbsp;</span><span class="morecontent"><span style="display:none;">' + lastContent +
-                    '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+                    var firstContent = content.substr(0, showChar);
+                    var lastContent = content.substr(showChar, content.length - showChar);
 
-                $(this).html(html);
-            }
+                    var html = firstContent + '<span class="moreellipses">' + ellipsestext +
+                        '&nbsp;</span><span class="morecontent"><span style="display:none;">' + lastContent +
+                        '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
 
-        });
+                    $(this).html(html);
+                }
 
-        $(".morelink").click(function() {
+            });
+        }
+        addReadMoreLink();
+
+        $(document).on('click', '.morelink', function() {
             if ($(this).hasClass("less")) {
                 $(this).removeClass("less");
                 $(this).html(moretext);
@@ -1405,6 +1409,7 @@
                         var cart_html = $('.vendor-products-wrapper #header_cart_main_ul_ondemand').html();
                         $('.vendor-products-wrapper').html(response.html);
                         $('.vendor-products-wrapper #header_cart_main_ul_ondemand').html(cart_html);
+                        addReadMoreLink();
                     }
                 }
             });
