@@ -115,7 +115,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         @endphp
 
         <ul class="list-unstyled topnav-menu float-right mb-0">
-            <li class="dropdown ">
+            <li class="dropdown alLanguageTop">
                 <a class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                     {{__('Language')}}
                     {{ $applocale_admin }}

@@ -239,8 +239,19 @@ body p:empty{display: none;}
   	padding: 10px 20px;
     background-color: rgb(238, 238, 238);
   }
-
-
+  .navbar-custom  ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect {
+    color: #6c757d;
+    font-family: 'Cera Round Pro Regular';
+    position: relative;
+}
+.navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before {
+  content: "\0153";
+  left: 0;
+  top: 0;
+  font-size: 15px;
+  color: #000;
+  margin-right: 4px;
+}
 
 
 
