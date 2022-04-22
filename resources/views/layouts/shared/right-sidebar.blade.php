@@ -414,7 +414,8 @@
     </div>
 </div>
 
-<script type="text/template" id="latest_order_template">
+<script type="text/template" id="latest_order_template">    
+    
     <div class="row">
         <% _.each(orders, function(order, k){%>
             <% if(order.vendors.length !== 0) { %>
@@ -459,7 +460,7 @@
                                                         <span class="item_no position-absolute">x<%= product.quantity %></span>
                                                     </div>
                                                     <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
-                                                    <label class="items_price">$<%= Helper.formatPrice(product.price) %></label>
+                                                    <label class="items_price">{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(product.price) %></label>
                                                 </div>
                                             <% }); %>
                                         </div>
@@ -468,23 +469,23 @@
                                         <ul class="price_box_bottom m-0 p-0">
                                             <li class="d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Total</label>
-                                                <span>$<%= Helper.formatPrice(vendor.subtotal_amount) %></span>
+                                                <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(vendor.subtotal_amount) %></span>
                                             </li>
                                             <li class="d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Promocode</label>
-                                                <span>$<%= Helper.formatPrice(vendor.discount_amount) %></span>
+                                                <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(vendor.discount_amount) %></span>
                                             </li>
                                             <li class="d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Delivery</label>
                                                 <% if(vendor.delivery_fee !== null) { %>
-                                                <span>$<%= Helper.formatPrice(vendor.delivery_fee) %></span>
+                                                <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(vendor.delivery_fee) %></span>
                                                 <% }else { %>
-                                                    <span>$ 0.00</span>
+                                                    <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }} 0.00</span>
                                                 <% } %>
                                             </li>
                                             <li class="grand_total d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Amount</label>
-                                                <span>$<%= Helper.formatPrice(vendor.payable_amount) %></span> 
+                                                <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(vendor.payable_amount) %></span> 
                                             </li>
                                         </ul>
                                     </div>
