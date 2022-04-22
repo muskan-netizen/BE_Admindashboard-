@@ -158,13 +158,6 @@ padding-bottom: 5px;}
     margin-bottom: 0 !important;
     line-height: normal;
     }
-    .product_list li {
-    margin: 0 0 12px 10px;
-    }
-    .items_price {
-    position: absolute;
-    width: 60px;
-    }
     body .item_no {
     width: 20px;
     height: 20px;
@@ -318,7 +311,7 @@ padding-bottom: 5px;}
         font-size: 10px;
     }
     footer#footer{margin-bottom: 50px;}
-    #content-wrap { margin-bottom: 0 !important;}
+    #content-wrap { margin-bottom: 50px;}
     #our_vendor_main_div .suppliers-slider-vendors {min-height: 206px;}
     #our_vendor_main_div .render_full_best_sellers,
     #our_vendor_main_div .render_full_on_sale,
