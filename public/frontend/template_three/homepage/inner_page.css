@@ -131,8 +131,13 @@ body .modal-content #address-map-container{overflow:hidden;border-radius: 10px 1
 
 @media (min-width: 1366px){
 .ds{position: absolute;left: calc(((100vw - 1366px) / 2) + 24px);}
-.booking-experience{height: calc(100vh - 150px);position: absolute;width: 400px;top: 50px;}
+/* .booking-experience{height: calc(100vh - 150px);position: absolute;width: 400px;top: 50px;} */
+.booking-experience{position: absolute;width: 400px;top: 50px;}
+
 }
+
+
+
 
 
 /* cab booking code end */

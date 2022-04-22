@@ -862,7 +862,7 @@ class TempCartController extends FrontController
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
                 $result = curl_exec($ch);
-                Log::info($result);
+              //  Log::info($result);
                 curl_close($ch);
             }
         }

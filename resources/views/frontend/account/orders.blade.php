@@ -185,7 +185,18 @@
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
-                                                                            <span class="ellipsis" data-toggle="tooltip"
+                                                                        @if($order->luxury_option_id == 3)
+                                                                          
+                                                                          <span class="ellipsis" data-toggle="tooltip"
+                                                                              data-placement="top" title="">
+                                                                              @if ( count($order->vendors) >0)
+                                                                                  {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                              @else
+                                                                                  NA
+                                                                              @endif
+                                                                          </span>
+                                                                          @else
+                                                                          <span class="ellipsis" data-toggle="tooltip"
                                                                                 data-placement="top" title="">
                                                                                 @if ($order->address)
                                                                                     {{ $order->address->address }},
@@ -198,6 +209,8 @@
                                                                                     NA
                                                                                 @endif
                                                                             </span>
+                                                                          @endif
+                                                                            
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -590,6 +603,18 @@
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
+                                                                            
+                                                                            @if($order->luxury_option_id == 3)
+                                                                          
+                                                                            <span class="ellipsis" data-toggle="tooltip"
+                                                                                data-placement="top" title="">
+                                                                                @if ( count($order->vendors) >0)
+                                                                                    {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                                @else
+                                                                                    NA
+                                                                                @endif
+                                                                            </span>
+                                                                            @else
                                                                             <span class="ellipsis" data-toggle="tooltip"
                                                                                 data-placement="top" title="">
                                                                                 @if ($order->address)
@@ -604,6 +629,8 @@
                                                                                     NA
                                                                                 @endif
                                                                             </span>
+                                                                            @endif
+                                                                            
                                                                         </div>
                                                                     @endif
                                                                 </div>
