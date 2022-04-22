@@ -6,7 +6,7 @@
 </style>
 @endsection
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid" id="alRowBGColor">
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
@@ -14,17 +14,19 @@
             </div>
         </div>
     </div>
+    @if (\Session::has('success'))
     <div class="row mb-2">
         <div class="col-sm-12">
             <div class="text-sm-left">
-                @if (\Session::has('success'))
+                
                 <div class="alert alert-success">
                     <span>{!! \Session::get('success') !!}</span>
                 </div>
-                @endif
+                
             </div>
         </div>
     </div>
+    @endif
 
 <!-- New Customize Page -->
 
@@ -40,7 +42,7 @@
     <div class="row col-spacing">
         <!-- Date & Time sec start -->
         <div class="col-lg-4 col-xl-3 mb-3">
-            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
@@ -55,7 +57,7 @@
                         <div class="col-md-12">
                             <div class="form-group mb-2">
                                 <label for="date_format">{{ __("Date Format") }}</label>
-                                <select class="form-control al_box_height al_box_height" id="date_format" name="date_format">
+                                <select class="form-control al_box_height" id="date_format" name="date_format">
                                     <option value="DD-MM-YYYY" {{ ($preference && $preference->date_format =="DD-MM-YYYY")? "selected" : "" }}>
                                         DD-MM-YYYY</option>
                                     {{-- <option value="DD/MM/YYYY" {{ ($preference && $preference->date_format =="DD/MM/YYYY")? "selected" : "" }}>
@@ -75,7 +77,7 @@
                         <div class="col-md-12">
                             <div class="form-group mb-2">
                                 <label for="time_format">{{ __("Time Format") }}</label>
-                                <select class="form-control al_box_height al_box_height" id="time_format" name="time_format">
+                                <select class="form-control al_box_height" id="time_format" name="time_format">
                                     <option value="12" {{ ($preference && $preference->time_format =="12")? "selected" : "" }}>12 {{ __("hours") }}
                                     </option>
                                     <option value="24" {{ ($preference && $preference->time_format =="24")? "selected" : "" }}>24 {{ __("hours") }}
@@ -91,7 +93,7 @@
                         <div class="col-md-12">
                             <div class="form-group mb-2">
                                 <label for="time_format">{{ __("Decimal Format (Digits After Decimal)") }}</label>
-                                <select class="form-control al_box_height al_box_height" id="digit_after_decimal" name="digit_after_decimal">
+                                <select class="form-control al_box_height" id="digit_after_decimal" name="digit_after_decimal">
                                     <option value="0" {{ ($preference && $preference->digit_after_decimal == 0)? "selected" : "" }}> {{ __("No Decimal") }}
                                     </option>
                                     @for($i=1; $i<=8; $i++)
@@ -113,7 +115,7 @@
         <!-- Date & Time sec end -->
         <!--Vendor Type &  Distance to Time Calculator start -->
         <div class="col-lg-4 col-xl-3 mb-3">
-            <form method="POST" class="mt-2" action="{{route('configure.update', Auth::user()->code)}}">
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                 <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
@@ -125,7 +127,7 @@
                     <div class="row mt-2">
                     <div class="col-12 mb-2">
                         <label class="primaryCurText">{{__('Distance Unit')}}</label>
-                        <select class="form-control" id="distance_unit_for_time" name="distance_unit_for_time">
+                        <select class="form-control al_box_height" id="distance_unit_for_time" name="distance_unit_for_time">
                             <option value="">{{__('Select unit')}}</option>
                             <option value="kilometer" @if((isset($preference) && $preference->distance_unit_for_time == 'kilometer')) selected @endif>{{__('Kilometer')}}</option>
                             <option value="mile" @if((isset($preference) && $preference->distance_unit_for_time == 'mile')) selected @endif>{{__('Mile')}}</option>
@@ -390,7 +392,7 @@
                     </div>
                     <p class="sub-header">{{ __("View and update the naming") }}</p>
                     <div class="table-responsive">
-                        <div class="row mb-2 flex-nowrap">
+                        <div class="row mb-2 mx-0 flex-nowrap">
                             <div class="col-sm-2"></div>
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
@@ -400,7 +402,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Vendors") }}</label>
@@ -422,7 +424,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Loyalty Cards") }}</label>
@@ -444,7 +446,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Takeaway") }}</label>
@@ -466,7 +468,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Search") }}</label>
@@ -488,7 +490,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Wishlist") }}</label>
@@ -510,7 +512,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Dine-In") }}</label>
@@ -532,7 +534,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Delivery") }}</label>
@@ -554,7 +556,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Zip Code") }}</label>
@@ -577,7 +579,7 @@
                             @endforeach
                         </div>
                         @if($want_to_tip_nomenclature) 
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Do you want to give a tip") }}</label>
@@ -601,7 +603,7 @@
                         </div>
                         @endif
                         @if(!empty($fixed_fee->id))
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Fixed Fee") }}</label>
@@ -626,7 +628,7 @@
                         </div>
                         @endif
 
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Royo Dispatcher") }}</label>
@@ -649,7 +651,7 @@
                             @endforeach
                         </div>
 
-                        <div class="row mb-2 flex-nowrap d-flex align-items-center">
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Referral Code") }}</label>
