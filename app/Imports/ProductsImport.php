@@ -329,7 +329,7 @@ class ProductsImport implements ToCollection{
                             ]);
 
                             foreach (explode(',', $da[23]) as $titleKey => $Addontitle) {
-                                $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->first();
+                                $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->where('vendor_id', $this->vendor_id)->first();
                                 if($vendorAddonSetExists){
                                     $addonsArray= [
                                         'product_id' => $product,
@@ -538,7 +538,7 @@ class ProductsImport implements ToCollection{
                             $delete = ProductAddon::where('product_id', $product_id->id)->delete();
                             $delete = ProductTag::where('product_id', $product_id->id)->delete();
                             foreach (explode(',', $da[23]) as $titleKey => $Addontitle) {
-                                $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->first();
+                                $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->where('vendor_id', $this->vendor_id)->first();
                                 if($vendorAddonSetExists){
                                     $addonsArray= [
                                         'product_id' => $product_id->id,
