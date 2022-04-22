@@ -639,11 +639,11 @@ class CartController extends FrontController
                 ->where('user_id', $user->id)
                 ->where('end_date', '>', $now)
                 ->orderBy('end_date', 'desc')->first();
-            if ($user_subscription) {
-                foreach ($user_subscription->features as $feature) {
-                    $subscription_features[] = $feature->feature_id;
-                }
-            }
+            // if ($user_subscription) {
+            //     foreach ($user_subscription->features as $feature) {
+            //         $subscription_features[] = $feature->feature_id;
+            //     }
+            // }
 
             $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
         }
@@ -972,9 +972,20 @@ class CartController extends FrontController
                         $is_promo_code_available = 1;
                     }
                 }
-                if (in_array(1, $subscription_features)) {
-                    $subscription_discount = $subscription_discount + $deliveryCharges;
+
+                // calculate subscription discount
+                if ($user_subscription) {
+                    foreach ($user_subscription->features as $feature) {
+                        if ($feature->feature_id == 1) {
+                            $subscription_discount = $subscription_discount + $deliveryCharges;
+                        }
+                        elseif ($feature->feature_id == 2) {
+                            $off_percentage_discount = ($feature->percent_value * $payable_amount / 100);
+                            $subscription_discount = $subscription_discount + $off_percentage_discount;
+                        }
+                    }
                 }
+
                // pr($PromoFreeDeliver);
 
                  $subtotal_amount = $payable_amount;
@@ -1078,7 +1089,7 @@ class CartController extends FrontController
                 }
                 $total_discount_amount = $total_discount_amount + $amount_value;
             }
-            if (!empty($subscription_features)) {
+            if ($total_subscription_discount > 0) {
                 $total_discount_amount = $total_discount_amount + $total_subscription_discount;
                 $cart->total_subscription_discount = decimal_format($total_subscription_discount);
             }

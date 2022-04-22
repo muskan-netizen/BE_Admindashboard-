@@ -149,7 +149,7 @@ class PagarmeController extends BaseController
                 return $this->successResponse($transactionReference, __('Payout is completed successfully'), 200);
 
             }else{
-                return $this->errorResponse(__('You are not connected to pagarme'), 400);
+                return $this->errorResponse(getNomenclatureName('vendors', false) . __(' is not connected to pagarme'), 400);
             }
         }catch(\Exception $ex){
             return $this->errorResponse($ex->getMessage(), 400);

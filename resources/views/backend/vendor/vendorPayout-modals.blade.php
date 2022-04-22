@@ -23,14 +23,14 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <label class="control-label">{{ __("Bank Code") }} *</label>
-                    <input class="form-control" maxlength="3" placeholder="{{ __("Bank Code") }}" type="text" name="bank_code" id="bank_code" required />
+                    <input class="form-control" maxlength="3" placeholder="{{ __("Bank Code") }}" type="text" name="bank_code" value="341" id="bank_code" required />
                     <span class="invalid-feedback" role="alert" id="bank_code_err"></span>
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <label class="control-label">{{ __("Agency") }} *</label>
-                    <input class="form-control" maxlength="5" placeholder="{{ __("Agency") }}" type="text" name="agencia" id="agencia" required />
+                    <input class="form-control" maxlength="5" placeholder="{{ __("Agency") }}" type="text" name="agencia" value="5268" id="agencia" required />
                     <span class="invalid-feedback" role="alert" id="agencia_err"></span>
                 </div>
             </div>
@@ -44,28 +44,28 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <label class="control-label">{{ __("Account Number") }} *</label>
-                    <input class="form-control" maxlength="13" placeholder="{{ __("Account Number") }}" type="text" name="conta" id="conta" required />
+                    <input class="form-control" maxlength="13" placeholder="{{ __("Account Number") }}" type="text" name="conta" value="34957" id="conta" required />
                     <span class="invalid-feedback" role="alert" id="conta_err"></span>
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <label class="control-label">{{ __("Account Verification Digit") }} *</label>
-                    <input class="form-control" maxlength="2" placeholder="{{ __("Account Verification Digit") }}" type="text" name="conta_dv" id="conta_dv" required />
+                    <input class="form-control" maxlength="2" placeholder="{{ __("Account Verification Digit") }}" type="text" name="conta_dv" value="7" id="conta_dv" required />
                     <span class="invalid-feedback" role="alert" id="conta_dv_err"></span>
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <label class="control-label">{{ __("Account CPF or CNPJ") }} *</label>
-                    <input class="form-control" placeholder="{{ __("Account CPF or CNPJ") }}" type="text" name="document_number" id="document_number" required />
+                    <input class="form-control" placeholder="{{ __("Account CPF or CNPJ") }}" type="text" name="document_number" value="14160243797" id="document_number" required />
                     <span class="invalid-feedback" role="alert" id="document_number_err"></span>
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <label class="control-label">{{ __("Full Name or Business Name") }} *</label>
-                    <input class="form-control" maxlength="30" placeholder="{{ __("Full Name or Business Name") }}" type="text" name="legal_name" id="legal_name" required />
+                    <input class="form-control" maxlength="30" placeholder="{{ __("Full Name or Business Name") }}" type="text" name="legal_name" value="Pedro Paulo Pereira Lopes" id="legal_name" required />
                     <span class="invalid-feedback" role="alert" id="legal_name_err"></span>
                 </div>
             </div>

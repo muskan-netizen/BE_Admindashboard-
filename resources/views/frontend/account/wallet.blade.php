@@ -305,7 +305,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
 <script type="text/template" id="user_profile_template">
     <% if(profile != '') { %>
         <label>
-            <span class="update_pic">
+            <span class="">
                 <img class="rounded-circle" src="<%= profile.image['image_fit'] %>100/100<%= profile.image['image_path'] %>" alt="" width="40" height="40">
             </span>
             <span class="ml-1"><b><%= profile.name %></b></span>
