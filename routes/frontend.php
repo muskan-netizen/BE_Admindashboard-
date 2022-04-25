@@ -180,9 +180,9 @@ Route::group(['middleware' => ['domain']], function () {
     Route::get('easypaisa/pay', 'Front\EasypaisaController@create_token')->name('easypaisa.create.token');
 	Route::any('easypaisa/success', 'Front\EasypaisaController@get_token_view_payment')->name('easypaisa.gettoken');
 
-
+	//Mvodafone
 	Route::post('payment/mvPay', 'Front\MvodafoneController@createPayLink')->name('mvodafone.pay');
-	Route::post('payment/mvsuccess', 'Front\MvodafoneController@successPage')->name('mvodafone.success');
+	Route::get('payment/mvsuccess', 'Front\MvodafoneController@successPage')->name('mvodafone.success');
 
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
