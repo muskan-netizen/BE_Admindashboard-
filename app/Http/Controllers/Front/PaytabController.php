@@ -23,7 +23,7 @@ class PaytabController extends FrontController
 	    $this->server_key = $this->creds_arr->server_key??'';
 	    $this->client_key = $this->creds_arr->client_key??'';
         Config::set('Paytabs.profile_id', $this->profile_id);
-        Config::set('Paytabs.server_key', $this->server_key);
+        Config::set('Paytabs.server_key', $this->server_key); 
 	}
 	public function beforePayment(Request $request)
     {
@@ -227,6 +227,8 @@ class PaytabController extends FrontController
     }
     public function after_app_payment(Request $request)
     {
+        Log::info('Paytab info');
+        Log::info($request->all());
         $user = User::where('auth_token', $request->auth_token)->first();
         Auth::login($user);
         $returnUrl = $this->sucessPayment($request);
