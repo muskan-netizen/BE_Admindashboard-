@@ -1656,48 +1656,4 @@ class CartController extends BaseController
     
     }
 
-
-
-     //Initiate STK Push
-     public function stkPushRequest(Request $request){
-        $accountReference='Transaction#'.Str::random(10);
-
-        $amount= $request->amount;
-        $phone=$this->formatPhone($request->phone_number);
-
-        $stk=$this->lipaNaMpesa(1,$phone,$accountReference);
-        $invalid=json_decode($stk);
-         dd($invalid);
-
-        if(@$invalid->errorCode){
-            Session::flash('mpesa-error', 'Invalid phone number!');
-            Session::flash('alert-class', 'alert-danger');
-
-            return back();
-        }
-        echo '/confirm/'.encrypt($accountReference); die;
-    }
-
-    public function checkTransactionStatus($transactionCode){
-
-        $status=$this->status($transactionCode);
-
-        $tStatus = $status->{'ResponseCode'};
-
-        return $tStatus;
-    }
-
-    public function formatPhone($phone)
-    {
-        $phone = 'hfhsgdgs' . $phone;
-        $phone = str_replace('hfhsgdgs0', '', $phone);
-        $phone = str_replace('hfhsgdgs', '', $phone);
-        $phone = str_replace('+', '', $phone);
-        if (strlen($phone) == 9) {
-            $phone = '254' . $phone;
-        }
-        return $phone;
-    }
-
-
 }

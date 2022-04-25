@@ -3,11 +3,15 @@ $(document).ready(function () {
     var header_height = $('.site-header').height();
     var window_height = $(window).height();
     var header_content_width = $('#content-wrap').height();
+
+
+    jQuery(".al_offset-top-home, .inner-pages-offset, .al_offset-top-home").css('margin-top', header_height+'px');
+    jQuery("#content-wrap").css('padding-bottom', footer_height);
+
     jQuery(window).scroll(function () {
         var scroll = jQuery(window).scrollTop();
         if (scroll <= 100) {
             jQuery(".site-header").removeClass("fixed-bar");
-            jQuery(".al_offset-top-home").css('margin-top', '0px');
 
         } else {
             jQuery(".site-header").addClass("fixed-bar");
@@ -79,6 +83,14 @@ $(function () {
 $(window).scroll(function () {
     var windscroll = $(window).scrollTop();
     var windowheight = $(window).height();
+    var header_height = $('.site-header').height();
+    // if(windscroll > (header_height + 200))
+    // {
+    //     console.log('-------------------');
+    //     jQuery(".alScrollspyProduct").css('margin-top', (header_height + 350)+'px');
+    // }else{
+    //     jQuery(".alScrollspyProduct").css('margin-top', '0px');
+    // }
     if (windscroll >= windowheight) {
         $('section.scrolling_section').each(function (i) {
             // The number at the end of the next line is how pany pixels you from the top you want it to activate.
@@ -88,7 +100,7 @@ $(window).scroll(function () {
                 $('.scrollspy-menu li').eq(i).addClass('active');
             }
         });
-        jQuery(".alScrollspyProduct").css('margin-top', (header_height + 100)+'px');
+        
     } else {
         $('.scrollspy-menu li.active').removeClass('active');
         $('.scrollspy-menu li:first').addClass('active');
