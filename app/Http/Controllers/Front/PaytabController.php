@@ -126,13 +126,19 @@ class PaytabController extends FrontController
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
                     $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                 }
+                Log::info('129');
                 if($request->come_from == 'app')
-                {
+                {   
+                    Log::info('132');
                     $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$request->tranRef.'&order='.$order_number;
                 }else{
+                    Log::info('135');
                     $returnUrl = route('order.return.success');
                 }
+                Log::info('138');
                 return $returnUrl;
+
+                Log::info($returnUrl);
             }
         } elseif($request->payment_from == 'wallet'){
             $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $request->tranRef]);
@@ -231,6 +237,7 @@ class PaytabController extends FrontController
         $user = User::where('auth_token', $request->auth_token)->first();
         Auth::login($user);
         $returnUrl = $this->sucessPayment($request);
+        Log::info($returnUrl);
         return $this->successResponse($request->all());
     }
 }
