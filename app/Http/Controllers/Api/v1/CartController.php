@@ -1056,7 +1056,9 @@ class CartController extends BaseController
         }//End cart Vendor loop
 
         // calculate subscription discount
+        $subscription_discount =0;
         if ($user_subscription) {
+         
             foreach ($user_subscription->features as $feature) {
                 if ($feature->feature_id == 1) {
                     $subscription_discount = $subscription_discount + $total_delivery_amount;
