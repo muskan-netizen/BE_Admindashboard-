@@ -1804,17 +1804,19 @@ class CartController extends FrontController
                     $time = Carbon::now()->format('Y-m-d H:i:s');                  
                     
                 }else{
-                   
-                    if(isset($request->slot))
-                    { 
-                        $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                        $slot = $request->slot;                        
-                    }else{                       
+                    if($request->schedule_dt){
+                        if(isset($request->slot))
+                        { 
+                            $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                            $slot = $request->slot;                        
+                        }else{                       
                      
                         if(isset($request->schedule_dt) && !empty($request->schedule_dt))
                         $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                       
+                        }
                     }
+                    
 
                 }
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
