@@ -76,6 +76,7 @@
 
  @endif
 
+<!-- Shimmer Efferct Start -->
  <section class="section-b-space_  p-0 ratio_asos">
  	<div class="container mb-md-5 shimmer_effect">
 		<div class="row">
@@ -315,9 +316,10 @@
 
 	</div>
  </section>
+ <!-- Shimmer Efferct End -->
 
 <!-- no-store-wrapper start -->
-<section class="no-store-wrapper mb-3 " >
+<section class="no-store-wrapper mb-3 mt-3" >
 	<div class="container">
         @if(count($for_no_product_found_html))
             @foreach($for_no_product_found_html as $key => $homePageLabel)

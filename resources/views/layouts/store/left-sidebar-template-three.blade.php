@@ -432,6 +432,7 @@ $pages = \App\Models\Page::with([
             </div>
         </div>
     </div>
+    @if(count($navCategories))
     <div class="menu-navigation_al">
       <div class="container-fluid">
          <div class="row">
@@ -447,8 +448,8 @@ $pages = \App\Models\Page::with([
                         @endif
                         {{$cate['name']}}
                      </a>
-                     @if(!empty($cate['children']))
-                     <ul class="al_main_category_list">
+                    @if(!empty($cate['children']))
+                    <ul class="al_main_category_list">
                         @foreach($cate['children'] as $childs)
                         <li>
                            <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
@@ -472,6 +473,7 @@ $pages = \App\Models\Page::with([
             </div>
         </div>
     </div>
+    @endif
    @endif
 </header>
 
