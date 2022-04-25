@@ -13,13 +13,14 @@
     <div class="col-md-12">
         <div class="row mb-6">
             <div class="col-sm-3">
-                <label>{{ __("Upload Category Icon") }}</label>
                 <div class="row">
                     <div class="col-sm-6">
+                        <label>{{ __("Category Icon") }}</label>
                         <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify" data-default-file="" />
                         <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
                     </div>
                     <div class="col-sm-6">
+                        <label>{{ __("Hover Icon") }}</label>
                         <input type="file" accept="image/*" data-plugins="dropify" name="icon_two" class="dropify" data-default-file="" />
                         <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
                     </div>
@@ -29,7 +30,7 @@
                 
             </div>
             <div class="col-sm-3">              
-                <label>{{ __("Upload Category image") }}</label>
+                <label>{{ __("Category image") }}</label>
                 <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
             </div>

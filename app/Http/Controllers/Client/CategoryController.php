@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation};
+use App\Models\{Client, ClientPreference, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag};
 use GuzzleHttp\Client as GCLIENT;
 
 class CategoryController extends BaseController
@@ -49,6 +49,7 @@ class CategoryController extends BaseController
             $build = $this->buildTree($categories->toArray());
             $tree = $this->printTree($build);
         }
+        $tags = Tag::with('primary')->get();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
             ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
             ->where('client_languages.client_code', Auth::user()->code)
@@ -56,7 +57,7 @@ class CategoryController extends BaseController
             ->orderBy('client_languages.is_primary', 'desc')->get();
 
 
-        return view('backend.catalog.index')->with(['categories' => $categories, 'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build]);
+        return view('backend.catalog.index')->with(['categories' => $categories, 'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build, 'tags'=>$tags]);
     }
 
     /**

@@ -74,14 +74,14 @@ INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`
 (5, NULL, 'Pharmacy', 1, NULL, 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:40:53', '2021-10-01 14:40:53', 1),
 (6, NULL, 'Send something', 1, NULL, 1, 1, 1, 1, 1, 2, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-10-01 14:40:41', '2021-10-01 14:40:41', 1),
 (7, NULL, 'Buy something', 1, NULL, 1, 1, 1, 1, 1, 2, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-10-01 14:40:41', '2021-10-01 14:40:41', 1),
-(8, 'category/icon/IBfpmY0WxtfyZt3aDa1oK1Ylbcl5WNjiJEJYsLSQ.svg', 'Vegetables& Fruits', 3, 'category/image/CYXcpdrgSKKbw8XMHPhQfUd3aLuXWQCekKqCRwm4.png', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 08:32:18', NULL, 1),
-(9, 'category/icon/2vo8hi9LutW7v367hFhHidOZd9hcRyuRWRB0s4a2.svg', 'Fruits', 3, 'category/image/K2vLZvOuuYI5HSwSH43kBucl5xQZmyJho4r4BL2O.jpg', 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 08:32:24', NULL, 1),
-(10, 'category/icon/eYR1U30UrQVFGZpewB5RpCSbz3cbXZx698FyV0r0.svg', 'Dairy and Eggs', 3, 'category/image/cTGFdgTVUa1Llbdwi9EO3vLRQ8jhFEpQsnsI6m4X.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 08:32:41', NULL, 1),
+(8, 'd1b1a0/category/icon/jN0ctCY6WgeGgbfPH7V9V2fjHW5JilxagIIb5VLH.png', 'Vegetables& Fruits', 3, 'category/image/CYXcpdrgSKKbw8XMHPhQfUd3aLuXWQCekKqCRwm4.png', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 08:32:18', NULL, 1),
+(9, 'd1b1a0/category/icon/vyYYOu32sBquSK1uxET03HBhbVZhExLonBMYJUSS.png', 'Fruits', 3, 'category/image/K2vLZvOuuYI5HSwSH43kBucl5xQZmyJho4r4BL2O.jpg', 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 08:32:24', NULL, 1),
+(10, 'd1b1a0/category/icon/QENcrm8m3GRsIxaGv3NT2B5agYhzXMdszTHIqwLA.png', 'Dairy and Eggs', 3, 'category/image/cTGFdgTVUa1Llbdwi9EO3vLRQ8jhFEpQsnsI6m4X.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 08:32:41', NULL, 1),
 (11, NULL, 'E-Commerce', 1, NULL, 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:40:56', '2021-10-01 14:40:56', 1),
 (12, NULL, 'Cloth', 1, NULL, 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:41:00', '2021-10-01 14:41:00', 1),
 (13, NULL, 'Dispatcher', 6, NULL, 0, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:41:05', '2021-10-01 14:41:05', 1),
-(14, 'category/icon/AhnoUOVKYf1NvjZ3lCvfiNylOwkU2Al5G0xtAIzI.svg', 'bakeryproducts', 3, 'category/image/W60KOGsUuhkkOKn0CJQzmdKHpSD85Yuf1buocCP4.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 10:00:46', '2021-11-15 08:32:35', NULL, 1),
-(15, 'category/icon/l13a7knkwjhzcciMJOl2n5uw6xEVY9wkIKWzOdvb.svg', 'beverages', 3, 'category/image/v9Lgft35v6S9W78Sp6PqzStbFv3wQ2pqMkUADpM9.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 10:10:54', '2021-11-15 08:32:47', NULL, 1);
+(14, 'd1b1a0/category/icon/HTWKj77nG8UzX2RJkuXxijK0HlF9nuqwNzXn73Jw.png', 'bakeryproducts', 3, 'category/image/W60KOGsUuhkkOKn0CJQzmdKHpSD85Yuf1buocCP4.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 10:00:46', '2021-11-15 08:32:35', NULL, 1),
+(15, 'd1b1a0/category/icon/acti395QFtZfpnerzBKzH67iRjqNcO4SiFMyJKsx.png', 'beverages', 3, 'category/image/v9Lgft35v6S9W78Sp6PqzStbFv3wQ2pqMkUADpM9.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 10:10:54', '2021-11-15 08:32:47', NULL, 1);
 
 --
 -- Dumping data for table `addon_options`

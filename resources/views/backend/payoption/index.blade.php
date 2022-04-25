@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="row">
-           
+
             @foreach($payOption as $key => $opt)
             <div class="col-6 col-md-3 col-xl-2 mb-3">
 
@@ -650,7 +650,7 @@
                                     <input type="text" name="vnpay_server_key" id="vnpay_server_key" class="form-control" value="{{$vnpay_server_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     @endif

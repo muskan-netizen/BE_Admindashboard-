@@ -336,24 +336,102 @@
                             
                         },
                     });
-                
             } 
         });
-
-
-    //     // url("client/category/delete/" . $node["id"])
-    //     Swal.fire({
-    //         title: 'Are you sure? You want to delete category.', 
-    //         showCancelButton:true,
-    //         confirmButtonText: 'Ok',
-    // }).then((result) => {
-    //     if (result.isConfirmed) {
-            
-    //     }
-            
-   // });
-
     }
+
+            // Product Tag Script
+    $('#add_product_tag_modal_btn').click(function(e) {
+        document.getElementById("productTagForm").reset();
+        $('#add_product_tag_modal input[name=tag_id]').val("");
+        $('#add_product_tag_modal').modal('show');
+        $('#add_product_tag__modal #standard-modalLabel').html('Add Tag');
+    });
+    $(document).on('click', '.submitSaveProductTag', function(e) {
+        var tag_id = $("#add_product_tag_modal input[name=tag_id]").val();
+        if (tag_id) {
+            var post_url = "{{ route('tag.update') }}";
+        } else {
+            var post_url = "{{ route('tag.create') }}";
+        }
+        var form_data = new FormData(document.getElementById("productTagForm"));
+        $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+               if (response.status == 'Success') {
+                  $('#add_or_edit_social_media_modal').modal('hide');
+                  $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+               }
+            },
+            error: function(response) {
+               $('#add_product_tag_modal .product_tag_err').html('The default language name field is required.');
+            }
+        });
+    });
+    $(document).on("click", ".edit_product_tag_btn", function() {
+        let tag_id = $(this).data('tag_id');
+        $('#add_product_tag_modal input[name=tag_id]').val(tag_id);
+        $.ajax({
+            method: 'GET',
+            data: {
+               tag_id: tag_id
+            },
+            url: "{{ route('tag.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                  $("#add_product_tag_modal input[name=tag_id]").val(response.data.id);
+                  $('#add_product_tag_modal #standard-modalLabel').html('Update Product Tag');
+                  $('#add_product_tag_modal').modal('show');
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_product_tag_modal #product_tag_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {
+
+            }
+        });
+    });
+    $(document).on("click", ".delete_product_tag_btn", function() {
+         var tag_id = $(this).data('tag_id');
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+          }).then((result) => {
+            if(result.value)
+            {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('tag.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     tag_id: tag_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
+                  }
+               });
+            }
+        });
+    });
+    //End Product Tag Script
 
     
 </script>

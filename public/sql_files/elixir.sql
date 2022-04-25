@@ -46,11 +46,11 @@ INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`
 (11, NULL, 'E-Commerce', 6, NULL, 0, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:41:40', '2021-10-01 14:41:40', 1),
 (12, NULL, 'Cloth', 6, NULL, 0, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:41:43', '2021-10-01 14:41:43', 1),
 (13, NULL, 'Dispatcher', 6, NULL, 0, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:41:46', '2021-10-01 14:41:46', 1),
-(14, 'category/icon/hCLxaMYkLCK1OhEiexeMk6Go7mDbeApw70VvmAI0.svg', 'healthdevices', 3, 'category/image/fItgcnhPFdMNpvoSSRKeRtOzD8ER8va0QkrSSJLX.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:40:46', '2021-11-15 10:09:57', NULL, 1),
-(15, 'category/icon/asqEcTkFTcA8XwV4if0ZK7slLeY9QXjizvhxjUvf.svg', 'babycare', 3, 'category/image/Lf37xg86du2bb4d3tLssADY1mkeOY8I3zkqIhbBp.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:41:19', '2021-11-15 10:10:03', NULL, 1),
-(16, 'category/icon/pJE0ctrdAuBnZSKtGFjWLYqSdSxIUZGEXfgg6bFr.svg', 'personalcare', 3, 'category/image/C7EAtBG6t7coDlsw2934zLYEM26HTKIAjq2WJQvn.jpg', 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:42:05', '2021-11-15 10:10:11', NULL, 1),
-(17, 'category/icon/xoFc29gap9RqdkPQCEAfqWPhzldR2KOWMUxexhMM.svg', 'health&nutrition', 3, 'category/image/33P5YDpYZoWngPLQAHoDQYz2RszfDXUSCUc9Ahzt.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:42:42', '2021-11-15 10:10:17', NULL, 1),
-(18, 'category/icon/BNHn0ujNBMR5vGCFuRNwqdU4J0XEloe8xeRdgyiP.svg', 'ayurveda', 3, 'category/image/0RoiOdoSuuChtXxfcdzeejM4X1rqJA9gTUvvFcPl.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:43:48', '2021-11-15 10:10:24', NULL, 1);
+(14, '574467/category/icon/MKI9zqPzRDP0ay3yXDkcfh07yMTcKmhvcI7Aw1DW.png', 'healthdevices', 3, 'category/image/fItgcnhPFdMNpvoSSRKeRtOzD8ER8va0QkrSSJLX.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:40:46', '2021-11-15 10:09:57', NULL, 1),
+(15, '574467/category/icon/tKgOWkRoZebZeuYHfc5LjZVlxl1GSPgUTUEHiZxk.png', 'babycare', 3, 'category/image/Lf37xg86du2bb4d3tLssADY1mkeOY8I3zkqIhbBp.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:41:19', '2021-11-15 10:10:03', NULL, 1),
+(16, '574467/category/icon/iIQ2MozzWEtG7JWhHn6XxtfNl7ptOOVP7Js5iqLs.png', 'personalcare', 3, 'category/image/C7EAtBG6t7coDlsw2934zLYEM26HTKIAjq2WJQvn.jpg', 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:42:05', '2021-11-15 10:10:11', NULL, 1),
+(17, '574467/category/icon/AfCEgHSPYVhUE0zFLGXTIhnOrhm2BpwGfWbuCxou.png', 'health&nutrition', 3, 'category/image/33P5YDpYZoWngPLQAHoDQYz2RszfDXUSCUc9Ahzt.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:42:42', '2021-11-15 10:10:17', NULL, 1),
+(18, '574467/category/icon/SKY10qr6UtG9y6b0aTt3xi80Q6hCggQeQuE0AGtd.png', 'ayurveda', 3, 'category/image/0RoiOdoSuuChtXxfcdzeejM4X1rqJA9gTUvvFcPl.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:43:48', '2021-11-15 10:10:24', NULL, 1);
 
 --
 -- Dumping data for table `addon_options`

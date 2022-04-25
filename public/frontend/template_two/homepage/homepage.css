@@ -1,4 +1,7 @@
 
+.fa-facebook-square:before, .fa-heart:before, .fa-twitter:before, .fa-user:before, .fa-whatsapp:before {
+    font-family: FontAwesome !important;
+}
 @media (max-width: 767px){
 .footer-contant .footer-social ul{
     margin: unset;

@@ -117,7 +117,8 @@ body .navigation-tab,body .navigation-tab-overlay{
     margin:auto;
     justify-content:center;
     white-space:nowrap;
-    justify-content:center
+    justify-content:center;
+    min-height: 100px;
 }
 ul.sm.pixelstrap.sm-horizontal{
     text-align:center
@@ -138,12 +139,12 @@ ul.sm.pixelstrap.sm-horizontal{
 .nav-tabs{
     border-bottom:0 solid #dee2e6
 }
-article#page-container .site-header{
+/* article#page-container .site-header{
     position:relative
 }
 article#page-container header.site-header.fixed-bar{
     position:fixed
-}
+} */
 .onhover-div i,.onhover-div img{
     font-size:20px
 }
