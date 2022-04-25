@@ -1461,7 +1461,6 @@ $(document).ready(function () {
         return orderResponse;
     }
     $(document).on("click", ".proceed_to_pay", function () {
-
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
         var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
@@ -1678,6 +1677,15 @@ $(document).ready(function () {
             if (order != '') {
                 //Easebuzz payment gateway
                 payWithVNpay(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
+        }else if (payment_option_id == 29) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //Mvodafone
+                payWithMvodafone(order);
             }
             else{
                 return false;
