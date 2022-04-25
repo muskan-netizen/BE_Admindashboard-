@@ -86,14 +86,14 @@ class PaytabController extends FrontController
     public function sucessPayment($request)
     {
         $user = Auth::user();
-    	if($request->payment_from == 'cart'){
+    	if($request->payment_from == 'cart'){Log::info('89');
             $order_number = $request->order_number;
             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
             if ($order) {
                 $order->payment_status = 1;
                 $order->save();
                 $payment_exists = Payment::where('transaction_id', $request->tranRef)->first();
-                if (!$payment_exists) {
+                if (!$payment_exists) {Log::info('96');
                     Payment::insert([
                         'date' => date('Y-m-d'),
                         'order_id' => $order->id,
@@ -103,11 +103,11 @@ class PaytabController extends FrontController
                     ]);
 
                     // Auto accept order
-                    $orderController = new OrderController();
+                    $orderController = new OrderController();Log::info('106');
                     $orderController->autoAcceptOrderIfOn($order->id);
 
                     // Remove cart
-                    $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                    $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();Log::info('110');
                     Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                     CartAddon::where('cart_id', $cart->id)->delete();
                     CartCoupon::where('cart_id', $cart->id)->delete();
@@ -116,15 +116,15 @@ class PaytabController extends FrontController
 
                     // Send Notification
                     if (!empty($order->vendors)) {
-                        foreach ($order->vendors as $vendor_value) {
+                        foreach ($order->vendors as $vendor_value) {Log::info('119');
                             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
                             $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
                             $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                         }
                     }
-                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);Log::info('125');
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                    $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                    $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);Log::info('127');
                 }
                 Log::info('129');
                 if($request->come_from == 'app')
