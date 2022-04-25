@@ -1178,7 +1178,7 @@ class CartController extends FrontController
             }
             $cart->without_category_kyc = 0;
             
-            if( $preferences->category_kyc_documents ==1 ){
+            if( $preferences->category_kyc_documents ==1 && $user ){
                       
                 $category_query =  CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_array){
                     $q->whereIn('category_id',$category_array);
