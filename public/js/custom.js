@@ -862,8 +862,8 @@ $(document).ready(function () {
         let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
         let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
         let comment_for_vendor = $("input[name='comment_for_vendor']").val(); //commnet for vendor
-        var schedule_pickup = $("#schedule_datetime_pickup").val();
-        var schedule_dropoff = $("#schedule_datetime_dropoff").val();
+        var schedule_pickup = $("#schedule_datetime_pickup_date").val()+" "+$("#schedule_datetime_pickup_time").val();
+        var schedule_dropoff = $("#schedule_datetime_dropoff_date").val()+" "+$("#schedule_datetime_dropoff_time").val();
         var specific_instructions = $("#specific_instructions").val();
         let tip = $("#cart_tip_amount").val();
 

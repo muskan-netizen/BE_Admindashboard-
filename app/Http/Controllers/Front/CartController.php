@@ -14,7 +14,7 @@ use App\Http\Traits\{ApiResponser,CartManager};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate};
 use Log;
 class CartController extends FrontController
 {
@@ -77,6 +77,7 @@ class CartController extends FrontController
         $navCategories = $this->categoryNav($langId);
     
         $subscription_features = array();
+        $user_subscription = null;
         if ($user) {
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')
@@ -91,15 +92,24 @@ class CartController extends FrontController
             }
         }
         $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
-
+        // $vendorSlotDate=VendorSlotDate::where('specific_date',date('Y-m-d'))->get();
+        $vendorWeeklySlotDay=array();
+        $vendorId=0;
+        if(!empty($cartData[0])){
+            $vendorId=$cartData[0]->vendor_id;
+            $vendorWeeklySlotDay=VendorSlot::select('start_time','end_time','day')->join('slot_days','slot_days.slot_id','=','vendor_slots.id')->where(['vendor_slots.vendor_id'=>$vendorId])->get()->toArray();
+        }
+        
         $data = array(
-            'navCategories' => $navCategories,
-            'cartData' => $cartData,
-            'addresses' => $addresses,
-            'countries' => $countries,
-            'subscription_features' => $subscription_features,
+            'navCategories'=>$navCategories,
+            'cartData'=>$cartData,
+            'vendorId'=>$vendorId,
+            'vendorWeeklySlotDay'=>$vendorWeeklySlotDay,
+            'addresses'=>$addresses,
+            'countries'=>$countries,
+            'subscription_features'=>$subscription_features,
             'guest_user'=>$guest_user,
-            'action' => $action,
+            'action'=>$action,
             'fixedFee'=>$fixedFee
         );
         $client_preference_detail = ClientPreference::first();
@@ -624,6 +634,7 @@ class CartController extends FrontController
             $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
         }
         $subscription_features = array();
+        $user_subscription = null;
         if($user){
             $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
             if ($order_loyalty_points_earned_detail) {
@@ -1167,7 +1178,7 @@ class CartController extends FrontController
             }
             $cart->without_category_kyc = 0;
             
-            if( $preferences->category_kyc_documents ==1 ){
+            if( $preferences->category_kyc_documents ==1 && $user ){
                       
                 $category_query =  CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_array){
                     $q->whereIn('category_id',$category_array);
@@ -1793,24 +1804,31 @@ class CartController extends FrontController
                     $time = Carbon::now()->format('Y-m-d H:i:s');                  
                     
                 }else{
-                   
-                    if(isset($request->slot))
-                    { 
-                        $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                        $slot = $request->slot;                        
-                    }else{                       
+                    if($request->schedule_dt){
+                        if(isset($request->slot))
+                        { 
+                            $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                            $slot = $request->slot;                        
+                        }else{                       
                      
                         if(isset($request->schedule_dt) && !empty($request->schedule_dt))
                         $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                       
+                        }
                     }
+                    
 
                 }
-                if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
+
+                Log::info($request->toArray());
+
+                if(isset($request->schedule_pickup) && !empty($request->schedule_pickup) &&  $request->schedule_pickup != 'undefined undefined')    # for pickup laundry
                 $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
-                if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff))  # for pickup laundry
+                if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff) &&  $request->schedule_dropoff != 'undefined undefined')  # for pickup laundry
                 $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+
+                Log::info('ok');
 
                 if ($user) {
                     $cart_detail = Cart::where('user_id', $user->id)->first();
@@ -2110,4 +2128,17 @@ class CartController extends FrontController
         //return response()->json(['status'=>'Success', 'message'=>__('Product form Submit successfully.')]);
     }
 
+    function ajaxGetScheduleDateDetails(Request $request){
+        $vendorWeeklySlotDay=VendorSlot::select('start_time','end_time','day')->join('slot_days','slot_days.slot_id','=','vendor_slots.id')->where(['vendor_slots.vendor_id'=>$request->vendorId])->get()->toArray();
+        $today=['start_time'=>"00:00",'end_time'=>"00:00"]; 
+        $dt=new \DateTime($request->date);
+        foreach($vendorWeeklySlotDay as $row){
+            
+            if(($row['day']-1)==(int)$dt->format('w'))
+            {
+                $today=['start_time'=>convertDateTimeInTimeZone(date('Y-M-d')." ".$row['start_time'], Auth()->user()->timezone, 'H:i'),'end_time'=>substr($row['end_time'],0,-3)];
+            }
+        }
+        return json_encode($today);
+    }
 }

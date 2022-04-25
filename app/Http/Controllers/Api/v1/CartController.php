@@ -25,11 +25,11 @@ use App\Http\Controllers\ShiprocketController;
 use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc};
 use GuzzleHttp\Client as GCLIENT;
 use Log;
-use App\Http\Traits\MpesaStkpush;
+//use App\Http\Traits\MpesaStkpush;
 
 class CartController extends BaseController
 {
-    use ApiResponser,MpesaStkpush;
+    use ApiResponser;
 
     private $field_status = 2;
 
@@ -529,6 +529,7 @@ class CartController extends BaseController
         
         $loyalty_amount_saved = 0;
         $subscription_features = array();
+        $user_subscription = null;
         if ($cart->user_id) {
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')
@@ -1056,7 +1057,9 @@ class CartController extends BaseController
         }//End cart Vendor loop
 
         // calculate subscription discount
+        $subscription_discount =0;
         if ($user_subscription) {
+         
             foreach ($user_subscription->features as $feature) {
                 if ($feature->feature_id == 1) {
                     $subscription_discount = $subscription_discount + $total_delivery_amount;

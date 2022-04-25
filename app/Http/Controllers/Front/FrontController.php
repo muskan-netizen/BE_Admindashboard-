@@ -51,6 +51,14 @@ class FrontController extends Controller
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
                 $send = $this->unifonic($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 5) //for arkesel_sms gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->arkesel_sms($to,$body,$crendentials);
+                if( isset($send->code) && $send->code != 'ok'){
+                    return '2';
+                }
             }else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
@@ -70,16 +78,22 @@ class FrontController extends Controller
         }
         return '1';
 	}
-    public function testsms()
+    public function testsms(Request $request)
     {
-        $to = '966506342600';
-        $body = "this is test sms from codebrew";
-        $crendentials = [
-            'unifonic_app_id' =>'ab8JPwmnCRgTrn2kkDEMCuCkMysK8l',
-            'unifonic_account_email' => 'abhimanyuvij@code-brew.com',
-            'unifonic_account_password' => 'Code@12345'
-        ];
-        $send = $this->unifonic($to,$body,$crendentials);
+        $prefer = ClientPreference::select('sms_credentials', 
+                        'sms_provider', 'sms_key', 'sms_secret', 'sms_from' )->first();
+        $to = $request->to ? $request->to :'+917508983302';
+        $provider = $prefer->sms_provider;
+        $body = "Dear ".ucwords('Harbans').", Please enter OTP 12345 to verify your account.";
+       // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+        // $to = '+917508983302';
+        // $body = "this is test sms from codebrew";
+        // $crendentials = [
+        //     'api_key' =>'Om15akt3STZwNXNzMEFjRzY=',
+        //     'sender_id' => 'Arkesel',
+        // ];
+        $crendentials = json_decode($prefer->sms_credentials);
+        $send = $this->arkesel_sms($to,$body,$crendentials);
         pr($send);
     }
     public function categoryNav($lang_id)
