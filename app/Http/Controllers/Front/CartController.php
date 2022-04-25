@@ -77,6 +77,7 @@ class CartController extends FrontController
         $navCategories = $this->categoryNav($langId);
     
         $subscription_features = array();
+        $user_subscription = null;
         if ($user) {
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')
@@ -125,8 +126,6 @@ class CartController extends FrontController
         $ageVerify= VerificationOption::where('code','yoti')->first();
 
         return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify'))->with($data,$client_preference_detail,$client_detail);
-       
-      //  return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data'))->with($data,$client_preference_detail,$client_detail);
        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
@@ -635,6 +634,7 @@ class CartController extends FrontController
             $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
         }
         $subscription_features = array();
+        $user_subscription = null;
         if($user){
             $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
             if ($order_loyalty_points_earned_detail) {
