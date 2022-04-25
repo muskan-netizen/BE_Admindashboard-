@@ -15,16 +15,7 @@ class PaytabController extends FrontController
 
 	private $application_id;
 	private $access_token;
-	public function __construct()
-  	{
-		// $this->paytab_creds = PaymentOption::select('credentials')->where('code', 'paytab')->where('status', 1)->first();
-	 //    $this->creds_arr = json_decode($this->paytab_creds->credentials);
-	 //    $this->profile_id = $this->creds_arr->profile_id??'';
-	 //    $this->server_key = $this->creds_arr->server_key??'';
-	 //    $this->client_key = $this->creds_arr->client_key??'';
-  //       Config::set('Paytabs.profile_id', $this->profile_id);
-  //       Config::set('Paytabs.server_key', $this->server_key); 
-	}
+    
 	public function beforePayment(Request $request)
     {
     	$data = $request->all();
@@ -126,19 +117,13 @@ class PaytabController extends FrontController
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
                     $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                 }
-                Log::info('129');
                 if($request->come_from == 'app')
-                {   
-                    Log::info('132');
+                {
                     $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$request->tranRef.'&order='.$order_number;
                 }else{
-                    Log::info('135');
                     $returnUrl = route('order.return.success');
                 }
-                Log::info('138');
                 return $returnUrl;
-
-                Log::info($returnUrl);
             }
         } elseif($request->payment_from == 'wallet'){
             $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $request->tranRef]);
@@ -237,7 +222,6 @@ class PaytabController extends FrontController
         $user = User::where('auth_token', $request->auth_token)->first();
         Auth::login($user);
         $returnUrl = $this->sucessPayment($request);
-        Log::info($returnUrl);
         return $this->successResponse($request->all());
     }
 }
