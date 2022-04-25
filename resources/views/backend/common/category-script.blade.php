@@ -198,4 +198,27 @@
             }
         });
     }
+
+    $(document).on("click",".delete-category",function() {
+            var destroy_url = $(this).data('destroy_url');
+            var id = $(this).data('rel');
+            Swal.fire({
+                title: "Are you sure?",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+            }).then((result) => {
+                if(result.value)
+                {
+                    $.ajax({
+                        type: "GET",
+                        url: destroy_url,                        
+                        success: function(response) {
+                            $.NotificationApp.send("Success", "Category deleted successfully!", "top-right", "#5ba035", "success");
+                            window.location.reload();                                                        
+                        }
+                    });
+                }
+            });
+        });
 </script>
