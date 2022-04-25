@@ -1359,8 +1359,8 @@ $(document).ready(function () {
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
         var is_gift = $('#is_gift:checked').val() ?? 0;
-
-        if ((task_type == 'schedule') && (schedule_dt == '')) {
+        var total_fixed_fee_amount = $("input[name='total_fixed_fee_amount']").val() ?? 0;
+         if ((task_type == 'schedule') && (schedule_dt == '')) {
             $("#proceed_to_pay_modal").modal('hide');
             $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
@@ -1370,7 +1370,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot },
+            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount },
             success: function (response) {
                 if (response.status == "Success") {
                     var ip_address = window.location.host;
