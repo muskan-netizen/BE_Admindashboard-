@@ -92,11 +92,17 @@ class CartController extends FrontController
         }
         $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
         // $vendorSlotDate=VendorSlotDate::where('specific_date',date('Y-m-d'))->get();
-        $vendorWeeklySlotDay=VendorSlot::select('start_time','end_time','day')->join('slot_days','slot_days.slot_id','=','vendor_slots.id')->where(['vendor_slots.vendor_id'=>$cartData[0]->vendor_id])->get()->toArray();
+        $vendorWeeklySlotDay=array();
+        $vendorId=0;
+        if(!empty($cartData[0])){
+            $vendorId=$cartData[0]->vendor_id;
+            $vendorWeeklySlotDay=VendorSlot::select('start_time','end_time','day')->join('slot_days','slot_days.slot_id','=','vendor_slots.id')->where(['vendor_slots.vendor_id'=>$vendorId])->get()->toArray();
+        }
         
         $data = array(
             'navCategories'=>$navCategories,
             'cartData'=>$cartData,
+            'vendorId'=>$vendorId,
             'vendorWeeklySlotDay'=>$vendorWeeklySlotDay,
             'addresses'=>$addresses,
             'countries'=>$countries,
@@ -2087,4 +2093,23 @@ class CartController extends FrontController
         //return response()->json(['status'=>'Success', 'message'=>__('Product form Submit successfully.')]);
     }
 
+    function ajaxGetScheduleDateDetails(Request $request){
+        $vendorWeeklySlotDay=VendorSlot::select('start_time','end_time','day')->join('slot_days','slot_days.slot_id','=','vendor_slots.id')->where(['vendor_slots.vendor_id'=>$request->vendorId])->get()->toArray();
+        $today=['start_time'=>"00:00",'end_time'=>"00:00"]; 
+        $dt=new \DateTime($request->date);
+        
+        // return json_encode($vendorWeeklySlotDay->get()->toArray());
+        foreach($vendorWeeklySlotDay as $row){
+            return dateTimeInUserTimeZone($dt->format('Y-m-d')." ".$row['start_time'], Auth()->user()->timezone);
+            // if(strtotime(now()) < strtotime('10:00')){
+                //     return "true".now();
+                // }
+                // return "false".now();
+            if(($row['day']-1)==(int)$dt->format('w'))
+            {
+                $today=['start_time'=>convertDateTimeInTimeZone(date('Y-M-d')." ".$row['start_time'], Auth()->user()->timezone, 'H:i'),'end_time'=>substr($row['end_time'],0,-3)];
+            }
+        }
+        return json_encode($today);
+    }
 }
