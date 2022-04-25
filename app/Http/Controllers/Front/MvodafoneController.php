@@ -21,7 +21,7 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
 use Log;
 
-class VivawalletController extends Controller
+class MvodafoneController extends Controller
 {
    use ApiResponser, Mvodafone;
 
@@ -165,8 +165,6 @@ class VivawalletController extends Controller
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
 
-            Payment::updateOrCreate(['viva_order_id'=>$request->s],['amount'=>0,'transaction_id'=>$request->s,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id,'user_id'=>auth()->id()]);
-
              // Send Notification
              if (!empty($order->vendors)) {
               foreach ($order->vendors as $vendor_value) {
@@ -181,7 +179,7 @@ class VivawalletController extends Controller
 
           if(isset($request->auth_token) && !empty($request->auth_token))
           {
-            $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&order='.$order->order_number;
+            $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=200&order='.$order->order_number;
             return Redirect::to($returnUrl); 
           }else{
             return Redirect::to(route('order.success',[$order->id]));

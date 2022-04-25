@@ -1610,7 +1610,7 @@ $(document).ready(function () {
             else {
                 return false;
             }
-        } else if (payment_option_id == 21) {
+        } else if (payment_option_id == 23) {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
                 paymentViaEasyPaisa();
