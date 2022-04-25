@@ -1804,24 +1804,31 @@ class CartController extends FrontController
                     $time = Carbon::now()->format('Y-m-d H:i:s');                  
                     
                 }else{
-                   
-                    if(isset($request->slot))
-                    { 
-                        $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                        $slot = $request->slot;                        
-                    }else{                       
+                    if($request->schedule_dt){
+                        if(isset($request->slot))
+                        { 
+                            $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                            $slot = $request->slot;                        
+                        }else{                       
                      
                         if(isset($request->schedule_dt) && !empty($request->schedule_dt))
                         $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                       
+                        }
                     }
+                    
 
                 }
-                if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
+
+                Log::info($request->toArray());
+
+                if(isset($request->schedule_pickup) && !empty($request->schedule_pickup) &&  $request->schedule_pickup != 'undefined undefined')    # for pickup laundry
                 $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
-                if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff))  # for pickup laundry
+                if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff) &&  $request->schedule_dropoff != 'undefined undefined')  # for pickup laundry
                 $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+
+                Log::info('ok');
 
                 if ($user) {
                     $cart_detail = Cart::where('user_id', $user->id)->first();
