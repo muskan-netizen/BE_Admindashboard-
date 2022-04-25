@@ -26,8 +26,9 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-12">
+                            <h4 class="header-title mb-3">{{ __('Redemption Value') }}</h4> 
                             <label class="mr-2 mb-0">{{ __('Enable') }}</label>
-                            <input type="checkbox" id="activeCheck" {{$status == 0 ? 'checked' : ''}} data-plugin="switchery" name="validity_index" class="chk_box1" data-color="#43bee1">
+                            <input type="checkbox" id="activeCheck" {{$status == 0 ? 'checked' : ''}} data-plugin="switchery" name="validity_index" class="chk_box1 " data-color="#43bee1">
                         </div>
                         <div class="col-12">
                         <form id="setRedeem">

@@ -36,24 +36,24 @@ INSERT INTO `addon_sets` (`id`, `title`, `min_select`, `max_select`, `position`,
 
 INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`, `status`, `position`, `is_core`, `can_add_products`, `parent_id`, `vendor_id`, `client_code`, `display_mode`, `warning_page_id`, `template_type_id`, `warning_page_design`, `created_at`, `updated_at`, `deleted_at`, `show_wishlist`) VALUES
 (1, NULL, 'Root', 3, NULL, 0, 1, 1, 1, 0, NULL, NULL, NULL, '1', NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(2, 'category/icon/MWlOeFC9hCqLsDubFulYR8YprnVau9b9cvZpUYFy.svg', 'disinfection', 8, 'category/image/MwXJJE7DkihnUGGjfkPlCBEcyVX5j2pJ0FktNijG.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 09:56:12', NULL, 1),
-(3, 'category/icon/M2Z53bUDuzilqExSOw32e5ak4jmK2gVtrrXacL98.svg', 'Home Cleaning', 8, 'category/image/jgC2LvGBz4XHRpVBQo5ksA4JgikSvmkbwIxauG2W.jpg', 1, 1, 2, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
-(4, 'category/icon/1LdpIWD3adsy7ZDMNALw5Iek8rAiDql8UJtQX15D.svg', 'AC Cleaning', 8, 'category/image/D0nMpTRINelmC9S0oogrOfgdDyvAxJMziydLWoOC.png', 1, 1, 3, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
-(5, 'category/icon/ahWz5gB6IVyWr7qEv7l8Xt30zFW6v5K9nJx9DubZ.svg', 'Carpet Cleaning', 8, 'category/image/orTaPzYgUJHNpWlKb9qQoxI502yUYslJZiPXkWlJ.jpg', 1, 1, 4, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
+(2, 'c8fbba/category/icon/Uv5LUsGC819zDsTZslFhvUUAVdBtZuZmn1ifGmbE.png', 'disinfection', 8, 'category/image/MwXJJE7DkihnUGGjfkPlCBEcyVX5j2pJ0FktNijG.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 09:56:12', NULL, 1),
+(3, 'c8fbba/category/icon/Z4rKBLIMZAxeOfexSch9ktTFaj7r3hyzZ4PJSilE.png', 'Home Cleaning', 8, 'category/image/jgC2LvGBz4XHRpVBQo5ksA4JgikSvmkbwIxauG2W.jpg', 1, 1, 2, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
+(4, 'c8fbba/category/icon/rRKMC5WeYkWNgHlhjkWueeGehJz4ip8lpUyvKd7G.png', 'AC Cleaning', 8, 'category/image/D0nMpTRINelmC9S0oogrOfgdDyvAxJMziydLWoOC.png', 1, 1, 3, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
+(5, 'c8fbba/category/icon/hrNBncLsAUZl1Bve3MP6hqmj7fDZeTAdTEpCwIUg.png', 'Carpet Cleaning', 8, 'category/image/orTaPzYgUJHNpWlKb9qQoxI502yUYslJZiPXkWlJ.jpg', 1, 1, 4, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
 (6, NULL, 'Send something', 1, NULL, 1, 1, 1, 1, 1, 2, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-29 07:45:38', '2021-09-29 07:45:38', 1),
 (7, NULL, 'Buy something', 1, NULL, 1, 1, 1, 1, 1, 2, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-29 07:45:43', '2021-09-29 07:45:43', 1),
 (8, NULL, 'Vegetables', 1, NULL, 1, 1, 1, 1, 1, 4, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-29 07:46:45', '2021-09-29 07:46:45', 1),
 (9, NULL, 'Fruits', 1, NULL, 1, 1, 1, 1, 1, 4, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-29 07:46:50', '2021-09-29 07:46:50', 1),
 (10, NULL, 'Dairy and Eggs', 1, NULL, 1, 1, 1, 1, 1, 4, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-29 07:46:55', '2021-09-29 07:46:55', 1),
-(11, 'category/icon/d1E10Vwrd8WmNuQX1VIOZxLfKJGiIpE3LzKkr0Nm.svg', 'Mattress Cleaning', 8, 'category/image/Qqj5OgKDb4gFyazkWshbo8pXbmKjsM6SJ5M0p7Ux.jpg', 1, 1, 5, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
-(12, 'category/icon/wKeciGYWJvFMc7SqoPmtV30AqxKsYUXOKWQUuiF8.svg', 'Sofa Cleaning', 8, 'category/image/5ScuLF8nSYQ0cJ6l52T80ub8lrGvSXek0ajcUCYm.jpg', 1, 1, 6, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
-(13, 'category/icon/Jr9ONGwbUxCNClRpTyQpiWcmop5KBok9cV8tLC83.svg', 'Handyman & Maintenance', 8, 'category/image/FhncvpTe0WIgX4J3rQLTghL0nDyxwlpS5Gcxd0nB.jpg', 1, 1, 7, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
-(14, 'category/icon/xn3VqBnf80RveecqZdHgY2qTDFNCH1yf4rgrKpKG.svg', 'Laundry & Dry Cleaning', 8, 'category/image/xe5I3DaWzOuxhQHpztNw7yqgAakloJjAVaa23REf.jpg', 1, 1, 9, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 07:49:54', '2021-10-08 10:01:49', NULL, 1),
+(11, 'c8fbba/category/icon/rkgdwVO0Ecy1AUqfto27ygzDgFOvZKzMNyESNNBi.png', 'Mattress Cleaning', 8, 'category/image/Qqj5OgKDb4gFyazkWshbo8pXbmKjsM6SJ5M0p7Ux.jpg', 1, 1, 5, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
+(12, 'c8fbba/category/icon/l7SH7RKeiNK1J3vMpya7CITDzDJry00OkPgFprnH.png', 'Sofa Cleaning', 8, 'category/image/5ScuLF8nSYQ0cJ6l52T80ub8lrGvSXek0ajcUCYm.jpg', 1, 1, 6, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
+(13, 'c8fbba/category/icon/YUEalsEjxvujPgjZKbUBiyOA4R4DjNGhefqdmWDc.png', 'Handyman & Maintenance', 8, 'category/image/FhncvpTe0WIgX4J3rQLTghL0nDyxwlpS5Gcxd0nB.jpg', 1, 1, 7, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 10:01:49', NULL, 1),
+(14, 'c8fbba/category/icon/XlkggyGnu5srjXPEjt81NmSWnHXSxGUlyG8EYka6.png', 'Laundry & Dry Cleaning', 8, 'category/image/xe5I3DaWzOuxhQHpztNw7yqgAakloJjAVaa23REf.jpg', 1, 1, 9, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 07:49:54', '2021-10-08 10:01:49', NULL, 1),
 (15, NULL, 'Deep Cleaning', 8, NULL, 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 07:50:19', '2021-09-29 08:14:07', '2021-09-29 08:14:07', 1),
 (16, NULL, 'Car Wash', 8, NULL, 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 07:50:45', '2021-09-29 08:14:14', '2021-09-29 08:14:14', 1),
 (17, NULL, 'Packers & Movers', 8, NULL, 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 07:51:14', '2021-09-29 07:52:32', '2021-09-29 07:52:32', 1),
-(18, 'category/icon/FM5QIkqzLGVLygm0Asm2ZswWMuX3OEbUcHelf1KY.svg', 'Men\'s Salon', 8, 'category/image/oNSEboeu0WuFxvIOm2jgZZlYemmQsnTFDrYCnno7.png', 1, 1, 10, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 07:51:38', '2021-10-08 10:01:49', NULL, 1),
-(19, 'category/icon/i4ljiv2n2jjgvgXPKvJLw8orDwfW6hI9kj875JJ5.svg', 'Pest Control', 8, 'category/image/66GEfTBQaXg0Y5ddF9vJ7DYK3TWx3n2BcLF7yWmR.jpg', 1, 1, 8, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 07:52:18', '2021-10-11 09:52:07', NULL, 1);
+(18, 'c8fbba/category/icon/WcCSfEMcMStBZkPD2yciYRGRCPL7KM2w18VOPlsj.png', 'Men\'s Salon', 8, 'category/image/oNSEboeu0WuFxvIOm2jgZZlYemmQsnTFDrYCnno7.png', 1, 1, 10, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 07:51:38', '2021-10-08 10:01:49', NULL, 1),
+(19, 'c8fbba/category/icon/3UqeHJEgHdcB8snvW32nY3mvO9Jd94djBRzgxcjg.png', 'Pest Control', 8, 'category/image/66GEfTBQaXg0Y5ddF9vJ7DYK3TWx3n2BcLF7yWmR.jpg', 1, 1, 8, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 07:52:18', '2021-10-11 09:52:07', NULL, 1);
 
 --
 -- Dumping data for table `addon_options`

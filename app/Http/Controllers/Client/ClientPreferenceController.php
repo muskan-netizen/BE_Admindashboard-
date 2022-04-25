@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments};
+use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -109,6 +109,8 @@ class ClientPreferenceController extends BaseController{
         }else{
             $reffer_to = $preference->reffered_to_amount;
         }
+        $verify_codes = array('passbase');
+        $verify_options = VerificationOption::whereIn('code', $verify_codes)->get();
         //pr($category_kyc_documents->first()->toArray() ); //
         $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
@@ -116,7 +118,7 @@ class ClientPreferenceController extends BaseController{
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
                     
-        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options'));
     }
 
     public function referandearnUpdate(Request $request, $code){
@@ -145,7 +147,7 @@ class ClientPreferenceController extends BaseController{
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id');
+        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id');
      
 
         foreach ($request->all() as $key => $value) {
@@ -181,6 +183,13 @@ class ClientPreferenceController extends BaseController{
                     'unifonic_app_id' => $request->unifonic_app_id,
                     'unifonic_account_email' => $request->unifonic_account_email,
                     'unifonic_account_password' => $request->unifonic_account_password,
+                ];
+            }
+            elseif($request->sms_provider == 5) // for unifonic
+            {
+                $sms_credentials = [
+                    'api_key' => $request->arkesel_api_key,
+                    'sender_id' => $request->arkesel_sender_id,
                 ];
             }
             $preference->sms_credentials = json_encode($sms_credentials);
@@ -237,6 +246,12 @@ class ClientPreferenceController extends BaseController{
         if($request->has('verify_config') && $request->verify_config == '1'){
             $preference->verify_email = ($request->has('verify_email') && $request->verify_email == 'on') ? 1 : 0;
             $preference->verify_phone = ($request->has('verify_phone') && $request->verify_phone == 'on') ? 1 : 0;
+            $preference->age_restriction_on_product_mode = ($request->has('age_restriction_on_product_mode') && $request->age_restriction_on_product_mode == 'on') ? 1 : 0;
+            $this->updateVerificationOption([
+                'method_id' => $request->method_id, 'method_name' => $request->method_name, 'active'=>$request->active,
+                'passbase_publish_key' => $request->passbase_publish_key, 'passbase_secret_key' => $request->passbase_secret_key
+            ]);
+
         }
         if($request->has('verify_vendor_type') && $request->verify_vendor_type == '1')
         {
@@ -268,22 +283,19 @@ class ClientPreferenceController extends BaseController{
             $preference->max_safety_mod = ($request->has('max_safety_mod') && $request->max_safety_mod == 'on') ? 1 : 0;
             $preference->address_is_car = ($request->has('address_is_car') && $request->address_is_car == 'on') ? 1 : 0;
             $preference->hide_order_address = ($request->has('hide_order_address') && $request->hide_order_address == 'on') ? 1 : 0;
-            $preference->age_restriction_on_product_mode = ($request->has('age_restriction_on_product_mode') && $request->age_restriction_on_product_mode == 'on') ? 1 : 0;
             $preference->auto_implement_5_percent_tip = ($request->has('auto_implement_5_percent_tip') && $request->auto_implement_5_percent_tip == 'on') ? 1 : 0;
 
             $preference->category_kyc_documents = ($request->has('category_kyc_documents') && $request->category_kyc_documents == 'on') ? 1 : 0;
             $preference->vendor_return_request = ($request->has('vendor_return_request') && $request->vendor_return_request == 'on') ? 1 : 0;
             $preference->third_party_accounting = ($request->has('third_party_accounting') && $request->third_party_accounting == 'on') ? 1 : 0;
             $preference->hide_order_prepare_time = ($request->has('hide_order_prepare_time') && $request->hide_order_prepare_time == 'on') ? 1 : 0;
+            $preference->is_cancel_order_user = ($request->has('is_cancel_order_user') && $request->is_cancel_order_user == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
          $preference->is_edit_order_admin = ($request->has('is_edit_order_admin') && $request->is_edit_order_admin == 'on') ? 1 : 0;
          $preference->is_edit_order_vendor = ($request->has('is_edit_order_vendor') && $request->is_edit_order_vendor == 'on') ? 1 : 0;
          $preference->is_edit_order_driver = ($request->has('is_edit_order_driver') && $request->is_edit_order_driver == 'on') ? 1 : 0;
-        }
-        if($request->has('cancel_order_modes') && $request->cancel_order_modes == '1'){
-            $preference->is_cancel_order_user = ($request->has('is_cancel_order_user') && $request->is_cancel_order_user == 'on') ? 1 : 0;
         }
         if($request->has('distance_to_time_calc_config') && $request->distance_to_time_calc_config == '1'){
             $preference->distance_unit_for_time = (($request->has('distance_unit_for_time')) && ($request->distance_unit_for_time != '')) ? $request->distance_unit_for_time : 'kilometer';
@@ -579,5 +591,34 @@ class ClientPreferenceController extends BaseController{
 
 
 
+    }
+    public function updateVerificationOption($data) 
+    {
+        $method_id_arr = $data['method_id'];
+        $method_name_arr = $data['method_name'];
+        $active_arr = $data['active'];
+        foreach ($method_id_arr as $key => $id) {
+            $saved_creds = VerificationOption::select('credentials')->where('id', $id)->first();
+            if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
+                $json_creds = $saved_creds->credentials;
+            } else {
+                $json_creds = NULL;
+            }
+
+            $status = 0;
+            $test_mode = 0;
+            if ((isset($active_arr[$id])) && ($active_arr[$id] == 'on')) {
+                $status = 1;
+
+                if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'passbase')) {
+                    $json_creds = json_encode(array(
+                        'publish_key' => $data['passbase_publish_key'],
+                        'secret_key'  => $data['passbase_secret_key'],
+                    ));
+                }
+                
+            }
+            VerificationOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
+        }
     }
 }

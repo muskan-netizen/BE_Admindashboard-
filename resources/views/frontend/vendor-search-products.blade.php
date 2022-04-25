@@ -9,7 +9,7 @@
         </ul>
     </nav>
 </div>
-<div class="col-md-8 col-lg-6">
+<div class="col-md-8 col-lg-6 alScrollspyProduct">
     <div class="row my-2 d-flex align-items-center">
         <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
             <div class="radius-bar w-100">
@@ -57,7 +57,7 @@
             @endforeach
         @endif
     </div>
-@forelse($listData as $key => $data) 
+@forelse($listData as $key => $data)
     <section class="scrolling_section " id="{{ $data->category->slug }}">
         @if (!empty($data->products))
             <h2 class="category-head mt-0 mb-3">
@@ -285,9 +285,12 @@
                             </p>
                             <div class="member_no d-block mb-0">
 
-                                <span>{!! $prod->translation_description !!}</span>
-
-                                {{-- <span>{!! strlen($prod->translation_description) > 140 ? substr($prod->translation_description, 0, 140) : $prod->translation_description !!}<span class="moreellipses">...&nbsp;</span><span class="morecontent"><span style="display:none;"> {!! substr($prod->translation_description, 140) !!} </span>&nbsp;&nbsp;<a href="" class="morelink">Read more</a></span></span> --}}
+                                <span>{!! strlen($prod->translation_description) > 140 ? substr($prod->translation_description, 0, 140) : $prod->translation_description !!}
+                                @if(strlen($prod->translation_description) > 140)
+                                    <span class="moreellipses">...&nbsp;</span>
+                                    <span class="morecontent"><span style="display:none;">
+                                        {!! substr($prod->translation_description, 140) !!} </span>&nbsp;&nbsp;<a href="" class="morelink">Read more</a></span></span>
+                                @endif
                             </div>
                             <div id="product_variant_options_wrapper">
                                 @if (!empty($prod->variantSet))

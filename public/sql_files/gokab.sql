@@ -41,7 +41,7 @@ INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`
 (12, NULL, 'Cloth', 1, NULL, 1, 1, 1, 1, 1, 1, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-29 05:49:11', '2021-09-29 05:49:11', 1),
 (13, NULL, 'Dispatcher', 1, NULL, 1, 1, 1, 1, 1, 1, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-29 05:49:15', '2021-09-29 05:49:15', 1),
 (14, 'fb78f0/category/icon/krfDcA76bhhuwi41MjflvzyrbmAMVwBljJMZKS8D.png', 'cabservice4', 7, 'category/image/Azw0EWEY0feOtxSe6joPyrvoIhVtB11TVEL1MM87.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 05:50:29', '2021-09-29 06:05:20', NULL, 1),
-(15, 'fb78f0/category/icon/AasnlItImR10vI7n76HFzwgVfiRpW0SftwMGWBy5.svg', 'motoservice4', 7, 'category/image/HzbCCqIM3WcdDjTNYa62qOtwMPSR2a1bRCf24ziI.png', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 05:51:18', '2021-09-29 06:05:40', NULL, 1),
+(15, 'fb78f0/category/icon/z9PW80kwEOOaB2jKNEIXZPICtewp6cUksN3jHQnP.png', 'motoservice4', 7, 'category/image/HzbCCqIM3WcdDjTNYa62qOtwMPSR2a1bRCf24ziI.png', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 05:51:18', '2021-09-29 06:05:40', NULL, 1),
 (16, 'fb78f0/category/icon/SuaA9S9JfBZxDMxKV3uElRCI7TvTLq5UClrI6f1A.png', 'autoservice4', 7, 'category/image/at8ANQM3UQcOV4K2PEVi3pFbJJt1V0snVuWxKGL5.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 05:52:06', '2021-09-29 06:05:58', NULL, 1);
 
 --

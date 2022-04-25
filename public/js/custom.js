@@ -3,11 +3,15 @@ $(document).ready(function () {
     var header_height = $('.site-header').height();
     var window_height = $(window).height();
     var header_content_width = $('#content-wrap').height();
+
+
+    jQuery(".al_offset-top-home, .inner-pages-offset, .al_offset-top-home").css('margin-top', header_height+'px');
+    jQuery("#content-wrap").css('padding-bottom', footer_height);
+
     jQuery(window).scroll(function () {
         var scroll = jQuery(window).scrollTop();
         if (scroll <= 100) {
             jQuery(".site-header").removeClass("fixed-bar");
-            jQuery(".al_offset-top-home").css('margin-top', '0px');
 
         } else {
             jQuery(".site-header").addClass("fixed-bar");
@@ -20,10 +24,41 @@ $(document).ready(function () {
     });
 });
 
+
+// $(document).ready(function () {
+//   var ft =  $('.footer-light').height();
+//   var ht =  $('.site-header').height();
+//   var sm = $('section.section-b-space_.p-0.ratio_asos').height();
+// //   var ct =  $('#content-wrap').height();
+
+//     jQuery(".site-header").removeClass("fixed-bar");
+//     jQuery(".al_offset-top-home, .inner-pages-offset, .al_offset-top-home").css('margin-top', ht);
+//     jQuery("#content-wrap").css('padding-bottom', ft);
+//     jQuery("#content-wrap").css('min-height', sm);
+//     jQuery("section.section-b-space_.p-0.ratio_asos").css('top', ht);
+//     // jQuery(".al_offset-top-home").css('margin-top', ht);
+
+//     var window_height = $(window).height();;
+//     jQuery(window).scroll(function () {
+//         var scroll = jQuery(window).scrollTop();
+//         if (scroll <= 100) {
+//             jQuery(".site-header").removeClass("fixed-bar");
+//             jQuery(".al_offset-top-home").css('margin-top', ht);
+
+//         } else {
+//             jQuery(".site-header").addClass("fixed-bar");
+//             if(window_height < header_content_width + footer_height){
+//                 jQuery(".al_offset-top-home").css('margin-top', header_height+'px');
+//             }else{
+//                 jQuery(".al_offset-top-home").css('margin-top', '0px');
+//             }
+//         }
+//     });
+// });
+
 $(".mobile-account .fa").click(function(){
     $(".onhover-show-div").toggleClass("open");
-  });
-
+});
 
 
 // Material Select Initialization
@@ -48,6 +83,14 @@ $(function () {
 $(window).scroll(function () {
     var windscroll = $(window).scrollTop();
     var windowheight = $(window).height();
+    var header_height = $('.site-header').height();
+    // if(windscroll > (header_height + 200))
+    // {
+    //     console.log('-------------------');
+    //     jQuery(".alScrollspyProduct").css('margin-top', (header_height + 350)+'px');
+    // }else{
+    //     jQuery(".alScrollspyProduct").css('margin-top', '0px');
+    // }
     if (windscroll >= windowheight) {
         $('section.scrolling_section').each(function (i) {
             // The number at the end of the next line is how pany pixels you from the top you want it to activate.
@@ -57,9 +100,11 @@ $(window).scroll(function () {
                 $('.scrollspy-menu li').eq(i).addClass('active');
             }
         });
+        
     } else {
         $('.scrollspy-menu li.active').removeClass('active');
         $('.scrollspy-menu li:first').addClass('active');
+        jQuery(".alScrollspyProduct").css('margin-top', '0px');
     }
 
 }).scroll();
@@ -817,8 +862,8 @@ $(document).ready(function () {
         let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
         let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
         let comment_for_vendor = $("input[name='comment_for_vendor']").val(); //commnet for vendor
-        var schedule_pickup = $("#schedule_datetime_pickup").val();
-        var schedule_dropoff = $("#schedule_datetime_dropoff").val();
+        var schedule_pickup = $("#schedule_datetime_pickup_date").val()+" "+$("#schedule_datetime_pickup_time").val();
+        var schedule_dropoff = $("#schedule_datetime_dropoff_date").val()+" "+$("#schedule_datetime_dropoff_time").val();
         var specific_instructions = $("#specific_instructions").val();
         let tip = $("#cart_tip_amount").val();
 
@@ -1631,7 +1676,7 @@ $(document).ready(function () {
         else if (payment_option_id == 28) {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
-                //Easebuzz payment gateway 
+                //Easebuzz payment gateway
                 payWithVNpay(address_id, payment_option_id, order);
             }
             else{
@@ -2364,11 +2409,11 @@ $(document).ready(function () {
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
-            
+
         }
-       
-       
-        
+
+
+
         if((parseFloat(amount_payable)+parseFloat($('#wallet_amount_used').val()))>=parseFloat($('#mov').text())){
             $("#MOV_Notification").addClass("d-none");
         }else{
@@ -2389,14 +2434,14 @@ $(document).ready(function () {
         var currency = amount_elem.attr('data-curr');
         var amount_payable = amount_elem.val();
         // amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
-        
+
         // alert("wallet amount available"+$('total_wallet_amount_available'))
         amount_payable = parseFloat(amount_payable) + parseFloat(tip);
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
         $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
 
-        
+
             if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");

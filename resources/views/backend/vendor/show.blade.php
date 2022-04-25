@@ -718,10 +718,10 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-50">{{ __("Save") }}</button>
+                            <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">{{ __("Save") }}</button>
                         </div>
-                        <div class="col-md-6">
-                        <input id="remove-line" class="btn btn-block btn-blue waves-effect waves-light w-50" type="button" value="Remove" />
+                        <div class="col-md-6 p-0">
+                        <input id="remove-line" class="btn btn-block btn-blue waves-effect waves-light w-100" type="button" value="Remove" />
                         </div>
                     </div>
 

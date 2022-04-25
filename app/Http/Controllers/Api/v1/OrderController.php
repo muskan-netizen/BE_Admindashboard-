@@ -158,11 +158,12 @@ class OrderController extends BaseController
                     $order->order_number = generateOrderNo();
                     $order->address_id = $request->address_id;
                     $order->payment_option_id = $request->payment_option_id;
+                    $order->specific_instructions = $request->specific_instructions;
                     $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
                     $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver ?? null;
                     $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
-                    $order->schedule_pickup = $cart->schedule_pickup ?? null;
-                    $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
+                    $order->schedule_pickup = $cart->schedule_pickup_date ?  $cart->schedule_pickup_date ." ".  $cart->schedule_pickup_time : null;
+                    $order->schedule_dropoff = $cart->schedule_dropoff_date ? $cart->schedule_dropoff_date ." ".$cart->schedule_dropoff_time : null;
                     $order->specific_instructions = $cart->specific_instructions ?? null;
                     $order->is_gift = $request->is_gift ?? 0;
                     $order->save();
