@@ -285,9 +285,12 @@
                             </p>
                             <div class="member_no d-block mb-0">
 
-                                <span>{!! $prod->translation_description !!}</span>
-
-                                {{-- <span>{!! strlen($prod->translation_description) > 140 ? substr($prod->translation_description, 0, 140) : $prod->translation_description !!}<span class="moreellipses">...&nbsp;</span><span class="morecontent"><span style="display:none;"> {!! substr($prod->translation_description, 140) !!} </span>&nbsp;&nbsp;<a href="" class="morelink">Read more</a></span></span> --}}
+                                <span>{!! strlen($prod->translation_description) > 140 ? substr($prod->translation_description, 0, 140) : $prod->translation_description !!}
+                                @if(strlen($prod->translation_description) > 140)
+                                    <span class="moreellipses">...&nbsp;</span>
+                                    <span class="morecontent"><span style="display:none;">
+                                        {!! substr($prod->translation_description, 140) !!} </span>&nbsp;&nbsp;<a href="" class="morelink">Read more</a></span></span>
+                                @endif
                             </div>
                             <div id="product_variant_options_wrapper">
                                 @if (!empty($prod->variantSet))

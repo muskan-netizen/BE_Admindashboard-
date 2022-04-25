@@ -22,6 +22,8 @@ class PaytabController extends FrontController
 	    $this->profile_id = $this->creds_arr->profile_id??'';
 	    $this->server_key = $this->creds_arr->server_key??'';
 	    $this->client_key = $this->creds_arr->client_key??'';
+        Config::set('Paytabs.profile_id', $this->profile_id);
+        Config::set('Paytabs.server_key', $this->server_key);
 	}
 	public function beforePayment(Request $request)
     {

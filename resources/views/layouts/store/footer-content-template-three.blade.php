@@ -126,7 +126,7 @@ $applocale = session()->get('applocale');
                     </div>
                 @endif
 
-
+                @if($client_preference_detail->show_qr_on_footer)
                 <div class="col-lg-3 col-md-6 d-none d-md-block mobile-border">
                     <div class="sub-title">
                         <div class="footer-title mt-0 ">
@@ -134,8 +134,6 @@ $applocale = session()->get('applocale');
                         </div>
                         <div class="footer-contant">
                             <div class="store-btn mb-3 mb-sm-0 d-none d-md-block">
-                            @if($client_preference_detail->show_qr_on_footer)
-
                             <ul class="row">
                                 <li class="col-6 text-center">
                                     <div class="al_QRcode col-12">{!! QrCode::size(60)->generate($client_preference_detail->ios_link??'#') !!} <br>
@@ -150,7 +148,7 @@ $applocale = session()->get('applocale');
 
                                 </li>
                             </ul>
-                            @endif
+                            
 
                                 <!-- <img class="blur-up lazyload" data-src="{{ getImageUrl(asset('front-assets/images/google-play.svg'),'270/48') }}" alt=""> -->
                             </div>
@@ -158,6 +156,7 @@ $applocale = session()->get('applocale');
                         </div>
                     </div>
                 </div>
+                 @endif
 
                 @if($client_preference_detail->show_payment_icons == 1)
                 <div class="col-lg-3 col-md-6 payment-card mobile-border">

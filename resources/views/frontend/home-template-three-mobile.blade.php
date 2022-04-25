@@ -212,7 +212,7 @@ if(session()->has('applocale')){
                                         <a href="javascript:void(0)">
                                             <span class="alLanguageSign">{{$applocale}}</span>
                                             <span class="lnr-earth align-middle"></span>
-                                            <span class="language ml-1 align-middle">{{ __("Language") }}</span>
+                                            <span class="language ml-1">{{ __("Language") }}</span>
                                         </a>
                                         <ul class="onhover-show-div">
                                             @foreach($languageList as $key => $listl)
