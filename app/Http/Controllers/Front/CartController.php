@@ -77,6 +77,7 @@ class CartController extends FrontController
         $navCategories = $this->categoryNav($langId);
     
         $subscription_features = array();
+        $user_subscription = null;
         if ($user) {
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')
