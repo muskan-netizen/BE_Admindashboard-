@@ -53,6 +53,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 	    Route::post('cart/product/variant/different-addons', 'Api\v1\CartController@getProductVariantWithDifferentAddons');
 
         Route::post('promo-code-open/list', 'Api\v1\PickupDeliveryController@postPromoCodeListOpen');
+        Route::post('order/after/payment', 'Front\PaytabController@after_app_payment');
 
     });
     Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {

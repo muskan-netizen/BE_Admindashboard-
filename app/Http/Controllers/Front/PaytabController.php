@@ -169,7 +169,6 @@ class PaytabController extends FrontController
             }else{
                 $returnUrl = route('user.subscription.plans');
             }
-            dd($returnUrl);
             return $returnUrl;
         }
         return Redirect::to(route('order.return.success'));
@@ -225,5 +224,12 @@ class PaytabController extends FrontController
             return $returnUrl;
         }
         return route('order.return.success');
+    }
+    public function after_app_payment(Request $request)
+    {
+        $user = User::where('auth_token', $request->auth_token)->first();
+        Auth::login($user);
+        $returnUrl = $this->sucessPayment($request);
+        Redirect::to(url($returnUrl));
     }
 }
