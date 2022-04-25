@@ -115,7 +115,7 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
         @endphp
 
         <ul class="list-unstyled topnav-menu float-right mb-0">
-            <li class="dropdown ">
+            <li class="dropdown alLanguageTop">
                 <a class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                     {{__('Language')}}
                     {{ $applocale_admin }}
