@@ -25,11 +25,11 @@ use App\Http\Controllers\ShiprocketController;
 use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc};
 use GuzzleHttp\Client as GCLIENT;
 use Log;
-use App\Http\Traits\MpesaStkpush;
+//use App\Http\Traits\MpesaStkpush;
 
 class CartController extends BaseController
 {
-    use ApiResponser,MpesaStkpush;
+    use ApiResponser;
 
     private $field_status = 2;
 
