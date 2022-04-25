@@ -72,14 +72,13 @@ class FrontController extends Controller
 	}
     public function testsms()
     {
-        $to = '966506342600';
+        $to = '+917508983302';
         $body = "this is test sms from codebrew";
         $crendentials = [
-            'unifonic_app_id' =>'ab8JPwmnCRgTrn2kkDEMCuCkMysK8l',
-            'unifonic_account_email' => 'abhimanyuvij@code-brew.com',
-            'unifonic_account_password' => 'Code@12345'
+            'api_key' =>'Om15akt3STZwNXNzMEFjRzY=',
+            'sender_id' => 'Arkesel',
         ];
-        $send = $this->unifonic($to,$body,$crendentials);
+        $send = $this->arkesel_sms($to,$body,$crendentials);
         pr($send);
     }
     public function categoryNav($lang_id)
