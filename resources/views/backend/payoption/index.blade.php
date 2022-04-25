@@ -654,6 +654,28 @@
                         </div>
                     </div>
                     @endif
+
+
+                    @if ( (strtolower($opt->code) == 'mvodafone') )
+                    <div class="mt-2" id="mvodafone_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mvodafone_client_id" class="mr-3">{{ __("Client ID") }}</label>
+                                    <input type="text" name="mvodafone_client_id" id="mvodafone_client_id" class="form-control" value="{{$client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mvodafone_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="mvodafone_secret_key" id="mvodafone_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
             </div>
             @endforeach
