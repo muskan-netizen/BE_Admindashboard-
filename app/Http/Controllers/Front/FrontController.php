@@ -72,13 +72,21 @@ class FrontController extends Controller
 	}
     public function testsms()
     {
+        $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
+                        'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from',
+                        'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider',
+                        'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
         $to = '+917508983302';
-        $body = "this is test sms from codebrew";
-        $crendentials = [
-            'api_key' =>'Om15akt3STZwNXNzMEFjRzY=',
-            'sender_id' => 'Arkesel',
-        ];
-        $send = $this->arkesel_sms($to,$body,$crendentials);
+        $provider = $prefer->sms_provider;
+        $body = "Dear ".ucwords('Harbans').", Please enter OTP 12345 to verify your account.";
+        $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+        // $to = '+917508983302';
+        // $body = "this is test sms from codebrew";
+        // $crendentials = [
+        //     'api_key' =>'Om15akt3STZwNXNzMEFjRzY=',
+        //     'sender_id' => 'Arkesel',
+        // ];
+        // $send = $this->arkesel_sms($to,$body,$crendentials);
         pr($send);
     }
     public function categoryNav($lang_id)
