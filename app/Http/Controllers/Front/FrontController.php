@@ -51,6 +51,11 @@ class FrontController extends Controller
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
                 $send = $this->unifonic($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 5) //for arkesel_sms gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->arkesel_sms($to,$body,$crendentials);
             }else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
