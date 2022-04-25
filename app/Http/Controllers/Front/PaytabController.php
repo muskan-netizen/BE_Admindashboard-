@@ -133,6 +133,8 @@ class PaytabController extends FrontController
                     $returnUrl = route('order.return.success');
                 }
                 return $returnUrl;
+
+                Log::info($returnUrl);
             }
         } elseif($request->payment_from == 'wallet'){
             $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $request->tranRef]);
@@ -231,6 +233,7 @@ class PaytabController extends FrontController
         $user = User::where('auth_token', $request->auth_token)->first();
         Auth::login($user);
         $returnUrl = $this->sucessPayment($request);
+        Log::info($returnUrl);
         return $this->successResponse($request->all());
     }
 }
