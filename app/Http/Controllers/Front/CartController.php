@@ -634,6 +634,7 @@ class CartController extends FrontController
             $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
         }
         $subscription_features = array();
+        $user_subscription = null;
         if($user){
             $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
             if ($order_loyalty_points_earned_detail) {
