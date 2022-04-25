@@ -529,6 +529,7 @@ class CartController extends BaseController
         
         $loyalty_amount_saved = 0;
         $subscription_features = array();
+        $user_subscription = null;
         if ($cart->user_id) {
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')

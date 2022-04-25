@@ -47,6 +47,9 @@ class BaseController extends Controller{
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
                 $send = $this->arkesel_sms($to,$body,$crendentials);
+                if( isset($send->code) && $send->code != 'ok'){
+                    return '2';
+                }
             }else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
