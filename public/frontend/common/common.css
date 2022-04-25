@@ -45,3 +45,6 @@ body.register_body footer#footer {position: absolute;}
 body.login_body #al_new_design, body.register_body #al_new_design{position: relative !important;} */
 
 .footer-theme .sub-title .footer-contant .payment-card-bottom ul li{padding:0;display:inline-block}
+body section.cab-banner-area {
+    margin: 0 !important;
+}
