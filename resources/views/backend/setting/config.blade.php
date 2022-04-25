@@ -788,7 +788,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
 
                   <!-- For arkesel -->
-                  <div class="row sms_fields mx-0" id="arkesel_fields" style="display : {{$preference->sms_provider == 3 ? 'flex' : 'none'}};">
+                  <div class="row sms_fields mx-0" id="arkesel_fields" style="display : {{$preference->sms_provider == 5 ? 'flex' : 'none'}};">
                      <div class="col-12">
                         <div class="form-group mb-2">
                            <label for="arkesel_api_key">{{ __("API Key") }}</label>
