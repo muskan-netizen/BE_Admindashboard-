@@ -64,18 +64,18 @@ class MvodafoneController extends Controller
 
         }elseif($request->from == 'wallet')
         {
-            $time = $request->transaction_id;
+            $time = $request->transaction_id??time();
             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
 
         }elseif($request->from == 'tip')
         {
-             $time = $request->order_number;
-             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
+             $time = time();
+             Payment::create(['amount'=>0,'transaction_id'=>$request->order_number.'_'.$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
 
         }elseif($request->from == 'subscription')
         {
-            $time = $request->subscription_id;
-            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
+            $time = time();
+            Payment::create(['amount'=>0,'transaction_id'=>$request->subsid.'_'.$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
             
         }
         return $time;
@@ -93,7 +93,16 @@ class MvodafoneController extends Controller
           ];
       $response = $this->createPaymentLinkVodafone($data);
       if(isset($response) && $response->url){
-        Payment::where('transaction_id',$number)->update(['viva_order_id'=>$response->reqId]);
+
+        if($request->from == 'cart'){
+           Payment::where('transaction_id',$number)->update(['viva_order_id'=>$response->reqId]);
+          }elseif($request->from == 'wallet'){
+          Payment::where('transaction_id',$number)->update(['viva_order_id'=>$response->reqId]);
+         }elseif($request->from == 'tip'){
+         Payment::where('transaction_id',$request->order_number.'_'.$number)->update(['viva_order_id'=>$response->reqId]);
+        }elseif($request->from == 'subscription'){
+        Payment::where('transaction_id',$request->subsid.'_'.$number)->update(['viva_order_id'=>$response->reqId]);
+       }
         return $response;
       }else{
         return false;
@@ -249,10 +258,11 @@ class MvodafoneController extends Controller
       $data = Payment::where('viva_order_id',$request->rID)->first();
       if(isset($request->rID) && $request->rID != '')
           {
-            $subscription = explode('_',$data->transaction_id);
-            $request->request->add(['user_id' => $user->id, 'payment_option_id' => 21, 'amount' => $data->balance_transaction, 'transaction_id' => $request->rID]);
+            $subscription =explode('_',$data->transaction_id);
+            $subscription =$subscription[0];
+            $request->request->add(['user_id' => $user->id, 'payment_option_id' => 29, 'amount' => $data->balance_transaction, 'transaction_id' => $request->rID]);
             $subscriptionController = new UserSubscriptionController();
-            $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription[2]);
+            $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
 
             if(isset($request->subscription_id) && !empty($request->subscription_id))
             {
@@ -283,13 +293,13 @@ class MvodafoneController extends Controller
       if(isset($request->rID) && $request->rID != '')
           {
             $order_number = explode('_',$data->transaction_id);
-            $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $data->transaction_id]);
+            $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[0], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $data->transaction_id]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
 
             if(isset($request->order_no) && !empty($request->order_no))
               {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=200&order='.$order_number[2].'&action=tip';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=200&order='.$order_number[0].'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
                 return Redirect::to(route('user.orders'))->with('success', $request->message);
