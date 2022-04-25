@@ -775,6 +775,7 @@ class OrderController extends FrontController
             $total_subscription_discount = 0;
             $total_container_charges = 0;
             $vendor_total_container_charges = 0;
+            $new_vendor_taxable_amount = 0;
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
                 $delivery_fee = 0;
@@ -796,6 +797,7 @@ class OrderController extends FrontController
               
 
                 $vendorProductIds = array();
+                // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
                     $variant = $vendor_cart_product->product->variants->where('id', $vendor_cart_product->variant_id)->first();
                     $quantity_price = 0;
@@ -810,7 +812,8 @@ class OrderController extends FrontController
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
 
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
-                    $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
+                    // $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
+                    $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
                     $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
                     $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
 
@@ -824,7 +827,6 @@ class OrderController extends FrontController
                                 $tax_category_ids[] = $tax_rate_detail->id;
                             }
                             $rate = round($tax_rate_detail->tax_rate);
-                            $tax_rate += $rate;
                             $tax_amount = ($price_in_dollar_compare * $rate) / 100;
                             $product_tax = $quantity_price * $rate / 100;
                             $product_taxable_amount += $product_tax;
@@ -928,6 +930,7 @@ class OrderController extends FrontController
                     }
                     $order_product->save();
                     if (!empty($vendor_cart_product->addon)) {
+                        
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
                             $opt_quantity_price = 0;
                             $opt_price_in_currency = $addon->option->price;
@@ -936,6 +939,9 @@ class OrderController extends FrontController
                             $total_amount = $total_amount + $opt_quantity_price;
                             $payable_amount = $payable_amount + $opt_quantity_price;
                             $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
+                            // if(!in_array($vendor_cart_product->vendor_id, $addonArray)){
+                            //     $vendor_payable_amount_for_service = $vendor_payable_amount;
+                            // }
                         }
                     }
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
@@ -949,6 +955,7 @@ class OrderController extends FrontController
                         }
                      //   CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
                     }
+                    // array_push($addonArray, $vendor_cart_product->vendor_id);
                 }
                 $coupon_id = null;
                 $coupon_name = null;
@@ -972,12 +979,14 @@ class OrderController extends FrontController
                 //Start applying service fee on vendor products total
                 $vendor_service_fee_percentage_amount = 0;
                 if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                    $vendor_service_fee_percentage_amount = ($vendor_products_total_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                    // $vendor_service_fee_percentage_amount = ($vendor_products_total_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                    $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
                     $vendor_payable_amount += $vendor_service_fee_percentage_amount;
                     $payable_amount += $vendor_service_fee_percentage_amount;
                 }
                 //End applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+               
                 $OrderVendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
 
                 $total_delivery_fee += $delivery_fee;
@@ -1023,7 +1032,7 @@ class OrderController extends FrontController
             $order->total_amount = $total_amount;
             $order->total_discount = $total_discount;
              // $order->taxable_amount = $taxable_amount;
-            $new_taxable_amount = number_format(($actual_amount * $tax_rate) / 100, 2);
+            $new_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
             $order->taxable_amount = $new_taxable_amount;
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
             if ($loyalty_amount_saved > 0) {

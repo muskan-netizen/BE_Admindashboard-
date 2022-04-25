@@ -166,7 +166,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     <div class="col-8 col-md-10">
                         <div class="row align-items-md-center">
-                            <div class="col-md-3 order-0">123456
+                            <div class="col-md-3 order-0">
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
@@ -545,7 +545,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% } %>
             <div class="row">
                 <div class="col-6">
-                    <p class="total_amt m-0">{{__('Amount Payable')}}</p>
+                    <p class="total_amt m-0">{{__('Amount Payable')}} <small>(incl. tax)</small> </p>
                 </div>
                 <div class="col-6 text-right">
                     <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>

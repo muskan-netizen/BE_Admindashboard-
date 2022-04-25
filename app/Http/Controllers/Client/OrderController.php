@@ -353,7 +353,6 @@ class OrderController extends BaseController
             }
         }
 
-
         return $this->successResponse(['orders' => $orders, 'pending_orders' => $pending_orders, 'active_orders' => $active_orders, 'orders_history' => $orders_history], '', 201);
     }
 

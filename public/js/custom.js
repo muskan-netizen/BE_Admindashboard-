@@ -1813,7 +1813,7 @@ $(document).ready(function () {
     $(document).on("click", ".proceed_to_pay", function () {       
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
-        $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
+        // $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
         var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
 
         let address_id = $("input:radio[name='address_id']:checked").val();
