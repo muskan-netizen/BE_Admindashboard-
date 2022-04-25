@@ -682,10 +682,8 @@ class OrderController extends FrontController
     public function orderSave($request, $paymentStatus)
     {
         try {
-            $fixed_fee_amount=0.00;
-            if(Session()->has('vid')){
-                $fixed_fee_amount=Vendor::find(Session()->get('vid'))->fixed_fee_amount ?? 0.00;
-            }
+           
+            $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
             $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code')->first();
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
