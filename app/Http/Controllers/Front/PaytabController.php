@@ -17,18 +17,17 @@ class PaytabController extends FrontController
 	private $access_token;
 	public function __construct()
   	{
-		$this->paytab_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'paytab')->where('status', 1)->first();
-	    $this->creds_arr = json_decode($this->paytab_creds->credentials);
-	    $this->profile_id = $this->creds_arr->profile_id??'';
-	    $this->server_key = $this->creds_arr->server_key??'';
-	    $this->client_key = $this->creds_arr->client_key??'';
-        Config::set('Paytabs.profile_id', $this->profile_id);
-        Config::set('Paytabs.server_key', $this->server_key); 
+		// $this->paytab_creds = PaymentOption::select('credentials')->where('code', 'paytab')->where('status', 1)->first();
+	 //    $this->creds_arr = json_decode($this->paytab_creds->credentials);
+	 //    $this->profile_id = $this->creds_arr->profile_id??'';
+	 //    $this->server_key = $this->creds_arr->server_key??'';
+	 //    $this->client_key = $this->creds_arr->client_key??'';
+  //       Config::set('Paytabs.profile_id', $this->profile_id);
+  //       Config::set('Paytabs.server_key', $this->server_key); 
 	}
 	public function beforePayment(Request $request)
     {
     	$data = $request->all();
-    	$data['client_key'] = $this->client_key;
         $data['come_from'] = 'app';
         if($request->isMethod('post'))
         {
@@ -232,6 +231,6 @@ class PaytabController extends FrontController
         $user = User::where('auth_token', $request->auth_token)->first();
         Auth::login($user);
         $returnUrl = $this->sucessPayment($request);
-        Redirect::to(url($returnUrl));
+        return $this->successResponse($request->all());
     }
 }
