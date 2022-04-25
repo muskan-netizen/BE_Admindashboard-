@@ -72,10 +72,8 @@ class FrontController extends Controller
 	}
     public function testsms(Request $request)
     {
-        $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
-                        'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from',
-                        'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider',
-                        'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
+        $prefer = ClientPreference::select('sms_credentials', 
+                        'sms_provider', 'sms_key', 'sms_secret', 'sms_from' )->first();
         $to = $request->to ? $request->to :'+917508983302';
         $provider = $prefer->sms_provider;
         $body = "Dear ".ucwords('Harbans').", Please enter OTP 12345 to verify your account.";
@@ -86,6 +84,7 @@ class FrontController extends Controller
         //     'api_key' =>'Om15akt3STZwNXNzMEFjRzY=',
         //     'sender_id' => 'Arkesel',
         // ];
+        $crendentials = json_decode($prefer->sms_credentials);
         $send = $this->arkesel_sms($to,$body,$crendentials);
         pr($send);
     }
