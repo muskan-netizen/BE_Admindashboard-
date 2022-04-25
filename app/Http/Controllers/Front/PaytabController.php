@@ -86,14 +86,14 @@ class PaytabController extends FrontController
     public function sucessPayment($request)
     {
         $user = Auth::user();
-    	if($request->payment_from == 'cart'){Log::info('89');
+    	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
             if ($order) {
                 $order->payment_status = 1;
                 $order->save();
                 $payment_exists = Payment::where('transaction_id', $request->tranRef)->first();
-                if (!$payment_exists) {Log::info('96');
+                if (!$payment_exists) {
                     Payment::insert([
                         'date' => date('Y-m-d'),
                         'order_id' => $order->id,
@@ -103,11 +103,11 @@ class PaytabController extends FrontController
                     ]);
 
                     // Auto accept order
-                    $orderController = new OrderController();Log::info('106');
+                    $orderController = new OrderController();
                     $orderController->autoAcceptOrderIfOn($order->id);
 
                     // Remove cart
-                    $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();Log::info('110');
+                    $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
                     Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                     CartAddon::where('cart_id', $cart->id)->delete();
                     CartCoupon::where('cart_id', $cart->id)->delete();
@@ -116,29 +116,23 @@ class PaytabController extends FrontController
 
                     // Send Notification
                     if (!empty($order->vendors)) {
-                        foreach ($order->vendors as $vendor_value) {Log::info('119');
+                        foreach ($order->vendors as $vendor_value) {
                             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
                             $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
                             $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                         }
                     }
-                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);Log::info('125');
+                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                    $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);Log::info('127');
+                    $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                 }
-                Log::info('129');
                 if($request->come_from == 'app')
-                {   
-                    Log::info('132');
+                {
                     $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$request->tranRef.'&order='.$order_number;
                 }else{
-                    Log::info('135');
                     $returnUrl = route('order.return.success');
                 }
-                Log::info('138');
                 return $returnUrl;
-
-                Log::info($returnUrl);
             }
         } elseif($request->payment_from == 'wallet'){
             $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $request->tranRef]);
@@ -237,7 +231,6 @@ class PaytabController extends FrontController
         $user = User::where('auth_token', $request->auth_token)->first();
         Auth::login($user);
         $returnUrl = $this->sucessPayment($request);
-        Log::info($returnUrl);
         return $this->successResponse($request->all());
     }
 }
