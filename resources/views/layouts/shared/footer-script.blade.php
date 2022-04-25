@@ -175,6 +175,7 @@ if (Session::has('toaster')) {
             },
             success: function(response) {
                 if (response.status == 'Success') {
+                    //console.log(response);
                     if (response.data.orders.data.length != 0) {
                         $("#received_new_orders").find(".modal-body").html('');
                         let latest_order_template = _.template($('#latest_order_template').html());
@@ -270,6 +271,25 @@ if (Session::has('toaster')) {
 @endif
 @endif
 <script>
+    $(document).on("change",".admin_panel_theme", function(){
+        if($(this).prop('checked')){
+            var theme_admin = 'dark';
+        }else{
+            var theme_admin = 'light';
+        }
+        $.ajax({
+            url: "{{route('configure.update', Auth::user()->code)}}",
+            type: "POST",
+            data: {
+                theme_admin: theme_admin,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(response) {
+                location.reload();
+            },
+        });
+
+    });
     $(document).on("click", ".update_order_status", function() {
         Swal.fire({
             title: "{{__('Are you Sure?')}}",

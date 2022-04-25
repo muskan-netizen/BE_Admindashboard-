@@ -150,6 +150,11 @@
                         <ul class="order-detail">
                             <li> {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{ $order->address ? $order->address->address : ''}}{{$order->address ? ($order->address->pincode ? ", ".$order->address->pincode : '') : ''}}</li>
                         </ul>
+                        @elseif($order->luxury_option_id == 3)
+                        <h4>{{getNomenclatureName('Takeaway', true) .' '. __('Address')}}</h4>
+                        <ul class="order-detail">
+                            <li> {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}</li>
+                        </ul>
                         @endif
                     </div>
                     <div class="col-sm-12 payment-mode">

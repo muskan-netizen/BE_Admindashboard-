@@ -117,7 +117,7 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="row" id="orders_wrapper">
-                                    <div class="col-sm-12 col-lg-12 tab-product al_custom_ordertabs pt-3">
+                                    <div class="col-sm-12 col-lg-12 tab-product al_custom_ordertabs mt-md-3 p-0">
                                         <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') === null || Request::query('pageType') == 'activeOrders' ? 'active show' : '' }}"
@@ -150,7 +150,7 @@
                                                 <div class="material-border"></div>
                                             </li>
                                         </ul>
-                                        <div class="tab-content nav-material" id="top-tabContent">
+                                        <div class="tab-content nav-material al" id="top-tabContent">
                                             <div class="tab-pane fade {{ Request::query('pageType') === null || Request::query('pageType') == 'activeOrders' ? 'active show' : '' }}"
                                                 id="active-orders" role="tabpanel" aria-labelledby="active-orders-tab">
                                                 <div class="row">
@@ -158,33 +158,21 @@
                                                         @foreach ($activeOrders as $key => $order)
                                                             <div class="col-12">
                                                                 <div class="row no-gutters order_head">
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Order Number') }}</h4>
+                                                                        <span>#{{ $order->order_number }}</span>
                                                                     </div>
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Date & Time') }}</h4>
+                                                                        <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                                                                     </div>
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Customer Name') }}</h4>
+                                                                        <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
-                                                                        </div>
-                                                                    @endif
-                                                                </div>
-                                                                <div class="row no-gutters order_data">
-                                                                    <div class="col-md-3">#{{ $order->order_number }}
-                                                                    </div>
-                                                                    {{-- <div class="col-md-3">{{convertDateTimeInTimeZone($order->created_at, $timezone, 'l, F d, Y, h:i A')}}</div> --}}
-                                                                    <div class="col-md-3">
-                                                                        {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
-                                                                    </div>
-                                                                    <div class="col-md-3">
-                                                                        <a class="text-capitalize">{{ $order->user->name }}</a>
-                                                                    </div>
-                                                                    @if ($client_preference_detail->business_type != 'taxi')
-                                                                        <div class="col-md-3">
                                                                             <span class="ellipsis" data-toggle="tooltip"
                                                                                 data-placement="top" title="">
                                                                                 @if ($order->address)
@@ -198,6 +186,47 @@
                                                                                     NA
                                                                                 @endif
                                                                             </span>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                                <div class="row no-gutters order_data d-none">
+                                                                    <div class="col-md-3">#{{ $order->order_number }}
+                                                                    </div>
+                                                                    {{-- <div class="col-md-3">{{convertDateTimeInTimeZone($order->created_at, $timezone, 'l, F d, Y, h:i A')}}</div> --}}
+                                                                    <div class="col-md-3">
+                                                                        {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <a class="text-capitalize">{{ $order->user->name }}</a>
+                                                                    </div>
+                                                                    @if ($client_preference_detail->business_type != 'taxi')
+                                                                        <div class="col-md-3">
+                                                                        @if($order->luxury_option_id == 3)
+                                                                          
+                                                                          <span class="ellipsis" data-toggle="tooltip"
+                                                                              data-placement="top" title="">
+                                                                              @if ( count($order->vendors) >0)
+                                                                                  {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                              @else
+                                                                                  NA
+                                                                              @endif
+                                                                          </span>
+                                                                          @else
+                                                                          <span class="ellipsis" data-toggle="tooltip"
+                                                                                data-placement="top" title="">
+                                                                                @if ($order->address)
+                                                                                    {{ $order->address->address }},
+                                                                                    {{ $order->address->street }},
+                                                                                    {{ $order->address->city }},
+                                                                                    {{ $order->address->state }},
+                                                                                    {{ $order->address->country }}
+                                                                                    {{ $order->address->pincode }}
+                                                                                @else
+                                                                                    NA
+                                                                                @endif
+                                                                            </span>
+                                                                          @endif
+                                                                            
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -314,16 +343,15 @@
                                                                                     </div>
                                                                                     <div class="col-7 col-sm-4">
                                                                                         <ul
-                                                                                            class="product_list d-flex align-items-center p-0 flex-wrap m-0 al">
+                                                                                            class="product_list p-0 m-0 text-center">
                                                                                             @foreach ($vendor->products as $product)
                                                                                                 @if ($vendor->vendor_id == $product->vendor_id)
-                                                                                                    <li class="text-center">
-                                                                                                        <img src="{{ $product->image_url }}"
-                                                                                                            alt="">
-                                                                                                        <span
-                                                                                                            class="item_no position-absolute">x{{ $product->quantity }}</span>
-                                                                                                        <label
-                                                                                                            class="items_price">{{ Session::get('currencySymbol') }}{{ decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
+                                                                                                    <li class="text-center mb-0 alOrderImg">
+                                                                                                        <img src="{{ $product->image_url }}" alt="">
+                                                                                                        <span class="item_no position-absolute">x{{ $product->quantity }}</span>
+                                                                                                    </li>
+                                                                                                    <li>
+                                                                                                        <label class="items_price">{{ Session::get('currencySymbol') }}{{ decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                                                     </li>
                                                                                                     @php
                                                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;
@@ -564,32 +592,21 @@
                                                         @foreach ($pastOrders as $key => $order)
                                                             <div class="col-12">
                                                                 <div class="row no-gutters order_head">
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Order Number') }}</h4>
+                                                                        <span>#{{ $order->order_number }}</span>
                                                                     </div>
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Date & Time') }}</h4>
+                                                                        <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                                                                     </div>
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Customer Name') }}</h4>
+                                                                        <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
-                                                                        </div>
-                                                                    @endif
-                                                                </div>
-                                                                <div class="row no-gutters order_data">
-                                                                    <div class="col-md-3">#{{ $order->order_number }}
-                                                                    </div>
-                                                                    <div class="col-md-3">
-                                                                        {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
-                                                                    </div>
-                                                                    <div class="col-md-3">
-                                                                        <a class="text-capitalize">{{ $order->user->name }}</a>
-                                                                    </div>
-                                                                    @if ($client_preference_detail->business_type != 'taxi')
-                                                                        <div class="col-md-3">
                                                                             <span class="ellipsis" data-toggle="tooltip"
                                                                                 data-placement="top" title="">
                                                                                 @if ($order->address)
@@ -604,6 +621,48 @@
                                                                                     NA
                                                                                 @endif
                                                                             </span>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                                <div class="row no-gutters order_data d-none">
+                                                                    <div class="col-md-3">#{{ $order->order_number }}
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <a class="text-capitalize">{{ $order->user->name }}</a>
+                                                                    </div>
+                                                                    @if ($client_preference_detail->business_type != 'taxi')
+                                                                        <div class="col-md-3">
+                                                                            
+                                                                            @if($order->luxury_option_id == 3)
+                                                                          
+                                                                            <span class="ellipsis" data-toggle="tooltip"
+                                                                                data-placement="top" title="">
+                                                                                @if ( count($order->vendors) >0)
+                                                                                    {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                                @else
+                                                                                    NA
+                                                                                @endif
+                                                                            </span>
+                                                                            @else
+                                                                            <span class="ellipsis" data-toggle="tooltip"
+                                                                                data-placement="top" title="">
+                                                                                @if ($order->address)
+                                                                                    {{ $order->address->house_number ?? false ? $order->address->house_number . ',' : '' }}
+                                                                                    {{ $order->address->address }},
+                                                                                    {{ $order->address->street }},
+                                                                                    {{ $order->address->city }},
+                                                                                    {{ $order->address->state }},
+                                                                                    {{ $order->address->country }}
+                                                                                    {{ $order->address->pincode }}
+                                                                                @else
+                                                                                    NA
+                                                                                @endif
+                                                                            </span>
+                                                                            @endif
+                                                                            
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -664,33 +723,26 @@
                                                                                     </div>
                                                                                     <div class="col-7 col-sm-4 row">
                                                                                         <div class="col-6 col-sm-6">
-                                                                                            <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
+                                                                                            <ul class="product_list p-0 m-0 text-center">
                                                                                                 @foreach ($vendor->products as $product)
                                                                                                     @if ($vendor->vendor_id == $product->vendor_id)
                                                                                                         @php
                                                                                                             $pro_rating = $product->productRating->rating ?? 0;
                                                                                                         @endphp
-                                                                                                        <li class="text-center">
-                                                                                                            <img src="{{ $product->image_url }}"
-                                                                                                                alt="">
-                                                                                                            <span
-                                                                                                                class="item_no position-absolute">x{{ $product->quantity }}</span>
-                                                                                                            <label
-                                                                                                                class="items_price">{{ Session::get('currencySymbol') }}{{ $product->price * $clientCurrency->doller_compare }}</label>
-                                                                                                            <label
-                                                                                                                class="rating-star add_edit_review"
+                                                                                                        <li class="text-center mb-0 alOrderImg">
+                                                                                                            <img src="{{ $product->image_url }}" alt="">
+                                                                                                            <span class="item_no position-absolute">x{{ $product->quantity }}</span>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <label class="items_price">{{ Session::get('currencySymbol') }}{{ $product->price * $clientCurrency->doller_compare }}</label>
+                                                                                                            <label class="rating-star add_edit_review"
                                                                                                                 data-id="{{ $product->productRating->id ?? 0 }}"
                                                                                                                 data-order_vendor_product_id="{{ $product->id ?? 0 }}">
-                                                                                                                <i
-                                                                                                                    class="fa fa-star{{ $pro_rating >= 1 ? '' : '-o' }}"></i>
-                                                                                                                <i
-                                                                                                                    class="fa fa-star{{ $pro_rating >= 2 ? '' : '-o' }}"></i>
-                                                                                                                <i
-                                                                                                                    class="fa fa-star{{ $pro_rating >= 3 ? '' : '-o' }}"></i>
-                                                                                                                <i
-                                                                                                                    class="fa fa-star{{ $pro_rating >= 4 ? '' : '-o' }}"></i>
-                                                                                                                <i
-                                                                                                                    class="fa fa-star{{ $pro_rating >= 5 ? '' : '-o' }}"></i>
+                                                                                                                <i class="fa fa-star{{ $pro_rating >= 1 ? '' : '-o' }}"></i>
+                                                                                                                <i class="fa fa-star{{ $pro_rating >= 2 ? '' : '-o' }}"></i>
+                                                                                                                <i class="fa fa-star{{ $pro_rating >= 3 ? '' : '-o' }}"></i>
+                                                                                                                <i class="fa fa-star{{ $pro_rating >= 4 ? '' : '-o' }}"></i>
+                                                                                                                <i class="fa fa-star{{ $pro_rating >= 5 ? '' : '-o' }}"></i>
                                                                                                             </label>
                                                                                                             @php
                                                                                                                 $product_total_price = $product->price * $clientCurrency->doller_compare;
@@ -707,11 +759,11 @@
                                                                                         <div class="col-6 col-sm-6">
                                                                                         @if($order->vendors[0]->dispatch_traking_url!=null && $order->vendors[0]->dispatch_traking_url!="")
 
-                                                                                            <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
+                                                                                            <ul class="product_list p-0 m-0 text-center">
                                                                                                 @php
                                                                                                 $driverrating = $order->driver_rating->rating ?? 0;
                                                                                                 @endphp
-                                                                                                <li class="text-center">
+                                                                                                <li class="text-center alOrderTaxi">
                                                                                                     {{-- <img src="#" alt=""> --}}
                                                                                                     <label class="items_price">{{__('Rate Your Driver')}}</label>
                                                                                                     <label class="rating-star add_edit_driver_review"
@@ -1029,18 +1081,35 @@
                                                             @if ($order->orderStatusVendor->isNotEmpty())
                                                                 <div class="col-12">
                                                                     <div class="row no-gutters order_head">
-                                                                        <div class="col-md-3">
+                                                                        <div class="col-md-3 alOrderStatus">
                                                                             <h4>{{ __('Order Number') }}</h4>
+                                                                            <span>#{{ $order->order_number }}</span>
                                                                         </div>
-                                                                        <div class="col-md-3">
+                                                                        <div class="col-md-3 alOrderStatus">
                                                                             <h4>{{ __('Date & Time') }}</h4>
+                                                                            <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                                                                         </div>
-                                                                        <div class="col-md-3">
+                                                                        <div class="col-md-3 alOrderStatus">
                                                                             <h4>{{ __('Customer Name') }}</h4>
+                                                                            <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                                         </div>
                                                                         @if ($client_preference_detail->business_type != 'taxi')
                                                                             <div class="col-md-3">
                                                                                 <h4>{{ __('Address') }}</h4>
+                                                                                <span class="ellipsis"
+                                                                                    data-toggle="tooltip" data-placement="top"
+                                                                                    title="">
+                                                                                    @if ($order->address)
+                                                                                        {{ $order->address->address }},
+                                                                                        {{ $order->address->street }},
+                                                                                        {{ $order->address->city }},
+                                                                                        {{ $order->address->state }},
+                                                                                        {{ $order->address->country }}
+                                                                                        {{ $order->address->pincode }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
                                                                             </div>
                                                                         @endif
                                                                     </div>
@@ -1113,19 +1182,17 @@
                                                                                             </ul>
                                                                                         </div>
                                                                                         <div class="col-7 col-sm-4">
-                                                                                            <ul
-                                                                                                class="product_list d-flex align-items-center p-0 flex-wrap m-0">
+                                                                                            <ul class="product_list p-0 m-0 text-center">
                                                                                                 @foreach ($vendor->products as $product)
                                                                                                     @if ($vendor->vendor_id == $product->vendor_id)
                                                                                                         @php
                                                                                                             $pro_rating = $product->productRating->rating ?? 0;
                                                                                                         @endphp
-                                                                                                        <li
-                                                                                                            class="text-center">
-                                                                                                            <img src="{{ $product->image_url }}"
-                                                                                                                alt="">
-                                                                                                            <span
-                                                                                                                class="item_no position-absolute">x{{ $product->quantity }}</span>
+                                                                                                        <li class="text-center mb-0 alOrderImg">
+                                                                                                            <img src="{{ $product->image_url }}" alt="">
+                                                                                                            <span class="item_no position-absolute">x{{ $product->quantity }}</span>
+                                                                                                        </li>
+                                                                                                        <li>
                                                                                                             <label
                                                                                                                 class="items_price">{{ Session::get('currencySymbol') }}{{ $product->price * $clientCurrency->doller_compare }}</label>
                                                                                                             <label
@@ -1321,22 +1388,38 @@
                                                         @foreach ($rejectedOrders as $key => $order)
                                                             <div class="col-12">
                                                                 <div class="row no-gutters order_head">
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Order Number') }}</h4>
+                                                                        <span>#{{ $order->order_number }}</span>
                                                                     </div>
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Date & Time') }}</h4>
+                                                                        <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                                                                     </div>
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-3 alOrderStatus">
                                                                         <h4>{{ __('Customer Name') }}</h4>
+                                                                        <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
+                                                                            <span class="ellipsis" data-toggle="tooltip"
+                                                                                data-placement="top" title="">
+                                                                                @if ($order->address)
+                                                                                    {{ $order->address->address }},
+                                                                                    {{ $order->address->street }},
+                                                                                    {{ $order->address->city }},
+                                                                                    {{ $order->address->state }},
+                                                                                    {{ $order->address->country }}
+                                                                                    {{ $order->address->pincode }}
+                                                                                @else
+                                                                                    NA
+                                                                                @endif
+                                                                            </span>
                                                                         </div>
                                                                     @endif
                                                                 </div>
-                                                                <div class="row no-gutters order_data">
+                                                                <div class="row no-gutters order_data d-none">
                                                                     <div class="col-md-3">#{{ $order->order_number }}
                                                                     </div>
                                                                     {{-- <div class="col-md-3">{{convertDateTimeInTimeZone($order->created_at, $timezone, 'l, F d, Y, h:i A')}}</div> --}}
@@ -1422,16 +1505,15 @@
                                                                                     </div>
                                                                                     <div class="col-7 col-sm-4">
                                                                                         <ul
-                                                                                            class="product_list d-flex align-items-center p-0 flex-wrap m-0">
+                                                                                            class="product_list p-0 m-0 text-center">
                                                                                             @foreach ($vendor->products as $product)
                                                                                                 @if ($vendor->vendor_id == $product->vendor_id)
-                                                                                                    <li class="text-center">
-                                                                                                        <img src="{{ $product->image_url }}"
-                                                                                                            alt="">
-                                                                                                        <span
-                                                                                                            class="item_no position-absolute">x{{ $product->quantity }}</span>
-                                                                                                        <label
-                                                                                                            class="items_price">{{ Session::get('currencySymbol') }}{{ decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
+                                                                                                    <li class="text-center mb-0 alOrderImg">
+                                                                                                        <img src="{{ $product->image_url }}" alt="">
+                                                                                                        <span class="item_no position-absolute">x{{ $product->quantity }}</span>
+                                                                                                    </li>
+                                                                                                    <li>
+                                                                                                        <label class="items_price">{{ Session::get('currencySymbol') }}{{ decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                                                     </li>
                                                                                                     @php
                                                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;

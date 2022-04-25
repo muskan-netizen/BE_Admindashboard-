@@ -67,10 +67,16 @@ class BaseController extends Controller
                                     $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> <i class="mdi mdi-square-edit-outline"></i></a><a class="action-icon" dataid="' . $node["id"] . '" title="' . $title . '" onclick="' . $askMessage . '" href="' . url("client/category/delete/" . $node["id"]) . '"> <i class="mdi ' . $icon . '"></i></a>';
                                 }
                             } elseif ($from == 'vendor' && $node["is_core"] == 0) {
-                                $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="1" href="#"> <i class="mdi mdi-square-edit-outline"></i></a>
-                                <a class="action-icon" dataid="' . $node["id"] . '" onclick="' . $askMessage . '" href="' . url("client/category/delete/" . $node["id"]) . '" title="' . $title . '"> <i class="mdi ' . $icon . '"></i></a>';
+                                // $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="1" href="#"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                // <a class="action-icon" dataid="' . $node["id"] . '" onclick="' . $askMessage . '" href="' . url("client/category/delete/" . $node["id"]) . '" title="' . $title . '"> <i class="mdi ' . $icon . '"></i></a>';
+                                $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="1" href="#"> <i class="mdi mdi-square-edit-outline"></i></a>';
+
+                                $this->htmlData .= '<button type="button" class="btn btn-primary-outline action-icon delete-category" title="' . $title . '" data-destroy_url="' . url("client/category/delete/" . $node["id"]) . '" data-rel="'.$node["id"].'"><i class="mdi mdi-delete"></i></button>';
                             }
                         }
+
+                        
+
                         $this->htmlData .= '</span> </div>';
                         if (isset($node['children']) && count($node['children']) > 0) {
                             $ss = $this->printTree($node['children'], $from, $activeCategory, $blockedCategory);
@@ -339,9 +345,9 @@ class BaseController extends Controller
     public function fixedFee($lang_id){
         if(Nomenclature::where('label','Fixed Fee')->exists()){
             $nomenclatures_translation_id=Nomenclature::where('label','Fixed Fee')->first()->id;
-            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee";
+            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee Per Order";
         }else{
-            return "Fixed Fee";
+            return "Fixed Fee Per Order";
         }
     }
 }

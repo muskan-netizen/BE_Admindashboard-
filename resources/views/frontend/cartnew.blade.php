@@ -4,27 +4,30 @@
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
-<link href="{{asset('assets/libs/flatpickr/flatpickr.min.css')}}" rel="stylesheet" type="text/css" />
+
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
-<style type="text/css">
-    .swal2-title {
-        margin: 0px;
-        font-size: 26px;
-        font-weight: 400;
-        margin-bottom: 28px;
-    }
 
-    .discard_price {
-        text-decoration: line-through;
-        color: #6c757d;
-    }
-    #category_kyc_form_in_cart .file--upload>label {
+<style type="text/css">
+.swal2-title {
+    margin: 0px;
+    font-size: 26px;
+    font-weight: 400;
+    margin-bottom: 28px;
+}
+
+.discard_price {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+#category_kyc_form_in_cart .file--upload>label {
     width: 100%;
     height: 200px;
     border: 1px solid #eee;
     border-radius: 15px;
 }
+
 #category_kyc_form_in_cart .file .update_pic {
     width: 100%;
     height: auto;
@@ -33,20 +36,35 @@
     border: 0;
     border-radius: 0;
 }
+
 #category_kyc_form_in_cart .file .update_pic img {
     height: 130px;
     width: auto;
 }
+		
+.time {
+    display: inline-block;
+    font-size: 26px;
+    padding: 5px;
+    text-align: center;
+    width: 94px;
+    margin-top: 5px;
+}	
 </style>
 
 @endsection
-
+@php $today=['start_time'=>"00:00",'end_time'=>"00:00"]; @endphp
+@foreach($vendorWeeklySlotDay as $row)
+@if(($row['day']-1)==(int)date('w'))
+@php $today=['start_time'=>$row['start_time'],'end_time'=>$row['end_time']]; @endphp
+@endif
+@endforeach
 @section('content')
 @php
 $now = \Carbon\Carbon::now()->format('Y-m-d\TH:i');
 if(Auth::user()){
 $timezone = Auth::user()->timezone;
-$now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
+$now = convertDateTimeInTimeZone($now, $timezone, 'H:i');
 }
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
 $urlImg = $clientData ? $clientData->logo['original'] : ' ';
@@ -103,7 +121,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     let total_fixed_fee_amount=0;
     let price_bifurcation=0;
     let total_wallet_amount_used=0;
-    
+    var closed_store= 0;
     _.each(cart_details.products, function(product, key){
        
         fixed_fee=product.vendor.fixed_fee;
@@ -123,7 +141,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="col-12">
                     <div class="countdownholder alert-danger" id="min_order_validation_error_<%= product.vendor.id %>" style="display:none;">Your cart will be expired in </div>
                 </div>
-                <% if( product.is_vendor_closed == 1 && product.closed_store_order_scheduled == 0 ) { %>
+                <% if( product.is_vendor_closed == 1 && product.closed_store_order_scheduled == 0 ) {
+                    var closed_store= 1; %>
                     <div class="col-12">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i>{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}
@@ -282,18 +301,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </div>
                         <% } %>
                     @endif
-<!--
-                    @if($client_preference_detail->category_kyc_documents ==1)
-                        <% if( (vendor_product.category_kyc_count > 0 ) ) { %>
-                        <div class=" col-3 <%= vendor_product.category_kyc_count %>  " id="category_kyc_dev_<%= vendor_product.category_id %>">
-                            <input type="hidden" name="category_kyc_ids" value="<%= vendor_product.category_id %>">
-                            <div class="text-center my-3 btn-category_kyc-div">
-                                <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= vendor_product.category_id %>" data-category_id="<%= vendor_product.category_id %>" >{{__('Category KYC Form')}}</button>
-                            </div>
-                        </div>
-
-                        <% } %>
-                    @endif -->
 
                 </div>
 
@@ -374,13 +381,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <hr>
     <% }); %>
     <div class="row">
-
+    <input type="hidden" name="without_category_kyc" value="<%= cart_details.without_category_kyc %>">
         @if($client_preference_detail->category_kyc_documents ==1)
             <% if( (cart_details.category_kyc_count > 0 ) ) { %>
             <div class=" col-3 <%= cart_details.category_kyc_count %>  " id="category_kyc_dev_<%= cart_details.category_rendem_id %>">
                 <input type="hidden" name="category_kyc_ids" value="<%= cart_details.category_rendem_id %>">
                 <div class="text-center my-3 btn-category_kyc-div">
-                    <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= cart_details.category_rendem_id %>" data-category_id="<%= cart_details.category_ids %>" >{{__('Category KYC Form')}}</button>
+                    <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= cart_details.category_rendem_id %>" data-category_id="<%= cart_details.category_ids %>" >{{__('Category KYC')}}</button>
                 </div>
             </div>
 
@@ -407,24 +414,35 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
 
             <hr class="my-2">
+            <% if( closed_store== 1 ) { %>
             <div class="row">
                 <div class="col-md-6">
                     <label for="">{{__('Schedule Pickup ')}}</label>
                     <% if(cart_details.pickup_delay_date != 0) { %>
-                        <input type="datetime-local" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_pickup != '') ? cart_details.schedule_pickup : '') %>" min="<%= ((cart_details.pickup_delay_date != '0') ? cart_details.pickup_delay_date : '') %>">
+                        <!-- <input type="text" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_pickup != '') ? cart_details.schedule_pickup : '') %>" min="<%= ((cart_details.pickup_delay_date != '0') ? cart_details.pickup_delay_date : '') %>"> -->
+                        <input type="date" id="schedule_datetime_pickup_date" onchange="handler(event);"  name="schedule_pickup_date" required/>
+	                        <input class='time durationMinMaxPickup d-none form-control' type='text' id="schedule_datetime_pickup_time"  name="schedule_pickup_time" value="0:00" required/>
                     <% } else { %>
-                            <input type="datetime-local" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_pickup??'' }}" min="{{ $now }}">
+                            <!-- <input type="text" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_pickup??'' }}" min="{{ $now }}"> -->
+                            <input type="date" id="schedule_datetime_pickup_date" onchange="handler(event);"  name="schedule_pickup_date"required/>
+	                        <input class='time durationMinMaxPickup d-none form-control' type='text' id="schedule_datetime_pickup_time"  name="schedule_pickup_time" value="0:00" required/>
                     <% } %>
                 </div>
                 <div class="col-md-6">
                     <label for="">{{__('Schedule Dropoff ')}} </label>
                     <% if(cart_details.dropoff_delay_date != 0) { %>
-                        <input type="datetime-local" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_dropoff != '') ? cart_details.schedule_dropoff : '') %>" min="<%= ((cart_details.dropoff_delay_date != '0') ? cart_details.dropoff_delay_date : '') %>">
+                        <!-- <input type="text" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_dropoff != '') ? cart_details.schedule_dropoff : '') %>" min="<%= ((cart_details.dropoff_delay_date != '0') ? cart_details.dropoff_delay_date : '') %>"> -->
+                        <input type="date" id="schedule_datetime_dropoff_date" onchange="handler(event);"  name="schedule_dropoff_date"/>
+	                    <input class='time durationMinMaxDropoff d-none form-control' type='text' id="schedule_datetime_dropoff_time"  name="schedule_dropoff_time" value="0:00"/>
                     <% } else { %>
-                            <input type="datetime-local" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_dropoff??'' }}" min="{{ $now }}">
+                            <!-- <input type="date" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_dropoff??'' }}" min="{{ $now }}"> -->
+                            <input type="date" id="schedule_datetime_dropoff_date" onchange="handler(event);"  name="schedule_dropoff_date"/>
+	                        <input class='time durationMinMaxDropoff d-none form-control' type='text' id="schedule_datetime_dropoff_time"  name="schedule_dropoff_time" value="0:00" />
                     <% } %>
+                    
                 </div>
             </div>
+            <% } %>
             @else
             <div class="row">
 
@@ -704,7 +722,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
                         <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> </a>
                     </div>
+
+                   
+
                     <div class="col-sm-6 col-lg-8 text-sm-right">
+
+                        @if(isset($ageVerify->status) && $ageVerify->status == 1)
+                            {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
+                        @endif
+
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
                     </div>
                 </div>
@@ -1268,6 +1294,106 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @endsection
 
 @section('script')
+
+<script type="text/javascript" src="{{asset('assets/libs/jquery-clock-timepicker/jquery-clock-timepicker.js')}}"></script>
+<script type="text/javascript">
+    function handler(e) {
+        $('.standard').clockTimePicker();
+        $('.required').clockTimePicker({
+            required: true
+        });
+        
+        var CSRF_TOKEN = $("input[name=_token]").val();
+        var DATE = e.target.value;
+        var vendorId = "{{$vendorId}}";
+        $.ajax({
+                type: "post",
+                url: "{{route('ajaxGetScheduleDateDetails')}}",
+                data: {_token: CSRF_TOKEN, date: DATE, vendorId: vendorId},
+                success: function(resp) {
+                    var data=JSON.parse(resp);
+                   $('.durationMinMaxPickup').clockTimePicker({
+                        duration: true,
+                        minimum: data.start_time,
+                        maximum: data.end_time
+                    });
+                    $('.durationMinMaxDropoff').clockTimePicker({
+                        duration: true,
+                        minimum: data.start_time,
+                        maximum:data.end_time
+                        
+                    });
+                    $("#schedule_datetime_dropoff_time").val(data.start_time);
+                    $("#schedule_datetime_pickup_time").val(data.start_time);
+                },
+                beforeSend: function() {
+                    $(".loader_box").show();
+                },
+                complete: function() {
+                    $(".loader_box").hide();
+                },
+                error: function(response) {
+
+                        $(".show_all_error.invalid-feedback").show();
+                        $(".show_all_error.invalid-feedback").text(
+                            'Something went wrong, Please try Again.');
+
+                    return response;
+                }
+            });
+
+        
+       $('.time').removeClass("d-none");
+    }
+    // setTimeout(function () {
+    //     $('.standard').clockTimePicker();
+    //     $('.required').clockTimePicker({
+    //         required: true
+    //     });
+    //     $('.separatorTime').clockTimePicker({
+    //         separator: '.'
+    //     });
+    //     $('.precisionTime5').clockTimePicker({
+    //         precision: 5
+    //     });
+    //     $('.precisionTime10').clockTimePicker({
+    //         precision: 10
+    //     });
+    //     $('.precisionTime15').clockTimePicker({
+    //         precision: 15
+    //     });
+    //     $('.precisionTime30').clockTimePicker({
+    //         precision: 30
+    //     });
+    //     $('.precisionTime60').clockTimePicker({
+    //         precision: 60
+    //     });
+    //     $('.simpleTime').clockTimePicker({
+    //         onlyShowClockOnMobile: true
+    //     });
+    //     $('.duration').clockTimePicker({
+    //         duration: true,
+    //         maximum: '80:00'
+    //     });
+    //     $('.durationNegative').clockTimePicker({
+    //         duration: true,
+    //         durationNegative: true
+    //     });
+    //     $('.durationMinMax').clockTimePicker({
+    //         duration: true,
+    //         minimum: '1:00',
+    //         maximum: '5:30'
+    //     });
+    //     $('.durationNegativeMinMax').clockTimePicker({
+    //         duration: true,
+    //         durationNegative: true,
+    //         minimum: '-5:00',
+    //         maximum: '5:00',
+    //         precision: 5
+    //     });
+    // }, 2500);
+</script>
+
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
 </script>
 

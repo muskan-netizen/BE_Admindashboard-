@@ -82,7 +82,7 @@
                     <div class="col-12">
                         <label for="type">{{__('Address Type')}}</label>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <div class="delivery_box pt-0 pl-0  pb-sm-3 pb-1">
                             <label class="radio m-0">{{__('Home')}}
                                 <input type="radio" checked="checked" name="address_type" value="1">
@@ -90,7 +90,7 @@
                             </label>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <div class="delivery_box pt-0 pl-0  pb-sm-3 pb-1">
                             <label class="radio m-0">{{__('Office')}}
                                 <input type="radio" name="address_type" value="2">
@@ -98,7 +98,7 @@
                             </label>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-3">
                         <div class="delivery_box pt-0 pl-0  pb-sm-3 pb-1">
                             <label class="radio m-0">{{__('Others')}}
                                 <input type="radio" name="address_type" value="3">

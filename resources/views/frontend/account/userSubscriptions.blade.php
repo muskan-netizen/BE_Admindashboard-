@@ -70,8 +70,9 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                 </div>
 
                 <div class="row">
+                    @if(!empty($subscription))
                     <div class="col-12 mb-4">
-                        @if(!empty($subscription))
+
                             <div class="card subscript-box">
                                 @if( (empty($subscription->cancelled_at)) || (!empty($subscription->cancelled_at)) && ($subscription->cancelled_at >= $now))
                                 <div class="row align-items-center mb-2">
@@ -133,8 +134,9 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                                 </div>
                                 @endif
                             </div>
-                        @endif
+
                     </div>
+                    @endif
 
                     @if($subscription_plans->isNotEmpty())
                         @foreach($subscription_plans as $plan)

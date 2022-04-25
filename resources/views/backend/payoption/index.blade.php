@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="row">
-           
+
             @foreach($payOption as $key => $opt)
             <div class="col-6 col-md-3 col-xl-2 mb-3">
 
@@ -100,7 +100,7 @@
 
                 <div class="card-box h-100 mb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">{{$opt->title}}</h4>
+                        <h4 class="header-title mb-0"><span class="alPaymentImage" style="height:24px;width:24px;display:inline-block;"> <img style="width:100%;" src="{{asset('paymentsLogo/'.$opt->code.'.png')}}" alt=""></span> {{$opt->title}}</h4>
                     </div>
                     <div class="row">
                         <div class="col-6">
@@ -650,7 +650,7 @@
                                     <input type="text" name="vnpay_server_key" id="vnpay_server_key" class="form-control" value="{{$vnpay_server_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     @endif
@@ -693,7 +693,7 @@
 
                 <div class="card-box h-100">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">{{$opt->title}}</h4>
+                        <h4 class="header-title mb-0"> <span class="alPaymentImage" style="height:24px;width:24px;display:inline-block;"> <img style="width:100%;" src="{{asset('paymentsLogo/'.$opt->code.'.png')}}" alt=""></span>  {{$opt->title}}</h4>
                     </div>
                     <div class="row">
                         <div class="col-6">

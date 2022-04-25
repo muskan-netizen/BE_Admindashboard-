@@ -40,6 +40,12 @@ class SmsProviderSeeder extends Seeder
                 'keyword' => 'unifonic',
                 'status' => '1'
             ),
+            array(
+                'id' => 5,
+                'provider' => 'Arkesel Service',
+                'keyword' => 'arkesel',
+                'status' => '1'
+            ),
         );
         if($sms_count == 0)
         {

@@ -99,7 +99,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            <h3 class="mt-0">{{__('My Wallet')}}</h3>
+                            <h2 class="">{{__('My Wallet')}}</h3>
                         </div>
                         <div class="box-account box-info">
                             <div class="card-box mb-0">
@@ -305,7 +305,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
 <script type="text/template" id="user_profile_template">
     <% if(profile != '') { %>
         <label>
-            <span class="update_pic">
+            <span class="">
                 <img class="rounded-circle" src="<%= profile.image['image_fit'] %>100/100<%= profile.image['image_path'] %>" alt="" width="40" height="40">
             </span>
             <span class="ml-1"><b><%= profile.name %></b></span>

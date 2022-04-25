@@ -81,18 +81,6 @@ class ToolsController extends BaseController
             $client = $this->clientObj->getClient();
 
             if (count($request->copy_to) > 0) {
-
-                // dd( $from_vendor->toArray());
-                // //copy vendor secifications of from vendor
-                // $vendor_specifications=array(
-                //      'need_container_charges'=>$from_vendor->need_container_charges,
-                //      'show_slot'=>$from_vendor->show_slot,
-                //      'auto_accept_order'=>$from_vendor->auto_accept_order,
-                //      'return_request'=>$from_vendor->return_request,
-                //      'slot_minutes'=>$from_vendor->slot_minutes
-                // );
-                // $this->vendorObj->where('id')
-
                 /*Products replicate */
                 foreach ($request->copy_to as $copy_to) {
                     /* Block existing products */
@@ -249,12 +237,27 @@ class ToolsController extends BaseController
             $new_tag->product_id = $product->id;
             $new_tag->save();
         }
+        foreach ($from_product->ProductFaq as $faq) {
+            $new_faq = $faq;
+            $new_faq = $new_faq->replicate();
+            $new_faq->product_id = $product->id;
+            $new_faq->save();
+            foreach ($faq->translations as $faq_translation) {
+                $new_faq_translation = $faq_translation;
+                $new_faq_translation = $new_faq_translation->replicate();
+                $new_faq_translation->product_faq_id = $new_faq->id;
+                $new_faq_translation->save();
+            }
+
+        }
+
         foreach ($from_product->translation as $translation) {
             $new_translation = $translation;
             $new_translation = $new_translation->replicate();
             $new_translation->product_id = $product->id;
             $new_translation->save();
         }
+        
         foreach ($from_product->variant as $key => $variant) {
             $new_variant = $variant;
             $new_variant = $new_variant->replicate();

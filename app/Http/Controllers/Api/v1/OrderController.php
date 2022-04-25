@@ -115,11 +115,11 @@ class OrderController extends BaseController
                     ->where('user_id', $user->id)
                     ->where('end_date', '>', $now)
                     ->orderBy('end_date', 'desc')->first();
-                if ($user_subscription) {
-                    foreach ($user_subscription->features as $feature) {
-                        $subscription_features[] = $feature->feature_id;
-                    }
-                }
+                // if ($user_subscription) {
+                //     foreach ($user_subscription->features as $feature) {
+                //         $subscription_features[] = $feature->feature_id;
+                //     }
+                // }
                 $loyalty_amount_saved = 0;
                 $redeem_points_per_primary_currency = '';
                 $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -158,11 +158,12 @@ class OrderController extends BaseController
                     $order->order_number = generateOrderNo();
                     $order->address_id = $request->address_id;
                     $order->payment_option_id = $request->payment_option_id;
+                    $order->specific_instructions = $request->specific_instructions;
                     $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
                     $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver ?? null;
                     $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
-                    $order->schedule_pickup = $cart->schedule_pickup ?? null;
-                    $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
+                    $order->schedule_pickup = $cart->schedule_pickup_date ?  $cart->schedule_pickup_date ." ".  $cart->schedule_pickup_time : null;
+                    $order->schedule_dropoff = $cart->schedule_dropoff_date ? $cart->schedule_dropoff_date ." ".$cart->schedule_dropoff_time : null;
                     $order->specific_instructions = $cart->specific_instructions ?? null;
                     $order->is_gift = $request->is_gift ?? 0;
                     $order->save();
@@ -386,9 +387,23 @@ class OrderController extends BaseController
                         $order_status->save();
                     }
                     $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
-                    if (in_array(1, $subscription_features)) {
-                        $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
+
+                    // calculate subscription discount
+                    if ($user_subscription) {
+                        foreach ($user_subscription->features as $feature) {
+                            if ($feature->feature_id == 1) {
+                                $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
+                            }
+                            elseif ($feature->feature_id == 2) {
+                                $off_percentage_discount = ($feature->percent_value * $payable_amount / 100);
+                                $total_subscription_discount = $total_subscription_discount + $off_percentage_discount;
+                            }
+                        }
                     }
+
+                    // if (in_array(1, $subscription_features)) {
+                    //     $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
+                    // }
                     $total_discount = $total_discount + $total_subscription_discount;
                     $order->total_amount = $total_amount;
                     $order->total_discount = $total_discount;
