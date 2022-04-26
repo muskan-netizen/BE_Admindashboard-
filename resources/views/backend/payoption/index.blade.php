@@ -576,7 +576,7 @@
                     </div>
                     @endif
                     @if ( (strtolower($opt->code) == 'toyyibpay') )
-                        <div class="mt-2" id="stripe_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="mt-2" id="toyyibpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-group mb-2">

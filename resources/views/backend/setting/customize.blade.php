@@ -92,7 +92,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group mb-2">
-                                <label for="time_format">{{ __("Decimal Format (Digits After Decimal)") }}</label>
+                                <label for="time_format">{{ __("Currency Format (Digits After Decimal)") }}</label>
                                 <select class="form-control al_box_height" id="digit_after_decimal" name="digit_after_decimal">
                                     <option value="0" {{ ($preference && $preference->digit_after_decimal == 0)? "selected" : "" }}> {{ __("No Decimal") }}
                                     </option>

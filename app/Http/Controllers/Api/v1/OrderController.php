@@ -164,7 +164,8 @@ class OrderController extends BaseController
                     $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
                     $order->schedule_pickup = $cart->schedule_pickup_date ?  $cart->schedule_pickup_date ." ".  $cart->schedule_pickup_time : null;
                     $order->schedule_dropoff = $cart->schedule_dropoff_date ? $cart->schedule_dropoff_date ." ".$cart->schedule_dropoff_time : null;
-                    $order->specific_instructions = $cart->specific_instructions ?? null;
+                    // $order->specific_instructions = $cart->specific_instructions ?? null;
+                    $order->specific_instructions = $request->specific_instructions ?? null;
                     $order->is_gift = $request->is_gift ?? 0;
                     $order->save();
                   

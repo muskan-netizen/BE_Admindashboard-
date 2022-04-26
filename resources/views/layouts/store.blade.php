@@ -29,6 +29,8 @@ if(isset($set_template))
     $body_class = "al_body_template_three";
   elseif($set_template->template_id == 4)
     $body_class = "al_body_template_four";
+  elseif($set_template->template_id == 5)
+    $body_class = "al_body_template_five";
 }
 @endphp
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
@@ -47,6 +49,8 @@ if(isset($set_template))
       @include('layouts.store/left-sidebar-template-three')
       @elseif(isset($set_template)  && $set_template->template_id == 4)
       @include('layouts.store/left-sidebar-template-four')
+      @elseif(isset($set_template)  && $set_template->template_id == 5)
+      @include('layouts.store/left-sidebar-template-five')
       @else
       @include('layouts.store/left-sidebar-template-one')
       @endif
@@ -60,6 +64,8 @@ if(isset($set_template))
     @include('layouts.store/footer-content-template-three')
     @elseif(isset($set_template)  && $set_template->template_id == 4)
     @include('layouts.store/footer-content-template-four')
+    @elseif(isset($set_template)  && $set_template->template_id == 5)
+    @include('layouts.store/footer-content-template-five')
     @else
     @include('layouts.store/footer-content-template-one')
     @endif
