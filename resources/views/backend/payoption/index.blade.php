@@ -676,6 +676,33 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'flutterwave') )
+                    <div class="mt-2" id="flutterwave_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="flutterwave_client_id" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="flutterwave_client_id" id="flutterwave_client_id" class="form-control" value="{{$client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="flutterwave_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="flutterwave_secret_key" id="flutterwave_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="flutterwave_enc_key" class="mr-3">{{ __("Encryption Key") }}</label>
+                                    <input type="password" name="flutterwave_enc_key" id="flutterwave_enc_key" class="form-control" value="{{$enc_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
             </div>
             @endforeach
