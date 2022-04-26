@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage, Payment, PaymentOption};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,UserAddress,Order,SubscriptionInvoicesUser,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage, Payment, PaymentOption};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -133,6 +133,29 @@ class PickupDeliveryController extends FrontController{
         if($product->loyalty_amount_saved > $product->tags_price)
         $product->loyalty_amount_saved = $product->tags_price;
 
+        $subscription_features = array();
+        $user_subscription = null;
+        $user = Auth::user();
+
+       
+        $product->subscription_discount = 0;
+        $product->subscription_percent_value = 0;
+        if ($user) {
+            $now = Carbon::now()->toDateTimeString();
+            $user_subscription = SubscriptionInvoicesUser::with('features')
+                ->select('id', 'user_id', 'subscription_id')
+                ->where('user_id', $user->id)
+                ->where('end_date', '>', $now)
+                ->orderBy('end_date', 'desc')->first();
+            if ($user_subscription) {
+                foreach ($user_subscription->features as $feature) {
+                    if ($feature->feature_id == 2) {
+                        $product->subscription_discount = ($feature->percent_value * $product->tags_price / 100);
+                        $product->subscription_percent_value = $feature->percent_value;
+                    }
+                }
+            }
+        }
 
         return $this->successResponse($product);
     }

@@ -194,6 +194,13 @@
                         <div class="col-6 mb-2 text-right" id="distance"></div>
                         <div class="col-6 mb-2">{{__('Duration')}}</div>
                         <div class="col-6 mb-2 text-right" id="duration"></div>
+                        <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
+                        <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
+                        <div class="col-6 mb-2 text-right" id="discount"><%= result.subscription_percent_value+'%' %></div>
+
+                        <div class="col-6 mb-2"><p class="total_amt m-0">{{__('Amount Payable')}}</p></div>
+                        <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
+                        <% } %>
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
                             <div class="col-6 mb-2">Loyalty</div>
                             <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>xx
