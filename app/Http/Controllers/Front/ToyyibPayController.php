@@ -238,6 +238,7 @@ class ToyyibPayController extends FrontController
                         if($toyyibPayRes['status_id'] == '2' ){
                             return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been pending');
                         }else{
+                            Order::where('order_number', $order_number)->update(['payment_status' => 1]);
                             return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
                         }
     
