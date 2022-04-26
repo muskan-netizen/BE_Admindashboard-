@@ -27,7 +27,7 @@ class TaxController extends Controller{
                 $query->where('user_id', Auth::user()->id);
             });
         }
-        $total_tax_collected =$total_tax_collected->sum('taxable_amount');
+        $total_tax_collected =decimal_format($total_tax_collected->sum('taxable_amount'));
 
 
         // type_of_taxes_applied_count
@@ -67,22 +67,17 @@ class TaxController extends Controller{
                 }
             });
         }
-        $orders = $orders_query->orderBy('id', 'desc');
-        // foreach ($orders as $order) {
-        //     $order->payment_method = $order->paymentOption ? $order->paymentOption->title : '';
-        //     $order->customer_name = $order->user ? $order->user->name : '-';
-        //     $order->payable_amount = decimal_format($order->payable_amount);
-        //     $order->taxable_amount = decimal_format($order->taxable_amount);
-        //     $order->created_date = dateTimeInUserTimeZone($order->created_at, $timezone);
-        //     $tax_types = [];
-        //     foreach ($order->taxes as $tax) {
-        //         if($tax){
-        //             $tax_types[]= $tax->category->title;
-        //         }
-        //     }
-        //     $order->tax_types = implode(', ',$tax_types);
-        // }
+        if (!empty($request->get('payment_option'))) {
+            $orders_query->where('payment_option_id',$request->get('payment_option'));
+        }
+        $orders = $orders_query->orderBy('id', 'desc'); 
         return Datatables::of($orders)
+        ->addColumn('payable_amount', function($orders) {
+            return decimal_format($orders->payable_amount);
+        })
+        ->addColumn('taxable_amount', function($orders) {
+            return decimal_format($orders->taxable_amount);
+        })
         ->addColumn('payment_method', function($orders) {
             return $orders->paymentOption ? $orders->paymentOption->title : '';
         })
@@ -104,22 +99,12 @@ class TaxController extends Controller{
         ->addIndexColumn()
         ->filter(function ($instance) use ($request) {
             if (!empty($request->get('search'))) {
-                $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                    if (Str::contains(Str::lower($row['order_number']), Str::lower($request->get('search')))){
-                        return true;
-                    }elseif(Str::contains(Str::lower($row['user']['name']), Str::lower($request->get('search')))){
-                        return true;
-                    }
-                    return false;
-                });
-            }
-            if (!empty($request->get('payment_option'))) {
-                $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                    if (Str::contains(Str::lower($row['payment_option_id']), Str::lower($request->get('payment_option')))){
-                        return true;
-                    }
-                    return false;
-                });
+                $search = $request->get('search');
+                $instance->where(function($query) use($search) {
+                    $query->whereHas('user', function($q) use($search){
+                        $q->where('name', 'LIKE', '%'.$search.'%');
+                    });
+                })->orWhere('order_number', 'LIKE', '%'.$search.'%');
             }
         })->make(true);
     }

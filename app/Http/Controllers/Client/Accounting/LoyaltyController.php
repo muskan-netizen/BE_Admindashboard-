@@ -78,15 +78,13 @@ class LoyaltyController extends Controller{
             $from_date = $date_date_filter[0];
             $orders_query->between($from_date." 00:00:00", $to_date." 23:59:59");
         }
+        if (!empty($request->get('payment_option'))) {
+            $orders_query->where('payment_option_id',$request->get('payment_option'));
+        }
+        if (!empty($request->get('loyalty'))) {
+            $orders_query->where('loyalty_membership_id',$request->get('loyalty'));
+        }
         $orders = $orders_query->orderBy('id', 'desc');
-        // foreach ($orders as $order) {
-        //     $order->loyalty_membership = $order->loyaltyCard ? $order->loyaltyCard->name : '';
-        //     $order->loyalty_points_used = $order->loyalty_points_used ? $order->loyalty_points_used : '0.00';
-        //     $order->created_date = dateTimeInUserTimeZone($order->created_at, $timezone);
-        //     $order->loyalty_points_earned = $order->loyalty_points_earned ? $order->loyalty_points_earned : '0.00';
-        //     $order->payment_option_title =  __($order->paymentOption->title);
-        //     $order->payable_amount = decimal_format($order->payable_amount,",");
-        // }
         return Datatables::of($orders)
                 ->addColumn('loyalty_membership', function($orders) {
                     return $orders->loyaltyCard ? $orders->loyaltyCard->name : '';
@@ -109,22 +107,12 @@ class LoyaltyController extends Controller{
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {
-                    $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                        if (Str::contains(Str::lower($row['order_number']), Str::lower($request->get('search')))){
-                            return true;
-                        }elseif(Str::contains(Str::lower($row['user']['name']), Str::lower($request->get('search')))){
-                            return true;
-                        }
-                        return false;
-                    });
-                }
-                if (!empty($request->get('payment_option'))) {
-                    $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                        if (Str::contains(Str::lower($row['payment_option_id']), Str::lower($request->get('payment_option')))){
-                            return true;
-                        }
-                        return false;
-                    });
+                    $search = $request->get('search');
+                    $instance->where(function($query) use($search) {
+                        $query->whereHas('user', function($q) use($search){
+                            $q->where('name', 'LIKE', '%'.$search.'%');
+                        });
+                    })->orWhere('order_number', 'LIKE', '%'.$search.'%');
                 }
             })->make(true);
     }

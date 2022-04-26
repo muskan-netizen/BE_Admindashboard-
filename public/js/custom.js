@@ -17,11 +17,6 @@ $(document).ready(function () {
 
         } else {
             jQuery(".site-header").addClass("fixed-bar");
-            // if(window_height < header_content_width + footer_height){
-            //     jQuery(".al_offset-top-home").css('margin-top', header_height+'px');
-            // }else{
-            //     jQuery(".al_offset-top-home").css('margin-top', '0px');
-            // }
         }
     });
 });
