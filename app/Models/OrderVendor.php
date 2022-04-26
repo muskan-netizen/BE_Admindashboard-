@@ -36,6 +36,9 @@ class OrderVendor extends Model{
 	public function orderstatus(){
 	    return $this->hasOne('App\Models\VendorOrderStatus' , 'vendor_id', 'vendor_id', 'order_id', 'order_id')->orderBy('id', 'DESC')->latest(); 
 	}
+	public function OrderStatusOption(){
+       return $this->hasOne('App\Models\OrderStatusOption', 'id', 'order_status_option_id'); 
+    }
 	public function cancelledBy()
 	{
 		return $this->belongsTo('App\Models\User','cancelled_by','id')->select('id','name');

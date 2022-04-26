@@ -68,6 +68,19 @@ footer#footer{position: absolute;bottom: 0;width: 100%;}
 @keyframes loading{100%{transform:translateX(100%)}}
 
 
+
+
+
+/* pick and drop css start */
+.al_body_template_three .cab-banner-area .cab-footer .btn{
+    height: auto;
+    line-height: normal;
+    border-radius: 12px;
+}
+.al_body_template_three .cab-banner-area .cab-input input.form-control{border-radius: 12px !important;}
+
+
+
 /* shimmer_effect end */
 @media(max-width: 1400px){ section#our_vendor_main_div .vendors{padding: 0 20px;}}
 

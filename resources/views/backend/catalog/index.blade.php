@@ -268,9 +268,9 @@
                             </table>
                         </div>
                     </div>
-                    <div class="col-sm-12 text-right btn_bottom">
+                   <!--  <div class="col-sm-12 text-right btn_bottom">
                         <button class="btn btn-info waves-effect waves-light text-sm-right saveBrandOrder">{{ __('Save Order') }}</button>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

@@ -180,9 +180,9 @@ Route::group(['middleware' => ['domain']], function () {
     Route::get('easypaisa/pay', 'Front\EasypaisaController@create_token')->name('easypaisa.create.token');
 	Route::any('easypaisa/success', 'Front\EasypaisaController@get_token_view_payment')->name('easypaisa.gettoken');
 
-
+	//Mvodafone
 	Route::post('payment/mvPay', 'Front\MvodafoneController@createPayLink')->name('mvodafone.pay');
-	Route::post('payment/mvsuccess', 'Front\MvodafoneController@successPage')->name('mvodafone.success');
+	Route::get('payment/mvsuccess', 'Front\MvodafoneController@successPage')->name('mvodafone.success');
 
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
@@ -357,6 +357,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('verifTokenProcess', 'Front\UserController@verifyToken')->name('user.verifyToken');
 	Route::get('user/addressBook', 'Front\AddressController@index')->name('user.addressBook');
 	Route::get('user/wallet', 'Front\WalletController@index')->name('user.wallet');
+	Route::get('user/wallet/refreshBalance/{id?}', 'Front\WalletController@refreshWalletbalance')->name('user.wallet.refreshBalance');
 	Route::post('user/wallet/credit', 'Front\WalletController@creditWallet')->name('user.creditWallet');
 	Route::post('wallet/transfer/user/verify', 'Front\WalletController@walletTransferUserVerify')->name('wallet.transfer.user.verify');
 	Route::post('wallet/transfer/confirm', 'Front\WalletController@walletTransferConfirm')->name('wallet.transfer.confirm');

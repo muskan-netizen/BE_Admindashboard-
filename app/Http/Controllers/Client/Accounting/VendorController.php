@@ -72,22 +72,6 @@ class VendorController extends Controller{
         }
 
         $vendors = $vendors;
-        // foreach ($vendors as $vendor) {
-
-        //     $vendor->total_paid = 0.00;
-        //     $vendor->url = route('vendor.show', $vendor->id);
-        //     $vendor->view_url = route('vendor.show', $vendor->id);
-        //     $vendor->delivery_fee = decimal_format($vendor->orders->sum('delivery_fee'));
-        //     $vendor->order_value = decimal_format($vendor->orders->sum('payable_amount'));
-        //     $vendor->payment_method = decimal_format($vendor->orders->whereIn('payment_option_id', [2,3, 4])->sum('payable_amount'));
-        //     $vendor->promo_admin_amount = decimal_format($vendor->orders->where('coupon_paid_by', 1)->sum('discount_amount'));
-        //     $vendor->promo_vendor_amount = decimal_format($vendor->orders->where('coupon_paid_by', 0)->sum('discount_amount'));
-        //     $vendor->service_fee = decimal_format($vendor->orders->sum('service_fee_percentage_amount'));
-        //     $vendor->cash_collected_amount = decimal_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount'));
-        //     $vendor->admin_commission_amount = decimal_format($vendor->orders->sum('admin_commission_percentage_amount') +  $vendor->orders->sum('admin_commission_fixed_amount'));
-        //     $vendor->taxable_amount = decimal_format($vendor->orders->sum('taxable_amount'));
-        //     $vendor->vendor_earning = decimal_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $vendor->admin_commission_amount - $vendor->delivery_fee ));
-        // }
         return Datatables::of($vendors)
 
             ->addColumn('total_paid', function($vendors) {
@@ -136,12 +120,8 @@ class VendorController extends Controller{
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {
-                    $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                        if (Str::contains(Str::lower($row['name']), Str::lower($request->get('search')))){
-                            return true;
-                        }
-                        return false;
-                    });
+                    $search = $request->get('search');
+                    $instance->where('name', 'LIKE', '%'.$search.'%');
                 }
             })->make(true);
     }

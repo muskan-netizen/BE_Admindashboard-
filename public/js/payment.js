@@ -1068,7 +1068,7 @@ $(document).ready(function() {
             url: create_mvodafone_pay_url,
             data: rowData,
             success: function(resp) {
-                window.location.href = resp;
+                 window.location.href = resp.url;
           },
           error: function(error) {
               console.log(error);
