@@ -190,7 +190,7 @@ class WalletController extends FrontController
         }
     }
 
-    public function refreshWalletbalance(Request $request, $id=''){
+    public function refreshWalletbalance(Request $request, $domain='', $id=''){
         if(!empty($id)){
             $user = User::find($id);
             if($user){
