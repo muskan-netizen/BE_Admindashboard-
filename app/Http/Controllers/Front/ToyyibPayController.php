@@ -44,9 +44,14 @@ class ToyyibPayController extends FrontController
 
     public function createCategory($data){        
 
-        $some_data = array(
-            'catname' => $data['category_name'], //CATEGORY NAME
-            'catdescription' => $data['category_name'], //PROVIDE YOUR CATEGORY DESCRIPTION
+        // $some_data = array(
+        //     'catname' => $data['category_name']??$data['order_number'], //CATEGORY NAME
+        //     'catdescription' => $data['category_name']??$data['order_number'], //PROVIDE YOUR CATEGORY DESCRIPTION
+        //     'userSecretKey' => $this->api_key //PROVIDE USER SECRET KEY HERE
+        //   );  
+          $some_data = array(
+            'catname' => 'Order data', //CATEGORY NAME
+            'catdescription' => 'Order Description' , //PROVIDE YOUR CATEGORY DESCRIPTION
             'userSecretKey' => $this->api_key //PROVIDE USER SECRET KEY HERE
           );          
           $curl = curl_init();        
