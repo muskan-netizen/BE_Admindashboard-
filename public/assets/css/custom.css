@@ -265,11 +265,31 @@ body p:empty{display: none;}
 
 
 
-
 @media(max-width:1499px){h1.control-label {font-size: 46px;} }
 @media(max-width:767px){.al_add_user{margin-top: 0;}}
 
 
+label.position-relative.control-label {
+  padding-right: 25px;
+}
+.alInfoIocn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.alInfoIocn[title]:hover:after {
+  content: attr(title);
+  position: absolute;
+  top: -100%;
+  left: 0;
+  background-color: #000;
+  color:white;
+}
+
+.inline-toltip{
+  z-index:100;
+  white-space: nowrap;
+}
 
 /* dashboard css */
 @media(max-width:767px){
