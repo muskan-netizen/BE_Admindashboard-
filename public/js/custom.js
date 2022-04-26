@@ -572,6 +572,9 @@ $(document).ready(function () {
             }else if (payment_option_id == 27) {
                 paymentViaPaytab('','');
             }
+            else if (payment_option_id == 29) {
+                payWithMvodafone('','');
+            }
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -1889,6 +1892,9 @@ $(document).ready(function () {
         }
         else if (payment_option_id == 28) {
             payWithVNpay('', payment_option_id, '');
+        }
+        else if (payment_option_id == 29) {
+            payWithMvodafone('', payment_option_id, '');
         }
 
 

@@ -583,7 +583,7 @@ class OrderController extends BaseController
                     $order = Order::find($request->order_id);
 
                     //Refund to wallet
-                    if($order->payment_option_id!=1 && $order->payment_status==1){
+                    if(($order->payment_option_id==4 || $order->payment_option_id==19)  && $order->payment_status==1){
                         
                         $orderRefund=new OrderRefund();
                         $orderRefund->user_id=$order->user_id;

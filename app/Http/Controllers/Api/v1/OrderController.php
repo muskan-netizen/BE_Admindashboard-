@@ -145,7 +145,7 @@ class OrderController extends BaseController
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
                 if ($cart) {
-                    $loyalty_points_used;
+                    $loyalty_points_used=0;
                     $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
                     if ($order_loyalty_points_earned_detail) {
                         $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
@@ -164,7 +164,8 @@ class OrderController extends BaseController
                     $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
                     $order->schedule_pickup = $cart->schedule_pickup_date ?  $cart->schedule_pickup_date ." ".  $cart->schedule_pickup_time : null;
                     $order->schedule_dropoff = $cart->schedule_dropoff_date ? $cart->schedule_dropoff_date ." ".$cart->schedule_dropoff_time : null;
-                    $order->specific_instructions = $cart->specific_instructions ?? null;
+                    // $order->specific_instructions = $cart->specific_instructions ?? null;
+                    $order->specific_instructions = $request->specific_instructions ?? null;
                     $order->is_gift = $request->is_gift ?? 0;
                     $order->save();
                   
@@ -174,6 +175,17 @@ class OrderController extends BaseController
                     $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
+                    
+                    /* calculate total fixed fee amount */
+                    $total_fixed_fee_amount =0.00;
+                    $pro_vendors=array();
+                    foreach($cart_products as $row){
+                        if(!in_array($row->vendor_id,$pro_vendors)){
+                            $pro_vendors[]=$row->vendor_id;
+                            $total_fixed_fee_amount += Vendor::find($row->vendor_id)->fixed_fee_amount;
+                        }
+                    }
+                    
                     $total_container_charges = 0;
                     $vendor_total_container_charges = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
@@ -447,6 +459,7 @@ class OrderController extends BaseController
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
                     $order->payable_amount = $payable_amount;
+                    $order->fixed_fee_amount = $total_fixed_fee_amount;
                     $order->total_container_charges = $total_container_charges;
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                         $order->payment_status = 1;
