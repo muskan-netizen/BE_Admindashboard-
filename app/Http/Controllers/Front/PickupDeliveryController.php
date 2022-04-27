@@ -587,7 +587,25 @@ class PickupDeliveryController extends FrontController{
                 $order->total_delivery_fee = $total_delivery_fee;
                 $order->loyalty_points_used = $loyalty_points_used;
                 $order->loyalty_amount_saved = $loyalty_amount_saved;
-                $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved;
+                $finalAmount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved;
+                if ($user) {
+                    $now = Carbon::now()->toDateTimeString();
+                    $user_subscription = SubscriptionInvoicesUser::with('features')
+                        ->select('id', 'user_id', 'subscription_id')
+                        ->where('user_id', $user->id)
+                        ->where('end_date', '>', $now)
+                        ->orderBy('end_date', 'desc')->first();
+                    if (!empty($user_subscription)) {
+                        foreach ($user_subscription->features as $feature) {
+                            if ($feature->feature_id == 2) {
+                                $finalAmount = ($feature->percent_value * $finalAmount / 100);
+                            }
+                        }
+                    }
+                }
+
+                $order->payable_amount = $finalAmount;
+
                 $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                 $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                 if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
