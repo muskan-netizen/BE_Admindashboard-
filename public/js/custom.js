@@ -3449,7 +3449,8 @@ $(document).ready(function () {
     $(document).on('click', '.check-time-slots', function () {
         let cur_date = $(this).val();
         let cart_product_id = $(this).data("cart_product_id");
-        getTimeSlots(cur_date, cart_product_id);
+        let product_vendor_id = $(this).data("product_vendor_id");
+        getTimeSlots(cur_date, cart_product_id , product_vendor_id);
 
     });
 
@@ -3516,7 +3517,7 @@ $(document).ready(function () {
     });
 
     // on demand add to cart
-    function getTimeSlots(cur_date, cart_product_id) {
+    function getTimeSlots(cur_date, cart_product_id,product_vendor_id) {
         $("#show_date" + cart_product_id).html(cur_date);
         $.ajax({
             type: "post",
@@ -3524,7 +3525,8 @@ $(document).ready(function () {
             url: getTimeSlotsForOndemand,
             data: {
                 "cur_date": cur_date,
-                "cart_product_id": cart_product_id
+                "cart_product_id": cart_product_id,
+                "product_vendor_id": product_vendor_id
             },
             success: function (response) {
                 var booking_time_slick = $("#show-all-time-slots" + cart_product_id).find('.booking-time');

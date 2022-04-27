@@ -176,6 +176,7 @@ class CategoryController extends FrontController{
             if($request->step == 2 && empty($request->addons))
             {
                 if ($request->session()->has('skip_addons')) {
+                   // pr($cartDataGet['period']->toArray());
                     $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
                     return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
                 }
@@ -197,6 +198,9 @@ class CategoryController extends FrontController{
                 abort(404);
             }
         }
+    }
+    public function getTimeSlotsForOndemand_step2(Request $request){
+        pr($request->all());
     }
 
     public function listData($langId, $category_id, $type = ''){
@@ -598,6 +602,9 @@ class CategoryController extends FrontController{
     // ***********   getTimeSlotsForOndemand ************** /////////////////
     public function getTimeSlotsForOndemand(Request $request){
 
+        
+       // pr($request->all());
+      
         $user = Auth::user();
         $timezone = $user->timezone ?? 'Asia/Kolkata';
 
@@ -612,7 +619,7 @@ class CategoryController extends FrontController{
             $curr_time = $daten->format('h:i');
 
         }
-
+        $slots = showSlot($today,$request->product_vendor_id,'delivery');
 
        // $date =new DateTime($request->cur_date);
 
@@ -622,8 +629,7 @@ class CategoryController extends FrontController{
 
         // $start_time = $date." ".$curr_time;
         // $end_time = $date." 23:59";
-
-
+      //pr( $slots);
         $time_slots = $this->SplitTime($start_time, $end_time, "60");
         $cart_product_id = $request->cart_product_id??0;
         if ($request->ajax()) {
