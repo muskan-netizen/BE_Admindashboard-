@@ -21,7 +21,7 @@ class PaytabController extends BaseController
     {
         $user = Auth::user();
         $transaction_id = $request->transaction_id;
-    	if($request->payment_from == 'cart'){
+    	if($request->action == 'cart'){
             $order_number = $request->order_number;
             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
             if ($order) {
@@ -63,26 +63,26 @@ class PaytabController extends BaseController
                     $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                 }
             }
-        } elseif($request->payment_from == 'wallet'){
+        } elseif($request->action == 'wallet'){
             $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $transaction_id]);
             $walletController = new WalletController();
             $walletController->creditWallet($request);
         }
-        elseif($request->payment_from == 'tip'){
+        elseif($request->action == 'tip'){
             $request->request->add(['order_number' => $request->order_number, 'tip_amount' => $request->amount, 'transaction_id' => $transaction_id]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
         }
-        elseif($request->payment_from == 'subscription'){
+        elseif($request->action == 'subscription'){
             $request->request->add(['payment_option_id' => 27, 'transaction_id' => $transaction_id]);
             $subscriptionController = new UserSubscriptionController();
-            $subscriptionController->purchaseSubscriptionPlan($request, '', $transaction_id);
+            $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
         }
         return $this->successResponse('', __('Payment completed successfully'), 200);
     }
     public function failedPayment($request)
     {
-    	if($request->payment_from == 'cart'){
+    	if($request->action == 'cart'){
             $order_number = $request->order_number;
             $order = Order::where('order_number', $order_number)->first();
             if($order){
