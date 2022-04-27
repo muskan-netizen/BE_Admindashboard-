@@ -88,7 +88,7 @@ class PaytabController extends BaseController
             elseif($request->action == 'subscription'){
                 $request->request->add(['payment_option_id' => 27, 'transaction_id' => $transaction_id]);
                 $subscriptionController = new UserSubscriptionController();
-                $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
+                $subscriptionController->purchaseSubscriptionPlan($request, $request->subscription_id);
             }
             return $this->successResponse('', __('Payment completed successfully'), 200);
         }
@@ -99,7 +99,6 @@ class PaytabController extends BaseController
     public function failedPayment(Request $request)
     {
         try{
-            $user = Auth::user();
             if($request->action == 'cart'){
                 $order_number = $request->order_number;
                 $order = Order::where('order_number', $order_number)->first();

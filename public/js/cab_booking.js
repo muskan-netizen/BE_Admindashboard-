@@ -207,17 +207,18 @@ $(document).ready(function () {
         });
        
         let amount = $(this).attr('data-amount');
+        let subscription_payable_amount = $(this).attr('data-subscriptionPayableAmount');
         let product_image = $(this).attr('data-image');
         let vendor_id = $(this).attr('data-vendor_id');
         let coupon_id = $(this).attr('data-coupon_id');
         let product_id = $(this).attr('data-product_id');
         let payment_option_id = $(this).attr('data-payment_method');
-       
+
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
@@ -659,6 +660,11 @@ $(document).ready(function () {
                     $('.cab-detail-box #discount_amount').text('').hide();
                     $('.cab-detail-box .code-text').text("Select A Promo Code").show();
                     $('.cab-detail-box #real_amount').text(response.data.currency_symbol+' '+amount);
+                    let subscriptionAmout = $('#subscription-amout-h').val();
+                    if(subscriptionAmout != undefined){
+                        $('#subscription-amout').text(response.data.currency_symbol+''+subscriptionAmout);
+                        $('#pickup_now').attr("data-subscriptionPayableAmount",subscriptionAmout);  
+                    }
                     $('#pickup_now').attr("data-coupon_id",'');
                     $('#pickup_later').attr("data-coupon_id",'');
                 }
@@ -687,6 +693,14 @@ $(document).ready(function () {
                     $('#pickup_now').attr("data-coupon_id",coupon_id);
                     $('#pickup_later').attr("data-coupon_id",coupon_id);
                     var current_amount = amount - response.data.new_amount;
+                    let subscriptionAmout = $('#subscription-amout-h').val();
+                    if(subscriptionAmout != undefined && subscriptionAmout > 0){
+                        console.log('response.data.new_amount', response.data.new_amount);
+                        var subscriptionPercent = $('#subscription-percent-h').val();
+                        let newPayableAmount = subscriptionPercent * current_amount / 100;
+                        $('#subscription-amout').text(response.data.currency_symbol+''+newPayableAmount);  
+                        $('#pickup_now').attr("data-subscriptionPayableAmount",newPayableAmount);
+                    }
                     $('.cab-detail-box #real_amount').text(response.data.currency_symbol+''+current_amount);
                 }
             }
