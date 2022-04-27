@@ -78,7 +78,7 @@ class PaytabController extends BaseController
             } elseif($request->action == 'wallet'){
                 $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $transaction_id]);
                 $walletController = new WalletController();
-                $walletController->creditWallet($request);
+                $walletController->creditMyWallet($request);
             }
             elseif($request->action == 'tip'){
                 $request->request->add(['order_number' => $request->order_number, 'tip_amount' => $request->amount, 'transaction_id' => $transaction_id]);
