@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use Auth, Log, Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Front\{BaseController, UserSubscriptionController, OrderController, WalletController};
+use App\Http\Controllers\Api\v1\{BaseController, UserSubscriptionController, OrderController, WalletController};
 use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, UserVendor, User,OrderProduct, OrderProductAddon, Transaction};
 
 class PaytabController extends BaseController
