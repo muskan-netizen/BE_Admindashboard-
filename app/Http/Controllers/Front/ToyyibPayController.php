@@ -148,7 +148,7 @@ class ToyyibPayController extends FrontController
                 'billPriceSetting'=>0,
                 'billPayorInfo'=>1,
                 'billAmount'=>$data['amount']*100,
-                'billReturnUrl'=> url('payment/toyyib/callback-success')."/".$data['payment_form'],
+                'billReturnUrl'=> url('payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
                 'billCallbackUrl'=> url('payment/toyyib/callback'),
                 'billExternalReferenceNo' => $data['order_number'],
                 'billTo'=> $user->name,
@@ -225,15 +225,19 @@ class ToyyibPayController extends FrontController
     public function callbackSuccess(Request $request,$payment_form,$domain = ''){
         $toyyibPayRes = $request;     
         $toyyibPayRes['payment_form'] = $toyyibPayRes['payment_form'] ?? $payment_form;
+        
         $user = Auth::user();      
-       
+        if(!$user)
+        {
+            $user = Auth::loginUsingId($request->userid);
+        }
             if($toyyibPayRes['status_id'] == '1' || $toyyibPayRes['status_id'] == '2' ){
                 if($toyyibPayRes['payment_form'] == 'cart'){
                     $order_number = $toyyibPayRes['order_id'];
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
                         $returnUrlParams = '';
-                        $returnUrl = route('order.success', $order->id);
+                        $returnUrl = route('order.success', $order->id);                        
                         $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
 
                         // Remove cart
