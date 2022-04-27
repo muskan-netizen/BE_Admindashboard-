@@ -367,12 +367,16 @@ class PaymentOptionController extends BaseController
                     $validatedData = $request->validate([
                         'paytab_profile_id' => 'required',
                         'paytab_server_key' => 'required',
-                        'paytab_client_key' => 'required'
+                        'paytab_client_key' => 'required',
+                        'paytab_mobile_server_key' => 'required',
+                        'paytab_mobile_client_key' => 'required',
                     ]);
                     $json_creds = json_encode(array(
                         'profile_id' => $request->paytab_profile_id,
                         'server_key' => $request->paytab_server_key,
-                        'client_key' => $request->paytab_client_key
+                        'client_key' => $request->paytab_client_key,
+                        'mobile_server_key' => $request->paytab_mobile_server_key,
+                        'mobile_client_key' => $request->paytab_mobile_client_key
                     ));
                 }
                 else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'vnpay')) {

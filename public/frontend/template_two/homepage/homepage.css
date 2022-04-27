@@ -2,9 +2,14 @@
 .fa-facebook-square:before, .fa-heart:before, .fa-twitter:before, .fa-user:before, .fa-whatsapp:before {
     font-family: FontAwesome !important;
 }
-.al_body_template_two article#content-wrap{padding-bottom: 0 !important;}
+/*.al_body_template_two article#content-wrap{padding-bottom: 0 !important;}
 .al_body_template_two .offset-top_al.al_offset-top-home{
     margin-top: 200px !important;
+}*/
+article#page-container {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
 }
 @media (max-width: 767px){
 .footer-contant .footer-social ul{

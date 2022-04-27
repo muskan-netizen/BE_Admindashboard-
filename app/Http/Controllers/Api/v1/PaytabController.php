@@ -88,7 +88,7 @@ class PaytabController extends BaseController
             elseif($request->action == 'subscription'){
                 $request->request->add(['payment_option_id' => 27, 'transaction_id' => $transaction_id]);
                 $subscriptionController = new UserSubscriptionController();
-                $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
+                $subscriptionController->purchaseSubscriptionPlan($request, $request->subscription_id);
             }
             return $this->successResponse('', __('Payment completed successfully'), 200);
         }
@@ -105,13 +105,10 @@ class PaytabController extends BaseController
                 $order = Order::where('order_number', $order_number)->first();
                 if($order){
                     $wallet_amount_used = $order->wallet_amount_used;
-                    Log::info($order);
                     if($wallet_amount_used > 0){
                         $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                        Log::info($transaction);
                         if(!$transaction){
                             $wallet = $user->wallet;
-                            Log::info($wallet);
                             $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
                         }
                     }

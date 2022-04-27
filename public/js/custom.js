@@ -7,7 +7,6 @@ $(document).ready(function () {
 
 
     jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
-    jQuery(".al_offset-top-home_1").css('margin-top', (header_height+100)+'px');
     jQuery("#content-wrap").css('padding-bottom', footer_height);
 
     jQuery(window).scroll(function () {
@@ -22,36 +21,6 @@ $(document).ready(function () {
 });
 
 
-// $(document).ready(function () {
-//   var ft =  $('.footer-light').height();
-//   var ht =  $('.site-header').height();
-//   var sm = $('section.section-b-space_.p-0.ratio_asos').height();
-// //   var ct =  $('#content-wrap').height();
-
-//     jQuery(".site-header").removeClass("fixed-bar");
-//     jQuery(".al_offset-top-home, .inner-pages-offset, .al_offset-top-home").css('margin-top', ht);
-//     jQuery("#content-wrap").css('padding-bottom', ft);
-//     jQuery("#content-wrap").css('min-height', sm);
-//     jQuery("section.section-b-space_.p-0.ratio_asos").css('top', ht);
-//     // jQuery(".al_offset-top-home").css('margin-top', ht);
-
-//     var window_height = $(window).height();;
-//     jQuery(window).scroll(function () {
-//         var scroll = jQuery(window).scrollTop();
-//         if (scroll <= 100) {
-//             jQuery(".site-header").removeClass("fixed-bar");
-//             jQuery(".al_offset-top-home").css('margin-top', ht);
-
-//         } else {
-//             jQuery(".site-header").addClass("fixed-bar");
-//             if(window_height < header_content_width + footer_height){
-//                 jQuery(".al_offset-top-home").css('margin-top', header_height+'px');
-//             }else{
-//                 jQuery(".al_offset-top-home").css('margin-top', '0px');
-//             }
-//         }
-//     });
-// });
 
 $(".mobile-account .fa").click(function(){
     $(".onhover-show-div").toggleClass("open");
@@ -1153,35 +1122,38 @@ $(document).ready(function () {
             }
         });
     }
+
+    
+    if (path.indexOf("auth_token") == -1) {
+        let queryString = window.location.search;
+        let urlParams = new URLSearchParams(queryString);
+
+        if ((urlParams.has('auth_token')) && (urlParams.get('auth_token') != '')) {
+        
+        var form = $(document.createElement('form'));
+        $(form).attr("action", "https://easypay.easypaisa.com.pk/easypay/Confirm.jsf");
+        $(form).attr("method", "POST");
+        var formInp = '<input name="auth_token" value="'+urlParams.get('auth_token')+'" hidden = "true"/><input name="postBackURL" value="http://royo-order.com/viewcart" hidden ="true"/><input type =”hidden” name=”paymentMethod” value="CC_PAYMENT_METHOD"><input value="confirm" type = "submit" name= "pay"/>';
+
+        $(form).append($(formInp));
+        form.appendTo(document.body)
+        $(form).submit();
+
+        return false;
+        }
+    }
+
+
     function paymentViaEasyPaisa() {
 
         var form = $(document.createElement('form'));
         $(form).attr("action", "https://easypay.easypaisa.com.pk/easypay/Index.jsf");
         $(form).attr("method", "POST");
+        var formInp = '<input name="storeId" value="17514" hidden = "true"/><input name="amount" value="10" hidden = "true"/><input name="postBackURL" value="http://royo-order.com/viewcart" hidden = "true"/><input name="orderRefNum" value="11206" hidden = "true"/><input type =”hidden” name=”paymentMethod” value="CC_PAYMENT_METHOD"><input type ="hidden" name="expiryDate" value="20220606 201531"><input type ="hidden" name="merchantHashedReq" value=""><input type="hidden" name="autoRedirect" value="1"><input type ="hidden" name="emailAddr" value="test.abcd@abcd.com"><input type ="hidden" name="mobileNum" value="03325241789"><input type ="hidden" name="bankIdentifier" value=""><input type = “image" src="checkout-button-with-logo.png border="0" name= “pay">';
 
-        var input = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "storeId")
-            .val("17514");
-        var input1 = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "amount")
-            .val($("input[name='cart_total_payable_amount']").val());
-        var input2 = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "postBackURL")
-            .val("http://local.myorder.com/confirmation");
-        var input3 = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "orderRefNum")
-            .val("123456");
-
-        $(form).append($(input)).append($(input1)).append($(input2)).append($(input3));
-
+        $(form).append($(formInp));
         form.appendTo(document.body)
-
         $(form).submit();
-
         return false;
     }
 
@@ -3449,7 +3421,8 @@ $(document).ready(function () {
     $(document).on('click', '.check-time-slots', function () {
         let cur_date = $(this).val();
         let cart_product_id = $(this).data("cart_product_id");
-        getTimeSlots(cur_date, cart_product_id);
+        let product_vendor_id = $(this).data("product_vendor_id");
+        getTimeSlots(cur_date, cart_product_id , product_vendor_id);
 
     });
 
@@ -3516,7 +3489,7 @@ $(document).ready(function () {
     });
 
     // on demand add to cart
-    function getTimeSlots(cur_date, cart_product_id) {
+    function getTimeSlots(cur_date, cart_product_id,product_vendor_id) {
         $("#show_date" + cart_product_id).html(cur_date);
         $.ajax({
             type: "post",
@@ -3524,7 +3497,8 @@ $(document).ready(function () {
             url: getTimeSlotsForOndemand,
             data: {
                 "cur_date": cur_date,
-                "cart_product_id": cart_product_id
+                "cart_product_id": cart_product_id,
+                "product_vendor_id": product_vendor_id
             },
             success: function (response) {
                 var booking_time_slick = $("#show-all-time-slots" + cart_product_id).find('.booking-time');

@@ -87,6 +87,8 @@
                 $client_id = (isset($creds->client_id)) ? $creds->client_id : '';
                 $client_key = (isset($creds->client_key)) ? $creds->client_key : '';
                 $server_key = (isset($creds->server_key)) ? $creds->server_key : '';
+                $mobile_client_key = (isset($creds->mobile_client_key)) ? $creds->mobile_client_key : '';
+                $mobile_server_key = (isset($creds->mobile_server_key)) ? $creds->mobile_server_key : '';
                 $access_code = (isset($creds->access_code)) ? $creds->access_code : '';
                 $enc_key = (isset($creds->enc_key)) ? $creds->enc_key : '';
                 $easypaisa_store_id = (isset($creds->easypaisa_store_id)) ? $creds->easypaisa_store_id : '';
@@ -622,14 +624,26 @@
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="paytab_server_key" class="mr-3">{{ __("Server Key") }}</label>
+                                    <label for="paytab_server_key" class="mr-3">{{ __("Standard Server Key") }}</label>
                                     <input type="text" name="paytab_server_key" id="paytab_server_key" class="form-control" value="{{$server_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="paytab_client_key" class="mr-3">{{ __("Client Key") }}</label>
+                                    <label for="paytab_client_key" class="mr-3">{{ __("Standard Client Key") }}</label>
                                     <input type="text" name="paytab_client_key" id="paytab_client_key" class="form-control" value="{{$client_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="paytab_mobile_server_key" class="mr-3">{{ __("Mobile Server Key") }}</label>
+                                    <input type="text" name="paytab_mobile_server_key" id="paytab_mobile_server_key" class="form-control" value="{{$mobile_server_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="paytab_mobile_client_key" class="mr-3">{{ __("Mobile Client Key") }}</label>
+                                    <input type="text" name="paytab_mobile_client_key" id="paytab_mobile_client_key" class="form-control" value="{{$mobile_client_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>
