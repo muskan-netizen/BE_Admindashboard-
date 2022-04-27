@@ -150,7 +150,7 @@ class PickupDeliveryController extends FrontController{
             if ($user_subscription) {
                 foreach ($user_subscription->features as $feature) {
                     if ($feature->feature_id == 2) {
-                        $product->subscription_discount = ($feature->percent_value * $product->tags_price / 100);
+                        $product->subscription_discount = $product->tags_price - ($feature->percent_value * $product->tags_price / 100);
                         $product->subscription_percent_value = $feature->percent_value;
                     }
                 }
@@ -598,7 +598,7 @@ class PickupDeliveryController extends FrontController{
                     if (!empty($user_subscription)) {
                         foreach ($user_subscription->features as $feature) {
                             if ($feature->feature_id == 2) {
-                                $finalAmount = ($feature->percent_value * $finalAmount / 100);
+                                $finalAmount = $finalAmount - ($feature->percent_value * $finalAmount / 100);
                             }
                         }
                     }
