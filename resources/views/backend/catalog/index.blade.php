@@ -240,7 +240,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($tags as $key => $tag)
-                                    <tr class="brandList" data-row-id="{{$brand->id}}">
+                                    <tr class="tagList" data-row-id="{{$tag->id}}">
                                         <td><span class="dragula-handle"></span></td>
                                         <td>@if(isset($tag->icon) && !empty($tag->icon)) <img style="height: 25px;width: auto;" src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}">@endif</td>
                                         <td>
@@ -268,9 +268,9 @@
                             </table>
                         </div>
                     </div>
-                    <div class="col-sm-12 text-right btn_bottom">
+                   <!--  <div class="col-sm-12 text-right btn_bottom">
                         <button class="btn btn-info waves-effect waves-light text-sm-right saveBrandOrder">{{ __('Save Order') }}</button>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

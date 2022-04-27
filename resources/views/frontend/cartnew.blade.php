@@ -467,7 +467,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="row">
                     <div class="col-6">{{__($fixedFee)}}</div>
                     <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(total_fixed_fee_amount) %></div>
-                    <input type="hidden" name="fixed_fee_amount" id="fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="<%= total_fixed_fee_amount %>">
+                    <input type="hidden" name="total_fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="<%= total_fixed_fee_amount %>">
                 </div>
                 <hr class="my-2">
             <% } %>
@@ -1429,7 +1429,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
+    var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
@@ -2082,6 +2084,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 </script>
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
+@endif
+@if(in_array('flutterwave',$client_payment_options))
+<script src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
 
 @endsection

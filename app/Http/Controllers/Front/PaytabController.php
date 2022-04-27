@@ -15,16 +15,7 @@ class PaytabController extends FrontController
 
 	private $application_id;
 	private $access_token;
-	public function __construct()
-  	{
-		// $this->paytab_creds = PaymentOption::select('credentials')->where('code', 'paytab')->where('status', 1)->first();
-	 //    $this->creds_arr = json_decode($this->paytab_creds->credentials);
-	 //    $this->profile_id = $this->creds_arr->profile_id??'';
-	 //    $this->server_key = $this->creds_arr->server_key??'';
-	 //    $this->client_key = $this->creds_arr->client_key??'';
-  //       Config::set('Paytabs.profile_id', $this->profile_id);
-  //       Config::set('Paytabs.server_key', $this->server_key); 
-	}
+    
 	public function beforePayment(Request $request)
     {
     	$data = $request->all();
@@ -159,7 +150,7 @@ class PaytabController extends FrontController
             return $returnUrl;
         }
         elseif($request->payment_from == 'subscription'){
-            $request->request->add(['payment_option_id' => 13, 'transaction_id' => $request->tranRef]);
+            $request->request->add(['payment_option_id' => 27, 'transaction_id' => $request->tranRef]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             if($request->come_from == 'app')

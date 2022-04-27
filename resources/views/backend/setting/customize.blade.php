@@ -92,7 +92,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group mb-2">
-                                <label for="time_format">{{ __("Decimal Format (Digits After Decimal)") }}</label>
+                                <label for="time_format">{{ __("Currency Format (Digits After Decimal)") }}</label>
                                 <select class="form-control al_box_height" id="digit_after_decimal" name="digit_after_decimal">
                                     <option value="0" {{ ($preference && $preference->digit_after_decimal == 0)? "selected" : "" }}> {{ __("No Decimal") }}
                                     </option>
@@ -612,7 +612,6 @@
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
-                                    <label for="custom_domain">{{ __("Fixed Fee Per Order") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="FixedFee_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="FixedFee_name[]" class="form-control al_box_height" value="{{ ($fixed_fee) ? \App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, $fixed_fee->id) : ''}}">
                                     @if($k == 0)
