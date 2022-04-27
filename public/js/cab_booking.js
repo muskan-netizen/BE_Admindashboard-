@@ -697,7 +697,7 @@ $(document).ready(function () {
                     if(subscriptionAmout != undefined && subscriptionAmout > 0){
                         console.log('response.data.new_amount', response.data.new_amount);
                         var subscriptionPercent = $('#subscription-percent-h').val();
-                        let newPayableAmount = subscriptionPercent * current_amount / 100;
+                        let newPayableAmount = current_amount - (subscriptionPercent * current_amount / 100);
                         $('#subscription-amout').text(response.data.currency_symbol+''+newPayableAmount);  
                         $('#pickup_now').attr("data-subscriptionPayableAmount",newPayableAmount);
                     }
