@@ -10,7 +10,7 @@ use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, Cart
 
 class PaytabController extends BaseController
 {
-    use \App\Http\Traits\PaytabPaymentManager;
+    // use \App\Http\Traits\PaytabPaymentManager;
 	use \App\Http\Traits\ApiResponser;
 
 	private $application_id;
