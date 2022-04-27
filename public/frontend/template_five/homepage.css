@@ -177,6 +177,24 @@ display:block;position:absolute;bottom:0;right:0}
 .style-4::-webkit-scrollbar{width:5px;height:5px;background-color:#f5f5f5}
 .style-4::-webkit-scrollbar-thumb{background-color:#000;border:2px solid #555}
 .cab-banner-area .card-box h2:empty{display: none;}
+path.althemeColor{fill: var(--theme-deafult);}
+path.alPath1{fill: var(--theme-deafult);opacity: .2;}
+path.alPath5{fill: var(--top-header-color);}
+
+/* dark theme */
+.dark .alDeliveryBox,
+.dark .al_custom_head_map_box{
+    background-color: #2b2b2b;
+}
+.dark #alTaxiSilderBG {
+    background-color: #242424;
+}
+.dark .al_custom_head_map_box i{color: #fff;}
+.dark .al_custom_head_map_box{border-color: #242424;}
+.dark .drivers.py-5 {
+    background-color: #2b2b2b;
+}
+
 @media(max-width:1366px){
     .ds {
         left: calc(((100vw - 1300px) / 2) + 24px);

@@ -184,6 +184,11 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/mvPay', 'Front\MvodafoneController@createPayLink')->name('mvodafone.pay');
 	Route::get('payment/mvsuccess', 'Front\MvodafoneController@successPage')->name('mvodafone.success');
 
+	//Flutterwave routes 
+	Route::post('payment/flutterwave', 'Front\FlutterWaveController@createHash')->name('flutterwave.createHash');
+	Route::match(['get','post'],'payment/flutter/success', 'Front\FlutterWaveController@successPage')->name('flutterwave.success');
+
+
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
 	Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
