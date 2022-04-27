@@ -1,4 +1,4 @@
-<h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
+<h4 class="mt-4 mb-2"><b>What time would you like us to start?</b></h4>
 <div class="booking-time radio-btns long-radio">   
    
     @foreach ($time_slots as $key => $date)
@@ -12,6 +12,5 @@
     </div>
     @endif
     @endforeach
-    
 </div>
 <P id="message_of_time{{$cart_product_id}}"></P>

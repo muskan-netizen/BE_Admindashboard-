@@ -370,7 +370,6 @@ function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
         return $q->where('day',$mytime)->where($type,'1');
     })
     ->get();
-    
     $min[] = '';
     $cart = CartProduct::where('vendor_id',$vid)->get();
     if(isset($cart) && $cart->count()>0){
