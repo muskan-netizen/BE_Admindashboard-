@@ -44,16 +44,16 @@ class ToyyibPayController extends FrontController
 
     public function createCategory($data){        
 
-        // $some_data = array(
-        //     'catname' => $data['category_name']??$data['order_number'], //CATEGORY NAME
-        //     'catdescription' => $data['category_name']??$data['order_number'], //PROVIDE YOUR CATEGORY DESCRIPTION
-        //     'userSecretKey' => $this->api_key //PROVIDE USER SECRET KEY HERE
-        //   );  
-          $some_data = array(
-            'catname' => 'Order data', //CATEGORY NAME
-            'catdescription' => 'Order Description' , //PROVIDE YOUR CATEGORY DESCRIPTION
+        $some_data = array(
+            'catname' => $data['category_name'], //CATEGORY NAME
+            'catdescription' => $data['category_name'], //PROVIDE YOUR CATEGORY DESCRIPTION
             'userSecretKey' => $this->api_key //PROVIDE USER SECRET KEY HERE
-          );          
+          );  
+        //   $some_data = array(
+        //     'catname' => 'Order data', //CATEGORY NAME
+        //     'catdescription' => 'Order Description' , //PROVIDE YOUR CATEGORY DESCRIPTION
+        //     'userSecretKey' => $this->api_key //PROVIDE USER SECRET KEY HERE
+        //   );          
           $curl = curl_init();        
           curl_setopt($curl, CURLOPT_POST, 1);
           curl_setopt($curl, CURLOPT_URL, $this->url.'/index.php/api/createCategory');  //PROVIDE API LINK HERE
@@ -120,12 +120,12 @@ class ToyyibPayController extends FrontController
             }
             elseif($payment_form == 'subscription'){
                 $description = 'Subscription Checkout';
-                if($request->has('subscription_id')){
+                if($data['subscription_id']){
                     $slug = $data['subscription_id'];
                     $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
                     $customer_data['subscription_id'] = $subscription_plan->id;
                     // $reference_number = $request->subscription_id;
-                    $returnUrlParams = $returnUrlParams . '&subscription=' . $request->subscription_id;
+                    $returnUrlParams = $returnUrlParams . '&subscription=' . $data['subscription_id'];
                     $order_tags['subscription_id'] = $data['subscription_id'];
                 }
             }
@@ -138,7 +138,7 @@ class ToyyibPayController extends FrontController
             if ($validator->fails()) {
                 return $this->errorResponse(__($validator->errors()->first()), 422);
             }
-
+            //return route('payment.toyyibpay.callbackSuccess',$data['payment_form']);
             
             $some_data = array(
                 'userSecretKey'=> $this->api_key,
@@ -311,6 +311,31 @@ class ToyyibPayController extends FrontController
             }
 
      }
+
+     public function orderForApp (Request $request){
+        //$primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        
+        $user = Auth::user();        
+        
+        $data = $request->all();
+        $data['address_id'] = "";
+        $data['payment_form'] = $data['action'] ?? 'cart';
+        $data['product_name'] = "Order Products";
+        $data['category_name'] = "Category";
+        //return $data;
+        //dd($data);
+        $codeCategory = $this->createCategory($data);
+        if(!empty($codeCategory)){
+           return $bill = $this->createBill($codeCategory,$data);
+            if(!empty($bill)){
+                $payUrl = $this->url.'/'.$bill;                          
+                return response()->json(['status' => 'Success', 'payment_link' => $payUrl]);
+            }else{
+                return $this->errorResponse($err->message, 400);
+            }
+        }
+       
+    }
 
 
 

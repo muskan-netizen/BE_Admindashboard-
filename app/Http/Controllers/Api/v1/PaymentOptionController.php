@@ -157,7 +157,7 @@ class PaymentOptionController extends BaseController{
 
     public function postPaymentVia_toyyibpay(Request $request){
         $gateway = new ToyyibPayController();
-        return $gateway->index($request);
+        return $gateway->orderForApp($request);
     }
     public function postPaymentVia_vnpay(Request $request){
         $gateway = new VnpayController();
