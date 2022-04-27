@@ -131,8 +131,9 @@
                     </div>
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between inline-toltip">
                         <label class="position-relative control-label" >Hide Price Bifurcation
-                            <div class="alInfoIocn" title="Hide Fixed Price, Service Fee, Container Charges, Taxes, Subtotal">
-                                <i class="fa fa-info-circle" ></i>
+                            <div class="alInfoIocn">
+                                <i class="fa fa-info-circle"></i>
+                                <span class="tooltiptext">Hide Fixed Price, Service Fee, Container Charges, Taxes, Subtotal</span>
                             </div>
                         </label>
                         <input type="checkbox" data-plugin="switchery" name="price_bifurcation" class="form-control" data-color="#43bee1" @if($vendor->price_bifurcation == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
