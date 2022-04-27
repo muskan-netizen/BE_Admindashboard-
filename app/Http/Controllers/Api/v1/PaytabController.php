@@ -33,7 +33,7 @@ class PaytabController extends BaseController
                         $payment = new Payment();
                         $payment->date = date('Y-m-d');
                         $payment->order_id = $order->id;
-                        $payment->transaction_id = $transactionId;
+                        $payment->transaction_id = $transaction_id;
                         $payment->balance_transaction = $request->amount;
                         $payment->type = 'cart';
                         $payment->save();
