@@ -316,5 +316,8 @@ section.section-b-space_.p-0.ratio_asos.Taxi_banner_shimmer .container{
     #alTaxiSilderBG .col-md-7.text-center svg {
         width: 100%;
     }
+    .drivers.py-5 img {
+        width: 100%;
+    }
 }
-
+@media(max-width:1366px){}
