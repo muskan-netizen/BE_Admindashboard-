@@ -465,20 +465,28 @@ class OrderController extends BaseController
                         $order->payment_status = 1;
                     }
                     $order->save();
-                    foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-                        $this->sendSuccessEmail($request, $order, $vendor_id);
-                    }
-                    $res = $this->sendSuccessEmail($request, $order);
+                    
                     // pr($res);
                     // exit();
                     // $ex_gateways = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25,28]; // if Stripe, paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz,vnpay
+                    
                     $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26];
+                    //Delete cart if payment is done from these gateways
                     if (in_array($request->payment_option_id, $ex_gateways)) {
+
+                        //Send Email to customer
+                        $res = $this->sendSuccessEmail($request, $order);
+                        //Send Email to Vendor
+                        foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                            $this->sendSuccessEmail($request, $order, $vendor_id);
+                        }
+                        
                         CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
+                        CartDeliveryFee::where('cart_id', $cart->id)->delete();
                     }
                     if (count($tax_category_ids)) {
                         foreach ($tax_category_ids as $tax_category_id) {

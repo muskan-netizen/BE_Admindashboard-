@@ -22,6 +22,7 @@ class PaytabController extends BaseController
         try{
             $user = Auth::user();
             $transaction_id = $request->transaction_id;
+            $request->amount = $this->getDollarCompareAmount($request->amount);
             if($request->action == 'cart'){
                 $order_number = $request->order_number;
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
@@ -62,6 +63,16 @@ class PaytabController extends BaseController
                         $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
                         $super_admin = User::where('is_superadmin', 1)->pluck('id');
                         $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+                        $request->request->add(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
+                        //Send Email to customer
+                        $orderController->sendSuccessEmail($request, $order);
+                        //Send Email to Vendor
+                        foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                            $orderController->sendSuccessEmail($request, $order, $vendor_id);
+                        }
+                        //Send SMS to customer
+                        $this->sendSuccessSMS($request, $order);
                     }
                 }
             } elseif($request->action == 'wallet'){
