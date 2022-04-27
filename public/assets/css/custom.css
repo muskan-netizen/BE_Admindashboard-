@@ -148,8 +148,8 @@ body p:empty{display: none;}
     border: solid 0px transparent;
     background-clip: padding-box;
     box-shadow: inset 0px 2px 5px 1px hsl(0deg 0% 0% / 30%);
-    -webkit-transition: all 0.85s ease-in-out;
-    transition: all 0.85s ease-in-out;
+    -webkit-transition: all 0s ease-in-out;
+    transition: all 0s ease-in-out;
   }
 
   .toggle__sphere {
@@ -161,11 +161,11 @@ body p:empty{display: none;}
     border-radius: 50%;
     transform-origin: top left;
     transform: translateY(0px);
-    box-shadow: 2px 0px 5px 1px hsla(18, 77%, 15%, 0.05),
+    /*box-shadow: 2px 0px 5px 1px hsla(18, 77%, 15%, 0.05),
       0px 5px 5px 1px hsla(18, 77%, 15%, 0.2),
-      -3px 0px 3px 1px hsla(0, 0%, 0%, 0.2);
-    -webkit-transition: all 0.85s ease-in-out;
-    transition: all 0.85s ease-in-out;
+      -3px 0px 3px 1px hsla(0, 0%, 0%, 0.2);*/
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
   }
 
   .toggle__sphere-overlay {
@@ -185,8 +185,8 @@ body p:empty{display: none;}
     height: 100%;
     transform-style: preserve-3d;
     border-radius: 50%;
-    -webkit-transition: transform 0.85s ease-in-out;
-    transition: transform 0.85s ease-in-out;
+    -webkit-transition: transform 0s ease-in-out;
+    transition: transform 0s ease-in-out;
   }
 
   .toggle__sphere-bg:before,
@@ -285,8 +285,39 @@ label.position-relative.control-label {
   position: absolute;
   top: 0;
   right: 0;
+  cursor: pointer;
 }
-.alInfoIocn[title]:hover:after {
+.alInfoIocn .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  margin-left: 5px;margin-top: 5px;
+}
+.alInfoIocn i{
+color:#43bee1
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.alInfoIocn:hover .tooltiptext {
+  visibility: visible;
+}
+.alInfoIocn .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 0; /* At the bottom of the tooltip */
+  left: 0;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+/*.alInfoIocn[title]:hover:after {
   content: attr(title);
   position: absolute;
   top: -100%;
@@ -298,7 +329,7 @@ label.position-relative.control-label {
 .inline-toltip{
   z-index:100;
   white-space: nowrap;
-}
+}*/
 
 /* dashboard css */
 @media(max-width:767px){
