@@ -36,6 +36,12 @@ article#page-container section .vendors section{
 .slick-slider{
     overflow: visible;
 }
+.pixelstrap li:hover ul{z-index: 9;}
+.pixelstrap li:hover ul li a{
+    padding: 0 !important;
+    width: 100%;
+    text-align: left;
+}
 .pixelstrap li:hover a,
 .pixelstrap li a{padding: 0;}
 .pixelstrap li:hover ul{display: block;}
