@@ -99,7 +99,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            <h3 class="mt-0">{{__('My Wallet')}}</h3>
+                            <h2 class="">{{__('My Wallet')}}</h3>
                         </div>
                         <div class="box-account box-info">
                             <div class="card-box mb-0">
@@ -305,7 +305,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
 <script type="text/template" id="user_profile_template">
     <% if(profile != '') { %>
         <label>
-            <span class="update_pic">
+            <span class="">
                 <img class="rounded-circle" src="<%= profile.image['image_fit'] %>100/100<%= profile.image['image_path'] %>" alt="" width="40" height="40">
             </span>
             <span class="ml-1"><b><%= profile.name %></b></span>
@@ -394,7 +394,9 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
+    var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
@@ -619,6 +621,9 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
 </script>
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
+@endif
+@if(in_array('flutterwave',$client_payment_options))
+<script src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script src="{{asset('js/payment.js')}}"></script>

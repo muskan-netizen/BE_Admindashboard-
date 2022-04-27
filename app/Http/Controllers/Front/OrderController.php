@@ -70,6 +70,11 @@ class OrderController extends FrontController
     public function orders(Request $request, $domain = '')
     {
         $user = Auth::user();
+        if(empty($user->timezone))
+        {
+            $client_timezone = DB::table('clients')->first('timezone'); 
+            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+        }        
         $currency_id = Session::get('customerCurrency');
 
         $langId = Session::get('customerLanguage');
@@ -677,10 +682,8 @@ class OrderController extends FrontController
     public function orderSave($request, $paymentStatus)
     {
         try {
-            $fixed_fee_amount=0.00;
-            if(Session()->has('vid')){
-                $fixed_fee_amount=Vendor::find(Session()->get('vid'))->fixed_fee_amount ?? 0.00;
-            }
+           
+            $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
             $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code')->first();
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
@@ -754,11 +757,11 @@ class OrderController extends FrontController
                     ->where('user_id', $user->id)
                     ->where('end_date', '>', $now)
                     ->orderBy('end_date', 'desc')->first();
-                if ($user_subscription) {
-                    foreach ($user_subscription->features as $feature) {
-                        $subscription_features[] = $feature->feature_id;
-                    }
-                }
+                // if ($user_subscription) {
+                //     foreach ($user_subscription->features as $feature) {
+                //         $subscription_features[] = $feature->feature_id;
+                //     }
+                // }
             }
             $cart_products = CartProduct::select('*')->with(['vendor', 'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                 $query->where('cart_id', $cart->id);
@@ -1011,9 +1014,23 @@ class OrderController extends FrontController
             }
 
             $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
-            if (in_array(1, $subscription_features)) {
-                $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
+
+            // calculate subscription discount
+            if ($user_subscription) {
+                foreach ($user_subscription->features as $feature) {
+                    if ($feature->feature_id == 1) {
+                        $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
+                    }
+                    elseif ($feature->feature_id == 2) {
+                        $off_percentage_discount = ($feature->percent_value * $payable_amount / 100);
+                        $total_subscription_discount = $total_subscription_discount + $off_percentage_discount;
+                    }
+                }
             }
+
+            // if (in_array(1, $subscription_features)) {
+            //     $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
+            // }
             $total_discount = $total_discount + $total_subscription_discount;
 
             $order->total_amount = $total_amount;
@@ -1071,7 +1088,7 @@ class OrderController extends FrontController
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [4,7,8,9,10,12,13,15,17,18,19,20,21,24,25,26,28]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay
+            $ex_gateways = [4,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay
            
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 

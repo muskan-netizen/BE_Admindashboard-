@@ -189,4 +189,19 @@ class WalletController extends FrontController
             return $this->errorResponse($ex->getMessage(), $ex->getCode);
         }
     }
+
+    public function refreshWalletbalance(Request $request, $domain='', $id=''){
+        if(!empty($id)){
+            $user = User::find($id);
+            if($user){
+                if($user->wallet){
+                    $user->wallet->refreshBalance();
+                }
+            }
+        }
+
+        echo '<pre>';
+        echo 'Successfully Done';
+        echo '</pre>';
+    }
 }

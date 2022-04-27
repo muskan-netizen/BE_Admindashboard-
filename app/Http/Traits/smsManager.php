@@ -71,6 +71,31 @@ trait smsManager{
         }
 
     }
+    public function arkesel_sms($to,$message,$crendentials)
+    {
+        $to_number = substr($to, 1);
+        $api_url = "https://sms.arkesel.com/sms/api?action=send-sms&";
+        $endpoint = $api_url.'api_key='.$crendentials->api_key.'&to='.$to_number.'&from='.$crendentials->sender_id.'&sms='.urlencode($message);
+    
+     
+       $curl = curl_init();
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => $endpoint,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        return json_decode($response);
+
+    }
     private function postCurl($data,$token=null):object{
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->api_url);
@@ -114,6 +139,7 @@ trait smsManager{
         try{
             $client = new \GuzzleHttp\Client();
             $res = $client->get($endpoint);
+            return $res;
             return $res->getStatusCode(); // 200
         }catch(Exception $e) {
             dd($e);

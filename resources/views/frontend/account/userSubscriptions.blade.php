@@ -70,8 +70,9 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                 </div>
 
                 <div class="row">
+                    @if(!empty($subscription))
                     <div class="col-12 mb-4">
-                        @if(!empty($subscription))
+
                             <div class="card subscript-box">
                                 @if( (empty($subscription->cancelled_at)) || (!empty($subscription->cancelled_at)) && ($subscription->cancelled_at >= $now))
                                 <div class="row align-items-center mb-2">
@@ -133,8 +134,9 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                                 </div>
                                 @endif
                             </div>
-                        @endif
+
                     </div>
+                    @endif
 
                     @if($subscription_plans->isNotEmpty())
                         @foreach($subscription_plans as $plan)
@@ -350,7 +352,9 @@ ul li {margin: 0 0 10px;color: #6c757d;}
     var stripe_fpx = '';
     var fpxBank = '';
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
+    var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var subscription_payment_options_url = "{{route('user.subscription.plan.select', ':id')}}";
@@ -409,6 +413,9 @@ ul li {margin: 0 0 10px;color: #6c757d;}
 </script>
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
+@endif
+@if(in_array('flutterwave',$client_payment_options))
+<script src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
 <script src="{{asset('js/payment.js')}}"></script>
 

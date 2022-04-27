@@ -25,6 +25,8 @@ use App\Http\Controllers\ShiprocketController;
 use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc};
 use GuzzleHttp\Client as GCLIENT;
 use Log;
+//use App\Http\Traits\MpesaStkpush;
+
 class CartController extends BaseController
 {
     use ApiResponser;
@@ -527,6 +529,7 @@ class CartController extends BaseController
         
         $loyalty_amount_saved = 0;
         $subscription_features = array();
+        $user_subscription = null;
         if ($cart->user_id) {
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')
@@ -534,11 +537,11 @@ class CartController extends BaseController
                 ->where('user_id', $cart->user_id)
                 ->where('end_date', '>', $now)
                 ->orderBy('end_date', 'desc')->first();
-            if ($user_subscription) {
-                foreach ($user_subscription->features as $feature) {
-                    $subscription_features[] = $feature->feature_id;
-                }
-            }
+            // if ($user_subscription) {
+            //     foreach ($user_subscription->features as $feature) {
+            //         $subscription_features[] = $feature->feature_id;
+            //     }
+            // }
             $user = User::find($cart->user_id);
             $cart->scheduled_date_time = !empty($cart->scheduled_date_time) ? convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i') : NULL;
             $cart->schedule_pickup = !empty($cart->schedule_pickup) ? convertDateTimeInTimeZone($cart->schedule_pickup, $user->timezone, 'Y-m-d\TH:i') : NULL;
@@ -1005,10 +1008,10 @@ class CartController extends BaseController
                     unset($vendorData->coupon->promo);
                 }
 
-                if (in_array(1, $subscription_features)) {
-                    $subscription_discount = $subscription_discount + $deliver_charge;
-                }
-                $total_subscription_discount = $total_subscription_discount + $subscription_discount;
+                // if (in_array(1, $subscription_features)) {
+                //     $subscription_discount = $subscription_discount + $deliver_charge;
+                // }
+                // $total_subscription_discount = $total_subscription_discount + $subscription_discount;
                 if (isset($serviceArea)) {
                     if ($serviceArea->isEmpty()) {
                         $vendorData->isDeliverable = 0;
@@ -1053,7 +1056,22 @@ class CartController extends BaseController
             ++$vondorCnt;
         }//End cart Vendor loop
 
+        // calculate subscription discount
+        $subscription_discount =0;
+        if ($user_subscription) {
+         
+            foreach ($user_subscription->features as $feature) {
+                if ($feature->feature_id == 1) {
+                    $subscription_discount = $subscription_discount + $total_delivery_amount;
+                }
+                elseif ($feature->feature_id == 2) {
+                    $off_percentage_discount = ($feature->percent_value * $total_paying / 100);
+                    $subscription_discount = $subscription_discount + $off_percentage_discount;
+                }
+            }
+        }
         
+        $total_subscription_discount = $total_subscription_discount + $subscription_discount;
 
         $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id')->first();
         if ($cart_product_luxury_id) {
@@ -1062,7 +1080,7 @@ class CartController extends BaseController
                 $cart->address = $vendor_address->address;
             }
         }
-        if (!empty($subscription_features)) {
+        if ($total_subscription_discount > 0) {
             $total_disc_amount = $total_disc_amount + $total_subscription_discount;
             $cart->total_subscription_discount = $total_subscription_discount * $clientCurrency->doller_compare;
         }
@@ -1086,6 +1104,7 @@ class CartController extends BaseController
             $cart->closed_store_order_scheduled = 0;
         }
         $cart->category_kyc_count = 0;
+        $cart->without_category_kyc = 0;
         $cart->category_ids = '';
         if( $preferences->category_kyc_documents ==1 ){
                       
@@ -1103,6 +1122,22 @@ class CartController extends BaseController
                 $cart->category_kyc_count = $category_kyc_count;
                 $cart->category_ids = implode( ',',$category_array);
             }
+
+            $ALLcategory_kyc_documents =CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_array){
+                $q->whereIn('category_id',$category_array);
+            })->with('primary')->get();
+            foreach ($ALLcategory_kyc_documents as $vendor_registration_document) {
+                if($vendor_registration_document->is_required == 1){
+                  
+                    $check = CaregoryKycDoc::where(['cart_id'=>$cartID,'category_kyc_document_id'=>$vendor_registration_document->id])->first();
+                    if($check)
+                    {  
+                        $cart->without_category_kyc = 1;
+                    }
+                }
+            }
+        }else{
+            $cart->without_category_kyc = 1; 
         }
 
         $cart->total_service_fee = decimal_format($total_service_fee);
@@ -1558,6 +1593,14 @@ class CartController extends BaseController
     }
 
     public function updateCartCategoryKyc(Request $request){
+        $user = Auth::user();
+        if (!$user->id) {
+            $cart = Cart::where('unique_identifier', $user->system_user);
+        } else {
+            $cart = Cart::where('user_id', $user->id);
+        }
+        $cart = $cart->first();
+
         $rules=[];
         $category_ids = explode(",",$request->category_ids);
 
@@ -1566,7 +1609,8 @@ class CartController extends BaseController
         })->with('primary')->get();
         foreach ($category_kyc_documents as $vendor_registration_document) {
             if($vendor_registration_document->is_required == 1){
-                if(isset($vendor_registration_document->primary) && !empty($vendor_registration_document->primary))
+                $check = CaregoryKycDoc::where(['cart_id'=>$cart->id,'category_kyc_document_id'=>$vendor_registration_document->id])->first();
+                if(isset($vendor_registration_document->primary) && !empty($vendor_registration_document->primary) && !$check )
                 {
                     $rules[$vendor_registration_document->primary->slug] = 'required';
                 }
@@ -1575,13 +1619,7 @@ class CartController extends BaseController
 
         $validation  = Validator::make($request->all(), $rules)->validate();
 
-        $user = Auth::user();
-        if (!$user->id) {
-            $cart = Cart::where('unique_identifier', $user->system_user);
-        } else {
-            $cart = Cart::where('user_id', $user->id);
-        }
-        $cart = $cart->first();
+        
     
         //pr($category_ids);
         $user_product_order_form = null;
@@ -1599,7 +1637,6 @@ class CartController extends BaseController
                     if ($vendor_registration_document->file_type != "Text" && $vendor_registration_document->file_type != "selector") {
                         $check = CaregoryKycDoc::where(['cart_id'=>$cart->id,'category_kyc_document_id'=>$vendor_registration_document->id])->first();
                         if ($request->hasFile($doc_name) && !$check) {
-                        
                             $vendor_docs =  new CaregoryKycDoc();
                             $vendor_docs->user_id = $user->id;
                             $vendor_docs->category_kyc_document_id = $vendor_registration_document->id;
@@ -1610,16 +1647,6 @@ class CartController extends BaseController
                             $vendor_docs->save();
                         }
                     } 
-                    //else {
-                    //     if (!empty($request->$doc_name)) {
-                    //         $vendor_docs =  new CaregoryKycDoc();
-                    //         $vendor_docs->user_id = $user->id;
-                    //         $vendor_docs->category_kyc_document_id = $vendor_registration_document->id;
-                    //         $vendor_docs->file_name = $request->$doc_name;
-                    //         $vendor_docs->cart_id = $cart->id;
-                    //         $vendor_docs->save();
-                    //     }
-                    //}
                 }
             }
         }
@@ -1631,6 +1658,5 @@ class CartController extends BaseController
         ]);
     
     }
-
 
 }
