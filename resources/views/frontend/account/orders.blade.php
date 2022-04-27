@@ -1813,6 +1813,9 @@
     @if(in_array('kongapay',$client_payment_options))
     <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
     @endif
+    @if(in_array('flutterwave',$client_payment_options))
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
+    @endif
     <script src="{{ asset('js/payment.js') }}"></script>
     <script type="text/javascript">
         $(document).delegate(".topup_wallet_btn_tip", "click", function() {
@@ -1845,6 +1848,7 @@
         var credit_tip_url = "{{ route('user.tip_after_order') }}";
         var payment_stripe_url = "{{ route('payment.stripe') }}";
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+        var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
         var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
         var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
         var create_ccavenue_url = "{{route('ccavenue.pay')}}";

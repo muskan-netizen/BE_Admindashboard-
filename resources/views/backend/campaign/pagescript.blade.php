@@ -98,7 +98,6 @@
                 $(".loader_box").show();
             },
             success: function(response) {
-
                 if (response.status == 'success') {
                     $(".modal .close").click();
                     location.reload();
@@ -112,8 +111,8 @@
             error: function(response) {
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
-                    Object.keys(errors).forEach(function(key) {
-                        $("#" + key + "Inpiut input").addClass("is-invalid");
+                    Object.keys(errors).forEach(function(key) {                       
+                        $("#" + key + "Input input").addClass("is-invalid");
                         $("#" + key + "Input span.invalid-feedback").children("strong").text(errors[key][0]);
                         $("#" + key + "Input span.invalid-feedback").show();
                     });
