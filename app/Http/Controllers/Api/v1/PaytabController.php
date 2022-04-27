@@ -96,7 +96,7 @@ class PaytabController extends BaseController
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
-    public function failedPayment($request)
+    public function failedPayment(Request $request)
     {
         try{
             if($request->action == 'cart'){
