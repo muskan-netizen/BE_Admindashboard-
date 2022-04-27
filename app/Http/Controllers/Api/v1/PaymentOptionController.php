@@ -13,6 +13,7 @@ use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController};
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
+use App\Http\Controllers\Front\ToyyibPayController;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction};
@@ -156,7 +157,7 @@ class PaymentOptionController extends BaseController{
 
     public function postPaymentVia_toyyibpay(Request $request){
         $gateway = new ToyyibPayController();
-        return $gateway->index($request);
+        return $gateway->orderForApp($request);
     }
     public function postPaymentVia_vnpay(Request $request){
         $gateway = new VnpayController();
