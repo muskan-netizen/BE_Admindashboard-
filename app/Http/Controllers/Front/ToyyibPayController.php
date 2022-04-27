@@ -138,7 +138,7 @@ class ToyyibPayController extends FrontController
             if ($validator->fails()) {
                 return $this->errorResponse(__($validator->errors()->first()), 422);
             }
-            //return route('payment.toyyibpay.callbackSuccess',$data['payment_form']);
+        
             
             $some_data = array(
                 'userSecretKey'=> $this->api_key,
@@ -148,8 +148,8 @@ class ToyyibPayController extends FrontController
                 'billPriceSetting'=>0,
                 'billPayorInfo'=>1,
                 'billAmount'=>$data['amount']*100,
-                'billReturnUrl'=> route('payment.toyyibpay.callbackSuccess',$data['payment_form']),
-                'billCallbackUrl'=> route('payment.toyyibpay.callback'),
+                'billReturnUrl'=> url('payment/toyyib/callback-success')."/".$data['payment_form'],
+                'billCallbackUrl'=> url('payment/toyyib/callback'),
                 'billExternalReferenceNo' => $data['order_number'],
                 'billTo'=> $user->name,
                 'billEmail' => $user->email,
@@ -221,8 +221,10 @@ class ToyyibPayController extends FrontController
      // dd($request->all());
     }
 
+    
     public function callbackSuccess(Request $request,$payment_form,$domain = ''){
         $toyyibPayRes = $request;     
+        $toyyibPayRes['payment_form'] = $toyyibPayRes['payment_form'] ?? $payment_form;
         $user = Auth::user();      
        
             if($toyyibPayRes['status_id'] == '1' || $toyyibPayRes['status_id'] == '2' ){
@@ -269,7 +271,7 @@ class ToyyibPayController extends FrontController
                     }
                    
                 }
-                elseif($data['payment_form'] == 'subscription'){
+                elseif($toyyibPayRes['payment_form'] == 'subscription'){
                     $returnUrl = route('user.subscription.plans');
                     if($toyyibPayRes['status_id'] == '2' ){
                         return Redirect::to(url($returnUrl))->with('success', 'Transaction has been pending');
@@ -326,7 +328,7 @@ class ToyyibPayController extends FrontController
         //dd($data);
         $codeCategory = $this->createCategory($data);
         if(!empty($codeCategory)){
-           return $bill = $this->createBill($codeCategory,$data);
+            $bill = $this->createBill($codeCategory,$data);
             if(!empty($bill)){
                 $payUrl = $this->url.'/'.$bill;                          
                 return response()->json(['status' => 'Success', 'payment_link' => $payUrl]);
