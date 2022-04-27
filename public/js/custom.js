@@ -1153,35 +1153,38 @@ $(document).ready(function () {
             }
         });
     }
+
+    
+    if (path.indexOf("auth_token") == -1) {
+        let queryString = window.location.search;
+        let urlParams = new URLSearchParams(queryString);
+
+        if ((urlParams.has('auth_token')) && (urlParams.get('auth_token') != '')) {
+        
+        var form = $(document.createElement('form'));
+        $(form).attr("action", "https://easypay.easypaisa.com.pk/easypay/Confirm.jsf");
+        $(form).attr("method", "POST");
+        var formInp = '<input name="auth_token" value="'+urlParams.get('auth_token')+'" hidden = "true"/><input name="postBackURL" value="http://royo-order.com/viewcart" hidden ="true"/><input type =”hidden” name=”paymentMethod” value="CC_PAYMENT_METHOD"><input value="confirm" type = "submit" name= "pay"/>';
+
+        $(form).append($(formInp));
+        form.appendTo(document.body)
+        $(form).submit();
+
+        return false;
+        }
+    }
+
+
     function paymentViaEasyPaisa() {
 
         var form = $(document.createElement('form'));
         $(form).attr("action", "https://easypay.easypaisa.com.pk/easypay/Index.jsf");
         $(form).attr("method", "POST");
+        var formInp = '<input name="storeId" value="17514" hidden = "true"/><input name="amount" value="10" hidden = "true"/><input name="postBackURL" value="http://royo-order.com/viewcart" hidden = "true"/><input name="orderRefNum" value="11206" hidden = "true"/><input type =”hidden” name=”paymentMethod” value="CC_PAYMENT_METHOD"><input type ="hidden" name="expiryDate" value="20220606 201531"><input type ="hidden" name="merchantHashedReq" value=""><input type="hidden" name="autoRedirect" value="1"><input type ="hidden" name="emailAddr" value="test.abcd@abcd.com"><input type ="hidden" name="mobileNum" value="03325241789"><input type ="hidden" name="bankIdentifier" value=""><input type = “image" src="checkout-button-with-logo.png border="0" name= “pay">';
 
-        var input = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "storeId")
-            .val("17514");
-        var input1 = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "amount")
-            .val($("input[name='cart_total_payable_amount']").val());
-        var input2 = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "postBackURL")
-            .val("http://local.myorder.com/confirmation");
-        var input3 = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "orderRefNum")
-            .val("123456");
-
-        $(form).append($(input)).append($(input1)).append($(input2)).append($(input3));
-
+        $(form).append($(formInp));
         form.appendTo(document.body)
-
         $(form).submit();
-
         return false;
     }
 
