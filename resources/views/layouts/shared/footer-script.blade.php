@@ -271,6 +271,7 @@ if (Session::has('toaster')) {
 @endif
 @endif
 <script>
+    @if(Auth::user())
     $(document).on("change",".admin_panel_theme", function(){
         if($(this).prop('checked')){
             var theme_admin = 'dark';
@@ -290,6 +291,7 @@ if (Session::has('toaster')) {
         });
 
     });
+    @endif
     $(document).on("click", ".update_order_status", function() {
         Swal.fire({
             title: "{{__('Are you Sure?')}}",
