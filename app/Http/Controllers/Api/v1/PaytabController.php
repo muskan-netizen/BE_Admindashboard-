@@ -99,15 +99,19 @@ class PaytabController extends BaseController
     public function failedPayment(Request $request)
     {
         try{
+            $user = Auth::user();
             if($request->action == 'cart'){
                 $order_number = $request->order_number;
                 $order = Order::where('order_number', $order_number)->first();
                 if($order){
                     $wallet_amount_used = $order->wallet_amount_used;
+                    Log::info($order);
                     if($wallet_amount_used > 0){
                         $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                        Log::info($transaction);
                         if(!$transaction){
                             $wallet = $user->wallet;
+                            Log::info($wallet);
                             $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
                         }
                     }
