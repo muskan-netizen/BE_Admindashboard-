@@ -438,12 +438,13 @@
                                                                 <i class="fa fa-home"></i> {{ $vendor->website }}
                                                             </li>
                                                         @endif
-                                                        @if($vendor->instagram_url)
-                                                            <li class="d-block vendor-instagram">
-                                                                <i class="fa fa-instagram"></i> <a target="_blank" href="{{$vendor->instagram_url}}">Visit Instagram</a>
-                                                            </li>
-                                                        @endif
                                                     @endif
+                                                    @if($vendor->instagram_url)
+                                                        <li class="d-block vendor-instagram">
+                                                            <i class="fa fa-instagram"></i> <a target="_blank" href="{{$vendor->instagram_url}}">Visit Instagram</a>
+                                                        </li>
+                                                    @endif
+                                                    
 
                                                     @php
                                                         $checkSlot = findSlot('', $vendor->id, '');

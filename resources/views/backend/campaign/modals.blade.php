@@ -26,7 +26,7 @@
 
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="form-group" id="nameInput">
+                        <div class="form-group" id="titleInput">
                             {!! Form::label('title', __('Title'),['class' => 'control-label']) !!}
                             {!! Form::text('title', null, ['class' => 'form-control', 'placeholder' => 'Title']) !!}
                             <span class="invalid-feedback" role="alert">
@@ -169,7 +169,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="form-group" id="schedule_datetimeInput">
                                     <label for="schedule_datetime" class="control-label">{{__("Schedule Date")}}</label>
                                     <input type="datetime-local" class="form-control" name="schedule_datetime" id="schedule_datetime">
                                                                

@@ -83,41 +83,29 @@ class PromoCodeController extends Controller{
                     $query->where('user_id', Auth::user()->id);
                 });
             }
-
             if (!empty($request->get('date_filter'))) {
                 $date_date_filter = explode(' to ', $request->get('date_filter'));
                 $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
                 $from_date = $date_date_filter[0];
-                $vendor_orders_query->between($from_date." 00:00:00", $to_date." 23:59:59");
+                $vendor_orders_query = $vendor_orders_query->between($from_date." 00:00:00", $to_date." 23:59:59");
+            }
+            if (!empty($request->get('promo_code_filter'))) {
+                $promo_code_filter = $request->get('promo_code_filter');
+                $vendor_orders_query = $vendor_orders_query->where('coupon_id', $promo_code_filter);
+            }
+            if (!empty($request->get('status_filter'))) {
+                $status_filter = $request->get('status_filter');
+                $vendor_orders_query = $vendor_orders_query->where('order_status_option_id', $status_filter);
+               
             }
             $vendor_orders = $vendor_orders_query->orderBy('id', 'desc');
-            // foreach ($vendor_orders as $vendor_order) {
-            //     $vendor_order->payment_option_title = __($vendor_order->orderDetail->paymentOption->title);
-            //     $order_status = '';
-            //     $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);
-            //     $vendor_order->user_name = $vendor_order->user ? $vendor_order->user->name : '';
-            //     $vendor_order->subtotal_amount = decimal_format($vendor_order->subtotal_amount) ;
-            //     $vendor_order->payable_amount = decimal_format($vendor_order->payable_amount) ;
-            //     $vendor_order->view_url = route('order.show.detail', [$vendor_order->order_id, $vendor_order->vendor_id]);
-            //     if($vendor_order->coupon_paid_by == 0){
-            //         $vendor_order->vendor_paid_promo = decimal_format($vendor_order->discount_amount) ?? '0.00';
-            //         $vendor_order->admin_paid_promo = '0.00';
-            //     }else{
-            //         $vendor_order->admin_paid_promo = decimal_format($vendor_order->discount_amount) ?? '0.00';
-            //         $vendor_order->vendor_paid_promo = '0.00';
-            //     }
-            //     if($vendor_order->orderstatus){
-            //         $order_status_detail = $vendor_order->orderstatus->where('order_id', $vendor_order->order_id)->orderBy('id', 'DESC')->first();
-            //         if($order_status_detail){
-            //             $order_status_option = OrderStatusOption::where('id', $order_status_detail->order_status_option_id)->first();
-            //             if($order_status_option){
-            //                 $order_status = $order_status_option->title;
-            //             }
-            //         }
-            //     }
-            //     $vendor_order->order_status = __($order_status);
-            // }
             return Datatables::of($vendor_orders)
+                ->addColumn('subtotal_amount', function($vendor_orders) {
+                    return decimal_format($vendor_orders->subtotal_amount);
+                })
+                ->addColumn('payable_amount', function($vendor_orders) {
+                    return decimal_format($vendor_orders->payable_amount);
+                })
                 ->addColumn('order_number', function($vendor_orders) {
                     return $vendor_orders->orderDetail ? $vendor_orders->orderDetail->order_number : '';
                 })
@@ -130,14 +118,14 @@ class PromoCodeController extends Controller{
                 })
                 ->addColumn('vendor_paid_promo', function($vendor_orders){
                     if($vendor_orders->coupon_paid_by == 0){
-                        return $vendor_orders->discount_amount ?? '0.00';
+                        return decimal_format($vendor_orders->discount_amount ?? 0);
                     }else{
                         return '0.00';
                     }
                 })
                 ->addColumn('admin_paid_promo', function($vendor_orders){
-                    if($vendor_orders->coupon_paid_by == 0){
-                        return $vendor_orders->discount_amount ?? '0.00';
+                    if($vendor_orders->coupon_paid_by == 1){
+                        return decimal_format($vendor_orders->discount_amount ?? 0) ;
                     }else{
                         return '0.00';
                     }
@@ -151,8 +139,8 @@ class PromoCodeController extends Controller{
                     return $vendor_orders->user ? $vendor_orders->user->name : '';
                 })
                 ->addColumn('order_status', function($vendor_orders) {
-                    if ($vendor_orders->orderstatus) {
-                        return $vendor_orders->orderstatus->OrderStatusOption->title;
+                    if ($vendor_orders->OrderStatusOption) {
+                        return $vendor_orders->OrderStatusOption->title;
                     }else{
                         return '';
                     }
@@ -165,27 +153,18 @@ class PromoCodeController extends Controller{
                 })
                 ->addIndexColumn()
                 ->filter(function ($instance) use ($request) {
-                    if (!empty($request->get('promo_code_filter'))) {
-                        $instance->collection = $instance->collection->filter(function ($row) use ($request) {
-                            return Str::contains($row['coupon_id'], $request->get('promo_code_filter')) ? true : false;
-                        });
-                    }
-                    if (!empty($request->get('status_filter'))) {
-                        $status_fillter = $request->get('status_filter');
-                        $instance->collection = $instance->collection->filter(function ($row) use ($status_fillter) {
-                            return Str::contains($row['order_status'], $status_fillter) ? true : false;
-                        });
-                    }
                     if (!empty($request->get('search'))) {
-                        $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                            if (Str::contains(Str::lower($row['order_detail']['order_number']), Str::lower($request->get('search')))){
-                                return true;
-                            }else if (Str::contains(Str::lower($row['user_name']), Str::lower($request->get('search')))) {
-                                return true;
-                            }else if (Str::contains(Str::lower($row['vendor']['name']), Str::lower($request->get('search')))) {
-                                return true;
-                            }
-                            return false;
+                        $search = $request->get('search');
+                        $instance->where(function($query) use($search){
+                            $query->whereHas('orderDetail', function($q) use($search){
+                                $q->where('order_number', 'LIKE', '%'.$search.'%');
+                            })
+                            ->orWhereHas('user', function($q) use($search){
+                                $q->where('name', 'LIKE', '%'.$search.'%');
+                            })
+                            ->orWhereHas('vendor', function($q) use($search){
+                                $q->where('name', 'LIKE', '%'.$search.'%');
+                            });
                         });
                     }
                 })->make(true);

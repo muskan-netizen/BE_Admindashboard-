@@ -394,7 +394,9 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
+    var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
@@ -619,6 +621,9 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
 </script>
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
+@endif
+@if(in_array('flutterwave',$client_payment_options))
+<script src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script src="{{asset('js/payment.js')}}"></script>
