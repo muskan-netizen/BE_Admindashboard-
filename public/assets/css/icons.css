@@ -8055,11 +8055,12 @@ File: Icons Css File
 .mdi-email-receive-outline::before {
   content: "\F10DB";
 }
-
+.mdi-email-remove::before{
+  content: "\F1661"
+}
 .mdi-email-search::before {
   content: "\F0961";
 }
-
 .mdi-email-search-outline::before {
   content: "\F0962";
 }

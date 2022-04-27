@@ -145,7 +145,7 @@ class OrderController extends BaseController
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
                 if ($cart) {
-                    $loyalty_points_used;
+                    $loyalty_points_used=0;
                     $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
                     if ($order_loyalty_points_earned_detail) {
                         $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
@@ -175,6 +175,17 @@ class OrderController extends BaseController
                     $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
+                    
+                    /* calculate total fixed fee amount */
+                    $total_fixed_fee_amount =0.00;
+                    $pro_vendors=array();
+                    foreach($cart_products as $row){
+                        if(!in_array($row->vendor_id,$pro_vendors)){
+                            $pro_vendors[]=$row->vendor_id;
+                            $total_fixed_fee_amount += Vendor::find($row->vendor_id)->fixed_fee_amount;
+                        }
+                    }
+                    
                     $total_container_charges = 0;
                     $vendor_total_container_charges = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
@@ -448,24 +459,34 @@ class OrderController extends BaseController
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
                     $order->payable_amount = $payable_amount;
+                    $order->fixed_fee_amount = $total_fixed_fee_amount;
                     $order->total_container_charges = $total_container_charges;
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                         $order->payment_status = 1;
                     }
                     $order->save();
-                    foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-                        $this->sendSuccessEmail($request, $order, $vendor_id);
-                    }
-                    $res = $this->sendSuccessEmail($request, $order);
+                    
                     // pr($res);
                     // exit();
-                    $ex_gateways = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25,28]; // if Stripe, paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz,vnpay
-                    if (!in_array($request->payment_option_id, $ex_gateways)) {
+                    // $ex_gateways = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25,28]; // if Stripe, paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz,vnpay
+                    
+                    $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26];
+                    //Delete cart if payment is done from these gateways
+                    if (in_array($request->payment_option_id, $ex_gateways)) {
+
+                        //Send Email to customer
+                        $res = $this->sendSuccessEmail($request, $order);
+                        //Send Email to Vendor
+                        foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                            $this->sendSuccessEmail($request, $order, $vendor_id);
+                        }
+                        
                         CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
+                        CartDeliveryFee::where('cart_id', $cart->id)->delete();
                     }
                     if (count($tax_category_ids)) {
                         foreach ($tax_category_ids as $tax_category_id) {
@@ -476,16 +497,16 @@ class OrderController extends BaseController
                         }
                     }
                     if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
-                        Payment::insert([
-                            'date' => date('Y-m-d'),
-                            'order_id' => $order->id,
-                            'transaction_id' => $request->transaction_id,
-                            'balance_transaction' => $order->payable_amount,
-                            'type' => 'cart'
-                        ]);
+                        $payment = new Payment();
+                        $payment->date = date('Y-m-d');
+                        $payment->order_id = $order->id;
+                        $payment->transaction_id = $request->transaction_id;
+                        $payment->balance_transaction = $order->payable_amount;
+                        $payment->type = 'cart';
+                        $payment->save();
                     }
                     $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
-                    if (!in_array($request->payment_option_id, $ex_gateways)) {
+                    if (in_array($request->payment_option_id, $ex_gateways)) {
                         $code = $request->header('code');
                         if (!empty($order->vendors)) {
                             foreach ($order->vendors as $vendor_value) {
@@ -2043,7 +2064,8 @@ class OrderController extends BaseController
                         }
                         $res = $this->sendSuccessEmail($request, $order);
 
-                        $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
+                        // $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
+                        $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26];
                         // if (!in_array($request->payment_option_id, $ex_gateways)) {
                         //     Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         //     CartCoupon::where('cart_id', $cart->id)->delete();
@@ -2071,7 +2093,7 @@ class OrderController extends BaseController
                             }
                         // }
                         $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
-                        if (!in_array($order->payment_option_id, $ex_gateways)) {
+                        if (in_array($order->payment_option_id, $ex_gateways)) {
                             $code = $request->header('code');
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {

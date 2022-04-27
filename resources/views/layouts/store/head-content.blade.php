@@ -38,6 +38,10 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/homepage/homepage.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/footer/footer.css')}}">
+@elseif(isset($set_template)  && $set_template->template_id == 5)
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/homepage.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/footer.css')}}">
 @endif
 
 @yield('css-links')

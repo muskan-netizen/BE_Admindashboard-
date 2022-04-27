@@ -33,8 +33,9 @@
                                             <div class="name_location d-block py-0">
                                                 <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
                                             </div>
-                                            @if($vendor->is_show_vendor_details == 1)
+                                            
                                                 <div class="">
+                                                    @if($vendor->is_show_vendor_details == 1)
                                                     @if($vendor->email)
                                                         <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
                                                     @endif
@@ -42,11 +43,12 @@
                                                     @if($vendor->website)
                                                         <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
                                                     @endif
+                                                    @endif
                                                     @if($vendor->instagram_url)
                                                         <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>                                                    
                                                     @endif
                                                 </div>
-                                            @endif
+                                            
                                         </div>
                                         @if($vendor->desc)
                                             <div class="col-md-12 text-center">

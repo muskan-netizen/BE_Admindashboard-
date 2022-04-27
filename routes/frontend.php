@@ -184,6 +184,11 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/mvPay', 'Front\MvodafoneController@createPayLink')->name('mvodafone.pay');
 	Route::get('payment/mvsuccess', 'Front\MvodafoneController@successPage')->name('mvodafone.success');
 
+	//Flutterwave routes 
+	Route::post('payment/flutterwave', 'Front\FlutterWaveController@createHash')->name('flutterwave.createHash');
+	Route::match(['get','post'],'payment/flutter/success', 'Front\FlutterWaveController@successPage')->name('flutterwave.success');
+
+
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
 	Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
@@ -357,6 +362,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('verifTokenProcess', 'Front\UserController@verifyToken')->name('user.verifyToken');
 	Route::get('user/addressBook', 'Front\AddressController@index')->name('user.addressBook');
 	Route::get('user/wallet', 'Front\WalletController@index')->name('user.wallet');
+	Route::get('user/wallet/refreshBalance/{id?}', 'Front\WalletController@refreshWalletbalance')->name('user.wallet.refreshBalance');
 	Route::post('user/wallet/credit', 'Front\WalletController@creditWallet')->name('user.creditWallet');
 	Route::post('wallet/transfer/user/verify', 'Front\WalletController@walletTransferUserVerify')->name('wallet.transfer.user.verify');
 	Route::post('wallet/transfer/confirm', 'Front\WalletController@walletTransferConfirm')->name('wallet.transfer.confirm');

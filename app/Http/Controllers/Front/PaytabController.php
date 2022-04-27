@@ -150,7 +150,7 @@ class PaytabController extends FrontController
             return $returnUrl;
         }
         elseif($request->payment_from == 'subscription'){
-            $request->request->add(['payment_option_id' => 13, 'transaction_id' => $request->tranRef]);
+            $request->request->add(['payment_option_id' => 27, 'transaction_id' => $request->tranRef]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             if($request->come_from == 'app')

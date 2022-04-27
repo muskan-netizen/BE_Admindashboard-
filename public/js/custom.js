@@ -1,11 +1,13 @@
-$(document).ready(function () {
+
+$(document).ready(function () { 
     var footer_height = $('.footer-light').height();
     var header_height = $('.site-header').height();
     var window_height = $(window).height();
     var header_content_width = $('#content-wrap').height();
 
 
-    jQuery(".al_offset-top-home, .inner-pages-offset, .al_offset-top-home").css('margin-top', header_height+'px');
+    jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
+    jQuery(".al_offset-top-home_1").css('margin-top', (header_height+100)+'px');
     jQuery("#content-wrap").css('padding-bottom', footer_height);
 
     jQuery(window).scroll(function () {
@@ -15,11 +17,6 @@ $(document).ready(function () {
 
         } else {
             jQuery(".site-header").addClass("fixed-bar");
-            if(window_height < header_content_width + footer_height){
-                jQuery(".al_offset-top-home").css('margin-top', header_height+'px');
-            }else{
-                jQuery(".al_offset-top-home").css('margin-top', '0px');
-            }
         }
     });
 });
@@ -574,9 +571,10 @@ $(document).ready(function () {
                 payWithEasebuss('');
             }else if (payment_option_id == 27) {
                 paymentViaPaytab('','');
-            }
-            else if (payment_option_id == 29) {
+            }else if (payment_option_id == 29) {
                 payWithMvodafone('','');
+            }else if (payment_option_id == 30) {
+                payWithFlutterWave('','');
             }
         } else {
             _this.attr("disabled", false);
@@ -1689,6 +1687,16 @@ $(document).ready(function () {
             if (order != '') {
                 //Mvodafone
                 payWithMvodafone(order);
+                
+            }
+            else{
+                return false;
+            }
+        }else if (payment_option_id == 30) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //FlutterWave
+                payWithFlutterWave(order);
             }
             else{
                 return false;
@@ -1895,9 +1903,10 @@ $(document).ready(function () {
         }
         else if (payment_option_id == 28) {
             payWithVNpay('', payment_option_id, '');
-        }
-        else if (payment_option_id == 29) {
+        }else if (payment_option_id == 29) {
             payWithMvodafone('', payment_option_id, '');
+        }else if (payment_option_id == 30) {
+            payWithFlutterWave('', payment_option_id, '');
         }
 
 
