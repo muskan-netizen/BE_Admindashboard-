@@ -163,5 +163,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::group(['prefix' => 'edit-order'], function () {
             Route::post('approve/reject', 'Api\v1\OrderController@submitEditedOrder');
         }); 
+        //Passbase Store 
+        Route::post('passbase/store','Front\PassbaseController@storeAuthkey');
     });
 });
