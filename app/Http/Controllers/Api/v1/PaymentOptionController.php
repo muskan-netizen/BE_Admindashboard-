@@ -169,11 +169,7 @@ class PaymentOptionController extends BaseController{
         $server_url = "https://".$domain."/";
         $request['serverUrl'] = $server_url;
         $request['currencyId'] = $request->header('currency'); 
-        if($request->header('authorization'))    
-        {
-            $request['auth_token'] = $request->header('authorization');
-        }
-            
+        $request['auth_token'] = $request->header('authorization') ?? "";
 
         $gateway = new ToyyibPayController();
         return $gateway->orderForApp($request);
