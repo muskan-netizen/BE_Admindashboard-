@@ -139,7 +139,7 @@ class ToyyibPayController extends FrontController
                 return $this->errorResponse(__($validator->errors()->first()), 422);
             }
         
-            
+           // $uniquetoken = md5(uniqid(rand(), true));
             $some_data = array(
                 'userSecretKey'=> $this->api_key,
                 'categoryCode'=> $codeCategory,
@@ -148,8 +148,8 @@ class ToyyibPayController extends FrontController
                 'billPriceSetting'=>0,
                 'billPayorInfo'=>1,
                 'billAmount'=>$data['amount']*100,
-                'billReturnUrl'=> url('payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
-                'billCallbackUrl'=> url('payment/toyyib/callback'),
+                'billReturnUrl'=> url($data['serverUrl'].'payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
+                'billCallbackUrl'=> url($data['serverUrl'].'payment/toyyib/callback'),
                 'billExternalReferenceNo' => $data['order_number'],
                 'billTo'=> $user->name,
                 'billEmail' => $user->email,
