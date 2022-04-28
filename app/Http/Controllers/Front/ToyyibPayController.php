@@ -150,6 +150,8 @@ class ToyyibPayController extends FrontController
                 'billAmount'=>$data['amount']*100,
                 'billReturnUrl'=> url($data['serverUrl'].'payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
                 'billCallbackUrl'=> url($data['serverUrl'].'payment/toyyib/callback'),
+                // 'billReturnUrl'=> url('payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
+                // 'billCallbackUrl'=> url('payment/toyyib/callback'),
                 'billExternalReferenceNo' => $data['order_number'],
                 'billTo'=> $user->name,
                 'billEmail' => $user->email,
@@ -327,8 +329,7 @@ class ToyyibPayController extends FrontController
      }
 
      public function orderForApp (Request $request){
-        //$primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        
+        //$primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();        
         $user = Auth::user();        
         
         $data = $request->all();

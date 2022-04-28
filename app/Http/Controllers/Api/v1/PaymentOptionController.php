@@ -47,7 +47,7 @@ class PaymentOptionController extends BaseController{
     }
 
     public function postPayment(Request $request, $gateway = ''){
-        if(!empty($gateway)){
+        if(!empty($gateway)){            
             $code = $request->header('code');
             $client = Client::where('code',$code)->first();
             $domain = '';
@@ -155,10 +155,30 @@ class PaymentOptionController extends BaseController{
         return $gateway->order($request);
     }
 
-    public function postPaymentVia_toyyibpay(Request $request){
+    public function postPaymentVia_toyyibpay(Request $request){ 
+
+        //for getting server main url from header        
+        $code = $request->header('code');
+        $client = Client::where('code',$code)->first();
+        $domain = '';
+        if(!empty($client->custom_domain)){
+            $domain = $client->custom_domain;
+        }else{
+            $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+        }
+        $server_url = "https://".$domain."/";
+        $request['serverUrl'] = $server_url;
+        $request['currencyId'] = $request->header('currency'); 
+        if($request->header('authorization'))    
+        {
+            $request['auth_token'] = $request->header('authorization');
+        }
+            
+
         $gateway = new ToyyibPayController();
         return $gateway->orderForApp($request);
     }
+
     public function postPaymentVia_vnpay(Request $request){
         $gateway = new VnpayController();
         return $gateway->order($request);
