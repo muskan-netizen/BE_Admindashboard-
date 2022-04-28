@@ -1,6 +1,22 @@
 a.common-product-box.text-center{
     position:relative
 }
+
+.menu-navigation.al{
+    width: 100%;
+    z-index: 0;
+    background-color: #f5f5f5;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top: 1px solid #ddd;
+    -webkit-transition: .5s;
+    transition: .5s;
+}
+ .al_body_template_one .slick-slide {
+    float: left;
+    height: 100%;
+    min-height: 1px;
+}
 /*css here----*/
 .customCheckbox {
     display: inline-block;
@@ -352,7 +368,7 @@ label{
 }
 .shimmer_effect .loading{
     position:relative;
-    background:#cccccc86;
+    background:#ccc;
     overflow:hidden
 }
 .shimmer_effect .loading:after{
@@ -994,11 +1010,11 @@ table.table.wishlist-table.border{
  .tab-product .nav.nav-tabs.nav-material li a.nav-link.active{
     background-color:transparent
 }
-.product-card-box .img-outer-box.position-relative{
+.al_body_template_one .product-card-box .img-outer-box.position-relative{
      overflow: hidden;
      height: 200px;
 }
-.product-card-box .img-outer-box.position-relative img{
+.al_body_template_one .product-card-box .img-outer-box.position-relative img{
     height: 100%;
 }
  .tip_radio{
@@ -1602,11 +1618,19 @@ body.dark  .price_head p,
 body.dark span.org_price.ml-1.font-14{
     opacity: 1;
 }
-section.section-b-space_.p-0.ratio_asos{position: absolute;z-index: 1;width: 100%;}
+
+section.section-b-space_.p-0.ratio_asos{position: relative;z-index: 1;width: 100%;}
 .login-form #schedule_div input{display: block;}
+
+/* csss */
+
+@media(max-width:991px){
+    .al_body_template_one .product-card-box .img-outer-box.position-relative{height: 130px;}
+
+}
 @media(max-width:767px){
     .suppliers-box .suppliers-img-outer{height: 100px;}
-    .product-card-box .img-outer-box.position-relative{height: 100px;}
+    .al_body_template_one .product-card-box .img-outer-box.position-relative{height: 100px;}
     .product-banner-img{
         height: 120px;
         margin-top: 15px;
@@ -1618,4 +1642,12 @@ section.section-b-space_.p-0.ratio_asos{position: absolute;z-index: 1;width: 100
     .al_template_one.site-topbar .location-bar h2{
         padding-right: 27px;
     }
+    .al_body_template_one .offset-top.al_offset-top-home{
+        margin-top: 190px !important;
+    }
+    .al_body_template_one .home-slider-wrapper .banner-img-outer img{
+        max-height: 120px;
+    }
 }
+
+

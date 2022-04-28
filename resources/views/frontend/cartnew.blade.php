@@ -41,7 +41,7 @@
     height: 130px;
     width: auto;
 }
-		
+
 .time {
     display: inline-block;
     font-size: 26px;
@@ -49,7 +49,7 @@
     text-align: center;
     width: 94px;
     margin-top: 5px;
-}	
+}
 </style>
 
 @endsection
@@ -123,7 +123,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     let total_wallet_amount_used=0;
     var closed_store= 0;
     _.each(cart_details.products, function(product, key){
-       
+
         fixed_fee=product.vendor.fixed_fee;
         fixed_fee_amount=product.vendor.fixed_fee_amount;
         total_fixed_fee_amount=parseFloat(total_fixed_fee_amount)+parseFloat(product.vendor.fixed_fee_amount);
@@ -161,10 +161,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then ')}} {{Session::get('currencySymbol')}}<%= Helper.formatPrice(product.vendor.order_min_amount) %>
                         </div>
-                        <div id="mov" style="display:none;"><%= product.vendor.order_min_amount %> </div>
+                        
                     </div>
                 <% } %>
-
+                <div id="mov" style="display:none;"><%= product.vendor.order_min_amount %> </div>
                 <% if( (product.isDeliverable != undefined) && (product.isDeliverable == 0) ) { %>
                     <div class="col-12">
                         <div class="text-danger">
@@ -309,8 +309,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <div class="row">
                  @if(!$guest_user)
                  <% if(product.is_promo_code_available > 0) { %>
-                <div class="col-lg-6 mb-3 mb-lg-0 d-flex align-items-start">
-                    <div class="coupon_box w-100">
+                <div class="col-lg-6 mb-3 mb-lg-0 ">
+                    <div class="coupon_box w-100 d-flex align-items-start">
                         <img class="blur-up lazyload" data-src="{{ asset('assets/images/discount_icon.svg') }}">
                         <label class="mb-0 ml-2">
                             <% if(product.coupon) { %>
@@ -439,7 +439,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <input type="date" id="schedule_datetime_dropoff_date" onchange="handler(event);"  name="schedule_dropoff_date"/>
 	                        <input class='time durationMinMaxDropoff d-none form-control' type='text' id="schedule_datetime_dropoff_time"  name="schedule_dropoff_time" value="0:00" />
                     <% } %>
-                    
+
                 </div>
             </div>
             <% } %>
@@ -467,7 +467,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="row">
                     <div class="col-6">{{__($fixedFee)}}</div>
                     <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(total_fixed_fee_amount) %></div>
-                    <input type="hidden" name="fixed_fee_amount" id="fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="<%= total_fixed_fee_amount %>">
+                    <input type="hidden" name="total_fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="<%= total_fixed_fee_amount %>">
                 </div>
                 <hr class="my-2">
             <% } %>
@@ -723,7 +723,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> </a>
                     </div>
 
-                   
+
 
                     <div class="col-sm-6 col-lg-8 text-sm-right">
 
@@ -877,7 +877,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
             <div class="modal-body mt-0 pb-0 pt-4">
                 <div class="row validate_promo_div">
-                    <div class="col-md-4">
+                    <div class="col-10">
                         <div class="form-group" >
                             <input class="form-control manual_promocode_input" name="name" type="text" placeholder="{{ __('Enter a promocode')}}" >
                             <button class="btn btn-solid apply_promo_code_btn" data-vendor_id="" data-cart_id=""
@@ -887,13 +887,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </span>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-2">
                         <button class="btn btn-solid validate_promo_code_btn" data-vendor_id="" data-cart_id=""
                             data-coupon_id="" data-amount="" style="cursor: pointer;">Apply</button>
                     </div>
                 </div>
                 <div class="coupon-box">
-                    <div class="row" id="promo_code_list_main_div">
+                    <div class="row mb-3" id="promo_code_list_main_div">
 
                     </div>
                 </div>
@@ -1302,7 +1302,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         $('.required').clockTimePicker({
             required: true
         });
-        
+
         var CSRF_TOKEN = $("input[name=_token]").val();
         var DATE = e.target.value;
         var vendorId = "{{$vendorId}}";
@@ -1321,7 +1321,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         duration: true,
                         minimum: data.start_time,
                         maximum:data.end_time
-                        
+
                     });
                     $("#schedule_datetime_dropoff_time").val(data.start_time);
                     $("#schedule_datetime_pickup_time").val(data.start_time);
@@ -1342,7 +1342,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 }
             });
 
-        
+
        $('.time').removeClass("d-none");
     }
     // setTimeout(function () {
@@ -1429,7 +1429,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
+    var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
@@ -2082,6 +2084,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 </script>
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
+@endif
+@if(in_array('flutterwave',$client_payment_options))
+<script src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
 
 @endsection

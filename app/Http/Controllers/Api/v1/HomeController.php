@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart};
+use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption};
 
 class HomeController extends BaseController
 {
@@ -53,6 +53,7 @@ class HomeController extends BaseController
             $want_to_tip = $this->getNomenclatureName('want_to_tip', $langId, false);
             $fixed_fee_nomenclature=ucwords(str_replace("_"," ",$fixed_fee_nomenclature));
             $want_to_tip=ucwords(str_replace("_"," ",$want_to_tip));
+            $passbase = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
 
             $homeData['profile']->preferences->delivery_nomenclature = $delivery_nomenclature;
             $homeData['profile']->preferences->dinein_nomenclature = $dinein_nomenclature;
@@ -62,6 +63,16 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
             $homeData['profile']->preferences->want_to_tip_nomenclature = $want_to_tip;
             $homeData['profile']->preferences->referral_code = $referral_code;
+            if(!is_null($passbase))
+            {
+                $homeData['profile']->preferences->passbase_check = 1; 
+                $passbase_creds = json_decode($passbase->credentials);
+                $homeData['profile']->preferences->passbase_api_key = $passbase_creds->publish_key;
+            }else{
+                $homeData['profile']->preferences->passbase_check = 0;
+            }
+            
+
 
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
             $banners = Banner::select("id", "name", "description", "image", "image_mobile", "link", 'redirect_category_id', 'redirect_vendor_id')
@@ -148,7 +159,7 @@ class HomeController extends BaseController
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
-            $payment_codes = ['stripe', 'stripe_fpx', 'razorpay', 'checkout'];
+            $payment_codes = ['stripe', 'stripe_fpx', 'razorpay', 'checkout', 'paytab'];
             $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
                 foreach ($payment_creds as $creds) {
@@ -164,6 +175,11 @@ class HomeController extends BaseController
                     }
                     if ($creds->code == 'checkout') {
                         $homeData['profile']->preferences->checkout_public_key = (isset($creds_arr->public_key) && (!empty($creds_arr->public_key))) ? $creds_arr->public_key : '';
+                    }
+                    if ($creds->code == 'paytab') {
+                        $homeData['profile']->preferences->paytab_profile_id = (isset($creds_arr->profile_id) && (!empty($creds_arr->profile_id))) ? $creds_arr->profile_id : '';
+                        $homeData['profile']->preferences->paytab_server_key = (isset($creds_arr->mobile_server_key) && (!empty($creds_arr->mobile_server_key))) ? $creds_arr->mobile_server_key : '';
+                        $homeData['profile']->preferences->paytab_client_key = (isset($creds_arr->mobile_client_key) && (!empty($creds_arr->mobile_client_key))) ? $creds_arr->mobile_client_key : '';
                     }
                 }
             }

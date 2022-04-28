@@ -87,6 +87,8 @@
                 $client_id = (isset($creds->client_id)) ? $creds->client_id : '';
                 $client_key = (isset($creds->client_key)) ? $creds->client_key : '';
                 $server_key = (isset($creds->server_key)) ? $creds->server_key : '';
+                $mobile_client_key = (isset($creds->mobile_client_key)) ? $creds->mobile_client_key : '';
+                $mobile_server_key = (isset($creds->mobile_server_key)) ? $creds->mobile_server_key : '';
                 $access_code = (isset($creds->access_code)) ? $creds->access_code : '';
                 $enc_key = (isset($creds->enc_key)) ? $creds->enc_key : '';
                 $easypaisa_store_id = (isset($creds->easypaisa_store_id)) ? $creds->easypaisa_store_id : '';
@@ -576,7 +578,7 @@
                     </div>
                     @endif
                     @if ( (strtolower($opt->code) == 'toyyibpay') )
-                        <div class="mt-2" id="stripe_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="mt-2" id="toyyibpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-group mb-2">
@@ -622,14 +624,26 @@
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="paytab_server_key" class="mr-3">{{ __("Server Key") }}</label>
+                                    <label for="paytab_server_key" class="mr-3">{{ __("Standard Server Key") }}</label>
                                     <input type="text" name="paytab_server_key" id="paytab_server_key" class="form-control" value="{{$server_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="paytab_client_key" class="mr-3">{{ __("Client Key") }}</label>
+                                    <label for="paytab_client_key" class="mr-3">{{ __("Standard Client Key") }}</label>
                                     <input type="text" name="paytab_client_key" id="paytab_client_key" class="form-control" value="{{$client_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="paytab_mobile_server_key" class="mr-3">{{ __("Mobile Server Key") }}</label>
+                                    <input type="text" name="paytab_mobile_server_key" id="paytab_mobile_server_key" class="form-control" value="{{$mobile_server_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="paytab_mobile_client_key" class="mr-3">{{ __("Mobile Client Key") }}</label>
+                                    <input type="text" name="paytab_mobile_client_key" id="paytab_mobile_client_key" class="form-control" value="{{$mobile_client_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>
@@ -654,6 +668,55 @@
                         </div>
                     </div>
                     @endif
+
+
+                    @if ( (strtolower($opt->code) == 'mvodafone') )
+                    <div class="mt-2" id="mvodafone_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mvodafone_client_id" class="mr-3">{{ __("Client ID") }}</label>
+                                    <input type="text" name="mvodafone_client_id" id="mvodafone_client_id" class="form-control" value="{{$client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mvodafone_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="mvodafone_secret_key" id="mvodafone_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'flutterwave') )
+                    <div class="mt-2" id="flutterwave_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="flutterwave_client_id" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="flutterwave_client_id" id="flutterwave_client_id" class="form-control" value="{{$client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="flutterwave_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="flutterwave_secret_key" id="flutterwave_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="flutterwave_enc_key" class="mr-3">{{ __("Encryption Key") }}</label>
+                                    <input type="password" name="flutterwave_enc_key" id="flutterwave_enc_key" class="form-control" value="{{$enc_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
             </div>
             @endforeach

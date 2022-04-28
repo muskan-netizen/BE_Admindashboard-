@@ -3,7 +3,7 @@
 {{-- <link href="{{asset('assets/libs/datatables/datatables.min.css')}}" rel="stylesheet" type="text/css" /> --}}
 <style>
 .dataTables_filter,.toolbar,.dt-buttons.btn-group.flex-wrap {position: absolute;height:40px;}.dataTables_filter{right:0;top: -50px;}
-.dataTables_filter label{margin:0;height:40px;}.dataTables_filter label input{margin:0;height:40px;}.dt-buttons.btn-group.flex-wrap{right: 170px;top: -50px;}
+.dataTables_filter label{margin:0;height:40px;}.dataTables_filter label input{margin:0;height:40px;}.dt-buttons.btn-group.flex-wrap{right: 200px;top: -50px;}
 .table-responsive{position: relative;overflow:visible;margin-top:10px;}table.dataTable{margin-top:0 !important;}
 </style>
 @endsection
@@ -91,7 +91,7 @@
                                         <select class="form-control al_box_height" id="order_status_option_select_box" name="order_status" >
                                             <option value="">{{ __('Select Order Status') }}</option>
                                             @forelse($order_status_options as $order_status_option)
-                                                <option value="{{$order_status_option->title}}">{{$order_status_option->title}}</option>
+                                                <option value="{{$order_status_option->id}}">{{$order_status_option->title}}</option>
                                             @empty
                                             @endforelse
                                         </select>
@@ -250,7 +250,21 @@
                             }
                         },
                             {data: 'order_status', name: 'order_status', orderable: false, searchable: false, "mRender": function ( data, type, full ) {
-                              return "<h5><span class='badge bg-success'>"+full.order_status+"</span></h5>";
+                                var color = "";
+                                if(full.order_status == 'Placed'){
+                                    color = "secondary";
+                                }else if(full.order_status == "Accepted"){
+                                    color = "warning";
+                                }else if(full.order_status == "Processing"){
+                                    color = "blue";
+                                }else if(full.order_status == "Rejected"){
+                                    color = "danger";
+                                }else if(full.order_status == "Out For Delivery"){
+                                    color = "info";
+                                }else if(full.order_status == "Delivered"){
+                                    color = "success";
+                                }
+                              return "<h5><span class='badge badge-"+color+"'>"+full.order_status+"</span></h5>";
                             }},
                         ]
                     });

@@ -118,7 +118,6 @@ body .navigation-tab,body .navigation-tab-overlay{
     justify-content:center;
     white-space:nowrap;
     justify-content:center;
-    min-height: 100px;
 }
 ul.sm.pixelstrap.sm-horizontal{
     text-align:center
@@ -243,6 +242,11 @@ article#page-container header.site-header.fixed-bar{
      border-color: var(--theme-deafult);
      background:linear-gradient(90deg,var(--theme-deafult) -540%,#fff 100%)
 }
+body.al_body_template_one a.navbar-brand img{
+    height: 40px;
+}
+
+
  @media (max-width:767px){
      .radius-bar{
          width: 100%;
