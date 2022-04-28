@@ -152,7 +152,7 @@ class ToyyibPayController extends FrontController
                 'billCallbackUrl'=> url($data['serverUrl'].'payment/toyyib/callback'),
                 // 'billReturnUrl'=> url('payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
                 // 'billCallbackUrl'=> url('payment/toyyib/callback'),
-                'billExternalReferenceNo' => $data['order_number'],
+                'billExternalReferenceNo' => $data['order_number']??"",
                 'billTo'=> $user->name,
                 'billEmail' => $user->email,
                 'billPhone'=>  $user->phone_number,
@@ -202,6 +202,8 @@ class ToyyibPayController extends FrontController
 
         if(!empty($request->all())){
             $data = $request->all();
+            $data['serverUrl'] = "";
+            $data['auth_token'] = "";
             //dd($data);
             $codeCategory = $this->createCategory($data);
             if(!empty($codeCategory)){
