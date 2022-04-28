@@ -12,7 +12,7 @@ use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
 use App\Http\Controllers\Front\PickupDeliveryController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
+use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress,Transaction};
 use Toyyibpay;
 use Auth;
 use Illuminate\Support\Facades\Log;
@@ -48,7 +48,12 @@ class ToyyibPayController extends FrontController
             'catname' => $data['category_name'], //CATEGORY NAME
             'catdescription' => $data['category_name'], //PROVIDE YOUR CATEGORY DESCRIPTION
             'userSecretKey' => $this->api_key //PROVIDE USER SECRET KEY HERE
-          );          
+          );  
+        //   $some_data = array(
+        //     'catname' => 'Order data', //CATEGORY NAME
+        //     'catdescription' => 'Order Description' , //PROVIDE YOUR CATEGORY DESCRIPTION
+        //     'userSecretKey' => $this->api_key //PROVIDE USER SECRET KEY HERE
+        //   );          
           $curl = curl_init();        
           curl_setopt($curl, CURLOPT_POST, 1);
           curl_setopt($curl, CURLOPT_URL, $this->url.'/index.php/api/createCategory');  //PROVIDE API LINK HERE
@@ -115,12 +120,12 @@ class ToyyibPayController extends FrontController
             }
             elseif($payment_form == 'subscription'){
                 $description = 'Subscription Checkout';
-                if($request->has('subscription_id')){
+                if($data['subscription_id']){
                     $slug = $data['subscription_id'];
                     $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
                     $customer_data['subscription_id'] = $subscription_plan->id;
                     // $reference_number = $request->subscription_id;
-                    $returnUrlParams = $returnUrlParams . '&subscription=' . $request->subscription_id;
+                    $returnUrlParams = $returnUrlParams . '&subscription=' . $data['subscription_id'];
                     $order_tags['subscription_id'] = $data['subscription_id'];
                 }
             }
@@ -133,8 +138,8 @@ class ToyyibPayController extends FrontController
             if ($validator->fails()) {
                 return $this->errorResponse(__($validator->errors()->first()), 422);
             }
-
-            
+        
+           // $uniquetoken = md5(uniqid(rand(), true));
             $some_data = array(
                 'userSecretKey'=> $this->api_key,
                 'categoryCode'=> $codeCategory,
@@ -143,8 +148,8 @@ class ToyyibPayController extends FrontController
                 'billPriceSetting'=>0,
                 'billPayorInfo'=>1,
                 'billAmount'=>$data['amount']*100,
-                'billReturnUrl'=> route('payment.toyyibpay.callbackSuccess',$data['payment_form']),
-                'billCallbackUrl'=> route('payment.toyyibpay.callback'),
+                'billReturnUrl'=> url($data['serverUrl'].'payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
+                'billCallbackUrl'=> url($data['serverUrl'].'payment/toyyib/callback'),
                 'billExternalReferenceNo' => $data['order_number'],
                 'billTo'=> $user->name,
                 'billEmail' => $user->email,
@@ -216,17 +221,23 @@ class ToyyibPayController extends FrontController
      // dd($request->all());
     }
 
+    
     public function callbackSuccess(Request $request,$payment_form,$domain = ''){
         $toyyibPayRes = $request;     
+        $toyyibPayRes['payment_form'] = $toyyibPayRes['payment_form'] ?? $payment_form;
+        
         $user = Auth::user();      
-       
+        if(!$user)
+        {
+            $user = Auth::loginUsingId($request->userid);
+        }
             if($toyyibPayRes['status_id'] == '1' || $toyyibPayRes['status_id'] == '2' ){
                 if($toyyibPayRes['payment_form'] == 'cart'){
                     $order_number = $toyyibPayRes['order_id'];
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
                         $returnUrlParams = '';
-                        $returnUrl = route('order.success', $order->id);
+                        $returnUrl = route('order.success', $order->id);                        
                         $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
 
                         // Remove cart
@@ -234,12 +245,20 @@ class ToyyibPayController extends FrontController
                         CartAddon::where('cart_id', $cart->id)->delete();
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
-                        CartProductPrescription::where('cart_id', $cart->id)->delete();
+                        CartProductPrescription::where('cart_id', $cart->id)->delete();                        
+
                         if($toyyibPayRes['status_id'] == '2' ){
                             return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been pending');
-                        }else{
+                        }else{                            
                             Order::where('order_number', $order_number)->update(['payment_status' => 1]);
-                            return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
+                            if(isset($request->auth_token) && !empty($request->auth_token))
+                            {
+                                $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&order='.$order->order_number;
+                                return Redirect::to($returnUrl); 
+                            }else{
+                                return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
+                            }
+                            // return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
                         }
     
                         // Send Email
@@ -264,7 +283,7 @@ class ToyyibPayController extends FrontController
                     }
                    
                 }
-                elseif($data['payment_form'] == 'subscription'){
+                elseif($toyyibPayRes['payment_form'] == 'subscription'){
                     $returnUrl = route('user.subscription.plans');
                     if($toyyibPayRes['status_id'] == '2' ){
                         return Redirect::to(url($returnUrl))->with('success', 'Transaction has been pending');
@@ -306,6 +325,31 @@ class ToyyibPayController extends FrontController
             }
 
      }
+
+     public function orderForApp (Request $request){
+        //$primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        
+        $user = Auth::user();        
+        
+        $data = $request->all();
+        $data['address_id'] = "";
+        $data['payment_form'] = $data['action'] ?? 'cart';
+        $data['product_name'] = "Order Products";
+        $data['category_name'] = "Category";
+        //return $data;
+        //dd($data);
+        $codeCategory = $this->createCategory($data);
+        if(!empty($codeCategory)){
+            $bill = $this->createBill($codeCategory,$data);
+            if(!empty($bill)){
+                $payUrl = $this->url.'/'.$bill;                          
+                return response()->json(['status' => 'Success', 'payment_link' => $payUrl]);
+            }else{
+                return $this->errorResponse($err->message, 400);
+            }
+        }
+       
+    }
 
 
 
