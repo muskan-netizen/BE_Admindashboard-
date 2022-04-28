@@ -245,12 +245,20 @@ class ToyyibPayController extends FrontController
                         CartAddon::where('cart_id', $cart->id)->delete();
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
-                        CartProductPrescription::where('cart_id', $cart->id)->delete();
+                        CartProductPrescription::where('cart_id', $cart->id)->delete();                        
+
                         if($toyyibPayRes['status_id'] == '2' ){
                             return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been pending');
-                        }else{
+                        }else{                            
                             Order::where('order_number', $order_number)->update(['payment_status' => 1]);
-                            return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
+                            if(isset($request->auth_token) && !empty($request->auth_token))
+                            {
+                                $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&order='.$order->order_number;
+                                return Redirect::to($returnUrl); 
+                            }else{
+                                return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
+                            }
+                            // return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
                         }
     
                         // Send Email
