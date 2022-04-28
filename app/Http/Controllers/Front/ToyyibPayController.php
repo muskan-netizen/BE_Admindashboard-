@@ -290,6 +290,7 @@ class ToyyibPayController extends FrontController
                         if(isset($request->auth_token) && !empty($request->auth_token))
                         { 
                             $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&order='.$toyyibPayRes['order_id'].'&action=tip';
+                            return Redirect::to($returnUrl); 
                         }else{
                             return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
                         }                        
@@ -304,6 +305,7 @@ class ToyyibPayController extends FrontController
                         if(isset($request->auth_token) && !empty($request->auth_token))
                         { 
                             $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=subscription';
+                            return Redirect::to($returnUrl); 
                         }else{
                             return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
                         }
