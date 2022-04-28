@@ -1659,9 +1659,9 @@ section.section-b-space_.p-0.ratio_asos{position: relative;z-index: 1;width: 100
     .al_template_one.site-topbar .location-bar h2{
         padding-right: 27px;
     }
-    .al_body_template_one .offset-top.al_offset-top-home{
+    /* .al_body_template_one .offset-top.al_offset-top-home{
         margin-top: 190px !important;
-    }
+    } */
     .al_body_template_one .home-slider-wrapper .banner-img-outer img{
         max-height: 120px;
     }

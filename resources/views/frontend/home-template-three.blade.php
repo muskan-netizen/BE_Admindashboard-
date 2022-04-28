@@ -527,7 +527,7 @@
 
 
 <!-- our_vendor_main_div start -->
-<section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div" >
+<section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0 {{isset($client_preference_detail) && $client_preference_detail->business_type == 'taxi' ? 'taxi' : ''}}" id="our_vendor_main_div" >
 	<div class="vendors"> @foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') @elseif($homePageLabel->slug == 'brands')
 		<section class="container popular-brands left-shape_ position-relative "  >
 			<div class="al_top_heading d-flex justify-content-between">

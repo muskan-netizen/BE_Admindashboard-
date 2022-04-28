@@ -54,7 +54,7 @@
                                             $imagePath = $v['image']['path']['proxy_url'].'300/300'.$v['image']['path']['image_path'];
                                         } ?>
                                         <div class="common-product-box scale-effect mb-2">
-                                            <a class="row" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                            <a class="row  w-100" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                                 <div class="col-4">
                                                     <div class="img-outer-box position-relative  p-0">
                                                         <img  class="blur-up lazyload w-100 p-0" data-src="{{$imagePath}}" alt="">

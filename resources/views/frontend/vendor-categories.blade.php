@@ -42,7 +42,7 @@
                                                     @endif
                                                     @endif
                                                     @if($vendor->instagram_url)
-                                                        <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>                                                    
+                                                        <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>
                                                     @endif
                                                 </div>
                                         </div>
@@ -82,7 +82,7 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
                         </h5>
-                        <div class="offer-slider ">
+                        <div class="offer-slider al">
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
                                     @foreach($newProds as $new)
@@ -93,7 +93,7 @@
                                     }*/ ?>
 
                                     <div class="common-product-box scale-effect mb-2">
-                                        <a class="row" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                        <a class="row  w-100" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                             <div class="col-4">
                                                 <div class="img-outer-box position-relative">
                                                         <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
