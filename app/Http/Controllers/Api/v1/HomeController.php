@@ -422,14 +422,18 @@ class HomeController extends BaseController
     public function getEditedOrders(Request $request){
         // Get user Edited Orders from Temp Cart
         $user = Auth::user();
-        $temp_order_vendors = TempCart::where('status', '0')->where('user_id', $user->id)->where('is_submitted', 1)->where('is_approved', 0)->pluck('order_vendor_id');
-        $temp_orders = Order::with(['vendors'=> function($q){
-            $q->select('order_id','vendor_id', 'dispatch_traking_url');
-        }])->whereHas('vendors', function($q) use($temp_order_vendors){
-            $q->whereIn('id', $temp_order_vendors);
-        })
-        ->select('id','order_number')
-        ->get();
+        $temp_orders = array();
+        if($user){
+            $temp_order_vendors = TempCart::where('status', '0')->where('user_id', $user->id)->where('is_submitted', 1)->where('is_approved', 0)->pluck('order_vendor_id');
+            $temp_orders = Order::with(['vendors'=> function($q){
+                $q->select('order_id','vendor_id', 'dispatch_traking_url');
+            }])->whereHas('vendors', function($q) use($temp_order_vendors){
+                $q->whereIn('id', $temp_order_vendors);
+            })
+            ->select('id','order_number')
+            ->get();
+        }
+        
 
         return $this->successResponse($temp_orders, '', 200);
     }
