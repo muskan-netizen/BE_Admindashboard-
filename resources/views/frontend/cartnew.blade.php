@@ -142,7 +142,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="countdownholder alert-danger" id="min_order_validation_error_<%= product.vendor.id %>" style="display:none;">Your cart will be expired in </div>
                 </div>
                 <% if( product.is_vendor_closed == 1 && product.closed_store_order_scheduled == 0 ) {
-                    var closed_store= 1; %>
+                    closed_store= 1; %>
                     <div class="col-12">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i>{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}
@@ -414,7 +414,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
 
             <hr class="my-2">
-            <% if( closed_store== 1 ) { %>
+            <% if( closed_store== 0 ) { %>
             <div class="row">
                 <div class="col-md-6">
                     <label for="">{{__('Schedule Pickup ')}}</label>
