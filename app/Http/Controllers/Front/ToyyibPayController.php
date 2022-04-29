@@ -148,7 +148,7 @@ class ToyyibPayController extends FrontController
                 'billPriceSetting'=>0,
                 'billPayorInfo'=>1,
                 'billAmount'=>$data['amount']*100,
-                'billReturnUrl'=> url($data['serverUrl'].'payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id."&auth_token=".$data['auth_token'],
+                'billReturnUrl'=> url($data['serverUrl'].'payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id."&auth_token=".$data['auth_token']."&amt=".$data['amount'],
                 'billCallbackUrl'=> url($data['serverUrl'].'payment/toyyib/callback'),
                 // 'billReturnUrl'=> url('payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
                 // 'billCallbackUrl'=> url('payment/toyyib/callback'),
@@ -229,7 +229,7 @@ class ToyyibPayController extends FrontController
     public function callbackSuccess(Request $request,$payment_form,$domain = ''){
         $toyyibPayRes = $request;     
         $toyyibPayRes['payment_form'] = $toyyibPayRes['payment_form'] ?? $payment_form;
-        
+       // return $toyyibPayRes;
         $user = Auth::user();      
         if(!$user)
         {
@@ -273,7 +273,10 @@ class ToyyibPayController extends FrontController
 
                     if($toyyibPayRes['status_id'] == '2' ){
                         return Redirect::to(url($returnUrl))->with('success', 'Transaction has been pending');
-                    }else{
+                    }else{                        
+                         $user = auth()->user();
+                         $wallet = $user->wallet;
+                         $wallet->depositFloat($request->amt, ['Wallet has been <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
                         if(isset($request->auth_token) && !empty($request->auth_token))
                         {                                
                             $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=wallet';
