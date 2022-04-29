@@ -229,7 +229,7 @@ class MvodafoneController extends Controller
               $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=200&transaction_id='.$request->rID.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.wallet'));
+              return Redirect::to(route('user.wallet'))->with('success','Wallet amount added successfuly.');
             }
 
             
@@ -269,7 +269,7 @@ class MvodafoneController extends Controller
               $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=200&transaction_id='.$request->rID.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.subscription.plans'))->with('success',$request->message);
+              return Redirect::to(route('user.subscription.plans'))->with('success','Subscription added successfuly.');
             }
           }else{
             $data->delete();
@@ -302,7 +302,7 @@ class MvodafoneController extends Controller
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=200&order='.$order_number[0].'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
-                return Redirect::to(route('user.orders'))->with('success', $request->message);
+                return Redirect::to(route('user.orders'))->with('success','Tip added successfuly.');
               }
 
           }else{
