@@ -175,7 +175,9 @@ class ToyyibPayController extends FrontController
               $info = curl_getinfo($curl);
               $err = curl_error($curl);  
               curl_close($curl);
-    
+
+              \Log::info(url($data['serverUrl'].'payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id."&auth_token=".$data['auth_token']."&amt=".$data['amount']);
+              
               $obj = json_decode($result);
               if($obj){
                 return $obj[0]->BillCode;
