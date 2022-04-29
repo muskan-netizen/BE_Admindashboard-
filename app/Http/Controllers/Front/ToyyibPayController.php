@@ -276,6 +276,7 @@ class ToyyibPayController extends FrontController
                     }else{                        
                          $user = auth()->user();
                          $wallet = $user->wallet;
+                         \Log::info($wallet);
                          $wallet->depositFloat($request->amt, ['Wallet has been <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
                         if(isset($request->auth_token) && !empty($request->auth_token))
                         {                                
