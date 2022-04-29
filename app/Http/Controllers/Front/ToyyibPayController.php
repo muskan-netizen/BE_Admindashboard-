@@ -232,10 +232,17 @@ class ToyyibPayController extends FrontController
         $toyyibPayRes = $request;     
         $toyyibPayRes['payment_form'] = $toyyibPayRes['payment_form'] ?? $payment_form;
        // return $toyyibPayRes;
-        $user = Auth::user();      
+       if(isset($request->auth_token) && !empty($request->auth_token))
+       {
+            $find_user = User::where('auth_token', $request->auth_token)->first();
+            $user = Auth::login($find_user);
+       }else{
+            $user = Auth::user();      
+       }
+        
         if(!$user)
         {
-            $user = Auth::loginUsingId($request->userid);
+            
         }
             if($toyyibPayRes['status_id'] == '1' || $toyyibPayRes['status_id'] == '2' ){
                 if($toyyibPayRes['payment_form'] == 'cart'){
