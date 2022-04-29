@@ -2424,7 +2424,7 @@ $(document).ready(function () {
         }
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
-        var amount_payable = amount_elem.val();
+        var amount_payable = parseFloat(amount_elem.val());
         
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
         $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
@@ -2438,7 +2438,7 @@ $(document).ready(function () {
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+parseFloat($('#wallet_amount_available').text()).toFixed(parseInt(digit_count)));
                 var payable_amount=((parseFloat($('#gross_amount').text()) -   parseFloat($('#loyalty_amount').text()))    -    parseFloat($('#wallet_amount_available').text())     +   parseFloat(tip)  );
-                $("#cart_total_payable_amount").html( currency +   payable_amount    );
+                $("#cart_total_payable_amount").html( currency +   payable_amount .toFixed(parseInt(digit_count))   );
             }
             if(parseFloat(amount_payable)+parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");

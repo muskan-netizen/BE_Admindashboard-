@@ -488,7 +488,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <hr class="my-2">
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.gross_amount)) %></div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)) %></span></div>
             </div>
             <% } %>
             <hr class="my-2">
@@ -502,7 +502,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(cart_details.loyalty_amount > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Loyalty Amount')}}</div>
-                    <div class="col-6 text-right"> - {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.loyalty_amount) %></div>
+                    <div class="col-6 text-right"> - {{Session::get('currencySymbol')}}<span id="loyalty_amount"><%= Helper.formatPrice(cart_details.loyalty_amount) %></span></div>
                 </div>
                 <hr class="my-2">
             <% } %>
