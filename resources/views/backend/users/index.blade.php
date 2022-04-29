@@ -260,7 +260,7 @@
                                 if (full.is_email_verified == 1) {
                                     return "<i class='mdi mdi-email-check mr-1 mdi-icons'></i>" + full.login_type_value;
                                 } else {
-                                    return "<i class='mdi mdi-email-remove mr-1 mdi-icons'></i>" + full.login_type_value;
+                                    return "<i class='mdi mdi-email-sync mr-1 mdi-icons'></i>" + full.login_type_value;
                                 }
                             }
                         },
@@ -285,7 +285,7 @@
                                     }
                                 } else {
                                     if (full.phone_number) {
-                                        return full.phone_number;
+                                        return "<i class='mdi mdi-phone mr-1 mdi-icons'></i>" + full.phone_number;
                                     } else {
                                         return "";
                                     }

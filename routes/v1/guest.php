@@ -8,6 +8,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::get('cart/list', 'Api\v1\CartController@index');
+        Route::post('mfc/stk/push', 'Api\v1\CartController@stkPushRequest');
         Route::get('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
         Route::post('homepage', 'Api\v1\HomeController@homepage');
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
@@ -53,6 +54,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 	    Route::post('cart/product/variant/different-addons', 'Api\v1\CartController@getProductVariantWithDifferentAddons');
 
         Route::post('promo-code-open/list', 'Api\v1\PickupDeliveryController@postPromoCodeListOpen');
+        Route::post('order/after/payment', 'Front\PaytabController@after_app_payment');
 
     });
     Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {

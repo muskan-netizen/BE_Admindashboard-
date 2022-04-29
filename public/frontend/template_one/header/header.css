@@ -117,7 +117,7 @@ body .navigation-tab,body .navigation-tab-overlay{
     margin:auto;
     justify-content:center;
     white-space:nowrap;
-    justify-content:center
+    justify-content:center;
 }
 ul.sm.pixelstrap.sm-horizontal{
     text-align:center
@@ -138,12 +138,12 @@ ul.sm.pixelstrap.sm-horizontal{
 .nav-tabs{
     border-bottom:0 solid #dee2e6
 }
-article#page-container .site-header{
+/* article#page-container .site-header{
     position:relative
 }
 article#page-container header.site-header.fixed-bar{
     position:fixed
-}
+} */
 .onhover-div i,.onhover-div img{
     font-size:20px
 }
@@ -242,6 +242,11 @@ article#page-container header.site-header.fixed-bar{
      border-color: var(--theme-deafult);
      background:linear-gradient(90deg,var(--theme-deafult) -540%,#fff 100%)
 }
+body.al_body_template_one a.navbar-brand img{
+    height: 40px;
+}
+
+
  @media (max-width:767px){
      .radius-bar{
          width: 100%;

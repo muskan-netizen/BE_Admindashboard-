@@ -38,10 +38,12 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '22', 'path' => 'ccavenue/pay', 'code' => 'ccavenue', 'title' => 'CCAvenue', 'off_site' => '1', 'status' => '0'), 
         array('id' => '23', 'path' => 'easypaisa/pay', 'code' => 'easypaisa', 'title' => 'Easypaisa', 'off_site' => '1', 'status' => '0'),
         array('id' => '24', 'path' => 'cashfree', 'code' => 'cashfree', 'title' => 'Cashfree', 'off_site' => '1', 'status' => '0'),
-        array('id' => '25', 'path' => 'easebuzz', 'code' => 'easebuzz', 'title' => 'Easebuzz', 'off_site' => '1', 'status' => '0'),
+        array('id' => '25', 'path' => 'easebuzz', 'code' => 'easebuzz', 'title' => 'PAYMENT GATEWAY - EASEBUZZ', 'off_site' => '1', 'status' => '0'),
         array('id' => '26', 'path' => 'tarsoft/toyyibpay', 'code' => 'toyyibpay', 'title' => 'Toyyibpay', 'off_site' => '1', 'status' => '0'),
         array('id' => '27', 'path' => '', 'code' => 'paytab', 'title' => 'PayTab', 'off_site' => '1', 'status' => '0'),
-        array('id' => '28', 'path' => 'vnpay', 'code' => 'vnpay', 'title' => 'VNPay', 'off_site' => '1', 'status' => '0')
+        array('id' => '28', 'path' => 'vnpay', 'code' => 'vnpay', 'title' => 'VNPay', 'off_site' => '1', 'status' => '0'),
+        array('id' => '29', 'path' => '', 'code' => 'mvodafone', 'title' => 'Mpesa Vodafone', 'off_site' => '1', 'status' => '0'),
+        array('id' => '30', 'path' => '', 'code' => 'flutterwave', 'title' => 'Flutter Wave', 'off_site' => '0', 'status' => '0')
         
       );
 

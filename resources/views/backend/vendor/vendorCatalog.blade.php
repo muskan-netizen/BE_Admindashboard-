@@ -326,15 +326,16 @@
                                                                                 class="mdi mdi-square-edit-outline"></i></a>
                                                                     </div>
                                                                     <div class="inner-div">
-                                                                        <form method="POST"
+                                                                        <form id="deleteproduct_{{$product->id}}" method="POST"
                                                                             action="{{ route('product.destroy', $product->id) }}">
                                                                             @csrf
                                                                             @method('DELETE')
                                                                             <div class="form-group">
-                                                                                <button type="submit"
+                                                                                <button type="button" class="btn btn-primary-outline action-icon delete-product" data-destroy_url="{{ route('product.destroy', $product->id) }}" data-rel="{{$product->id}}"><i class="mdi mdi-delete"></i></button>
+                                                                                {{-- <button type="submit"
                                                                                     onclick="return confirm('Are you sure? You want to delete the product.')"
                                                                                     class="btn btn-primary-outline action-icon"><i
-                                                                                        class="mdi mdi-delete"></i></button>
+                                                                                        class="mdi mdi-delete"></i></button> --}}
                                                                             </div>
                                                                         </form>
                                                                     </div>
@@ -1041,6 +1042,23 @@
             setTimeout(function() {
                 $("#show_copy_msg_on_click_copy").hide();
             }, 1000);
-        })
+        })        
+
+        $(document).on("click",".delete-product",function() {
+            var destroy_url = $(this).data('destroy_url');
+            var id = $(this).data('rel');
+            Swal.fire({
+                title: "Are you sure?",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+            }).then((result) => {
+                if(result.value)
+                {
+                    $('form#deleteproduct_'+id).submit();
+                }
+            });
+        });
+        
     </script>
 @endsection

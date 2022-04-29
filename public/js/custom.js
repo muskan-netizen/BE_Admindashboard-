@@ -1,29 +1,61 @@
-$(document).ready(function () {
+
+$(document).ready(function () { 
     var footer_height = $('.footer-light').height();
     var header_height = $('.site-header').height();
     var window_height = $(window).height();
     var header_content_width = $('#content-wrap').height();
+
+
+    jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
+    jQuery(".al_offset-top-home_1").css('margin-top', (header_height+100)+'px');
+    jQuery("#content-wrap").css('padding-bottom', footer_height);
+
     jQuery(window).scroll(function () {
         var scroll = jQuery(window).scrollTop();
         if (scroll <= 100) {
             jQuery(".site-header").removeClass("fixed-bar");
-            jQuery(".al_offset-top-home").css('margin-top', '0px');
 
         } else {
             jQuery(".site-header").addClass("fixed-bar");
-            if(window_height < header_content_width + footer_height){
-                jQuery(".al_offset-top-home").css('margin-top', header_height+'px');
-            }else{
-                jQuery(".al_offset-top-home").css('margin-top', '0px');
-            }
         }
     });
 });
 
+
+// $(document).ready(function () {
+//   var ft =  $('.footer-light').height();
+//   var ht =  $('.site-header').height();
+//   var sm = $('section.section-b-space_.p-0.ratio_asos').height();
+// //   var ct =  $('#content-wrap').height();
+
+//     jQuery(".site-header").removeClass("fixed-bar");
+//     jQuery(".al_offset-top-home, .inner-pages-offset, .al_offset-top-home").css('margin-top', ht);
+//     jQuery("#content-wrap").css('padding-bottom', ft);
+//     jQuery("#content-wrap").css('min-height', sm);
+//     jQuery("section.section-b-space_.p-0.ratio_asos").css('top', ht);
+//     // jQuery(".al_offset-top-home").css('margin-top', ht);
+
+//     var window_height = $(window).height();;
+//     jQuery(window).scroll(function () {
+//         var scroll = jQuery(window).scrollTop();
+//         if (scroll <= 100) {
+//             jQuery(".site-header").removeClass("fixed-bar");
+//             jQuery(".al_offset-top-home").css('margin-top', ht);
+
+//         } else {
+//             jQuery(".site-header").addClass("fixed-bar");
+//             if(window_height < header_content_width + footer_height){
+//                 jQuery(".al_offset-top-home").css('margin-top', header_height+'px');
+//             }else{
+//                 jQuery(".al_offset-top-home").css('margin-top', '0px');
+//             }
+//         }
+//     });
+// });
+
 $(".mobile-account .fa").click(function(){
     $(".onhover-show-div").toggleClass("open");
-  });
-
+});
 
 
 // Material Select Initialization
@@ -48,6 +80,14 @@ $(function () {
 $(window).scroll(function () {
     var windscroll = $(window).scrollTop();
     var windowheight = $(window).height();
+    var header_height = $('.site-header').height();
+    // if(windscroll > (header_height + 200))
+    // {
+    //     console.log('-------------------');
+    //     jQuery(".alScrollspyProduct").css('margin-top', (header_height + 350)+'px');
+    // }else{
+    //     jQuery(".alScrollspyProduct").css('margin-top', '0px');
+    // }
     if (windscroll >= windowheight) {
         $('section.scrolling_section').each(function (i) {
             // The number at the end of the next line is how pany pixels you from the top you want it to activate.
@@ -57,9 +97,11 @@ $(window).scroll(function () {
                 $('.scrollspy-menu li').eq(i).addClass('active');
             }
         });
+        
     } else {
         $('.scrollspy-menu li.active').removeClass('active');
         $('.scrollspy-menu li:first').addClass('active');
+        jQuery(".alScrollspyProduct").css('margin-top', '0px');
     }
 
 }).scroll();
@@ -529,6 +571,10 @@ $(document).ready(function () {
                 payWithEasebuss('');
             }else if (payment_option_id == 27) {
                 paymentViaPaytab('','');
+            }else if (payment_option_id == 29) {
+                payWithMvodafone('','');
+            }else if (payment_option_id == 30) {
+                payWithFlutterWave('','');
             }
         } else {
             _this.attr("disabled", false);
@@ -688,20 +734,21 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '#category_kycform_submit', function(e) {
+        $('#proceed_to_pay_loader').show();
         e.preventDefault();
         var input='';
-
+     
+        $(this).attr("disabled", true);
         var form = document.getElementById('category_kyc_form_in_cart');
         var formData = new FormData(form);
         var data_uri = post_category_kyc_document;
-        // console.log(data_uri);
-        //  return false;
+       
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
         });
-
+       
         $.ajax({
             type: "post",
             headers: {
@@ -713,11 +760,14 @@ $(document).ready(function () {
             processData: false,
             success: function(response) {
                 if (response.status == 'success') {
+                    $('#category_kycform_submit').attr("disabled", false);
                     $(".modal .close").click();
                     location.reload();
                 } else {
+                    $('#category_kycform_submit').attr("disabled", false);
                     $(".show_all_error.invalid-feedback").show();
                     $(".show_all_error.invalid-feedback").text(response.message);
+                   
                 }
                 return response;
             },
@@ -728,6 +778,7 @@ $(document).ready(function () {
                 $(".loader_box").hide();
             },
             error: function(response) {
+                $('#category_kycform_submit').attr("disabled", false);
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
                     Object.keys(errors).forEach(function(key) {
@@ -755,7 +806,8 @@ $(document).ready(function () {
             success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
             return false;
         }
-        if($("input[name='category_kyc_ids']").length > 0){
+        //$("input[name='category_kyc_ids']").length > 0 || 
+        if( ($("input[name='without_category_kyc']").val() !=1 ) ){
             success_error_alert('error', 'Category KYC is required! kindly fill the details.', ".cart_response");
             return false;
 
@@ -811,8 +863,8 @@ $(document).ready(function () {
         let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
         let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
         let comment_for_vendor = $("input[name='comment_for_vendor']").val(); //commnet for vendor
-        var schedule_pickup = $("#schedule_datetime_pickup").val();
-        var schedule_dropoff = $("#schedule_datetime_dropoff").val();
+        var schedule_pickup = $("#schedule_datetime_pickup_date").val()+" "+$("#schedule_datetime_pickup_time").val();
+        var schedule_dropoff = $("#schedule_datetime_dropoff_date").val()+" "+$("#schedule_datetime_dropoff_time").val();
         var specific_instructions = $("#specific_instructions").val();
         let tip = $("#cart_tip_amount").val();
 
@@ -1101,35 +1153,38 @@ $(document).ready(function () {
             }
         });
     }
+
+    
+    if (path.indexOf("auth_token") == -1) {
+        let queryString = window.location.search;
+        let urlParams = new URLSearchParams(queryString);
+
+        if ((urlParams.has('auth_token')) && (urlParams.get('auth_token') != '')) {
+        
+        var form = $(document.createElement('form'));
+        $(form).attr("action", "https://easypay.easypaisa.com.pk/easypay/Confirm.jsf");
+        $(form).attr("method", "POST");
+        var formInp = '<input name="auth_token" value="'+urlParams.get('auth_token')+'" hidden = "true"/><input name="postBackURL" value="http://royo-order.com/viewcart" hidden ="true"/><input type =”hidden” name=”paymentMethod” value="CC_PAYMENT_METHOD"><input value="confirm" type = "submit" name= "pay"/>';
+
+        $(form).append($(formInp));
+        form.appendTo(document.body)
+        $(form).submit();
+
+        return false;
+        }
+    }
+
+
     function paymentViaEasyPaisa() {
 
         var form = $(document.createElement('form'));
         $(form).attr("action", "https://easypay.easypaisa.com.pk/easypay/Index.jsf");
         $(form).attr("method", "POST");
+        var formInp = '<input name="storeId" value="17514" hidden = "true"/><input name="amount" value="10" hidden = "true"/><input name="postBackURL" value="http://royo-order.com/viewcart" hidden = "true"/><input name="orderRefNum" value="11206" hidden = "true"/><input type =”hidden” name=”paymentMethod” value="CC_PAYMENT_METHOD"><input type ="hidden" name="expiryDate" value="20220606 201531"><input type ="hidden" name="merchantHashedReq" value=""><input type="hidden" name="autoRedirect" value="1"><input type ="hidden" name="emailAddr" value="test.abcd@abcd.com"><input type ="hidden" name="mobileNum" value="03325241789"><input type ="hidden" name="bankIdentifier" value=""><input type = “image" src="checkout-button-with-logo.png border="0" name= “pay">';
 
-        var input = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "storeId")
-            .val("17514");
-        var input1 = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "amount")
-            .val($("input[name='cart_total_payable_amount']").val());
-        var input2 = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "postBackURL")
-            .val("http://local.myorder.com/confirmation");
-        var input3 = $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "orderRefNum")
-            .val("123456");
-
-        $(form).append($(input)).append($(input1)).append($(input2)).append($(input3));
-
+        $(form).append($(formInp));
         form.appendTo(document.body)
-
         $(form).submit();
-
         return false;
     }
 
@@ -1308,8 +1363,8 @@ $(document).ready(function () {
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
         var is_gift = $('#is_gift:checked').val() ?? 0;
-
-        if ((task_type == 'schedule') && (schedule_dt == '')) {
+        var total_fixed_fee_amount = $("input[name='total_fixed_fee_amount']").val() ?? 0;
+         if ((task_type == 'schedule') && (schedule_dt == '')) {
             $("#proceed_to_pay_modal").modal('hide');
             $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
@@ -1319,7 +1374,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot },
+            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount },
             success: function (response) {
                 if (response.status == "Success") {
                     var ip_address = window.location.host;
@@ -1410,7 +1465,6 @@ $(document).ready(function () {
         return orderResponse;
     }
     $(document).on("click", ".proceed_to_pay", function () {
-
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
         var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
@@ -1560,7 +1614,7 @@ $(document).ready(function () {
             else {
                 return false;
             }
-        } else if (payment_option_id == 21) {
+        } else if (payment_option_id == 23) {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
                 paymentViaEasyPaisa();
@@ -1625,8 +1679,27 @@ $(document).ready(function () {
         else if (payment_option_id == 28) {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
-                //Easebuzz payment gateway 
+                //Easebuzz payment gateway
                 payWithVNpay(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
+        }else if (payment_option_id == 29) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //Mvodafone
+                payWithMvodafone(order);
+                
+            }
+            else{
+                return false;
+            }
+        }else if (payment_option_id == 30) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                //FlutterWave
+                payWithFlutterWave(order);
             }
             else{
                 return false;
@@ -1833,6 +1906,10 @@ $(document).ready(function () {
         }
         else if (payment_option_id == 28) {
             payWithVNpay('', payment_option_id, '');
+        }else if (payment_option_id == 29) {
+            payWithMvodafone('', payment_option_id, '');
+        }else if (payment_option_id == 30) {
+            payWithFlutterWave('', payment_option_id, '');
         }
 
 
@@ -2358,11 +2435,11 @@ $(document).ready(function () {
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
-            
+
         }
-       
-       
-        
+
+
+
         if((parseFloat(amount_payable)+parseFloat($('#wallet_amount_used').val()))>=parseFloat($('#mov').text())){
             $("#MOV_Notification").addClass("d-none");
         }else{
@@ -2383,14 +2460,14 @@ $(document).ready(function () {
         var currency = amount_elem.attr('data-curr');
         var amount_payable = amount_elem.val();
         // amount_payable = parseFloat(amount_payable) + parseFloat(tip)+parseFloat(fixed_fee_amount);
-        
+
         // alert("wallet amount available"+$('total_wallet_amount_available'))
         amount_payable = parseFloat(amount_payable) + parseFloat(tip);
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
         $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
 
-        
+
             if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");
@@ -3375,7 +3452,8 @@ $(document).ready(function () {
     $(document).on('click', '.check-time-slots', function () {
         let cur_date = $(this).val();
         let cart_product_id = $(this).data("cart_product_id");
-        getTimeSlots(cur_date, cart_product_id);
+        let product_vendor_id = $(this).data("product_vendor_id");
+        getTimeSlots(cur_date, cart_product_id , product_vendor_id);
 
     });
 
@@ -3442,7 +3520,7 @@ $(document).ready(function () {
     });
 
     // on demand add to cart
-    function getTimeSlots(cur_date, cart_product_id) {
+    function getTimeSlots(cur_date, cart_product_id,product_vendor_id) {
         $("#show_date" + cart_product_id).html(cur_date);
         $.ajax({
             type: "post",
@@ -3450,7 +3528,8 @@ $(document).ready(function () {
             url: getTimeSlotsForOndemand,
             data: {
                 "cur_date": cur_date,
-                "cart_product_id": cart_product_id
+                "cart_product_id": cart_product_id,
+                "product_vendor_id": product_vendor_id
             },
             success: function (response) {
                 var booking_time_slick = $("#show-all-time-slots" + cart_product_id).find('.booking-time');

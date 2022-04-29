@@ -591,7 +591,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             <div class="menu-navigation al">
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-12">  
 
                                 <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
                                     @foreach($navCategories as $cate)
@@ -600,7 +600,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                         <a href="{{route('categoryDetail', $cate['slug'])}}" >
                                             @if($client_preference_detail->show_icons==1 &&
                                             \Request::route()->getName()=='userHome')
-                                            <div class="nav-cate-img"> <img class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>
+                                            <div class="nav-cate-img" style="height:50px;width:50px; "> <img class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>
                                             @endif{{$cate['name']}}
                                         </a>
                                         @if(!empty($cate['children']))
@@ -634,7 +634,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
     @endif
 </header>
 <div
-    class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @else al_offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif">
+    class=" @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @else al_offset-top-home_1 @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif">
 </div>
 <script type="text/template" id="nav_categories_template">
     <!-- <li>
@@ -713,4 +713,43 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                     class="btn btn-solid" id="remove_cart_button" data-cart_id="">{{__('Remove')}}</button> </div>
         </div>
     </div>
+</div>
+@php
+                $applocale = 'en';
+                if(session()->has('applocale')){
+                    $applocale = session()->get('applocale');
+                }
+                @endphp
+<!-- Modal -->
+<div class="modal fade mobile-setting" id="setting_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="setting-modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-bottom">
+        <h5 class="modal-title" id="setting-modalLabel">Language & Currency</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body pt-0">
+        <div class="show-div setting">
+            <h6 class="mb-1">{{ __("language") }}</h6>
+            <ul>
+                @foreach($languageList as $key => $listl)
+                    <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
+                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                    </li>
+                @endforeach
+            </ul>
+            <h6 class="mb-1">{{ __("currency") }}</h6>
+            <ul class="list-inline">
+                @foreach($currencyList as $key => $listc)
+                    <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
+                        <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

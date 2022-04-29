@@ -31,7 +31,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave');
         //,'easebuzz' 
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
@@ -367,12 +367,16 @@ class PaymentOptionController extends BaseController
                     $validatedData = $request->validate([
                         'paytab_profile_id' => 'required',
                         'paytab_server_key' => 'required',
-                        'paytab_client_key' => 'required'
+                        'paytab_client_key' => 'required',
+                        'paytab_mobile_server_key' => 'required',
+                        'paytab_mobile_client_key' => 'required',
                     ]);
                     $json_creds = json_encode(array(
                         'profile_id' => $request->paytab_profile_id,
                         'server_key' => $request->paytab_server_key,
-                        'client_key' => $request->paytab_client_key
+                        'client_key' => $request->paytab_client_key,
+                        'mobile_server_key' => $request->paytab_mobile_server_key,
+                        'mobile_client_key' => $request->paytab_mobile_client_key
                     ));
                 }
                 else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'vnpay')) {
@@ -383,6 +387,27 @@ class PaymentOptionController extends BaseController
                     $json_creds = json_encode(array(
                         'vnpay_website_id' => $request->vnpay_website_id,
                         'vnpay_server_key' => $request->vnpay_server_key
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'mvodafone')) {
+                    $validatedData = $request->validate([
+                        'mvodafone_client_id' => 'required',
+                        'mvodafone_secret_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'client_id' => $request->mvodafone_client_id,
+                        'secret_key' => $request->mvodafone_secret_key
+                    ));
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'flutterwave')) {
+                    $validatedData = $request->validate([
+                        'flutterwave_client_id' => 'required',
+                        'flutterwave_secret_key' => 'required',
+                        'flutterwave_enc_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'client_id' => $request->flutterwave_client_id,
+                        'secret_key' => $request->flutterwave_secret_key,
+                        'enc_key' => $request->flutterwave_enc_key
                     ));
                 }
             }

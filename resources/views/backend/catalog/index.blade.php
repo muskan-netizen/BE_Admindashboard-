@@ -140,7 +140,7 @@
         </div>
 
         <div class="col-xl-4 col-lg-6 mb-4">
-            <div class="card-box h-100">
+            <div class="card-box ">
                 <div class="row mb-2">
                     <div class="col-sm-8">
                         <h4 class="page-title">{{ __('Brand') }}</h4>
@@ -158,7 +158,7 @@
                             @csrf
                             <input type="hidden" name="orderData" id="orderBrandData" value="" />
                         </form>
-                        <div class="table-responsive outer-box">
+                        <div class="table-responsive outer-boxal">
                             <table class="table table-centered table-nowrap table-striped" id="brand-datatable">
                                 <thead>
                                     <tr>
@@ -208,6 +208,69 @@
                     <div class="col-sm-12 text-right btn_bottom">
                         <button class="btn btn-info waves-effect waves-light text-sm-right saveBrandOrder">{{ __('Save Order') }}</button>
                     </div>
+                </div>
+            </div>
+            <div class="card-box">
+                <div class="row mb-2">
+                    <div class="col-sm-8">
+                        <h4 class="page-title">{{ __('Tags') }}</h4>
+                        <p class="sub-header"></p>
+                    </div>
+                    <div class="col-sm-4 text-right">
+                        <button class="btn btn-info waves-effect waves-light text-sm-right addTagbtn" dataid="0">
+                            <i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
+                        </button>
+                    </div>
+                </div>
+                <div class="row brand-row">
+                    <div class="col-md-12">
+                        <form name="tag_order" id="tag_order" action="{{route('brand.order')}}" method="post">
+                            @csrf
+                            <input type="hidden" name="orderData" id="orderTagData" value="" />
+                        </form>
+                        <div class="table-responsive outer-boxal">
+                            <table class="table table-centered table-nowrap table-striped" id="tag-datatable">  
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>{{ __('Icon') }}</th>
+                                        <th>{{ __('Name') }}</th>
+                                        <th>{{ __('Action') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($tags as $key => $tag)
+                                    <tr class="tagList" data-row-id="{{$tag->id}}">
+                                        <td><span class="dragula-handle"></span></td>
+                                        <td>@if(isset($tag->icon) && !empty($tag->icon)) <img style="height: 25px;width: auto;" src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}">@endif</td>
+                                        <td>
+                                            <a class="edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">
+                                                {{$tag->primary ? $tag->primary->name : ''}}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <div class="inner-div" style="float: left;">
+                                                    <a class="action-icon edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">
+                                                        <i class="mdi mdi-square-edit-outline"></i>
+                                                    </a>
+                                                </div>
+                                                <div class="inner-div">
+                                                    <button type="button" class="btn btn-primary-outline action-icon delete_product_tag_btn" data-tag_id="{{$tag->id}}">
+                                                        <i class="mdi mdi-delete"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                   <!--  <div class="col-sm-12 text-right btn_bottom">
+                        <button class="btn btn-info waves-effect waves-light text-sm-right saveBrandOrder">{{ __('Save Order') }}</button>
+                    </div> -->
                 </div>
             </div>
         </div>
