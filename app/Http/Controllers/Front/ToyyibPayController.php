@@ -175,7 +175,7 @@ class ToyyibPayController extends FrontController
               $info = curl_getinfo($curl);
               $err = curl_error($curl);  
               curl_close($curl);
-    
+              
               $obj = json_decode($result);
               if($obj){
                 return $obj[0]->BillCode;
@@ -230,10 +230,17 @@ class ToyyibPayController extends FrontController
         $toyyibPayRes = $request;     
         $toyyibPayRes['payment_form'] = $toyyibPayRes['payment_form'] ?? $payment_form;
        // return $toyyibPayRes;
-        $user = Auth::user();      
+       if(isset($request->auth_token) && !empty($request->auth_token))
+       {
+            $find_user = User::where('auth_token', $request->auth_token)->first();
+            $user = Auth::login($find_user);
+       }else{
+            $user = Auth::user();      
+       }
+        
         if(!$user)
         {
-            $user = Auth::loginUsingId($request->userid);
+            
         }
             if($toyyibPayRes['status_id'] == '1' || $toyyibPayRes['status_id'] == '2' ){
                 if($toyyibPayRes['payment_form'] == 'cart'){
@@ -309,7 +316,7 @@ class ToyyibPayController extends FrontController
                     }else{
                         if(isset($request->auth_token) && !empty($request->auth_token))
                         { 
-                            $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=subscription';
+                            $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&transaction_id='.$request->transaction_id.'&action=subscription';
                             return Redirect::to($returnUrl); 
                         }else{
                             return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');

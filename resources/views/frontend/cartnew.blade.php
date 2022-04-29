@@ -142,7 +142,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="countdownholder alert-danger" id="min_order_validation_error_<%= product.vendor.id %>" style="display:none;">Your cart will be expired in </div>
                 </div>
                 <% if( product.is_vendor_closed == 1 && product.closed_store_order_scheduled == 0 ) {
-                    var closed_store= 1; %>
+                    closed_store= 1; %>
                     <div class="col-12">
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i>{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}
@@ -414,7 +414,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
 
             <hr class="my-2">
-            <% if( closed_store== 1 ) { %>
+            <% if( closed_store== 0 ) { %>
             <div class="row">
                 <div class="col-md-6">
                     <label for="">{{__('Schedule Pickup ')}}</label>
@@ -488,7 +488,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <hr class="my-2">
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.gross_amount)) %></div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)) %></span></div>
             </div>
             <% } %>
             <hr class="my-2">
@@ -502,15 +502,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(cart_details.loyalty_amount > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Loyalty Amount')}}</div>
-                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.loyalty_amount) %></div>
+                    <div class="col-6 text-right"> - {{Session::get('currencySymbol')}}<span id="loyalty_amount"><%= Helper.formatPrice(cart_details.loyalty_amount) %></span></div>
                 </div>
                 <hr class="my-2">
             <% } %>
             <% if(cart_details.wallet_amount_used > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Wallet Amount')}}</div>
-                    <div class="col-6 text-right" id="wallet_amount_used">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.wallet_amount_used) %></div>
-                    <div class="col-6 text-right" id="total_wallet_amount_available" style="display:none"><%= cart_details.total_wallet_amount_available %></div>
+                    <div class="col-6 text-right" id="wallet_amount_used"> - {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.wallet_amount_used) %></div>
+                    <div class="col-6 text-right" id="wallet_amount_used_fixed" style="display:none"><%= cart_details.wallet_amount_used %></div>
+                    <div class="col-6 text-right" id="wallet_amount_available" style="display:none"><%= cart_details.wallet_amount_available %></div>
                 </div>
                 <hr class="my-2">
             <% }else{ %>
