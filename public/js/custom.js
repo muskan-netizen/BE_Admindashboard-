@@ -2388,13 +2388,13 @@ $(document).ready(function () {
                 wallet_amount_used_fixed=0;
             }
             console.log(wallet_amount_used_fixed);
-            amount_payable = parseFloat(amount_payable) + parseFloat(tip) +wallet_amount_used_fixed ;
+            amount_payable = parseFloat(amount_payable) + parseFloat(tip)  ;
             // console.log(parseFloat(amount_payable)  +"|"+$('#mov').text());
             $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
-            if(parseFloat(amount_payable)>=parseFloat($('#mov').text())){
+            if(parseFloat(amount_payable)+ wallet_amount_used_fixed>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");
                 $("#MOV_Notification").addClass("d-none");

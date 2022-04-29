@@ -1114,6 +1114,7 @@ class CartController extends FrontController
                 $total_payable_amount = $total_payable_amount - $loyalty_amount_saved;
             }
             $wallet_amount_available = 0;
+            $wallet_amount_used = 0;
             if($user){
                
                 if($user->balanceFloat > 0){
