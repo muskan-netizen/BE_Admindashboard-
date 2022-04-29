@@ -502,15 +502,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(cart_details.loyalty_amount > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Loyalty Amount')}}</div>
-                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.loyalty_amount) %></div>
+                    <div class="col-6 text-right"> - {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.loyalty_amount) %></div>
                 </div>
                 <hr class="my-2">
             <% } %>
             <% if(cart_details.wallet_amount_used > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Wallet Amount')}}</div>
-                    <div class="col-6 text-right" id="wallet_amount_used">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.wallet_amount_used) %></div>
-                    <div class="col-6 text-right" id="total_wallet_amount_available" style="display:none"><%= cart_details.total_wallet_amount_available %></div>
+                    <div class="col-6 text-right" id="wallet_amount_used"> - {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.wallet_amount_used) %></div>
+                    <div class="col-6 text-right" id="wallet_amount_used_fixed" style="display:none"><%= cart_details.wallet_amount_used %></div>
+                    <div class="col-6 text-right" id="wallet_amount_available" style="display:none"><%= cart_details.wallet_amount_available %></div>
                 </div>
                 <hr class="my-2">
             <% }else{ %>
