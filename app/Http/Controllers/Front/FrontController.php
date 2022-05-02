@@ -82,7 +82,7 @@ class FrontController extends Controller
     {
         $prefer = ClientPreference::select('sms_credentials', 
                         'sms_provider', 'sms_key', 'sms_secret', 'sms_from' )->first();
-        $to = $request->to ? $request->to :'+917508983302';
+        $to = $request->to ? $request->to : "+233276997300";//'+917508983302';
         $provider = $prefer->sms_provider;
         $body = "Dear ".ucwords('Harbans').", Please enter OTP 12345 to verify your account.";
        // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
