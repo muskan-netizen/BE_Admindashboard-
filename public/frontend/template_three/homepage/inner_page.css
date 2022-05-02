@@ -383,18 +383,8 @@ width: 100%;
 width: 95%;
 text-align: center;
 }
-.radio-btns input[type="checkbox"]{
-z-index: -1;
-position: absolute;
-display: none;
-}
-.radio-btns.long-radio input[type="checkbox"]+label .customCheckbox{
-width: auto;
-border-radius: 50px;
-height: auto;
-line-height: normal;
-padding: 10px 14px;
-}
+.radio-btns input[type="checkbox"]{z-index: -1;position: absolute;display: none;}
+.radio-btns.long-radio input[type="checkbox"]+label .customCheckbox{width: auto;border-radius: 50px;height: auto;line-height: normal;padding: 10px 14px;}
 .radio-btns input[type="radio"]+label .customCheckbox{display: inline-block;box-sizing: border-box;position: relative;width: 49px;height: 49px;line-height: 49px;text-align: center;padding: 0;border-radius: 50%;z-index: 1;color: #1f2431;background: #f3f3f3;overflow: hidden;transition: all .5s;cursor: pointer;}
 .footer-card{background: #fff;padding: 20px;position: -webkit-sticky;position: sticky;bottom: 0;z-index: 30;background-color: #fff;float: left;clear: left;width: 100%;box-shadow: 0 16px 32px 0 rgb(0,0,0 / 5%)!important;}
 #header_cart_main_ul_ondemand li{display: block;position: relative;padding-right: 25px;}
