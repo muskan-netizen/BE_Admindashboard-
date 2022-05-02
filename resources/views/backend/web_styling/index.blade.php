@@ -341,7 +341,7 @@
                                     $exist = 0;
                                     $value = '';
                                     @endphp
-                                    <div class="col-3 pl-1">
+                                    <div class="col pl-1">
                                         <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="home_labels[]">
                                         <input class="form-control" type="hidden" value="{{$lang->langId}}" name="languages[]">
                                         @foreach($home_page_label->translations as $translation)
@@ -354,7 +354,7 @@
                                         @endforeach
                                         <input class="form-control" value="{{$exist == 1 ? $value : '' }}" type="text" name="names[]" placeholder="{{ $lang->langName }}">
                                     </div>
-                                    
+
                                     @endforeach
 
                                 </div>

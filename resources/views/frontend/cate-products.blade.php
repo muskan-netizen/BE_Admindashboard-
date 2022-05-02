@@ -128,7 +128,7 @@
                                             $imagePath = $v['image']['path']['image_fit'].'300/300'.$v['image']['path']['image_path'];
                                         }*/ ?>
                                         <div class=" common-product-box scale-effect mb-2">
-                                            <a class="row " href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                            <a class="row  w-100" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                                 <div class="col-4">
                                                     <div class="img-outer-box position-relative  pr-0">
                                                         <img class="blur-up lazyload p-0" data-src="{{$new['image_url']}}" alt="">
@@ -141,7 +141,7 @@
                                                         <div class="inner_spacing px-0">
                                                             <div class="product-description">
                                                                 <div class="d-flex align-items-center justify-content-between">
-                                                                    <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                                    <h6 class="card_title ellips">{{ $new['translation_title'] }}</h6>
                                                                     <!--<span class="rating-number">2.0</span>-->
                                                                 </div>
                                                                 <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->
