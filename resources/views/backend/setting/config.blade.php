@@ -1095,7 +1095,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
 
                <div class="row align-items-start">
-                  @if($client_preference_detail->business_type != 'taxi')
+                  @if($client_preference_detail->business_type != 'taxi') //super_app 
 
                      @if($client_preference_detail->business_type != 'laundry')
                      <div class="col-md-4">
@@ -1134,8 +1134,16 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
                         <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">Enable the option to create Subscriptions for Customers and Vendors.</small></label>
-                       <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
-                     </span>
+                        <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+                  @elseif($client_preference_detail->subscription_tab_taxi == 1)
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">Enable the option to create Subscriptions for Customers and Vendors.</small></label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
+                        </span>
                      </div>
                   </div>
                   @endif
@@ -1178,6 +1186,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      <div class="form-group d-flex justify-content-between mb-3">
                         <label for="gifting" class="mr-2 mb-0">{{__('Gifting')}}<small class="d-block pr-5">Enable option to mark an Order to be gift wrapped.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="gifting" id="gifting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->gifting == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="gifting" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">Enable subscription tab for taxi/cab.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="subscription_tab_taxi" id="subscription_tab_taxi" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_tab_taxi == '1')) checked='checked' @endif>
                      </span>
                      </div>
                   </div>
