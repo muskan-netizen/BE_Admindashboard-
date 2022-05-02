@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class VerificationOption extends Model
 {
     use HasFactory;
+    protected $table = 'verification_options';
 }
