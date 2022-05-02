@@ -139,7 +139,7 @@ class ToyyibPayController extends FrontController
                 return $this->errorResponse(__($validator->errors()->first()), 422);
             }
         
-            
+           // $uniquetoken = md5(uniqid(rand(), true));
             $some_data = array(
                 'userSecretKey'=> $this->api_key,
                 'categoryCode'=> $codeCategory,
@@ -148,9 +148,11 @@ class ToyyibPayController extends FrontController
                 'billPriceSetting'=>0,
                 'billPayorInfo'=>1,
                 'billAmount'=>$data['amount']*100,
-                'billReturnUrl'=> url('payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
-                'billCallbackUrl'=> url('payment/toyyib/callback'),
-                'billExternalReferenceNo' => $data['order_number'],
+                'billReturnUrl'=> url($data['serverUrl'].'payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id."&auth_token=".$data['auth_token']."&amt=".$data['amount'],
+                'billCallbackUrl'=> url($data['serverUrl'].'payment/toyyib/callback'),
+                // 'billReturnUrl'=> url('payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
+                // 'billCallbackUrl'=> url('payment/toyyib/callback'),
+                'billExternalReferenceNo' => $data['order_number']??"",
                 'billTo'=> $user->name,
                 'billEmail' => $user->email,
                 'billPhone'=>  $user->phone_number,
@@ -173,7 +175,7 @@ class ToyyibPayController extends FrontController
               $info = curl_getinfo($curl);
               $err = curl_error($curl);  
               curl_close($curl);
-    
+              
               $obj = json_decode($result);
               if($obj){
                 return $obj[0]->BillCode;
@@ -200,6 +202,8 @@ class ToyyibPayController extends FrontController
 
         if(!empty($request->all())){
             $data = $request->all();
+            $data['serverUrl'] = "";
+            $data['auth_token'] = "";
             //dd($data);
             $codeCategory = $this->createCategory($data);
             if(!empty($codeCategory)){
@@ -225,11 +229,18 @@ class ToyyibPayController extends FrontController
     public function callbackSuccess(Request $request,$payment_form,$domain = ''){
         $toyyibPayRes = $request;     
         $toyyibPayRes['payment_form'] = $toyyibPayRes['payment_form'] ?? $payment_form;
+       // return $toyyibPayRes;
+       if(isset($request->auth_token) && !empty($request->auth_token))
+       {
+            $find_user = User::where('auth_token', $request->auth_token)->first();
+            $user = Auth::login($find_user);
+       }else{
+            $user = Auth::user();      
+       }
         
-        $user = Auth::user();      
         if(!$user)
         {
-            $user = Auth::loginUsingId($request->userid);
+            
         }
             if($toyyibPayRes['status_id'] == '1' || $toyyibPayRes['status_id'] == '2' ){
                 if($toyyibPayRes['payment_form'] == 'cart'){
@@ -245,12 +256,20 @@ class ToyyibPayController extends FrontController
                         CartAddon::where('cart_id', $cart->id)->delete();
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
-                        CartProductPrescription::where('cart_id', $cart->id)->delete();
+                        CartProductPrescription::where('cart_id', $cart->id)->delete();                        
+
                         if($toyyibPayRes['status_id'] == '2' ){
                             return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been pending');
-                        }else{
+                        }else{                            
                             Order::where('order_number', $order_number)->update(['payment_status' => 1]);
-                            return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
+                            if(isset($request->auth_token) && !empty($request->auth_token))
+                            {
+                                $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&order='.$order->order_number;
+                                return Redirect::to($returnUrl); 
+                            }else{
+                                return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
+                            }
+                            // return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
                         }
     
                         // Send Email
@@ -261,8 +280,17 @@ class ToyyibPayController extends FrontController
 
                     if($toyyibPayRes['status_id'] == '2' ){
                         return Redirect::to(url($returnUrl))->with('success', 'Transaction has been pending');
-                    }else{
-                        return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                    }else{                        
+                         $user = auth()->user();
+                         $wallet = $user->wallet;
+                         $wallet->depositFloat($request->amt, ['Wallet has been <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
+                        if(isset($request->auth_token) && !empty($request->auth_token))
+                        {                                
+                            $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=wallet';
+                            return Redirect::to($returnUrl); 
+                        }else{
+                            return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                        }
                     }
                     
                 }
@@ -271,7 +299,13 @@ class ToyyibPayController extends FrontController
                     if($toyyibPayRes['status_id'] == '2' ){
                         return Redirect::to(url($returnUrl))->with('success', 'Transaction has been pending');
                     }else{
-                        return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                        if(isset($request->auth_token) && !empty($request->auth_token))
+                        { 
+                            $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&order='.$toyyibPayRes['order_id'].'&action=tip';
+                            return Redirect::to($returnUrl); 
+                        }else{
+                            return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                        }                        
                     }
                    
                 }
@@ -280,7 +314,13 @@ class ToyyibPayController extends FrontController
                     if($toyyibPayRes['status_id'] == '2' ){
                         return Redirect::to(url($returnUrl))->with('success', 'Transaction has been pending');
                     }else{
-                        return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                        if(isset($request->auth_token) && !empty($request->auth_token))
+                        { 
+                            $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&transaction_id='.$request->transaction_id.'&action=subscription';
+                            return Redirect::to($returnUrl); 
+                        }else{
+                            return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                        }
                     }
                     
                 }
@@ -319,8 +359,7 @@ class ToyyibPayController extends FrontController
      }
 
      public function orderForApp (Request $request){
-        //$primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        
+        //$primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();        
         $user = Auth::user();        
         
         $data = $request->all();

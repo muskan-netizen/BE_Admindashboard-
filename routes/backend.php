@@ -205,6 +205,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('tax', 'Client\TaxCategoryController');
         Route::resource('taxRate', 'Client\TaxRateController');
         Route::resource('addon', 'Client\AddonSetController');
+        Route::post('addonoption/delete', 'Client\AddonSetController@deleteAddonOption')->name('addonoption_delete');
         Route::resource('payment', 'Client\PaymentController');
         Route::resource('accounting', 'Client\AccountController');
         Route::get('vendor/filterdata', 'Client\VendorController@getFilterData')->name('vendor.filterdata');

@@ -18,3 +18,4 @@ package-lock.json
 /storage
 .DS_Store
 /public/storage
+.DS_Store

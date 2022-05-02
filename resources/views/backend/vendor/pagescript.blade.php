@@ -520,6 +520,8 @@
 
     });
 
+
+
     $(".openAddonModal").click(function(e) {
         $('#addAddonmodal').modal({
             backdrop: 'static',
@@ -660,6 +662,46 @@
                 console.log('data2');
             }
         });
+    });
+    $(document).on('click', '.delete_addon_set', function(e) {
+        e.preventDefault(); 
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        console.log('sdf');
+        var option_id = $(this).attr('data_addon_id');
+       
+        $.ajax({
+            type: "POST",
+            url: "{{route('addonoption_delete')}}",
+            data: {'option_id':option_id},
+            dataType: 'json',
+            success: function(data) {
+                Swal.fire({
+                    text: "{{__('Option deleted successfully!') }}",
+                    icon: "success",
+                    button: "OK",
+                }).then((result) => {
+                    location.reload();
+                });
+                setTimeout(function () {
+            $(element).addClass('d-none');
+            $(element).find(".alert").hide();
+        }, 8000);
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            },
+            error: function(data) {
+                console.log('data2');
+            }
+        });
+      
     });
     // search users for set permission
     $('#search_user_for_vendor_permission').keyup(function(){
