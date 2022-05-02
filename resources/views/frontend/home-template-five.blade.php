@@ -256,7 +256,7 @@
 					<div class="inner_spacing px-0">
 						<div class="product-description">
 							<div class="d-flex align-items-center justify-content-between">
-								<h6 class="card_title mb-1 ellips"><%=product.title %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+								<h6 class="card_title ellips"><%=product.title %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
 								<% if(product.averageRating > 0){%> <span class="rating-number"><%=product.averageRating %></span>
 									<%}%> @endif @endif </div>
 							<div class="product-description_list border-bottom">

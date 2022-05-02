@@ -313,11 +313,22 @@ section.section-b-space_.p-0.ratio_asos.Taxi_banner_shimmer .container{
     .al_body_template_five .cab-footer {
         margin: 0;
     }
+
+}
+@media(max-width:991px){
     #alTaxiSilderBG .col-md-7.text-center svg {
         width: 100%;
     }
     .drivers.py-5 img {
         width: 100%;
     }
+    .col-md-6.delivery-img svg {
+        width: 100%;
+    }
+    .about-ipd {
+        margin-bottom: 120px;
+    }
+    .cardbanner {
+        height: 360px;
+    }
 }
-@media(max-width:1366px){}
