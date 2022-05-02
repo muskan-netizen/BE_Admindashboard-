@@ -230,9 +230,9 @@ span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #
                             <div id="cardCollpase2" class="collapse show mt-3 " dir="ltr" style="position: relative;">
                                 <div class="card-widgets d-block align-items-top select-date">
                                     <div class="btn-group mb-0 mx-2">
-                                        <button type="button" class="btn btn-xs btn-secondary yearSales">{{ __('Yearly') }}</button>
-                                        <button type="button" class="btn btn-xs btn-light weeklySales">{{ __('Weekly') }}</button>
-                                        <button type="button" class="btn btn-xs btn-light monthlySales">{{ __('Monthly') }}</button>
+                                        <button type="button" class="btn btn-xs btn-secondary yearSales">{{ __('Year') }}</button>
+                                        <button type="button" class="btn btn-xs btn-light weeklySales">{{ __('Week') }}</button>
+                                        <button type="button" class="btn btn-xs btn-light monthlySales">{{ __('Month') }}</button>
                                     </div>
                                 </div>
                                 <h4 class="header-title mb-0">{{ __('Sales Analytics') }}</h4>

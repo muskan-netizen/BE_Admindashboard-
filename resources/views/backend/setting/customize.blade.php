@@ -412,7 +412,7 @@
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 1)}}">
+                                    <input type="text" name="names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('vendors'))}}">
                                     @if($k == 0)
                                         @if($errors->has('names.0'))
                                             <span class="text-danger" role="alert">
@@ -434,7 +434,7 @@
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="loyalty_cards_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="loyalty_cards_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 2)}}">
+                                    <input type="text" name="loyalty_cards_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Loyalty Cards'))}}">
                                     @if($k == 0)
                                         @if($errors->has('loyalty_cards_names.0'))
                                             <span class="text-danger" role="alert">
@@ -456,7 +456,7 @@
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="takeaway_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 3)}}">
+                                    <input type="text" name="takeaway_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Takeaway'))}}">
                                     @if($k == 0)
                                         @if($errors->has('takeaway_names.0'))
                                             <span class="text-danger" role="alert">
@@ -478,7 +478,7 @@
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="search_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="search_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 4)}}">
+                                    <input type="text" name="search_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Search'))}}">
                                     @if($k == 0)
                                         @if($errors->has('search_names.0'))
                                             <span class="text-danger" role="alert">
@@ -500,7 +500,7 @@
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="wishlist_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="wishlist_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 5)}}">
+                                    <input type="text" name="wishlist_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Wishlist'))}}">
                                     @if($k == 0)
                                         @if($errors->has('wishlist_names.0'))
                                             <span class="text-danger" role="alert">
@@ -522,7 +522,7 @@
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="dinein_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="dinein_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 6)}}">
+                                    <input type="text" name="dinein_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Dine-In'))}}">
                                     @if($k == 0)
                                         @if($errors->has('dinein_names.0'))
                                             <span class="text-danger" role="alert">
@@ -544,7 +544,7 @@
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="delivery_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="delivery_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 7)}}">
+                                    <input type="text" name="delivery_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Delivery'))}}">
                                     @if($k == 0)
                                         @if($errors->has('delivery_names.0'))
                                             <span class="text-danger" role="alert">
@@ -566,7 +566,7 @@
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="zipCode_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="zipCode_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 8)}}">
+                                    <input type="text" name="zipCode_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Zip Code'))}}">
                                     @if($k == 0)
                                         @if($errors->has('zipCode_name.0'))
                                             <span class="text-danger" role="alert">

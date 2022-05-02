@@ -63,7 +63,7 @@
                         @endforeach
                         <td class="lasttd">
                             @if($first > 0)
-                            <a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a>
+                            <a href="javascript:void(0);"  data_addon_id="{{$optDataId}}"  class="action-icon delete_addon_set"> <i class="mdi mdi-delete"></i></a>
                             @endif
                         </td>
                     </tr>

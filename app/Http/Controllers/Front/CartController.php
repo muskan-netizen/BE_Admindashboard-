@@ -1070,7 +1070,7 @@ class CartController extends FrontController
 
 
 
-                $total_payable_amount = $total_payable_amount + $payable_amount;
+                $total_payable_amount = $total_payable_amount + $payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount);
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
@@ -1113,10 +1113,12 @@ class CartController extends FrontController
                 }
                 $total_payable_amount = $total_payable_amount - $loyalty_amount_saved;
             }
+            $wallet_amount_available = 0;
             $wallet_amount_used = 0;
             if($user){
+               
                 if($user->balanceFloat > 0){
-                    $wallet_amount_used = $user->balanceFloat;
+                    $wallet_amount_available=$user->balanceFloat;
                     if($customerCurrency){
                         $wallet_amount_used = $user->balanceFloat * $customerCurrency->doller_compare;
                     }
@@ -1229,6 +1231,7 @@ class CartController extends FrontController
             $cart->tip_10_percent = decimal_format(0.10 * $total_payable_amount);
             $cart->tip_15_percent = decimal_format(0.15 * $total_payable_amount);
             $cart->total_container_charges = decimal_format($total_container_charges);
+            $cart->wallet_amount_available = decimal_format($wallet_amount_available);
 
             $cart->action = $action;
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();

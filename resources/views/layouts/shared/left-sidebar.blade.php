@@ -83,11 +83,34 @@
                                 </li>
                             @endif
                             @if(in_array('orders',$allowed) || Auth::user()->is_superadmin == 1)
-                                <li>
+                                <!-- <li>
                                     <a href="{{route('order.index')}}">
                                         <span class="icon-orders"></span>
                                         <span> {{ __('Orders') }} </span>
                                     </a>
+                                </li> -->
+
+                                <li>
+                                    <a href="#sidebarorders" data-toggle="collapse"> 
+                                    <span class="icon-accounting"></span>
+                                        <span> {{ __('Orders') }} </span>
+                                    </a>
+                                    <div class="collapse" id="sidebarorders">
+                                        <ul class="nav-second-level">
+                                            
+                                                <li>
+                                                    <a href="{{route('order.index')}}">{{ __('All Orders') }}</a>
+                                                </li>
+                                           
+                                                <li>
+                                                    <a href="{{route('backend.order.returns',['Pending'])}}">{{ __("Return Request") }}</a>
+                                                </li>
+                                            
+                                                <li>
+                                                    <a href="{{route('cancel-order.requests')}}">{{ __("Cancel Order Request") }}</a>
+                                                </li>
+                                        </ul>
+                                    </div>
                                 </li>
                             @endif
                             @if(in_array('vendors',$allowed) || Auth::user()->is_superadmin == 1)
