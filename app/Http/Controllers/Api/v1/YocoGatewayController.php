@@ -46,6 +46,7 @@ class YocoGatewayController extends BaseController
     public function yocoWebview(Request $request){
         $user = Auth::user();
         $amount = $request->amount;
+        $amount = $this->getDollarCompareAmount($amount);
         $action = isset($request->action) ? $request->action : '';
         $params = '?amount=' . $amount . '&public_key_yoco=' . $this->PUBLIC_KEY.'&auth_token='.$user->auth_token.'&action='.$action;
         if(($action == 'cart') || ($action == 'tip')){

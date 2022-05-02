@@ -72,7 +72,7 @@ class PaytabController extends BaseController
                             $orderController->sendSuccessEmail($request, $order, $vendor_id);
                         }
                         //Send SMS to customer
-                        $this->sendSuccessSMS($request, $order);
+                        $orderController->sendSuccessSMS($request, $order);
                     }
                 }
             } elseif($request->action == 'wallet'){
