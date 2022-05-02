@@ -19,6 +19,12 @@
     -webkit-transform: scale(1);
     transform: scale(1);
 }
+.al_body_template_two header.site-header.fixed-bar img.blur-up.lazyloaded{
+    display: none;
+}
+.al_body_template_two a.btn.btn-solid_al{
+    padding: 0;
+}
 .al_body_template_two  .common-product-box,
 .al_body_template_two .product-box,
 .al_body_template_two .product-card-box,

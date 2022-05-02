@@ -299,7 +299,7 @@ body.al_body_template_two{
          display: none !important;
     }
      section.home-slider-wrapper.py-sm-3{
-        padding-top: 20px !important;
+        padding: 24px 0!important;
     }
     .navbar-brand{
         padding:0;
