@@ -27,7 +27,7 @@ class DashBoardController extends Controller
     {
         $onboardclients = Client::where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->count();
         $allclients = Client::select(DB::Raw("GROUP_CONCAT(id) as ids"))->where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->first()->ids;
-        //dd($allclients);
+        
         $activeSubs  = BillingSubscription::join('clients', 'clients.id', '=', 'billing_subscriptions.client_id')
                                                     ->where('clients.status', 1)->where('clients.is_deleted',0)->where('clients.is_blocked', 0)
                                                     ->where(function ($q) {

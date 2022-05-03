@@ -367,7 +367,7 @@ public function getBillingTimeframe(Request $request)
         else:
             return redirect()->back()->withInput()->withErrors(['error' => "Something went wrong."]);
         endif;
-        return redirect()->route('clientsubscription')->with('success', 'Client Subscription is added successfully.');
+        return redirect()->route('clientsubscription')->with('success', 'Client Subscription added successfully.');
     }
 
 
