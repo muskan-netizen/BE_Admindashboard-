@@ -71,4 +71,4 @@ if(isset($set_template))
     @endif
     @include('layouts.store/footer')
 </body>
-</html> 
+</html>
