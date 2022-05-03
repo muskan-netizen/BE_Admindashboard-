@@ -212,7 +212,8 @@ class YocoGatewayController extends FrontController
             Auth::login($user);
             $token = $request->token;
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-            $amount = $this->getDollarCompareAmount($request->amount);
+            // $amount = $this->getDollarCompareAmount($request->amount);
+            $amount = $request->amount;
             $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_INT);
      
             $customer_data = array(

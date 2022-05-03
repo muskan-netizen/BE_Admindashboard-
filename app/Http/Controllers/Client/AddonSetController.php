@@ -175,7 +175,16 @@ class AddonSetController extends BaseController
         }
         return redirect()->back()->with('success', 'Addon set updated successfully!');
     }
-
+    
+    public function deleteAddonOption(Request $request, $domain = '') {
+        //pr($request->all());
+        $addonOptions = AddonOption::find($request->option_id);
+        //pr( $addonOptions);
+        if($addonOptions){
+            $addonOptions->delete();
+        }
+        return response()->json(array('success' => true));
+    }
     /**
      * Remove the specified resource from storage.
      *

@@ -188,6 +188,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/flutterwave', 'Front\FlutterWaveController@createHash')->name('flutterwave.createHash');
 	Route::match(['get','post'],'payment/flutter/success', 'Front\FlutterWaveController@successPage')->name('flutterwave.success');
 
+	//Easypaisa routes
+	Route::post('payment/easypaisa', 'Front\EasypaisaController@createHash')->name('easypaisa.createHash');
+	Route::get('payment/easypaisa', 'Front\EasypaisaController@successPage')->name('easypaisa.success');
+
 
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');

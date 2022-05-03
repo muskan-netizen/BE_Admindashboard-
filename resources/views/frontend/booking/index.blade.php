@@ -194,6 +194,14 @@
                         <div class="col-6 mb-2 text-right" id="distance"></div>
                         <div class="col-6 mb-2">{{__('Duration')}}</div>
                         <div class="col-6 mb-2 text-right" id="duration"></div>
+                        <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
+                        <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
+                        <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
+                        <input type="hidden" id="subscription-percent-h" value="<%= result.subscription_percent_value %>">
+                        <div class="col-6 mb-2"><p class="total_amt m-0">{{__('Amount Payable')}}</p></div>
+                        <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
+                        <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
+                        <% } %>
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
                             <div class="col-6 mb-2">Loyalty</div>
                             <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>xx
@@ -205,6 +213,7 @@
                         <img src="{{asset('assets/images/discount_icon.svg')}}">
                         <span class="code-text">{{__('Select a promo code')}}</span>
                     </label>
+                    
                     <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" id="promo_code_list_btn_cab_booking">Apply</a>
                     <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" style="display:none;">Remove</a>
 
@@ -230,8 +239,15 @@
                 </h4>
                 <div class="row">
                     <div class="col-12">
-                    <input type="hidden" id="stripe_token" name="stripe_token" value="">
-                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Pickup')}}</button>
+                    <% 
+                    var payableAmout = '';
+                    if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ 
+                        payableAmout = result.subscription_discount;
+                    }
+                        
+                    %>
+                        <input type="hidden" id="stripe_token" name="stripe_token" value="">
+                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Pickup')}}</button>
                     </div>
                     <!--<div class="col-6">
                         <button class="btn btn-solid w-100" id="pickup_later" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
@@ -512,6 +528,7 @@
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var credit_wallet_url = "{{route('user.creditWallet')}}";

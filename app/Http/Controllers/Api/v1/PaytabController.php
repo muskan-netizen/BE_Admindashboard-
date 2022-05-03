@@ -72,7 +72,7 @@ class PaytabController extends BaseController
                             $orderController->sendSuccessEmail($request, $order, $vendor_id);
                         }
                         //Send SMS to customer
-                        $this->sendSuccessSMS($request, $order);
+                        $orderController->sendSuccessSMS($request, $order);
                     }
                 }
             } elseif($request->action == 'wallet'){
@@ -88,7 +88,7 @@ class PaytabController extends BaseController
             elseif($request->action == 'subscription'){
                 $request->request->add(['payment_option_id' => 27, 'transaction_id' => $transaction_id]);
                 $subscriptionController = new UserSubscriptionController();
-                $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
+                $subscriptionController->purchaseSubscriptionPlan($request, $request->subscription_id);
             }
             return $this->successResponse('', __('Payment completed successfully'), 200);
         }

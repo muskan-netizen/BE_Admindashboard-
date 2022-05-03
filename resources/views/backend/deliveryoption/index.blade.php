@@ -44,7 +44,7 @@
                 <div class="card-box h-100">
                     <div class="row ">
                         <div class="col-md-6">
-                            <h3 class="mb-1"> <span class="alPaymentImage" style="height:50px;width:50px;display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/royoDis.png')}}" alt=""></span> {{getNomenclatureName('Royo Dispatcher')}}</h3>
+                            <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/royoDis.png')}}" alt=""></span> {{getNomenclatureName('Royo Dispatcher')}}</h3>
                         </div>
                         <div class="col-md-6 mt-2 text-right">
                             <button class="btn btn-info waves-effect waves-light save_btn" type="submit" name="last_mile_submit_btn" value ="1"> {{ __("Save") }}</button>
@@ -147,7 +147,7 @@
                     ?>
                     <div class="row">
                     <div class="col-md-6">
-                        <h3 class="mb-1"> <span class="alPaymentImage" style="height:50px;width:50px;display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$delOption->code.'.png')}}" alt=""></span>  {{$delOption->title}}</h3>
+                        <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$delOption->code.'.png')}}" alt=""></span>  {{$delOption->title}}</h3>
                     </div>
                     <div class="col-md-6 mt-2 text-right">
                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
@@ -333,7 +333,7 @@
                     ?>
                     <div class="row">
                     <div class="col-md-6 ">
-                        <h3 class="mb-1"><span class="alPaymentImage" style="height:60px;width:60px;display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$opt->code.'.png')}}" alt=""></span>  {{$opt->title}}</h3>
+                        <h3 class="mb-1"><span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$opt->code.'.png')}}" alt=""></span>  {{$opt->title}}</h3>
                     </div>
                     <div class="col-md-6 text-right">
                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
@@ -488,7 +488,7 @@
                     ?>
                     <div class="row">
                     <div class="col-md-6">
-                        <h3 class="mb-1"> <span class="alPaymentImage" style="height:60px;width:60px;display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$optDunzo->code.'.png')}}" alt=""></span>  {{__($optDunzo->title)}}</h3>
+                        <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$optDunzo->code.'.png')}}" alt=""></span>  {{__($optDunzo->title)}}</h3>
                     </div>
                     <div class="col-md-6 text-right">
                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
@@ -621,7 +621,7 @@
                     ?>
                     <div class="row">
                     <div class="col-md-6">
-                        <h3 class="mb-1"> <span class="alPaymentImage" style="height:60px;width:60px;display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$optAhoy->code.'.png')}}" alt=""></span>  {{$optAhoy->title}}</h3>
+                        <h3 class="mb-1"> <span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$optAhoy->code.'.png')}}" alt=""></span>  {{$optAhoy->title}}</h3>
                     </div>
                     <div class="col-md-6 text-right">
                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
