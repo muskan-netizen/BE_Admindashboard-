@@ -140,7 +140,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 
     @else
     <div class="main-menu al_template_one_menu">
-        <div class="container-fluid d-block">
+        <div class="container-fluid d-block p-0">
             <div class="container p-0 align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
                     <div class="row mobile-header align-items-center justify-content-between my-sm-2">
@@ -467,8 +467,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             <div class="menu-navigation al">
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="col-12">  
-                                
+                            <div class="col-12">
+
                                 <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
                                     @foreach($navCategories as $cate)
                                     @if($cate['name'])

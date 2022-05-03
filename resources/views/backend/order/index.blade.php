@@ -332,7 +332,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         <div class="page-title-box d-flex justify-content-between">
             <h4 class="page-title mr-3">{{ __('Orders') }}</h4>
-            <div class="d-flex align-items-center">
+            {{--<div class="d-flex align-items-center">
                 <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
                     <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
                         <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
@@ -343,7 +343,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
                     </b>
                 </a>
-            </div>
+            </div>--}}
         </div>
         @if($client_preference_detail->third_party_accounting)
         @foreach($accounting as $accounting)

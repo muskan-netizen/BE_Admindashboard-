@@ -1,13 +1,13 @@
-
 $(document).ready(function () { 
     var footer_height = $('.footer-light').height();
     var header_height = $('.site-header').height();
     var window_height = $(window).height();
     var header_content_width = $('#content-wrap').height();
 
-
+    console.log('header_height',header_height,'footer_height',footer_height);
     jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
     jQuery("#content-wrap").css('padding-bottom', footer_height);
+
 
     jQuery(window).scroll(function () {
         var scroll = jQuery(window).scrollTop();
@@ -18,6 +18,10 @@ $(document).ready(function () {
             jQuery(".site-header").addClass("fixed-bar");
         }
     });
+
+    $('.scrollspy-menu a').on('click',function(){
+        $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
+    })
 });
 
 
@@ -34,7 +38,7 @@ $(document).ready(function () {
 });
 
 $(function () {
-    document.ajax_loading = false;
+    document.ajax_loading = false; 
     $.hasAjaxRunning = function () {
         return document.ajax_loading;
     };
@@ -50,18 +54,11 @@ $(window).scroll(function () {
     var windscroll = $(window).scrollTop();
     var windowheight = $(window).height();
     var header_height = $('.site-header').height();
-    // if(windscroll > (header_height + 200))
-    // {
-    //     console.log('-------------------');
-    //     jQuery(".alScrollspyProduct").css('margin-top', (header_height + 350)+'px');
-    // }else{
-    //     jQuery(".alScrollspyProduct").css('margin-top', '0px');
-    // }
+
     if (windscroll >= windowheight) {
         $('section.scrolling_section').each(function (i) {
             // The number at the end of the next line is how pany pixels you from the top you want it to activate.
-            if ($(this).position().top <= windscroll - windowheight + 800 ) {
-
+            if ($(this).position().top <= windscroll - windowheight + 650 ) {
                 $('.scrollspy-menu li.active').removeClass('active');
                 $('.scrollspy-menu li').eq(i).addClass('active');
             }

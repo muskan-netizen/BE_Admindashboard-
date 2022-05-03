@@ -55,6 +55,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('promo-code-open/list', 'Api\v1\PickupDeliveryController@postPromoCodeListOpen');
         Route::post('order/after/payment', 'Front\PaytabController@after_app_payment');
+        //Passbase Store 
+        Route::post('passbase/store','Api\v1\PassbaseController@storeAuthkey');
+
 
     });
     Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {
