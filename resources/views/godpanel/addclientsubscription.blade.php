@@ -241,9 +241,14 @@ $(document).ready(function(){
                             {
                                 $("#buttonsubmitDiv").show();
                             }
-                            $("#software_plans").val(res.lastsubscriptiondata.billing_plan_id);
-                            $("#software_plans").change();
-                            
+                            if($("#plan_type").val()==1)
+                            {
+                                $("#software_plans").val(res.lastsubscriptiondata.billing_plan_id);
+                                $("#software_plans").change();
+                            }else{
+                                $("#hosting_plans").val(res.lastsubscriptiondata.billing_plan_id);
+                                $("#hosting_plans").change();
+                            }
                             $("#pricing").val(res.lastsubscriptiondata.billing_price_id);
                             $("#pricing").change();
                         }
