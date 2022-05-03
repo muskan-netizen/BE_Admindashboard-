@@ -152,7 +152,7 @@ class MvodafoneController extends Controller
 
       $order = Order::where('order_number',$payment->transaction_id)->first();
       //dd($order);
-          if(isset($request->rID) && $request->rID != '')
+          if(isset($request->rCode) && $request->rCode == '101')
           {
            
             $order->payment_status = '1';
@@ -217,7 +217,7 @@ class MvodafoneController extends Controller
 
     public function completeOrderWallet(Request $request,$payment)
     {
-       if(isset($request->rID) && $request->rID != '')
+      if(isset($request->rCode) && $request->rCode == '101')
           {
             $data = Payment::where('viva_order_id',$request->rID)->first();
             $user = auth()->user();
@@ -256,7 +256,7 @@ class MvodafoneController extends Controller
     {
       $user = auth()->user();
       $data = Payment::where('viva_order_id',$request->rID)->first();
-      if(isset($request->rID) && $request->rID != '')
+      if(isset($request->rCode) && $request->rCode == '101')
           {
             $subscription =explode('_',$data->transaction_id);
             $subscription =$subscription[0];
@@ -290,7 +290,7 @@ class MvodafoneController extends Controller
     public function completeOrderTip(Request $request,$payment)
     {
       $data = Payment::where('viva_order_id',$request->rID)->first();
-      if(isset($request->rID) && $request->rID != '')
+      if(isset($request->rCode) && $request->rCode == '101')
           {
             $order_number = explode('_',$data->transaction_id);
             $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[0], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $data->transaction_id]);
