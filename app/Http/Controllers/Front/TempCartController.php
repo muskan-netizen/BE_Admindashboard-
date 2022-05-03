@@ -909,6 +909,7 @@ class TempCartController extends FrontController
         try{
             $order_vendor_id = $request->order_vendor_id;
             $getallproduct = OrderVendor::with(['products.addon'])->where('id', $order_vendor_id)->first();
+            \Log::info($getallproduct->toArray());
             if(!$request->has('user_id')){
                 $request->request->add(['user_id' => $getallproduct->user_id]);
             }
