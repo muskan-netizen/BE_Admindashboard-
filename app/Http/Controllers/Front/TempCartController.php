@@ -914,7 +914,7 @@ class TempCartController extends FrontController
             }
             $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
             $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
-            $cart = TempCart::where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->first();
+            $cart = TempCart::where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', '!=', 1)->where('is_approved', '!=', 1)->first();
             if(!$cart){
                 foreach($getallproduct->products as $data){
                     $request->request->add([
@@ -934,7 +934,7 @@ class TempCartController extends FrontController
                     $this->postAddToTempCart($request);
                 }
             }
-            $cart = TempCart::with(['address','currency','coupon.promo'])->where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->first();
+            $cart = TempCart::with(['address','currency','coupon.promo'])->where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->orderBy('id', 'desc')->first();
             $cartData = $this->getCart($cart, $langId, $currId, '');
 
             return $this->successResponse($cartData, 'Order added to cart.', 201);
