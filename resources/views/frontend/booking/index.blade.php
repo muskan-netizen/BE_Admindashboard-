@@ -227,6 +227,20 @@
                     <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
+                <select name="is_for_friend" class="form-control">
+                    <option value="0">For Me</option>
+                    <option value="1">For Friend</option>
+                </select>
+                <form>
+                    <div class="form-group">
+                        <label for="friendName">Friend Name</label>
+                        <input type="text" class="form-control" name="friendName" placeholder="Friend Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="friendPhoneNumber">Friend Phone Number</label>
+                        <input type="number" class="form-control" name="friendPhoneNumber" placeholder="Phone Number">
+                    </div>
+                </form>
             </div>
             <span id="show_error_of_booking" class="error"></span>
 

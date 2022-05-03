@@ -325,7 +325,7 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-
+        
         DB::beginTransaction();
         try {
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -466,6 +466,12 @@ class PickupDeliveryController extends FrontController{
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
+                
+                /*book for a friend*/
+                $order->type = $request->type;
+                $order->friend_name = $request->friendName;
+                $order->friend_phone_number = $request->friendPhoneNumber;
+                
                 $order->save();
                 $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
@@ -661,6 +667,9 @@ class PickupDeliveryController extends FrontController{
 
                 $postdata =  [
                     'order_number' =>  $order->order_number,
+                    'order_type' =>  $order->type,
+                    'order_friend_name' =>  $order->friend_name,
+                    'order_number' =>  $order->friend_phone_number,
                     'barcode' => '',
                     'allocation_type' => 'a',
                     'task' => $request->tasks,

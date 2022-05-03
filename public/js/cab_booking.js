@@ -170,7 +170,7 @@ $(document).ready(function () {
             time_zone = time_zone;
         }
 
-        $('#pickup_now').attr('disabled', true);
+        // $('#pickup_now').attr('disabled', true);
       //  $('#pickup_later').attr('disabled', true);
         var pickup_location_names = $('input[name="pickup_location_name[]"]').map(function(){return this.value;}).get();
         var destination_location_names = $('input[name="destination_location_name[]"]').map(function(){return this.value;}).get();
@@ -213,12 +213,16 @@ $(document).ready(function () {
         let coupon_id = $(this).attr('data-coupon_id');
         let product_id = $(this).attr('data-product_id');
         let payment_option_id = $(this).attr('data-payment_method');
-
+        let type = $('select[name=is_for_friend]').val();
+        let friendName=$('input[name=friendName]').val();
+        let friendPhoneNumber=$('input[name=friendPhoneNumber]').val();
+        // alert(type+"|"+friendName+"|"+friendPhoneNumber);
+        // return false;
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime,type:type,friendName:friendName,friendPhoneNumber:friendPhoneNumber},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
