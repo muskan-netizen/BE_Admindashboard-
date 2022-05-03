@@ -50,6 +50,7 @@
                             <thead>
                                 <tr>
                                     <th>{{ __('Plan') }}</th>
+                                    <th>{{ __('Plan Type') }}</th>
                                     <th>{{ __('Timeframe') }}</th>
                                     <th>{{ __('Current Price') }}</th>
                                     <th>{{ __('Earlier Price') }}</th>
@@ -60,7 +61,8 @@
                             <tbody id="BillingPricing_list">
                                 @foreach($billingpricings as $billingpricing)
                                 <tr data-row-id="{{$billingpricing->slug}}">
-                                    <td>{{$billingpricing->billingplan->title}}</a></td>
+                                    <td>{{$billingpricing->plan_name}}</td>
+                                    <td><span class="badge bg-success" style="color:#fff;">{{$billingpricing->plantype}}</span></a></td>
                                     <td>{{$billingpricing->billingtimeframe->title}}</td>
                                     <td><a href="javascript:void(0)" class="editBillingPricingBtn" data-id="{{$billingpricing->slug}}">{{__(ucfirst($billingpricing->price))}}</a></td>
                                     <td>{{$billingpricing->old_price}}</td>

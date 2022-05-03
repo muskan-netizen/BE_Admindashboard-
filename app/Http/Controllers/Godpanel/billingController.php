@@ -181,7 +181,9 @@ public function getBillingTimeframe(Request $request)
 
     public function getBillingPricing(Request $request)
     {
-        $billingpricings = BillingPricing::with('billingplan:id,title','billingtimeframe:id,title')->select("id", "price", "slug", "status", 'old_price', 'billing_plan_id', 'billing_timeframe_id')->orderBy('id', 'asc')->paginate(20);
+        $billingpricings = BillingPricing::with('billingtimeframe:id,title')->select("billing_pricings.id", "price", "billing_pricings.slug", "billing_pricings.status", 'old_price', 'billing_plan_id', 'billing_timeframe_id', 'billing_plan_types.title as plantype', 'billing_plans.title as plan_name')
+                                           ->join('billing_plans', 'billing_plans.id', '=', 'billing_pricings.billing_plan_id')
+                                           ->join('billing_plan_types', 'billing_plan_types.id', '=', 'billing_plans.plan_type')->orderBy('id', 'asc')->paginate(20);
         $billingplanlist = BillingPlanManager::getBillingPlanList();
         $billingtimeframelist = BillingPlanManager::getBillingTimeframeList();
         return view('godpanel/billingpricing')->with(['billingpricings'=>$billingpricings, 'billingplanlist'=>$billingplanlist, 'billingtimeframelist'=>$billingtimeframelist]);

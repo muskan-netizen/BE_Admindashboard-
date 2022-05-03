@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Traits;
+use DB;
 use Illuminate\Support\Collection;
 use App\Models\{BillingPlan, BillingPlanType, BillingTimeframe, BillingPricing, Client};
 
@@ -41,7 +42,7 @@ trait BillingPlanManager{
   public function getBillingPlanList($plantype='')
   {
     if($plantype==''):
-      $billingplanlist = BillingPlan::orderBy('title', 'desc')->get()->pluck('title','id');
+      $billingplanlist = BillingPlan::select('id', DB::Raw("CONCAT(title, ' (', (select title from billing_plan_types where billing_plan_types.id=billing_plans.plan_type), ')') as title"))->orderBy('title', 'desc')->get()->pluck('title','id');
     else:
       $billingplanlist = BillingPlan::where('plan_type', $plantype)->orderBy('title', 'desc')->get()->pluck('title','id');
     endif;
