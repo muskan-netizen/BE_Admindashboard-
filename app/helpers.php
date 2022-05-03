@@ -30,7 +30,16 @@ function orderProductDetails($order_id)
     }
     return $itemsDetails;
 }
-
+function EasebuzzSubMerchent()
+{
+    $access = 0;
+    $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'easebuzz')->where('status', 1)->first();
+    if($payOpt){
+        $json = json_decode($payOpt->credentials);
+        $access = $json->easebuzz_Sub_merchant ;
+    }
+    return $access;
+}
 
 if (!function_exists('pr')) {
     function pr($var) {

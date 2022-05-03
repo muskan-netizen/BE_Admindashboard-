@@ -360,6 +360,7 @@ class PaymentOptionController extends BaseController
                         'easebuzz_salt' => 'required'
                     ]);
                     $json_creds = json_encode(array(
+                        'easebuzz_Sub_merchant' =>  ($request->has('easebuzz_Sub_merchant') && $request->easebuzz_Sub_merchant == 'on') ? 1 : 0,
                         'easebuzz_merchant_key' => $request->easebuzz_merchant_key,
                         'easebuzz_salt' => $request->easebuzz_salt
                     ));

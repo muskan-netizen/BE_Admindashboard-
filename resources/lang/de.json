@@ -298,7 +298,6 @@
   "Payment Gateway": "Zahlungs-Gateways",
   "Vendor Earning": "Verkäuferverdienst",
   "Hyperlocal": "Hyperlokal",
-  "Save": "Speichern",
   "Enable location based visibility of Vendors and set the Default Location.": "Aktivieren Sie die standortbasierte Sichtbarkeit von Anbietern und legen Sie den Standardstandort fest.",
   "Default Location": "Standardstandort",
   "Latitude": "Breite",
@@ -850,18 +849,15 @@
   "Save": "Speichern",
   "Measurement ID": "Mess-ID",
   "Refer And Earn": "Empfehlen und verdienen",
-  "Reffered by earning": "Referenziert durch Verdienen",
-  "Reffered by earning": "Referenziert durch Verdienen",
   "Isolate Single Vendor Order": "Einzelnen Lieferantenauftrag isolieren",
   "Update reffered to earning here.": "Update bezog sich auf das Verdienen hier.",
   "Reffered by earning": "Referenziert durch Verdienen",
   "Reffered to earning": "Bezogen auf das Verdienen",
   "Update reffered by earning here.": "Aktualisieren Sie durch das Verdienen hier.",
-  "Reffered to earning": "Bezogen auf das Verdienen",
   "Tip Before Order": "Tipp vor der Bestellung",
   "Tip After Order": "Tipp nach Bestellung",
   "Off Scheduling  Order": "Off-Scheduling-Auftrag",
-  "Select Parent Category" : "Übergeordnete Kategorie auswählen",
   "There are no stores available in your area currently.": "Derzeit ist kein Geschäft in Ihrer Nähe verfügbar.",
   "Create a free account and join us!": "Erstellen Sie ein kostenloses Konto und treten Sie uns bei!"
+
 }

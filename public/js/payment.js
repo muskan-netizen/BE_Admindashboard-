@@ -1522,11 +1522,13 @@ $(document).ready(function() {
 
         let ajaxData = [];
         if (path.indexOf("cart") !== -1) {
+            var vendor_id =order?.vendors[0]?.vendor_id || 0;
             total_amount = cartElement.val();
             payment_form = 'cart';
             ajaxData.push(
                 {name: 'address_id', value: address_id},
                 {name: 'order_number', value: order.order_number},
+                {name: 'vendor_id', value: vendor_id},
                 {name: 'payment_form', value: 'cart'}
             );
             returnParams += 'order=' + order.order_number;
