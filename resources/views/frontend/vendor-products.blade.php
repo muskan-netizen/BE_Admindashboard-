@@ -33,7 +33,7 @@
                                             <div class="name_location d-block py-0">
                                                 <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
                                             </div>
-                                            
+
                                                 <div class="">
                                                     @if($vendor->is_show_vendor_details == 1)
                                                     @if($vendor->email)
@@ -45,10 +45,10 @@
                                                     @endif
                                                     @endif
                                                     @if($vendor->instagram_url)
-                                                        <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>                                                    
+                                                        <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>
                                                     @endif
                                                 </div>
-                                            
+
                                         </div>
                                         @if($vendor->desc)
                                             <div class="col-md-12 text-center">
@@ -152,7 +152,7 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span> -->
                         </h5>
-                            <div class="offer-slider">
+                            <div class="offer-slider al">
                                 @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
 
@@ -164,7 +164,7 @@
                                     }*/ ?>
 
                                     <div class="common-product-box scale-effect mb-2">
-                                        <a class="row" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                        <a class="row w-100" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                             <div class="col-4">
                                                 <div class="img-outer-box position-relative">
                                                         <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
@@ -179,7 +179,7 @@
                                                     <div class="inner_spacing px-0">
                                                         <div class="product-description">
                                                             <div class="d-flex align-items-center justify-content-between">
-                                                                <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                                <h6 class="card_title ellips">{{ $new['translation_title'] }}</h6>
                                                                 <!--<span class="rating-number">2.0</span>-->
                                                             </div>
                                                             <!-- <h3 class="m-0">{{ $new['translation_title'] }}</h3> -->

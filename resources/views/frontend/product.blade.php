@@ -627,7 +627,7 @@
 						<div class="inner_spacing px-0">
 							<div class="product-description">
 								<div class="d-flex align-items-center justify-content-between">
-									<h6 class="card_title mb-1 ellips">{{ $related_product->translation_title }}</h6>
+									<h6 class="card_title ellips">{{ $related_product->translation_title }}</h6>
 								</div>
 								<p>{{ $related_product->vendor_name }}</p>
 								<p class="border-bottom pb-1">In {{$related_product->category_name}}</p>

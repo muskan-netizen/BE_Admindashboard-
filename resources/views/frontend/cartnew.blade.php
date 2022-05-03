@@ -161,7 +161,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <div class="text-danger">
                             <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders less then ')}} {{Session::get('currencySymbol')}}<%= Helper.formatPrice(product.vendor.order_min_amount) %>
                         </div>
-                        
+
                     </div>
                 <% } %>
                 <div id="mov" style="display:none;"><%= product.vendor.order_min_amount %> </div>
@@ -782,7 +782,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <div class="inner_spacing px-0">
                                         <div class="product-description">
                                             <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="card_title mb-1 ellips"><%= product.translation_title %></h6>
+                                                <h6 class="card_title ellips"><%= product.translation_title %></h6>
                                                 <!--<span class="rating-number">2.0</span>-->
                                             </div>
                                             <p><%= product.vendor_name %></p>
@@ -833,7 +833,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <div class="inner_spacing px-0">
                                         <div class="product-description">
                                             <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="card_title mb-1 ellips"><%= product.translation_title %></h6>
+                                                <h6 class="card_title ellips"><%= product.translation_title %></h6>
                                                 <!--<span class="rating-number">2.0</span>-->
                                             </div>
                                             <!-- <h3 class="m-0"><%= product.translation_title %></h3> -->

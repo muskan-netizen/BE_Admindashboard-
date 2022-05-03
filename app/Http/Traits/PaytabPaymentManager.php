@@ -2,7 +2,7 @@
 namespace App\Http\Traits;
 use App\Models\PaymentOption;
 use Paytabscom\Laravel_paytabs\Facades\paypage; 
-use Auth, Log;
+use Auth, Log, Config;
 trait PaytabPaymentManager{
   public function __construct()
     {
