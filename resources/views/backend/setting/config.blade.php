@@ -1095,7 +1095,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
 
                <div class="row align-items-start">
-                  @if($client_preference_detail->business_type != 'taxi') //super_app 
+                  @if($client_preference_detail->business_type != 'taxi')  
 
                      @if($client_preference_detail->business_type != 'laundry')
                      <div class="col-md-4">
