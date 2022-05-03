@@ -30,7 +30,16 @@ function orderProductDetails($order_id)
     }
     return $itemsDetails;
 }
-
+function EasebuzzSubMerchent()
+{
+    $access = 0;
+    $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'easebuzz')->where('status', 1)->first();
+    if($payOpt){
+        $json = json_decode($payOpt->credentials);
+        $access = $json->easebuzz_Sub_merchant ;
+    }
+    return $access;
+}
 
 if (!function_exists('pr')) {
     function pr($var) {
@@ -382,10 +391,15 @@ function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
     }
 
     if(isset($slots) && count($slots)>0){
+        $slotss = [];
         foreach($slots as $slott){
             if(isset($slott->days->id))
             {
-                $slotss[] = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
+               $new_slot = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
+               if(!in_array($new_slot, $slotss))
+               {
+                   $slotss[] = $new_slot; 
+               }
             }else{
                 $slotss[] = [];
             }
@@ -406,7 +420,7 @@ function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
             }
         }
     }
-
+    
     return $viewSlot;
 }
 
