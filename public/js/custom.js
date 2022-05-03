@@ -4,9 +4,10 @@ $(document).ready(function () {
     var window_height = $(window).height();
     var header_content_width = $('#content-wrap').height();
 
-
+    console.log('header_height',header_height,'footer_height',footer_height);
     jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
     jQuery("#content-wrap").css('padding-bottom', footer_height);
+
 
     jQuery(window).scroll(function () {
         var scroll = jQuery(window).scrollTop();

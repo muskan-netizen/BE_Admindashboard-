@@ -148,7 +148,7 @@ class ToyyibPayController extends FrontController
                 'billPriceSetting'=>0,
                 'billPayorInfo'=>1,
                 'billAmount'=>$data['amount']*100,
-                'billReturnUrl'=> url($data['serverUrl'].'payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id."&auth_token=".$data['auth_token']."&amt=".$data['amount'],
+                'billReturnUrl'=> url($data['serverUrl'].'payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id."&auth_token=".$data['auth_token']."&amt=".$data['amount']."&subscriptionid=".$data['subscription_id'],
                 'billCallbackUrl'=> url($data['serverUrl'].'payment/toyyib/callback'),
                 // 'billReturnUrl'=> url('payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
                 // 'billCallbackUrl'=> url('payment/toyyib/callback'),
@@ -232,16 +232,17 @@ class ToyyibPayController extends FrontController
        // return $toyyibPayRes;
        if(isset($request->auth_token) && !empty($request->auth_token))
        {
+          // $user = Auth::loginUsingId($request->userid);
             $find_user = User::where('auth_token', $request->auth_token)->first();
             $user = Auth::login($find_user);
        }else{
             $user = Auth::user();      
        }
         
-        if(!$user)
-        {
+        // if(!$user)
+        // {
             
-        }
+        // }
             if($toyyibPayRes['status_id'] == '1' || $toyyibPayRes['status_id'] == '2' ){
                 if($toyyibPayRes['payment_form'] == 'cart'){
                     $order_number = $toyyibPayRes['order_id'];
@@ -314,6 +315,10 @@ class ToyyibPayController extends FrontController
                     if($toyyibPayRes['status_id'] == '2' ){
                         return Redirect::to(url($returnUrl))->with('success', 'Transaction has been pending');
                     }else{
+                        $request->request->add(['user_id' => $user->id, 'payment_option_id' => 26, 'amount' => $request->amt, 'transaction_id' => $request->transaction_id]);
+                        $subscriptionController = new UserSubscriptionController();                        
+                        $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscriptionid);
+
                         if(isset($request->auth_token) && !empty($request->auth_token))
                         { 
                             $returnUrl = route('payment.gateway.return.response').'/?gateway=toyyibpay'.'&status=200&transaction_id='.$request->transaction_id.'&action=subscription';
