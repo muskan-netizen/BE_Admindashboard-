@@ -606,6 +606,10 @@ class PickupDeliveryController extends FrontController{
 
                 $order->payable_amount = $finalAmount;
 
+                if(!empty($request->subscription_payable_amount)){
+                    $order->subscription_discount = $request->amount - $request->subscription_payable_amount;
+                }
+
                 $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                 $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                 if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {

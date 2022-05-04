@@ -212,8 +212,8 @@ class CategoryController extends FrontController{
             $preferences= ClientPreference::first();
             $vendorData = Vendor::with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
-                $longitude = Session::get('longitude') ?? $preferences->Default_longitude;
+                $latitude = Session::get('latitude') ?? '';
+                $longitude = Session::get('longitude') ?? '';
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
@@ -608,7 +608,6 @@ class CategoryController extends FrontController{
         $user = Auth::user();
         $timezone = $user->timezone ?? 'Asia/Kolkata';
 
-
         $dates = new DateTime("now", new DateTimeZone($timezone) );
         $today = $dates->format('Y-m-d');
 
@@ -617,25 +616,37 @@ class CategoryController extends FrontController{
         }else{
             $daten = new DateTime("now", new DateTimeZone($timezone) );
             $curr_time = $daten->format('h:i');
-
         }
-        $slots = showSlot($today,$request->product_vendor_id,'delivery');
 
-       // $date =new DateTime($request->cur_date);
+        if(!empty($request->cur_date)){
+            $date = $request->cur_date;
+        }else{
+            $date = $today;
+        }
+
+        $slots = showSlot($date,$request->product_vendor_id,'delivery');
 
         $start_time = new DateTime("now", new  DateTimeZone($timezone) );
         $start_time = $start_time->format('Y-m-d H:m');
         $end_time = date('Y-m-d 23:59');
 
-        // $start_time = $date." ".$curr_time;
-        // $end_time = $date." 23:59";
-      //pr( $slots);
+        $time_slots = [];
+        if(!empty($slots)){
+            $i = 0;
+            foreach($slots as $slot){
+                $newSlot = explode('-', $slot['value']);
+                $time_slots[$i++] = trim($newSlot[0]);
+            }
+        }else{
         $time_slots = $this->SplitTime($start_time, $end_time, "60");
+        }
+
         $cart_product_id = $request->cart_product_id??0;
         if ($request->ajax()) {
            return \Response::json(\View::make('frontend.ondemand.time-slots-for-date', array('time_slots' => $time_slots,'cart_product_id'=> $cart_product_id))->render());
         }
     }
+    
     # get product faq
     public function getcategoryKycDocument(Request $request,$domain = ''){
         $user = Auth::user();
