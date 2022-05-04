@@ -200,7 +200,7 @@
                     @if(EasebuzzSubMerchent() == 1)
                     <div class="col-md-12">
                         <div class="form-group" id="social_link">
-                            {!! Form::label('title', 'Easebuss Sub Merchent Id',['class' => 'control-label']) !!}
+                            {!! Form::label('title', 'Easebuzz Sub Merchent Id',['class' => 'control-label']) !!}
                             <input class="form-control" name="easebuzz_sub_merchent_id" type="text" value="{{$vendor->easebuzz_sub_merchent_id}}" >
                         </div>
                     </div>
