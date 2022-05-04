@@ -350,19 +350,19 @@ public function getBillingTimeframe(Request $request)
             $clientsubs->billing_timeframe_title = $billingtimeframe->title;
             $clientsubs->billing_price_id        = $request->pricing;
             $clientsubs->billing_price           = $request->price;
-            $clientsubs->start_date              = (!empty($client_subscription))?(($client_subscription->end_date!= NULL && $client_subscription->end_date!='')?$client_subscription->end_date:date('Y-m-d',time())):(($billing_start_date!='')?$billing_start_date:date('Y-m-d',time()));
+            $clientsubs->start_date              = (!empty($client_subscription))?(($client_subscription->end_date!= NULL && $client_subscription->end_date!='')?date("Y-m-d", strtotime('+ 1 day' , strtotime($client_subscription->end_date))):date('Y-m-d',time())):(($billing_start_date!='')?$billing_start_date:date('Y-m-d',time()));
 
             if($clientsubs->start_date == ''):
                 return redirect()->back()->withInput()->withErrors(['error' => "Error, Subscription Start Date is not set."]);
             endif;
             if($billingtimeframe->is_timelimit == 1):
-                $end_date                        = date("Y-m-d", strtotime('+ '.$billingtimeframe->validity.' '.$billingtimeframe->validity_type , strtotime($clientsubs->start_date)));
+                $end_date           = date("Y-m-d", strtotime('+ '.$billingtimeframe->validity.' '.$billingtimeframe->validity_type , strtotime($clientsubs->start_date)));
                 $clientsubs->end_date            = date("Y-m-d", strtotime('- 1 day' , strtotime($end_date)));
                 $clientsubs->next_due_date       = date("Y-m-d", strtotime('+ '.$billingtimeframe->standard_buffer_period.' day' , strtotime($clientsubs->end_date)));
             endif;
-            if(!empty($client_subscription)):
-                $updateclientsubs = BillingSubscription::where('id', $client_subscription->id)->update(['end_date'=>$clientsubs->start_date]);
-            endif;
+            /* if(!empty($client_subscription)):
+                $updateclientsubs = BillingSubscription::where('id', $client_subscription->id)->update(['end_date'=>date("Y-m-d", strtotime('- 1 day' , strtotime($clientsubs->start_date)))]);
+            endif; */
             $clientsubs->save();
         else:
             return redirect()->back()->withInput()->withErrors(['error' => "Something went wrong."]);
@@ -529,9 +529,18 @@ public function getBillingTimeframe(Request $request)
         endif;
 
         if (!empty($request->get('search'))):
-            $client_subscription = $client_subscription->whereRaw("(billing_plan_title like '%".$search_value."%' or billing_timeframe_title like '%".$search_value."%' or clients.name like '%".$search_value."%' or billing_price like '%".$search_value."%' or (CASE WHEN end_date IS NULL THEN 'Active' WHEN end_date >= date(NOW()) THEN 'Active' ELSE 'Expired' END) like '%".$search_value."%' or DATE_FORMAT(start_date, '%d-%b-%Y') like '%".$search_value."%' or DATE_FORMAT(end_date, '%d-%b-%Y') like '%".$search_value."%' or DATE_FORMAT(next_due_date, '%d-%b-%Y') like '%".$search_value."%' or billing_plan_types.title like '%".$search_value."%' or (CASE WHEN is_paid =1 THEN 'Paid' ELSE 'Unpaid' END) like '%".$search_value."%')");
+            $client_subscription = $client_subscription->whereRaw("(billing_plan_title like '%".$search_value."%' or 
+                                                        billing_timeframe_title like '%".$search_value."%' or 
+                                                        clients.name like '%".$search_value."%' or billing_price like '%".$search_value."%' or 
+                                                        (CASE WHEN end_date IS NULL THEN 'Active' WHEN end_date >= date(NOW()) THEN 'Active' ELSE 'Expired' END) like '%".$search_value."%' or 
+                                                        DATE_FORMAT(start_date, '%d-%b-%Y') like '%".$search_value."%' or 
+                                                        DATE_FORMAT(end_date, '%d-%b-%Y') like '%".$search_value."%' or 
+                                                        DATE_FORMAT(next_due_date, '%d-%b-%Y') like '%".$search_value."%' or 
+                                                        billing_plan_types.title like '%".$search_value."%' or 
+                                                        (CASE WHEN is_paid =1 THEN 'Paid' ELSE 'Unpaid' END) like '%".$search_value."%')");
         endif;
 
+        //$client_subscription = $client_subscription->whereRaw("billing_subscriptions.id in (select MAX(billing_subscriptions.id) from billing_subscriptions inner join billing_pricings on billing_pricings.id=billing_subscriptions.billing_price_id inner join billing_plans on billing_plans.id=billing_pricings.billing_plan_id group by client_id, billing_plans.plan_type)");
         $client_subscription = $client_subscription->orderBy('id', 'DESC')->get();
         $count = 0;
         return Datatables::of($client_subscription)
