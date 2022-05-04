@@ -82,7 +82,7 @@ class FrontController extends Controller
     {
         $prefer = ClientPreference::select('sms_credentials', 
                         'sms_provider', 'sms_key', 'sms_secret', 'sms_from' )->first();
-        $to = $request->to ? $request->to : "+233276997300";//'+917508983302';
+        $to = $request->to ? $request->to :'+917508983302';
         $provider = $prefer->sms_provider;
         $body = "Dear ".ucwords('Harbans').", Please enter OTP 12345 to verify your account.";
        // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
@@ -648,6 +648,19 @@ class FrontController extends Controller
             }
         }
 
+        foreach($cartData as $key => $data){
+            $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($user->timezone)->format('Y-m-d');
+            $cartData[$key]->scheduled_date_time = $selectedDate;
+            $slots = showSlot($selectedDate,$data->vendor_id,'delivery');
+            $time_slots = [];
+            $i = 0;
+            foreach($slots as $slot){
+                $newSlot = explode('-', $slot['value']);
+                $time_slots[$i++] = trim($newSlot[0]);
+            }
+            $cartData[$key]->timeSlots = $time_slots;
+        }
+
         $user = Auth::user();
         $timezone = $user->timezone ?? 'Asia/Kolkata';
 
@@ -660,7 +673,7 @@ class FrontController extends Controller
         $end_time = date('Y-m-d 23:59');
         $period = CarbonPeriod::create($start_date, $end_date);
         $time_slots = $this->SplitTime($start_time, $end_time, "60");
-        //dd($period);
+
         return ['time_slots' => $time_slots,'period' => $period,'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user];
     }
 
