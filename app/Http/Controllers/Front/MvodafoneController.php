@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Front\FrontController;
 use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use Auth;
@@ -21,7 +22,7 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
 use Log;
 
-class MvodafoneController extends Controller
+class MvodafoneController extends FrontController
 {
    use ApiResponser, Mvodafone;
 
@@ -86,8 +87,9 @@ class MvodafoneController extends Controller
     $number =  $this->orderNumber($request);
     $user = auth()->user();
     $this->credentials();
+
       $data  = [
-              'amount'              => $request->amt,
+              'amount'              => $this->getDollarCompareAmount($request->amt),
               'order_no'            => $number,
               'returnUrl'           => route('mvodafone.success'),
           ];
