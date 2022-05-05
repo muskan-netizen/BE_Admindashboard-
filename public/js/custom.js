@@ -3345,50 +3345,9 @@ $(document).ready(function () {
         });
     }
 
-    // *****************************  End tip after order place ****************************///
 
-    $(document).on('click', '.validate_promo_code_btn', function () {
-        let amount = $(this).attr('data-amount');
-        let cart_id = $(this).attr('data-cart_id');
-        let vendor_id = $(this).attr('data-vendor_id');
-        let promocode = $(document).find('.manual_promocode_input').val();
-        if (promocode && promocode != "") {
-            // let coupon_id = $(this).data('coupon_id');
-            $.ajax({
-                type: "POST",
-                dataType: 'json',
-                url: validate_promocode_coupon_url,
-                data: { cart_id: cart_id, vendor_id: vendor_id, amount: amount, promocode: promocode },
-                success: function (response) {
-                    if (response.status == "Success") {
-                        $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-amount', amount);
-                        $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-cart_id', cart_id);
-                        $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-vendor_id', vendor_id);
-                        $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-coupon_id', response.data.id);
-                        $('.validate_promo_div').find('.apply_promo_code_btn').trigger('click');
-                        $('#refferal-modal').modal('hide');
-                        cartHeader();
-                    }
-                },
-                error: function (reject) {
-                    if (reject.status === 422) {
-                        var message = $.parseJSON(reject.responseText);
-                        $(".invalid-feedback.manual_promocode").html("<strong>" + message.message + "</strong>");
-                    }
-                }
-            });
-        } else {
-            $(".invalid-feedback.manual_promocode").html("<strong>Please enter promocode</strong>");
-        }
-    })
-});
+/*** Start payment option Switch cases */
 
-function numberWithCommas(x) {
-    // x=x.toFixed(2)
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-//   var number = 213242.3412;
-//   alert(numberWithCommas(number));
 
 
 function subscriptionPaymentOPtions(payment_option_id)
@@ -3935,3 +3894,50 @@ function walletPaymentOPtions(payment_option_id)
     }
 
 }
+
+/*** End payment option Switch cases */
+
+    // *****************************  End tip after order place ****************************///
+
+    $(document).on('click', '.validate_promo_code_btn', function () {
+        let amount = $(this).attr('data-amount');
+        let cart_id = $(this).attr('data-cart_id');
+        let vendor_id = $(this).attr('data-vendor_id');
+        let promocode = $(document).find('.manual_promocode_input').val();
+        if (promocode && promocode != "") {
+            // let coupon_id = $(this).data('coupon_id');
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: validate_promocode_coupon_url,
+                data: { cart_id: cart_id, vendor_id: vendor_id, amount: amount, promocode: promocode },
+                success: function (response) {
+                    if (response.status == "Success") {
+                        $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-amount', amount);
+                        $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-cart_id', cart_id);
+                        $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-vendor_id', vendor_id);
+                        $('.validate_promo_div').find('.apply_promo_code_btn').attr('data-coupon_id', response.data.id);
+                        $('.validate_promo_div').find('.apply_promo_code_btn').trigger('click');
+                        $('#refferal-modal').modal('hide');
+                        cartHeader();
+                    }
+                },
+                error: function (reject) {
+                    if (reject.status === 422) {
+                        var message = $.parseJSON(reject.responseText);
+                        $(".invalid-feedback.manual_promocode").html("<strong>" + message.message + "</strong>");
+                    }
+                }
+            });
+        } else {
+            $(".invalid-feedback.manual_promocode").html("<strong>Please enter promocode</strong>");
+        }
+    })
+});
+
+function numberWithCommas(x) {
+    // x=x.toFixed(2)
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+//   var number = 213242.3412;
+//   alert(numberWithCommas(number));
