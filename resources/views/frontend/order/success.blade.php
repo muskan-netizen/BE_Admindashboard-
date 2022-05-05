@@ -141,6 +141,9 @@
                         <ul class="order-detail">
                             <li>{{__('Order ID')}}: {{$order->order_number}}</li>
                             <li>{{__('Order Date')}}: {{ date('F d, Y', strtotime($order->created_at)) }}</li>
+                            @if (!empty($order->scheduled_date_time)) 
+                            <li>{{__('Scheduled Date')}}: {{ date('F d, Y', strtotime($order->scheduled_date_time)) }}</li>
+                            @endif
                             <li>{{__('Order Total')}}: {{Session::get('currencySymbol')}}{{decimal_format($order->payable_amount * @$clientCurrency->doller_compare)}}</li>
                         </ul>
                     </div>
