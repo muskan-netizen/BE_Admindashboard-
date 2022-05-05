@@ -140,6 +140,7 @@ class ToyyibPayController extends FrontController
             }
         
            // $uniquetoken = md5(uniqid(rand(), true));
+            $subsciptionid = $data['subscription_id'] ?? "";
             $some_data = array(
                 'userSecretKey'=> $this->api_key,
                 'categoryCode'=> $codeCategory,
@@ -148,7 +149,7 @@ class ToyyibPayController extends FrontController
                 'billPriceSetting'=>0,
                 'billPayorInfo'=>1,
                 'billAmount'=>$data['amount']*100,
-                'billReturnUrl'=> url($data['serverUrl'].'payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id."&auth_token=".$data['auth_token']."&amt=".$data['amount']."&subscriptionid=".$data['subscription_id'],
+                'billReturnUrl'=> url($data['serverUrl'].'payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id."&auth_token=".$data['auth_token']."&amt=".$data['amount']."&subscriptionid=".$subsciptionid,
                 'billCallbackUrl'=> url($data['serverUrl'].'payment/toyyib/callback'),
                 // 'billReturnUrl'=> url('payment/toyyib/callback-success')."/".$data['payment_form']."?userid=".$user->id,
                 // 'billCallbackUrl'=> url('payment/toyyib/callback'),

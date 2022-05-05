@@ -355,7 +355,7 @@ class StripeGatewayController extends FrontController
                 // Find the card ID
                 $customer_id = $customerResponse->id;
                 if ($customer_id) {
-                    $request->request->set('customerReference', $customer_id);
+                    $request->request->add(['customerReference' => $customer_id, 'payment_option_id' => 19]);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
             }else {
