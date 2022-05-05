@@ -233,9 +233,9 @@ class ToyyibPayController extends FrontController
        // return $toyyibPayRes;
        if(isset($request->auth_token) && !empty($request->auth_token))
        {
-          // $user = Auth::loginUsingId($request->userid);
-            $find_user = User::where('auth_token', $request->auth_token)->first();
-            $user = Auth::login($find_user);
+           $user = Auth::loginUsingId($request->userid);
+            // $find_user = User::where('auth_token', $request->auth_token)->first();
+            // $user = Auth::login($find_user);
        }else{
             $user = Auth::user();      
        }
