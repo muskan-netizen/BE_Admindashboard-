@@ -17,6 +17,7 @@
         "artisangang/jwt": "^0.2.0",
         "awt/apilogger": "@dev",
         "bavix/laravel-wallet": "^6.1",
+        "braintree/braintree_php": "^6.8",
         "checkout/checkout-sdk-php": "^1.0",
         "coinbase/coinbase-commerce": "^1.0",
         "darvinstudio/omnipay-telr": "^1.0",

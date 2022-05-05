@@ -142,6 +142,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/paytab/page','Front\PaytabController@beforePayment')->name('payment.paytab.beforePayment');
 	Route::post('payment/paytab','Front\PaytabController@createPayment')->name('payment.paytab.createPayment');
 
+	//Coinbase
+	Route::match(['get','post'],'payment/coinbase/page','Front\CoinbaseController@beforePayment')->name('payment.coinbase.beforePayment');
+	Route::post('payment/coinbase','Front\CoinbaseController@createPayment')->name('payment.coinbase.createPayment');
+
 	// toyyibpay
 	Route::match(['get','post'],'payment/toyyib', 'Front\ToyyibPayController@index')->name('payment.toyyibpay.index');
 	//Route::post('payment/webhook/toyyib', 'Front\ToyyibPayController@webhook')->name('payment.webhook.toyyibpay');
