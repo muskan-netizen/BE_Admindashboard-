@@ -6,7 +6,7 @@ ul.onhover-show-div.open{background-color:#fff;display:block!important;max-width
 .slick-slider .common-product-box:hover,
 .slick-slider .product-box:hover,
 .slick-slider .product-card-box:hover,
-.slick-slider .suppliers-box:hover{    box-shadow:0 0 0 1px rgb(255 0 24 / 17%),0 1px 5px 0 rgb(255 0 24 / 12%)}
+.slick-slider .suppliers-box:hover{box-shadow:0 0 0 1px rgb(255 0 24 / 17%),0 1px 5px 0 rgb(255 0 24 / 12%)}
 .slick-slider .common-product-box:hover img,
 .slick-slider .product-box:hover img,
 .slick-slider .product-card-box:hover img,
@@ -102,7 +102,6 @@ a.product-box.scale-effect.mt-0{position: relative;display: block;}
 .categories-product-list.fixed-bar .scrollspy-menu,
 .categories-product-list.fixed-bar .cart-main-box{position: fixed;}
 .cart-main-box{width:325px;max-width:100%;position:sticky;top:160px;z-index: 9;}
-
 .cart-main-box-inside ul{overflow-y:auto;max-height:600px}.cart-sub-total{background-color:#1b1b1b;padding:10px 15px}.cart-sub-total span{font-size:18px;font-weight:700;color:#fff}.checkout-btn{background:var(--theme-deafult);color:#fff;font-size:18px;font-weight:700;padding:9px 0 11px;border:2px solid transparent}.checkout-btn:hover,.checkout-btn:active,.checkout-btn:focus{border-color:var(--theme-deafult);color:var(--theme-deafult);background:transparent}.right-card-title{font-size:20px;font-weight:700}.related-products .slick-track{margin:0}.product__carousel .gallery-thumbs .swiper-slide.swiper-slide-thumb-active{border-color:#ebebeb!important}.add_vendor-fav{vertical-align:top;margin:5px 10px 0 0;display:inline-block;opacity:0;-webkit-transition:all .5s;-moz-transition:all .5s;transition:all .5s}.cart-box-outer.product_row:hover .add_vendor-fav,.cart-box-outer.product_row:focus .add_vendor-fav,.cart-box-outer.product_row:active .add_vendor-fav{opacity:1}.productAddonSetOptions .checkbox{width:50%;margin-right:-4px}.productAddonSetOptions .checkbox label{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer}.other_cart_products .slick-track{margin:0}
 .dark .fixed-bar .category-head{padding:10px;}
 #continental .category-head{top:0}
@@ -192,38 +191,7 @@ body.al_body_template_one .top-banner-wrapper{background-color: transparent;box-
 .alPageSearchView .product-box .img-wrapper .front a{height:100%;width:100%;}
 .alPageSearchView .collection-product-wrapper .product-top-filter{border: none;}
 /* search page css end */
-.vendor-stories{
-    width: 50px;
-    height: 50px;
-    overflow: hidden;
-    position: absolute;
-    z-index: 1;
-    top: -20px;
-}
-.vendor-stories a {
-    height: 100%;
-    width: 100%;
-    border: none;
-    position: absolute;
-    top: 0;
-    padding: 3px;
-}
-.vendor-stories img.avatar-sm{
-    height: 100%;
-    width: 100%;
-    border:none;
-}
-.circle-wrapper{padding: 2px; height: 100%;border-color: var(--theme-deafult);
-    border-width: 2px;
-    border-style: dotted;border-radius: 50%;
-    width: 100%;animation: spincircle 10s linear infinite;
-}
-@keyframes spincircle{
-    100% {
-        -webkit-transform: rotateZ(360deg);
-        transform: rotateZ(360deg);
-    }
-}
+
 @media(max-width:991px){
 .al_body_template_one .slick-slider .product-card-box .img-outer-box.position-relative{height: 130px;}
 .dashboard-left{padding: 0 15px 25px;max-width: 260px;width:100%;}
@@ -265,6 +233,7 @@ body.al_body_template_one .top-banner-wrapper{background-color: transparent;box-
 
 /* #vendorStoriesImg{border-radius: 5px;cursor: pointer;-webkit-transition: 0.3s;transition: 0.3s;}
 #vendorStoriesImg:hover{opacity: 0.7;}
+.vendor-stories{width:50px;height:50px;overflow:hidden;position:absolute;z-index:1;top:-20px}.vendor-stories a{height:100%;width:100%;border:none;position:absolute;top:0;padding:3px}.vendor-stories img.avatar-sm{height:100%;width:100%;border:none}.circle-wrapper{padding:2px;height:100%;border-color:var(--theme-deafult);border-width:2px;border-style:dotted;border-radius:50%;width:100%;animation:spincircle 10s linear infinite}@keyframes spincircle{100%{-webkit-transform:rotateZ(360deg);transform:rotateZ(360deg)}}
 #vendorStories .modal-content{margin: auto;display: block;width: 80%;max-width: 700px;}
 #vendorStories  .modal-content,#vendorStories  #caption{-webkit-animation-name: zoom;-webkit-animation-duration: 0.6s;animation-name: zoom;animation-duration: 0.6s;}
 @-webkit-keyframes zoom{ from {-webkit-transform:scale(0)} to {-webkit-transform:scale(1)}}
@@ -276,12 +245,34 @@ body.al_body_template_one .top-banner-wrapper{background-color: transparent;box-
 .dark.al_body_template_one #orders_wrapper{background-color: transparent;}
 .al_body_template_one .order_head h4{padding: 0;font-size: 14px;}
 .al_body_template_one .order_head{text-transform: capitalize;font-weight: 400;font-size: 16px;}
-body.al_body_template_one .status_box label{
-    display: inline-block;
-}
-body.al_body_template_one table.table.wishlist-table.border {
-    background-color: #232323;
-}
+body.al_body_template_one .status_box label{display: inline-block;}
+body.al_body_template_one table.table.wishlist-table.border{background-color: #232323;}
+.dark .sm-horizontal{background-color: transparent;border-color: transparent;}
+.dark .suppliers-box .suppliers-img-outer{background-color: transparent;}
+.dark.al_body_template_one .ratio_asos .top-banner-wrapper .top-banner-content h4{color: #fff;}
+.al_body_template_one .mobile-menu.main-menu .menu-right_{border-radius:10px;}
+.dark.al_body_template_one .mobile-menu.main-menu .menu-right_{background-color: #131313;}
+
+
+
+
+
+
+
+
+
+
 @media (max-width: 767px){
 .col-md-3.alOrderStatus{display: flex;justify-content: space-between;align-items: center;}
+.al_body_template_one .common-banner{height:150px}
+.dark .al_body_template_one .top-banner-content.small-section h4{color: #fff;}
+.al_body_template_one .top-banner-content.small-section h4{padding-top: 10px;padding-bottom: 0; }
+.al_body_template_one .product-timing small{font-size: 10px;margin: 0 !important;}
+.dark.al_body_template_one .product-timing small{color: #fff;}
+.al_body_template_one  .timing-box_al li img{height: 20px;}
+.al_body_template_one .product-timing svg{height: 12px !important;}
+.dark.al_body_template_one .timing-box_al li{color:#fff}
+.collection-product-wrapper .product-top-filter{border:none;}
+.al_body_template_one .ratio_asos .top-banner-wrapper .top-banner-content{margin-bottom: 10px;}
+
 }
