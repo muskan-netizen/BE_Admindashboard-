@@ -11,9 +11,9 @@ trait CoinbasePaymentManager{
 
   public function init()
   {
-    ApiClient::init('fc62ed0e-44ac-463e-a73f-b86832597ebf');
+    ApiClient::init('iRM97WT0cpgnKAEl0TQDzaXLaJ5UY6F2BrrOPMFgwRj8uIS3aumvLrjHEPHy/6G4U8loVhuDByLSauxMO8cyYA==');
   }
-  public function createCheckout()
+  public function createCheckout($data,$user)
   {
     $this->init();
     $checkoutData = [
@@ -24,10 +24,10 @@ trait CoinbasePaymentManager{
           'amount' => '100.00',
           'currency' => 'USD'
       ],
-      'requested_info' => ['name', 'email'],
+      'requested_info' => [],
     ];
     $newCheckoutObj = Checkout::create($checkoutData);
-    dd($newCheckoutObj);
+    return $newCheckoutObj;
   }
   public function createCharge()
   {
@@ -66,16 +66,33 @@ trait CoinbasePaymentManager{
     dd($response);
     return $response;
   }
+  public function createCheckout1($data,$user)
+  {
+    $endpoint='/checkouts';
+    $checkoutData = [
+      'name' => 'The Sovereign Individual',
+      'description' => 'Mastering the Transition to the Information Age',
+      'pricing_type' => 'fixed_price',
+      'local_price' => [
+          'amount' => '100.00',
+          'currency' => 'USD'
+      ],
+      'requested_info' => ['email'],
+    ];
+    $response=$this->postCurl($endpoint,$data);
+    dd($response);
+    return $response;
+  }
   private function postCurl($data,$token=null):object{
       $ch = curl_init();
-      curl_setopt($ch, CURLOPT_URL, 'https://api.commerce.coinbase.com');
+      curl_setopt($ch, CURLOPT_URL, 'https://api-public.sandbox.exchange.coinbase.com');
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($ch, CURLOPT_POST, 1);
       curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($data));
       $headers = array();
       $headers[] = 'Content-Type: application/json';
-      $headers[] = 'X-CC-Api-Key: fc62ed0e-44ac-463e-a73f-b86832597ebf';
-      $headers[] = 'X-CC-Version: 2018-03-22';
+      $headers[] = 'X-CC-Api-Key: m/qQJP1aUY4iZE59yHLs2BjoAsCF+Z8hmNCOIE4f/YyRrRL2m5o8G410dm0cOfCzHBvwZkSMybdhhBbuhPUJFg==';
+      $headers[] = 'X-CC-Version:  2022-05-01';
       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
       $result = curl_exec($ch);
       if (curl_errno($ch)) {

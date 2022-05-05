@@ -53,7 +53,7 @@
                                         @if($vendor->desc)
                                             <div class="col-md-12 text-center">
                                                 <p>{{$vendor->desc}}</p>
-                                                <p>{{ $vendor->short_desc }}</p>
+                                               <p> {!! $vendor->short_desc !!}</p>
                                             </div>
                                         @endif
                                             @php

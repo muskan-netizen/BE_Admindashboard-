@@ -414,7 +414,7 @@
                                                     <h4 title="{{ $vendor->desc }}" style="line-height: 24px">
                                                         {{ substr($vendor->desc, 0, 80) . '...' }}</h4>
                                                 @endif
-                                                <p>{{ $vendor->short_desc }}</p>
+                                                <p>{!! $vendor->short_desc !!}</p>
                                                 <ul class="vendor-info">
                                                     {{-- <li class="d-block food-items">
                                                             <i class="icon-ic_eat"></i>

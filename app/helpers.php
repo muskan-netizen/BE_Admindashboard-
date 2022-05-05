@@ -391,10 +391,15 @@ function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
     }
 
     if(isset($slots) && count($slots)>0){
+        $slotss = [];
         foreach($slots as $slott){
             if(isset($slott->days->id))
             {
-                $slotss[] = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
+               $new_slot = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
+               if(!in_array($new_slot, $slotss))
+               {
+                   $slotss[] = $new_slot; 
+               }
             }else{
                 $slotss[] = [];
             }
@@ -415,7 +420,7 @@ function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
             }
         }
     }
-
+    
     return $viewSlot;
 }
 

@@ -66,6 +66,12 @@ class UserController extends FrontController{
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
         $newDateTime = \Carbon\Carbon::now()->addMinutes(10)->toDateTimeString();
         if ($request->type == "phone") {
+            $check_user = User::where('phone_number', $request->phone)->count();
+            if(is_null($user->phone_number) && !$check_user){
+                $user->phone_number = $request->phone;
+                $user->dial_code = $request->dial_code;
+                $user->save();
+            }
             $message = __('An otp has been sent to your phone. Please check.');
             if ($user->is_phone_verified == 0) {
                 $otp = mt_rand(100000, 999999);
