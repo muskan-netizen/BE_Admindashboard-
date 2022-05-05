@@ -325,7 +325,7 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-        
+        // dd($request->all());
         DB::beginTransaction();
         try {
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -686,9 +686,12 @@ class PickupDeliveryController extends FrontController{
                     'customer_name' => $customer->name ?? 'Dummy Customer',
                     'recipient_email' => $request->email ?? $customer->email,
                     'recipient_phone' => $request->phone_number ?? $customer->phone_number,
-                    'customer_phone_number' => $customer->phone_number ?? rand(111111,11111)
+                    'customer_phone_number' => $customer->phone_number ?? rand(111111,11111),
+                    'type'=>$request->type??0,
+                    'friend_name'=>$request->friendName?? null,
+                    'friend_phone_number'=>$request->friendPhoneNumber?? null
                 ];
-                //pr($postdata);
+                // dd($postdata);
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);

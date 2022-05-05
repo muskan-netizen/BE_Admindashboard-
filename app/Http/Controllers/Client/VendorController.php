@@ -955,6 +955,9 @@ class VendorController extends BaseController
         $vendor->container_charges_tax = $request->container_charges_tax == 'on' ? 1 : 0;
         $vendor->container_charges_tax_id=$request->container_charges_tax_id != 0 && $vendor->container_charges_tax !=0 ? $request->container_charges_tax_id:0;
                 
+        $vendor->fixed_fee_tax = $request->fixed_fee_tax == 'on' ? 1 : 0;
+        $vendor->fixed_fee_tax_id=$request->fixed_fee_tax_id != 0 && $vendor->fixed_fee_tax !=0 ? $request->fixed_fee_tax_id:0;
+                
 
         // Set order limit - By Ovi
         if($request->has('orders_per_slot')){

@@ -247,10 +247,10 @@ class ProductController extends BaseController
         $pro_tags = Tag::with('primary')->whereHas('primary')->get();
         $product_faqs = ProductFaq::with('primary')->where('product_id',$product->id)->get();
 
-        $taxRates=TaxRate::all();
+        
         $set_product_tags = ProductTag::where('product_id',$product->id)->pluck('tag_id')->toArray();
         
-        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags,'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids, 'taxRates' => $taxRates]);
+        return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags,'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids]);
     }
 
     /**
@@ -336,6 +336,9 @@ class ProductController extends BaseController
        
         $product->container_charges_tax = $request->container_charges_tax == 'on' ? 1 : 0;
         $product->container_charges_tax_id=$request->container_charges_tax_id != 0 && $product->container_charges_tax !=0 ? $request->container_charges_tax_id:0;
+                
+        $product->fixed_fee_tax = $request->fixed_fee_tax == 'on' ? 1 : 0;
+        $product->fixed_fee_tax_id=$request->fixed_fee_tax_id != 0 && $product->fixed_fee_tax !=0 ? $request->fixed_fee_tax_id:0;
                 
 
 

@@ -213,7 +213,7 @@
                      {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
                         <select class="form-control" name="service_charges_tax_id">
                             <option value="">{{__('Select any')}}</option>
-                            @foreach($taxRates as $row)
+                            @foreach(taxRates() as $row)
                                 <option value="{{$row->id}}" {{$vendor->service_charges_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
                             @endforeach
                         </select>
@@ -222,7 +222,7 @@
 
 
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', __('On Delivery'),['class' => 'control-label']) !!}
+                        {!! Form::label('title', __('On Delivery Charges'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="delivery_charges_tax" class="form-control" data-color="#43bee1" @if($vendor->delivery_charges_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     
@@ -230,12 +230,12 @@
                      {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
                         <select class="form-control" name="delivery_charges_tax_id">
                             <option value="">{{__('Select any')}}</option>
-                            @foreach($taxRates as $row)
+                            @foreach(taxRates() as $row)
                                 <option value="{{$row->id}}" {{$vendor->delivery_charges_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
                             @endforeach
                         </select>
                     </div>
-
+                    
 
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Container Charges'),['class' => 'control-label']) !!}
@@ -248,8 +248,25 @@
                      {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
                         <select class="form-control" name="container_charges_tax_id">
                             <option value="">{{__('Select any')}}</option>
-                            @foreach($taxRates as $row)
+                            @foreach(taxRates() as $row)
                                 <option value="{{$row->id}}" {{$vendor->container_charges_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
+                            @endforeach
+                        </select>
+                    </div> 
+
+                    
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('On Fixed Fee'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="fixed_fee_tax" class="form-control" data-color="#43bee1" @if($vendor->fixed_fee_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                
+                    
+                    <div class="form-group w-100" style="display:{{$vendor->fixed_fee_tax == 0 ? 'none!important' : 'block'}}" id="fixed_fee_tax_id">
+                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
+                        <select class="form-control" name="fixed_fee_tax_id">
+                            <option value="">{{__('Select any')}}</option>
+                            @foreach(taxRates() as $row)
+                                <option value="{{$row->id}}" {{$vendor->fixed_fee_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -844,6 +861,13 @@ $( document ).ready(function() {
             $("#container_charges_tax_id").css("display", "block");
         } else {
             $("#container_charges_tax_id").css("display", "none");
+        }
+    })
+    $("input[name='fixed_fee_tax']").change(function() {
+        if($(this).prop('checked')){
+            $("#fixed_fee_tax_id").css("display", "block");
+        } else {
+            $("#fixed_fee_tax_id").css("display", "none");
         }
     })
 

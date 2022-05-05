@@ -136,6 +136,7 @@ function getOrderDriverDetails(dispatch_traking_url,order_id) {
 
 
 $(document).ready(function () {
+   
     $('.cab-booking-main-loader').hide();
     var selected_address = '';
     // const styles = [{"stylers":[{"visibility":"on"},{"saturation":-100},{"gamma":0.54}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"water","stylers":[{"color":"#4d4946"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"gamma":0.48}]},{"featureType":"transit.station","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"gamma":7.18}]}];
@@ -143,6 +144,7 @@ $(document).ready(function () {
     $(document).on("click","#show_dir",function() {
         initMap2();
     });
+
     // please order dispatcher
     $(document).on("click", "#pickup_now, #pickup_later",function() {
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -213,11 +215,11 @@ $(document).ready(function () {
         let coupon_id = $(this).attr('data-coupon_id');
         let product_id = $(this).attr('data-product_id');
         let payment_option_id = $(this).attr('data-payment_method');
-        let type = $('select[name=is_for_friend]').val();
+        let type = parseFloat($('input[name=is_for_friend]:checked').val());
+        // alert(type);
+        // return false;
         let friendName=$('input[name=friendName]').val();
         let friendPhoneNumber=$('input[name=friendPhoneNumber]').val();
-        // alert(type+"|"+friendName+"|"+friendPhoneNumber);
-        // return false;
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -764,8 +766,17 @@ $(document).ready(function () {
                             // console.log('innset');
                         }
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
+                        
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
                         getDistance();
+                        if($('input[name=is_for_friend]:checked').val()==1){
+                            $('.for_friend_fields_div').removeClass('d-none');
+                            alert(1);
+                        }else{
+                            alert(0);
+                            $('.for_friend_fields_div').addClass('d-none');
+                        }
+
                     }else{
                         $("#cab_detail_box ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
                     }
