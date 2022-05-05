@@ -12,7 +12,7 @@ use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
 use App\Http\Controllers\Front\PickupDeliveryController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress,Transaction};
+use App\Models\{User, UserVendor,CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress,Transaction};
 use Toyyibpay;
 use Auth;
 use Illuminate\Support\Facades\Log;
@@ -253,11 +253,14 @@ class ToyyibPayController extends FrontController
                         $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
 
                         // Remove cart
+                        CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                         Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                         CartAddon::where('cart_id', $cart->id)->delete();
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
-                        CartProductPrescription::where('cart_id', $cart->id)->delete();                        
+                        CartProductPrescription::where('cart_id', $cart->id)->delete();  
+                        // send sms 
+                        $this->sendSuccessSMS($request, $order);             
 
                         if($toyyibPayRes['status_id'] == '2' ){
                             return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been pending');
