@@ -303,13 +303,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     @endif
 
                 </div>
+                <input type="hidden" name="cart_product_ids[]" value="<%= vendor_product.id %>">
 
                 <hr>
             <% }); %>
             <div class="row">
                  @if(!$guest_user)
-                 <% if(product.is_promo_code_available > 0) { %>
                 <div class="col-lg-6 mb-3 mb-lg-0 ">
+                <% if(product.is_promo_code_available > 0) { %>
                     <div class="coupon_box w-100 d-flex align-items-start">
                         <img class="blur-up lazyload" data-src="{{ asset('assets/images/discount_icon.svg') }}">
                         <label class="mb-0 ml-2">
@@ -323,8 +324,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <% if(product.coupon) { %>
                         <label class="p-1 m-0"><a href="javascript:void(0)" class="remove_promo_code_btn ml-1" data-coupon_id="<%= product.coupon ? product.coupon.promo.id : '' %>" data-cart_id="<%= cart_details.id %>">Remove</a></label>
                     <% } %>
-                </div>
                 <% } %>
+                </div>            
                 @endif
                 <div class="col-lg-6">
                     <% if(product.delOptions) { %>

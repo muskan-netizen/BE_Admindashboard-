@@ -721,7 +721,21 @@ class CartController extends FrontController
                     }
                 }
                 Session()->put('vid','');
+                //get Coupon Discount for product case
+                $coupon_product_ids = [];
+                $coupon_product_discount = 0;
+                $in_or_not = 0;
+                if (isset($vendorData->coupon) && !empty($vendorData->coupon) && isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)){
+                    if($vendorData->coupon->promo->restriction_on == 0)
+                    {
+                        $coupon_product_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
+                        $in_or_not = $vendorData->coupon->promo->restriction_type; 
+                        
+                    }
+                }
+                $cart_product_ids = [];
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
+                    $cart_product_ids[] = $prod->product_id;
                     if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
                         $quantity_check = productvariantQuantity($prod->variant_id);
                         if($quantity_check < $prod->quantity ){
@@ -775,6 +789,10 @@ class CartController extends FrontController
                     $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
+                    if(($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids)) || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids)))
+                    {
+                        $coupon_product_discount = $coupon_product_discount + $quantity_price + $quantity_container_charges;
+                    }
                     if($prod->addon->isNotEmpty()){
                         foreach ($prod->addon as $ck => $addons) {
                             if(isset($addons->option)){
@@ -790,7 +808,11 @@ class CartController extends FrontController
                                 $addons->option->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
                                 $addons->option->quantity_price = $opt_quantity_price;
                                 $payable_amount = $payable_amount + $opt_quantity_price;
-                                $quantity_price = $quantity_price + $opt_quantity_price; 
+                                $quantity_price = $quantity_price + $opt_quantity_price;
+                                if(($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids)) || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids)))
+                                {
+                                    $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
+                                }
                             }
                         }
                     }
@@ -912,6 +934,10 @@ class CartController extends FrontController
                 $couponGetAmount = $payable_amount ;
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
                     if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
+                        if($vendorData->coupon->promo->restriction_on == 0)
+                        {
+                            $couponGetAmount = $coupon_product_discount;
+                        }
                         if($vendorData->coupon->promo->first_order_only==1){
                             if(Auth::user()){
                                 $userOrder = auth()->user()->orders->first();
@@ -943,7 +969,7 @@ class CartController extends FrontController
                                 $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
                             }
 
-                            if( ($minimum_spend <= $payable_amount ) && ($maximum_spend >= $payable_amount))
+                            if( ($minimum_spend <= $couponGetAmount ) && ($maximum_spend >= $couponGetAmount))
                             {
                                 if ($vendorData->coupon->promo->promo_type_id == 2) {
                                     $total_discount_percent = $vendorData->coupon->promo->amount;
@@ -952,7 +978,7 @@ class CartController extends FrontController
                                     $coupon_amount_used = $total_discount_percent;
                                 } else {
                                     $gross_amount = decimal_format($payable_amount - $taxable_amount);
-                                    $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
+                                    $percentage_amount = ($couponGetAmount * $vendorData->coupon->promo->amount / 100);
                                     $payable_amount -= $percentage_amount;
                                     $coupon_amount_used = $percentage_amount;
                                 }
@@ -978,7 +1004,7 @@ class CartController extends FrontController
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
                 $promoCodeRequest->setMethod('POST');
-                $promoCodeRequest->request->add(['vendor_id' => $vendorData->vendor_id,'amount' => $couponGetAmount,'is_cart' => 1]);
+                $promoCodeRequest->request->add(['vendor_id' => $vendorData->vendor_id,'amount' => $couponGetAmount,'is_cart' => 1, 'cart_product_ids' => $cart_product_ids]);
                 $promoCodeResponse = $promoCodeController->postPromoCodeList($promoCodeRequest)->getData();
                 if($promoCodeResponse->status == 'Success'){
                     if(!empty($promoCodeResponse->data)){
@@ -1001,9 +1027,9 @@ class CartController extends FrontController
 
                // pr($PromoFreeDeliver);
 
-                 $subtotal_amount = $payable_amount;
+                $subtotal_amount = $payable_amount;
                 // if($PromoFreeDeliver != 1){
-                    $payable_amount = $payable_amount + $deliveryCharges;
+                $payable_amount = $payable_amount + $deliveryCharges;
                 //}
                 //$payable_amount = $payable_amount + $deliver_charge;
                 //Start applying service fee on vendor products total

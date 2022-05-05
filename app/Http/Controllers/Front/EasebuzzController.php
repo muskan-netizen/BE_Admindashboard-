@@ -296,12 +296,14 @@ class EasebuzzController  extends FrontController
                                 $orderController->autoAcceptOrderIfOn($order->id);
         
                                 // Remove cart
+                                CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                                 Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                                 CartAddon::where('cart_id', $cart_id)->delete();
                                 CartCoupon::where('cart_id', $cart_id)->delete();
                                 CartProduct::where('cart_id', $cart_id)->delete();
                                 CartProductPrescription::where('cart_id', $cart_id)->delete();
-        
+                                // send success sms
+                                $this->sendSuccessSMS($request, $order);
                                 // Send Notification
                                 if (!empty($order->vendors)) {
                                     foreach ($order->vendors as $vendor_value) {
