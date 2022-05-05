@@ -233,9 +233,9 @@ class ToyyibPayController extends FrontController
        // return $toyyibPayRes;
        if(isset($request->auth_token) && !empty($request->auth_token))
        {
-          // $user = Auth::loginUsingId($request->userid);
-            $find_user = User::where('auth_token', $request->auth_token)->first();
-            $user = Auth::login($find_user);
+           $user = Auth::loginUsingId($request->userid);
+            // $find_user = User::where('auth_token', $request->auth_token)->first();
+            // $user = Auth::login($find_user);
        }else{
             $user = Auth::user();      
        }
@@ -245,7 +245,7 @@ class ToyyibPayController extends FrontController
             
         // }
             if($toyyibPayRes['status_id'] == '1' || $toyyibPayRes['status_id'] == '2' ){
-                if($toyyibPayRes['payment_form'] == 'cart'){
+                if($toyyibPayRes['payment_form'] == 'cart'){                 
                     $order_number = $toyyibPayRes['order_id'];
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
