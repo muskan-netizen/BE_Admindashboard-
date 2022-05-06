@@ -4,7 +4,7 @@ $(document).ready(function () {
     var window_height = $(window).height();
     var header_content_width = $('#content-wrap').height();
 
-    console.log('header_height',header_height,'footer_height',footer_height);
+    // console.log('header_height',header_height,'footer_height',footer_height);
     jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
     jQuery("#content-wrap").css('padding-bottom', footer_height);
 
@@ -3201,7 +3201,7 @@ $(document).ready(function () {
         // var res = parseInt(str.substring(10, str.length - 1));
 
 
-        console.log(minimum_order_count);
+        // console.log(minimum_order_count);
 
         var s = $(".qty-box .input-qty-number"),
             i = parseInt(s.val(), 10);
