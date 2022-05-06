@@ -231,16 +231,7 @@ body.al_body_template_one .top-banner-wrapper{background-color: transparent;box-
 .al_body_template_one .h2-heading{font-size: 18px;line-height: 24px;}
 }
 
-/* #vendorStoriesImg{border-radius: 5px;cursor: pointer;-webkit-transition: 0.3s;transition: 0.3s;}
-#vendorStoriesImg:hover{opacity: 0.7;}
-.vendor-stories{width:50px;height:50px;overflow:hidden;position:absolute;z-index:1;top:-20px}.vendor-stories a{height:100%;width:100%;border:none;position:absolute;top:0;padding:3px}.vendor-stories img.avatar-sm{height:100%;width:100%;border:none}.circle-wrapper{padding:2px;height:100%;border-color:var(--theme-deafult);border-width:2px;border-style:dotted;border-radius:50%;width:100%;animation:spincircle 10s linear infinite}@keyframes spincircle{100%{-webkit-transform:rotateZ(360deg);transform:rotateZ(360deg)}}
-#vendorStories .modal-content{margin: auto;display: block;width: 80%;max-width: 700px;}
-#vendorStories  .modal-content,#vendorStories  #caption{-webkit-animation-name: zoom;-webkit-animation-duration: 0.6s;animation-name: zoom;animation-duration: 0.6s;}
-@-webkit-keyframes zoom{ from {-webkit-transform:scale(0)} to {-webkit-transform:scale(1)}}
-@keyframes zoom{ from {transform:scale(0)} to {transform:scale(1)} }
-#vendorStories  .close{position: absolute;top: 15px;right: 35px;color: #f1f1f1;font-size: 40px;font-weight: bold;-webkit-transition: 0.3s;transition: 0.3s;}
-#vendorStories  .close:hover, #vendorStories  .close:focus {color: #bbb;text-decoration: none;cursor: pointer;}
-@media only screen and (max-width: 700px){ #vendorStories .modal-content{width: 100%;}} */
+
 
 .dark.al_body_template_one #orders_wrapper{background-color: transparent;}
 .al_body_template_one .order_head h4{padding: 0;font-size: 14px;}

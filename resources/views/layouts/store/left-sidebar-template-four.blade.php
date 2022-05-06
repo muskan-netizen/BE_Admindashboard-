@@ -30,7 +30,7 @@ $pages = \App\Models\Page::with([
         $applocale = session()->get('applocale');
     }
     @endphp
-
+@if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register'))
 <header id="al_four_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
     @include('layouts.store/topbar-template-four')
     <!-- Start Cab Booking Header From Here -->
@@ -338,6 +338,7 @@ $pages = \App\Models\Page::with([
 
     {{-- @endif --}}
 </header>
+@endif
 
 <div class=" @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset al_offset-top @else al_offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>
 <script type="text/template" id="nav_categories_template">

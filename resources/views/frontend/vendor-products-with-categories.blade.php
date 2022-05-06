@@ -28,13 +28,12 @@
                                 <div class="col-12 vendor-details-left px-sm-4 px-2 d-sm-flex align-items-center">
 
                                     <div class="vender-icon mr-sm-3">
-                                        <!-- <div class="vendor-stories">
+                                        <div class="vendor-stories">
                                             <div class="circle-wrapper"></div>
                                             <a href="" data-toggle="modal" data-target="#vendorStories">
-                                                <img id="vendorStoriesImg" src="{{ $vendor->logo['image_fit'] . '50/50' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-sm" alt="profile-image">
+                                                <img id="vendorStoriesImg" src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-sm" alt="profile-image">
                                             </a>
-
-                                        </div> -->
+                                        </div>
                                         <div class="vendor-reviwes">
                                             @if ($vendor->vendorRating > 0)
                                                 <div class="rating-text-box ml-sm-auto">
@@ -47,7 +46,7 @@
                                                     <div class="reviews-text">Delivery Reviews</div>
                                                 </div> --}}
                                         </div>
-                                        <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image">
+                                        <!-- <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image"> -->
                                     </div>
                                     <div class="ml-sm-1">
                                                 <h3>{{ $vendor->name }}</h3>
@@ -846,12 +845,12 @@
             </div>
         </div>
     </div>
-    <!-- vendorStories
+    <!-- vendorStories -->
     <div id="vendorStories" class="modal fade" tabindex="-1" aria-labelledby="vendorStoriesLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
                 <img class="modal-content" id="img01">
         </div>
-    </div>-->
+    </div>
 
 @endsection
 @section('script')
@@ -860,26 +859,26 @@
     <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 
     <script>
-        // Get the modal vendorStories
-        //var modal = document.getElementById("vendorStories");
+         //Get the modal vendorStories
+        var modal = document.getElementById("vendorStories");
 
-        // Get the image and insert it inside the modal - use its "alt" text as a caption
-        //var img = document.getElementById("vendorStoriesImg");
-        //var modalImg = document.getElementById("img01");
-        //var captionText = document.getElementById("caption");
-        //img.onclick = function(){
-        //modal.style.display = "block";
-        //modalImg.src = this.src;
-        //captionText.innerHTML = this.alt;
-        //}
+         //Get the image and insert it inside the modal - use its "alt" text as a caption
+        var img = document.getElementById("vendorStoriesImg");
+        var modalImg = document.getElementById("img01");
+        var captionText = document.getElementById("caption");
+            img.onclick = function(){
+            modal.style.display = "block";
+            modalImg.src = this.src;
+            captionText.innerHTML = this.alt;
+        }
 
         // Get the <span> element that closes the modal
-        //var span = document.getElementsByClassName("close")[0];
+        var span = document.getElementsByClassName("close")[0];
 
-        // When the user clicks on <span> (x), close the modal
-        //span.onclick = function() {
-        //modal.style.display = "none";
-        //}
+         //When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+        modal.style.display = "none";
+        }
     </script>
     <script>
         var get_product_addon_url = "{{ route('vendorProductAddons') }}"
