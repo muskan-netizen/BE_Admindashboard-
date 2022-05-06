@@ -81,6 +81,9 @@
                                 <h4><b>{{__('Allow location Access')}}</b></h4>
                                 <div class="current-location ellips text-color mb-2">{{__('Your current location')}}</div>
                                 <hr class="m-0">
+                                <input type="hidden" id="address-input" value=""/>
+                                <input type="hidden" id="address-latitude" value=""/>
+                                <input type="hidden" id="address-longitude" value=""/>
                             </div>
                         </a>
                     @forelse($user_addresses as $user_address)
