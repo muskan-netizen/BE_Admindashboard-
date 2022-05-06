@@ -174,6 +174,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
             </form>
         </div>
     </article>
+    <a href="">Skip As a Guest </a>
 </section>
 
 @endsection

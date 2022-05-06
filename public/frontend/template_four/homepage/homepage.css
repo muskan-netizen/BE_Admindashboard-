@@ -19,8 +19,6 @@ background:linear-gradient(to bottom,var(--theme-deafult) -200%,#fff);height:100
 .al_body_template_four .common-product-box.scale-effect a .img-outer-box{border-radius:10px;overflow: hidden;}
 .al_body_template_four .suppliers-img-outer{overflow: hidden;}
 .vendor-search-bar button.btn{background-color: #fff;}
-.Stars{--percent: calc(var(--rating) / 5 * 100%);display: inline-block;font-size: var(--star-size);font-family: Times; line-height: 1;}
-.Stars::before{content: '★★★★★';letter-spacing: 3px;background: linear-gradient(90deg, var(--star-background) var(--percent), var(--star-color) var(--percent));-webkit-background-clip: text;-webkit-text-fill-color: transparent;}
 .alScrollspyProduct{background-color: #fff;}
 .dark .alScrollspyProduct{background-color: #2b2b2b;}
 .al_body_template_four .suppliers-img-outer img{height:100%;object-fit:cover;border-radius:20px;display:block}.product-card-box.position-relative{padding:15px;background-color:#fff;box-shadow:0 0 10px rgb(0 0 0 / 20%);border-radius:15px;overflow:hidden}.timing-box_al{display:flex;justify-content:space-between}.timing-box_al li{margin-right:10px;font-size:10px;line-height:normal;color:#777}.timing-box_al li:last-child{margin-right:0}.ellips{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.al_body_template_four .al_tabs{height:50px;border-radius:30px;margin-top:20px}.top-banner-content.small-section{padding:10px 0}.al_box_third_template,.collection-collapse-block{padding:15px;background-color:#fff;box-shadow:0 0 10px rgb(0 0 0 / 20%);border-radius:15px;overflow:hidden;display:block;border:none}.al_box_third_template:hover,.collection-collapse-block:hover{border:none}.inner_spacing.w-100 h3.d-flex.align-items-center.justify-content-between{font-size:16px}.collection-product-wrapper .product-top-filter{border:none}.inner_spacing.w-100 h4.mt-1{position:relative;right:-56px;padding:6px 40px;border-radius:30px 0 0 30px;overflow:hidden;line-height:30px;font-weight:600;color:var(--theme-deafult)}.inner_spacing.w-100 h4.mt-1:after{position:absolute;background-color:var(--theme-deafult);height:100%;width:100%;opacity:.2;content:"";left:0;top:0}ul.pagination{margin-top:30px}.displayProducts .product-image img{border-radius:15px}.page-item.active .page-link{background-color:var(--theme-deafult);border-color:var(--theme-deafult)}.top-banner-wrapper.text-center{margin-top:20px}.checkboxAl{display:inline-block;position:relative;padding-left:35px;margin-bottom:12px;cursor:pointer;font-size:22px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.checkboxAl input{position:absolute;opacity:0;cursor:pointer;height:0;width:0}.checkmark{position:absolute;top:0;left:0;height:25px;width:25px;border:1px solid #777;border-radius:5px}.checkboxAl:hover input~.checkmark{background-color:var(--theme-deafult);border-color:var(--theme-deafult)}.checkboxAl input:checked~.checkmark{background-color:var(--theme-deafult);border-color:var(--theme-deafult)}.checkmark:after{content:"";position:absolute;display:none}.checkboxAl input:checked~.checkmark:after{display:block}.checkboxAl .checkmark:after{left:9px;top:3px;width:7px;height:14px;border:solid #fff;border-width:0 3px 3px 0;-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);transform:rotate(45deg)}.alProductsPage .related-products .slick-list.draggable{padding-top:10px}.alProductsPage .product-m.related-products .slick-slide{margin:0}.product-buttons .btn.btn-solid i{margin-right:5px}.product-buttons .btn.btn-solid{border-radius:50px;padding:0!important;font-size:14px!important;height:40px;line-height:40px;max-width:200px;display:inline-block;width:100%;text-transform:capitalize;letter-spacing:0}.alProductsPage h3{font-weight:600}.product-banner-img{margin-top:20px;height:300px;overflow:hidden}.product-banner-img img{width:100%;height:100%;object-fit:cover}.vender-icon{margin-top:-90px}.vender-icon img{border:3px solid #fff}.class_img.product_image img{width:100%;border-radius:10px}.search_form.d-flex.align-items-center.border{border-radius:50px;overflow:hidden}.scrollspy-menu{position:sticky;top:120px;height:auto;width:330px}.scrollspy-menu ul{display:block;list-style:none;text-align:center;margin:0;padding:0;position:sticky;top:0}.scrollspy-menu li{display:block}
@@ -51,12 +49,13 @@ body.al_body_template_four .login_continue_btn{height: 37px;font-weight: 700;fon
 .checkbox-input label{position: relative;padding-left: 25px;font-size: 12px;}
 .checkbox-input input{position: absolute;left: 0;width: 18px;top: 0;height:25px}
 .dark .dark-light:before{top: 19px;}
-#register .user-info.d-block.w-100 h2 {font-size: 18px;text-transform: capitalize;font-weight: 300;color: #777;}
-#register label.m-0 {text-transform: capitalize;}
-#register .file.file--upload {height: 80px;}
-#register .file.file--upload span {position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);}
-#register .file.file--upload label {width: 100%;height: 100%;padding: 0;}
-div#alDocumentsSection {height: 200px;overflow-y: scroll;}
+#register .user-info.d-block.w-100 h2{font-size: 18px;text-transform: capitalize;font-weight: 300;color: #777;}
+#register label.m-0{text-transform: capitalize;}
+#register .file.file--upload{height: 80px;}
+#register .file.file--upload span{position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);}
+#register .file.file--upload label{width: 100%;height: 100%;padding: 0;}
+div#alDocumentsSection{max-height: 200px;overflow-y: auto;}
+.is-invalid~ .fa.fa-eye-slash.toggle-password{display: none;}
 /* login page css end here */
 
 .vendor-reviwes{position: absolute;top: -30px;background-color: green;color: #fff;padding: 2px 7px;border-radius: 5px;}
@@ -64,6 +63,12 @@ div#alDocumentsSection {height: 200px;overflow-y: scroll;}
 .scrolling_section h2.category-head{font-size: 18px;text-transform: capitalize;color: var(--theme-deafult);  }
 .pixelstrap ul a:hover:hover:before,
 .footer-theme .sub-title li a:before{display: none;}
+
+/* Stars css start */
+.Stars{--percent: calc(var(--rating) / 5 * 100%);display: inline-block;font-size: var(--star-size);font-family: Times; line-height: 1;}
+.Stars::before{content: '★★★★★';letter-spacing: 3px;background: linear-gradient(90deg, var(--star-background) var(--percent), var(--star-color) var(--percent));-webkit-background-clip: text;background-clip: text;-webkit-text-fill-color: transparent;}
+/* Stars css start */
+
 
 /* Dark theme  */
 .dark .tip_label,
