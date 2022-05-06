@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser};
+use App\Models\{User, UserVendor,CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser};
 
 class YocoGatewayController extends FrontController
 {
@@ -147,14 +147,16 @@ class YocoGatewayController extends FrontController
                     $orderController->autoAcceptOrderIfOn($order->id);
 
                     // Remove cart
-
+                    CaregoryKycDoc::where('cart_id',$request->cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                     Cart::where('id', $request->cart_id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                     CartAddon::where('cart_id', $request->cart_id)->delete();
                     CartCoupon::where('cart_id', $request->cart_id)->delete();
                     CartProduct::where('cart_id', $request->cart_id)->delete();
                     CartProductPrescription::where('cart_id', $request->cart_id)->delete();
                     CartDeliveryFee::where('cart_id', $request->cart_id)->delete();
-
+                   
+                    // send success smm
+                    $this->sendSuccessSMS($request, $order);
                     // Send Notification
                     if (!empty($order->vendors)) {
                         foreach ($order->vendors as $vendor_value) {
@@ -317,13 +319,16 @@ class YocoGatewayController extends FrontController
                     $orderController->autoAcceptOrderIfOn($order->id);
 
                     // Remove cart
-
+                    CaregoryKycDoc::where('cart_id',$request->cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                     Cart::where('id', $request->cart_id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                     CartAddon::where('cart_id', $request->cart_id)->delete();
                     CartCoupon::where('cart_id', $request->cart_id)->delete();
                     CartProduct::where('cart_id', $request->cart_id)->delete();
                     CartProductPrescription::where('cart_id', $request->cart_id)->delete();
                     CartDeliveryFee::where('cart_id', $request->cart_id)->delete();
+
+                    // send success smm
+                    $this->sendSuccessSMS($request, $order);
 
                     // Send Notification
                     if (!empty($order->vendors)) {

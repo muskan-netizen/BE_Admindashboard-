@@ -56,32 +56,38 @@ class PromoCodeController extends Controller{
             $now = Carbon::now()->toDateTimeString();
             $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id");
             if ($product_ids) {
-                $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
-                $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details,$firstOrderCheck) {
-                    $query->where(function ($query2) use ($promo_code_details) {
-                        $query2->where('restriction_type', 1);
-                        if (!empty($promo_code_details->toArray())) {
-                            $query2->whereNotIn('id', $promo_code_details->toArray());
-                        }
-                    });
+                if(isset($request->cart_product_ids) && !empty($request->cart_product_ids))
+                {
+                    foreach($request->cart_product_ids as $c_product_id)
+                    {
+                        $promo_code_details = PromoCodeDetail::where('refrence_id', $c_product_id)->pluck('promocode_id');
+                        $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details,$firstOrderCheck) {
+                            $query->where(function ($query2) use ($promo_code_details) {
+                                $query2->where('restriction_type', 1);
+                                if (!empty($promo_code_details->toArray())) {
+                                    $query2->whereNotIn('id', $promo_code_details->toArray());
+                                }
+                            });
 
-                    $query->orWhere(function ($query1) use ($promo_code_details) {
-                        $query1->where('restriction_type', 0);
-                        if (!empty($promo_code_details->toArray())) {
-                            $query1->whereIn('id', $promo_code_details->toArray());
-                        } else {
-                            $query1->where('id', 0);
+                            $query->orWhere(function ($query1) use ($promo_code_details) {
+                                $query1->where('restriction_type', 0);
+                                if (!empty($promo_code_details->toArray())) {
+                                    $query1->whereIn('id', $promo_code_details->toArray());
+                                } else {
+                                    $query1->where('id', 0);
+                                }
+                            });
+                        });
+                        if($firstOrderCheck){
+                            $result1->where('first_order_only', 0);
                         }
-                    });
-                });
-                if($firstOrderCheck){
-                    $result1->where('first_order_only', 0);
+                        if($is_from_cart != 1){
+                            $result1->where(['promo_visibility' => 'public']);
+                        }
+                        $result1 = $result1->where('is_deleted', 0)->get();
+                        $promo_codes = $promo_codes->merge($result1);
+                    }
                 }
-                if($is_from_cart != 1){
-                    $result1->where(['promo_visibility' => 'public']);
-                }
-                $result1 = $result1->where('is_deleted', 0)->get();
-                $promo_codes = $promo_codes->merge($result1);
 
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
                 $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
@@ -121,10 +127,7 @@ class PromoCodeController extends Controller{
                 if (isset($promo_code->maximum_spend)) {
                     $maximum_spend = $promo_code->maximum_spend * $doller_compare;
                 }
-                if($total_minimum_spend < $minimum_spend){
-                    $promo_codes->forget($key);
-                }
-                if($total_minimum_spend > $maximum_spend){
+                if($total_minimum_spend < $minimum_spend || $total_minimum_spend > $maximum_spend){
                     $promo_codes->forget($key);
                 }
             }

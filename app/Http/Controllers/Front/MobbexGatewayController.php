@@ -145,6 +145,9 @@ class MobbexGatewayController extends FrontController
                         CartProduct::where('cart_id', $user['cart_id'])->delete();
                         CartProductPrescription::where('cart_id', $user['cart_id'])->delete();
 
+                        // send sms 
+                        $this->sendSuccessSMS($request, $order);
+                        
                         // Send Notification
                         if (!empty($order->vendors)) {
                             foreach ($order->vendors as $vendor_value) {

@@ -553,7 +553,7 @@
 				</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
-		<section class="suppliers-section container "  >
+		<section class="suppliers-section container" id="homepage_trending_vendors_div">
 			<div class=" top-heading ">
 				<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
 			<div class="row">
