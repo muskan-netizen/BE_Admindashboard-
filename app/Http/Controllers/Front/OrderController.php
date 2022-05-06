@@ -408,32 +408,32 @@ class OrderController extends FrontController
             }
         }
     }
-    public function sendSuccessSMS($request, $order, $vendor_id = '')
-    {
-        try {
-            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
+    // public function sendSuccessSMS($request, $order, $vendor_id = '')
+    // {
+    //     try {
+    //         $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
 
-            $currId = Session::get('customerCurrency');
-            $currSymbol = Session::get('currencySymbol');
-            $customerCurrency = ClientCurrency::where('currency_id', $currId)->first();
-            $user = User::where('id', $order->user_id)->first();
-            if ($user) {
-                if ($user->dial_code == "971") {
-                    $to = '+' . $user->dial_code . "0" . $user->phone_number;
-                } else {
-                    $to = '+' . $user->dial_code . $user->phone_number;
-                }
-                $provider = $prefer->sms_provider;
-                $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
-                $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
-            //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
-                if (!empty($prefer->sms_provider)) {
-                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-                }
-            }
-        } catch (\Exception $ex) {
-        }
-    }
+    //         $currId = Session::get('customerCurrency');
+    //         $currSymbol = Session::get('currencySymbol');
+    //         $customerCurrency = ClientCurrency::where('currency_id', $currId)->first();
+    //         $user = User::where('id', $order->user_id)->first();
+    //         if ($user) {
+    //             if ($user->dial_code == "971") {
+    //                 $to = '+' . $user->dial_code . "0" . $user->phone_number;
+    //             } else {
+    //                 $to = '+' . $user->dial_code . $user->phone_number;
+    //             }
+    //             $provider = $prefer->sms_provider;
+    //             $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
+    //             $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
+    //         //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+    //             if (!empty($prefer->sms_provider)) {
+    //                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+    //             }
+    //         }
+    //     } catch (\Exception $ex) {
+    //     }
+    // }
     /**
      * Get Cart Items
      *
@@ -1109,6 +1109,9 @@ class OrderController extends FrontController
                 CartProduct::where('cart_id', $cart->id)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
                 CartDeliveryFee::where('cart_id', $cart->id)->delete();
+                // send sms 
+                $this->sendSuccessSMS($request, $order);
+
             }
 
             if (count($tax_category_ids)) {
@@ -1156,7 +1159,7 @@ class OrderController extends FrontController
                 // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id]);
             }
             DB::commit();
-            $this->sendSuccessSMS($request, $order);
+            //$this->sendSuccessSMS($request, $order);
 
             return $this->successResponse($order);
         } catch (Exception $e) {

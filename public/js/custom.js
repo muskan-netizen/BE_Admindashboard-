@@ -1492,15 +1492,16 @@ $(document).ready(function () {
         });
     });
     $(document).on("click", ".promo_code_list_btn", function () {
+        let cart_product_ids = $("input[name='cart_product_ids[]']").map(function(){return $(this).val();}).get();;
         let amount = $(this).attr('data-amount');
         let cart_id = $(this).attr('data-cart_id');
-        let vendor_id = $(this).attr('data-vendor_id');
+        let vendor_id = $(this).attr('data-vendor_id');    
         $(".invalid-feedback.manual_promocode").html("");
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: promocode_list_url,
-            data: { vendor_id: vendor_id, amount: amount, cart_id: cart_id },
+            data: { vendor_id: vendor_id, amount: amount, cart_id: cart_id, cart_product_ids:cart_product_ids },
             success: function (response) {
                 $("#promo_code_list_main_div").html('');
                 $(document).find('.manual_promocode_input').val("");

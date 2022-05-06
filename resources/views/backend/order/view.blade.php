@@ -425,7 +425,7 @@ $timezone = Auth::user()->timezone;
                                     @endif
                                     @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
                                     <tr>
-                                        <th scope="row" colspan="4" class="text-end">{{ __("Redemmed Loyality Points") }} :</th>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Redeemed Loyality Points") }} :</th>
                                         <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
                                     </tr>
                                     @endif
