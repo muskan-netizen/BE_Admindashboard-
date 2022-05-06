@@ -1730,4 +1730,102 @@ $(document).ready(function() {
         data._token = $('input[name=_token]').val(); 
         $.redirect(paytab_before_payment, data);
     }
+
+    ///////////////////////////PayU payment Gateway //////////////////////////////
+    window.payWithPayU = function payWithPayU(address_id='', payment_option_id='', order='') {
+        let total_amount = 0;
+        let tip = 0;
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_form = '';
+        let returnParams = '';
+
+        let ajaxData = [];
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            payment_form = 'cart';
+            ajaxData.push(
+                {name: 'address_id', value: address_id},
+                {name: 'order_number', value: order.order_number},
+                {name: 'payment_form', value: 'cart'}
+            );
+            returnParams += 'order=' + order.order_number;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_form = 'wallet';
+            ajaxData.push({name: 'payment_form', value: 'wallet'});
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            payment_form = 'subscription';
+            ajaxData = $("#subscription_payment_form").serializeArray();
+            ajaxData.push({name: 'payment_form', value: 'subscription'});
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            payment_form = 'tip';
+            ajaxData.push( 
+                {name: 'payment_form', value: 'tip'},
+                {name: 'order_number', value: $("#order_number").val()}
+            );
+            returnParams += 'order=' + $("#order_number").val();
+        }
+        ajaxData.push({ name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
+        returnParams += '&amount=' + total_amount + '&payment_form=' + payment_form;
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: post_payment_via_gateway_url.replace(':gateway', 'payu'),
+            data: ajaxData,
+            success: function(resp) {
+                if (resp.status == 'Success') {
+                    if (resp.data != '') {
+                        $("#payu_offsite_form").remove();
+                        var form = '';
+                        $.each(res.formData, function(key, value) {
+                            form += '<input type="hidden" name="' + key + '" value="' + value + '">';
+                        });
+                        form = $('<form id="payu_offsite_form" action="' + res.redirectUrl + '" method="post">' + form + '</form>');
+                        if (path.indexOf("cart") !== -1) {
+                            $('#proceed_to_pay_modal .modal-body').append(form);
+                        } else if (path.indexOf("wallet") !== -1) {
+                            $('#topup_wallet .modal-content').append(form);
+                        }
+                        form.submit();
+                    }
+                } else {
+                    if (path.indexOf("cart") !== -1) {
+                        success_error_alert('error', resp.message, ".payment_response");
+                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                    } else if (path.indexOf("wallet") !== -1) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    } else if (path.indexOf("subscription") !== -1) {
+                        success_error_alert('error', resp.message, "#subscription_payment_form .payment_response");
+                        $(".subscription_confirm_btn").removeAttr("disabled");
+                    } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    }
+                }
+            },
+            error: function(error) {
+                
+                var response = $.parseJSON(error.responseText);
+                if (path.indexOf("cart") !== -1) {
+                    success_error_alert('error', response.message, ".payment_response");
+                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                } else if (path.indexOf("wallet") !== -1) {
+                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                    $(".topup_wallet_confirm").removeAttr("disabled");
+                } else if (path.indexOf("subscription") !== -1) {
+                    success_error_alert('error', response.message, "#subscription_payment_form .payment_response");
+                    $(".subscription_confirm_btn").removeAttr("disabled");
+                }
+            }
+        });
+    }
 });

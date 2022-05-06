@@ -1347,7 +1347,7 @@ $(document).ready(function () {
         if (payment_option_id == 1) {
             placeOrder(address_id, payment_option_id, '', tip, delivery_type);
         } else{
-            cartPaymentOptions(payment_option_id,address_id = '',tip = '', delivery_type);
+            cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
         }
     });
 
@@ -3387,464 +3387,467 @@ $(document).ready(function () {
         } else {
             $(".invalid-feedback.manual_promocode").html("<strong>Please enter promocode</strong>");
         }
-    })
-});
-
-function numberWithCommas(x) {
-    // x=x.toFixed(2)
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-//   var number = 213242.3412;
-//   alert(numberWithCommas(number));
+    });
 
 
-function subscriptionPaymentOPtions(payment_option_id)
-{
-    switch (payment_option_id) {
-    
-        case 3:
-            paymentViaPaypal('', payment_option_id);
-        break;
+    function subscriptionPaymentOPtions(payment_option_id)
+    {
+        switch (payment_option_id) {
+        
+            case 3:
+                paymentViaPaypal('', payment_option_id);
+            break;
 
-        case 4:
-                stripe.createToken(card).then(function (result) {
-                if (result.error) {
-                    $('#stripe_card_error').html(result.error.message);
-                    _this.attr("disabled", false);
+            case 4:
+                    stripe.createToken(card).then(function (result) {
+                    if (result.error) {
+                        $('#stripe_card_error').html(result.error.message);
+                        _this.attr("disabled", false);
+                    } else {
+                        $("#card_last_four_digit").val(result.token.card.last4);
+                        $("#card_expiry_month").val(result.token.card.exp_month);
+                        $("#card_expiry_year").val(result.token.card.exp_year);
+                        paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                    }
+                    });
+
+            break;
+
+            case 8:
+                    
+                    inline.createToken().then(function (result) {
+                        if (result.error) {
+                            $('#yoco_card_error').html(result.error.message);
+                            _this.attr("disabled", false);
+                        } else {
+                            const token = result;
+                            paymentViaYoco(token.id, '', '');
+                        }
+                    }).catch(function (error) {
+                        // Re-enable button now that request is complete
+                        _this.attr("disabled", false);
+                        //alert("error occured: " + error);
+                        Swal.fire({
+                            // title: "Warning!",
+                            text: "error occured: " + error,
+                            icon: "error",
+                            button: "OK",
+                        });
+                    });
+            
+            break;
+
+            case 9:
+                    paymentViaPaylink('', '');
+            break;
+
+            case 10:
+                    paymentViaRazorpay_wallet('', payment_option_id);
+            break;
+
+            case 12:
+                    paymentViaSimplify('', '');
+            break;
+
+            case 13:
+                    paymentViaSquare('', '');
+            break;
+
+            case 14:
+                    paymentViaOzow('', '');
+            break;
+
+            case 15:
+                    paymentViaPagarme('', '');
+            break;
+
+            case 17:
+                    paymentViaCheckout('', '');
+            break;
+
+            case 18:
+                    paymentViaAuthorize('', '');
+            break;
+
+            case 19:
+                    paymentViaStripeFPX('', 19, '');
+            break;
+
+            case 20:
+                    payWithKPG('');
+            break;
+
+            case 21:
+                    payWithVivaWallet('');
+            break;
+
+            case 22:
+                    payWithCcAvenue('');
+            break;
+
+            case 23:
+                    paymentViaEasyPaisaPay('');
+            break;
+
+            case 24:
+                    paymentViaCashfree('');
+            break;
+
+            case 25:
+                    payWithEasebuss('');
+            break;
+
+            case 26:
+                    paymentViaToyyibPay('');
+            break;
+
+            case 27:
+                    paymentViaPaytab('','');
+            break;
+
+            case 29:
+                    payWithMvodafone('','');
+            break;
+
+            case 30:
+                    payWithFlutterWave('','');
+            break;
+        
+        }
+
+    }
+
+    function cartPaymentOptions(payment_option_id,address_id,tip, delivery_type)
+    {
+        var action =  payment_option_id;
+        switch (action) {
+            case '3':
+                    paymentViaPaypal(address_id, payment_option_id);
+            break;
+
+            case '4':
+                    stripe.createToken(card).then(function (result) {
+                        if (result.error) {
+                            $('#stripe_card_error').html(result.error.message);
+                            $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+                        } else {
+                            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                            if (order != '') {
+                                paymentViaStripe(result.token.id, address_id, payment_option_id, delivery_type, order);
+                            } else {
+                                return false;
+                            }
+                        }
+                    });
+
+            break;
+
+            case '5':
+                paymentViaPaystack(address_id, payment_option_id);
+            break;
+
+            case '6':
+                paymentViaPayfast(address_id, payment_option_id);
+            break;
+
+            case '7':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaMobbex(address_id, order);
                 } else {
-                    $("#card_last_four_digit").val(result.token.card.last4);
-                    $("#card_expiry_month").val(result.token.card.exp_month);
-                    $("#card_expiry_year").val(result.token.card.exp_year);
-                    paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                    return false;
                 }
-                });
+            break;
 
-        break;
+            case '8':
+                    var order;
+                    inline.createToken().then(function (result) {
+                        if (result.error) {
 
-        case 8:
+                            $('#yoco_card_error').html(result.error.message);
+                            $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+                        } else {
+                            const token = result;
+                            // alert("card successfully tokenised: " + token.id);
+                            payment_option_id = 8;
+
+                            order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                            if (order != '') {
+                                paymentViaYoco(token.id, address_id, order);
+                            } else {
+                                return false;
+                            }
+                        }
+                    }).catch(function (error) {
+                        // Re-enable button now that request is complete
+                        //alert("error occured: " + error);
+                        Swal.fire({
+                            // title: "Warning!",
+                            text: "error occured: " + error,
+                            icon: "error",
+                            button: "OK",
+                        });
+                    });
+            
+            break;
+
+            case '9':
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaPaylink(address_id, order);
+                    } else {
+                        return false;
+                    }
+            break;
+
+            case '10':
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaRazorpay(address_id, order, 'cart');
+                    } else {
+                        return false;
+                    }
+            break;
+
+            case '12':
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaSimplify(address_id, order);
+                    } else {
+                        return false;
+                    }
+            break;
+
+            case '13':
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaSquare(address_id, order);
+                    } else {
+                        return false;
+                    }
+            break;
+
+            case '14':
+                    paymentViaOzow('', '');
+            break;
+
+            case '15':
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaPagarme(address_id, order);
+                    } else {
+                        return false;
+                    }
+            break;
+
+            case '17':
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaCheckout(address_id, order);
+                    } else {
+                        return false;
+                    }
+            break;
+
+            case '18':
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaAuthorize(address_id, order);
+                    } else {
+                        return false;
+                    }
+            break;
+
+            case '19':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaStripeFPX(address_id, payment_option_id, order);
+                }
+                else {
+                    return false;
+                }
+            break;
+
+            case '20': //Kongapay
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    
+                    payWithKPG(order);
+                }
+                else {
+                    return false;
+                }
+            break;
+
+            case '21':
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        //Viva Wallet
+                        payWithVivaWallet(order);
+                    }
+                    else{
+                        return false;
+                    }
+            break;
+
+            case '22':
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        payWithCcAvenue(order);
+                    }
+                    else {
+                        return false;
+                    }
+            break;
+
+            case '23' :
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaEasyPaisaPay(order);
+                    }
+                    else {
+                        return false;
+                    }
+            break;
+
+            case '24':  
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaCashfree(address_id, payment_option_id, order);
+                    }
+                    else {
+                        return false;
+                    }
+            break;
+
+            case '25':
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        //Easebuzz payment gateway
+                        payWithEasebuss(address_id, payment_option_id, order);
+                    }else{
+                        return false;
+                    }
+            break;
+
+            case '26':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //alert(12345677888);
+                    paymentViaToyyibPay(address_id, payment_option_id, order);
+                }
+                else {
+                    return false;
+                }
+
                 
+            break;
+
+            case '27':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaPaytab(address_id, order);
+                } else {
+                    return false;
+                }
+
+                
+            break;
+
+            case '28':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //Easebuzz payment gateway
+                    payWithVNpay(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+
+                
+            break;
+
+            case '29':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //Mvodafone
+                    payWithMvodafone(order);
+                    
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '30':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //FlutterWave
+                    payWithFlutterWave(order);
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '31':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //PayU
+                    payWithPayU(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
+        
+        }
+
+    }
+
+
+    function walletPaymentOPtions(payment_option_id)
+    {
+        switch (payment_option_id) {
+            case 3:
+                    paymentViaPaypal('', payment_option_id);
+            break;
+
+            case 4:
+                stripe.createToken(card).then(function (result) {
+                    if (result.error) {
+                        $('#stripe_card_error').html(result.error.message);
+                        $(".topup_wallet_confirm").attr("disabled", false);
+                    } else {
+                        paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                    }
+                });
+            break;
+
+            case 5:
+                    paymentViaPaystack();
+            break;
+
+            case 6:
+                    paymentViaPayfast();
+            break;
+
+            case 7:
+            
+            break;
+
+            case 8:
                 inline.createToken().then(function (result) {
                     if (result.error) {
                         $('#yoco_card_error').html(result.error.message);
-                        _this.attr("disabled", false);
+                        $(".topup_wallet_confirm").attr("disabled", false);
                     } else {
                         const token = result;
                         paymentViaYoco(token.id, '', '');
                     }
                 }).catch(function (error) {
                     // Re-enable button now that request is complete
-                    _this.attr("disabled", false);
-                    //alert("error occured: " + error);
-                    Swal.fire({
-                        // title: "Warning!",
-                        text: "error occured: " + error,
-                        icon: "error",
-                        button: "OK",
-                    });
-                });
-        
-        break;
-
-        case 9:
-                paymentViaPaylink('', '');
-        break;
-
-        case 10:
-                paymentViaRazorpay_wallet('', payment_option_id);
-        break;
-
-        case 12:
-                paymentViaSimplify('', '');
-        break;
-
-        case 13:
-                paymentViaSquare('', '');
-        break;
-
-        case 14:
-                paymentViaOzow('', '');
-        break;
-
-        case 15:
-                paymentViaPagarme('', '');
-        break;
-
-        case 17:
-                paymentViaCheckout('', '');
-        break;
-
-        case 18:
-                paymentViaAuthorize('', '');
-        break;
-
-        case 19:
-                paymentViaStripeFPX('', 19, '');
-        break;
-
-        case 20:
-                payWithKPG('');
-        break;
-
-        case 21:
-                payWithVivaWallet('');
-        break;
-
-        case 22:
-                payWithCcAvenue('');
-        break;
-
-        case 23:
-                paymentViaEasyPaisaPay('');
-        break;
-
-        case 24:
-                paymentViaCashfree('');
-        break;
-
-        case 25:
-                payWithEasebuss('');
-        break;
-
-        case 26:
-                paymentViaToyyibPay('');
-        break;
-
-        case 27:
-                paymentViaPaytab('','');
-        break;
-
-        case 29:
-                payWithMvodafone('','');
-        break;
-
-        case 30:
-                payWithFlutterWave('','');
-        break;
-    
-    }
-
-}
-
-function cartPaymentOptions(payment_option_id,address_id,tip, delivery_type)
-{
-    var action =  payment_option_id;
-    switch (action) {
-        case '3':
-                paymentViaPaypal(address_id, payment_option_id);
-        break;
-
-        case '4':
-                stripe.createToken(card).then(function (result) {
-                    if (result.error) {
-                        $('#stripe_card_error').html(result.error.message);
-                        $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
-                    } else {
-                        var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                        if (order != '') {
-                            paymentViaStripe(result.token.id, address_id, payment_option_id, delivery_type, order);
-                        } else {
-                            return false;
-                        }
-                    }
-                });
-
-        break;
-
-        case '5':
-            paymentViaPaystack(address_id, payment_option_id);
-        break;
-
-        case '6':
-            paymentViaPayfast(address_id, payment_option_id);
-        break;
-
-        case '7':
-            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-            if (order != '') {
-                paymentViaMobbex(address_id, order);
-            } else {
-                return false;
-            }
-        break;
-
-        case '8':
-                var order;
-                inline.createToken().then(function (result) {
-                    if (result.error) {
-
-                        $('#yoco_card_error').html(result.error.message);
-                        $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
-                    } else {
-                        const token = result;
-                        // alert("card successfully tokenised: " + token.id);
-                        payment_option_id = 8;
-
-                        order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                        if (order != '') {
-                            paymentViaYoco(token.id, address_id, order);
-                        } else {
-                            return false;
-                        }
-                    }
-                }).catch(function (error) {
-                    // Re-enable button now that request is complete
-                    //alert("error occured: " + error);
-                    Swal.fire({
-                        // title: "Warning!",
-                        text: "error occured: " + error,
-                        icon: "error",
-                        button: "OK",
-                    });
-                });
-        
-        break;
-
-        case '9':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViaPaylink(address_id, order);
-                } else {
-                    return false;
-                }
-        break;
-
-        case '10':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViaRazorpay(address_id, order, 'cart');
-                } else {
-                    return false;
-                }
-        break;
-
-        case '12':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViaSimplify(address_id, order);
-                } else {
-                    return false;
-                }
-        break;
-
-        case '13':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViaSquare(address_id, order);
-                } else {
-                    return false;
-                }
-        break;
-
-        case '14':
-                paymentViaOzow('', '');
-        break;
-
-        case '15':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViaPagarme(address_id, order);
-                } else {
-                    return false;
-                }
-        break;
-
-        case '17':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViaCheckout(address_id, order);
-                } else {
-                    return false;
-                }
-        break;
-
-        case '18':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViaAuthorize(address_id, order);
-                } else {
-                    return false;
-                }
-        break;
-
-        case '19':
-            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-            if (order != '') {
-                paymentViaStripeFPX(address_id, payment_option_id, order);
-            }
-            else {
-                return false;
-            }
-        break;
-
-        case '20': //Kongapay
-            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-            if (order != '') {
-                
-                payWithKPG(order);
-            }
-            else {
-                return false;
-            }
-        break;
-
-        case '21':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    //Viva Wallet
-                    payWithVivaWallet(order);
-                }
-                else{
-                    return false;
-                }
-        break;
-
-        case '22':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    payWithCcAvenue(order);
-                }
-                else {
-                    return false;
-                }
-        break;
-
-        case '23' :
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViaEasyPaisaPay(order);
-                }
-                else {
-                    return false;
-                }
-        break;
-
-        case '24':  
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViaCashfree(address_id, payment_option_id, order);
-                }
-                else {
-                    return false;
-                }
-        break;
-
-        case '25':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    //Easebuzz payment gateway
-                    payWithEasebuss(address_id, payment_option_id, order);
-                }else{
-                    return false;
-                }
-        break;
-
-        case '26':
-            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-            if (order != '') {
-                //alert(12345677888);
-                paymentViaToyyibPay(address_id, payment_option_id, order);
-            }
-            else {
-                return false;
-            }
-
-            
-        break;
-
-        case '27':
-            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-            if (order != '') {
-                paymentViaPaytab(address_id, order);
-            } else {
-                return false;
-            }
-
-            
-        break;
-
-        case '28':
-            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-            if (order != '') {
-                //Easebuzz payment gateway
-                payWithVNpay(address_id, payment_option_id, order);
-            }
-            else{
-                return false;
-            }
-
-            
-        break;
-
-        case '29':
-            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-            if (order != '') {
-                //Mvodafone
-                payWithMvodafone(order);
-                
-            }
-            else{
-                return false;
-            }
-        break;
-
-        case '30':
-            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-            if (order != '') {
-                //FlutterWave
-                payWithFlutterWave(order);
-            }
-            else{
-                return false;
-            }
-        break;
-    
-    }
-
-}
-
-
-function walletPaymentOPtions(payment_option_id)
-{
-    switch (payment_option_id) {
-        case 3:
-                paymentViaPaypal('', payment_option_id);
-        break;
-
-        case 4:
-            stripe.createToken(card).then(function (result) {
-                if (result.error) {
-                    $('#stripe_card_error').html(result.error.message);
-                    $(".topup_wallet_confirm").attr("disabled", false);
-                } else {
-                    paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                }
-            });
-        break;
-
-        case 5:
-                paymentViaPaystack();
-        break;
-
-        case 6:
-                paymentViaPayfast();
-        break;
-
-        case 7:
-           
-        break;
-
-        case 8:
-            inline.createToken().then(function (result) {
-                if (result.error) {
-                    $('#yoco_card_error').html(result.error.message);
-                    $(".topup_wallet_confirm").attr("disabled", false);
-                } else {
-                    const token = result;
-                    paymentViaYoco(token.id, '', '');
-                }
-            }).catch(function (error) {
-                // Re-enable button now that request is complete
-                // alert("error occured: " + error);
+                    // alert("error occured: " + error);
                 Swal.fire({
                     // title: "Warning!",
                     text: "error occured: " + error,
@@ -3942,3 +3945,11 @@ function walletPaymentOPtions(payment_option_id)
     }
 
 }
+});
+
+function numberWithCommas(x) {
+    // x=x.toFixed(2)
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+//   var number = 213242.3412;
+//   alert(numberWithCommas(number));
