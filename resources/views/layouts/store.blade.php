@@ -55,6 +55,9 @@ if(isset($set_template))
       @include('layouts.store/left-sidebar-template-one')
       @endif
     </header>
+    @if(isset($set_template)  && $set_template->template_id == 4)
+    @include('frontend.template_four.layouts.vendor_type')
+    @endif
     @yield('content')
     @if(isset($set_template)  && $set_template->template_id == 1)
     @include('layouts.store/footer-content-template-one')
