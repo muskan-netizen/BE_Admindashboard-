@@ -257,7 +257,7 @@ class FlutterWaveController extends Controller
 
             if(isset($request->auth_token) && !empty($request->auth_token))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->tx_ref.'&action=wallet';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=flutterwave'.'&status=00&transaction_id='.$request->tx_ref.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
               return Redirect::to(route('user.wallet'))->with('error',$request->message);
@@ -286,7 +286,7 @@ class FlutterWaveController extends Controller
               $returnUrl = route('payment.gateway.return.response').'/?gateway=flutterwave'.'&status=200&transaction_id='.$request->tx_ref.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.subscription.plans'))->with('success','Suscription added successfuly.');
+              return Redirect::to(route('user.subscription.plans'))->with('success','Subscription added successfuly.');
             }
           }else{
             $data->delete();
@@ -328,7 +328,7 @@ class FlutterWaveController extends Controller
 
               if(isset($request->auth_token) && !empty($request->auth_token))
               {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=tip';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=flutterwave'.'&status=00&transaction_id='.$request->merchant_reference.'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
                 return Redirect::to(route('user.orders'))->with('error', $request->message);

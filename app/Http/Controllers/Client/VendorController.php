@@ -988,6 +988,9 @@ class VendorController extends BaseController
         if ($request->has('instagram_url')) {
             $vendor->instagram_url = $request->has('instagram_url') ? $request->instagram_url : NULL;
         }
+        if ($request->has('easebuzz_sub_merchent_id')) {
+            $vendor->easebuzz_sub_merchent_id = $request->has('easebuzz_sub_merchent_id') ? $request->easebuzz_sub_merchent_id : NULL;
+        }
         
         $vendor->save();
         $return_json   = $request->has('return_json') && $request->return_json ? $request->return_json : 0;

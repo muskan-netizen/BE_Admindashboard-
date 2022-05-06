@@ -99,17 +99,17 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
                         </h5>
-                        <div class="offer-slider">
+                        <div class="offer-slider al">
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
-                                    <div>
+                                    <div  class="col-12 p-0">
                                     @foreach($newProds as $new)
                                         <?php /*$imagePath = '';
                                         foreach ($new['media'] as $k => $v) {
                                             $imagePath = $v['image']['path']['image_fit'].'300/300'.$v['image']['path']['image_path'];
                                         }*/ ?>
                                         <div class="common-product-box scale-effect mb-2">
-                                            <a class=" row" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                            <a class=" row  w-100" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                                 <div class="col-sm-4">
                                                     <div class="img-outer-box position-relative">
                                                         <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
@@ -124,7 +124,7 @@
                                                         <div class="inner_spacing px-0">
                                                             <div class="product-description">
                                                                 <div class="d-flex align-items-center justify-content-between">
-                                                                    <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                                    <h6 class="card_title ellips">{{ $new['translation_title'] }}</h6>
                                                                     <!--<span class="rating-number">2.0</span>-->
                                                                 </div>
                                                                 <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->

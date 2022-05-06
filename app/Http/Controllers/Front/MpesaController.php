@@ -303,7 +303,7 @@ class MpesaController extends Controller
 
           if(isset($request->auth_token) && !empty($request->auth_token))
           {
-            $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&order='.$order->order_number;
+            $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesa'.'&status=200&order='.$order->order_number;
             return Redirect::to($returnUrl); 
           }else{
             return Redirect::to(route('order.success',[$order->id]));
@@ -317,7 +317,7 @@ class MpesaController extends Controller
             }
             if(isset($request->auth_token) && !empty($request->auth_token))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=00&order='.$order->order_number;
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesa'.'&status=00&order='.$order->order_number;
               return Redirect::to($returnUrl);  
             }else{
               return Redirect::to(route('showCart'))->with('error',$request->message);
@@ -341,10 +341,10 @@ class MpesaController extends Controller
 
             if(isset($request->transaction_id) && !empty($request->transaction_id))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&transaction_id='.$request->s.'&action=wallet';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesa'.'&status=200&transaction_id='.$request->s.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.wallet'));
+              return Redirect::to(route('user.wallet'))->with('success','Wallet amount added successfuly.');
             }
 
             
@@ -354,7 +354,7 @@ class MpesaController extends Controller
 
             if(isset($request->transaction_id) && !empty($request->transaction_id))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=00&transaction_id='.$request->merchant_reference.'&action=wallet';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesa'.'&status=00&transaction_id='.$request->merchant_reference.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
               return Redirect::to(route('user.wallet'))->with('error',$request->message);
@@ -380,10 +380,10 @@ class MpesaController extends Controller
 
             if(isset($request->subscription_id) && !empty($request->subscription_id))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&transaction_id='.$request->s.'&action=subscription';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesa'.'&status=200&transaction_id='.$request->s.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
+              return Redirect::to(route('user.subscription.plans'))->with('success','Subscription added successfuly.');
             }
           }else{
             $data->delete();
@@ -413,10 +413,10 @@ class MpesaController extends Controller
 
             if(isset($request->order_no) && !empty($request->order_no))
               {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&order='.$order_number[2].'&action=tip';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesa'.'&status=200&order='.$order_number[2].'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
-                return Redirect::to(route('user.orders'))->with('success', $request->message);
+                return Redirect::to(route('user.orders'))->with('success','Tip amount added successfuly.');
               }
 
           }else{
@@ -424,7 +424,7 @@ class MpesaController extends Controller
 
               if(isset($request->order_no) && !empty($request->order_no))
               {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=00&transaction_id='.$data->transaction_id.'&action=tip';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesa'.'&status=00&transaction_id='.$data->transaction_id.'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
                 return Redirect::to(route('user.orders'))->with('error', $request->message);
