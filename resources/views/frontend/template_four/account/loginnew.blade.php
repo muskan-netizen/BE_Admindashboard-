@@ -41,7 +41,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                         <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>
                                         <a class="font-14 pull-right" href="javascript:void(0)" id="send_password_reset_link" style="right:10px;">{{__('Forgot Password?')}}</a>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group m-0 alErrorSuccessMsg">
                                         <span id="error-msg" class="font-14 text-danger" style="display:none"></span>
                                         <span id="success-msg" class="font-14 text-success" style="display:none"></span>
                                     </div>

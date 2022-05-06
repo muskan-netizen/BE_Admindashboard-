@@ -4,7 +4,7 @@
 @endsection
 @section('css')
 <style>
-.cardbanner {height:300px;}
+.cardbanner {height:400px;}
 .shimmer_effect .grid-row .cards {margin-bottom: 40px;}
 .shimmer_effect .grid-row .card_icon{display:none;}
 .shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
@@ -19,12 +19,7 @@
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
-	<div class="container-fliud mt-4 mb-5 shimmer_effect">
-		<div class="row mt-0">
-			<div class="col-md-2 offset-md-5 cards mb-3">
-				<div class="al_tabs loading"></div>
-			</div>
-		</div>
+	<div class="container-fliud mb-5 shimmer_effect al_tabsShimmer">
 		<div class="row">
 			<div class="col-md-10 offset-md-1 cards">
 				<div class="cardbanner loading"></div>
