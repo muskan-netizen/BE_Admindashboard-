@@ -69,6 +69,11 @@ div#alDocumentsSection{max-height: 200px;overflow-y: auto;}
     border-style: solid; 
     border-radius: 0;
 }
+.BGcenter #alDocumentsSection{max-height: 200px;overflow-y: auto;}
+.BGcenter .is-invalid~ .fa.fa-eye-slash.toggle-password{display: none;}
+.BGcenter .tab-content button{width: 100%;height: 37px;}
+.BGcenter a.alBtnGuestLink{color: #FBCC04;font-size: 20px;font-weight: 600;text-align: center;margin: 20px auto;display: block;text-decoration: underline;}
+span.registerLink{text-align: center;width: 100%;margin-top: 10px;display: block;}
 /* login page css end here */
 
 .vendor-reviwes{position: absolute;top: -30px;background-color: green;color: #fff;padding: 2px 7px;border-radius: 5px;}
