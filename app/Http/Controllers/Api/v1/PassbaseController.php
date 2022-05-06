@@ -30,7 +30,7 @@ class PassbaseController extends BaseController
     	$response = $this->getIdentity($request->identityAccessKey);
     	$add = $this->userVerificationObj->addVerification([
     		'verification_option_id' => 1,
-    		'user_id' => Auth::user()->id,
+    		'user_id' => $request->user_id??12,
     		'response_id' => $response['id'],
     		'status' => $response['status']
     	]);

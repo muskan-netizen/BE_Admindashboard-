@@ -354,7 +354,7 @@ use Illuminate\Support\Arr;
                                                     <div class="radios">
                                                         <p>{{date('D', strtotime($date))}}</p>
 
-                                                        <input type="radio" class="check-time-slots" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' @if($key == 0) checked @endif />
+                                                        <input type="radio" class="check-time-slots" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' @if($key == 0) checked @endif />
 
 
                                                         <label for='radio{{$cd}}{{$key}}'>
@@ -370,6 +370,11 @@ use Illuminate\Support\Arr;
                                             <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
 
                                             <div class="booking-time radio-btns long-radio">
+                                                @php
+                                                if(!empty($cart_data->timeSlots)){
+                                                    $time_slots = $cart_data->timeSlots;
+                                                }
+                                                @endphp
                                                 @foreach ($time_slots as $key => $date)
                                                 @if($key+1 < count($time_slots))
                                                 @php
@@ -388,7 +393,7 @@ use Illuminate\Support\Arr;
                                                     </div>
                                                 </div>
                                                 @endif
-                                                @endforeach
+                                                @endforeach                                                
                                             </div>
                                             <P id="message_of_time{{$cart_data->id}}"></P>
                                         </div>
@@ -560,7 +565,7 @@ use Illuminate\Support\Arr;
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Start Time')}}</span>
-                                                    <span id="show_time{{$cart_data->id}}">@if(isset($cart_data->scheduled_date_time)) {{ date('H:i', strtotime($cart_data->scheduled_date_time)) }}  @else -- @endif</span>
+                                                    <span id="show_time{{$cart_data->id}}">@if(isset($cart_data->scheduled_date_time)) {{ $cart_data->schedule_slot }}  @else -- @endif</span>
                                                 </h6>
                                             </div>
                                         </li>

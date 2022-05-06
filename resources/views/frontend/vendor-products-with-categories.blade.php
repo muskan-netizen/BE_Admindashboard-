@@ -414,7 +414,7 @@
                                                     <h4 title="{{ $vendor->desc }}" style="line-height: 24px">
                                                         {{ substr($vendor->desc, 0, 80) . '...' }}</h4>
                                                 @endif
-                                                <p>{{ $vendor->short_desc }}</p>
+                                                <p>{!! $vendor->short_desc !!}</p>
                                                 <ul class="vendor-info">
                                                     {{-- <li class="d-block food-items">
                                                             <i class="icon-ic_eat"></i>
@@ -506,8 +506,7 @@
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
-                                                    <li><a
-                                                            href="#{{ $data->category->slug }}">{{ $data->category->translation_one->name }}({{ $data->products_count }})</a>
+                                                    <li><a data-slug="{{ $data->category->slug }}" style="cursor: pointer;">{{ $data->category->translation_one->name }}({{ $data->products_count }})</a>
                                                     </li>
                                                 @empty
                                                 @endforelse

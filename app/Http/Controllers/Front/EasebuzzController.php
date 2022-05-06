@@ -7,7 +7,7 @@ use App\Helpers\Easebuzz;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Redirect;
-use App\Models\{PaymentOption,ClientCurrency,CaregoryKycDoc, Order, Cart, CartAddon, CartProduct, User,  Payment,  CartCoupon, CartProductPrescription, UserVendor, Transaction};
+use App\Models\{PaymentOption,ClientCurrency,CaregoryKycDoc, Order, Cart, CartAddon, CartProduct, User,  Payment,  CartCoupon, CartProductPrescription, UserVendor, Transaction,Vendor};
 
 use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController};
 
@@ -17,6 +17,7 @@ class EasebuzzController  extends FrontController
 
     private $MERCHANT_KEY;
     private $SALT;
+    private $Sub_merchant;
    
     // need webhook for this 
     // serverurl + payment/easebuzz/notify;
@@ -26,6 +27,7 @@ class EasebuzzController  extends FrontController
         $this->MERCHANT_KEY =  $json->easebuzz_merchant_key;
         $this->SALT =  $json->easebuzz_salt;
         $this->ENV = ($payOpt->test_mode == 1) ?  "test" : 'prod' ; 
+        $this->Sub_merchant = $json->easebuzz_Sub_merchant ;
     }
 
     function easebuzz_gateway (){
@@ -33,6 +35,7 @@ class EasebuzzController  extends FrontController
     }
 
     function order (Request $request){
+      //  pr($request->all());
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         if($primaryCurrency->currency->iso_code != 'INR' ) {
             $error =  __(' Currency format error!');
@@ -82,7 +85,17 @@ class EasebuzzController  extends FrontController
             "country" => "India",
             "zipcode" => $user->address->first()->pincode,
         );
-       // pr($postData);
+        $sub_merchnt_id = '';
+        if($request->vendor_id){
+            $vendor = Vendor::select('id','easebuzz_sub_merchent_id')->where('id', $request->vendor_id)->first();
+            
+            $sub_merchnt_id = $vendor->easebuzz_sub_merchent_id ?? '';
+          
+        }
+        if(($this->Sub_merchant == 1) && ($sub_merchnt_id != '' )){
+            $postData['sub_merchant_id']= $sub_merchnt_id ;
+        }
+        //pr($postData);
         $easebuzzObj = new Easebuzz($this->MERCHANT_KEY, $this->SALT, $this->ENV);
         $response = $easebuzzObj->initiatePaymentAPI($postData);
         // echo "order";
