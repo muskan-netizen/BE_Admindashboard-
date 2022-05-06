@@ -119,21 +119,21 @@ class Vendor extends Model implements Auditable{
     return $this->hasMany('App\Models\Category','vendor_id','id');
   }
   
-  public function getTaxFixedFee(){
-    return $this->hasOne('App\Models\TaxRate', 'id', 'fixed_fee_tax_id');
-  }
+  // public function getTaxFixedFee(){
+  //   return $this->hasOne('App\Models\TaxRate', 'id', 'fixed_fee_tax_id');
+  // }
 
-  public function getTaxContainerCharges(){
-    return $this->hasOne('App\Models\TaxRate', 'id', 'container_charges_tax_id');
-  }
+  // public function getTaxContainerCharges(){
+  //   return $this->hasOne('App\Models\TaxRate', 'id', 'container_charges_tax_id');
+  // }
 
-  public function getTaxServiceCharges(){
-    return $this->hasOne('App\Models\TaxRate', 'id', 'service_charges_tax_id');
-  }
+  // public function getTaxServiceCharges(){
+  //   return $this->hasOne('App\Models\TaxRate', 'id', 'service_charges_tax_id');
+  // }
 
-  public function getTaxDeliveryCharges(){
-    return $this->hasOne('App\Models\TaxRate', 'id', 'delivery_charges_tax_id');
-  }
+  // public function getTaxDeliveryCharges(){
+  //   return $this->hasOne('App\Models\TaxRate', 'id', 'delivery_charges_tax_id');
+  // }
 
   public function getById($id){
     return self::where('id',$id)->first();

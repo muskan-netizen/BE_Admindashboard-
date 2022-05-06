@@ -14,7 +14,7 @@ use App\Http\Traits\{ApiResponser,CartManager};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate};
 use Log;
 class CartController extends FrontController
 {
@@ -600,7 +600,8 @@ class CartController extends FrontController
         $delifproductnotexist = CartProduct::where('cart_id', $cart_id)->doesntHave('product')->delete();
 
         $cartData = CartProduct::with([
-            'vendor','vendor.slots','vendor.getTaxFixedFee','vendor.getTaxContainerCharges','vendor.getTaxServiceCharges','vendor.getTaxDeliveryCharges','vendor.slot.day', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
+            // 'vendor','vendor.slots','vendor.getTaxFixedFee','vendor.getTaxContainerCharges','vendor.getTaxServiceCharges','vendor.getTaxDeliveryCharges','vendor.slot.day', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
+            'vendor','vendor.slots','vendor.slot.day', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
                 $qry->where('cart_id', $cart_id);
             }, 'vendorProducts.pvariant.media.pimage.image', 'vendorProducts.product.media.image',
             'vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
@@ -626,7 +627,13 @@ class CartController extends FrontController
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
         ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        //dd($cartData);
+        //dd($cartData[0]->vendor);
+        $taxes=TaxRate::all();
+        $taxRates=array();
+        foreach($taxes as $tax){
+            $taxRates[$tax->id]=['tax_rate'=>$tax->tax_rate,'tax_amount'=>$tax->tax_amount];
+        }
+        // dd($taxRates);
         $loyalty_amount_saved = 0;
         $redeem_points_per_primary_currency = '';
         $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -680,9 +687,7 @@ class CartController extends FrontController
             $PromoDelete = 0;
             $d = 0;
             $total_container_charges = 0 ;
-            // dd($cartData);
             foreach ($cartData as $ven_key => $vendorData) {
-                // dd($vendorData->vendor->getTaxFixedFee->tax_rate);
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = $delivery_fee_charges_static =  $deliver_charges_lalmove = 0.00;
                 $delivery_count = 0;
@@ -736,7 +741,6 @@ class CartController extends FrontController
                         $prod->update(['vendor_dinein_table_id' => $cart_dinein_table_id]);
                     }
                     
-                    //pr($prod->product->toArray());
                     $prod->product_out_of_stock =  $product_out_of_stock;
                     $prod->faq_count = 0;
                     if( $preferences->product_order_form ==1 ){
@@ -1235,7 +1239,7 @@ class CartController extends FrontController
             $cart->tip_15_percent = decimal_format(0.15 * $total_payable_amount);
             $cart->total_container_charges = decimal_format($total_container_charges);
             $cart->wallet_amount_available = decimal_format($wallet_amount_available);
-
+            $cart->taxRates=$taxRates;
             $cart->action = $action;
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();

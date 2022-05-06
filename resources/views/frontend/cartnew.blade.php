@@ -130,8 +130,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     let tax_delivery_charges_percentage=0;
     
     _.each(cart_details.products, function(product, key){
-        // console.log(JSON.stringify(product.vendor_products));
-        if (product.vendor.get_tax_fixed_fee != null) {
+        console.log(JSON.stringify(product));
+       /* if (product.vendor.get_tax_fixed_fee != null) {
             tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
         }
         if (product.vendor.get_tax_container_charges != null) {
@@ -142,7 +142,54 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         }
         if (product.vendor.get_tax_delivery_charges != null) {
             tax_delivery_charges_percentage=product.vendor.get_tax_delivery_charges.tax_rate;
+        }*/
+
+
+        /* --- Vendor Tax Get Percentage ---- */
+        _.each(cart_details.taxRates, function(tax, index){
+            if(product.vendor.fixed_fee_tax_id!=null){
+                if(product.vendor.fixed_fee_tax_id==index){
+                    tax_fixed_fee_percentage=tax.tax_rate;
+                }
+            }
+
+            if(product.vendor.service_charges_tax_id!=null){
+                if(product.vendor.service_charges_tax_id==index){
+                    tax_service_charges_percentage=tax.tax_rate;
+                }
+            }
+
+            if(product.vendor.delivery_charges_tax_id!=null){
+                if(product.vendor.delivery_charges_tax_id==index){
+                    tax_delivery_charges_percentage=tax.tax_rate;
+                }
+            }
+
+            if(product.vendor.container_charges_tax_id!=null){
+                if(product.vendor.container_charges_tax_id==index){
+                    tax_container_charges_percentage=tax.tax_rate;
+                }
+            }
+        });
+
+
+        
+
+        /*console.log(tax_fixed_fee_percentage);
+        if (product.vendor.get_tax_fixed_fee != null) {
+            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
+        }tax_fixed_fee_percentage,tax_container_charges_percentage,tax_service_charges_percentage,tax_delivery_charges_percentage
+        if (product.vendor.get_tax_container_charges != null) {
+            tax_container_charges_percentage=product.vendor.get_tax_container_charges.tax_rate;
         }
+        if (product.vendor.get_tax_service_charges != null) {
+            tax_service_charges_percentage=product.vendor.get_tax_service_charges.tax_rate;
+        }
+        if (product.vendor.get_tax_delivery_charges != null) {
+            tax_delivery_charges_percentage=product.vendor.get_tax_delivery_charges.tax_rate;
+        }*/
+
+        
         /*console.log("tax_fixed_fee_percentage"+tax_fixed_fee_percentage);
         console.log("tax_container_charges_percentage"+tax_container_charges_percentage);
         console.log("tax_service_charges_percentage"+tax_service_charges_percentage);
@@ -214,7 +261,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
                             <div class="col-md-3 order-0">
-                                <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %> fixed_fee_tax_id <%= vendor_product.product.fixed_fee_tax_id %></h4>
+                                <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
                                     <% if(vset.variant_detail.trans) { %>

@@ -534,7 +534,7 @@
 
                     
 
-                    <div class="row">
+                    {{--<div class="row">
                         <div class="col-md-12">
                             <h4 class="mb-2 "> <span class="">{{ __("Taxes") }}</span></h4>
                         </div>
@@ -556,7 +556,7 @@
 
 
 
-                    {{--<div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Delivery Charges'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="delivery_charges_tax" class="form-control" data-color="#43bee1" @if($product->delivery_charges_tax == 1) checked @endif>
                     </div>
@@ -587,7 +587,7 @@
                                 <option value="{{$row->id}}" {{$product->container_charges_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
                             @endforeach
                         </select>
-                    </div> --}}
+                    </div> 
                     
                      
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
@@ -603,7 +603,7 @@
                                 <option value="{{$row->id}}" {{$product->fixed_fee_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> --}}
 
 
 
