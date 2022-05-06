@@ -46,7 +46,9 @@ body.login_body #al_new_design, body.register_body #al_new_design{position: rela
 
 .footer-theme .sub-title .footer-contant .payment-card-bottom ul li{padding:0;display:inline-block}
 body section.cab-banner-area { margin: 0 !important;}
-
+body .iti--separate-dial-code .iti__selected-flag {
+    background-color: #eee;
+}
 /* vendorStories page css start */
 #vendorStoriesImg{border-radius: 5px;cursor: pointer;-webkit-transition: 0.3s;transition: 0.3s;}
 #vendorStoriesImg:hover{opacity: 0.7;}
