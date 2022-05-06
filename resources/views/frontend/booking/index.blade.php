@@ -56,6 +56,9 @@
             <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
             <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude"/>
             <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude"/>
+            <input type="hidden" id="address-input" value=""/>
+            <input type="hidden" id="address-latitude" value=""/>
+            <input type="hidden" id="address-longitude" value=""/>
             <input type="hidden" name="schedule_date" value="" id="schedule_date"/>
             <div class="location-container style-4">
                 <div class="location-search d-flex align-items-center check-pickup">
@@ -97,9 +100,7 @@
                                 <h4><b>{{__('Allow location Access')}}</b></h4>
                                 <div class="current-location ellips text-color mb-2">{{__('Your current location')}}</div>
                                 <hr class="m-0">
-                                <input type="hidden" id="address-input" value=""/>
-                                <input type="hidden" id="address-latitude" value=""/>
-                                <input type="hidden" id="address-longitude" value=""/>
+                                
                             </div>
                         </a>
                     @forelse($user_addresses as $user_address)

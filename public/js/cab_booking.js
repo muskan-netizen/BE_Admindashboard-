@@ -794,11 +794,54 @@ $(document).ready(function () {
     });
 
     $(document).on("click","#get-current-location",function() {
-
-        var currentLocation          = $('#address-input').val();
+        getLocation();
+        /* var currentLocation          = $('#address-input').val();
         var currentLocationLatitude  = $('#address-latitude').val();
-        var currentLocationLongitude = $('#address-longitude').val();
-        if($('.check-pickup').css('display') == 'block')
+        var currentLocationLongitude = $('#address-longitude').val(); */
+        
+        var latitude             = $('#address-latitude').val();
+        var longitude            = $('#address-longitude').val();
+        var pickup_location      = $('#pickup_location_latitude').val();
+        var destination_location = $('#destination_location_latitude').val();
+        var pickupAddress        = $('#address-input').val();
+        if(pickup_location == ''){
+            $('#pickup_location').val($('#address-input').val());
+            $('#pickup_location_latitude').val(latitude);
+            $('#pickup_location_longitude').val(longitude);
+
+        
+            var pickupLocationLatitude  = latitude;
+            var pickupLocationLongitude = longitude;
+            var currentUrl              = window.location.href;
+            var queryString             = removeURLParameter(currentUrl, 'pickup_location');
+            var perm                    = "?pickup_location=" + $('#address-input').val() + "&pickup_location_latitude=" + pickupLocationLatitude +"&pickup_location_longitude=" + pickupLocationLongitude + (queryString != '' ? "&" + queryString : '');
+            window.history.replaceState(null, null, perm);
+
+            $(".check-pick-first").css("display", "none");
+            $("#pickup-where-from").html(" "+$('#address-input').val());
+            $(".check-dropoff-secpond").css("display", "block");
+            $('.check-pickup').attr("style", "display: none !important");
+            $(".check-dropoff").css("display", "block");
+
+        }else if(destination_location == ''){
+            $('#destination_location').val($('#address-input').val());
+            $('#destination_location_latitude').val(latitude);
+            $('#destination_location_longitude').val(longitude);
+
+            var currentUrl  = window.location.href;
+            var queryString = removeURLParameter(currentUrl, 'destination_location');
+            var perm        = "?" + (queryString != '' ? queryString : '') + "&destination_location=" + $('#address-input').val()  + "&destination_location_latitude=" + latitude +"&destination_location_longitude=" + longitude;
+            window.history.replaceState(null, null, perm);
+
+            $("#dropoff-where-to").html(" "+$('#address-input').val());
+            $('.where-to-first').attr("style", "display: none !important");
+            $('.check-dropoff').attr("style", "display: none !important");
+            $(".where-to-second").css("display", "block");
+            $('.add-more-location').attr("style", "display: block !important");
+
+            $('#search_product_main_div').attr("style", "display: block !important");
+            $('.location-list').attr("style", "display: none !important");
+        /* if($('.check-pickup').css('display') == 'block')
         {
             $('#pickup_location').val(currentLocation);
             $('#pickup_location_latitude').val(currentLocationLatitude);
@@ -839,7 +882,7 @@ $(document).ready(function () {
             $('.location-list').attr("style", "display: none !important");
 
 
-            getLocation();
+            getLocation(); */
         }else{
             $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
                 if(this.value == ''){
@@ -865,7 +908,8 @@ $(document).ready(function () {
             }).get();
         }
 
-
+        displayLocationCab(latitude, longitude);
+        getVendorList();
 
     });
     $(document).on("click",".edit-dropoff",function() {
@@ -1071,7 +1115,7 @@ $(document).ready(function () {
                 $('.scheduleDateTimeApnd').html(perm[1]);
             }
         }
-
+        
         var pickup_location      = $("#pickup_location").val();
         var destination_location = $("#destination_location").val();
         if(pickup_location != '' && destination_location != ''){
@@ -1104,8 +1148,7 @@ $(document).ready(function () {
         var locations = [];
         let pickup_location_latitude  = $('#pickup_location_latitude').val();
         let pickup_location_longitude = $('#pickup_location_longitude').val();
-
-
+    
         var pointA = new google.maps.LatLng(pickup_location_latitude, pickup_location_longitude);
         map = new google.maps.Map(document.getElementById('booking-map'), {zoom: 7,center: pointA});
         map.setOptions({ styles:  styles});
@@ -1137,8 +1180,16 @@ $(document).ready(function () {
                 stopover: true,
               });
         });
-
-        let origin = $('#pickup_location').val();
+        
+        let origin ='';
+        if($('#pickup_location').val()=="Your Location"){
+            var latmy = parseFloat($("#address-latitude").val());
+            var longmy = parseFloat($("#address-longitude").val());
+            origin = {lat: latmy, lng: longmy};
+        }else{
+            origin = $('#pickup_location').val();
+        }
+        
         let destination = (random_id != '') ? $('#destination_location_'+random_id).val() : $('#destination_location').val();
         if(origin && destination){
             directionsService.route({
@@ -1287,12 +1338,16 @@ $(document).ready(function () {
     function errorcallback(positionerror) {
         if (window.console) {
             console.log(positionerror);
+            $('#address-latitude').val('30.7120453');
+            $('#address-longitude').val('76.8144185');
+            $('#address-input').val('Your Location');
           }
     }
 
     function showPosition(position) {
         let lat = position.coords.latitude;
         let long = position.coords.longitude;
+        $('#address-input').val('Your Location');
         $('#address-latitude').val(lat);
         $('#address-longitude').val(long);
         displayLocationCab(lat, long);
