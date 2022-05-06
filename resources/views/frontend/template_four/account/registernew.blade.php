@@ -30,7 +30,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                     <div class="col-sm-6 text-center px-sm-5 LogoInArea">
                         <h3 class="mb-2">{{ __('Register') }}</h3>
 
-                        <div class="row mt-3">
+                        <div class="row">
                             <div class="col-sm-12 text-left">
                                 <form name="register" id="register" enctype="multipart/form-data" action="{{ route('customer.register') }}"
                                     class="" method="post"> @csrf
@@ -262,6 +262,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
         </div>
         <a class="alBtnGuestLink" href="">Skip As a Guest</a>
     </article>
+    <a class="alBtnGuestLink" href="">Skip As a Guest</a>
 </section>
 
 @endsection
