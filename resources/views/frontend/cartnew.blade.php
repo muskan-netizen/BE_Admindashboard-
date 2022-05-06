@@ -145,7 +145,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     let tax_delivery_charges_percentage=0;
     
     _.each(cart_details.products, function(product, key){
-        console.log(JSON.stringify(product));
+        /*console.log(JSON.stringify(product));*/
        /* if (product.vendor.get_tax_fixed_fee != null) {
             tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
         }
@@ -1666,7 +1666,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 vendor: vendor
             },
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 if (response.status == "Success") {
 
                 } else {
@@ -1724,11 +1724,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             //transform into simple data/value object
             for(var i = 0; i < s_data.length; i++){
                 var record = s_data[i];
-                console.log(record);
+                // console.log(record);
                 out[record.name] = record.value;
                 var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
                 var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
-                console.log(is_required);
+                // console.log(is_required);
 
                 if((is_required)==1 && (record.value =='' )){
                     var errorMsg ="The "+ record.name +" field is required.";
@@ -1781,16 +1781,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         var out = {};
         var s_data = $(dom_query).serializeArray();
 
-        console.log(s_data);
+        // console.log(s_data);
 
             //transform into simple data/value object
             for(var i = 0; i < s_data.length; i++){
                 var record = s_data[i];
-                console.log(record);
+                // console.log(record);
                 out[record.name] = record.value;
                 var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
                 var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
-                console.log(is_required);
+                // console.log(is_required);
 
                 if((is_required)==1 && (record.value =='' )){
                     var errorMsg ="The "+ record.name +" field is required.";
