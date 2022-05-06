@@ -136,9 +136,79 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     let total_fixed_fee_amount=0;
     let price_bifurcation=0;
     let total_wallet_amount_used=0;
-    var closed_store= 0;
-    _.each(cart_details.products, function(product, key){
+    let closed_store= 0;
 
+    /* Getting other taxes */
+    let tax_fixed_fee_percentage=0;
+    let tax_container_charges_percentage=0;
+    let tax_service_charges_percentage=0;
+    let tax_delivery_charges_percentage=0;
+    
+    _.each(cart_details.products, function(product, key){
+        console.log(JSON.stringify(product));
+       /* if (product.vendor.get_tax_fixed_fee != null) {
+            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
+        }
+        if (product.vendor.get_tax_container_charges != null) {
+            tax_container_charges_percentage=product.vendor.get_tax_container_charges.tax_rate;
+        }
+        if (product.vendor.get_tax_service_charges != null) {
+            tax_service_charges_percentage=product.vendor.get_tax_service_charges.tax_rate;
+        }
+        if (product.vendor.get_tax_delivery_charges != null) {
+            tax_delivery_charges_percentage=product.vendor.get_tax_delivery_charges.tax_rate;
+        }*/
+
+
+        /* --- Vendor Tax Get Percentage ---- */
+        _.each(cart_details.taxRates, function(tax, index){
+            if(product.vendor.fixed_fee_tax_id!=null){
+                if(product.vendor.fixed_fee_tax_id==index){
+                    tax_fixed_fee_percentage=tax.tax_rate;
+                }
+            }
+
+            if(product.vendor.service_charges_tax_id!=null){
+                if(product.vendor.service_charges_tax_id==index){
+                    tax_service_charges_percentage=tax.tax_rate;
+                }
+            }
+
+            if(product.vendor.delivery_charges_tax_id!=null){
+                if(product.vendor.delivery_charges_tax_id==index){
+                    tax_delivery_charges_percentage=tax.tax_rate;
+                }
+            }
+
+            if(product.vendor.container_charges_tax_id!=null){
+                if(product.vendor.container_charges_tax_id==index){
+                    tax_container_charges_percentage=tax.tax_rate;
+                }
+            }
+        });
+
+
+        
+
+        /*console.log(tax_fixed_fee_percentage);
+        if (product.vendor.get_tax_fixed_fee != null) {
+            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
+        }tax_fixed_fee_percentage,tax_container_charges_percentage,tax_service_charges_percentage,tax_delivery_charges_percentage
+        if (product.vendor.get_tax_container_charges != null) {
+            tax_container_charges_percentage=product.vendor.get_tax_container_charges.tax_rate;
+        }
+        if (product.vendor.get_tax_service_charges != null) {
+            tax_service_charges_percentage=product.vendor.get_tax_service_charges.tax_rate;
+        }
+        if (product.vendor.get_tax_delivery_charges != null) {
+            tax_delivery_charges_percentage=product.vendor.get_tax_delivery_charges.tax_rate;
+        }*/
+
+        
+        /*console.log("tax_fixed_fee_percentage"+tax_fixed_fee_percentage);
+        console.log("tax_container_charges_percentage"+tax_container_charges_percentage);
+        console.log("tax_service_charges_percentage"+tax_service_charges_percentage);
+        console.log("tax_delivery_charges_percentage"+tax_delivery_charges_percentage);*/
         fixed_fee=product.vendor.fixed_fee;
         fixed_fee_amount=product.vendor.fixed_fee_amount;
         total_fixed_fee_amount=parseFloat(total_fixed_fee_amount)+parseFloat(product.vendor.fixed_fee_amount);
@@ -150,7 +220,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <div id="thead_<%= product.vendor.id %>">
             <div class="row">
                 <div class="col-12">
-                    <h5 class="m-0"><b><%= product.vendor.name %></b></h5>
+                    <h5 class="m-0"><b><%= product.vendor.name %><%= product.fix_fee_tax %></b></h5>
                     <input type="hidden" name="category_name" id="category_name" value= "<%= product.vendor.name %>" />
                 </div>
                 <div class="col-12">
@@ -495,16 +565,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <hr class="my-2">
             <% }
-            if(price_bifurcation!=1){ %>
+            let other_taxes=0;
+            other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.total_container_charges)*tax_container_charges_percentage/100)+(parseFloat(cart_details.delivery_charges)*tax_delivery_charges_percentage/100);
+            if(price_bifurcation!=1){  %>
             <div class="row">
                 <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_taxable_amount) %></div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+other_taxes) %></div>
             </div>
             <% } if(price_bifurcation!=1){ %>
             <hr class="my-2">
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)) %></span></div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)+other_taxes) %></span>
+                <span id="other_taxes" style="display:none;"><%= other_taxes %></span></div>
             </div>
             <% } %>
             <hr class="my-2">
@@ -590,18 +663,18 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <div class="col-6 text-right">
                     <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
-                        <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
+                        <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes) %></p>
                         <% }else{ %>
-                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)) %></p>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
                             <%
                         } %>
                         <div>
                             <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
                                 <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
-                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(total_fixed_fee_amount) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                                 <% }else{ %>
                                     <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(total_fixed_fee_amount) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                                 <% } %>
                         <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= cart_details.total_payable_amount %>">
                     </div>

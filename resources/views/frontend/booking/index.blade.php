@@ -15,7 +15,23 @@
             <div class="loader-outer d-none">
                 <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
             </div>
+            <!-- <select name="is_for_friend" class="form-control">
+                    <option value="0">For Me</option>
+                    <option value="1">For Friend</option>
+                </select> -->
 
+                <div class="tip_radio_controls">
+                    <input type="radio" class="tip_radio active" id="for_me" name="is_for_friend" value="0">
+                    <label class="tip_label" for="for_me">
+                        <h5 class="m-0" id="tip_5">Book</h5>
+                        <p class="m-0">For Me</p>
+                    </label>       
+                    <input type="radio" class="tip_radio" id="for_friend" name="is_for_friend" value="1">
+                    <label class="tip_label" for="for_friend">
+                        <h5 class="m-0" id="tip_5">Book</h5>
+                        <p class="m-0">For Friend</p>
+                    </label>                      
+                </div>
             <div class="location-box check-pick-first">
                 <div class="where-to-go">
                     <div class="title title-36">{{__('Where can we pick you up?')}}</div>
@@ -230,6 +246,17 @@
                     <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
+                <div class="for_friend_fields_div">
+                    <div class="form-group">
+                        <label for="friendName">Friend Name</label>
+                        <input type="text" class="form-control" name="friendName" placeholder="Friend Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="friendPhoneNumber">Friend Phone Number</label>
+                        <input type="number" class="form-control" name="friendPhoneNumber" placeholder="Phone Number">
+                    </div>
+                </div>
+                
             </div>
             <span id="show_error_of_booking" class="error"></span>
 
