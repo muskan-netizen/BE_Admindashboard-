@@ -3,7 +3,7 @@ Route::group(['prefix' => '/godpanel'], function () {
 	Route::get('login', function(){return view('godpanel/login');});
 	Route::post('login','Godpanel\LoginController@Login')->name('god.login');
 	Route::middleware(['middleware' => 'auth:admin'])->group(function () {
-
+        
 		Route::resource('client','Godpanel\ClientController');
 		Route::resource('map','Godpanel\MapProviderController');
 		Route::resource('sms','Godpanel\SmsProviderController');
@@ -19,6 +19,35 @@ Route::group(['prefix' => '/godpanel'], function () {
 		Route::post('singleVendorSetting/{id}', 'Godpanel\ClientController@singleVendorSetting')->name('client.update_single_vendor');
 
 		Route::post('exportDb/{dbname}', 'Godpanel\ClientController@exportDb')->name('client.exportdb');
+        
+
+		Route::get('dashboard', 'Godpanel\DashBoardController@dashboard')->name('dashboard');
+
+		Route::get('billingplans', 'Godpanel\billingController@getBillingPlans')->name('billingplans');
+		Route::post('billingplans/save/{slug?}', 'Godpanel\billingController@saveBillingPlan')->name('billingplans.save');
+		Route::get('billingplans/edit/{slug}', 'Godpanel\billingController@editBillingPlan')->name('billingplans.edit');
+        Route::post('billingplans/updateStatus/{slug}', 'Godpanel\billingController@updateBillingPlanStatus')->name('billingplans.updateStatus');
+
+		Route::get('billingtimeframes', 'Godpanel\billingController@getBillingTimeframe')->name('billingtimeframes');
+		Route::post('billingtimeframes/save/{slug?}', 'Godpanel\billingController@saveBillingTimeframe')->name('billingtimeframes.save');
+		Route::get('billingtimeframes/edit/{slug}', 'Godpanel\billingController@editBillingTimeframe')->name('billingtimeframes.edit');
+        Route::post('billingtimeframes/updateStatus/{slug}', 'Godpanel\billingController@updateBillingTimeframeStatus')->name('billingtimeframes.updateStatus');
+
+		Route::get('billingpricings', 'Godpanel\billingController@getBillingPricing')->name('billingpricing');
+		Route::post('billingpricings/save/{slug?}', 'Godpanel\billingController@saveBillingPricing')->name('billingpricing.save');
+		Route::get('billingpricings/edit/{slug}', 'Godpanel\billingController@editBillingPricing')->name('billingpricing.edit');
+        Route::post('billingpricings/updateStatus/{slug}', 'Godpanel\billingController@updateBillingPricingStatus')->name('billingpricing.updateStatus');
+
+		Route::get('clientsubscriptions', 'Godpanel\billingController@getClientSubscription')->name('clientsubscription');
+		Route::get('clientsubscriptions/add', 'Godpanel\billingController@addClientSubscription')->name('clientsubscription.add');
+		Route::post('clientsubscriptions/save', 'Godpanel\billingController@saveClientSubscription')->name('clientsubscription.save');
+		Route::get('clientsubscriptions/filter', 'Godpanel\billingController@filter')->name('clientsubscription.filter');
+		Route::get('clientsubscriptions/edit/{slug}', 'Godpanel\billingController@editClientSubscription')->name('clientsubscription.edit');
+		Route::post('clientsubscriptions/update/{slug}', 'Godpanel\billingController@updateClientSubscription')->name('clientsubscription.update');
+		Route::get('getclientbillingdetails/{clientid}/{plantype}', 'Godpanel\billingController@getclientbillingdetails')->name('getclientbillingdetails.details');
+		Route::get('deleteclientsubscription/{slug}', 'Godpanel\billingController@deleteClientSubscription')->name('clientsubscription.delete');
+		Route::get('clientsubscriptions/editpayment/{slug}', 'Godpanel\billingController@editSubscriptionPayment')->name('clientsubscription.editpayment');
+		Route::post('clientsubscriptions/updatepayment', 'Godpanel\billingController@updateClientSubscriptionPayment')->name('clientsubscription.updatepayment');
 		
 	});
 });

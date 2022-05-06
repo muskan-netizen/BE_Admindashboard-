@@ -1260,16 +1260,28 @@ $(document).ready(function () {
 
     function getLocation() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, null);
+            var options = {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0       
+              };
+            navigator.geolocation.getCurrentPosition(showPosition, errorcallback, options);
         } else {
             alert("Geolocation is not supported by this browser.");
         }
     }
+    
+    function errorcallback(positionerror) {
+        if (window.console) {
+            console.log(positionerror);
+          }
+    }
+
     function showPosition(position) {
         let lat = position.coords.latitude;
         let long = position.coords.longitude;
-        $('#addHeader1-latitude').val(lat);
-        $('#addHeader1-longitude').val(long);
+        $('#address-latitude').val(lat);
+        $('#address-longitude').val(long);
         displayLocationCab(lat, long);
     }
     if (!selected_address) {
