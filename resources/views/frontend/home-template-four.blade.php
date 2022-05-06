@@ -449,7 +449,7 @@
 					</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
-		<section class="suppliers-section">
+		<section class="suppliers-section" id="homepage_trending_vendors_div">
 			<div class="container"  >
 
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between ">

@@ -35,15 +35,19 @@ input[type="email"]:disabled,input[type="text"]:disabled,input[type="tel"]:disab
 
                     <div class="col-lg-6 text-center">
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            @if($preference->verify_email == 1 && $user->is_email_verified == 0)
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link active" id="EmailVerified-tab" data-toggle="tab" href="#EmailVerified" role="tab" aria-controls="EmailVerified" aria-selected="false">Email </a>
                             </li>
+                            @endif
+                            @if($preference->verify_phone == 1 && $user->is_phone_verified == 0)
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link" id="PhoneVerified-tab" data-toggle="tab" href="#PhoneVerified" role="tab" aria-controls="PhoneVerified" aria-selected="true">Phone</a>
                             </li>
+                            @endif
                         </ul>
                         <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="EmailVerified" role="tabpanel" aria-labelledby="EmailVerified-tab">
+                            <div class="tab-pane show active" id="EmailVerified" role="tabpanel" aria-labelledby="EmailVerified-tab">
                                 @if($preference->verify_email == 1)
                                 <div class="col-lg-12 text-center px-sm-5 LogoInArea" id="verify_email_main_div">
                                     @if($user->is_email_verified == 0)
@@ -92,7 +96,7 @@ input[type="email"]:disabled,input[type="text"]:disabled,input[type="tel"]:disab
                                 </div>
                                 @endif
                             </div>
-                            <div class="tab-pane fade" id="PhoneVerified" role="tabpanel" aria-labelledby="PhoneVerified-tab">
+                            <div class="tab-pane {{$preference->verify_email == 0 || ($preference->verify_email == 1 && $user->is_phone_verified == 1) ? 'show active' : ''}}" id="PhoneVerified" role="tabpanel" aria-labelledby="PhoneVerified-tab">
                                 <div class="MyPhone">
                                 @if($preference->verify_phone == 1 && $user->is_phone_verified == 0)
                                     <div class="col-lg-12 text-center px-sm-5 LogoInArea" id="verify_phone_main_div">
