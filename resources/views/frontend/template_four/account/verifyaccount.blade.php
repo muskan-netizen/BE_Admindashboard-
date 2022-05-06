@@ -1,4 +1,4 @@
-@extends('layouts.store', ['title' => 'Verify Account'])
+ @extends('layouts.store', ['title' => 'Verify Account'])
 @section('css')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection

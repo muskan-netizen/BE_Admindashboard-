@@ -14,7 +14,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
 <section class="wrapper-main container-fluid">
     <article class="BGcenter">
         <div class="container">
-            <div class=" col-sm-8 offset-sm-2 p-3" id="login-section">
+            <div class=" col-xl-8 offset-xl-2 p-3" id="login-section">
                 <div class="row d-flex align-items-center h-100">
                     <div class="col-sm-6">
                         <div class="LoginLogoBG">

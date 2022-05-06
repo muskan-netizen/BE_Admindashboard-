@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner, Client, Category, Brand, Product, ClientLanguage, User, ClientCurrency, ClientPreference, Country, UserAddress, UserVerification,EmailTemplate, VerificationOption};
+use App\Models\{Currency, Banner, Client, Category, Brand, Product, ClientLanguage, User, ClientCurrency, ClientPreference, Country, UserAddress, UserVerification,EmailTemplate, VerificationOption, WebStylingOption};
 
 
 class UserController extends FrontController{
@@ -28,7 +28,7 @@ class UserController extends FrontController{
         $user = User::where('id', Auth::user()->id)->first();
         $preference = ClientPreference::select('verify_email', 'verify_phone','third_party_accounting')->where('id', '>', 0)->first();
         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
-        if($preference->third_party_accounting && $passbase_check && is_null($user->passbase_verification))
+        if($passbase_check && is_null($user->passbase_verification))
         {
             return redirect()->route('passbase.page');
         }elseif ($preference->verify_email == 0 && $preference->verify_phone == 0) {
@@ -45,7 +45,14 @@ class UserController extends FrontController{
             }
         }
         $navCategories = $this->categoryNav($langId);
-        return view('frontend/account/verifyaccountnew')->with(['preference' => $preference, 'navCategories' => $navCategories, 'user' => $user]);
+        $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
+        if($set_template->template_id == 4)
+        {
+            $verify_page = "template_four.account.verifyaccount";
+        }else{
+            $verify_page = "account.verifyaccountnew";
+        }
+        return view('frontend.'.$verify_page)->with(['preference' => $preference, 'navCategories' => $navCategories, 'user' => $user]);
     }
 
     /**
@@ -66,6 +73,12 @@ class UserController extends FrontController{
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
         $newDateTime = \Carbon\Carbon::now()->addMinutes(10)->toDateTimeString();
         if ($request->type == "phone") {
+            $check_user = User::where('phone_number', $request->phone)->count();
+            if(is_null($user->phone_number) && !$check_user){
+                $user->phone_number = $request->phone;
+                $user->dial_code = $request->dial_code;
+                $user->save();
+            }
             $message = __('An otp has been sent to your phone. Please check.');
             if ($user->is_phone_verified == 0) {
                 $otp = mt_rand(100000, 999999);

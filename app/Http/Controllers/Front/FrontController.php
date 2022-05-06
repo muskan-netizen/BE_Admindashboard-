@@ -82,7 +82,7 @@ class FrontController extends Controller
     {
         $prefer = ClientPreference::select('sms_credentials', 
                         'sms_provider', 'sms_key', 'sms_secret', 'sms_from' )->first();
-        $to = $request->to ? $request->to : "+233276997300";//'+917508983302';
+        $to = $request->to ? $request->to :'+917508983302';
         $provider = $prefer->sms_provider;
         $body = "Dear ".ucwords('Harbans').", Please enter OTP 12345 to verify your account.";
        // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
@@ -648,6 +648,19 @@ class FrontController extends Controller
             }
         }
 
+        foreach($cartData as $key => $data){
+            $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($user->timezone)->format('Y-m-d');
+            $cartData[$key]->scheduled_date_time = $selectedDate;
+            $slots = showSlot($selectedDate,$data->vendor_id,'delivery');
+            $time_slots = [];
+            $i = 0;
+            foreach($slots as $slot){
+                $newSlot = explode('-', $slot['value']);
+                $time_slots[$i++] = trim($newSlot[0]);
+            }
+            $cartData[$key]->timeSlots = $time_slots;
+        }
+
         $user = Auth::user();
         $timezone = $user->timezone ?? 'Asia/Kolkata';
 
@@ -660,7 +673,7 @@ class FrontController extends Controller
         $end_time = date('Y-m-d 23:59');
         $period = CarbonPeriod::create($start_date, $end_date);
         $time_slots = $this->SplitTime($start_time, $end_time, "60");
-        //dd($period);
+
         return ['time_slots' => $time_slots,'period' => $period,'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user];
     }
 
@@ -870,5 +883,33 @@ class FrontController extends Controller
         }
         return $hours;
 
+    }
+    protected function sendSuccessSMS($request, $order, $vendor_id = '')
+    {
+        Log::info('sendSuccessSMS FrontController');
+        try {
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
+
+            // $currId = Session::get('customerCurrency');
+            // $currSymbol = Session::get('currencySymbol');
+            $customerCurrency = ClientCurrency::with('currency')->where('is_primary', '1')->first();
+            $currSymbol =$customerCurrency->currency->symbol;
+            $user = User::where('id', $order->user_id)->first();
+            if ($user) {
+                if ($user->dial_code == "971") {
+                    $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                } else {
+                    $to = '+' . $user->dial_code . $user->phone_number;
+                }
+                $provider = $prefer->sms_provider;
+                $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
+                $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
+            //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                if (!empty($prefer->sms_provider)) {
+                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                }
+            }
+        } catch (\Exception $ex) {
+        }
     }
 }

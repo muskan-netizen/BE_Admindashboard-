@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
@@ -419,7 +419,29 @@ class PickupDeliveryController extends BaseController{
                 $order->total_delivery_fee = $total_delivery_fee;
                 $order->loyalty_points_used = $loyalty_points_used;
                 $order->loyalty_amount_saved = $loyalty_amount_saved;
-                $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved;
+
+                
+
+                $now = Carbon::now()->toDateTimeString();
+                $user_subscription = SubscriptionInvoicesUser::with('features')
+                    ->select('id', 'user_id', 'subscription_id')
+                    ->where('user_id', $user->id)
+                    ->where('end_date', '>', $now)
+                    ->orderBy('end_date', 'desc')->first();
+                if ($user_subscription) {
+                    foreach ($user_subscription->features as $feature) {
+                        if ($feature->feature_id == 2) {
+                            $subscriptionAmount = $request->amount - ($feature->percent_value * $request->amount / 100);
+                            $order->subscription_discount = $request->amount - $subscriptionAmount;
+                            $order->payable_amount = $subscriptionAmount;
+                        }
+                    }
+                }else{
+                    $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved;
+                }
+
+
+                
                 $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                 $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                 if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {

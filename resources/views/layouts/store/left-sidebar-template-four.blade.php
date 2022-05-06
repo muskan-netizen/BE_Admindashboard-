@@ -30,7 +30,7 @@ $pages = \App\Models\Page::with([
         $applocale = session()->get('applocale');
     }
     @endphp
-@if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register'))
+@if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify')) 
 <header id="al_four_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
     @include('layouts.store/topbar-template-four')
     <!-- Start Cab Booking Header From Here -->

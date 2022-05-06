@@ -457,29 +457,33 @@ $(document).ready(function () {
 
                         switch (item) {
                             case 'trending_vendors':
-                                if($('.suppliers-slider-trending_vendors').hasClass('slick-initialized')){
-                                    $(".suppliers-slider-trending_vendors").slick('destroy');
-                                    $(".render_vendors").html('');
+                                if(response.data.trending_vendors.length > 0){
+                                    if($('.suppliers-slider-trending_vendors').hasClass('slick-initialized')){
+                                        $(".suppliers-slider-trending_vendors").slick('destroy');
+                                        $(".render_vendors").html('');
+                                    }
+                                    let trending_vendors_template = _.template($('#trending_vendors_template').html());
+                                    $(".render_trending_vendors").append(trending_vendors_template({ trending_vendors: response.data.trending_vendors , type: vendor_language}));
+                                    $('.suppliers-slider-trending_vendors').slick({
+                                        infinite: true,
+                                        speed: 300,
+                                        slidesToShow: 6,
+                                        slidesToScroll: 1,
+                                        centerMode: false,
+                                        centerPadding: '60px',
+                                        arrows: true,
+                                        dots: false,
+                                        responsive: [
+                                            { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 3, infinite: true, dots: false, centerMode: true,}},
+                                            { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, }},
+                                            { breakpoint: 767, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,}},
+                                            { breakpoint: 576, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,centerPadding: '0px',}}
+                                        ]
+                                    });
+                                    $("#our_vendor_main_div").show();
+                                }else{
+                                    $('#homepage_trending_vendors_div').hide();
                                 }
-                                let trending_vendors_template = _.template($('#trending_vendors_template').html());
-                                $(".render_trending_vendors").append(trending_vendors_template({ trending_vendors: response.data.trending_vendors , type: vendor_language}));
-                                $('.suppliers-slider-trending_vendors').slick({
-                                    infinite: true,
-                                    speed: 300,
-                                    slidesToShow: 6,
-                                    slidesToScroll: 1,
-                                    centerMode: false,
-                                    centerPadding: '60px',
-                                    arrows: true,
-                                    dots: false,
-                                    responsive: [
-                                        { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 3, infinite: true, dots: false, centerMode: true,}},
-                                        { breakpoint: 991, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true, }},
-                                        { breakpoint: 767, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,}},
-                                        { breakpoint: 576, settings: { slidesToShow: 3, slidesToScroll: 1, dots: false, centerMode: true,centerPadding: '0px',}}
-                                    ]
-                                });
-                                $("#our_vendor_main_div").show();
                             break;
                             case 'vendors':
                                 if($('.suppliers-slider-vendors').hasClass('slick-initialized')){

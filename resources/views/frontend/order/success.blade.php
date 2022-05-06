@@ -20,7 +20,9 @@
 </section>
 <section class="section-b-space_al p-0 mt-2">
     <div class="container position-relative">
-        <div class="error_msg mb-2">{{__('You have earned')}} {{ (int)$order->loyalty_points_earned }} {{__('points with this order.')}}</div>
+        @if( ((int)$order->loyalty_points_earned) > 0)
+            <div class="error_msg mb-2">{{__('You have earned')}} {{ (int)$order->loyalty_points_earned }} {{__('points with this order.')}}</div>
+        @endif
         <div class="row">
             <div class="col-lg-6">
                 <div class="product-order py-3">
@@ -141,6 +143,9 @@
                         <ul class="order-detail">
                             <li>{{__('Order ID')}}: {{$order->order_number}}</li>
                             <li>{{__('Order Date')}}: {{ date('F d, Y', strtotime($order->created_at)) }}</li>
+                            @if (!empty($order->scheduled_date_time)) 
+                            <li>{{__('Scheduled Date')}}: {{ date('F d, Y', strtotime($order->scheduled_date_time)) }}</li>
+                            @endif
                             <li>{{__('Order Total')}}: {{Session::get('currencySymbol')}}{{decimal_format($order->payable_amount * @$clientCurrency->doller_compare)}}</li>
                         </ul>
                     </div>

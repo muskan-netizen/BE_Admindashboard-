@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, WalletController, FrontController};
 use Auth, Log, Redirect, Session;
-use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProductAddon,OrderProduct,OrderProductPrescription,VendorOrderStatus,OrderVendor,OrderTax};
+use App\Models\{PaymentOption, Cart, CaregoryKycDoc,SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProductAddon,OrderProduct,OrderProductPrescription,VendorOrderStatus,OrderVendor,OrderTax};
 
 class PagarmeController extends FrontController
 {
@@ -158,12 +158,16 @@ class PagarmeController extends FrontController
 
 
                     // Remove cart
+                    CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                     Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                     CartAddon::where('cart_id', $cart->id)->delete();
                     CartCoupon::where('cart_id', $cart->id)->delete();
                     CartProduct::where('cart_id', $cart->id)->delete();
                     CartProductPrescription::where('cart_id', $cart->id)->delete();
-
+                
+                    // send success sms
+                    $this->sendSuccessSMS($request, $order);
+                   
                     // Send Notification
                     if (!empty($order->vendors)) {
                         foreach ($order->vendors as $vendor_value) {

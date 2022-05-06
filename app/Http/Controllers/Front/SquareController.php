@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, WalletController, FrontController};
 use Auth, Log, Redirect;
-use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProduct};
+use App\Models\{PaymentOption, Cart, CaregoryKycDoc,SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProduct};
 
 class SquareController extends FrontController
 {
@@ -122,11 +122,15 @@ class SquareController extends FrontController
 
                     // Remove cart
                     $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                    CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                     Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                     CartAddon::where('cart_id', $cart->id)->delete();
                     CartCoupon::where('cart_id', $cart->id)->delete();
                     CartProduct::where('cart_id', $cart->id)->delete();
                     CartProductPrescription::where('cart_id', $cart->id)->delete();
+
+                    // send success sms
+                    $this->sendSuccessSMS($request, $order);
 
                     // Send Notification
                     if (!empty($order->vendors)) {

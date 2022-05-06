@@ -38,7 +38,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       @csrf
       <div class="row">
          @if($client_preference_detail->business_type != 'taxi')
-         <div class="col-lg-3 col-md-6 mb-3">
+         <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
             <div class="row h-100">
                <div class="col-12">
                   <!-- Hyperlocal start -->
@@ -105,7 +105,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          @endif
 
          @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
-         <div class="col-lg-3 col-md-6 mb-3">
+         <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
             <!-- On Demand Services section start -->
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
@@ -220,10 +220,10 @@ $sms_crendential = json_decode($preference->sms_credentials);
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100 h-100"> 
                <div class="d-flex align-items-center justify-content-between mb-2">
-                  <h4 class="header-title text-uppercase mb-0">{{__('Xero Configuration')}}</h4>
+                  <h4 class="header-title mb-0">{{__('Xero Configuration')}}</h4>
                   <button class="btn btn-info d-block" type="submit" name="xero_submit"> {{ __("Save") }} </button>
                </div>
-               <p class="sub-header">{{__('View and update your Xero Keys')}}</p>
+               <p class="sub-header">{{__('View and update your Xero Keys')}}<br>&nbsp;</p>
                <div class="row">
                   <div class="col-12">
                      <div class="form-group mb-0">
@@ -577,7 +577,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       </div>
    </div>
    <div class="row">
-      <div class="col-xl-3 mb-3">
+      <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
          <!-- Map Configuration start -->
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
@@ -633,7 +633,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- Map Configuration end -->
       </div>
-      <div class="col-xl-3 mb-3">
+      <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
          <!-- SMS Configuration start -->
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
@@ -816,7 +816,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- SMS Configuration end -->
       </div>
-      <div class="col-xl-6 mb-3">
+      <div class="col-xl-6 col-lg-12 mb-xl-0 mb-3">
          <!-- Mail Configuration start -->
          <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
             @csrf
@@ -1095,7 +1095,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
 
                <div class="row align-items-start">
-                  @if($client_preference_detail->business_type != 'taxi') //super_app 
+                  @if($client_preference_detail->business_type != 'taxi')  
 
                      @if($client_preference_detail->business_type != 'laundry')
                      <div class="col-md-4">
