@@ -20,7 +20,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
     <section class="wrapper-main pt-lg-3 alSectionTop d-flex align-items-center">
         <article class="BGcenter">
             <div class="container">
-                <div class=" col-sm-8 offset-sm-2 p-3" id="login-section">
+                <div class=" col-xl-8 offset-xl-2 p-3" id="login-section">
                     <div class="row d-flex align-items-center h-100">
                         <div class="col-sm-6">
                             <div class="LoginLogoBG">
@@ -92,7 +92,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                             </div>
                                         </div>
 
-                                        <div class="form-row ">
+                                        <div class="row form-group" id="alDocumentsSection">
                                             @if (count($user_registration_documents) > 0)
                                                 <div class="user-info d-block w-100">
                                                     <h2 class="py-1">User Document</h2>
@@ -101,7 +101,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                             @foreach ($user_registration_documents as $vendor_registration_document)
                                                 @if (isset($vendor_registration_document->primary->slug) && !empty($vendor_registration_document->primary->slug))
                                                     @if (strtolower($vendor_registration_document->file_type) == 'selector')
-                                                        <div class="col-12 mb-3 p-0"
+                                                        <div class="col-6 mb-1"
                                                             id="{{ $vendor_registration_document->primary->slug ?? '' }}Input">
                                                             <label
                                                                 for="" class="m-0">{{ $vendor_registration_document->primary ? $vendor_registration_document->primary->name : '' }}</label>
@@ -122,7 +122,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                                                 id="{{ $vendor_registration_document->primary->slug }}_error"><strong></strong></span>
                                                         </div>
                                                     @else
-                                                        <div class="col-12 mb-3 p-0"
+                                                        <div class="col-6 mb-1"
                                                             id="{{ $vendor_registration_document->primary->slug ?? '' }}Input">
                                                             <label class="m-0"
                                                                 for="">{{ $vendor_registration_document->primary ? $vendor_registration_document->primary->name : '' }}</label>
