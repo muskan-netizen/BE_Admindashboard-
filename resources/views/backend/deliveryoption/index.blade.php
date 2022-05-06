@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <!-- <p class="sub-header">{{ __("Offer Last Mile Delivery with Dispatcher.") }}</p> -->
-                    <div class="row">
+                    <div class="row mt-2">
                         <div class="col-12">
                             <div class="form-group mb-0">
                                 <div class="form-group mb-0 switchery-demo">
@@ -153,7 +153,7 @@
                         <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
                     </div>
                     </div>
-                    <div class="row">
+                    <div class="row mt-2">
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
@@ -177,7 +177,7 @@
 
                             <div class="col-md-6">
                                 <div class="form-group mb-0">
-                                    <label for="lalamove_api_key" class="mr-3">{{ __("Api key") }}</label>
+                                    <label for="lalamove_api_key" class="mr-3">{{ __("API key") }}</label>
                                     <input type="text" name="api_key" id="lalamove_api_key" class="form-control" value="{{$api_key}}" @if($delOption->status == 1) required @endif>
                                 </div>
                             </div>
@@ -337,7 +337,7 @@
                     </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row mt-2">
                         <div class="col-md-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
@@ -490,7 +490,7 @@
                     </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row mt-2">
                         <div class="col-md-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
@@ -516,13 +516,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group mb-0">
-                                    <label for="dunzo_app_url" class="mr-3">{{ __("App Url") }}</label>
+                                    <label for="dunzo_app_url" class="mr-3">{{ __("App URL") }}</label>
                                     <input type="text" name="app_url" id="dunzo_app_url" class="form-control" value="{{$app_url}}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-0">
-                                    <label for="dunzo_api_key" class="mr-3">{{ __("Api key") }}</label>
+                                    <label for="dunzo_api_key" class="mr-3">{{ __("API key") }}</label>
                                     <input type="text" name="api_key" id="dunzo_api_key" class="form-control" value="{{$api_key}}" @if($optDunzo->status == 1) required @endif>
                                 </div>
                             </div>
@@ -622,7 +622,7 @@
                     </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row mt-2">
                         <div class="col-md-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
@@ -648,13 +648,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group mb-0">
-                                    <label for="ahoy_app_url" class="mr-3">{{ __("App Url") }}</label>
+                                    <label for="ahoy_app_url" class="mr-3">{{ __("App URL") }}</label>
                                     <input type="text" name="app_url" id="ahoy_app_url" class="form-control" value="{{$app_url}}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-0">
-                                    <label for="ahoy_api_key" class="mr-3">{{ __("Api key") }}</label>
+                                    <label for="ahoy_api_key" class="mr-3">{{ __("API key") }}</label>
                                     <input type="text" name="api_key" id="ahoy_api_key" class="form-control" value="{{$api_key}}" @if($optAhoy->status == 1) required @endif>
                                 </div>
                             </div>

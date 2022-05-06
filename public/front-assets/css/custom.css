@@ -288,8 +288,9 @@ body[dir=rtl] #page-container .footer-theme .sub-title .contact-list li span{pad
 @media (min-width: 1600px) {
 .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {max-width: 1685px;}
 }
-@media (min-width: 1400px) {
-.ds {position: absolute;left: calc(((100vw - 1440px) / 2) + 24px);}
+@media (min-width: 1024px) {
+.ds {position: absolute;left: 24px;}
+.booking-experience{height: calc(100vh - 150px);position: absolute;width: 400px;top: 50px;}
 }
 @media (max-width: 1400px) {
 form label {font-size: 12px;}

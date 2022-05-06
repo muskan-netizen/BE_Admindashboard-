@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
 use App\Http\Controllers\Front\PickupDeliveryController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
+use App\Models\{User, UserVendor, CaregoryKycDoc,Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
 
 class StripeGatewayController extends FrontController
 {
@@ -160,6 +160,7 @@ class StripeGatewayController extends FrontController
                                 $orderController->autoAcceptOrderIfOn($order->id);
         
                                 // Remove cart
+                                CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                                 Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                                 CartAddon::where('cart_id', $cart_id)->delete();
                                 CartCoupon::where('cart_id', $cart_id)->delete();
@@ -167,6 +168,9 @@ class StripeGatewayController extends FrontController
                                 CartProductPrescription::where('cart_id', $cart_id)->delete();
                                 CartDeliveryFee::where('cart_id', $cart_id)->delete();
         
+                                // send success sms
+                                  $this->sendSuccessSMS($request, $order);
+
                                 // Send Notification
                                 if (!empty($order->vendors)) {
                                     foreach ($order->vendors as $vendor_value) {
@@ -351,7 +355,7 @@ class StripeGatewayController extends FrontController
                 // Find the card ID
                 $customer_id = $customerResponse->id;
                 if ($customer_id) {
-                    $request->request->set('customerReference', $customer_id);
+                    $request->request->add(['customerReference' => $customer_id, 'payment_option_id' => 19]);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
             }else {
@@ -530,12 +534,16 @@ class StripeGatewayController extends FrontController
                             $orderController->autoAcceptOrderIfOn($order->id);
     
                             // Remove cart
+                            CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                             Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                             CartAddon::where('cart_id', $cart_id)->delete();
                             CartCoupon::where('cart_id', $cart_id)->delete();
                             CartProduct::where('cart_id', $cart_id)->delete();
                             CartProductPrescription::where('cart_id', $cart_id)->delete();
-    
+                  
+                            // send sms 
+                            $this->sendSuccessSMS($request, $order);
+                        
                             // Send Notification
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {

@@ -1492,15 +1492,16 @@ $(document).ready(function () {
         });
     });
     $(document).on("click", ".promo_code_list_btn", function () {
+        let cart_product_ids = $("input[name='cart_product_ids[]']").map(function(){return $(this).val();}).get();;
         let amount = $(this).attr('data-amount');
         let cart_id = $(this).attr('data-cart_id');
-        let vendor_id = $(this).attr('data-vendor_id');
+        let vendor_id = $(this).attr('data-vendor_id');    
         $(".invalid-feedback.manual_promocode").html("");
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: promocode_list_url,
-            data: { vendor_id: vendor_id, amount: amount, cart_id: cart_id },
+            data: { vendor_id: vendor_id, amount: amount, cart_id: cart_id, cart_product_ids:cart_product_ids },
             success: function (response) {
                 $("#promo_code_list_main_div").html('');
                 $(document).find('.manual_promocode_input').val("");
@@ -1950,7 +1951,7 @@ $(document).ready(function () {
     }
     $(document).on('click', '.tip_radio_controls .tip_radio', function () {
         var tip = $(this).val();
-        var amount_payable = $("#cart_payable_amount_original").val();
+        var amount_payable = parseFloat($("#cart_payable_amount_original").val());
         var currency = $("#cart_payable_amount_original").attr('data-curr');
         // if this was previously checked
         if ($(this).hasClass("active")) {
@@ -1970,19 +1971,21 @@ $(document).ready(function () {
             if ((fixed_fee_amount == '') || (isNaN(fixed_fee_amount))) {
                 fixed_fee_amount = 0;
             }
+            var other_taxes=parseFloat($('#other_taxes').text());
         if (tip != 'custom') {
             if ((tip == '') || (isNaN(tip))) {
                 tip = 0;
             }
             var wallet_amount_used_fixed=parseFloat($('#wallet_amount_used_fixed').text());
+            
+            
             if(isNaN(wallet_amount_used_fixed) || wallet_amount_used_fixed== null){
                 wallet_amount_used_fixed=0;
             }
-            console.log(wallet_amount_used_fixed);
-            amount_payable = parseFloat(amount_payable) + parseFloat(tip)  ;
-            // console.log(parseFloat(amount_payable)  +"|"+$('#mov').text());
+            amount_payable = parseFloat(amount_payable) + parseFloat(tip)+other_taxes  ;
             $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+            $("input[name='cart_total_payable_amount']").val( parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
             if(parseFloat(amount_payable)+ wallet_amount_used_fixed>=parseFloat($('#mov').text())){
@@ -1996,15 +1999,17 @@ $(document).ready(function () {
             }
         } else {
             // amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
-            $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+            $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
+            $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
         }
     
-        $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+        //$("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     }
     $(document).on('keyup', '#custom_tip_amount', function () {
+        var other_taxes=parseFloat($('#other_taxes').text());
         var tip = $(this).val();
         if ((tip == '') || (isNaN(tip))) {
             tip = 0;
@@ -2018,8 +2023,8 @@ $(document).ready(function () {
         var amount_payable = parseFloat(amount_elem.val());
         
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
-        $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
-        $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+        $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
+        $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
         
         if(parseFloat($('#wallet_amount_available').text())>0){
             if(parseFloat($('#wallet_amount_available').text()) >= parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)){
@@ -2029,7 +2034,8 @@ $(document).ready(function () {
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+parseFloat($('#wallet_amount_available').text()).toFixed(parseInt(digit_count)));
                 var payable_amount=((parseFloat($('#gross_amount').text()) -   parseFloat($('#loyalty_amount').text()))    -    parseFloat($('#wallet_amount_available').text())     +   parseFloat(tip)  );
-                $("#cart_total_payable_amount").html( currency +   payable_amount .toFixed(parseInt(digit_count))   );
+                $("#cart_total_payable_amount").html( currency +   payable_amount+other_taxes .toFixed(parseInt(digit_count))   );
+                $("input[name='cart_total_payable_amount']").val(  payable_amount+other_taxes .toFixed(parseInt(digit_count))   );
             }
             if(parseFloat(amount_payable)+parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
@@ -2041,7 +2047,8 @@ $(document).ready(function () {
                 $("#MOV_Notification").removeClass("d-none");
             }
         }else{
-            $("#cart_total_payable_amount").html(currency + (parseFloat(amount_payable)+parseFloat(tip)).toFixed(parseInt(digit_count)));
+            $("#cart_total_payable_amount").html(currency + (parseFloat(amount_payable)+parseFloat(tip)+other_taxes).toFixed(parseInt(digit_count)));
+            $("input[name='cart_total_payable_amount']").val((parseFloat(amount_payable)+parseFloat(tip)+other_taxes).toFixed(parseInt(digit_count)));
             if(parseFloat(amount_payable)+parseFloat(tip)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");

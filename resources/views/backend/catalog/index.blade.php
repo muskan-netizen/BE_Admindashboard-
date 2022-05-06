@@ -217,7 +217,7 @@
                         <p class="sub-header"></p>
                     </div>
                     <div class="col-sm-4 text-right">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right addTagbtn" dataid="0">
+                        <button class="btn btn-info waves-effect waves-light text-sm-right addTagbtn" dataid="0" id="add_product_tag_modal_btn">
                             <i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
                         </button>
                     </div>
