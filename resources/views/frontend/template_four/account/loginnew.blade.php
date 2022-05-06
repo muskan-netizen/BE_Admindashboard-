@@ -47,7 +47,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                     </div>
                                     <div class="form-group mt-4 text-center">
                                         <button class="btn btn-solid w-100 login_continue_btn my-2" type="submit">{{__('Continue')}}</button>
-                                        <span class="registerLink">Already Have An Account? <a href="{{route('customer.register')}}">Register</a> </span>
+                                        <span class="registerLink">Don't Have An Account? <a href="{{route('customer.register')}}">Register</a> </span>
                                     </div>
                                 </div>
                         </form>
@@ -174,7 +174,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
             </form>
         </div>
     </article>
-    <a href="">Skip As a Guest </a>
+    <a class="alBtnGuestLink" href="">Skip As a Guest</a>
 </section>
 
 @endsection
