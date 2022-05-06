@@ -55,7 +55,7 @@ if(isset($set_template))
       @include('layouts.store/left-sidebar-template-one')
       @endif
     </header>
-    @if(isset($set_template)  && $set_template->template_id == 4)
+    @if(isset($set_template)  && $set_template->template_id == 4 && (\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify'))
     @include('frontend.template_four.layouts.vendor_type')
     @endif
     @yield('content')

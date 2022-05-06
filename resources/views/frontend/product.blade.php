@@ -40,7 +40,7 @@
     </div>
   </div> -->
 
-<section class="section-b-space FiveTemplate alSingleProducts">
+<section class="section-b-space alSingleProducts">
     <div class="collection-wrapper al">
         <div class="container">
             <div class="row">
@@ -166,47 +166,9 @@
                                     </p>
                                     @endif
                                 </div>
-                                <div id="product_variant_quantity_wrapper" class="mt-3">
-                                        @if($product->inquiry_only == 0)
-                                        <div class="product-description border-product pb-0">
-                                            <h6 class="product-title mt-0">{{__('Quantity')}}:
-                                                @if($product->has_inventory && !$product->variant[0]->quantity > 0 && $product->sell_when_out_of_stock != 1)
-                                                    <span id="outofstock" style="color: red;">{{ __('Out of Stock')}}</span>
-                                                @else
-                                                @php
-                                                $product_quantity_in_cart = $product_in_cart->quantity??0;
-                                                @endphp
-                                                <input type="hidden" value="{{$product->has_inventory}}" id="hasInventory">
-                                                <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
-                                                @endif
-                                            </h6>
-                                            @if(!$product->has_inventory || $product->variant[0]->quantity > 0 || $product->sell_when_out_of_stock == 1)
-                                            @if($product->minimum_order_count > 1)
-                                            {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $product->minimum_order_count }} </p>
-                                            <p class="mb-1 product_price">   {{__('Batch') }} : {{ $product->batch_count }} </p> --}}
-                                            @endif
-                                            <div class="qty-box mb-3">
-                                                <div class="input-group">
-                                                    <span class="input-group-prepend">
-                                                        <button type="button" class="btn quantity-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-minus"></i>
-                                                        </button>
-                                                    </span>
-                                                    <input type="text" name="quantity"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="quantity" class="form-control input-qty-number quantity_count"  value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
-                                                    <span class="input-group-prepend quant-plus">
-                                                        <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
-                                                            <i class="ti-plus"></i>
-                                                        </button>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            @endif
-                                        </div>
-                                        @endif
-
-                                    </div>
                             </div>
 
-                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text">
+                            <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text p-0">
                                 <div class="product-right inner_spacing pl-sm-3 p-0">
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
@@ -271,29 +233,46 @@
                                     <div id="variant_response">
                                         <span class="text-danger mb-2 mt-2"></span>
                                     </div>
-                                    <div class="border-product al_disc">
-                                        <h6 class="product-title">{{__('Product Details')}}</h6>
-                                        <p></p>
-                                        {!!(!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}
-                                    </div>
-                                    <div class="border-product">
-                                        <h6 class="product-title">{{__('Share It')}}</h6>
-                                        <div class="product-icon w-100">
-                                            <!-- <ul class="product-social"> -->
-                                                {!! $shareComponent !!}
-                                                <!-- <li><a href="#"><i class="fa fa-twitter"></i></a></li> -->
-                                                <!-- <li><a href="#"><i class="fa fa-facebook"></i></a></li> -->
-                                                <!-- <li><a href="#"><i class="fa fa-google-plus"></i></a></li> -->
-                                                <!-- <li><a href="#"><i class="fa fa-instagram"></i></a></li> -->
-                                            <!-- </ul>   -->
+                                    <div id="product_variant_quantity_wrapper">
+                                        @if($product->inquiry_only == 0)
+                                        <div class="product-description border-product pb-0">
+                                            <h6 class="product-title mt-0">{{__('Quantity')}}:
+                                                @if($product->has_inventory && !$product->variant[0]->quantity > 0 && $product->sell_when_out_of_stock != 1)
+                                                    <span id="outofstock" style="color: red;">{{ __('Out of Stock')}}</span>
+                                                @else
+                                                @php
+                                                $product_quantity_in_cart = $product_in_cart->quantity??0;
+                                                @endphp
+                                                <input type="hidden" value="{{$product->has_inventory}}" id="hasInventory">
+                                                <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
+                                                @endif
+                                            </h6>
+                                            @if(!$product->has_inventory || $product->variant[0]->quantity > 0 || $product->sell_when_out_of_stock == 1)
+                                            @if($product->minimum_order_count > 1)
+                                            {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $product->minimum_order_count }} </p>
+                                            <p class="mb-1 product_price">   {{__('Batch') }} : {{ $product->batch_count }} </p> --}}
+                                            @endif
+                                            <div class="qty-box mb-3">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <button type="button" class="btn quantity-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
+                                                        </button>
+                                                    </span>
+                                                    <input type="text" name="quantity"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="quantity" class="form-control input-qty-number quantity_count"  value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
+                                                    <span class="input-group-prepend quant-plus">
+                                                        <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
+                                                            <i class="ti-angle-right"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            @endif
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
+                                        @endif
 
-                            <div class="col-12 pl-0">
-                                @if(!empty($product->addOn) && $product->addOn->count() > 0)
+                                    </div>
+
+                                    @if(!empty($product->addOn) && $product->addOn->count() > 0)
                                     <div class="border-product">
                                         <h6 class="product-title">{{ __('Addon List')}}</h6>
 
@@ -325,12 +304,9 @@
                                                     <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
                                                         @foreach($addon->setoptions as $k => $option)
                                                         <div class="checkbox checkbox-success form-check-inline mb-1">
-                                                            <label class="checkboxAl" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
-                                                                <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
-                                                                {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}
-                                                                <span class="checkmark"></span>
-                                                            </label>
-
+                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
+                                                            <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
+                                                                {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
                                                         </div>
                                                         @endforeach
                                                     </div>
@@ -387,7 +363,6 @@
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                         @if($is_inwishlist_btn && $is_available)
                                         <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
-                                            <i class="ti-heart"></i>
                                             {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
                                         </button>
                                         @endif
@@ -403,7 +378,7 @@
 
                                         @endphp
                                         @if($is_available == 1)
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}"><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
                                         @endif
 
                                             @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
@@ -416,10 +391,29 @@
                                         @endif
                                         @endif
                                     </div>
+                                    <div class="border-product al_disc">
+                                        <h6 class="product-title">{{__('Product Details')}}</h6>
+                                        <p></p>
+                                        {!!(!empty($product->translation) && isset($product->translation[0])) ?
+                                            $product->translation[0]->body_html : ''!!}
+                                    </div>
+                                    <div class="border-product">
+                                        <h6 class="product-title">{{__('Share It')}}</h6>
+                                        <div class="product-icon w-100">
+                                            <!-- <ul class="product-social"> -->
+                                                {!! $shareComponent !!}
+                                                <!-- <li><a href="#"><i class="fa fa-twitter"></i></a></li> -->
+                                                <!-- <li><a href="#"><i class="fa fa-facebook"></i></a></li> -->
+                                                <!-- <li><a href="#"><i class="fa fa-google-plus"></i></a></li> -->
+                                                <!-- <li><a href="#"><i class="fa fa-instagram"></i></a></li> -->
+                                            <!-- </ul>   -->
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="col-12 pl-0">
-                            @if($client_preference_detail && $client_preference_detail->rating_check == 1)
+                        </div>
+                    </div>
+                    @if($client_preference_detail && $client_preference_detail->rating_check == 1)
                     <section class="tab-product m-0">
                         <div class="row">
                             <div class="col-sm-12 col-lg-12">
@@ -486,10 +480,6 @@
                         </div>
                     </section>
                     @endif
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
