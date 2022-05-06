@@ -208,7 +208,6 @@
 				</div>
 			</div>
 		</div>
-
 	@endif
 	@if(count($banners))
 	<section class="home-slider-wrapper"  >

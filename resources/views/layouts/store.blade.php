@@ -48,9 +48,7 @@ if(isset($set_template))
       @elseif(isset($set_template)  && $set_template->template_id == 3)
       @include('layouts.store/left-sidebar-template-three')
       @elseif(isset($set_template)  && $set_template->template_id == 4)
-
-        @include('layouts.store/left-sidebar-template-four')
-
+      @include('layouts.store/left-sidebar-template-four')
       @elseif(isset($set_template)  && $set_template->template_id == 5)
       @include('layouts.store/left-sidebar-template-five')
       @else
@@ -65,9 +63,7 @@ if(isset($set_template))
     @elseif(isset($set_template)  && $set_template->template_id == 3)
     @include('layouts.store/footer-content-template-three')
     @elseif(isset($set_template)  && $set_template->template_id == 4)
-
-      @include('layouts.store/footer-content-template-four')
-
+    @include('layouts.store/footer-content-template-four')
     @elseif(isset($set_template)  && $set_template->template_id == 5)
     @include('layouts.store/footer-content-template-five')
     @else

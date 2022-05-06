@@ -17,7 +17,7 @@ if(session()->has('applocale')){
     </a>
 </div>
 @endif
-@if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register'))
+@if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify')) 
 <footer id="footer" class="footer-light al_footer_template_four">
         <section class="section-b-space light-layout pt-3 pb-0">
             <div class="container">

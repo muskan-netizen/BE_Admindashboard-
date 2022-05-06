@@ -97,11 +97,11 @@ class CustomerAuthController extends FrontController
         $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
         if($set_template->template_id == 4)
         {
-            $login_page = "loginnew_four";
+            $login_page = "template_four.account.loginnew";
         }else{
-            $login_page = "loginnew";
+            $login_page = "account.loginnew";
         }
-        return view('frontend.account.'.$login_page)->with(['navCategories' => $navCategories]);
+        return view('frontend.'.$login_page)->with(['navCategories' => $navCategories]);
     }
 
     public function registerForm($domain = '', Request $request)
@@ -126,12 +126,12 @@ class CustomerAuthController extends FrontController
         $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
         if($set_template->template_id == 4)
         {
-            $register_page = "registernew_four";
+            $register_page = "template_four.account.registernew";
         }else{
-            $register_page = "registernew";
+            $register_page = "account.registernew";
         }
         if (!Session::get('referrer')) {
-            return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
+            return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
         } else {
             return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
         }
