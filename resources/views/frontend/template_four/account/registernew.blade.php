@@ -93,14 +93,16 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                     </div>
 
                                     <div class="row form-group" id="alDocumentsSection">
+
                                         @if (count($user_registration_documents) > 0)
                                             <div class="user-info d-block w-100">
                                                 <h2 class="py-1">User Document</h2>
                                             </div>
                                         @endif
-                                        @foreach ($user_registration_documents as $vendor_registration_document)
-                                            @if (isset($vendor_registration_document->primary->slug) && !empty($vendor_registration_document->primary->slug))
-                                                @if (strtolower($vendor_registration_document->file_type) == 'selector')
+                                        <div class="alDocumentsSection">
+                                            @foreach ($user_registration_documents as $vendor_registration_document)
+                                                @if (isset($vendor_registration_document->primary->slug) && !empty($vendor_registration_document->primary->slug))
+                                                    @if (strtolower($vendor_registration_document->file_type) == 'selector')
                                                     <div class="col-6 mb-1"
                                                         id="{{ $vendor_registration_document->primary->slug ?? '' }}Input">
                                                         <label
@@ -121,7 +123,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                                         <span class="invalid-feedback"
                                                             id="{{ $vendor_registration_document->primary->slug }}_error"><strong></strong></span>
                                                     </div>
-                                                @else
+                                                    @else
                                                     <div class="col-6 mb-1"
                                                         id="{{ $vendor_registration_document->primary->slug ?? '' }}Input">
                                                         <label class="m-0"
@@ -176,9 +178,10 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                                             </div>
                                                         @endif
                                                     </div>
+                                                    @endif
                                                 @endif
-                                            @endif
-                                        @endforeach
+                                            @endforeach
+                                        </div>
                                     </div>
                                     <div class="row form-group mb-0 align-items-center">
                                         <div class="col-12 p-0 checkbox-input">
@@ -222,7 +225,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                             <input type="hidden" name="device_type" value="web">
                                             <input type="hidden" name="device_token" value="web">
                                             <button type="submit" class="btn btn-solid submitLogin w-100">{{ __('Create An Account') }}</button>
-                                            <span class="registerLink">Already Have An Account? <a href="{{route('customer.register')}}">Login</a> </span>
+                                            <span class="registerLink">Already Have An Account? <a href="{{route('customer.login')}}">Login</a> </span>
                                         </div>
                                     </div>
                                 </form>
@@ -260,9 +263,9 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                 </div>
             </div>
         </div>
-        <a class="alBtnGuestLink" href="">Skip As a Guest</a>
+        <a class="alBtnGuestLink" href="{{route('userHome')}}">Skip As a Guest</a>
     </article>
-    <a class="alBtnGuestLink" href="">Skip As a Guest</a>
+    
 </section>
 
 @endsection

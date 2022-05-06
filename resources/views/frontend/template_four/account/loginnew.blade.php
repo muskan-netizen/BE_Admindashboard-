@@ -173,9 +173,11 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
             </div>
             </form>
         </div>
+        <a class="alBtnGuestLink" href="{{route('userHome')}}">Skip As a Guest</a>
+
     </article>
-    <a class="alBtnGuestLink" href="">Skip As a Guest</a>
 </section>
+    
 
 @endsection
 @section('script')
