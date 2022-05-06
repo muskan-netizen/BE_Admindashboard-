@@ -26,7 +26,6 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-12">
-                            <h4 class="header-title mb-3">{{ __('Redemption Value') }}</h4> 
                             <label class="mr-2 mb-0">{{ __('Enable') }}</label>
                             <input type="checkbox" id="activeCheck" {{$status == 0 ? 'checked' : ''}} data-plugin="switchery" name="validity_index" class="chk_box1 " data-color="#43bee1">
                         </div>
@@ -36,6 +35,7 @@
                                 <div class="row mt-3">
                                     <div class="col-md-12">
                                         <div class="form-group mb-0">
+                                            <h4 class="header-title">{{ __('Redemption Value') }}</h4> 
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text primaryKey" id="basic-addon1">

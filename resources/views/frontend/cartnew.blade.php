@@ -50,6 +50,21 @@
     width: 94px;
     margin-top: 5px;
 }
+#applepay-btn {
+    width: 100%;
+    height: 50px;
+    display: none;
+    border-radius: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    background-image: -webkit-named-image(apple-pay-logo-white);
+    background-position: 50% 50%;
+    background-color: black;
+    background-size: 60%;
+    background-repeat: no-repeat;
+    color: #FFF !important;
+}
 </style>
 
 @endsection
@@ -988,6 +1003,17 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <% } %>
                     </div>
                 <% }); %>
+                {{-- <div class="" id="" role="tabpanel">
+                    <label class="radio mt-2">
+                        Apple Pay
+                        <input type="radio" name="cart_payment_method" id="radio-paytab_apple_pay" value="100" data-payment_option_id="100">
+                        <span class="checkround"></span>
+                    </label>
+                    <div class="col-md-12 mt-3 mb-3 paytab_apple_pay_element_wrapper option-wrapper d-none">
+                        <button type="button" id="applepay-btn">Pay Now</button>
+                        <span class="error text-danger" id="paytab_apple_pay_error"></span>
+                    </div>
+                </div> --}}
                 <div class="payment_response">
                     <div class="alert p-0 m-0" role="alert"></div>
                 </div>
@@ -1417,12 +1443,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @if(in_array('checkout',$client_payment_options))
 <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 @endif
+@if(in_array('paytabs',$client_payment_options))
+<script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
+@endif
 
 <script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/apple_pay.js')}}"></script>
 
 <script type="text/javascript">
     var stripe_fpx = '';
