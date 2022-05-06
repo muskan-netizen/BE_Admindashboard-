@@ -69,6 +69,10 @@ div#alDocumentsSection{max-height: 200px;overflow-y: auto;}
 .Stars::before{content: '★★★★★';letter-spacing: 3px;background: linear-gradient(90deg, var(--star-background) var(--percent), var(--star-color) var(--percent));-webkit-background-clip: text;background-clip: text;-webkit-text-fill-color: transparent;}
 /* Stars css start */
 
+/* inner pages four template css */
+.al_body_template_four .dashboard-left .block-content{border:none;background-color: #fff; padding:25px 15px;border-radius: 15px;}
+/* inner pages four template end */
+
 
 /* Dark theme  */
 .dark .tip_label,

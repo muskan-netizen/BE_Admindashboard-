@@ -221,8 +221,8 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                         <div class="col-12 p-0">
                                             <input type="hidden" name="device_type" value="web">
                                             <input type="hidden" name="device_token" value="web">
-                                            <button type="submit"
-                                                class="btn btn-solid submitLogin w-100">{{ __('Create An Account') }}</button>
+                                            <button type="submit" class="btn btn-solid submitLogin w-100">{{ __('Create An Account') }}</button>
+                                            <span class="registerLink">Already Have An Account? <a href="{{route('customer.register')}}">Login</a> </span>
                                         </div>
                                     </div>
                                 </form>
@@ -260,7 +260,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                 </div>
             </div>
         </div>
-        <a href="">Skip As a Guest </a>
+        <a class="alBtnGuestLink" href="">Skip As a Guest</a>
     </article>
 </section>
 

@@ -4,13 +4,8 @@
 @endsection
 @section('content')
 <style type="text/css">
-    a.disabled {
-      pointer-events: none;
-      cursor: default;
-    }
-    input[type="email"]:disabled,input[type="text"]:disabled,input[type="tel"]:disabled {
-      background: #dddddd;
-    }
+a.disabled {pointer-events: none;cursor: default;}
+input[type="email"]:disabled,input[type="text"]:disabled,input[type="tel"]:disabled {background: #dddddd;}
 </style>
 
 <section class="wrapper-main mb-5 py-lg-5">
@@ -55,9 +50,9 @@
                                 <div class="row text-center mt-2">
                                     <div class="col-12 resend_txt">
                                         <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
-                                        
+
                                         <div class="countdown text-danger"></div>
-                                        
+
                                         <a class="verifyEmail" href="javascript:void(0)"><u>{{__('RESEND')}}</u></a>
                                     </div>
                                     <div class="col-md-12 mt-3">
@@ -212,7 +207,7 @@
             success: function(response) {
                 if($type == 'email'){
                     $('.verifyEmail').removeClass('disabled').html(resend_text);
-                    
+
                     $('.verifyEmail').css('display','none');
                     $('.countdown').html('');
                     $('.countdown').css('display','');
@@ -225,7 +220,7 @@
 
                 }else{
                     $('.verifyPhone').removeClass('disabled').html(resend_text);
-                    
+
                     $('.verifyPhone').css('display','none');
                     $('.phonecountdown').html('');
                     $('.phonecountdown').css('display','');
@@ -358,8 +353,8 @@
         }, 1000);
     }
 
-    
-                                            
-                                        
+
+
+
 </script>
 @endsection
