@@ -58,9 +58,6 @@ body.al_body_template_four .login_continue_btn{height: 37px;font-weight: 700;fon
 .pixelstrap ul a:hover:hover:before,
 .footer-theme .sub-title li a:before{display: none;}
 
-
-
-
 /* Dark theme  */
 .dark .tip_label,
 .dark .card-box{background-color:#232323}
