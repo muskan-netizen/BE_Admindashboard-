@@ -1,6 +1,7 @@
 @extends('layouts.store', ['title' => __('Cart')])
 
 @section('css')
+<script src="https://pay.payphonetodoesposible.com/api/button/js?appId=9dcXgkutC0aVTlmEQjOwoQ"></script>
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
@@ -733,6 +734,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         @endif
 
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+
+                        <div id="pp-button"></div>
                     </div>
                 </div>
             </div>
@@ -2083,7 +2086,56 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
+
+
+
+window.onload = function() {
+payphone.Button({
+
+//token obtenido desde la consola de developer
+token:"m2pmAD_eUV9wicWM8k5gPm7E4dWDtFHVased9IggmMVFShM3K08l4K-OsrmeSxZDaarnAdPT546HydhGc3Ob0eO3G7babe4EMXxYrpsGIBQBy_yIZy-6b_ZA6fs0AwBedz0UiVt2I5nSoAmEatCI0lVKgzmgKOVTh9K3fj_SLlobXwsw4ZrPWFnuDa9cJygacV-WVHeo7n8DK-g-__nt_p0PRZj_tZrmmQHGqIImZu7GlLImzCQAmNRC7kjrVsbO-FPVt6-slaDne15cLo8J2gEvjvxbhzyYBZzHnun0BWcBIS1U5WggYks385Q_C1j2ikHAkF1Tt_XxUj6E4NFuS5j7-40",
+
+//PARÁMETROS DE CONFIGURACIÓN
+btnHorizontal: true,
+btnCard: true,
+
+createOrder: function(actions){
+
+//Se ingresan los datos de la transaccion ej. monto, impuestos, etc
+return actions.prepare({
+
+amount: 100,
+amountWithoutTax: 100,
+currency: "USD",
+clientTransactionId: "121330"
+});
+
+},
+onComplete: function(model, actions){
+
+//Se confirma el pago realizado
+actions.confirm({
+id: model.id,
+clientTxId: model.clientTxId
+}).then(function(value){
+
+//EN ESTA SECCIÓN SE RECIBE LA RESPUESTA Y SE MUESTRA AL USUARIO
+
+if (value.transactionStatus == "Approved"){
+alert("Pago " + value.transactionId + " recibido, estado " + value.transactionStatus );
+}
+}).catch(function(err){
+console.log(err);
+});
+
+}
+}).render("#pp-button");
+
+}
+
 </script>
+
+
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 @endif
