@@ -13,7 +13,7 @@
     <div class="row my-2 d-flex align-items-center">
         <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
             <div class="radius-bar w-100">
-                <div class="search_form d-flex align-items-center justify-content-between border">
+                <div class="search_form d-flex align-items-center border">
                     <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                     <input class="form-control border-0 typeahead" type="search"
                         placeholder="{{ __('Search') }}" id="vendor_search_box" value="{{$input['keyword']??''}}">

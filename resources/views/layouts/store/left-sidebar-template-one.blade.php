@@ -510,8 +510,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
     </div>
     @endif
 </article>
-<div
-    class=" @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @else al_offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif">
+<div class=" @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @else al_offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif">
 </div>
 <script type="text/template" id="nav_categories_template">
     <!-- <li>
