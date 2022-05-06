@@ -196,6 +196,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/easypaisa', 'Front\EasypaisaController@createHash')->name('easypaisa.createHash');
 	Route::get('payment/easypaisa', 'Front\EasypaisaController@successPage')->name('easypaisa.success');
 
+	//payPhone routes
+	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
+
 
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');

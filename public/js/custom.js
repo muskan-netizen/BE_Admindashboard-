@@ -3751,10 +3751,21 @@ function cartPaymentOptions(payment_option_id,address_id,tip, delivery_type)
             if (order != '') {
                 //FlutterWave
                 payWithFlutterWave(order);
-            }
-            else{
+            }else{
                 return false;
             }
+        break;
+
+        case '32':
+                    alert('hi');
+                    payphoneButton();
+            // var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            // if (order != '') {
+            //     //payPhone
+            //     payWithFlutterWave(order);
+            // }else{
+            //     return false;
+            // }
         break;
     
     }

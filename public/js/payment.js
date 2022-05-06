@@ -990,6 +990,86 @@ $(document).ready(function() {
         }
         window.location=create_ccavenue_url+'?'+rowData;
     }
+    
+    window.payphoneButton = function payphoneButton(order='')
+    {
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        //let amt = cartElement.val()*100;
+        let total_amount = 0;
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscriptionId = $("input[name='subscription_id']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_from = '';
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            payment_from = 'cart';
+            var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            var rowData = 'amt='+total_amount+'&from='+payment_from;
+        }else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            subsId = subscriptionId.val();
+            payment_from = 'subscription';
+            var rowData = 'subsid='+subsId+'&from='+payment_from+'&amt='+total_amount;
+        }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+            var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
+        }
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: create_payphone_url,
+            data: rowData,
+            success: function(resp) {
+
+                payphone.Button({
+                    //token obtenido desde la consola de developer
+                    token: 'm2pmAD_eUV9wicWM8k5gPm7E4dWDtFHVased9IggmMVFShM3K08l4K-OsrmeSxZDaarnAdPT546HydhGc3Ob0eO3G7babe4EMXxYrpsGIBQBy_yIZy-6b_ZA6fs0AwBedz0UiVt2I5nSoAmEatCI0lVKgzmgKOVTh9K3fj_SLlobXwsw4ZrPWFnuDa9cJygacV-WVHeo7n8DK-g-__nt_p0PRZj_tZrmmQHGqIImZu7GlLImzCQAmNRC7kjrVsbO-FPVt6-slaDne15cLo8J2gEvjvxbhzyYBZzHnun0BWcBIS1U5WggYks385Q_C1j2ikHAkF1Tt_XxUj6E4NFuS5j7-40',
+        
+                            //PARÁMETROS DE CONFIGURACIÓN
+                            btnHorizontal: true,
+                            btnCard: true,
+        
+                            createOrder: function(actions){
+                                //Se ingresan los datos de la transaccion ej. monto, impuestos, etc
+                                return actions.prepare({
+        
+                                amount: 100,
+                                amountWithoutTax: 100,
+                                currency: "USD",
+                                clientTransactionId: "10230"
+                                });
+        
+                                },
+                                onComplete: function(model, actions)
+                                {
+                                            //Se confirma el pago realizado
+                                            actions.confirm({
+                                            id: model.id,
+                                            clientTxId: model.clientTxId
+                                            }).then(function(value){
+                                                console.log(value);
+                                            //EN ESTA SECCIÓN SE RECIBE LA RESPUESTA Y SE MUESTRA AL USUARIO
+                                            if (value.transactionStatus == "Approved"){
+                                                alert("Pago " + value.transactionId + " recibido, estado " + value.transactionStatus );
+                                            }
+                                        }).catch(function(err){
+                                        console.log(err);
+                                        });
+                                }
+                    }).render("#pp-button");
+
+          },
+          error: function(error) {
+              console.log(error);
+          }
+        
+        });
+    }
 
     window.payWithKPG = function payWithKPG(order='')
     {

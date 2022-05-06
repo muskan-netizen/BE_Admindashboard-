@@ -1,7 +1,6 @@
 @extends('layouts.store', ['title' => __('Cart')])
 
 @section('css')
-<script src="https://pay.payphonetodoesposible.com/api/button/js?appId=9dcXgkutC0aVTlmEQjOwoQ"></script>
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
@@ -146,7 +145,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     let tax_delivery_charges_percentage=0;
     
     _.each(cart_details.products, function(product, key){
-        console.log(JSON.stringify(product));
+        {{-- console.log(JSON.stringify(product)); --}}
        /* if (product.vendor.get_tax_fixed_fee != null) {
             tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
         }
@@ -207,9 +206,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
         
         /*console.log("tax_fixed_fee_percentage"+tax_fixed_fee_percentage);
-        console.log("tax_container_charges_percentage"+tax_container_charges_percentage);
-        console.log("tax_service_charges_percentage"+tax_service_charges_percentage);
-        console.log("tax_delivery_charges_percentage"+tax_delivery_charges_percentage);*/
+        {{-- console.log("tax_container_charges_percentage"+tax_container_charges_percentage); --}}
+        {{-- console.log("tax_service_charges_percentage"+tax_service_charges_percentage); --}}
+        {{-- console.log("tax_delivery_charges_percentage"+tax_delivery_charges_percentage);*/ --}}
         fixed_fee=product.vendor.fixed_fee;
         fixed_fee_amount=product.vendor.fixed_fee_amount;
         total_fixed_fee_amount=parseFloat(total_fixed_fee_amount)+parseFloat(product.vendor.fixed_fee_amount);
@@ -824,7 +823,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
 
-                        <div id="pp-button"></div>
                     </div>
                 </div>
             </div>
@@ -1076,6 +1074,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 </div>
                                 <span class="error text-danger" id="checkout_card_error"></span>
                             </div>
+                        <% } %>
+                        <% if(payment_option.slug == 'payphone') { %>
+                            <div id="pp-button"></div>
                         <% } %>
                     </div>
                 <% }); %>
@@ -1500,7 +1501,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
 </script>
-
+@if(in_array('payphone',$client_payment_options))
+<script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
+@endif
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
@@ -1537,6 +1540,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_payphone_url = "{{route('payphone.createHash')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
@@ -1669,7 +1673,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 vendor: vendor
             },
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 if (response.status == "Success") {
 
                 } else {
@@ -1727,11 +1731,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             //transform into simple data/value object
             for(var i = 0; i < s_data.length; i++){
                 var record = s_data[i];
-                console.log(record);
+                // console.log(record);
                 out[record.name] = record.value;
                 var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
                 var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
-                console.log(is_required);
+                // console.log(is_required);
 
                 if((is_required)==1 && (record.value =='' )){
                     var errorMsg ="The "+ record.name +" field is required.";
@@ -1784,16 +1788,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         var out = {};
         var s_data = $(dom_query).serializeArray();
 
-        console.log(s_data);
+        // console.log(s_data);
 
             //transform into simple data/value object
             for(var i = 0; i < s_data.length; i++){
                 var record = s_data[i];
-                console.log(record);
+                // console.log(record);
                 out[record.name] = record.value;
                 var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
                 var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
-                console.log(is_required);
+                // console.log(is_required);
 
                 if((is_required)==1 && (record.value =='' )){
                     var errorMsg ="The "+ record.name +" field is required.";
@@ -2191,53 +2195,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         readURL(this, '#upload_logo_preview_'+rel);
     });
 
-
-
-window.onload = function() {
-payphone.Button({
-
-//token obtenido desde la consola de developer
-token:"m2pmAD_eUV9wicWM8k5gPm7E4dWDtFHVased9IggmMVFShM3K08l4K-OsrmeSxZDaarnAdPT546HydhGc3Ob0eO3G7babe4EMXxYrpsGIBQBy_yIZy-6b_ZA6fs0AwBedz0UiVt2I5nSoAmEatCI0lVKgzmgKOVTh9K3fj_SLlobXwsw4ZrPWFnuDa9cJygacV-WVHeo7n8DK-g-__nt_p0PRZj_tZrmmQHGqIImZu7GlLImzCQAmNRC7kjrVsbO-FPVt6-slaDne15cLo8J2gEvjvxbhzyYBZzHnun0BWcBIS1U5WggYks385Q_C1j2ikHAkF1Tt_XxUj6E4NFuS5j7-40",
-
-//PARÁMETROS DE CONFIGURACIÓN
-btnHorizontal: true,
-btnCard: true,
-
-createOrder: function(actions){
-
-//Se ingresan los datos de la transaccion ej. monto, impuestos, etc
-return actions.prepare({
-
-amount: 100,
-amountWithoutTax: 100,
-currency: "USD",
-clientTransactionId: "121330"
-});
-
-},
-onComplete: function(model, actions){
-
-//Se confirma el pago realizado
-actions.confirm({
-id: model.id,
-clientTxId: model.clientTxId
-}).then(function(value){
-
-//EN ESTA SECCIÓN SE RECIBE LA RESPUESTA Y SE MUESTRA AL USUARIO
-
-if (value.transactionStatus == "Approved"){
-alert("Pago " + value.transactionId + " recibido, estado " + value.transactionStatus );
-}
-}).catch(function(err){
-console.log(err);
-});
-
-}
-}).render("#pp-button");
-
-}
-
 </script>
+
+
 
 
 @if(in_array('kongapay',$client_payment_options))
