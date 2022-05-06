@@ -363,7 +363,8 @@
 									<%}%> @endif @endif
 							<div class="product-description_list">
 								<p class="al_ratingNumber mb-0">
-									<span class="rating-number"><%=product.averageRating %></span>
+									<!-- <span class="rating-number"><%=product.averageRating %></span> -->
+									<span class="Stars" style="--rating: <%=product.averageRating %>;" aria-label="Rating of this product is <%=product.averageRating %> out of 5."></span>
 								</p>
 								<p class="al_product_category mb-0">
 									<span>{{__('In')}} <%=product.category %></span>
