@@ -32,6 +32,7 @@ class BraintreeController extends Controller
         {
             $data['come_from'] = 'web';
         }
+        $token = $this->createToken();
     	return view('frontend.payment_gatway.braintree')->with(['data' => $data]);
     }
     public function createPayment(Request $request)
