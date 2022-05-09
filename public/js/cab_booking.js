@@ -1355,6 +1355,7 @@ $(document).ready(function () {
                 }
             }
         );
+        
         if(mylocationAdd == ''){ mylocationAdd = 'Your Location';}
         $('#address-input').val(mylocationAdd);
         $('#address-latitude').val(lat);
