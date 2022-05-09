@@ -151,7 +151,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     _.each(cart_details.products, function(product, key){
         /*console.log(JSON.stringify(product));*/
        /* if (product.vendor.get_tax_fixed_fee != null) {
-            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tapx_rate;
+            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
         }
         if (product.vendor.get_tax_container_charges != null) {
             tax_container_charges_percentage=product.vendor.get_tax_container_charges.tax_rate;
@@ -209,9 +209,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
         
         /*console.log("tax_fixed_fee_percentage"+tax_fixed_fee_percentage);
-        {{-- console.log("tax_container_charges_percentage"+tax_container_charges_percentage); --}}
-        {{-- console.log("tax_service_charges_percentage"+tax_service_charges_percentage); --}}
-        {{-- console.log("tax_delivery_charges_percentage"+tax_delivery_charges_percentage);*/ --}}
+        console.log("tax_container_charges_percentage"+tax_container_charges_percentage);
+        console.log("tax_service_charges_percentage"+tax_service_charges_percentage);
+        console.log("tax_delivery_charges_percentage"+tax_delivery_charges_percentage);*/
         fixed_fee=product.vendor.fixed_fee;
         fixed_fee_amount=product.vendor.fixed_fee_amount;
         total_fixed_fee_amount=parseFloat(total_fixed_fee_amount)+parseFloat(product.vendor.fixed_fee_amount);
@@ -845,7 +845,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         @endif
 
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
-
                     </div>
                 </div>
             </div>
@@ -1097,9 +1096,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 </div>
                                 <span class="error text-danger" id="checkout_card_error"></span>
                             </div>
-                        <% } %>
-                        <% if(payment_option.slug == 'payphone') { %>
-                            <div id="pp-button"></div>
                         <% } %>
                     </div>
                 <% }); %>
@@ -1524,9 +1520,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
 </script>
-@if(in_array('payphone',$client_payment_options))
-<script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
-@endif
+
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
@@ -1563,7 +1557,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
-    var create_payphone_url = "{{route('payphone.createHash')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
@@ -2217,12 +2210,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
-
 </script>
-
-
-
-
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 @endif
