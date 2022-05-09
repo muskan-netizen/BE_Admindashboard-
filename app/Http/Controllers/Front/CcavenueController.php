@@ -167,7 +167,6 @@ class CcavenueController extends Controller
       $information=explode('=',$decryptValues[$i]);
       $request->request->add([$information[0] => $information[1]]);
     }
-    //eyJ0eXAiOiJqd3QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDY3NDQyODMsImV4cCI6MTY0OTQyMjY4MywiaXNzIjoicm95b29yZGVycy5jb20ifQ.oWt1RdwKc8ejQ1u6vgxK4WYFyZn3FSIiOYfF4YULsDU
     
     if(isset($request->merchant_param5) && !empty($request->merchant_param5)){
         $user = User::where('auth_token',$request->merchant_param5)->first();

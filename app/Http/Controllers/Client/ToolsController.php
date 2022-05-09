@@ -100,6 +100,19 @@ class ToolsController extends BaseController
                     if (isset($vendor_name) && !empty($vendor_name))
                         $sku_url = $sku_url . "." . $vendor_name;
 
+                    /*unique Addons replicate */
+                    $addon_sets = AddonSet::with(['option.translation_many', 'translation_many'])->select('id', 'title', 'min_select', 'max_select', 'position')
+                        ->where('status', 1)
+                        ->where('vendor_id', $request->copy_from)
+                        ->orderBy('position', 'asc')->get();
+                    foreach ($addon_sets as $set) {
+                        $check_addon = $this->addOnSetObj->checkAddon($set, $copy_to);
+                        if ($check_addon) {
+                            $this->deleteAddonSet($check_addon->id);
+                        }
+                        $add_addOn = $this->addCompleteAddOn($set, $copy_to);
+                    }
+
                     foreach ($from_products as $from_product) {
                         $product_slug = createSlug(!is_null($from_product->title) ? $from_product->title : $from_product->url_slug);
                         $product_sku = $sku_url . '.' . $product_slug;
@@ -185,24 +198,12 @@ class ToolsController extends BaseController
     }
     public function addProduct($from_product, $copy_to, $copy_from, $product_sku)
     {
+        $category_id = null;        
         $product = $from_product;
         $product = $product->replicate();
         $product->vendor_id = $copy_to;
         $product->sku = $product_sku;
         $product->save();
-        foreach ($from_product->addOn as $addOn) {
-            $addOn_id = $addOn->addon_id;
-            $check_addon = $this->addOnSetObj->checkAddon($addOn->addOnName, $copy_to);
-            if (is_null($check_addon)) {
-                $add_addOn = $this->addCompleteAddOn($addOn, $copy_to);
-                $addOn_id = $add_addOn->id;
-            }
-            $new_addOn = $addOn;
-            $new_addOn = $new_addOn->replicate();
-            $new_addOn->product_id = $product->id;
-            $new_addOn->addon_id = $addOn_id;
-            $new_addOn->save();
-        }
         if (isset($from_product->category) && !is_null($from_product->category)) {
             $category_id = $from_product->category->category_id;
             if (!is_null($from_product->category->categoryDetail->vendor_id)) {
@@ -210,6 +211,8 @@ class ToolsController extends BaseController
                 if (is_null($check_category)) {
                     $add_category = $this->addCompleteCategory($from_product->category->categoryDetail, $copy_to);
                     $category_id = $add_category->id;
+                }else{
+                    $category_id = $check_category->id;
                 }
             }
             $new_category = $from_product->category;
@@ -218,6 +221,27 @@ class ToolsController extends BaseController
             $new_category->category_id = $category_id;
             $new_category->save();
         }
+        if($category_id){
+            $product->category_id = $category_id;
+            $product->save();
+        }
+        
+        foreach ($from_product->addOn as $addOn) {
+            $addOn_id = $addOn->addon_id;
+            $check_addon = $this->addOnSetObj->checkAddon($addOn->addOnName, $copy_to);
+            if (is_null($check_addon)) {
+                $add_addOn = $this->addCompleteAddOn($addOn, $copy_to);
+                $addOn_id = $add_addOn->id;
+            }else{
+                $addOn_id = $check_addon->id;
+            }
+            $new_addOn = $addOn;
+            $new_addOn = $new_addOn->replicate();
+            $new_addOn->product_id = $product->id;
+            $new_addOn->addon_id = $addOn_id;
+            $new_addOn->save();
+        }
+
         foreach ($from_product->celebrities as $celebrity) {
             $new_celebrity = $celebrity;
             $new_celebrity = $new_celebrity->replicate();
@@ -237,27 +261,12 @@ class ToolsController extends BaseController
             $new_tag->product_id = $product->id;
             $new_tag->save();
         }
-        foreach ($from_product->ProductFaq as $faq) {
-            $new_faq = $faq;
-            $new_faq = $new_faq->replicate();
-            $new_faq->product_id = $product->id;
-            $new_faq->save();
-            foreach ($faq->translations as $faq_translation) {
-                $new_faq_translation = $faq_translation;
-                $new_faq_translation = $new_faq_translation->replicate();
-                $new_faq_translation->product_faq_id = $new_faq->id;
-                $new_faq_translation->save();
-            }
-
-        }
-
         foreach ($from_product->translation as $translation) {
             $new_translation = $translation;
             $new_translation = $new_translation->replicate();
             $new_translation->product_id = $product->id;
             $new_translation->save();
         }
-        
         foreach ($from_product->variant as $key => $variant) {
             $new_variant = $variant;
             $new_variant = $new_variant->replicate();
@@ -301,9 +310,25 @@ class ToolsController extends BaseController
             DB::rollback();
         }
     }
+    public function deleteAddonSet($id)
+    {
+        try {
+            DB::beginTransaction();
+            $addonSet = AddonSet::find($id);
+            $addonSet->status = 2;
+            $addonSet->update();
+            DB::commit();
+        } catch (\Exception $ex) {
+            DB::rollback();
+        }
+    }
     public function addCompleteAddOn($addOn, $copy_to)
     {
-        $addOnSet = $addOn->addOnName;
+        if(isset($addOn->addOnName)){
+            $addOnSet = $addOn->addOnName;
+        }else{
+            $addOnSet = $addOn;
+        }
         $new_addOnSet = $addOnSet;
         $new_addOnSet = $new_addOnSet->replicate();
         $new_addOnSet->vendor_id = $copy_to;

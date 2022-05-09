@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Front;
-use App\Http\Controllers\Front\FrontController;
+use App\Http\Controllers\Controller;
 use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use Auth;
@@ -16,26 +16,26 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Models\UserVendor;
 use App\Models\CaregoryKycDoc;
+
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
 use Log;
+use App\Http\Controllers\Front\FrontController;
 
-class FlutterWaveController extends FrontController
+class PayphoneController extends FrontController
 {
    use ApiResponser;
 
-   private $secret_key;
-   private $public_key;
-   private $enc_key;
+   private $id;
+   private $token;
    private $url;
 
    public function __construct()
    {
-      $konga = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'flutterwave')->where('status', 1)->first();
-      $json = json_decode($konga->credentials);
-      $this->secret_key = $json->secret_key;
-      $this->public_key = $json->client_id;
-      $this->enc_key = $json->enc_key;
+      $payphone = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'payphone')->where('status', 1)->first();
+      $json = json_decode($payphone->credentials);
+      $this->id = $json->id;
+      $this->token = $json->token;
    }
 
    public function createHash(Request $request)
@@ -48,83 +48,80 @@ class FlutterWaveController extends FrontController
     }else{
       $user = auth()->user();
     }
+     $name = explode(' ',$user->name);
      $returnUrl = '';
      if($request->from == 'cart')
      {
-      $request->amt = $amt;
+      $request->amt = $amt*100;
       $time = $request->order_number;
-      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'cart','date'=>date('Y-m-d')]);
 
      }elseif($request->from == 'wallet')
      {
       $time = ($request->transaction_id)??'W_'.time();
       //Save transaction before payment success for get information only
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'wallet','date'=>date('Y-m-d')]);
-      $request->amt = $amt;
+      $request->amt = $amt*100;
 
      }elseif($request->from == 'tip')
      {
       $time = 'T_'.time().'_'.$request->order_number;
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'tip','date'=>date('Y-m-d')]);
-      $request->amt = $amt;
+     
+      $request->amt = $amt*100;
       
      }elseif($request->from == 'subscription')
      {
       $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'subscription','date'=>date('Y-m-d')]);
 
-      $request->amt = $amt;
+      $request->amt = $amt*100;
      
      }
-     $returnUrl = route('flutterwave.success');
+       
+     $key = $request->amt.'|'.$this->api_key.'|'.$time;
 
      //Need to save entry in payment table
 
-    $data = array(
-        'public_key'=> $this->public_key,
-        'tx_ref'=> $time,
-        'amount'=> $request->amt??0,
-        'currency'=> "NGN",
-        'payment_options'=> "card, banktransfer, ussd",
-        'redirect_url'=> $returnUrl,
-        // 'meta'=> [
-        //   'consumer_id'=> 23,
-        //   'consumer_mac'=> "92a3-912ba-1192a",
-        // ],
-        'customer'=> [
-          'email'=> $user->email??'',
-          'phone_number'=> $user->phone_number,
-          'name'=> $user->name,
-        ],
-        // 'customizations'=> [
-        //   'title'=> "The Titanic Store",
-        //   'description'=> "Payment for an awesome cruise",
-        //   'logo'=> "https://www.logolynx.com/images/logolynx/22/2239ca38f5505fbfce7e55bbc0604386.jpeg",
-        // ],
-    );
-    // dd($data);
+     $data = (object)array(
+            "hash"=> hash('Sha512',$key),
+            "amount"=> $request->amt??0,
+            "description"=> "web payment",
+            "email"=> $user->email??'',
+            "merchantId"=> $this->merchant_id,
+            "reference"=> $time,
+            "firstname" => $name[0]??'',
+            "lastname" => $name[1]??'last name',
+            "phone" => $user->phone_number,
+            "enableFrame"=> true,
+            "callback" => $returnUrl,
+            "customerId" => $user->email
+        );
       return json_encode($data);
    }  
 
 
    public function webViewPay(Request $request)
    {
-        $request->request->add(['amt'=>$request->amount,'from'=>$request->from,'order_number'=>$request->order_no??time()]);
-        $data = json_decode($this->createHash($request));
-        $inputs = '
-        <input type="text" value="'.$data->hash.'" name="hash"/>
-        <input type="number" value="'.$data->amount.'" name="amount"/>
-        <input type="text" value="mobile payment" name="description">
-        <input type="email" value="'.$data->email.'" name="email">
-        <input type="text" value="Kongadel" name="merchant_id">
-        <input type="text" value="'.$data->reference.'" name="reference">
-        <input type="text" value="'.$data->firstname.'" name="firstname">
-        <input type="text" value="'.$data->lastname.'" name="lastname">
-        <input type="text" value="'.$data->phone.'" name="phone">
-        <input type="text" value="'.$data->callback.'" name="callback">
-        <input type="text" value="'.$data->customerId.'" name="customerId">
-        ';
-        return view('frontend.payment_gatway.kongapay_view', compact('inputs'));
+     $request->request->add(['amt'=>$request->amount,'from'=>$request->from,'order_number'=>$request->order_no??time()]);
+    // $data = $request->all();
+    // $request['from']=$request->from;
+    // $request['amt']=$request->amount??'100';
+    // $request['order_number']=$request->order_no??time(); // order no
+    $data = json_decode($this->createHash($request));
+    $inputs = '
+    <input type="text" value="'.$data->hash.'" name="hash"/>
+    <input type="number" value="'.$data->amount.'" name="amount"/>
+    <input type="text" value="mobile payment" name="description">
+    <input type="email" value="'.$data->email.'" name="email">
+    <input type="text" value="Kongadel" name="merchant_id">
+    <input type="text" value="'.$data->reference.'" name="reference">
+    <input type="text" value="'.$data->firstname.'" name="firstname">
+    <input type="text" value="'.$data->lastname.'" name="lastname">
+    <input type="text" value="'.$data->phone.'" name="phone">
+    <input type="text" value="'.$data->callback.'" name="callback">
+    <input type="text" value="'.$data->customerId.'" name="customerId">
+    ';
+    return view('frontend.payment_gatway.kongapay_view', compact('inputs'));
    }
 
    public function kongapayPurchase(Request $request)
@@ -146,31 +143,14 @@ class FlutterWaveController extends FrontController
        $params = $params .'&app=3&order_no='.$request->order_number;
       }
 
-       return $this->successResponse(url($request->serverUrl.'payment/flutterwave/api/'.$params)); 
+       return $this->successResponse(url($request->serverUrl.'payment/kongapay/api/'.$params)); 
    }
-
-
-
-   public function successPage(Request $request)
-   {
-    $payment = Payment::where('transaction_id',$request->tx_ref)->first();
-        if($payment->type=='cart'){
-          return $this->completeOrderCart($request,$payment);
-        }elseif($payment->type=='wallet'){
-            return $this->completeOrderWallet($request,$payment);
-        }elseif($payment->type=='tip'){
-            return $this->completeOrderTip($request,$payment);
-        }elseif($payment->type=='subscription'){
-            return $this->completeOrderSubs($request,$payment);
-        }
-   }
-
 
    public function completeOrderCart(Request $request)
     {
 
-      $order = Order::where('order_number',$request->tx_ref)->first();
-          if(isset($request->tx_ref) && ($request->status == 'successful' || $request->status == 'completed'))
+      $order = Order::where('order_number',$request->merchant_reference)->first();
+          if(isset($request->merchant_reference) && $request->status == 'success')
           {
            
             $order->payment_status = '1';
@@ -182,18 +162,18 @@ class FlutterWaveController extends FrontController
 
             $cart = Cart::where('user_id',auth()->id())->select('id')->first();
             $cartid = $cart->id;
+            CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
             Cart::where('id', $cartid)->update([
               'schedule_type' => null, 'scheduled_date_time' => null,
               'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
           ]);
-           CaregoryKycDoc::where('cart_id',$cartid)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
             CartAddon::where('cart_id', $cartid)->delete();
             CartCoupon::where('cart_id', $cartid)->delete();
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
             // send sms 
             $this->sendSuccessSMS($request, $order);
-            Payment::create(['amount'=>0,'transaction_id'=>$request->tx_ref,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id]);
+            Payment::create(['amount'=>0,'transaction_id'=>$request->merchant_reference,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id]);
 
              // Send Notification
              if (!empty($order->vendors)) {
@@ -209,7 +189,7 @@ class FlutterWaveController extends FrontController
 
           if(isset($request->auth_token) && !empty($request->auth_token))
           {
-            $returnUrl = route('payment.gateway.return.response').'/?gateway=flutterwave'.'&status=200&order='.$order->order_number;    
+            $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order->order_number;
             return Redirect::to($returnUrl); 
           }else{
             return Redirect::to(route('order.success',[$order->id]));
@@ -223,7 +203,7 @@ class FlutterWaveController extends FrontController
             }
             if(isset($request->auth_token) && !empty($request->auth_token))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=flutterwave'.'&status=00&order='.$order->order_number;
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&order='.$order->order_number;
               return Redirect::to($returnUrl);  
             }else{
               return Redirect::to(route('showCart'))->with('error',$request->message);
@@ -238,29 +218,29 @@ class FlutterWaveController extends FrontController
 
     public function completeOrderWallet(Request $request)
     {
-        if(isset($request->tx_ref) && ($request->status == 'successful' || $request->status == 'completed'))
+          if(isset($request->merchant_reference) && $request->status == 'success')
           {
-            $data = Payment::where('transaction_id',$request->tx_ref)->first();
+            $data = Payment::where('transaction_id',$request->merchant_reference)->first();
             $user = auth()->user();
             $wallet = $user->wallet;
-            $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->tx_ref . '</b>']);
+            $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->merchant_reference . '</b>']);
 
-            if(isset($request->auth_token) && !empty($request->auth_token))
+            if(isset($request->transaction_id) && !empty($request->transaction_id))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=flutterwave'.'&status=200&transaction_id='.$request->tx_ref.'&action=wallet';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.wallet'))->with('success','Wallet amount added successfuly.');
+              return Redirect::to(route('user.wallet'));
             }
 
             
           }else{
-            $data = Payment::where('transaction_id',$request->tx_ref)->first();
+            $data = Payment::where('transaction_id',$request->merchant_reference)->first();
             $data->delete();
 
-            if(isset($request->auth_token) && !empty($request->auth_token))
+            if(isset($request->transaction_id) && !empty($request->transaction_id))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=flutterwave'.'&status=00&transaction_id='.$request->tx_ref.'&action=wallet';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
               return Redirect::to(route('user.wallet'))->with('error',$request->message);
@@ -276,27 +256,27 @@ class FlutterWaveController extends FrontController
     public function completeOrderSubs(Request $request)
     {
       $user = auth()->user();
-      $data = Payment::where('transaction_id',$request->tx_ref)->first();
-      if(isset($request->tx_ref) && ($request->status == 'successful' || $request->status == 'completed'))
+      $data = Payment::where('transaction_id',$request->merchant_reference)->first();
+      if(isset($request->merchant_reference) && $request->status == 'success')
           {
-            $subscription = explode('_',$request->tx_ref);
-            $request->request->add(['user_id' => $user->id, 'payment_option_id' => 30, 'amount' => $data->balance_transaction, 'transaction_id' => $request->tx_ref]);
+            $subscription = explode('_',$request->merchant_reference);
+            $request->request->add(['user_id' => $user->id, 'payment_option_id' => 20, 'amount' => $data->balance_transaction, 'transaction_id' => $request->merchant_reference]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription[2]);
 
-            if(isset($request->auth_token) && !empty($request->auth_token))
+            if(isset($request->subscription_id) && !empty($request->subscription_id))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=flutterwave'.'&status=200&transaction_id='.$request->tx_ref.'&action=subscription';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.subscription.plans'))->with('success','Subscription added successfuly.');
+              return Redirect::to(route('user.subscription.plans'))->with('success',$request->message);
             }
           }else{
             $data->delete();
 
-            if(isset($request->auth_token) && !empty($request->auth_token))
+            if(isset($request->subscription_id) && !empty($request->subscription_id))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=flutterwave'.'&status=00&transaction_id='.$request->tx_ref.'&action=subscription';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
               return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
@@ -309,29 +289,28 @@ class FlutterWaveController extends FrontController
 
     public function completeOrderTip(Request $request)
     {
-      $data = Payment::where('transaction_id',$request->tx_ref)->first();
-      if(isset($request->tx_ref) && ($request->status == 'successful' || $request->status == 'completed'))
+      $data = Payment::where('transaction_id',$request->merchant_reference)->first();
+      if(isset($request->merchant_reference) && $request->status == 'success')
           {
-            $order_number = explode('_',$request->tx_ref);
-            $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $request->tx_ref]);
+            $order_number = explode('_',$request->merchant_reference);
+            $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $request->merchant_reference]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
 
-            if(isset($request->auth_token) && !empty($request->auth_token))
+            if(isset($request->order_no) && !empty($request->order_no))
               {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=flutterwave'.'&status=200&order='.$order_number[2].'&action=tip';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order_number[2].'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
-                return Redirect::to(route('user.orders'))->with('success','Tip added successfuly.');
+                return Redirect::to(route('user.orders'))->with('success', $request->message);
               }
 
           }else{
-
             $data->delete();
 
-              if(isset($request->auth_token) && !empty($request->auth_token))
+              if(isset($request->order_no) && !empty($request->order_no))
               {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=flutterwave'.'&status=00&transaction_id='.$request->merchant_reference.'&action=tip';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
                 return Redirect::to(route('user.orders'))->with('error', $request->message);

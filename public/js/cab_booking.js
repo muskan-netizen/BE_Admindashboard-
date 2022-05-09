@@ -457,7 +457,6 @@ $(document).ready(function () {
             $('#pickup_location_latitude').val(latitude);
             $('#pickup_location_longitude').val(longitude);
 
-            // initMap2();
             var pickupLocationLatitude  = latitude;
             var pickupLocationLongitude = longitude;
             var currentUrl              = window.location.href;
@@ -489,7 +488,6 @@ $(document).ready(function () {
 
             $('#search_product_main_div').attr("style", "display: block !important");
             $('.location-list').attr("style", "display: none !important");
-
         }else{
             $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
                 if(this.value == ''){
@@ -518,7 +516,7 @@ $(document).ready(function () {
             }).get();
         }
 
-        displayLocationCab(latitude, longitude);
+        displayLocationCab(latitude, longitude);initMap2();
         getVendorList();
     });
     function getVendorList(){
@@ -560,7 +558,7 @@ $(document).ready(function () {
                         if(response.data.length != 0){
                             let vendors_template = _.template($('#vendors_template').html());
                             $("#vendor_main_div").append(vendors_template({results: response.data})).show();
-                            console.log(response.data.length);
+                            //console.log(response.data.length);
                             if(response.data.length == 1){
                                 $('.vendor-list').trigger('click');
                                 $('.table-responsive').remove();
@@ -701,7 +699,7 @@ $(document).ready(function () {
                     var current_amount = amount - response.data.new_amount;
                     let subscriptionAmout = $('#subscription-amout-h').val();
                     if(subscriptionAmout != undefined && subscriptionAmout > 0){
-                        console.log('response.data.new_amount', response.data.new_amount);
+                        //console.log('response.data.new_amount', response.data.new_amount);
                         var subscriptionPercent = $('#subscription-percent-h').val();
                         let newPayableAmount = current_amount - (subscriptionPercent * current_amount / 100);
                         $('#subscription-amout').text(response.data.currency_symbol+''+newPayableAmount);  
@@ -771,6 +769,8 @@ $(document).ready(function () {
                         getDistance();
                         if($('input[name=is_for_friend]:checked').val()==1){
                             $('.for_friend_fields_div').removeClass('d-none');
+                            
+
                         }else{
                             $('.for_friend_fields_div').addClass('d-none');
                         }
@@ -801,6 +801,7 @@ $(document).ready(function () {
         
         var latitude             = $('#address-latitude').val();
         var longitude            = $('#address-longitude').val();
+
         var pickup_location      = $('#pickup_location_latitude').val();
         var destination_location = $('#destination_location_latitude').val();
         var pickupAddress        = $('#address-input').val();
@@ -923,7 +924,7 @@ $(document).ready(function () {
         $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
             $(this).hide();
         }).get();
-
+        
     });
 
     $(document).on("click",".scheduled-ride",function() {
@@ -962,7 +963,7 @@ $(document).ready(function () {
 
     $(document).on("click",".apremove",function() {
         var destination_location_add_temp = $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').length;
-
+        
         if(destination_location_add_temp == 0){
             return false;
         }else if(destination_location_add_temp == 1){
@@ -996,7 +997,7 @@ $(document).ready(function () {
         }
 
         var random_id = $(this).data('rel');
-
+        
         if(random_id == ''){
             $(".where-to-second").remove();
             $("#destination_location").remove();
@@ -1337,17 +1338,40 @@ $(document).ready(function () {
     
     function errorcallback(positionerror) {
         if (window.console) {
-            console.log(positionerror);
+            //console.log(positionerror);
             $('#address-latitude').val('30.7120453');
             $('#address-longitude').val('76.8144185');
-            $('#address-input').val('Your Location');
+            $('#address-input').val('PR67+RQ Chandigarh, India');
           }
     }
 
     function showPosition(position) {
         let lat = position.coords.latitude;
         let long = position.coords.longitude;
-        $('#address-input').val('Your Location');
+
+        var is_chrome = /chrom(e|ium)/.test( navigator.userAgent.toLowerCase() );
+        var is_ssl    = 'https:' == document.location.protocol;
+        if( is_chrome && ! is_ssl ){
+            return false;
+        }
+
+        var google_map_pos = new google.maps.LatLng( lat, long );
+
+        
+        var google_maps_geocoder = new google.maps.Geocoder();
+        google_maps_geocoder.geocode(
+            { 'latLng': google_map_pos },
+            function( results, status ) {
+                if ( status == google.maps.GeocoderStatus.OK && results[0] ) {
+                    //console.log( results[0].formatted_address ); committed by surednder
+                    //mylocationAdd = results[0].formatted_address; committed by surednder
+                    $('#address-input').val(results[0].formatted_address);
+                }else{
+                    $('#address-input').val('Your Location');
+                }
+            }
+        );
+        
         $('#address-latitude').val(lat);
         $('#address-longitude').val(long);
         displayLocationCab(lat, long);

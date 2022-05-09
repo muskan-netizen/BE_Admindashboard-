@@ -62,6 +62,8 @@
 
                 <?php
                 $creds = json_decode($opt->credentials);
+                $id = (isset($creds->id)) ? $creds->id : '';
+                $token = (isset($creds->token)) ? $creds->token : '';
                 $username = (isset($creds->username)) ? $creds->username : '';
                 $password = (isset($creds->password)) ? $creds->password : '';
                 $signature = (isset($creds->signature)) ? $creds->signature : '';
@@ -749,6 +751,28 @@
                                     <input type="text" name="braintree_private_key" id="braintree_private_key" class="form-control" value="{{$private_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
+                    @if ( (strtolower($opt->code) == 'payphone'))
+                    <div class="mt-2" id="payphone_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="payphone_id" class="mr-3">{{ __("ID") }}</label>
+                                    <input type="text" name="payphone_id" id="payphone_id" class="form-control" value="{{$id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="payphone_client_id" class="mr-3">{{ __("Client ID") }}</label>
+                                    <input type="text" name="payphone_client_id" id="payphone_client_id" class="form-control" value="{{$client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="payphone_token" class="mr-3">{{ __("Token") }}</label>
+                                    <input type="text" name="payphone_token" id="payphone_token" class="form-control" value="{{$token}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            
                         </div>
                     </div>
                     @endif

@@ -132,7 +132,10 @@
                         </ul>
                     </div>
                     <div class="final-total">
-                        <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($order->payable_amount) * @$clientCurrency->doller_compare)}}</span></h3>
+                        @php
+                            $total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount
+                        @endphp
+                        <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></h3>
                     </div>
                 </div>
             </div>

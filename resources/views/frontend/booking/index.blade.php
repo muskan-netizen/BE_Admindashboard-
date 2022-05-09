@@ -20,16 +20,16 @@
                     <option value="1">For Friend</option>
                 </select> -->
 
-                <div class="tip_radio_controls">
-                    <input type="radio" class="tip_radio active" id="for_me" name="is_for_friend" value="0">
-                    <label class="tip_label" for="for_me">
+                <div class="tip_radio_controls_book_friend text-center my-2">
+                    <input type="radio" class="tip_radio" id="for_me" name="is_for_friend" value="0">
+                    <label class="tip_label mb-0  my-2 active" for="for_me" id="label_for_me">
                         <h5 class="m-0" id="tip_5">Book</h5>
                         <p class="m-0">For Me</p>
                     </label>       
                     <input type="radio" class="tip_radio" id="for_friend" name="is_for_friend" value="1">
-                    <label class="tip_label" for="for_friend">
+                    <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
                         <h5 class="m-0" id="tip_5">Book</h5>
-                        <p class="m-0">For Friend</p>
+                        <p class="m-0">For A Friend</p>
                     </label>                      
                 </div>
             <div class="location-box check-pick-first">
@@ -247,13 +247,14 @@
                     <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
-                <div class="for_friend_fields_div">
+                <div class="for_friend_fields_div px-2 py-2">
+                    <h4 class="pb-2">Friend's Details</h4>
                     <div class="form-group">
-                        <label for="friendName">Friend Name</label>
-                        <input type="text" class="form-control" name="friendName" placeholder="Friend Name">
+                        <label for="friendName">Friend's Name</label>
+                        <input type="text" class="form-control" name="friendName" placeholder="Name">
                     </div>
                     <div class="form-group">
-                        <label for="friendPhoneNumber">Friend Phone Number</label>
+                        <label for="friendPhoneNumber">Friend's Phone Number</label>
                         <input type="number" class="form-control" name="friendPhoneNumber" placeholder="Phone Number">
                     </div>
                 </div>
@@ -680,7 +681,15 @@ $('body').on('click', '.clproduct_order_form', function (event) {
 
 <script type="text/javascript">
     $(document).ready(function (e) {
-
+        
+        // if(parseInt($('input[name=is_for_friend]:checked')).val()==1){
+        //     $('#label_for_me').removeClass('active');
+        //     $('#label_for_friend').addClass('active');
+        //     alert("here");
+        // }
+        $('#label_for_friend').click(function(){
+            $('#label_for_me').removeClass('active');
+        });
         $(document).delegate('#submit_productfaq', 'click', function() {
        var product_order_form_element = getFormData('#product-order-form-name');
         $('#product_order_form').modal('hide');
@@ -700,7 +709,7 @@ $('body').on('click', '.clproduct_order_form', function (event) {
         return out;
         }
 
-    });
+     });
 </script>
 
 

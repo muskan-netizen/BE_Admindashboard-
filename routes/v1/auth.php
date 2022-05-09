@@ -91,6 +91,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('payment/razorpay/pay/{amount}/{order}', 'Api\v1\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
         Route::post('payment/complete/paytab','Api\v1\PaytabController@completePayment');
         Route::post('payment/failed/paytab','Api\v1\PaytabController@failedPayment');
+
+        Route::post('payment/sdk_complete/{gateway?}','Api\v1\PaymentOptionController@sdkResponsePayment');
+        Route::post('payment/sdk_failed/{gateway?}','Api\v1\PaymentOptionController@sdkFailedPayment');
     
         Route::post('payment/place/order', 'Api\v1\PaymentOptionController@postPlaceOrder');
         Route::get('user/loyalty/info', 'Api\v1\LoyaltyController@index');
