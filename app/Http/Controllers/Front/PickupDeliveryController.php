@@ -695,8 +695,8 @@ class PickupDeliveryController extends FrontController{
                     'order_time_zone' => $request->order_time_zone ??null,
                     'customer_name' => $customer->name ?? 'Dummy Customer',
                     'recipient_email' => $request->email ?? $customer->email,
-                    'recipient_phone' => $request->phone_number ?? $customer->phone_number,
-                    'customer_phone_number' => $customer->phone_number ?? rand(111111,11111),
+                    'recipient_phone' => $request->phone_number ?? $customer->dial_code.$customer->phone_number,
+                    'customer_phone_number' => $customer->dial_code.$customer->phone_number ?? rand(111111,11111),
                     'type'=>$type,
                     'friend_name'=>$friendName,
                     'friend_phone_number'=>$friendPhoneNumber

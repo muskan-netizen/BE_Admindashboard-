@@ -551,9 +551,9 @@ class PickupDeliveryController extends BaseController{
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
-                            'customer_phone_number' => $customer->phone_number??rand(111111,11111),
+                            'customer_phone_number' => $customer->dial_code.$customer->phone_number??rand(111111,11111),
                             'customer_email' => $customer->email ?? '',
-                            'recipient_phone' => $request->phone_number ?? $customer->phone_number,
+                            'recipient_phone' => $request->phone_number ?? $customer->dial_code.$customer->phone_number,
                             'recipient_email' => $request->email ?? $customer->email,
                             'task_description' => $request->task_description??null,
                             'allocation_type' => 'a',
