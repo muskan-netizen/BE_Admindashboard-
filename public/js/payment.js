@@ -1028,7 +1028,7 @@ $(document).ready(function() {
 
                 payphone.Button({
                     //token obtenido desde la consola de developer
-                    token: 'm2pmAD_eUV9wicWM8k5gPm7E4dWDtFHVased9IggmMVFShM3K08l4K-OsrmeSxZDaarnAdPT546HydhGc3Ob0eO3G7babe4EMXxYrpsGIBQBy_yIZy-6b_ZA6fs0AwBedz0UiVt2I5nSoAmEatCI0lVKgzmgKOVTh9K3fj_SLlobXwsw4ZrPWFnuDa9cJygacV-WVHeo7n8DK-g-__nt_p0PRZj_tZrmmQHGqIImZu7GlLImzCQAmNRC7kjrVsbO-FPVt6-slaDne15cLo8J2gEvjvxbhzyYBZzHnun0BWcBIS1U5WggYks385Q_C1j2ikHAkF1Tt_XxUj6E4NFuS5j7-40',
+                    token:resp.token,
         
                             //PARÁMETROS DE CONFIGURACIÓN
                             btnHorizontal: true,
@@ -1038,10 +1038,10 @@ $(document).ready(function() {
                                 //Se ingresan los datos de la transaccion ej. monto, impuestos, etc
                                 return actions.prepare({
         
-                                amount: 100,
-                                amountWithoutTax: 100,
+                                amount: resp.amount,
+                                amountWithoutTax: resp.amount,
                                 currency: "USD",
-                                clientTransactionId: "10230"
+                                clientTransactionId: resp.orderNo
                                 });
         
                                 },
@@ -1059,6 +1059,7 @@ $(document).ready(function() {
                                             }
                                         }).catch(function(err){
                                         console.log(err);
+                                        alert(err);
                                         });
                                 }
                     }).render("#pp-button");
@@ -1066,6 +1067,8 @@ $(document).ready(function() {
           },
           error: function(error) {
               console.log(error);
+              alert(error);
+
           }
         
         });

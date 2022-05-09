@@ -48,11 +48,11 @@ class PayphoneController extends FrontController
     }else{
       $user = auth()->user();
     }
+
      $name = explode(' ',$user->name);
      $returnUrl = '';
      if($request->from == 'cart')
      {
-      $request->amt = $amt*100;
       $time = $request->order_number;
 
      }elseif($request->from == 'wallet')
@@ -60,41 +60,22 @@ class PayphoneController extends FrontController
       $time = ($request->transaction_id)??'W_'.time();
       //Save transaction before payment success for get information only
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'wallet','date'=>date('Y-m-d')]);
-      $request->amt = $amt*100;
 
      }elseif($request->from == 'tip')
      {
       $time = 'T_'.time().'_'.$request->order_number;
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'tip','date'=>date('Y-m-d')]);
-     
-      $request->amt = $amt*100;
       
      }elseif($request->from == 'subscription')
      {
       $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'subscription','date'=>date('Y-m-d')]);
-
-      $request->amt = $amt*100;
-     
      }
-       
-     $key = $request->amt.'|'.$this->api_key.'|'.$time;
-
      //Need to save entry in payment table
-
      $data = (object)array(
-            "hash"=> hash('Sha512',$key),
-            "amount"=> $request->amt??0,
-            "description"=> "web payment",
-            "email"=> $user->email??'',
-            "merchantId"=> $this->merchant_id,
-            "reference"=> $time,
-            "firstname" => $name[0]??'',
-            "lastname" => $name[1]??'last name',
-            "phone" => $user->phone_number,
-            "enableFrame"=> true,
-            "callback" => $returnUrl,
-            "customerId" => $user->email
+            "token"=> $this->token,
+            "amount"=> round($amt)??0,
+            "orderNo"=> $time,
         );
       return json_encode($data);
    }  
