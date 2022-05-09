@@ -80,6 +80,8 @@
                 $merchant_key = (isset($creds->merchant_key)) ? $creds->merchant_key : '';
                 $passphrase = (isset($creds->passphrase)) ? $creds->passphrase : '';
                 $merchant_account = (isset($creds->merchant_account)) ? $creds->merchant_account : '';
+                $merchant_salt_v1 = (isset($creds->merchant_salt_v1)) ? $creds->merchant_salt_v1 : '';
+                $merchant_salt_v2 = (isset($creds->merchant_salt_v2)) ? $creds->merchant_salt_v2 : '';
                 $multiplier = (isset($creds->multiplier)) ? $creds->multiplier : '';
                 $login_id = (isset($creds->login_id)) ? $creds->login_id : '';
                 $profile_id = (isset($creds->profile_id)) ? $creds->profile_id : '';
@@ -720,6 +722,31 @@
                                 </div>
                             </div>
                             
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'payu') )
+                    <div class="mt-2" id="payu_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="payu_merchant_key" class="mr-3">{{ __("Merchant Key") }}</label>
+                                    <input type="text" name="payu_merchant_key" id="payu_merchant_key" class="form-control" value="{{$merchant_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="payu_merchant_salt_v1" class="mr-3">{{ __("Merchant Salt V1") }}</label>
+                                    <input type="password" name="payu_merchant_salt_v1" id="payu_merchant_salt_v1" class="form-control" value="{{$merchant_salt_v1}}" @if($opt->status == 1) required @endif>
+                                </div>
+                        </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pay_merchant_salt_v2" class="mr-3">{{ __("Merchant Salt V2") }}</label>
+                                    <input type="password" name="payu_merchant_salt_v2" id="payu_merchant_salt_v2" class="form-control" value="{{$merchant_salt_v2}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     @endif

@@ -399,7 +399,8 @@ class PaymentOptionController extends BaseController
                         'client_id' => $request->mvodafone_client_id,
                         'secret_key' => $request->mvodafone_secret_key
                     ));
-                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'flutterwave')) {
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'flutterwave')) {
                     $validatedData = $request->validate([
                         'flutterwave_client_id' => 'required',
                         'flutterwave_secret_key' => 'required',
@@ -409,6 +410,18 @@ class PaymentOptionController extends BaseController
                         'client_id' => $request->flutterwave_client_id,
                         'secret_key' => $request->flutterwave_secret_key,
                         'enc_key' => $request->flutterwave_enc_key
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'payu')) {
+                    $validatedData = $request->validate([
+                        'payu_merchant_key' => 'required',
+                        'payu_merchant_salt_v1' => 'required',
+                        'payu_merchant_salt_v2' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'merchant_key' => $request->payu_merchant_key,
+                        'merchant_salt_v1' => $request->payu_merchant_salt_v1,
+                        'merchant_salt_v2' => $request->payu_merchant_salt_v2
                     ));
                 }
             }
