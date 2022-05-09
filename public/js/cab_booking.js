@@ -1341,7 +1341,7 @@ $(document).ready(function () {
             console.log(positionerror);
             $('#address-latitude').val('30.7120453');
             $('#address-longitude').val('76.8144185');
-            $('#address-input').val('Your Location');
+            $('#address-input').val('PR67+RQ Chandigarh, India');
           }
     }
 
@@ -1357,18 +1357,21 @@ $(document).ready(function () {
 
         var google_map_pos = new google.maps.LatLng( lat, long );
 
-        /* Use Geocoder to get address */
+        var mylocationAdd = '';
         var google_maps_geocoder = new google.maps.Geocoder();
         google_maps_geocoder.geocode(
             { 'latLng': google_map_pos },
             function( results, status ) {
                 if ( status == google.maps.GeocoderStatus.OK && results[0] ) {
-                    console.log( results[0].formatted_address );
+                    //console.log( results[0].formatted_address );
+                    mylocationAdd = results[0].formatted_address;
+                }else{
+                    mylocationAdd = 'Your Location';
                 }
             }
         );
-        
-        $('#address-input').val('Your Location');
+        if(mylocationAdd == ''){ mylocationAdd = 'Your Location';}
+        $('#address-input').val(mylocationAdd);
         $('#address-latitude').val(lat);
         $('#address-longitude').val(long);
         displayLocationCab(lat, long);
