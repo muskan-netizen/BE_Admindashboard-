@@ -1357,7 +1357,6 @@ $(document).ready(function () {
             }
         );
         
-        //$('#address-input').val(mylocationAdd);
         $('#address-latitude').val(lat);
         $('#address-longitude').val(long);
         displayLocationCab(lat, long);
