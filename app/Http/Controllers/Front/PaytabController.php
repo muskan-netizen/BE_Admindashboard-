@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, WalletController, FrontController};
 use Auth, Log, Redirect;
-use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProduct, OrderProductAddon};
+use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, CartDeliveryFee, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, Transaction};
 
 class PaytabController extends FrontController
 {
@@ -104,6 +104,7 @@ class PaytabController extends FrontController
                     CartCoupon::where('cart_id', $cart->id)->delete();
                     CartProduct::where('cart_id', $cart->id)->delete();
                     CartProductPrescription::where('cart_id', $cart->id)->delete();
+                    CartDeliveryFee::where('cart_id', $cart->id)->delete();
 
                     // Send Notification
                     if (!empty($order->vendors)) {
