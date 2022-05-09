@@ -149,9 +149,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     
     let other_taxes=0;
     _.each(cart_details.products, function(product, key){
-        //console.log(JSON.stringify(product));
+        /*console.log(JSON.stringify(product));*/
        /* if (product.vendor.get_tax_fixed_fee != null) {
-            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
+            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tapx_rate;
         }
         if (product.vendor.get_tax_container_charges != null) {
             tax_container_charges_percentage=product.vendor.get_tax_container_charges.tax_rate;

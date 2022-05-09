@@ -35,6 +35,6 @@ class AddonSet extends Model
 		return self::where([
 			'vendor_id' => $vendor_id,
 			'title' => $addOn->title
-		])->first();
+		])->where('status', 1)->first();
 	}
 }
