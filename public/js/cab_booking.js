@@ -982,7 +982,7 @@ $(document).ready(function () {
         }
 
         var random_id = $(this).data('rel');
-        alert(random_id);
+        
         if(random_id == ''){
             $(".where-to-second").remove();
             $("#destination_location").remove();
@@ -1348,14 +1348,14 @@ $(document).ready(function () {
             { 'latLng': google_map_pos },
             function( results, status ) {
                 if ( status == google.maps.GeocoderStatus.OK && results[0] ) {
-                    //console.log( results[0].formatted_address );
+                    console.log( results[0].formatted_address );
                     mylocationAdd = results[0].formatted_address;
                 }else{
                     mylocationAdd = 'Your Location';
                 }
             }
         );
-        
+        alert(mylocationAdd);
         if(mylocationAdd == ''){ mylocationAdd = 'Your Location';}
         $('#address-input').val(mylocationAdd);
         $('#address-latitude').val(lat);
