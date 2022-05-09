@@ -1363,8 +1363,8 @@ $(document).ready(function () {
             { 'latLng': google_map_pos },
             function( results, status ) {
                 if ( status == google.maps.GeocoderStatus.OK && results[0] ) {
-                    //console.log( results[0].formatted_address );
-                    //mylocationAdd = results[0].formatted_address;
+                    //console.log( results[0].formatted_address ); committed by surednder
+                    //mylocationAdd = results[0].formatted_address; committed by surednder
                     $('#address-input').val(results[0].formatted_address);
                 }else{
                     $('#address-input').val('Your Location');
