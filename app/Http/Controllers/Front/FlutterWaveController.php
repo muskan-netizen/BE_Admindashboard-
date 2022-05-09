@@ -33,8 +33,8 @@ class FlutterWaveController extends FrontController
    {
       $konga = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'flutterwave')->where('status', 1)->first();
       $json = json_decode($konga->credentials);
-      $this->secret_key = $json->client_id;
-      $this->public_key = $json->secret_key;
+      $this->secret_key = $json->secret_key;
+      $this->public_key = $json->client_id;
       $this->enc_key = $json->enc_key;
    }
 
@@ -81,7 +81,7 @@ class FlutterWaveController extends FrontController
      //Need to save entry in payment table
 
     $data = array(
-        'public_key'=> $this->secret_key,
+        'public_key'=> $this->public_key,
         'tx_ref'=> $time,
         'amount'=> $request->amt??0,
         'currency'=> "NGN",

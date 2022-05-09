@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner, Client, Category, Brand, Product, ClientLanguage, User, ClientCurrency, ClientPreference, Country, UserAddress, UserVerification,EmailTemplate, VerificationOption};
+use App\Models\{Currency, Banner, Client, Category, Brand, Product, ClientLanguage, User, ClientCurrency, ClientPreference, Country, UserAddress, UserVerification,EmailTemplate, VerificationOption, WebStylingOption};
 
 
 class UserController extends FrontController{
@@ -45,7 +45,14 @@ class UserController extends FrontController{
             }
         }
         $navCategories = $this->categoryNav($langId);
-        return view('frontend/account/verifyaccountnew')->with(['preference' => $preference, 'navCategories' => $navCategories, 'user' => $user]);
+        $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
+        if($set_template->template_id == 4)
+        {
+            $verify_page = "template_four.account.verifyaccount";
+        }else{
+            $verify_page = "account.verifyaccountnew";
+        }
+        return view('frontend.'.$verify_page)->with(['preference' => $preference, 'navCategories' => $navCategories, 'user' => $user]);
     }
 
     /**

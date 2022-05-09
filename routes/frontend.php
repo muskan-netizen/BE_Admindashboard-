@@ -125,6 +125,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/square/page','Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square','Front\SquareController@createPayment')->name('payment.square.createPayment');
 
+	//Braintree
+	Route::match(['get','post'],'payment/braintree/page','Front\BraintreeController@beforePayment')->name('payment.braintree.beforePayment');
+	Route::post('payment/braintree','Front\BraintreeController@createPayment')->name('payment.braintree.createPayment'); 
+
 	//Ozow
 	Route::match(['get','post'],'payment/ozow/page','Front\OzowController@beforePayment')->name('payment.ozow.beforePayment');
 	Route::post('payment/ozow','Front\OzowController@createPayment')->name('payment.ozow.createPayment');
@@ -195,6 +199,9 @@ Route::group(['middleware' => ['domain']], function () {
 	//Easypaisa routes
 	Route::post('payment/easypaisa', 'Front\EasypaisaController@createHash')->name('easypaisa.createHash');
 	Route::get('payment/easypaisa', 'Front\EasypaisaController@successPage')->name('easypaisa.success');
+
+	//payPhone routes
+	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
 
 
 	//KongaPay routes 

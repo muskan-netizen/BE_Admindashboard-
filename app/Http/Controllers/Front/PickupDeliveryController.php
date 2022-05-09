@@ -675,6 +675,13 @@ class PickupDeliveryController extends FrontController{
                 if(empty($friendName) || empty($friendPhoneNumber)){
                     $type=0;
                 }
+                
+                if ($customer->dial_code == "971") {
+                    $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                } else {                
+                    $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                }
+                
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     'order_type' =>  $order->type,
@@ -695,8 +702,8 @@ class PickupDeliveryController extends FrontController{
                     'order_time_zone' => $request->order_time_zone ??null,
                     'customer_name' => $customer->name ?? 'Dummy Customer',
                     'recipient_email' => $request->email ?? $customer->email,
-                    'recipient_phone' => $request->phone_number ?? $customer->phone_number,
-                    'customer_phone_number' => $customer->phone_number ?? rand(111111,11111),
+                    'recipient_phone' => $request->phone_number ?? $customerno,
+                    'customer_phone_number' => $customerno ?? rand(111111,11111),
                     'type'=>$type,
                     'friend_name'=>$friendName,
                     'friend_phone_number'=>$friendPhoneNumber

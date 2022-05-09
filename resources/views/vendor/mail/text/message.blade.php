@@ -2,7 +2,9 @@
     {{-- Header --}}
     @slot('header')
         @component('mail::header', ['url' => config('app.url')])
-            {{ config('app.name') }}
+        <?php $client = \App\Models\Client::first(); 
+        if($client){ $company_name = $client->company_name; } ?>
+         {{$company_name}}
         @endcomponent
     @endslot
 
@@ -21,7 +23,7 @@
     {{-- Footer --}}
     @slot('footer')
         @component('mail::footer')
-            © {{ date('Y') }} {{ config('app.name') }}. @lang('All rights reserved.')
+            © {{ date('Y') }} {{ $company_name }}. @lang('All rights reserved.')
         @endcomponent
     @endslot
 @endcomponent
