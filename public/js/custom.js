@@ -3427,7 +3427,6 @@ $(document).ready(function () {
         });
     }
 
-    // *****************************  End tip after order place ****************************///
 
     $(document).on('click', '.validate_promo_code_btn', function () {
         let amount = $(this).attr('data-amount');
@@ -3875,6 +3874,17 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '32':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //PayU
+                    payphoneButton(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
         
         }
 
@@ -4016,6 +4026,10 @@ $(document).ready(function () {
 
         case 30:
                 payWithFlutterWave('', payment_option_id, '');
+        break;
+
+        case 32:
+                paymentViaBraintree('', payment_option_id, ''); 
         break;
     }
 

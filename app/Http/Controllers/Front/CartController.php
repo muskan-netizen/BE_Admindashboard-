@@ -13,6 +13,8 @@ use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager};
+use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
+use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate};
 class CartController extends FrontController
@@ -1653,6 +1655,16 @@ class CartController extends FrontController
                 $option = array_merge($option,$optionLala);
             }
             //End Lalamove Delivery changes code
+
+            if($vendorData->vendor->pincode){
+                //get Shippo Services Delivery changes code
+                $shipo = new ShippoController();
+                $deliver_shipo_fee = $shipo->getServices($vendorData->vendor_id);
+                if($deliver_shipo_fee)
+                {
+                    $option = array_merge($option,$deliver_shipo_fee);
+                }
+            }
 
 
             if($vendorData->vendor->shiprocket_pickup_name){
