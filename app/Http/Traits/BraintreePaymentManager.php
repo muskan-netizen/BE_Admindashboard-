@@ -5,12 +5,17 @@ use Auth, Log, Config;
 trait BraintreePaymentManager{
 
   public function init(){
-    return Braintree\Gateway([
+    $gateway = new Braintree\Gateway([
       'environment' => 'sandbox',
       'merchantId' => $this->merchant_id,
       'publicKey' => $this->public_key,
       'privateKey' => $this->private_key
     ]);
+    return $gateway;
+  }
+  public function createToken(){
+    $customer = $this->createCustomer();
+    dd($customer);
   }
   public function createCustomer()
   {
@@ -24,11 +29,9 @@ trait BraintreePaymentManager{
       'fax' => '419.555.1235',
       'website' => 'http://example.com'
     ]);
-    dd($result);
-    $result->success;
-    # true
-
-    $result->customer->id;
+    return $result;
+    // $result->success;
+    // $result->customer->id;
   }
 
 
