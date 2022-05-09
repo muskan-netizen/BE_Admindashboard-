@@ -451,7 +451,6 @@ $(document).ready(function () {
             $('#pickup_location_latitude').val(latitude);
             $('#pickup_location_longitude').val(longitude);
 
-            // initMap2();
             var pickupLocationLatitude  = latitude;
             var pickupLocationLongitude = longitude;
             var currentUrl              = window.location.href;
@@ -483,7 +482,6 @@ $(document).ready(function () {
 
             $('#search_product_main_div').attr("style", "display: block !important");
             $('.location-list').attr("style", "display: none !important");
-
         }else{
             $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
                 if(this.value == ''){
@@ -512,7 +510,7 @@ $(document).ready(function () {
             }).get();
         }
 
-        displayLocationCab(latitude, longitude);
+        displayLocationCab(latitude, longitude);initMap2();
         getVendorList();
     });
     function getVendorList(){
@@ -788,6 +786,7 @@ $(document).ready(function () {
         
         var latitude             = $('#address-latitude').val();
         var longitude            = $('#address-longitude').val();
+
         var pickup_location      = $('#pickup_location_latitude').val();
         var destination_location = $('#destination_location_latitude').val();
         var pickupAddress        = $('#address-input').val();
@@ -910,7 +909,7 @@ $(document).ready(function () {
         $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
             $(this).hide();
         }).get();
-
+        
     });
 
     $(document).on("click",".scheduled-ride",function() {
@@ -949,7 +948,7 @@ $(document).ready(function () {
 
     $(document).on("click",".apremove",function() {
         var destination_location_add_temp = $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').length;
-
+        
         if(destination_location_add_temp == 0){
             return false;
         }else if(destination_location_add_temp == 1){
@@ -983,7 +982,7 @@ $(document).ready(function () {
         }
 
         var random_id = $(this).data('rel');
-
+        alert(random_id);
         if(random_id == ''){
             $(".where-to-second").remove();
             $("#destination_location").remove();
@@ -1334,6 +1333,26 @@ $(document).ready(function () {
     function showPosition(position) {
         let lat = position.coords.latitude;
         let long = position.coords.longitude;
+
+        var is_chrome = /chrom(e|ium)/.test( navigator.userAgent.toLowerCase() );
+        var is_ssl    = 'https:' == document.location.protocol;
+        if( is_chrome && ! is_ssl ){
+            return false;
+        }
+
+        var google_map_pos = new google.maps.LatLng( lat, long );
+
+        /* Use Geocoder to get address */
+        var google_maps_geocoder = new google.maps.Geocoder();
+        google_maps_geocoder.geocode(
+            { 'latLng': google_map_pos },
+            function( results, status ) {
+                if ( status == google.maps.GeocoderStatus.OK && results[0] ) {
+                    console.log( results[0].formatted_address );
+                }
+            }
+        );
+        
         $('#address-input').val('Your Location');
         $('#address-latitude').val(lat);
         $('#address-longitude').val(long);
