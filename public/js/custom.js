@@ -3939,6 +3939,10 @@ function walletPaymentOPtions(payment_option_id)
         case 30:
                 payWithFlutterWave('', payment_option_id, '');
         break;
+
+        case 32:
+                paymentViaBraintree('', payment_option_id, ''); 
+        break;
     }
 
 }

@@ -31,7 +31,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','braintree');
         //,'easebuzz' 
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
@@ -409,6 +409,17 @@ class PaymentOptionController extends BaseController
                         'client_id' => $request->flutterwave_client_id,
                         'secret_key' => $request->flutterwave_secret_key,
                         'enc_key' => $request->flutterwave_enc_key
+                    ));
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'braintree')) {
+                    $validatedData = $request->validate([
+                        'braintree_merchant_id' => 'required',
+                        'braintree_public_key' => 'required',
+                        'braintree_private_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'merchant_id' => $request->braintree_merchant_id,
+                        'public_key' => $request->braintree_public_key,
+                        'private_key' => $request->braintree_private_key
                     ));
                 }
             }
