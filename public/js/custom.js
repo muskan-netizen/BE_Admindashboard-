@@ -3427,7 +3427,6 @@ $(document).ready(function () {
         });
     }
 
-    // *****************************  End tip after order place ****************************///
 
     $(document).on('click', '.validate_promo_code_btn', function () {
         let amount = $(this).attr('data-amount');
@@ -3870,6 +3869,17 @@ $(document).ready(function () {
                 if (order != '') {
                     //PayU
                     payWithPayU(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '32':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //PayU
+                    payphoneButton(address_id, payment_option_id, order);
                 }
                 else{
                     return false;
