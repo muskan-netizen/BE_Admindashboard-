@@ -771,6 +771,8 @@ $(document).ready(function () {
                         getDistance();
                         if($('input[name=is_for_friend]:checked').val()==1){
                             $('.for_friend_fields_div').removeClass('d-none');
+                            
+
                         }else{
                             $('.for_friend_fields_div').addClass('d-none');
                         }

@@ -144,8 +144,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     let tax_service_charges_percentage=0;
     let tax_delivery_charges_percentage=0;
     
+    let product_container_charges_tax_amount=0;
+
+    
+    let other_taxes=0;
     _.each(cart_details.products, function(product, key){
-        console.log(JSON.stringify(product));
+        //console.log(JSON.stringify(product));
        /* if (product.vendor.get_tax_fixed_fee != null) {
             tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
         }
@@ -158,8 +162,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         if (product.vendor.get_tax_delivery_charges != null) {
             tax_delivery_charges_percentage=product.vendor.get_tax_delivery_charges.tax_rate;
         }*/
-
-
+        
         /* --- Vendor Tax Get Percentage ---- */
         _.each(cart_details.taxRates, function(tax, index){
             if(product.vendor.fixed_fee_tax_id!=null){
@@ -188,7 +191,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         });
 
 
-        
+         
 
         /*console.log(tax_fixed_fee_percentage);
         if (product.vendor.get_tax_fixed_fee != null) {
@@ -216,6 +219,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         if ( cart_details.wallet_amount_used > 0  ) {
             total_wallet_amount_used=parseFloat(total_wallet_amount_used)+parseFloat(cart_details.wallet_amount_used);
         }
+
+        other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.delivery_charges)*tax_delivery_charges_percentage/100);
+           
         %>
         <div id="thead_<%= product.vendor.id %>">
             <div class="row">
@@ -347,7 +353,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <p class="p-0 m-0 alert-danger">{{ __('Container Charges') }} *</p>
                                 </div>
                                 <div class="col-md-2 col-sm-4 text-center">
-                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.container_charges) %></div>
+                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.container_charges) %> 
+                                    <% 
+                                    
+                                    /* --- Vendor Tax Get Percentage ---- */
+                                    _.each(cart_details.taxRates, function(tax, index){
+                                        if(vendor_product.product.container_charges_tax_id!=null){
+                                            if(vendor_product.product.container_charges_tax_id==index){
+                                                product_container_charges_tax_amount+=parseFloat(vendor_product.pvariant.container_charges)*parseFloat(tax.tax_rate)/100;
+                                            }
+                                        }                         
+                                    });
+                                    console.log("product_container_charges_tax_amount"+product_container_charges_tax_amount);
+                                     %></div>
                                 </div>
                                 <div class="col-md-7 col-sm-4 text-right">
                                     <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_container_charges) %></div>
@@ -431,7 +449,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     {{__($fixedFee)}} :</label>
                                 </div>
                             <div class="col-7">
-                                <%= product.vendor.fixed_fee_amount %>
+                            <%= product.vendor.fixed_fee_amount %> 
                             </div>
 
                         </div>
@@ -565,8 +583,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <hr class="my-2">
             <% }
-            let other_taxes=0;
-            other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.total_container_charges)*tax_container_charges_percentage/100)+(parseFloat(cart_details.delivery_charges)*tax_delivery_charges_percentage/100);
+            if(product_container_charges_tax_amount!=0){
+                other_taxes=other_taxes+product_container_charges_tax_amount;
+                console.log('product');
+            }else{
+                console.log('vendor');
+                other_taxes=other_taxes+(parseFloat(cart_details.total_container_charges)*tax_container_charges_percentage/100);
+            }
             if(price_bifurcation!=1){  %>
             <div class="row">
                 <div class="col-6">{{__('Tax')}}</div>
