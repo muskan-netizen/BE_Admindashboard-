@@ -558,7 +558,7 @@ $(document).ready(function () {
                         if(response.data.length != 0){
                             let vendors_template = _.template($('#vendors_template').html());
                             $("#vendor_main_div").append(vendors_template({results: response.data})).show();
-                            console.log(response.data.length);
+                            //console.log(response.data.length);
                             if(response.data.length == 1){
                                 $('.vendor-list').trigger('click');
                                 $('.table-responsive').remove();
@@ -699,7 +699,7 @@ $(document).ready(function () {
                     var current_amount = amount - response.data.new_amount;
                     let subscriptionAmout = $('#subscription-amout-h').val();
                     if(subscriptionAmout != undefined && subscriptionAmout > 0){
-                        console.log('response.data.new_amount', response.data.new_amount);
+                        //console.log('response.data.new_amount', response.data.new_amount);
                         var subscriptionPercent = $('#subscription-percent-h').val();
                         let newPayableAmount = current_amount - (subscriptionPercent * current_amount / 100);
                         $('#subscription-amout').text(response.data.currency_symbol+''+newPayableAmount);  
@@ -1338,7 +1338,7 @@ $(document).ready(function () {
     
     function errorcallback(positionerror) {
         if (window.console) {
-            console.log(positionerror);
+            //console.log(positionerror);
             $('#address-latitude').val('30.7120453');
             $('#address-longitude').val('76.8144185');
             $('#address-input').val('PR67+RQ Chandigarh, India');
@@ -1363,11 +1363,11 @@ $(document).ready(function () {
             { 'latLng': google_map_pos },
             function( results, status ) {
                 if ( status == google.maps.GeocoderStatus.OK && results[0] ) {
-                    //console.log( results[0].formatted_address );
+                    console.log( results[0].formatted_address );
                     //mylocationAdd = results[0].formatted_address;
-                    $('#address-input').val(results[0].formatted_address)
+                    $('#address-input').val(results[0].formatted_address);
                 }else{
-                    $('#address-input').val('Your Location')
+                    $('#address-input').val('Your Location');
                 }
             }
         );
