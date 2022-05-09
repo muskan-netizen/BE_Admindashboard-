@@ -1363,7 +1363,7 @@ $(document).ready(function () {
             { 'latLng': google_map_pos },
             function( results, status ) {
                 if ( status == google.maps.GeocoderStatus.OK && results[0] ) {
-                    console.log( results[0].formatted_address );
+                    //console.log( results[0].formatted_address );
                     //mylocationAdd = results[0].formatted_address;
                     $('#address-input').val(results[0].formatted_address);
                 }else{
