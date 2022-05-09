@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Front;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Front\FrontController;
 use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use Auth;
@@ -17,11 +17,12 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Models\UserVendor;
+use App\Models\CaregoryKycDoc;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
 use Log;
 
-class MvodafoneController extends Controller
+class MvodafoneController extends FrontController
 {
    use ApiResponser, Mvodafone;
 
@@ -86,8 +87,9 @@ class MvodafoneController extends Controller
     $number =  $this->orderNumber($request);
     $user = auth()->user();
     $this->credentials();
+
       $data  = [
-              'amount'              => $request->amt,
+              'amount'              => $this->getDollarCompareAmount($request->amt),
               'order_no'            => $number,
               'returnUrl'           => route('mvodafone.success'),
           ];
@@ -152,7 +154,7 @@ class MvodafoneController extends Controller
 
       $order = Order::where('order_number',$payment->transaction_id)->first();
       //dd($order);
-          if(isset($request->rID) && $request->rID != '')
+          if(isset($request->rCode) && $request->rCode == '101')
           {
            
             $order->payment_status = '1';
@@ -169,11 +171,13 @@ class MvodafoneController extends Controller
               'schedule_type' => null, 'scheduled_date_time' => null,
               'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
           ]);
+            CaregoryKycDoc::where('cart_id',$cartid)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
             CartAddon::where('cart_id', $cartid)->delete();
             CartCoupon::where('cart_id', $cartid)->delete();
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
-
+            // send sms 
+            $this->sendSuccessSMS($request, $order);
              // Send Notification
              if (!empty($order->vendors)) {
               foreach ($order->vendors as $vendor_value) {
@@ -217,7 +221,7 @@ class MvodafoneController extends Controller
 
     public function completeOrderWallet(Request $request,$payment)
     {
-       if(isset($request->rID) && $request->rID != '')
+      if(isset($request->rCode) && $request->rCode == '101')
           {
             $data = Payment::where('viva_order_id',$request->rID)->first();
             $user = auth()->user();
@@ -256,7 +260,7 @@ class MvodafoneController extends Controller
     {
       $user = auth()->user();
       $data = Payment::where('viva_order_id',$request->rID)->first();
-      if(isset($request->rID) && $request->rID != '')
+      if(isset($request->rCode) && $request->rCode == '101')
           {
             $subscription =explode('_',$data->transaction_id);
             $subscription =$subscription[0];
@@ -290,7 +294,7 @@ class MvodafoneController extends Controller
     public function completeOrderTip(Request $request,$payment)
     {
       $data = Payment::where('viva_order_id',$request->rID)->first();
-      if(isset($request->rID) && $request->rID != '')
+      if(isset($request->rCode) && $request->rCode == '101')
           {
             $order_number = explode('_',$data->transaction_id);
             $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[0], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $data->transaction_id]);

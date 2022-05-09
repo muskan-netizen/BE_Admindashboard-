@@ -419,7 +419,7 @@ class OrderController extends BaseController
             'vendors.cancel_request',
             'reports'
         ))->findOrFail($order_id);
-    //    return $order;
+            //    return $order;
        
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
@@ -489,7 +489,7 @@ class OrderController extends BaseController
          //return $vendor_order_statuses;
         
 
-        //pr($order->KYC_document->toArray());
+        //pr($order->KYC_document->toArray());`
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 'order' => $order,
             'vendor_order_statuses' => $vendor_order_statuses,
@@ -583,7 +583,7 @@ class OrderController extends BaseController
                     $order = Order::find($request->order_id);
 
                     //Refund to wallet
-                    if(($order->payment_option_id==4 || $order->payment_option_id==19)  && $order->payment_status==1){
+                    if( (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) && $request->status_option_id == 3){
                         
                         $orderRefund=new OrderRefund();
                         $orderRefund->user_id=$order->user_id;
@@ -603,11 +603,16 @@ class OrderController extends BaseController
                         $orderRefund->save();
 
 
-                        $previousWalletAmount=Wallet::where('holder_id',$order->user_id)->first()->balance;
-                        if(empty($previousWalletAmount)){
-                            $refundAmount=($order->wallet_amount_used+$order->payable_amount);
-                        }else{
-                            $refundAmount=(($order->wallet_amount_used+$order->payable_amount)+($previousWalletAmount/100));
+                        $refund_amount = $order->wallet_amount_used + $order->payable_amount;
+                        if($refund_amount > 0){
+                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                            if(!$transaction){
+                                $user = User::find($order->user_id);
+                                if($user){
+                                    $wallet = $user->wallet;
+                                    $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                                }
+                            }
                         }
                         
                         $wallet = User::find($order->user_id)->wallet;

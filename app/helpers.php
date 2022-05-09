@@ -741,3 +741,9 @@ function decimal_format($number,$format="")
     $digits = $preference['digit_after_decimal'] ?? 2;
     return number_format($number,$digits,'.',$format);
 }
+
+if (!function_exists('taxRates')) {
+    function taxRates(){
+        return App\Models\TaxRate::all();
+    }
+}

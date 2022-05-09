@@ -325,7 +325,7 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-
+        // dd($request->all());
         DB::beginTransaction();
         try {
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -466,6 +466,12 @@ class PickupDeliveryController extends FrontController{
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
+                
+                /*book for a friend*/
+                $order->type = $request->type;
+                $order->friend_name = $request->friendName;
+                $order->friend_phone_number = $request->friendPhoneNumber;
+                
                 $order->save();
                 $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
@@ -663,8 +669,17 @@ class PickupDeliveryController extends FrontController{
                 $client_do = Client::where('code',$unique)->first();
                 $call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
 
+                $type=$request->type??0;
+                $friendName=$request->friendName?? null;
+                $friendPhoneNumber=$request->friendPhoneNumber?? null;
+                if(empty($friendName) || empty($friendPhoneNumber)){
+                    $type=0;
+                }
                 $postdata =  [
                     'order_number' =>  $order->order_number,
+                    'order_type' =>  $order->type,
+                    'order_friend_name' =>  $order->friend_name,
+                    'order_number' =>  $order->friend_phone_number,
                     'barcode' => '',
                     'allocation_type' => 'a',
                     'task' => $request->tasks,
@@ -681,9 +696,12 @@ class PickupDeliveryController extends FrontController{
                     'customer_name' => $customer->name ?? 'Dummy Customer',
                     'recipient_email' => $request->email ?? $customer->email,
                     'recipient_phone' => $request->phone_number ?? $customer->phone_number,
-                    'customer_phone_number' => $customer->phone_number ?? rand(111111,11111)
+                    'customer_phone_number' => $customer->phone_number ?? rand(111111,11111),
+                    'type'=>$type,
+                    'friend_name'=>$friendName,
+                    'friend_phone_number'=>$friendPhoneNumber
                 ];
-                //pr($postdata);
+                // dd($postdata);
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);

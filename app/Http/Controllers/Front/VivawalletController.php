@@ -17,11 +17,13 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Models\UserVendor;
+use App\Models\CaregoryKycDoc;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
+use App\Http\Controllers\Front\FrontController;
 use Log;
 
-class VivawalletController extends Controller
+class VivawalletController extends FrontController
 {
    use ApiResponser, Vivawallet;
 
@@ -251,10 +253,13 @@ class VivawalletController extends Controller
               'schedule_type' => null, 'scheduled_date_time' => null,
               'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
           ]);
+             CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
             CartAddon::where('cart_id', $cartid)->delete();
             CartCoupon::where('cart_id', $cartid)->delete();
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
+            // send sms 
+            $this->sendSuccessSMS($request, $order);
 
             Payment::updateOrCreate(['viva_order_id'=>$request->s],['amount'=>0,'transaction_id'=>$request->s,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id,'user_id'=>auth()->id()]);
 

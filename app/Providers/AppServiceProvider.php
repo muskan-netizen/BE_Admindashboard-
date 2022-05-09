@@ -49,7 +49,7 @@ class AppServiceProvider extends ServiceProvider
         }
         $client_head = Client::where(['id' => 1])->first();
 
-        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree'];
+        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone'];
         $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = '';
         $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
         if($payment_options){
@@ -70,8 +70,13 @@ class AppServiceProvider extends ServiceProvider
                 if($option->code == 'cashfree'){
                     $cashfree_test_mode = ($option->test_mode == 0) ? false : true;
                 }
+                if($option->code == 'payphone'){
+                    $payphone_id = $creds->id??'';
+                    $payphone_token = $creds->token??'';
+                }
             }
         }
+        
 
         $count = 0;
         if($client_preference_detail){
@@ -99,9 +104,8 @@ class AppServiceProvider extends ServiceProvider
         view()->share('client_preference_detail', $client_preference_detail);
         view()->share('client_payment_options', $client_payment_options);
         view()->share('cashfree_test_mode', $cashfree_test_mode);
-        // view()->share('set_template', $set_template);
-
-
+        view()->share('payphone_id', $payphone_id??'');
+        view()->share('payPhoneToken', $payphone_token??'');
     }
 
     public function connectDynamicDb($request)

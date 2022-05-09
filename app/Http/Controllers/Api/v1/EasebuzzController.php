@@ -15,7 +15,8 @@ class EasebuzzController  extends BaseController
     use ApiResponser;
 
     private $MERCHANT_KEY;
-    private $SALT;
+    private $SALT; 
+    private $Sub_merchant;
    
 
     public function __construct() {
@@ -24,6 +25,7 @@ class EasebuzzController  extends BaseController
         $this->MERCHANT_KEY =  $json->easebuzz_merchant_key;
         $this->SALT =  $json->easebuzz_salt;
         $this->ENV = ($payOpt->test_mode == 1) ?  "test" : 'prod' ; 
+        $this->Sub_merchant = $json->easebuzz_Sub_merchant ;
     }
 
     public function order (Request $request){
@@ -90,6 +92,16 @@ class EasebuzzController  extends BaseController
             "country" => "India",
             "zipcode" => $user->address->first()->pincode,
         );
+        $sub_merchnt_id = '';
+        if($request->vendor_id){
+            $vendor = Vendor::select('id','easebuzz_sub_merchent_id')->where('id', $request->vendor_id)->first();
+            
+            $sub_merchnt_id = $vendor->easebuzz_sub_merchent_id ?? '';
+          
+        }
+        if(($this->Sub_merchant == 1) && ($sub_merchnt_id != '' )){
+            $postData['sub_merchant_id']= $sub_merchnt_id ;
+        }
        
         $easebuzzObj = new Easebuzz($this->MERCHANT_KEY, $this->SALT, $this->ENV);
         $response = $easebuzzObj->initiatePaymentAPI($postData);
