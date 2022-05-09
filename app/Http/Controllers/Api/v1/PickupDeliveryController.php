@@ -548,12 +548,20 @@ class PickupDeliveryController extends BaseController{
                 $team_tag = $unique."_".$vendor;
                 $product = Product::find($request->product_id);
                 $order_agent_tag = $product->tags??'';
+
+                
+                if ($customer->dial_code == "971") {
+                    $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                } else {                
+                    $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                }
+                
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
-                            'customer_phone_number' => $customer->phone_number??rand(111111,11111),
+                            'customer_phone_number' => $customerno??rand(111111,11111),
                             'customer_email' => $customer->email ?? '',
-                            'recipient_phone' => $request->phone_number ?? $customer->phone_number,
+                            'recipient_phone' => $request->phone_number ?? $customerno,
                             'recipient_email' => $request->email ?? $customer->email,
                             'task_description' => $request->task_description??null,
                             'allocation_type' => 'a',
