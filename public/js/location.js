@@ -704,7 +704,7 @@ $(document).ready(function () {
         }else{
             let lat = position.coords.latitude;
             let long = position.coords.longitude;
-            // displayLocation(lat, long);
+            displayLocation(lat, long);
         }
     }
 
@@ -778,64 +778,64 @@ $(document).ready(function () {
         });
     }
 
-    // function displayLocation(latitude, longitude, placeId='', location='') {
-    //     var geocoder;
-    //     geocoder = new google.maps.Geocoder();
-    //     var latlng = new google.maps.LatLng(latitude, longitude);
+     function displayLocation(latitude, longitude, placeId='', location='') {
+         var geocoder;
+         geocoder = new google.maps.Geocoder();
+         var latlng = new google.maps.LatLng(latitude, longitude);
 
-    //     const map = new google.maps.Map(document.getElementById('address-map'), {
-    //         center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-    //         zoom: 13
-    //     });
+         const map = new google.maps.Map(document.getElementById('address-map'), {
+             center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
+             zoom: 13
+         });
 
-    //     const marker = new google.maps.Marker({
-    //         map: map,
-    //         position: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
-    //     });
+         const marker = new google.maps.Marker({
+             map: map,
+             position: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
+         });
 
-    //     var geodata = { 'latLng': latlng };
-    //     if(placeId != ''){
-    //         geodata = { 'placeId': placeId };
-    //         // geodata.placeId = placeId;
-    //     }
+         var geodata = { 'latLng': latlng };
+         if(placeId != ''){
+             geodata = { 'placeId': placeId };
+             // geodata.placeId = placeId;
+         }
 
-    //     geocoder.geocode(geodata,
-    //         function (results, status) {
-    //             if (status == google.maps.GeocoderStatus.OK) {
-    //                 if (results[0]) {
-    //                     var add = results[0].formatted_address;
-    //                     var value = add.split(",");
-    //                     if(placeId == ''){
-    //                         placeId = results[0].place_id;
-    //                     }
-    //                     if(location != ''){
-    //                         add = location;
-    //                     }
+         geocoder.geocode(geodata,
+             function (results, status) {
+                 if (status == google.maps.GeocoderStatus.OK) {
+                     if (results[0]) {
+                         var add = results[0].formatted_address;
+                         var value = add.split(",");
+                         if(placeId == ''){
+                             placeId = results[0].place_id;
+                         }
+                         if(location != ''){
+                             add = location;
+                         }
 
-    //                     count = value.length;
-    //                     country = value[count - 1];
-    //                     state = value[count - 2];
-    //                     city = value[count - 3];
-    //                     if (!selected_address) {
-    //                         $("#address-place-id").val(placeId);
-    //                         $("#address-input").val(add);
-    //                         $("#address-latitude").val(latitude);
-    //                         $("#address-longitude").val(longitude);
-    //                         $(".homepage-address span").text(value).attr({ "title": value, "data-original-title": value });
-    //                         getHomePageCategoryMenu(latitude, longitude);
-    //                         getHomePage(latitude, longitude);
-    //                     }
-    //                 }
-    //                 else {
-    //                     // $("#address-input").val("address not found");
-    //                 }
-    //             }
-    //             else {
-    //                 $("#address-input").val("Geocoder failed due to: " + status);
-    //             }
-    //         }
-    //     );
-    // }
+                         count = value.length;
+                         country = value[count - 1];
+                         state = value[count - 2];
+                         city = value[count - 3];
+                         if (!selected_address) {
+                             $("#address-place-id").val(placeId);
+                             $("#address-input").val(add);
+                             $("#address-latitude").val(latitude);
+                             $("#address-longitude").val(longitude);
+                             $(".homepage-address span").text(value).attr({ "title": value, "data-original-title": value });
+                             getHomePageCategoryMenu(latitude, longitude);
+                             getHomePage(latitude, longitude);
+                         }
+                     }
+                     else {
+                         // $("#address-input").val("address not found");
+                     }
+                 }
+                 else {
+                     $("#address-input").val("Geocoder failed due to: " + status);
+                 }
+             }
+         );
+    }
 
 
     ////////////// *****************   home page category icon **************** //////////////////
