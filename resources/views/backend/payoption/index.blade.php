@@ -726,6 +726,31 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'braintree') )
+                    <div class="mt-2" id="braintree_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="braintree_merchant_id" class="mr-3">{{ __("Merchant ID") }}</label>
+                                    <input type="text" name="braintree_merchant_id" id="braintree_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="braintree_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="braintree_public_key" id="braintree_public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="braintree_private_key" class="mr-3">{{ __("Private Key") }}</label>
+                                    <input type="text" name="braintree_private_key" id="braintree_private_key" class="form-control" value="{{$private_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
                     @if ( (strtolower($opt->code) == 'payphone'))
                     <div class="mt-2" id="payphone_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">

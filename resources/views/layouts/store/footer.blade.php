@@ -200,6 +200,10 @@ gtag('config', 'G-5LPF1QP3Y3');
     var square_before_payment = "{{route('payment.square.beforePayment')}}";
     var square_create_payment = "{{route('payment.square.createPayment')}}";
 
+//////////////Braintree payment Routes
+    var braintree_before_payment = "{{route('payment.braintree.beforePayment')}}";
+    var braintree_create_payment = "{{route('payment.braintree.createPayment')}}"; 
+
 //////////////Ozow payment Routes
     var ozow_before_payment = "{{route('payment.ozow.beforePayment')}}";
     var ozow_create_payment = "{{route('payment.ozow.createPayment')}}";

@@ -26,7 +26,7 @@ $preference = $client_preference_detail;
                     @if($client_preference_detail->show_contact_us == 1)
 
                     @endif
-                    <div class="col-lg-3 col-md-6 pl-xl-3 mobile-border order-sm-3">
+                    <div class="col-lg-3 col-md-6 mobile-border order-sm-3">
                         <div class="sub-title">
                             <div class="footer-title mt-0 d-none d-md-block">
                                 <h4 class="mt-0">{{ __('Find Our App On Mobile') }}</h4>
