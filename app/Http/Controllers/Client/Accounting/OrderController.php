@@ -96,6 +96,9 @@ class OrderController extends Controller{
             ->addColumn('user_name', function($vendor_orders) {
                 return $vendor_orders->user ? $vendor_orders->user->name : '';
             })
+            ->addColumn('admin_commission', function($vendor_orders) {
+                return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+            })
             ->addColumn('order_status', function($vendor_orders) {
                 return $vendor_orders->OrderStatusOption->title;
             })

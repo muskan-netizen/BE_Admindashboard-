@@ -419,7 +419,7 @@ class OrderController extends BaseController
             'vendors.cancel_request',
             'reports'
         ))->findOrFail($order_id);
-    //    return $order;
+            //    return $order;
        
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
@@ -489,7 +489,7 @@ class OrderController extends BaseController
          //return $vendor_order_statuses;
         
 
-        //pr($order->KYC_document->toArray());
+        //pr($order->KYC_document->toArray());`
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 'order' => $order,
             'vendor_order_statuses' => $vendor_order_statuses,
