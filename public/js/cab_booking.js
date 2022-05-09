@@ -997,7 +997,7 @@ $(document).ready(function () {
         }
 
         var random_id = $(this).data('rel');
-        alert(random_id);
+        
         if(random_id == ''){
             $(".where-to-second").remove();
             $("#destination_location").remove();
@@ -1357,21 +1357,22 @@ $(document).ready(function () {
 
         var google_map_pos = new google.maps.LatLng( lat, long );
 
-        var mylocationAdd = '';
+        
         var google_maps_geocoder = new google.maps.Geocoder();
         google_maps_geocoder.geocode(
             { 'latLng': google_map_pos },
             function( results, status ) {
                 if ( status == google.maps.GeocoderStatus.OK && results[0] ) {
                     //console.log( results[0].formatted_address );
-                    mylocationAdd = results[0].formatted_address;
+                    //mylocationAdd = results[0].formatted_address;
+                    $('#address-input').val(results[0].formatted_address)
                 }else{
-                    mylocationAdd = 'Your Location';
+                    $('#address-input').val('Your Location')
                 }
             }
         );
-        if(mylocationAdd == ''){ mylocationAdd = 'Your Location';}
-        $('#address-input').val(mylocationAdd);
+        
+        //$('#address-input').val(mylocationAdd);
         $('#address-latitude').val(lat);
         $('#address-longitude').val(long);
         displayLocationCab(lat, long);
