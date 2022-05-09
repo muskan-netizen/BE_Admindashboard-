@@ -669,6 +669,12 @@ class PickupDeliveryController extends FrontController{
                 $client_do = Client::where('code',$unique)->first();
                 $call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
 
+                $type=$request->type??0;
+                $friendName=$request->friendName?? null;
+                $friendPhoneNumber=$request->friendPhoneNumber?? null;
+                if(empty($friendName) || empty($friendPhoneNumber)){
+                    $type=0;
+                }
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     'order_type' =>  $order->type,
@@ -691,9 +697,9 @@ class PickupDeliveryController extends FrontController{
                     'recipient_email' => $request->email ?? $customer->email,
                     'recipient_phone' => $request->phone_number ?? $customer->phone_number,
                     'customer_phone_number' => $customer->phone_number ?? rand(111111,11111),
-                    'type'=>$request->type??0,
-                    'friend_name'=>$request->friendName?? null,
-                    'friend_phone_number'=>$request->friendPhoneNumber?? null
+                    'type'=>$type,
+                    'friend_name'=>$friendName,
+                    'friend_phone_number'=>$friendPhoneNumber
                 ];
                 // dd($postdata);
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
