@@ -14,7 +14,7 @@ class BillingPricing extends Model
     }
 
     public function billingtimeframe(){
-        return $this->belongsTo('App\Models\BillingTimeframe', 'billing_timeframe_id')->select('id', 'title', 'status', 'is_custom', 'is_timelimit', 'standard_buffer_period', 'validity', 'validity_type');
+        return $this->belongsTo('App\Models\BillingTimeframe', 'billing_timeframe_id')->select('id', 'title', 'status', 'is_custom', 'is_lifetime', 'standard_buffer_period', 'validity', 'validity_type');
     }
 
     public function billingsubscriptions(){

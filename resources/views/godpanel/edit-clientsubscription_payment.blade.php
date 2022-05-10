@@ -27,7 +27,7 @@
                             <td>{{$subscriptiondata->client_name}}</td>
                             <td>{{$subscriptiondata->billing_plan_title}} <span class="badge bg-info" style="color:#fff;">{{$subscriptiondata->plan_type}}</span></td>
                             <td>{{$subscriptiondata->billing_timeframe_title}}</td>
-                            <td>{{$subscriptiondata->billing_price}}</td>
+                            <td><span id="real_subs_price">{{$subscriptiondata->billing_price}}</span></td>
                             <td>{{$subscriptiondata->start_date}}</td>
                             <td>{{$subscriptiondata->end_date}}</td>
                             <td>
@@ -121,7 +121,7 @@
                     <div class="col-md-6">
                         <div class="form-group" id="nameInput">
                             <label>{{ __('Amount Paid') }}</label>
-                            {!! Form::number('paid_amount', null, ['class'=>'form-control', 'required'=>'required', 'id'=>'paid_amount']) !!}
+                            {!! Form::number('paid_amount', $subscriptiondata->billing_price, ['class'=>'form-control', 'required'=>'required', 'id'=>'paid_amount']) !!}
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
@@ -130,7 +130,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>{{ __('Payment Date') }}</label>
-                            {!! Form::text('payment_date', null, ['class'=>'form-control', 'required'=>'required', 'id'=>'payment_date', 'placeholder'=>'dd-mm-yyyy', 'autocomplete'=>'off']) !!}
+                            {!! Form::text('payment_date', date('d-m-Y',time()), ['class'=>'form-control', 'required'=>'required', 'id'=>'payment_date', 'placeholder'=>'dd-mm-yyyy', 'autocomplete'=>'off']) !!}
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
