@@ -469,6 +469,79 @@ $(document).ready(function () {
         var payment_option_id = selected_option.data("payment_option_id");
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
+            // $('#subscription_payment').modal('hide');
+            if (payment_option_id == 4) {
+                stripe.createToken(card).then(function (result) {
+                    if (result.error) {
+                        $('#stripe_card_error').html(result.error.message);
+                        _this.attr("disabled", false);
+                    } else {
+                        $("#card_last_four_digit").val(result.token.card.last4);
+                        $("#card_expiry_month").val(result.token.card.exp_month);
+                        $("#card_expiry_year").val(result.token.card.exp_year);
+                        paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                    }
+                });
+            } else if (payment_option_id == 3) {
+                paymentViaPaypal('', payment_option_id);
+            } else if (payment_option_id == 8) {
+                inline.createToken().then(function (result) {
+                    if (result.error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: result.error.message,
+                        });
+                        // $('#yoco_card_error').html(result.error.message);
+                        _this.attr("disabled", false);
+                    } else {
+                        const token = result;
+                        paymentViaYoco(token.id, '', '');
+                    }
+                }).catch(function (error) {
+                    // Re-enable button now that request is complete
+                    _this.attr("disabled", false);
+                    //alert("error occured: " + error);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: "error occured: " + error,
+                        icon: "error",
+                        button: "OK",
+                    });
+                });
+            } else if (payment_option_id == 9) {
+                paymentViaPaylink('', '');
+            } else if (payment_option_id == 10) {
+                paymentViaRazorpay_wallet('', payment_option_id);
+            }
+            else if (payment_option_id == 12) {
+                paymentViaSimplify('', '');
+            }
+            else if (payment_option_id == 13) {
+                paymentViaSquare('', '');
+            } else if (payment_option_id == 14) {
+                paymentViaOzow('', '');
+            } else if (payment_option_id == 15) {
+                paymentViaPagarme('', '');
+            } else if (payment_option_id == 17) {
+                paymentViaCheckout('', '');
+            } else if (payment_option_id == 18) {
+                paymentViaAuthorize('', '');
+            } else if (payment_option_id == 19) {
+                paymentViaStripeFPX('', 19, '');
+            } else if (payment_option_id == 20) {
+                payWithKPG('');
+            }else if (payment_option_id == 21) {
+                payWithVivaWallet('');
+            }else if(payment_option_id == 22) {
+                payWithCcAvenue('');
+            } else if (payment_option_id == 24) {
+                paymentViaCashfree('');
+            } else if (payment_option_id == 26) {
+                paymentViaToyyibPay('');
+            } else if (payment_option_id == 25) {
+                payWithEasebuss('');
+            }
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -1277,6 +1350,8 @@ $(document).ready(function () {
     }
 
     window.placeOrderBeforePayment = function placeOrderBeforePayment(address_id = 0, payment_option_id, tip = 0) {
+        // alert("here");
+        // return false;
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
@@ -1323,10 +1398,10 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-
-    $(document).on("click", ".proceed_to_pay", function () {
+    $(document).on("click", ".proceed_to_pay", function () {       
+        $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
-        $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
+        // $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
         var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
 
         let address_id = $("input:radio[name='address_id']:checked").val();
@@ -3520,7 +3595,7 @@ $(document).ready(function () {
             break;
 
             case 32:
-                payphoneButton('','');
+                    payphoneButton('','');
             break;
         
         }
@@ -3965,7 +4040,11 @@ $(document).ready(function () {
         break;
 
         case 32:
-                    payphoneButton('', payment_option_id, '');
+                payphoneButton('', payment_option_id, '');
+        break;
+
+        case 32:
+                paymentViaBraintree('', payment_option_id, ''); 
         break;
     }
 

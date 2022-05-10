@@ -682,7 +682,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% } %>
             <div class="row">
                 <div class="col-6">
-                    <p class="total_amt m-0">{{__('Amount Payable')}}</p>
+                    <p class="total_amt m-0">{{__('Amount Payable')}} <small>(incl. tax)</small> </p>
                 </div>
                 <div class="col-6 text-right">
                     <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
@@ -1124,7 +1124,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <div class="modal-footer d-block text-center">
             <div class="row">
                 <div class="col-sm-12 p-0 d-flex flex-fill">
-                    <button type="button" class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}</button>
+                    <button type="button" style="width:100%;" class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}
+                        <img style="width:5%; display:none;" id="proceed_to_pay_loader" src="{{asset('assets/images/loader.gif')}}"/>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1758,9 +1760,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 var record = s_data[i];
                 // console.log(record);
                 out[record.name] = record.value;
-                var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
-                var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
-                // console.log(is_required);
+                var product_faq_id = $(dom_query+' input[name="'+record.name+'"]').attr('data-product_faq_id');
+                var is_required = $(dom_query+' input[name="'+record.name+'"]').attr('data-required');
+                console.log(is_required);
 
                 if((is_required)==1 && (record.value =='' )){
                     var errorMsg ="The "+ record.name +" field is required.";
@@ -1820,8 +1822,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 var record = s_data[i];
                 // console.log(record);
                 out[record.name] = record.value;
-                var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
-                var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
+                var product_faq_id = $(dom_query+' input[name="'+record.name+'"]').attr('data-product_faq_id');
+                var is_required = $(dom_query+' input[name="'+record.name+'"]').attr('data-required');
                 // console.log(is_required);
 
                 if((is_required)==1 && (record.value =='' )){

@@ -247,13 +247,14 @@
                     <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
-                <div class="for_friend_fields_div">
+                <div class="for_friend_fields_div px-2 py-2">
+                    <h4 class="pb-2">Friend's Details</h4>
                     <div class="form-group">
-                        <label for="friendName">Friend Name</label>
-                        <input type="text" class="form-control" name="friendName" placeholder="Friend Name">
+                        <label for="friendName">Friend's Name</label>
+                        <input type="text" class="form-control" name="friendName" placeholder="Name">
                     </div>
                     <div class="form-group">
-                        <label for="friendPhoneNumber">Friend Phone Number</label>
+                        <label for="friendPhoneNumber">Friend's Phone Number</label>
                         <input type="number" class="form-control" name="friendPhoneNumber" placeholder="Phone Number">
                     </div>
                 </div>

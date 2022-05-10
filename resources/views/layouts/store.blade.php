@@ -55,6 +55,11 @@ if(isset($set_template))
       @include('layouts.store/left-sidebar-template-one')
       @endif
     </header>
+
+    @if(isset($set_template)  && $set_template->template_id == 4 && (\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify') && (\Request::route()->getName() != 'user.profile') && (\Request::route()->getName() != 'user.addressBook') && (\Request::route()->getName() != 'user.orders') && (\Request::route()->getName() != 'user.wishlists') && (\Request::route()->getName() != 'user.loyalty') && (\Request::route()->getName() != 'user.wallet') && (\Request::route()->getName() != 'user.subscription.plans') && (\Request::route()->getName() != 'user.changePassword'))
+    @include('frontend.template_four.layouts.vendor_type')
+    @endif 
+
     @yield('content')
     @if(isset($set_template)  && $set_template->template_id == 1)
     @include('layouts.store/footer-content-template-one')
@@ -71,4 +76,4 @@ if(isset($set_template))
     @endif
     @include('layouts.store/footer')
 </body>
-</html> 
+</html>

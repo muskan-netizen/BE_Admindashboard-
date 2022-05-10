@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\Front;
 
 use DB;
+use Log;
 use Auth;
 use Session;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager};
-use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate};
-use Log;
 class CartController extends FrontController
 {
     use ApiResponser,CartManager;
@@ -800,6 +800,7 @@ class CartController extends FrontController
                     {
                         $coupon_product_discount = $coupon_product_discount + $quantity_price + $quantity_container_charges;
                     }
+                    $opt_quantity_price_new = 0.00;
                     if($prod->addon->isNotEmpty()){
                         foreach ($prod->addon as $ck => $addons) {
                             if(isset($addons->option)){
@@ -814,6 +815,7 @@ class CartController extends FrontController
                                 $addons->option->price = decimal_format($opt_price_in_currency);
                                 $addons->option->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
                                 $addons->option->quantity_price = $opt_quantity_price;
+                                $opt_quantity_price_new += $opt_quantity_price;
                                 $payable_amount = $payable_amount + $opt_quantity_price;
                                 $quantity_price = $quantity_price + $opt_quantity_price;
                                 if(($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids)) || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids)))
@@ -1043,10 +1045,12 @@ class CartController extends FrontController
                    
                 $slotsDate = findSlot('',$vendorData->vendor->id,'');
                 $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
-
+                    
                 $vendor_service_fee_percentage_amount = 0;
                 if($vendorData->vendor->service_fee_percent > 0){
-                    $vendor_service_fee_percentage_amount = ($vendor_products_total_amount * $vendorData->vendor->service_fee_percent) / 100 ;
+                    $amount_for_service = $opt_quantity_price_new+$vendor_products_total_amount;
+                    // dd($opt_quantity_price_new.' '.$vendor_products_total_amount.' '.$vendorData->vendor->service_fee_percent);
+                    $vendor_service_fee_percentage_amount = ($amount_for_service * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
 
