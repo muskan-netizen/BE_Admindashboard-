@@ -62,6 +62,8 @@
 
                 <?php
                 $creds = json_decode($opt->credentials);
+                $id = (isset($creds->id)) ? $creds->id : '';
+                $token = (isset($creds->token)) ? $creds->token : '';
                 $username = (isset($creds->username)) ? $creds->username : '';
                 $password = (isset($creds->password)) ? $creds->password : '';
                 $signature = (isset($creds->signature)) ? $creds->signature : '';
@@ -80,6 +82,8 @@
                 $merchant_key = (isset($creds->merchant_key)) ? $creds->merchant_key : '';
                 $passphrase = (isset($creds->passphrase)) ? $creds->passphrase : '';
                 $merchant_account = (isset($creds->merchant_account)) ? $creds->merchant_account : '';
+                $merchant_salt_v1 = (isset($creds->merchant_salt_v1)) ? $creds->merchant_salt_v1 : '';
+                $merchant_salt_v2 = (isset($creds->merchant_salt_v2)) ? $creds->merchant_salt_v2 : '';
                 $multiplier = (isset($creds->multiplier)) ? $creds->multiplier : '';
                 $login_id = (isset($creds->login_id)) ? $creds->login_id : '';
                 $profile_id = (isset($creds->profile_id)) ? $creds->profile_id : '';
@@ -203,7 +207,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="kongapay_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <label for="kongapay_api_key" class="mr-3">{{ __("API Key") }}</label>
                                     <input type="text" name="kongapay_api_key" id="kongapay_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
@@ -365,13 +369,13 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="paylink_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <label for="paylink_api_key" class="mr-3">{{ __("API Key") }}</label>
                                     <input type="password" name="paylink_api_key" id="paylink_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="paylink_api_secret_key" class="mr-3">{{ __("Api Secret Key") }}</label>
+                                    <label for="paylink_api_secret_key" class="mr-3">{{ __("API Secret Key") }}</label>
                                     <input type="password" name="paylink_api_secret_key" id="paylink_api_secret_key" class="form-control" value="{{$api_secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
@@ -384,13 +388,13 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="razorpay_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <label for="razorpay_api_key" class="mr-3">{{ __("API Key") }}</label>
                                     <input type="text" name="razorpay_api_key" id="razorpay_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="razorpay_api_secret_key" class="mr-3">{{ __("Api Secret Key") }}</label>
+                                    <label for="razorpay_api_secret_key" class="mr-3">{{ __("API Secret Key") }}</label>
                                     <input type="text" name="razorpay_api_secret_key" id="razorpay_api_secret_key" class="form-control" value="{{$api_secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
@@ -480,7 +484,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="ozow_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <label for="ozow_api_key" class="mr-3">{{ __("API Key") }}</label>
                                     <input type="text" name="ozow_api_key" id="ozow_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
@@ -493,7 +497,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="pagarme_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <label for="pagarme_api_key" class="mr-3">{{ __("API Key") }}</label>
                                     <input type="text" name="pagarme_api_key" id="pagarme_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
@@ -589,7 +593,7 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group mb-2">
-                                        <label for="toyyibpay_redirect_uri" class="mr-3">{{ __("Redirect Uri") }}</label>
+                                        <label for="toyyibpay_redirect_uri" class="mr-3">{{ __("Redirect URL") }}</label>
                                         <input type="password" name="toyyibpay_redirect_uri" id="toyyibpay_redirect_uri" class="form-control" value="{{$toyyibpay_redirect_uri??''}}" @if($opt->status == 1) required @endif>
                                     </div>
                                 </div>
@@ -724,6 +728,85 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'payu') )
+                    <div class="mt-2" id="payu_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="payu_merchant_key" class="mr-3">{{ __("Merchant Key") }}</label>
+                                    <input type="text" name="payu_merchant_key" id="payu_merchant_key" class="form-control" value="{{$merchant_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="payu_merchant_salt_v1" class="mr-3">{{ __("Merchant Salt V1") }}</label>
+                                    <input type="password" name="payu_merchant_salt_v1" id="payu_merchant_salt_v1" class="form-control" value="{{$merchant_salt_v1}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pay_merchant_salt_v2" class="mr-3">{{ __("Merchant Salt V2") }}</label>
+                                    <input type="password" name="payu_merchant_salt_v2" id="payu_merchant_salt_v2" class="form-control" value="{{$merchant_salt_v2}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'braintree') )
+                    <div class="mt-2" id="braintree_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="braintree_merchant_id" class="mr-3">{{ __("Merchant ID") }}</label>
+                                    <input type="text" name="braintree_merchant_id" id="braintree_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="braintree_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="braintree_public_key" id="braintree_public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="braintree_private_key" class="mr-3">{{ __("Private Key") }}</label>
+                                    <input type="text" name="braintree_private_key" id="braintree_private_key" class="form-control" value="{{$private_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'payphone'))
+                    <div class="mt-2" id="payphone_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="payphone_id" class="mr-3">{{ __("ID") }}</label>
+                                    <input type="text" name="payphone_id" id="payphone_id" class="form-control" value="{{$id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="payphone_client_id" class="mr-3">{{ __("Client ID") }}</label>
+                                    <input type="text" name="payphone_client_id" id="payphone_client_id" class="form-control" value="{{$client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="payphone_token" class="mr-3">{{ __("Token") }}</label>
+                                    <input type="text" name="payphone_token" id="payphone_token" class="form-control" value="{{$token}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
             </div>
             @endforeach
@@ -812,7 +895,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="pagarme_payout_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <label for="pagarme_payout_api_key" class="mr-3">{{ __("API Key") }}</label>
                                     <input type="text" name="pagarme_payout_api_key" id="pagarme_payout_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>

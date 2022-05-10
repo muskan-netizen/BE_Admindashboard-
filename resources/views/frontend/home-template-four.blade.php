@@ -4,7 +4,7 @@
 @endsection
 @section('css')
 <style>
-.cardbanner {height:300px;}
+.cardbanner {height:400px;}
 .shimmer_effect .grid-row .cards {margin-bottom: 40px;}
 .shimmer_effect .grid-row .card_icon{display:none;}
 .shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
@@ -19,12 +19,7 @@
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
-	<div class="container-fliud mt-4 mb-5 shimmer_effect">
-		<div class="row mt-0">
-			<div class="col-md-2 offset-md-5 cards mb-3">
-				<div class="al_tabs loading"></div>
-			</div>
-		</div>
+	<div class="container-fliud mb-5 shimmer_effect al_tabsShimmer">
 		<div class="row">
 			<div class="col-md-10 offset-md-1 cards">
 				<div class="cardbanner loading"></div>
@@ -144,72 +139,6 @@
 <!-- shimmer_effect end -->
 <!-- gradinet sec start -->
 <article class="al_gradientSec">
-	@if($client_preference_detail->business_type != 'taxi')
-		<div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif">
-			<div class="container-fluid text-center py-3" >
-				<div class="row align-items-center justify-content-center position-initial">
-					<div class="al_count_tabs_fourdesign d-none d-sm-block"  >
-								@if($mod_count > 1)
-								<ul class="nav nav-tabs navigation_tab_al nav-material tab-icons vendor_mods" id="top-tab" role="tablist">
-									@if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
-									<li class="navigation-tab-item" role="presentation">
-										<a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
-											{{$Delivery}}
-										</a>
-									</li>
-									@endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
-									<li class="navigation-tab-item " role="presentation">
-										<a class="nav-link al_dinein {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
-											{{$Dine_In}}
-										</a>
-									</li>
-									@endif @if($client_preference_detail->takeaway_check==1)
-									<li class="navigation-tab-item " role="presentation">
-										@php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
-										<a class="nav-link al_takeway {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
-											{{$Takeaway}}
-										</a>
-									</li>
-									@endif
-									<div class="navigation-tab-overlay_alnew_design"></div>
-								</ul>
-								@endif
-							</div>
-
-							<div class="al_count_tabs_new_design al_tab_mobile position-fixed d-block d-sm-none">
-								@if($mod_count > 1)
-								<ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods d-flex justify-content-around" id="top-tab" role="tablist">
-									@if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
-									<li class="navigation-tab-item pr-lg-3" role="presentation">
-										<a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
-											<span><img src="{{asset('images/al_custom3.png')}}" alt=""></span>
-											{{$Delivery}}
-										</a>
-									</li>
-									@endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
-									<li class="navigation-tab-item pr-lg-3 " role="presentation">
-										<a class="nav-link al_dinein {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
-											<span><img src="{{asset('images/al_custom1.png')}}" alt=""></span>
-											{{$Dine_In}}
-										</a>
-									</li>
-									@endif @if($client_preference_detail->takeaway_check==1)
-									<li class="navigation-tab-item  pr-lg-3" role="presentation">
-										@php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
-										<a class="nav-link al_takeway {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
-											<span><img src="{{asset('images/al_custom2.png')}}" alt=""></span>
-											{{$Takeaway}}
-										</a>
-									</li>
-									@endif
-								</ul>
-								@endif
-							</div>
-				</div>
-			</div>
-		</div>
-
-	@endif
 	@if(count($banners))
 	<section class="home-slider-wrapper"  >
 		<div class="container-fluid d-flex justify-content-center">
@@ -364,7 +293,8 @@
 									<%}%> @endif @endif
 							<div class="product-description_list">
 								<p class="al_ratingNumber mb-0">
-									<span class="rating-number"><%=product.averageRating %></span>
+									<!-- <span class="rating-number"><%=product.averageRating %></span> -->
+									<span class="Stars" style="--rating: <%=product.averageRating %>;" aria-label="Rating of this product is <%=product.averageRating %> out of 5."></span>
 								</p>
 								<p class="al_product_category mb-0">
 									<span>{{__('In')}} <%=product.category %></span>
@@ -519,7 +449,7 @@
 					</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
-		<section class="suppliers-section">
+		<section class="suppliers-section" id="homepage_trending_vendors_div">
 			<div class="container"  >
 
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between ">

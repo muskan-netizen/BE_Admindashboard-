@@ -136,7 +136,7 @@ function convertDateTimeInTimeZone($date, $timezone, $format = 'Y-m-d H:i:s'){
 function getClientPreferenceDetail()
 {
     $client_preference_detail = ClientPreference::first();
-    list($r, $g, $b) = sscanf($client_preference_detail->web_color, "#%02x%02x%02x");
+    list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
     $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
     return $client_preference_detail;
 }
@@ -740,4 +740,10 @@ function decimal_format($number,$format="")
     $preference = session()->get('preferences');
     $digits = $preference['digit_after_decimal'] ?? 2;
     return number_format($number,$digits,'.',$format);
+}
+
+if (!function_exists('taxRates')) {
+    function taxRates(){
+        return App\Models\TaxRate::all();
+    }
 }
