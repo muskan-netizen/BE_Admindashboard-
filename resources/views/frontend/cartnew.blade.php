@@ -1527,7 +1527,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
 </script>
 @if(in_array('payphone',$client_payment_options))
-<script src="https://pay.payphonetodoesposible.com/api/button/js?appId=9dcXgkutC0aVTlmEQjOwoQ"></script>
+<script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
 @endif
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>

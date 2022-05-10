@@ -3518,6 +3518,10 @@ $(document).ready(function () {
             case 30:
                     payWithFlutterWave('','');
             break;
+
+            case 32:
+                payphoneButton('','');
+            break;
         
         }
 
@@ -3958,6 +3962,10 @@ $(document).ready(function () {
 
         case 30:
                 payWithFlutterWave('', payment_option_id, '');
+        break;
+
+        case 32:
+                    payphoneButton('', payment_option_id, '');
         break;
     }
 

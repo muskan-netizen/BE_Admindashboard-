@@ -228,7 +228,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="" id="subscription_payment_form">
+      <form action="" id="subscription_payment_form"> 
         @csrf
         @method('POST')
         <div>
@@ -322,6 +322,9 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                         <span class="error text-danger" id="checkout_card_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'payphone') { %>
+                    <div id="pp-button"></div>
+                <% } %>
             <% } %>
         <% }); %>
     <% } %>
@@ -348,12 +351,16 @@ ul li {margin: 0 0 10px;color: #6c757d;}
 @if(in_array('checkout',$client_payment_options))
 <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 @endif
+@if(in_array('payphone',$client_payment_options))
+<script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
+@endif
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_payphone_url = "{{route('payphone.createHash')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";

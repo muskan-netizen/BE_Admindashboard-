@@ -1052,14 +1052,14 @@ $(document).ready(function() {
                                             id: model.id,
                                             clientTxId: model.clientTxId
                                             }).then(function(value){
-                                                console.log(value);
                                             //EN ESTA SECCIÓN SE RECIBE LA RESPUESTA Y SE MUESTRA AL USUARIO
                                             if (value.transactionStatus == "Approved"){
-                                                alert("Pago " + value.transactionId + " recibido, estado " + value.transactionStatus );
+                                                //alert("Pago " + value.transactionId + " recibido, estado " + value.transactionStatus );
+                                              var resUrl = resp.returnUrl+'?id='+value.transactionId+'&clientTransactionId='+resp.orderNo+'&status='+value.transactionStatus;
+                                              window.location.href= resUrl;
                                             }
                                         }).catch(function(err){
                                         console.log(err);
-                                        alert(err);
                                         });
                                 }
                     }).render("#pp-button");
@@ -1067,8 +1067,6 @@ $(document).ready(function() {
           },
           error: function(error) {
               console.log(error);
-              alert(error);
-
           }
         
         });
