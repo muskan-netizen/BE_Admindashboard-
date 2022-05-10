@@ -3896,6 +3896,17 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '34':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //payWithWindcave
+                    payWithWindcave(order);
+                }
+                else{
+                    return false;
+                }
+            break;
         
         }
 

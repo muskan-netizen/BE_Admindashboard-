@@ -199,6 +199,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//Easypaisa routes
 	Route::post('payment/easypaisa', 'Front\EasypaisaController@createHash')->name('easypaisa.createHash');
 	Route::get('payment/easypaisa', 'Front\EasypaisaController@successPage')->name('easypaisa.success');
+
+	//Easypaisa routes
+	Route::post('payment/windcave', 'Front\WindcaveController@createHash')->name('windcave.createHash');
+	Route::get('payment/windcave', 'Front\WindcaveController@successPage')->name('windcave.success');
 	
 	//payPhone routes
 	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
