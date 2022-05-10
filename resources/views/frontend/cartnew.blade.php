@@ -1751,9 +1751,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 var record = s_data[i];
                 // console.log(record);
                 out[record.name] = record.value;
-                var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
-                var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
-                // console.log(is_required);
+                var product_faq_id = $(dom_query+' input[name="'+record.name+'"]').attr('data-product_faq_id');
+                var is_required = $(dom_query+' input[name="'+record.name+'"]').attr('data-required');
+                console.log(is_required);
 
                 if((is_required)==1 && (record.value =='' )){
                     var errorMsg ="The "+ record.name +" field is required.";
@@ -1813,8 +1813,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 var record = s_data[i];
                 // console.log(record);
                 out[record.name] = record.value;
-                var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
-                var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
+                var product_faq_id = $(dom_query+' input[name="'+record.name+'"]').attr('data-product_faq_id');
+                var is_required = $(dom_query+' input[name="'+record.name+'"]').attr('data-required');
                 // console.log(is_required);
 
                 if((is_required)==1 && (record.value =='' )){

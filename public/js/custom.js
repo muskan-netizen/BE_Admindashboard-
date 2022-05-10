@@ -1350,8 +1350,8 @@ $(document).ready(function () {
     }
 
     window.placeOrderBeforePayment = function placeOrderBeforePayment(address_id = 0, payment_option_id, tip = 0) {
-        alert("here");
-        return false;
+        // alert("here");
+        // return false;
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
