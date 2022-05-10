@@ -12,7 +12,7 @@ jQuery(window).scroll(function () {
     }
 });
 $(document).ready(function () {
-
+    getLocation();
     if (window.location.pathname == '/') {
         let latitude = "";
         let longitude = "";
@@ -704,7 +704,7 @@ $(document).ready(function () {
         }else{
             let lat = position.coords.latitude;
             let long = position.coords.longitude;
-            //displayLocation(lat, long);
+            displayLocation(lat, long);
         }
     }
 
