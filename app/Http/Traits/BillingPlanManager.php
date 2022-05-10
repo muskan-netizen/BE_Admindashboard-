@@ -9,9 +9,13 @@ use App\Models\{BillingPlan, BillingPlanType, BillingTimeframe, BillingPricing, 
 trait BillingPlanManager{
 
   
-  public function getClientList()
+  public function getClientList($type='')
   {
-    $clientlist = Client::orderBy('name', 'asc')->where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->get()->pluck('name','id');
+    if($type==''):
+        $clientlist = Client::orderBy('name', 'asc')->where('status', 1)->where('is_deleted', 0)->get()->pluck('name','id');
+    else:
+        $clientlist = Client::orderBy('name', 'asc')->where('status', 1)->where('is_deleted', 0)->where('client_type', $type)->get()->pluck('name','id');
+    endif;
     return $clientlist;
   }
 
@@ -25,6 +29,12 @@ trait BillingPlanManager{
   {
     $days_month_year = ['day'=>'day', 'month'=>'month', 'year'=>'year'];
     return $days_month_year;
+  }
+
+  public function gettClientTypeList()
+  {
+    $client_type = ['1'=>'Live', '2'=>'Demo'];
+    return $client_type;
   }
 
   public function gettPaymentStatusList()
