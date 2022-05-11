@@ -826,6 +826,25 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'paytech'))
+                    <div class="mt-2" id="paytech_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="paytech_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="paytech_key" id="windcave_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="paytech_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="text" name="paytech_secret_key" id="paytech_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
             </div>
             @endforeach

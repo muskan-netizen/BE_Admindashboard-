@@ -3599,8 +3599,11 @@ $(document).ready(function () {
             break;
 
             case 34:
-              
                     payWithWindcave('','');
+            break;
+
+            case 35:
+                payWithPaytech('','');
             break;
         
         }
@@ -3921,6 +3924,16 @@ $(document).ready(function () {
                         return false;
                     }
             break;
+
+            case '35':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    payWithPaytech(order);
+                }
+                else{
+                    return false;
+                }
+            break;
         
         }
 
@@ -4074,6 +4087,10 @@ $(document).ready(function () {
 
         case 34:
                 payWithWindcave('', payment_option_id, ''); 
+        break;
+
+        case 35:
+                payWithPaytech('', payment_option_id, ''); 
         break;
     }
 
