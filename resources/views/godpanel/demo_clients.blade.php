@@ -33,9 +33,6 @@
 
                             </div>
                         </div>
-                        <div class="col-sm-4 text-right">
-                            <a class="btn btn-info waves-effect waves-light text-sm-right" href="{{route('client.create')}}"><i class="mdi mdi-plus-circle mr-1"></i> Add </a>
-                        </div>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-centered table-nowrap table-striped" id="products-datatable">
@@ -49,7 +46,7 @@
                                     <th>{{ __("DB Name") }}</th>
                                     <th>{{ __("SUB Domain") }}</th>
                                     <th>{{ __("Client Code") }}</th>
-                                    <th style="width: 85px;">{{ __("Action") }}</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -65,14 +62,7 @@
                                     <td> {{$client->database_name}} </td>
                                     <td><a target="_blank" href="{{$client->sub_domain_url}}">{{$client->sub_domain }}{{env('SUBMAINDOMAIN') }}</a> </td>
                                     <td> {{$client->code}} </td>
-                                    <td>
-                                        <a href="{{route('client.edit', $client->id)}}" class="btn btn-primary-outlineaction-icon p-0"> 
-                                            <i class="mdi mdi-square-edit-outline"></i>
-                                        </a>
-                                      
-                                        
-                                    </td>
-                                  
+                                    
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -88,29 +78,7 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function() {
-        $.ajaxSetup({
-            headers: {'X-CSRF-TOKEN': $('input[name="_token"]').val()}
-        });
-        $(document).on("click",".delete-client",function() {
-            var url = $(this).data('url');
-            var client_id = $(this).data('client_id');
-            if(confirm('Are you sure? You want to delete this client.')) {
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    dataType: 'json',
-                    data: {client_id:client_id},
-                    headers: {Accept: "application/json"},
-                    success: function(response) {
-                        $("#promo_code_list_main_div").html('');
-                        if (response.status == "Success") {
-                            $('#tr_'+client_id).remove();
-                        }
-                    }
-                });
-            }
-            return false;
-        });
+        
     }); 
 </script>
 @endsection

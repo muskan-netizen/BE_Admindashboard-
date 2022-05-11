@@ -40,19 +40,19 @@ class VendorOrderDispatcherStatus extends Model
         case 3:
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_3_1.png');
-                $status_data['driver_status'] = __('Driver heading to the store');
+                $status_data['driver_status'] = __('Driver heading to pickup location');
             } else {
                 $status_data['icon'] = asset('assets/icons/driver_3_2.png');
-                $status_data['driver_status'] = __('Driver heading to you');
+                $status_data['driver_status'] = __('Driver heading to drop-off location');
             }
         break;
         case 4:
             if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_4_1.png');
-                $status_data['driver_status'] = __('Driver waiting for your order');
+                $status_data['driver_status'] = __('Driver waiting to pickup your order');
             } else {
                 $status_data['icon'] = asset('assets/icons/driver_4_2.png');
-                $status_data['driver_status'] = __('Driver arrived at your location');
+                $status_data['driver_status'] = __('Driver arrived at drop-off location');
             }
         break;
         case 5:

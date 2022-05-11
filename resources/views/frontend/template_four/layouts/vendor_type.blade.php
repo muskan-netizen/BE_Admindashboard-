@@ -1,5 +1,4 @@
-
-@if($client_preference_detail->business_type != 'taxi')
+@if($client_preference_detail->business_type != 'taxi' && (\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify') && (\Request::route()->getName() != 'user.profile') && (\Request::route()->getName() != 'user.addressBook') && (\Request::route()->getName() != 'user.orders') && (\Request::route()->getName() != 'user.wishlists') && (\Request::route()->getName() != 'user.loyalty') && (\Request::route()->getName() != 'user.wallet') && (\Request::route()->getName() != 'user.subscription.plans') && (\Request::route()->getName() != 'user.changePassword') && (\Request::route()->getName() != 'showCart') && (\Request::route()->getName() != 'order.success') && (\Request::route()->getName() != 'order.return.success'))
 <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif">
 			<div class="container-fluid text-center py-3" >
 				<div class="row align-items-center justify-content-center position-initial">
