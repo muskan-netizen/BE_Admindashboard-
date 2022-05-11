@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, WalletController, FrontController};
 use Auth, Log, Redirect;
-use App\Models\{PaymentOption, Cart, CaregoryKycDoc,SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProduct};
+use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, CartDeliveryFee, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, Transaction};
 
-class BraintreeController extends Controller
+class BraintreeController extends FrontController
 {
     use \App\Http\Traits\BraintreePaymentManager;
 	use \App\Http\Traits\ApiResponser;
@@ -32,51 +32,23 @@ class BraintreeController extends Controller
         {
             $data['come_from'] = 'web';
         }
-        $token = $this->createToken();
+        $data['token'] = $this->createToken();
     	return view('frontend.payment_gatway.braintree')->with(['data' => $data]);
     }
     public function createPayment(Request $request)
     {
-        Log::info("braintree Create Payment");
-        Log::info($request->all());
         if($request->come_from == "app")
         {
             $user = User::where('auth_token', $request->auth_token)->first();
             Auth::login($user);
         }
     	$user = Auth::user();
-    	$cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-        $amount = $this->getDollarCompareAmount($request->amount);
-    	$data = $request->all();
-    	$request['amount'] = $amount*100;
-    	
-        if($request->payment_from == 'cart'){
-            $request['description'] = 'Order Checkout';
-            if($request->has('order_number')){
-                $request['reference'] = $request->order_number;
-            }
-        }
-        elseif($request->payment_from == 'wallet'){
-            $request['description'] = 'Wallet Checkout';
-            $request['reference'] = $user->id;
-        }
-        elseif($request->payment_from == 'tip'){
-            $request['description'] = 'Tip Checkout';
-            if($request->has('order_number')){
-                $request['reference'] = $request->order_number;
-            }
-        }
-        elseif($request->payment_from == 'subscription'){
-            $request['description'] = 'Subscription Checkout';
-            if($request->has('subscription_id')){
-                $request['reference'] = $request->subscription_id;
-            }
-        }
-    	$payment_id = $this->createBraintreePayment($request->all());
-    	$request['amount'] = $amount;
-	    if(isset($payment_id) && !is_null($payment_id))
+        $request['amount'] = $this->getDollarCompareAmount($request->amount);
+    	$payment_id = $this->createTransaction($request->all());
+    	$request['tranRef'] = $payment_id ;
+	    if(!is_null($payment_id))
 	    {
-	        $returnUrl = $this->sucessPayment($request,$payment_id);
+	        $returnUrl = $this->sucessPayment($request);
 	    }
 	    else {
 	        $returnUrl = $this->failedPayment($request);
@@ -84,13 +56,8 @@ class BraintreeController extends Controller
     	
         return Redirect::to(url($returnUrl));
     }
-    public function sucessPayment($request, $transactionId)
+    public function sucessPayment($request)
     {
-        if($request->come_from == "app")
-        {
-            $user = User::where('auth_token', $request->auth_token)->first();
-            Auth::login($user);
-        }
         $user = Auth::user();
     	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
@@ -98,12 +65,12 @@ class BraintreeController extends Controller
             if ($order) {
                 $order->payment_status = 1;
                 $order->save();
-                $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                $payment_exists = Payment::where('transaction_id', $request->tranRef)->first();
                 if (!$payment_exists) {
                     Payment::insert([
                         'date' => date('Y-m-d'),
                         'order_id' => $order->id,
-                        'transaction_id' => $transactionId,
+                        'transaction_id' => $request->tranRef,
                         'balance_transaction' => $request->amount,
                         'type' => 'cart'
                     ]);
@@ -114,15 +81,12 @@ class BraintreeController extends Controller
 
                     // Remove cart
                     $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-                    CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                     Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                     CartAddon::where('cart_id', $cart->id)->delete();
                     CartCoupon::where('cart_id', $cart->id)->delete();
                     CartProduct::where('cart_id', $cart->id)->delete();
                     CartProductPrescription::where('cart_id', $cart->id)->delete();
-
-                    // send success sms
-                    $this->sendSuccessSMS($request, $order);
+                    CartDeliveryFee::where('cart_id', $cart->id)->delete();
 
                     // Send Notification
                     if (!empty($order->vendors)) {
@@ -138,43 +102,43 @@ class BraintreeController extends Controller
                 }
                 if($request->come_from == 'app')
                 {
-                    $returnUrl = route('payment.gateway.return.response').'/?gateway=braintree'.'&status=200&transaction_id='.$transactionId.'&order='.$order_number;
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$request->tranRef.'&order='.$order_number;
                 }else{
                     $returnUrl = route('order.return.success');
                 }
                 return $returnUrl;
             }
         } elseif($request->payment_from == 'wallet'){
-            $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $transactionId]);
+            $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $request->tranRef]);
             $walletController = new WalletController();
             $walletController->creditWallet($request);
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=braintree'.'&status=200&transaction_id='.$transactionId;
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$request->tranRef;
             }else{
                 $returnUrl = route('user.wallet');
             }
             return $returnUrl;
         }
         elseif($request->payment_from == 'tip'){
-            $request->request->add(['order_number' => $request->order_number, 'tip_amount' => $request->amount, 'transaction_id' => $transactionId]);
+            $request->request->add(['order_number' => $request->order_number, 'tip_amount' => $request->amount, 'transaction_id' => $request->tranRef]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=braintree'.'&status=200&transaction_id='.$transactionId;
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$request->tranRef;
             }else{
                 $returnUrl = route('user.orders');
             }
             return $returnUrl;
         }
         elseif($request->payment_from == 'subscription'){
-            $request->request->add(['payment_option_id' => 13, 'transaction_id' => $transactionId]);
+            $request->request->add(['payment_option_id' => 27, 'transaction_id' => $request->tranRef]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=braintree'.'&status=200&transaction_id='.$transactionId;
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab'.'&status=200&transaction_id='.$request->tranRef;
             }else{
                 $returnUrl = route('user.subscription.plans');
             }
@@ -199,7 +163,7 @@ class BraintreeController extends Controller
             Order::where('id', $order->id)->delete();
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=braintree&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab&status=0';
             }else{
                 $returnUrl = route('showCart');
             }
@@ -208,7 +172,7 @@ class BraintreeController extends Controller
         elseif($request->payment_from == 'wallet'){
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=braintree&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab&status=0';
             }else{
                 $returnUrl = route('user.wallet');
             }
@@ -217,7 +181,7 @@ class BraintreeController extends Controller
         elseif($request->payment_from == 'tip'){
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=braintree&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab&status=0';
             }else{
                 $returnUrl = route('user.orders');
             }
@@ -226,7 +190,7 @@ class BraintreeController extends Controller
         elseif($request->payment_from == 'subscription'){
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=braintree&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=paytab&status=0';
             }else{
                 $returnUrl = route('user.subscription.plans');
             }

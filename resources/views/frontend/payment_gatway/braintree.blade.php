@@ -44,23 +44,58 @@
             </div>
         </div>
     </div>
-  <div id="dropin-container"></div>
-  <button id="submit-button" class="button button--small button--green">Purchase</button>
+  <div id="dropin-wrapper">
+    <div id="checkout-message"></div>
+    <div class="container">
+      <div id="dropin-container"></div>
+      <button id="submit-button" class="button button--small button--green">Submit payment</button>
+    </div>
+  </div>
+  <form class="al_payment_gatewayForm" id="braintree-payment-form" action="{{route('payment.braintree.createPayment')}}" method="POST">
+    @forelse($data as $key=>$value)
+    <input type="hidden" name="{{$key}}" value="{{$value}}">
+    @empty
+    @endforelse
+    @csrf
+    <input type="hidden" name="paymentMethodNonce" id="paymentMethodNonce">
+    <input type="hidden" name="deviceData" id="deviceData">
+  </form>
 
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://js.braintreegateway.com/web/dropin/1.33.1/js/dropin.js"></script>
+  <!-- includes the Braintree JS client SDK -->
+  <script src="http://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://js.braintreegateway.com/web/dropin/1.29.0/js/dropin.min.js"></script>
+  <script src="https://js.braintreegateway.com/web/3.77.0/js/client.min.js"></script>
+  <script src="https://js.braintreegateway.com/web/3.77.0/js/data-collector.min.js"></script>
   <script type="text/javascript">
     var button = document.querySelector('#submit-button');
-
     braintree.dropin.create({
-      authorization: 'sandbox_g42y39zw_348pk9cgf3bgyw2b',
+      authorization: "{{$data['token']}}",
       selector: '#dropin-container'
     }, function (err, instance) {
       button.addEventListener('click', function () {
         instance.requestPaymentMethod(function (err, payload) {
-          // Submit payload.nonce to your server
+          console.log(payload.nonce);
+          $('#paymentMethodNonce').val(payload.nonce);
+          $('#braintree-payment-form').submit();
         });
       })
+    });
+
+    braintree.client.create({
+      authorization: "{{$data['token']}}"
+    }).then(function (clientInstance) {
+      // Creation of any other components...
+      return braintree.dataCollector.create({
+        client: clientInstance,
+        paypal: true
+      }).then(function (dataCollectorInstance) {
+        // At this point, you should access the dataCollectorInstance.deviceData value and provide it
+        // to your server, e.g. by injecting it into your form as a hidden input.
+        var deviceData = dataCollectorInstance.deviceData;
+        $('#deviceData').val(deviceData);
+      });
+    }).catch(function (err) {
+      // Handle error in creation of components
     });
   </script>
 </body>
