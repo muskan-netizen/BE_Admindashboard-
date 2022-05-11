@@ -46,7 +46,7 @@
     </div>
   <div id="dropin-wrapper">
     <div id="checkout-message"></div>
-    <div class="container">
+    <div class="container text-center">
       <div id="dropin-container"></div>
       <button id="submit-button" class="button button--small button--green">Submit payment</button>
     </div>

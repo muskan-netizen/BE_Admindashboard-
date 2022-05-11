@@ -6,6 +6,16 @@
         <script src="{{asset('assets/js/jquery-3.1.1.min.js')}}"></script>
         <script src="{{asset('assets/js/vendor.min.js')}}"></script>
         <script src="{{asset('assets/js/jquery-ui.min.js')}}" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+        <style type="text/css">
+            
+            body.authentication-bg {
+                background-color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;
+                background-size: cover;
+                background-position: center;
+                }
+
+        </style>
+    
     </head>
     @php
     $clientData = App\Models\Client::first();
@@ -90,5 +100,6 @@
 
         @include('layouts.shared.footer-script')
         <script src="{{asset('assets/js/app.min.js')}}"></script>
+       
     </body>
 </html>

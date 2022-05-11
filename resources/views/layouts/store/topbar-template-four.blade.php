@@ -114,10 +114,10 @@ $preference = $client_preference_detail;
                                                 <label class="input-group-text" for="inputGroupSelect01"><i class="fa fa-globe" aria-hidden="true"></i></label>
                                             </div>
                                             <select class="custom-select" id="inputGroupSelect01">
-                                                <option selected>Language</option>
-                                                <option value="1">English</option>
-                                                <option value="2">Arabic</option>
-                                                <option value="3">Spanish</option>
+                                                <option>Language</option>
+                                                @foreach($languageList as $key => $listl)
+                                                <option {{$applocale ==  $listl->language->sort_code ?  'selected' : ''}} value="{{$listl->language_id}}">{{$listl->language->name}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
 
@@ -514,10 +514,10 @@ $preference = $client_preference_detail;
                                                 <label class="input-group-text" for="inputGroupSelect01"><i class="fa fa-globe" aria-hidden="true"></i></label>
                                             </div>
                                             <select class="custom-select" id="inputGroupSelect01">
-                                                <option selected>Language</option>
-                                                <option value="1">English</option>
-                                                <option value="2">Arabic</option>
-                                                <option value="3">Spanish</option>
+                                                <option>Language</option>
+                                                @foreach($languageList as $key => $listl)
+                                                <option {{$applocale ==  $listl->language->sort_code ?  'selected' : ''}} value="{{$listl->language_id}}">{{$listl->language->name}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
 
