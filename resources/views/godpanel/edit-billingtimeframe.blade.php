@@ -21,7 +21,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-12">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('title', __('Status'),['class' => 'control-label']) !!}
                             <div class="mt-md-1">
@@ -30,7 +30,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-12">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('title', __('Customised'),['class' => 'control-label']) !!}
                             <div class="mt-md-1">
@@ -39,11 +39,11 @@
                         </div>
                     </div>
 
-                    <div class="col-md-12">
+                    <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('title', __('Time Limit'),['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Lifetime'),['class' => 'control-label']) !!}
                             <div class="mt-md-1">
-                                <input type="checkbox" data-plugin="switchery" name="is_timelimit" id="is_timelimit" class="form-control timelimit" data-color="#43bee1" {{($billingtimeframe->is_timelimit == 1) ? 'checked' : ''}}>
+                                <input type="checkbox" data-plugin="switchery" name="is_lifetime" id="is_lifetime" class="form-control timelimit" data-color="#43bee1" {{($billingtimeframe->is_lifetime == 1) ? 'checked' : ''}}>
                             </div>
                         </div>
                     </div>

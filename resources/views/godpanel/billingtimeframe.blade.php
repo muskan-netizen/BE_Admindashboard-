@@ -51,7 +51,7 @@
                                 <tr>
                                     <th>{{ __('Title') }}</th>
                                     <th>{{ __('Customised') }}</th>
-                                    <th>{{ __('Time Limit') }}</th>
+                                    <th>{{ __('Lifetime') }}</th>
                                     <th>{{ __('Validity') }}</th>
                                     <th>{{ __('Buffer Period (Days)') }}</th>
                                     <th>{{ __('Status') }}</th>
@@ -123,7 +123,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         {!! Form::label('title', __('Status'),['class' => 'control-label']) !!}
                                         <div class="mt-md-1">
@@ -132,7 +132,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         {!! Form::label('title', __('Customised'),['class' => 'control-label']) !!}
                                         <div class="mt-md-1">
@@ -141,11 +141,11 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12">
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        {!! Form::label('title', __('Time Limit'),['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Lifetime'),['class' => 'control-label']) !!}
                                         <div class="mt-md-1">
-                                            <input type="checkbox" data-plugin="switchery" name="is_timelimit" id="is_timelimit" class="form-control timelimit" data-color="#43bee1" checked='checked'>
+                                            <input type="checkbox" data-plugin="switchery" name="is_lifetime" id="is_lifetime" class="form-control timelimit" data-color="#43bee1">
                                         </div>
                                     </div>
                                 </div>
@@ -238,10 +238,10 @@
 
                 $("#edit-billing-timeframe .timelimit").on("change", function() {
                     if($(this).is(":checked")){
-                        $("#div_buffer_period_edit,#div_validity_edit,#div_validity_type_edit").show();
-                    }else{
                         $("#div_buffer_period_edit,#div_validity_edit,#div_validity_type_edit").hide();
                         $("#standard_buffer_period_edit,#validity_edit").val(0);
+                    }else{
+                        $("#div_buffer_period_edit,#div_validity_edit,#div_validity_type_edit").show();
                     }
                 });
                 $("#edit-billing-timeframe .timelimit").change();
@@ -287,12 +287,11 @@
 
     $("#add-billing-timeframe .timelimit").on("change", function() {
         if($(this).is(":checked")){
-            $("#div_buffer_period,#div_validity,#div_validity_type").show();
-        }else{
             $("#div_buffer_period,#div_validity,#div_validity_type").hide();
             $("#standard_buffer_period,#validity").val(0);
+        }else{
+            $("#div_buffer_period,#div_validity,#div_validity_type").show();
         }
-        
     });
 
     

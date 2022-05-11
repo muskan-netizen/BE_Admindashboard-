@@ -38,6 +38,7 @@ Route::group(['prefix' => '/godpanel'], function () {
 		Route::get('billingpricings/edit/{slug}', 'Godpanel\billingController@editBillingPricing')->name('billingpricing.edit');
         Route::post('billingpricings/updateStatus/{slug}', 'Godpanel\billingController@updateBillingPricingStatus')->name('billingpricing.updateStatus');
 
+		Route::get('democlients', 'Godpanel\billingController@getDemoClientList')->name('democlients');
 		Route::get('clientsubscriptions', 'Godpanel\billingController@getClientSubscription')->name('clientsubscription');
 		Route::get('clientsubscriptions/add', 'Godpanel\billingController@addClientSubscription')->name('clientsubscription.add');
 		Route::post('clientsubscriptions/save', 'Godpanel\billingController@saveClientSubscription')->name('clientsubscription.save');
