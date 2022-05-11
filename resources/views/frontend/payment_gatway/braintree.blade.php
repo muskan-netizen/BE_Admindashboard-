@@ -46,8 +46,10 @@
     </div>
   <div id="dropin-wrapper">
     <div id="checkout-message"></div>
-    <div id="dropin-container"></div>
-    <button id="submit-button" class="button button--small button--green">Submit payment</button>
+    <div class="container">
+      <div id="dropin-container"></div>
+      <button id="submit-button" class="button button--small button--green">Submit payment</button>
+    </div>
   </div>
   <form class="al_payment_gatewayForm" id="braintree-payment-form" action="{{route('payment.braintree.createPayment')}}" method="POST">
     @forelse($data as $key=>$value)
