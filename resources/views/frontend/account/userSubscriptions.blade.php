@@ -424,8 +424,11 @@ ul li {margin: 0 0 10px;color: #6c757d;}
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 @endif
 @if(in_array('flutterwave',$client_payment_options))
-<script src="https://checkout.flutterwave.com/v3.js"></script>
+<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
-<script src="{{asset('js/payment.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
+
+
 
 @endsection

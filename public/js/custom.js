@@ -541,6 +541,8 @@ $(document).ready(function () {
                 paymentViaToyyibPay('');
             } else if (payment_option_id == 25) {
                 payWithEasebuss('');
+            }else if (payment_option_id == 33) {
+                paymentViaBraintree('');
             }
         } else {
             _this.attr("disabled", false);
@@ -1350,8 +1352,6 @@ $(document).ready(function () {
     }
 
     window.placeOrderBeforePayment = function placeOrderBeforePayment(address_id = 0, payment_option_id, tip = 0) {
-        // alert("here");
-        // return false;
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
@@ -3911,6 +3911,15 @@ $(document).ready(function () {
                 else{
                     return false;
                 }
+            break;
+
+            case '33':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaBraintree(address_id, order);
+                    } else {
+                        return false;
+                    }
             break;
         
         }

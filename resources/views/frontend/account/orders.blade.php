@@ -1820,6 +1820,7 @@
     <script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
     @endif
     <script src="{{ asset('js/payment.js') }}"></script>
+    <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
     <script type="text/javascript">
         $(document).delegate(".topup_wallet_btn_tip", "click", function() {
             $('#topup_wallet').modal('show');

@@ -861,7 +861,6 @@ $(document).ready(function() {
 
 /////////////////////////////////////////////Square Pamyent Gateway /////////////////////////////////////////
     window.paymentViaBraintree = function paymentViaBraintree(address_id,order){
-        alert('112233');
         let total_amount = 0;
         let tip = 0;
         let tipElement = $("#cart_tip_amount");
@@ -896,7 +895,7 @@ $(document).ready(function() {
             data.order_number = $("#order_number").val();
         }
         data.amount = total_amount;
-        data.payment_option_id =13;
+        data.payment_option_id =33;
         data._token = $('input[name=_token]').val(); 
         $.redirect(braintree_before_payment, data); 
     }

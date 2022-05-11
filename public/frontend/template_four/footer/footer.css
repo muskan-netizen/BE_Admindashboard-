@@ -52,6 +52,9 @@ ul{margin: 0;}
 .al_footer_template_four .footer-theme .sub-title li{
     padding: 0;
 }
+.al_footer_template_four .footer-theme .sub-title .store-btn li{
+    padding: 0 5px;
+}
 .al_footer_template_four  .payment-card-bottom li{
     display: inline-block;
 }
