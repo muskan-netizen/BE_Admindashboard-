@@ -53,7 +53,7 @@ class VendorSimpelExport implements FromCollection, WithHeadings, WithMapping{
         }
         $collection = collect();
         return $collection->push($dataArra);
-        pr(collect($dataArra));
+     //   pr(collect($dataArra));
     }
 
     public function headings(): array{
@@ -78,9 +78,9 @@ class VendorSimpelExport implements FromCollection, WithHeadings, WithMapping{
              __('Commission Monthly'),
         ];
         $EasebuzzSubMerchent = EasebuzzSubMerchent();
-            if($EasebuzzSubMerchent ==1 ){
-                $heding[]=__("EaseBuzz Sub Merchent Id");
-            }
+        if($EasebuzzSubMerchent ==1 ){
+            $heding[]=__("EaseBuzz Sub Merchent Id");
+        }
       
         foreach ($vendor_registration_documents as $vendor_registration_document) {
             array_push($heding , $vendor_registration_document->primary->slug);
