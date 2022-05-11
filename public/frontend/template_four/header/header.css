@@ -489,7 +489,7 @@ h2.homepage-address{
     -webkit-transform: scale(1);transform: scale(1);
 }
 .menu_navigation_al_four .slick-list{
-    overflow-x: clip;
+    overflow-x: inherit;
     overflow-y: visible;
 }
 .al_new_wrapper_design .menu_navigation_al_four .slick-next{
