@@ -99,7 +99,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                                 <h2 class="py-1">User Document</h2>
                                             </div>
                                         @endif
-                                        <div class="alDocumentsSection">
+                                        <div class="row alDocumentsSection">
                                             @foreach ($user_registration_documents as $vendor_registration_document)
                                                 @if (isset($vendor_registration_document->primary->slug) && !empty($vendor_registration_document->primary->slug))
                                                     @if (strtolower($vendor_registration_document->file_type) == 'selector')

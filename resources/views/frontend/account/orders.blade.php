@@ -1816,7 +1816,8 @@
     @if(in_array('flutterwave',$client_payment_options))
     <script src="https://checkout.flutterwave.com/v3.js"></script>
     @endif
-    <script src="{{ asset('js/payment.js') }}"></script>
+    <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
+    <script type="text/javascript"  src="{{ asset('js/payment.js') }}"></script>
     <script type="text/javascript">
         $(document).delegate(".topup_wallet_btn_tip", "click", function() {
             $('#topup_wallet').modal('show');
