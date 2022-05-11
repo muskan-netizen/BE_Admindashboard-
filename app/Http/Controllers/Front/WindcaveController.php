@@ -40,7 +40,7 @@ class WindcaveController extends FrontController
         $json = json_decode($payOpt->credentials);
         $this->appId = $json->app_id;
         $this->app_key = $json->api_key;
-        $this->token = base64_encode($json->appId.':'.$this->app_key);
+        $this->token = base64_encode($this->appId.':'.$this->app_key);
         if ($payOpt->test_mode == '1') {
             $this->app_url = 'https://sec.windcave.com/api/v1/sessions';
         } else {
@@ -87,7 +87,7 @@ class WindcaveController extends FrontController
    
          $request->amt = $amt;
         }
-
+        $request->request->add(['amt'=>$amt]);
         return $time;
     }
 
@@ -104,6 +104,7 @@ class WindcaveController extends FrontController
             "callbackUrls" => ["approved"=> route('windcave.success'), "declined"=> route('windcave.success'), "cancelled"=> route('windcave.success') ],
             "notificationUrl" => route('windcave.success')
         );
+        \Log::info(json_encode($data));
         $url = $this->postCurl($data,$this->token);
         return json_encode($url->links[1]);
     }
@@ -130,6 +131,7 @@ class WindcaveController extends FrontController
             \Log::info(curl_error($ch));
         }
         curl_close($ch);
+        \Log::info($result);
         return json_decode($result); 
     }
 
