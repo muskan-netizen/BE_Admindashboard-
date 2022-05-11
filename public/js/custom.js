@@ -2117,7 +2117,7 @@ $(document).ready(function () {
                 //alert(parseFloat($('#gross_amount').text()));
                 var payable_amount=((parseFloat($('#gross_amount').text()) -   (subscription_discount + lol + wall ))    +   parseFloat(tip)  );
                 $("#cart_total_payable_amount").html( currency +   parseFloat(payable_amount + other_taxes).toFixed(parseInt(digit_count))   );
-                $("input[name='cart_total_payable_amount']").val(  payable_amount+other_taxes .toFixed(parseInt(digit_count))   );
+                $("input[name='cart_total_payable_amount']").val(  parseFloat(payable_amount + other_taxes).toFixed(parseInt(digit_count))   );
             }
             if(parseFloat(amount_payable)+parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
@@ -3597,6 +3597,11 @@ $(document).ready(function () {
             case 32:
                     payphoneButton('','');
             break;
+
+            case 34:
+              
+                    payWithWindcave('','');
+            break;
         
         }
 
@@ -4054,8 +4059,12 @@ $(document).ready(function () {
                 payphoneButton('', payment_option_id, '');
         break;
 
-        case 32:
+        case 33:
                 paymentViaBraintree('', payment_option_id, ''); 
+        break;
+
+        case 34:
+                payWithWindcave('', payment_option_id, ''); 
         break;
     }
 

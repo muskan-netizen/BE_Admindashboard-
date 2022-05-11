@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Redirect;
 use Log;
 
-class WindcaveController extends FrontController
+class PaytechController extends FrontController
 {
     use ApiResponser;
 
@@ -36,15 +36,17 @@ class WindcaveController extends FrontController
 
     public function __construct()
     {
-        $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'windcave')->where('status', 1)->first();
+        $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'payteach')->where('status', 1)->first();
         $json = json_decode($payOpt->credentials);
-        $this->appId = $json->app_id;
+        $this->api_secret = $json->api_secret;
         $this->app_key = $json->api_key;
         $this->token = base64_encode($this->appId.':'.$this->app_key);
         if ($payOpt->test_mode == '1') {
-            $this->app_url = 'https://sec.windcave.com/api/v1/sessions';
+            $this->env = 'test';
+            $this->app_url = 'https://paytech.sn/api';
         } else {
-            $this->app_url = 'https://sec.windcave.com/api/v1/sessions';
+            $this->env = 'prod';
+            $this->app_url = 'https://paytech.sn/api';
         }
     }
 
@@ -94,45 +96,29 @@ class WindcaveController extends FrontController
     public function createHash(Request $request)
     {
         $order_number =  $this->orderNumber($request);
-        $data = array(
-            "type" => 'purchase',
-            "amount" => round($request->amt),
-            "currency" => 'FJD',
-            "merchantReference" => $order_number,
-            "storeCard" => true,
-            "storedCardIndicator" => 'credentialonfileinitial',
-            "callbackUrls" => ["approved"=> route('windcave.success').'?oid='.$order_number, "declined"=> route('windcave.fail').'?oid='.$order_number, "cancelled"=> route('windcave.fail').'?oid='.$order_number ],
-            "notificationUrl" => route('windcave.success').'?oid='.$order_number
-        );
-        $url = $this->postCurl($data,$this->token);
-        return json_encode($url->links[1]);
+
+        $postFields = array ("item_name" => 'Test Item', "item_price" => round($request->amt) , "currency" => "xof" , "command_ref" =>   $order_number , "command_name" =>   '' , "env" =>   $this->env , "success_url" =>   route('windcave.success') , "ipn_url" =>   route('windcave.success') , "cancel_url" =>  route('windcave.fail') , "custom_field" =>$order_number);
+
+        $jsonResponse = post ($this->app_url.'/payment/request-payment',$postFields,["API_KEY: " . $this->api_key , "API_SECRET: " . $this->api_secret]); 
+
+        return json_encode($jsonResponse);
     }
 
 
-    private function postCurl($data,$token=null):object{
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->app_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($data));
-        $headers = array();
-        $headers[] = 'Accept: */*';
-        if(!is_null($token)){
-
-           $headers[] = "Authorization: Basic ${token}";
-            // dd( $headers);
-        }
-      $headers[] = 'Content-Type: application/json';
-         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            // echo 'Error:' . curl_error($ch);
-            \Log::info(curl_error($ch));
-        }
-        curl_close($ch);
-        \Log::info($result);
-        return json_decode($result); 
+    function post ( $url , $data = [], $header = []) { 
+        $strPostField = http_build_query ( $data );  
+        
+        $ch = curl_init ( $url ); 
+        curl_setopt ( $ch , CURLOPT_CUSTOMREQUEST , "POST" ); 
+        curl_setopt ( $ch , CURLOPT_POSTFIELDS , $strPostField ); 
+        curl_setopt ( $ch , CURLOPT_RETURNTRANSFER , true ); 
+        curl_setopt ( $ch , CURLOPT_SSL_VERIFYPEER , 0 ); 
+        curl_setopt ( $ch , CURLOPT_SSL_VERIFYHOST , 0 ); 
+        curl_setopt ( $ch , CURLOPT_HTTPHEADER , array_merge ( $header , [ 'Content-Type: application/x-www-form-urlencoded;charset=utf-8' , 'Content-Length: ' .mb_strlen ( $strPostField ) ])) ;  
+        
+        return curl_exec ($ch); 
     }
+
 
 
     public function successPage(Request $request)

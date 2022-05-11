@@ -202,7 +202,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Easypaisa routes
 	Route::post('payment/windcave', 'Front\WindcaveController@createHash')->name('windcave.createHash');
-	Route::get('payment/windcave', 'Front\WindcaveController@successPage')->name('windcave.success');
+	Route::get('payment/windcave/success', 'Front\WindcaveController@successPage')->name('windcave.success');
+	Route::get('payment/windcave/fail', 'Front\WindcaveController@failPage')->name('windcave.fail');
 	
 	//payPhone routes
 	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
