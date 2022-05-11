@@ -5,7 +5,7 @@ use Auth, Log, Config;
 trait BraintreePaymentManager{
 
   public function init(){
-    $gateway = new Braintree\Gateway([
+    $gateway = new \Braintree\Gateway([
       'environment' => 'sandbox',
       'merchantId' => $this->merchant_id,
       'publicKey' => $this->public_key,
@@ -14,12 +14,20 @@ trait BraintreePaymentManager{
     return $gateway;
   }
   public function createToken(){
-    $customer = $this->createCustomer();
-    dd($customer);
-  }
-  public function createCustomer()
-  {
     $gateway = $this->init();
+    $customer = $this->createCustomer($gateway);
+    if($customer->success)
+    {
+      $aCustomerId = $customer->customer->id;
+      $clientToken = $gateway->clientToken()->generate([
+        "customerId" => $aCustomerId
+      ]);
+      return $clientToken;
+    }
+    return null;
+  }
+  public function createCustomer($gateway)
+  {
     $result = $gateway->customer()->create([
       'firstName' => 'Mike',
       'lastName' => 'Jones',
@@ -30,8 +38,22 @@ trait BraintreePaymentManager{
       'website' => 'http://example.com'
     ]);
     return $result;
-    // $result->success;
-    // $result->customer->id;
+  }
+  public function createTransaction($data)
+  {
+    $gateway = $this->init();
+    $result = $gateway->transaction()->sale([
+      'amount' => '10.00',
+      'paymentMethodNonce' => $data['paymentMethodNonce'],
+      'deviceData' => $data['deviceData'],
+      'options' => [
+        'submitForSettlement' => True
+      ]
+    ]);
+    if($result->success){
+      return $result->transaction->id;
+    }
+    return null;
   }
 
 
