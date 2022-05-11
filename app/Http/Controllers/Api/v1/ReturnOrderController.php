@@ -198,6 +198,9 @@ class ReturnOrderController extends BaseController{
                 $email_template_content = '';
                 $email_template = EmailTemplate::where('id', 4)->first();
                 if($email_template){
+                    //for changeing the value upto 2 decimal
+                    $order_vendor_product->price = number_format((float)$order_vendor_product->price, 2, '.', '') ?? $order_vendor_product->price;
+                    
                     $email_template_content = $email_template->content;
                     $email_template_content = str_ireplace("{product_image}", $order_vendor_product->image['image_fit'].'200/200'.$order_vendor_product->image['image_path'], $email_template_content);
                     $email_template_content = str_ireplace("{product_name}", $order_vendor_product->product->title, $email_template_content);
