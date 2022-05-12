@@ -2085,8 +2085,8 @@ $(document).ready(function () {
     }
     $(document).on('keyup', '#custom_tip_amount', function () {
         var other_taxes=parseFloat($('#other_taxes').text());
-        // var subscription_discount=parseFloat($('#total_subscription_discount').text());
-        // if (isNaN(subscription_discount)) subscription_discount = 0;
+        var subscription_discount=parseFloat($('#total_subscription_discount').text());
+        if (isNaN(subscription_discount)) subscription_discount = 0;
         var tip = $(this).val();
         if ((tip == '') || (isNaN(tip))) {
             tip = 0;
