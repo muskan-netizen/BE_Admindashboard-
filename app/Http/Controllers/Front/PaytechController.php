@@ -97,10 +97,10 @@ class PaytechController extends FrontController
     {
         $order_number =  $this->orderNumber($request);
         //['XOF', 'EUR', 'USD', 'CAD','GBP','MAD']
-        $postFields = array ("item_name" => 'Test Item', "item_price" => round($request->amt) , "currency" => "USD" , "command_ref" =>   'testing'.$order_number , "command_name" =>   'Testing gateway' , "env" =>   $this->env , "success_url" =>   'http://royo-order.com/payment/windcave/success' , "ipn_url" => 'https://royo-order.com/payment/windcave/success' , "cancel_url" =>  'http://royo-order.com/payment/windcave/fail' , "custom_field" =>'testing'.$order_number);
-        \Log::info(json_encode($postFields));
-        $jsonResponse = $this->post ('https://paytech.sn/api/payment/request-payment',$postFields,["API_KEY: " . $this->api_key , "API_SECRET: " . $this->api_secret]); 
-        //dd(["API_KEY: " . $this->api_key , "API_SECRET: " . $this->api_secret]);
+        $postFields = array ("item_name" => 'Test Item', "item_price" => round($request->amt) , "currency" => "USD" , "command_ref" =>   'testing'.$order_number , "command_name" =>   'Testing gateway' , "env" =>   $this->env , "success_url" =>   route('paytech.success') , "ipn_url" => 'https://royo-order.com/payment/windcave/success' , "cancel_url" =>  route('paytech.success') , "custom_field" =>'testing'.$order_number);
+        \Log::info(json_encode($postFields)); 
+        $jsonResponse = $this->post ($this->app_url.'/payment/request-payment',$postFields,["API_KEY: " . $this->api_key , "API_SECRET: " . $this->api_secret]); 
+        \Log::info(json_encode(["API_KEY: " . $this->api_key , "API_SECRET: " . $this->api_secret]));
         return json_encode($jsonResponse);
     }
 
