@@ -2085,8 +2085,8 @@ $(document).ready(function () {
     }
     $(document).on('keyup', '#custom_tip_amount', function () {
         var other_taxes=parseFloat($('#other_taxes').text());
-        var subscription_discount=parseFloat($('#total_subscription_discount').text());
-        if (isNaN(subscription_discount)) subscription_discount = 0;
+        // var subscription_discount=parseFloat($('#total_subscription_discount').text());
+        // if (isNaN(subscription_discount)) subscription_discount = 0;
         var tip = $(this).val();
         if ((tip == '') || (isNaN(tip))) {
             tip = 0;
@@ -2110,14 +2110,10 @@ $(document).ready(function () {
             }else{
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+parseFloat($('#wallet_amount_available').text()).toFixed(parseInt(digit_count)));
-                var lol = parseFloat($('#loyalty_amount').text());
-                var wall = parseFloat($('#wallet_amount_available').text());
-                if (isNaN(lol)) lol = 0;
-                if (isNaN(wall)) wall = 0;
-                //alert(parseFloat($('#gross_amount').text()));
-                var payable_amount=((parseFloat($('#gross_amount').text()) -   (subscription_discount + lol + wall ))    +   parseFloat(tip)  );
-                $("#cart_total_payable_amount").html( currency +   parseFloat(payable_amount + other_taxes).toFixed(parseInt(digit_count))   );
-                $("input[name='cart_total_payable_amount']").val(  parseFloat(payable_amount + other_taxes).toFixed(parseInt(digit_count))   );
+                var payable_amount=((parseFloat($('#gross_amount').text()) -   parseFloat($('#loyalty_amount').text()))    -    parseFloat($('#wallet_amount_available').text())     +   parseFloat(tip)  );
+                payable_amount = payable_amount + other_taxes;
+                $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count))   );
+                $("input[name='cart_total_payable_amount']").val(  payable_amount.toFixed(parseInt(digit_count))   );
             }
             if(parseFloat(amount_payable)+parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
@@ -2129,9 +2125,10 @@ $(document).ready(function () {
                 $("#MOV_Notification").removeClass("d-none");
             }
         }else{
-            $("#cart_total_payable_amount").html(currency + (parseFloat(amount_payable)+parseFloat(tip)+other_taxes).toFixed(parseInt(digit_count)));
-            $("input[name='cart_total_payable_amount']").val((parseFloat(amount_payable)+parseFloat(tip)+other_taxes).toFixed(parseInt(digit_count)));
-            if(parseFloat(amount_payable)+parseFloat(tip)>=parseFloat($('#mov').text())){
+            var payable_amount = parseFloat(amount_payable) + parseFloat(tip) + other_taxes;
+            $("#cart_total_payable_amount").html(currency + payable_amount.toFixed(parseInt(digit_count)));
+            $("input[name='cart_total_payable_amount']").val(payable_amount.toFixed(parseInt(digit_count)));
+            if(parseFloat(amount_payable)+parseFloat(tip) >= parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");
                 $("#MOV_Notification").addClass("d-none");
