@@ -541,8 +541,6 @@ $(document).ready(function () {
                 paymentViaToyyibPay('');
             } else if (payment_option_id == 25) {
                 payWithEasebuss('');
-            }else if (payment_option_id == 33) {
-                paymentViaBraintree('');
             }
         } else {
             _this.attr("disabled", false);
@@ -2109,9 +2107,8 @@ $(document).ready(function () {
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+parseFloat($('#wallet_amount_available').text()).toFixed(parseInt(digit_count)));
                 var payable_amount=((parseFloat($('#gross_amount').text()) -   parseFloat($('#loyalty_amount').text()))    -    parseFloat($('#wallet_amount_available').text())     +   parseFloat(tip)  );
-                payable_amount = payable_amount + other_taxes;
-                $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count))   );
-                $("input[name='cart_total_payable_amount']").val(  payable_amount.toFixed(parseInt(digit_count))   );
+                $("#cart_total_payable_amount").html( currency +   payable_amount+other_taxes .toFixed(parseInt(digit_count))   );
+                $("input[name='cart_total_payable_amount']").val(  payable_amount+other_taxes .toFixed(parseInt(digit_count))   );
             }
             if(parseFloat(amount_payable)+parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
@@ -2123,10 +2120,9 @@ $(document).ready(function () {
                 $("#MOV_Notification").removeClass("d-none");
             }
         }else{
-            var payable_amount = parseFloat(amount_payable) + parseFloat(tip) + other_taxes;
-            $("#cart_total_payable_amount").html(currency + payable_amount.toFixed(parseInt(digit_count)));
-            $("input[name='cart_total_payable_amount']").val(payable_amount.toFixed(parseInt(digit_count)));
-            if(parseFloat(amount_payable)+parseFloat(tip) >= parseFloat($('#mov').text())){
+            $("#cart_total_payable_amount").html(currency + (parseFloat(amount_payable)+parseFloat(tip)+other_taxes).toFixed(parseInt(digit_count)));
+            $("input[name='cart_total_payable_amount']").val((parseFloat(amount_payable)+parseFloat(tip)+other_taxes).toFixed(parseInt(digit_count)));
+            if(parseFloat(amount_payable)+parseFloat(tip)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");
                 $("#MOV_Notification").addClass("d-none");
@@ -3429,6 +3425,7 @@ $(document).ready(function () {
         });
     }
 
+    // *****************************  End tip after order place ****************************///
 
     $(document).on('click', '.validate_promo_code_btn', function () {
         let amount = $(this).attr('data-amount');
@@ -3876,26 +3873,6 @@ $(document).ready(function () {
                     return false;
                 }
             break;
-
-            case '32':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    //PayU
-                    payphoneButton(address_id, payment_option_id, order);
-                }
-                else{
-                    return false;
-                }
-            break;
-
-            case '33':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                    if (order != '') {
-                        paymentViaBraintree(address_id, order);
-                    } else {
-                        return false;
-                    }
-            break;
         
         }
 
@@ -4037,10 +4014,6 @@ $(document).ready(function () {
 
         case 30:
                 payWithFlutterWave('', payment_option_id, '');
-        break;
-
-        case 33:
-                paymentViaBraintree('', payment_option_id, ''); 
         break;
     }
 
