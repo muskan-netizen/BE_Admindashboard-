@@ -1577,6 +1577,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var product_faq_update_url = "{{ route('cart.productfaq') }}";
     var promo_code_remove_url = "{{ route('remove.promocode') }}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
+    var payment_success_paypal_url = "{{ route('payment.paypalCompletePurchase') }}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
     var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
     var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
