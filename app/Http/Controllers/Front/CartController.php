@@ -1097,7 +1097,7 @@ class CartController extends FrontController
                 // if ($loyalty_amount_saved > 0) {
                 // dd($payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)); //36.81
                 // }
-                if((float)($vendorData->vendor->order_min_amount) > $payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)){  # if any vendor total amount of order is less then minimum order amount
+                if((float)($vendorData->vendor->order_min_amount) > $payable_amount+(float)($vendorData->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)){  # if any vendor total amount of order is less then minimum order amount
                     $delivery_status = 0;
                 }
 
@@ -1105,7 +1105,7 @@ class CartController extends FrontController
 
 
 
-                $total_payable_amount = $total_payable_amount + $payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount);
+                $total_payable_amount = $total_payable_amount + $payable_amount+$vendorData->vendor->fixed_fee_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;

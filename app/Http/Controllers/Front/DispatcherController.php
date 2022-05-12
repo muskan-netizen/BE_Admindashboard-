@@ -331,6 +331,10 @@ class DispatcherController extends FrontController
                     $order->luxury_option_name = $luxury_option_name;
                     $order->order_item_count = $order_item_count;
                 }
+                //$data=$order;
+
+                //$data->payable_amount=$data->payable_amount+$data->fixed_fee_amount;
+                //dd($data->payable_amount);
                 return $this->successResponse($order, null, 201);
             }
 

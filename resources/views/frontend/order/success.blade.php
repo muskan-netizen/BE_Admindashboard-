@@ -124,16 +124,17 @@
                             <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_amount * @$clientCurrency->doller_compare)}}</span></li>
 
                             @if($order->loyalty_amount_saved > 0)
-                                <li>{{__('Loyalty Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->loyalty_amount_saved * @$clientCurrency->doller_compare)}}</span></li>
+                                <li>{{__('Loyalty Amount')}} <span> - {{Session::get('currencySymbol')}}{{decimal_format($order->loyalty_amount_saved * @$clientCurrency->doller_compare)}}</span></li>
                             @endif
                             @if($order->wallet_amount_used > 0)
-                                <li>{{__('Wallet Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}</span></li>
+                                <li>{{__('Wallet Amount')}} <span> - {{Session::get('currencySymbol')}}{{decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}</span></li>
                             @endif
                         </ul>
                     </div>
                     <div class="final-total">
                         @php
-                            $total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount
+                            //$total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount
+                            $total = $order->payable_amount;
                         @endphp
                         <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></h3>
                     </div>
