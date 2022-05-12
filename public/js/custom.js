@@ -2109,8 +2109,9 @@ $(document).ready(function () {
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+parseFloat($('#wallet_amount_available').text()).toFixed(parseInt(digit_count)));
                 var payable_amount=((parseFloat($('#gross_amount').text()) -   parseFloat($('#loyalty_amount').text()))    -    parseFloat($('#wallet_amount_available').text())     +   parseFloat(tip)  );
-                $("#cart_total_payable_amount").html( currency +   payable_amount+other_taxes .toFixed(parseInt(digit_count))   );
-                $("input[name='cart_total_payable_amount']").val(  payable_amount+other_taxes .toFixed(parseInt(digit_count))   );
+                payable_amount = payable_amount + other_taxes;
+                $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count))   );
+                $("input[name='cart_total_payable_amount']").val(  payable_amount.toFixed(parseInt(digit_count))   );
             }
             if(parseFloat(amount_payable)+parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
@@ -2122,9 +2123,10 @@ $(document).ready(function () {
                 $("#MOV_Notification").removeClass("d-none");
             }
         }else{
-            $("#cart_total_payable_amount").html(currency + (parseFloat(amount_payable)+parseFloat(tip)+other_taxes).toFixed(parseInt(digit_count)));
-            $("input[name='cart_total_payable_amount']").val((parseFloat(amount_payable)+parseFloat(tip)+other_taxes).toFixed(parseInt(digit_count)));
-            if(parseFloat(amount_payable)+parseFloat(tip)>=parseFloat($('#mov').text())){
+            var payable_amount = parseFloat(amount_payable) + parseFloat(tip) + other_taxes;
+            $("#cart_total_payable_amount").html(currency + payable_amount.toFixed(parseInt(digit_count)));
+            $("input[name='cart_total_payable_amount']").val(payable_amount.toFixed(parseInt(digit_count)));
+            if(parseFloat(amount_payable)+parseFloat(tip) >= parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");
                 $("#MOV_Notification").addClass("d-none");
