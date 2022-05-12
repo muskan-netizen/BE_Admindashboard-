@@ -624,9 +624,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(cart_details.wallet_amount_used > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Wallet Amount')}}</div>
-                    <div class="col-6 text-right" id="wallet_amount_used"> <b>- {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.wallet_amount_used) %></b></div>
-                    <div class="col-6 text-right" id="wallet_amount_used_fixed" style="display:none"><b><%= cart_details.wallet_amount_used %></b></div>
-                    <div class="col-6 text-right" id="wallet_amount_available" style="display:none"><b><%= cart_details.wallet_amount_available %></b></div>
+                    <div class="col-6 text-right" id="wallet_amount_used"> - {{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.wallet_amount_used)+parseFloat(other_taxes)) %></div>
+                    <div class="col-6 text-right" id="wallet_amount_used_fixed" style="display:none"><%= parseFloat(cart_details.wallet_amount_used)+parseFloat(other_taxes) %></div>
+                    <div class="col-6 text-right" id="wallet_amount_available" style="display:none"><%= cart_details.wallet_amount_available %></div>
                 </div>
                 <hr class="my-2">
             <% }else{ %>
@@ -687,25 +687,57 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="col-6">
                     <p class="total_amt m-0">{{__('Amount Payable')}} <small>(incl. tax)</small> </p>
                 </div>
+
+
+
+
                 <div class="col-6 text-right">
-                    <b>
-                        <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
-                        <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes) %></p>
+                    <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
+                        <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
+                        <% } else { %>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes) %></p>
+                        <% } %>
+                        <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
+                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                
                         <% }else{ %>
-                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
+                            <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)) %></p>
+                            <% } else { %>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
+                            <% } %>
+                            <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
+                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                             <%
                         } %>
                         <div>
-                            <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
-                                <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
+                        <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= cart_details.total_payable_amount %>">
+                    </div>
+
+
+
+                <div class="col-6 text-right">
+                    <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
+                        <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
+                        <% } else { %>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes) %></p>
+                        <% } %>
+                        <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
                                 <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
-                                <% }else{ %>
-                                    <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
+                                
+                        <% }else{ %>
+                            <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)) %></p>
+                            <% } else { %>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
+                            <% } %>
+                            <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
                                     <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
-                                <% } %>
-                            <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= cart_details.total_payable_amount %>">
-                        </div>
-                    </b>
+                            <%
+                        } %>
+                        <div>
                 </div>
             </div>
             <hr class="my-2">
