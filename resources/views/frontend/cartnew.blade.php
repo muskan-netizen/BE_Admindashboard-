@@ -101,7 +101,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="container">
     <div class="row mt-2 mb-4 mb-lg-5">
         <div class="col-12 text-center">
-            <div class="cart_img_outer">
+            <div class="cart_img_outer" style="height:200px;">
                 <img class="blur-up lazyload" data-src="{{asset('front-assets/images/empty_cart.png')}}">
             </div>
             <h3>{{__('Your Cart Is Empty!')}}</h3>
@@ -858,7 +858,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         @else
         <div class="row mt-2 mb-4 mb-lg-5">
             <div class="col-12 text-center">
-                <div class="cart_img_outer">
+                <div class="cart_img_outer" style="height:200px;">
                     <img class="blur-up lazyload" data-src="{{asset('front-assets/images/empty_cart.png')}}">
                 </div>
                 <h3>{{__('Your Cart Is Empty!')}}</h3>

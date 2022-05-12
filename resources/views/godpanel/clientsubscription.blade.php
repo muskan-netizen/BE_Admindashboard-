@@ -230,6 +230,14 @@ function getSubscriptionList() {
                             }
                         });
 
+                        $("#payment_method").on("change", function() {
+                            if($(this).val() == 'Free'){
+                                $("#paid_amount").val(0);
+                            }else{
+                                $("#paid_amount").val($("#real_subs_price").text());
+                            }
+                        });
+
                         $("#payment_date").flatpickr({
                             altInput: false,
                             allowInput: true,

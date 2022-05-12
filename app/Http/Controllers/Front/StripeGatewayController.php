@@ -53,9 +53,9 @@ class StripeGatewayController extends FrontController
            
             $payment_form = $request->payment_form;
            
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
            
-            if (!$saved_payment_method) {
+            // if (!$saved_payment_method) {
                 $customerResponse = $this->gateway->createCustomer(array(
                     'description' => 'Creating Customer',
                     'name' => $user->name,
@@ -73,14 +73,14 @@ class StripeGatewayController extends FrontController
                     $request->request->set('customerReference', $customer_id);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            }else {
-                $customer_id = $saved_payment_method->customerReference;
-                // \Stripe\Stripe::setApiKey($this->API_KEY);
-                // $retrieve_customer = \Stripe\Customer::retrieve(
-                //     $customer_id, 
-                //     []
-                // );
-            }
+            // }else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            //     // \Stripe\Stripe::setApiKey($this->API_KEY);
+            //     // $retrieve_customer = \Stripe\Customer::retrieve(
+            //     //     $customer_id, 
+            //     //     []
+            //     // );
+            // }
             
 
             $postdata = [
@@ -238,8 +238,8 @@ class StripeGatewayController extends FrontController
             $address = UserAddress::where('user_id', $user->id);
             $token = $request->stripe_token;
             $plan = SubscriptionPlansUser::where('slug', $request->subscription_id)->firstOrFail();
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
-            if (!$saved_payment_method) {
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // if (!$saved_payment_method) {
                 $customerResponse = $this->gateway->createCustomer(array(
                     'description' => 'Creating Customer for subscription',
                     'email' => $request->email,
@@ -251,9 +251,9 @@ class StripeGatewayController extends FrontController
                     $request->request->set('customerReference', $customer_id);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            } else {
-                $customer_id = $saved_payment_method->customerReference;
-            }
+            // } else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            // }
 
             // $subscriptionResponse = $this->gateway->createSubscription(array(
             //     "customerReference" => $customer_id,
@@ -339,9 +339,9 @@ class StripeGatewayController extends FrontController
 
             $user = Auth::user();
 
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
            
-            if (!$saved_payment_method) {
+            // if (!$saved_payment_method) {
                 $customerResponse = $stripe->customers->create([
                     'name' => $user->name,
                     'email' => $user->email,
@@ -358,14 +358,14 @@ class StripeGatewayController extends FrontController
                     $request->request->add(['customerReference' => $customer_id, 'payment_option_id' => 19]);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            }else {
-                $customer_id = $saved_payment_method->customerReference;
-                // \Stripe\Stripe::setApiKey($this->API_KEY);
-                // $retrieve_customer = \Stripe\Customer::retrieve(
-                //     $customer_id, 
-                //     []
-                // );
-            }
+            // }else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            //     // \Stripe\Stripe::setApiKey($this->API_KEY);
+            //     // $retrieve_customer = \Stripe\Customer::retrieve(
+            //     //     $customer_id, 
+            //     //     []
+            //     // );
+            // }
 
             $description = '';
             $payment_form = $request->payment_form;

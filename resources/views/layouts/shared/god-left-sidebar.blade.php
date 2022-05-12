@@ -77,6 +77,9 @@
                                 <li>
                                     <a href="{{route('clientsubscription')}}">&nbsp;&nbsp;&nbsp;Client Subscriptions</a>
                                 </li>
+                                <li>
+                                    <a href="{{route('democlients')}}">&nbsp;&nbsp;&nbsp;Demo Clients</a>
+                                </li>
                         </ul>
                     </div>
                 </li>

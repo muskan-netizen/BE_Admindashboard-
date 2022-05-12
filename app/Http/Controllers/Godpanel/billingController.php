@@ -105,7 +105,7 @@ class billingController extends Controller
 
 public function getBillingTimeframe(Request $request)
     {
-        $billingtimeframes = BillingTimeframe::select("id", "title", "slug", "status", 'standard_buffer_period', 'validity', 'validity_type',DB::Raw("(CASE WHEN is_custom = 1 THEN 'Yes' ELSE 'No' END) AS custome_text, (CASE WHEN is_timelimit = 1 THEN 'Yes' ELSE 'No' END) AS timelimit_text"))->orderBy('title', 'asc')->paginate(20);
+        $billingtimeframes = BillingTimeframe::select("id", "title", "slug", "status", 'standard_buffer_period', 'validity', 'validity_type',DB::Raw("(CASE WHEN is_custom = 1 THEN 'Yes' ELSE 'No' END) AS custome_text, (CASE WHEN is_lifetime = 1 THEN 'Yes' ELSE 'No' END) AS timelimit_text"))->orderBy('title', 'asc')->paginate(20);
         $validity_type = BillingPlanManager::gettValidityTypeList();
         return view('godpanel/billingtimeframe')->with(['billingtimeframes'=>$billingtimeframes, 'validity_type'=>$validity_type]);
     }
@@ -129,9 +129,9 @@ public function getBillingTimeframe(Request $request)
             $timeframe->slug = uniqid();
         }
 
-        $timeframe->is_timelimit = ($request->has('is_timelimit') && $request->is_timelimit == 'on') ? '1' : '2';
+        $timeframe->is_lifetime = ($request->has('is_lifetime') && $request->is_lifetime == 'on') ? '1' : '2';
 
-        if($timeframe->is_timelimit):
+        if($timeframe->is_lifetime ==2):
             $rules['standard_buffer_period'] = 'required';
         endif;
 
@@ -261,13 +261,19 @@ public function getBillingTimeframe(Request $request)
     
     //...................For Client Subscription page----------------------------//
 
+    public function getDemoClientList()
+    {
+        $clients = Client::where('is_deleted', 0)->where('client_type', 2)->orderBy('created_at', 'DESC')->paginate(20);
+        return view('godpanel/demo_clients')->with(['clients'=>$clients]);
+    }
+
     public function getClientSubscription(Request $request)
     {
         $billingplanlist      = BillingPlanManager::getBillingPlanList();
         $billingtimeframelist = BillingPlanManager::getBillingTimeframeList();
         $paymentstatuslist    = BillingPlanManager::gettPaymentStatusList();
         $plantypelist         = BillingPlanManager::getBillingPlanTypeList();
-        $clientlists          = BillingPlanManager::getClientList();
+        $clientlists          = BillingPlanManager::getClientList(1);
         
         return view('godpanel/clientsubscription')->with(['clientlists'=>$clientlists, 'plantypelists'=>$plantypelist, 'billingplanlist'=>$billingplanlist, 'billingtimeframelist'=>$billingtimeframelist, 'paymentstatuslist'=>$paymentstatuslist]);
     }
@@ -279,7 +285,7 @@ public function getBillingTimeframe(Request $request)
         $billinghostingplanlist       = BillingPlanManager::getBillingPlanList(2);
         $billingplantypelist          = BillingPlanManager::getBillingPlanTypeList();
         $billingpricinglistjson       = BillingPlanManager::getBillingPricingListjson();
-        $clientlist                   = BillingPlanManager::getClientList();
+        $clientlist                   = BillingPlanManager::getClientList(1);
         
         return view('godpanel/addclientsubscription')->with(['billingsoftwareplanlist'=>$billingsoftwareplanlist, 'clientlist'=>$clientlist, 'billinghostingplanlist'=>$billinghostingplanlist, 'billingplantypelist'=>$billingplantypelist, 'billingpricinglistjson'=>$billingpricinglistjson]);
     }
@@ -355,7 +361,7 @@ public function getBillingTimeframe(Request $request)
             if($clientsubs->start_date == ''):
                 return redirect()->back()->withInput()->withErrors(['error' => "Error, Subscription Start Date is not set."]);
             endif;
-            if($billingtimeframe->is_timelimit == 1):
+            if($billingtimeframe->is_lifetime == 2):
                 $end_date           = date("Y-m-d", strtotime('+ '.$billingtimeframe->validity.' '.$billingtimeframe->validity_type , strtotime($clientsubs->start_date)));
                 $clientsubs->end_date            = date("Y-m-d", strtotime('- 1 day' , strtotime($end_date)));
                 $clientsubs->next_due_date       = date("Y-m-d", strtotime('+ '.$billingtimeframe->standard_buffer_period.' day' , strtotime($clientsubs->end_date)));
