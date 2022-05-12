@@ -2102,7 +2102,6 @@ $(document).ready(function () {
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
         $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
-        
         if(parseFloat($('#wallet_amount_available').text())>0){
             if(parseFloat($('#wallet_amount_available').text()) >= parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)){
                 /* Paid amount is less then available wallet amount*/
