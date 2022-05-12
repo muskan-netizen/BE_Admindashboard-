@@ -1,120 +1,191 @@
 <?php
 namespace App\Http\Traits;
+
+use App\Models\{ShippingOption, User, UserAddress, Vendor};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use Log;
 trait ShippoManager{
 
-  public function __construct()
-  {
-    //
-  }
-
-  public function get_estimate_price()
-  {
-    $dd = \Shippo::setApiKey('shippo_test_aa70f37d463c811cb8cf67acb199186adbd299a7');
-
-    // Define delivery windows in max. days
-    // Pick an east coast, a west coast and a mid-west destination
-    $delivery_windows = array(1, 3, 7);
-    $destination_zip_codes = array('10007', '60290', '95122');  
-      
-    // Example from_address array
-    // The complete refence for the address object is available here: https://goshippo.com/docs/reference#addresses
-    $from_address = array(
-        'name' => 'Mr Hippo',
-        'company' => 'Shippo',
-        'street1' => '215 Clayton St.',
-        'city' => 'San Francisco',
-        'state' => 'CA',
-        'zip' => '94117',
-        'country' => 'US',
-        'phone' => '+1 555 341 9393',
-        'email' => 'mr-hippo@goshipppo.com',
-    );
-
-    // Parcel information array
-    // The complete reference for parcel object is here: https://goshippo.com/docs/reference#parcels
-    $parcel = array(
-        'length'=> '5',
-        'width'=> '5',
-        'height'=> '5',
-        'distance_unit'=> 'in',
-        'weight'=> '2',
-        'mass_unit'=> 'lb',
-    );
+    private $token;
+    private $length;
+    private $width;
+    private $height;
+    private $weight;
+    private $api_url;
+    private $status;
+    private $base_price;
 
 
-    // Collect the shipments to each address
-    $shipments = array();
-    foreach ($destination_zip_codes as $zip_code)
+    public function __construct()
     {
-        // Example to_address with the zip code
-        // The complete refence for the address object is available here: https://goshippo.com/docs/reference#addresses
-        $to_address = array(
-            'country' => 'US',
-            'zip' => $zip_code,
-        );
-      
-        // For each destination address we now create a Shipment object.
-        // async=false indicates that the function will wait until all rates are generated before it returns.
-        // The reference for the shipment object is here: https://goshippo.com/docs/reference#shipments
-        // By default Shippo API operates on an async basis. You can read about our async flow here: https://goshippo.com/docs/async
-      $shipments[] = \Shippo_Shipment::create(array(
-            'address_from'=> $from_address,
-            'address_to'=> $to_address,
-            'parcels'=> array($parcel),
-            'async'=> false
-        ));
-    }
-    dd($shipments);
-
-    // Collect all shipments rates
-    $all_rates = array();
-    foreach ($shipments as $shipment) {
-        $all_rates = array_merge($all_rates, $shipment['rates']);
-    }
-
-    // Show estimations for each delivery window
-    foreach ($delivery_windows as $delivery_window) {
-        $estimations = calculate_rates_estimation($all_rates, $delivery_window);
-
-        echo "For a delivery window of {$delivery_window} days:" . "\n";
-        echo "--> " . "Min. costs: " . $estimations['min'] . "\n";
-        echo "--> " . "Max. costs: " . $estimations['max'] . "\n";
-        echo "--> " . "Avg. costs: " . $estimations['average'] . "\n";
-        dd('1122');
-    }
-  }
-  // This function takes a list of $rates, filters only those rates in
-  // the $delivery_window, and returns the rates estimation
-  function calculate_rates_estimation($rates, $delivery_window) {
-        // Filter rates by delivery window
-        $eligible_rates = array_values(array_filter(
-            $rates,
-            function($rate) use($delivery_window){
-                return $rate['days'] <= $delivery_window;
+       $ship_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'shippo')->where('status', 1)->first();
+        if(isset($ship_creds) && !empty($ship_creds)){
+            $creds_arr = json_decode($ship_creds->credentials);
+            
+            $this->token = $creds_arr->token;
+            $this->api_url = 'https://api.goshippo.com/';
+            $this->base_price = $creds_arr->base_price??'0';
+            if($this->base_price>0)
+            {
+                $this->base_price = $creds_arr->base_price??'0';
+                $this->distance = $creds_arr->distance??'0';
+                $this->amount_per_km = $creds_arr->amount_per_km??'0';
             }
-        ));
+            $this->status = $ship_creds->status??'0';
 
-        // Calculate estimations on the eligible_rates
-        $min = $eligible_rates[0]['amount'];
-        $max = 0.0;
-        $sum = 0.0;
-        foreach ($eligible_rates as $rate) {
-            $amount = $rate['amount'];
+            $this->length = $creds_arr->length??'1';
+            $this->width = $creds_arr->width??'1';
+            $this->height = $creds_arr->height??'1';
+            $this->weight = $creds_arr->weight??'1';
+        }else{
+			$this->status =0;
+		}
+    }
+    public function credentials()
+    {
+        $ship_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code', 'shippo')->where('status', 1)->first();
+        if(isset($ship_creds) && !empty($ship_creds)){
+            $creds_arr = json_decode($ship_creds->credentials);
+            
+            $this->token = $creds_arr->token;
+            $this->api_url = 'https://api.goshippo.com/';
+            $this->base_price = $creds_arr->base_price??'0';
+            if($this->base_price>0)
+            {
+                $this->base_price = $creds_arr->base_price??'0';
+                $this->distance = $creds_arr->distance??'0';
+                $this->amount_per_km = $creds_arr->amount_per_km??'0';
+            }
+            $this->status = $ship_creds->status??'0';
 
-            $min = min($min, $amount);
-            $max = max($max, $amount);
-            $sum += $amount;
-        }
+            $this->length = $creds_arr->length??'1';
+            $this->width  = $creds_arr->width??'1';
+            $this->height = $creds_arr->height??'1';
+            $this->weight = $creds_arr->weight??'1';
+        }else{
+			$this->status =0;
+		}
+    }
 
-        return array(
-            'delivery_window' => $delivery_window,
-            'min' => $min,
-            'max' => $max,
-            'average' => $sum / count($eligible_rates),
+
+
+    public function checkCourierService($vid)
+    {
+        $vendors = array();
+        $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
+        $vendor_details = Vendor::find($vid);
+        if($cus_address->pincode!='')
+        {
+        $this->credentials();
+        $endpoint='shipments/';
+        $data = array (
+            "address_to"=> [
+                "name"=> auth()->user()->name??null,
+                "street1"=> ($cus_address->address)?? null,
+                "city"=> ($cus_address->city)?? null,
+                "state"=> ($cus_address->state)?? null,
+                "zip"=> ($cus_address->pincode)?? null,
+                "country"=> ($cus_address->country)?? null,
+                "phone"=> auth()->user()->phone_number??null,
+                "email"=> auth()->user()->email??null
+            ],
+            "address_from"=> [
+                "name"=> $vendor_details->name??null,
+                "street1"=> ($vendor_details->street)?? null,
+                "city"=> ($vendor_details->city)?? null,
+                "state"=> ($vendor_details->state)?? null,
+                "zip"=> ($vendor_details->pincode)?? null,
+                "country"=> ($vendor_details->country)?? null,
+                "phone"=> $vendor_details->phone_number??null,
+                "email"=> $vendor_details->email??null
+            ],
+            "parcels"=> [
+                "length"=> $this->length,
+                "width"=> $this->width,
+                "height"=> $this->height,
+                "distance_unit"=> "in",
+                "weight"=> $this->weight,
+                "mass_unit"=> "lb"
+            ],
+            "async"=> false
+
         );
+        // dd($data);
+        $result = $this->postCurl($endpoint,$data,$this->token);
+        //courier_name , rate, courier_company_id , etd , etd_hours , estimated_delivery_days
+        if($result->rates){
+          $result = $result->rates;
+          foreach($result as $key => $data)
+          {
+              $vendors[] = array(
+                'type'=>'S',
+                'courier_name' => $data->provider.' - '.$data->servicelevel->name,
+                'rate' => number_format(round($data->amount), 2, '.', ''),
+                'courier_company_id' => $data->object_id,
+                'etd' => $data->estimated_days,
+                'etd_hours' => $data->arrives_by,
+                'estimated_delivery_days' => $data->estimated_days,
+                'code' => 'S_'.$data->object_id
+               );
+          }
+        }
+        }
+        return $vendors;
+    }
+
+
+    private function postCurl($endpoint,$data,$token=null):object{
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $this->api_url.''.$endpoint);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($data));
+                $headers = array();
+                $headers[] = 'Accept: */*';
+                if(!is_null($token)){
+
+                   $headers[] = "Authorization: ShippoToken ${token}";
+                    // dd( $headers);
+                }
+              $headers[] = 'Content-Type: application/json';
+                 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                $result = curl_exec($ch);
+                if (curl_errno($ch)) {
+                    // echo 'Error:' . curl_error($ch);
+                    \Log::info(curl_error($ch));
+                }
+                curl_close($ch);
+                return json_decode($result); 
+    }
+
+    private function getCurl($endpoint,$data,$token=null):object{
+
+        $curl = curl_init();
+          
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $this->api_url.''.$endpoint);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+            if($data)
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
+
+
+            $headers = array();
+            $headers[] = 'Accept: */*';
+            if(!is_null($token)){
+                $headers[] = "Authorization: Bearer $token";
+            }
+            $headers[] = 'Content-Type: application/json';
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+                \Log::info(curl_error($ch));
+            }
+            curl_close($ch);
+            return json_decode($result); 
     }
 
 

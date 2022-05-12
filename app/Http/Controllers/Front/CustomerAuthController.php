@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs};
+use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption};
 use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
 use Math;
@@ -94,7 +94,14 @@ class CustomerAuthController extends FrontController
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-        return view('frontend.account.loginnew')->with(['navCategories' => $navCategories]);
+        $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
+        if($set_template->template_id == 4)
+        {
+            $login_page = "template_four.account.loginnew";
+        }else{
+            $login_page = "account.loginnew";
+        }
+        return view('frontend.'.$login_page)->with(['navCategories' => $navCategories]);
     }
 
     public function registerForm($domain = '', Request $request)
@@ -116,10 +123,17 @@ class CustomerAuthController extends FrontController
         })->first();
         $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
             //pr($user_registration_documents);
+        $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
+        if($set_template->template_id == 4)
+        {
+            $register_page = "template_four.account.registernew";
+        }else{
+            $register_page = "account.registernew";
+        }
         if (!Session::get('referrer')) {
-            return view('frontend.account.registernew')->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
+            return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
         } else {
-            return view('frontend.account.registernew')->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
+            return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
         }
     }
 
@@ -196,7 +210,7 @@ class CustomerAuthController extends FrontController
 
 
     /**     * Display register Form     */
-    public function register(SignupRequest $req, $domain = ''){ 
+    public function register(SignupRequest $req, $domain = ''){
         try {
             $phonenumber= str_replace('-', '', $req->phone_number);
             $req->phone_number = str_replace(' ', '', $phonenumber);
@@ -493,7 +507,7 @@ class CustomerAuthController extends FrontController
 
                         if(session()->get("locale") == "ar"){
                             return $this->errorResponse(__('حدث خطأ ما في إرسال OTP. نأسف للإزعاج'), 404);
-                        }                        
+                        }
                         return $this->errorResponse(__('Something went wrong in sending OTP. We are sorry to for the inconvenience'), 404);
                     }
                 }else{
@@ -991,27 +1005,27 @@ class CustomerAuthController extends FrontController
 
 
 
-    # zillowGetData 
+    # zillowGetData
 
     public function zillowGetData()
     {
 
-        
 
-       
+
+
         $params = (array('address' => '7356 CARTER AVE', 'citystatezip' => 'NEWARK'));
 
         $params['zws-id'] = 'X1-ZWz16b0yk0045n_8mfo0';
 			$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
 			$result = new SimpleXMLElement($url, 0, true);dd($params);
-        
+
 			// save this in object so that we could reuse it
 			if ( isset($result->response->results->result->zpid) ) {
 				$this->zpid = (string)$result->response->results->result->zpid;
 			}
 
 			return $result->response;
-        
+
     }
 
 

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\OrderController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax};
+use App\Models\{User, UserVendor, Cart,CaregoryKycDoc, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax};
 
 class RazorpayGatewayController extends FrontController
 {
@@ -123,12 +123,16 @@ class RazorpayGatewayController extends FrontController
                     // Remove cart
                     $user = Auth::user();
                     $cart = Cart::where('user_id',$user->id)->select('id')->first();
+                    CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                     Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                     CartAddon::where('cart_id', $cart->id)->delete();
                     CartCoupon::where('cart_id', $cart->id)->delete();
                     CartProduct::where('cart_id', $cart->id)->delete();
                     CartProductPrescription::where('cart_id', $cart->id)->delete();
-
+                    
+                    // send success sms
+                    $this->sendSuccessSMS($request, $order);
+                    
                     // Send Notification
                     if (!empty($order->vendors)) {
                         foreach ($order->vendors as $vendor_value) {

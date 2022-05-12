@@ -419,7 +419,7 @@ class OrderController extends BaseController
             'vendors.cancel_request',
             'reports'
         ))->findOrFail($order_id);
-    //    return $order;
+            //    return $order;
        
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
@@ -489,7 +489,7 @@ class OrderController extends BaseController
          //return $vendor_order_statuses;
         
 
-        //pr($order->KYC_document->toArray());
+        //pr($order->KYC_document->toArray());`
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 'order' => $order,
             'vendor_order_statuses' => $vendor_order_statuses,
@@ -583,7 +583,7 @@ class OrderController extends BaseController
                     $order = Order::find($request->order_id);
 
                     //Refund to wallet
-                    if(($order->payment_option_id==4 || $order->payment_option_id==19)  && $order->payment_status==1){
+                    if( (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) && $request->status_option_id == 3){
                         
                         $orderRefund=new OrderRefund();
                         $orderRefund->user_id=$order->user_id;
@@ -603,11 +603,16 @@ class OrderController extends BaseController
                         $orderRefund->save();
 
 
-                        $previousWalletAmount=Wallet::where('holder_id',$order->user_id)->first()->balance;
-                        if(empty($previousWalletAmount)){
-                            $refundAmount=($order->wallet_amount_used+$order->payable_amount);
-                        }else{
-                            $refundAmount=(($order->wallet_amount_used+$order->payable_amount)+($previousWalletAmount/100));
+                        $refund_amount = $order->wallet_amount_used + $order->payable_amount;
+                        if($refund_amount > 0){
+                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                            if(!$transaction){
+                                $user = User::find($order->user_id);
+                                if($user){
+                                    $wallet = $user->wallet;
+                                    $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                                }
+                            }
                         }
                         
                         $wallet = User::find($order->user_id)->wallet;
@@ -947,12 +952,18 @@ class OrderController extends BaseController
                 'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
             );
 
+            if ($customer->dial_code == "971") {
+                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+            } else {                
+                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+            }
+
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
-                'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
+                'customer_phone_number' => $customerno ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
-                'recipient_phone' => $customer->phone_number ?? rand(111111, 11111),
+                'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
                 'task_description' => "Order From :" . $vendor_details->name,
                 'allocation_type' => 'a',
@@ -1054,12 +1065,18 @@ class OrderController extends BaseController
                 'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
             );
 
+            if ($customer->dial_code == "971") {
+                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+            } else {                
+                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+            }
+
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
-                'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
+                'customer_phone_number' => $customerno ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
-                'recipient_phone' => $customer->phone_number ?? rand(111111, 11111),
+                'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
                 'task_description' => "Order From :" . $vendor_details->name,
                 'allocation_type' => 'a',
@@ -1197,14 +1214,18 @@ class OrderController extends BaseController
             }
 
 
-
+            if ($customer->dial_code == "971") {
+                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+            } else {                
+                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+            }
 
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
-                'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
+                'customer_phone_number' => $customerno ?? rand(111111, 11111),
                 'customer_email' => $customer->email ?? null,
-                'recipient_phone' => $customer->phone_number ?? rand(111111, 11111),
+                'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
                 'task_description' => $desc ?? null,
                 'allocation_type' => 'a',

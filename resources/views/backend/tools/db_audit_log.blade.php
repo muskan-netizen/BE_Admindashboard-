@@ -128,7 +128,9 @@
 </div>
 @endsection
 @section('script')
-    <script>
-          $('#logTable').DataTable();
-    </script>
+<script>
+    $('#logTable').DataTable({
+        "pageLength": 25
+    });
+</script>
 @endsection

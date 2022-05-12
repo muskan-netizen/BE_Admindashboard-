@@ -1,7 +1,7 @@
 @extends('layouts.store', ['title' => 'Checkout'])
 @section('content')
 
-<section class="section-b-space light-layout">
+<section class="section-b-space light-layout_alFour">
     <div class="container">
         <div class="row">
             <div class="col-md-12 my-1">
@@ -19,152 +19,161 @@
     </div>
 </section>
 <section class="section-b-space_al p-0 mt-2">
-    <div class="container position-relative">
-        <div class="error_msg mb-2">{{__('You have earned')}} {{ (int)$order->loyalty_points_earned }} {{__('points with this order.')}}</div>
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="product-order py-3">
-                    <h3>{{__('Your Order Details')}}</h3>
-                    @foreach($order->products as $product)
+    <div class="container position-relative alFourTemplateOrderSucces">
+        <div class="card">
+            <div class="card-body">
 
-                        @php
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="product-order py-3">
+                            <h3>{{__('Your Order Details')}}</h3>
+                            @foreach($order->products as $product)
 
-                            $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
-                        @endphp
+                                @php
+
+                                    $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
+                                @endphp
 
 
 
 
-	                    <div class="row product-order-detail">
-	                        <div class="col-2">
-	                        	<img src="{{ $image }}" class="img-fluid blur-up lazyloaded">
-	                        </div>
-                            <div class="col-10">
-                                <div class="row align-items-md-center">
-                                    <div class="col-4 order_detail">
-                                        <div>
-                                            <h4>{{__('Product Name')}}</h4>
-                                            <h5>{{$product->pvariant->translation_one->title ?? $product->pvariant->sku }}</h5>
-                                            @foreach($product->pvariant->vset as $vset)
-                                                <label><span>{{$vset->optionData->trans->title}}:</span>{{$vset->variantDetail->trans->title}}</label>
-                                            @endforeach
-
-                                        </div>
-                                        
+                                <div class="row product-order-detail">
+                                    <div class="col-2">
+                                        <img src="{{ $image }}" class="img-fluid blur-up lazyloaded">
                                     </div>
-                                    <div class="col-4 order_detail">
-                                        <div>
-                                            <h4>{{__('Quantity')}}</h4>
-                                            <h5>{{$product->quantity}}</h5>
-                                        </div>
-                                    </div>
-                                    <div class="col-4 order_detail">
-                                        <div>
-                                            <h4>{{__('Price')}}</h4>
-                                            <h5>{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}}</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                                @if(count($product->addon) != 0)
-                                <hr class="my-2" style="width:100%">
-                                <div class="col-12">
-                                    <div class="row align-items-md-center">
-                                        <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
-                                    </div>
-                                </div>
-                                @foreach($product->addon as $addon)
-                                    @if($addon->option)
-                                    <div class="col-12">
+                                    <div class="col-10">
                                         <div class="row">
-                                            <div class="col-md-3 col col-sm-4 items-details text-left">
-                                                <p class="p-0 m-0">{{ $addon->option->title }}</p>
+                                            <div class="col-4 order_detail">
+                                                <div>
+                                                    <h4>{{__('Product Name')}}</h4>
+                                                    <h5>{{$product->pvariant->translation_one->title ?? $product->pvariant->sku }}</h5>
+                                                    @foreach($product->pvariant->vset as $vset)
+                                                        <label><span>{{$vset->optionData->trans->title}}:</span>{{$vset->variantDetail->trans->title}}</label>
+                                                    @endforeach
+
+                                                </div>
+
                                             </div>
-                                            <div class="col-md-2 col col-sm-4 text-center">
-                                            
+                                            <div class="col-4 order_detail">
+                                                <div>
+                                                    <h4>{{__('Quantity')}}</h4>
+                                                    <h5>{{$product->quantity}}</h5>
+                                                </div>
                                             </div>
-                                            <div class="col-md-7 col col-sm-4 text-right">
-                                                <div class="extra-items-price">{{Session::get('currencySymbol')}}{{decimal_format($addon->option->price )}}</div>
+                                            <div class="col-4 order_detail">
+                                                <div>
+                                                    <h4>{{__('Price')}}</h4>
+                                                    <h5>{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}}</h5>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    @endif
-                                @endforeach
-                            
-                            @endif
-                            </div>
-	                        
-                            
-	                    </div>
-                    @endforeach
-                    <div class="total-sec">
-                        <ul>
-                            @if($order->taxable_amount > 0)
-                                <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)}}</span></li>
-                            @endif
-                            @if($order->total_service_fee > 0)
-                                <li>{{__('Service Fee')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_service_fee * @$clientCurrency->doller_compare)}}</span></li>
-                            @endif
-                            @if(!empty($order->fixed_fee_amount) && $order->fixed_fee_amount > 0)
-                                <li>{{__($fixedFeeNomenclatures)}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->fixed_fee_amount)}}</span></li>
-                            @endif
-                            @if($order->total_container_charges > 0)
-                                <li>{{__('Container Charges')}} <span>{{Session::get('currencySymbol')}}@money($order->total_container_charges * @$clientCurrency->doller_compare)</span></li>
-                            @endif
-                            @if($order->total_delivery_fee > 0)
-                                <li>{{__('Delivery Fee')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_delivery_fee * @$clientCurrency->doller_compare)}}</span></li>
-                            @endif
-                            @if($order->tip_amount > 0)
-                                <li>{{__('Tip Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->tip_amount * @$clientCurrency->doller_compare)}}</span></li>
-                            @endif
-                            @if($order->subscription_discount > 0)
-                                <li>{{__('Subscription Discount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)}}</span></li>
-                            @endif
-                            <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_amount * @$clientCurrency->doller_compare)}}</span></li>
+                                        @if(count($product->addon) != 0)
+                                        <hr class="my-2" style="width:100%">
+                                        <div class="col-12">
+                                            <div class="row align-items-md-center">
+                                                <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
+                                            </div>
+                                        </div>
+                                        @foreach($product->addon as $addon)
+                                            @if($addon->option)
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    <div class="col-md-4 col col-sm-4 items-details text-left">
+                                                        <p class="p-0 m-0">{{ $addon->option->title }}</p>
+                                                    </div>
+                                                    <div class="col-md-3 col col-sm-4 text-center">
 
-                            @if($order->loyalty_amount_saved > 0)
-                                <li>{{__('Loyalty Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->loyalty_amount_saved * @$clientCurrency->doller_compare)}}</span></li>
-                            @endif
-                            @if($order->wallet_amount_used > 0)
-                                <li>{{__('Wallet Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}</span></li>
-                            @endif
+                                                    </div>
+                                                    <div class="col-md-5 col col-sm-4 text-right">
+                                                        <div class="extra-items-price">{{Session::get('currencySymbol')}}{{decimal_format($addon->option->price )}}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endif
+                                        @endforeach
+
+                                    @endif
+                                    </div>
+
+
+                                </div>
+                            @endforeach
+                            <div class="total-sec row">
+                                <ul class="col-sm-6 offset-sm-6">
+                                    @if($order->taxable_amount > 0)
+                                        <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)}}</span></li>
+                                    @endif
+                                    @if($order->total_service_fee > 0)
+                                        <li>{{__('Service Fee')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_service_fee * @$clientCurrency->doller_compare)}}</span></li>
+                                    @endif
+                                    @if(!empty($order->fixed_fee_amount) && $order->fixed_fee_amount > 0)
+                                        <li>{{__($fixedFeeNomenclatures)}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->fixed_fee_amount)}}</span></li>
+                                    @endif
+                                    @if($order->total_container_charges > 0)
+                                        <li>{{__('Container Charges')}} <span>{{Session::get('currencySymbol')}}@money($order->total_container_charges * @$clientCurrency->doller_compare)</span></li>
+                                    @endif
+                                    @if($order->total_delivery_fee > 0)
+                                        <li>{{__('Delivery Fee')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_delivery_fee * @$clientCurrency->doller_compare)}}</span></li>
+                                    @endif
+                                    @if($order->tip_amount > 0)
+                                        <li>{{__('Tip Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->tip_amount * @$clientCurrency->doller_compare)}}</span></li>
+                                    @endif
+                                    @if($order->subscription_discount > 0)
+                                        <li>{{__('Subscription Discount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)}}</span></li>
+                                    @endif
+                                    <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_amount * @$clientCurrency->doller_compare)}}</span></li>
+
+                                    @if($order->loyalty_amount_saved > 0)
+                                        <li>{{__('Loyalty Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->loyalty_amount_saved * @$clientCurrency->doller_compare)}}</span></li>
+                                    @endif
+                                    @if($order->wallet_amount_used > 0)
+                                        <li>{{__('Wallet Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}</span></li>
+                                    @endif
                         </ul>
                     </div>
                     <div class="final-total">
-                        <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($order->payable_amount) * @$clientCurrency->doller_compare)}}</span></h3>
+                        @php
+                            //$total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount
+                            $total = $order->payable_amount;
+                        @endphp
+                        <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></h3>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="row order-success-sec">
-                    <div class="col-sm-6">
-                        <h4>{{__('Summary')}}</h4>
-                        <ul class="order-detail">
-                            <li>{{__('Order ID')}}: {{$order->order_number}}</li>
-                            <li>{{__('Order Date')}}: {{ date('F d, Y', strtotime($order->created_at)) }}</li>
-                            @if (!empty($order->scheduled_date_time)) 
-                            <li>{{__('Scheduled Date')}}: {{ date('F d, Y', strtotime($order->scheduled_date_time)) }}</li>
-                            @endif
-                            <li>{{__('Order Total')}}: {{Session::get('currencySymbol')}}{{decimal_format($order->payable_amount * @$clientCurrency->doller_compare)}}</li>
-                        </ul>
+                </div></div>
+                               <div class="col-lg-6">
+                        <div class="row order-success-sec">
+                            <h3 class="col-12">{{__('Summary')}}</h3>
+                            <div class="col-sm-12">
+                                <ul class="order-detail row">
+                                    <li class="col-4">{{__('Order ID')}}: <span> {{$order->order_number}}</span></li>
+                                    <li class="col-4">{{__('Order Date')}}:<span> {{ date('F d, Y', strtotime($order->created_at)) }}</span></li>
+
+                                    @if (!empty($order->scheduled_date_time))
+                                    <li class="col-4">{{__('Scheduled Date')}}:<span> {{ date('F d, Y', strtotime($order->scheduled_date_time)) }}</span></li>
+                                    @endif
+                                </ul>
+                                <ul class="order-detail row">
+                                    <li class="col-4">{{__('Order Total')}}:<span> {{Session::get('currencySymbol')}}{{decimal_format($order->payable_amount * @$clientCurrency->doller_compare)}}</span></li>
+                                    <li class="Shipping col-8">
+
+                                        @if($order->luxury_option_id == 1)
+                                            {{__('Delivery Address')}}
+                                        <span>
+                                        {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{ $order->address ? $order->address->address : ''}}{{$order->address ? ($order->address->pincode ? ", ".$order->address->pincode : '') : ''}}
+                                        </span>
+                                        @elseif($order->luxury_option_id == 3)
+                                        {{getNomenclatureName('Takeaway', true) .' '. __('Address')}}
+                                            <span>
+                                            {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                            </span>
+                                        @endif
+                                    </li>
+                                </ul>
+                                <ul class="order-detail row">
+                                    <li class="col-4 payment-mode">{{__('Payment Method')}}:<span>{{__($order->paymentOption->title)}}</span></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-6 Shipping">
-                        @if($order->luxury_option_id == 1)
-                        <h4>{{__('Delivery Address')}}</h4>
-                        <ul class="order-detail">
-                            <li> {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{ $order->address ? $order->address->address : ''}}{{$order->address ? ($order->address->pincode ? ", ".$order->address->pincode : '') : ''}}</li>
-                        </ul>
-                        @elseif($order->luxury_option_id == 3)
-                        <h4>{{getNomenclatureName('Takeaway', true) .' '. __('Address')}}</h4>
-                        <ul class="order-detail">
-                            <li> {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}</li>
-                        </ul>
-                        @endif
-                    </div>
-                    <div class="col-sm-12 payment-mode">
-                        <h4>{{__('Payment Method')}}</h4>
-                        <p>{{__($order->paymentOption->title)}}</p>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

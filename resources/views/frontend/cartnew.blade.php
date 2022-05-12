@@ -50,6 +50,21 @@
     width: 94px;
     margin-top: 5px;
 }
+#applepay-btn {
+    width: 100%;
+    height: 50px;
+    display: none;
+    border-radius: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    background-image: -webkit-named-image(apple-pay-logo-white);
+    background-position: 50% 50%;
+    background-color: black;
+    background-size: 60%;
+    background-repeat: no-repeat;
+    color: #FFF !important;
+}
 </style>
 
 @endsection
@@ -86,7 +101,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="container">
     <div class="row mt-2 mb-4 mb-lg-5">
         <div class="col-12 text-center">
-            <div class="cart_img_outer">
+            <div class="cart_img_outer" style="height:200px;">
                 <img class="blur-up lazyload" data-src="{{asset('front-assets/images/empty_cart.png')}}">
             </div>
             <h3>{{__('Your Cart Is Empty!')}}</h3>
@@ -121,9 +136,82 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     let total_fixed_fee_amount=0;
     let price_bifurcation=0;
     let total_wallet_amount_used=0;
-    var closed_store= 0;
-    _.each(cart_details.products, function(product, key){
+    let closed_store= 0;
 
+    /* Getting other taxes */
+    let tax_fixed_fee_percentage=0;
+    let tax_container_charges_percentage=0;
+    let tax_service_charges_percentage=0;
+    let tax_delivery_charges_percentage=0;
+    
+    let product_container_charges_tax_amount=0;
+
+    
+    let other_taxes=0;
+    _.each(cart_details.products, function(product, key){
+        /*console.log(JSON.stringify(product));*/
+       /* if (product.vendor.get_tax_fixed_fee != null) {
+            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
+        }
+        if (product.vendor.get_tax_container_charges != null) {
+            tax_container_charges_percentage=product.vendor.get_tax_container_charges.tax_rate;
+        }
+        if (product.vendor.get_tax_service_charges != null) {
+            tax_service_charges_percentage=product.vendor.get_tax_service_charges.tax_rate;
+        }
+        if (product.vendor.get_tax_delivery_charges != null) {
+            tax_delivery_charges_percentage=product.vendor.get_tax_delivery_charges.tax_rate;
+        }*/
+        
+        /* --- Vendor Tax Get Percentage ---- */
+        _.each(cart_details.taxRates, function(tax, index){
+            if(product.vendor.fixed_fee_tax_id!=null){
+                if(product.vendor.fixed_fee_tax_id==index){
+                    tax_fixed_fee_percentage=tax.tax_rate;
+                }
+            }
+
+            if(product.vendor.service_charges_tax_id!=null){
+                if(product.vendor.service_charges_tax_id==index){
+                    tax_service_charges_percentage=tax.tax_rate;
+                }
+            }
+
+            if(product.vendor.delivery_charges_tax_id!=null){
+                if(product.vendor.delivery_charges_tax_id==index){
+                    tax_delivery_charges_percentage=tax.tax_rate;
+                }
+            }
+
+            if(product.vendor.container_charges_tax_id!=null){
+                if(product.vendor.container_charges_tax_id==index){
+                    tax_container_charges_percentage=tax.tax_rate;
+                }
+            }
+        });
+
+
+         
+
+        /*console.log(tax_fixed_fee_percentage);
+        if (product.vendor.get_tax_fixed_fee != null) {
+            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
+        }tax_fixed_fee_percentage,tax_container_charges_percentage,tax_service_charges_percentage,tax_delivery_charges_percentage
+        if (product.vendor.get_tax_container_charges != null) {
+            tax_container_charges_percentage=product.vendor.get_tax_container_charges.tax_rate;
+        }
+        if (product.vendor.get_tax_service_charges != null) {
+            tax_service_charges_percentage=product.vendor.get_tax_service_charges.tax_rate;
+        }
+        if (product.vendor.get_tax_delivery_charges != null) {
+            tax_delivery_charges_percentage=product.vendor.get_tax_delivery_charges.tax_rate;
+        }*/
+
+
+        /*console.log("tax_fixed_fee_percentage"+tax_fixed_fee_percentage);
+        console.log("tax_container_charges_percentage"+tax_container_charges_percentage);
+        console.log("tax_service_charges_percentage"+tax_service_charges_percentage);
+        console.log("tax_delivery_charges_percentage"+tax_delivery_charges_percentage);*/
         fixed_fee=product.vendor.fixed_fee;
         fixed_fee_amount=product.vendor.fixed_fee_amount;
         total_fixed_fee_amount=parseFloat(total_fixed_fee_amount)+parseFloat(product.vendor.fixed_fee_amount);
@@ -131,11 +219,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         if ( cart_details.wallet_amount_used > 0  ) {
             total_wallet_amount_used=parseFloat(total_wallet_amount_used)+parseFloat(cart_details.wallet_amount_used);
         }
+
+        other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.delivery_charges)*tax_delivery_charges_percentage/100);
+           
         %>
         <div id="thead_<%= product.vendor.id %>">
             <div class="row">
                 <div class="col-12">
-                    <h5 class="m-0"><b><%= product.vendor.name %></b></h5>
+                    <h5 class="m-0"><b><%= product.vendor.name %><%= product.fix_fee_tax %></b></h5>
                     <input type="hidden" name="category_name" id="category_name" value= "<%= product.vendor.name %>" />
                 </div>
                 <div class="col-12">
@@ -178,8 +269,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <hr class="mt-2">
         <div id="tbody_<%= product.vendor.id %>">
             <% _.each(product.vendor_products, function(vendor_product, vp){%>
-                <div class="row align-items-md-center vendor_products_tr" id="tr_vendor_products_<%= vendor_product.id %>">
-                    <div class="product-img col-3 col-md-2 pr-0 al">
+                <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage" id="tr_vendor_products_<%= vendor_product.id %>">
+                    <div class="product-img col-3 col-md-2 pr-0">
                         <% if(vendor_product.pvariant.media_one) { %>
                             <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
                         <% }else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){ %>
@@ -190,7 +281,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
-                            <div class="col-md-3 order-0">
+                            <div class="col-md-3">
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
@@ -199,10 +290,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <% } %>
                                 <% }); %>
                             </div>
-                            <div class="col-md-2 text-md-center order-1 mb-1 mb-md-0">
+                            <div class="col-md-2 mb-1 mb-md-0">
+                                <span class="alFourTempTitle">Price</span>
                                 <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></div>
                             </div>
-                            <div class="col-7 col-md-4 text-md-center order-3 order-md-2">
+                            <div class="col-7 col-md-4 text-md-center">
                                 <div class="number d-flex justify-content-md-center">
                                     <div class="counter-container d-flex align-items-center">
                                         <span class="minus qty-minus" data-minimum_order_count="<%= vendor_product.product.minimum_order_count %>"
@@ -223,13 +315,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <% } %>
                                 <% } %>
                             </div>
-                            <div class="col-md-1 text-right text-md-center p-in order-2 order-md-3">
+
+                            <div class="col-5 col-md-2 text-left">
+                                <span class="alFourTempTitle">Total</span>
+                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_price) %></div>
+                            </div>
+                            <div class="col-md-1 text-right text-md-center p-in">
                                 <a class="action-icon d-block remove_product_via_cart" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 </a>
-                            </div>
-                            <div class="col-5 col-md-2 text-right order-4">
-                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_price) %></div>
                             </div>
                         </div>
                         <% if(vendor_product.addon.length != 0) { %>
@@ -241,14 +335,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </div>
                             <% _.each(vendor_product.addon, function(addon, ad){%>
                             <% if(addon.option){%>
-                                <div class="row no-gutters">
-                                    <div class="col-md-3 col col-sm-4 items-details text-left">
+                                <div class="row">
+                                    <div class="col-md-3 col col-sm-4 items-details">
                                         <p class="p-0 m-0"><%= addon.option.title %></p>
                                     </div>
-                                    <div class="col-md-2 col col-sm-4 text-center">
+                                    <div class="col-md-6 col col-sm-4">
                                         <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart * addon.option.multiplier) %></div>
                                     </div>
-                                    <div class="col-md-7 col col-sm-4 text-right">
+                                    <div class="col-md-3 col col-sm-4">
                                         <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
                                     </div>
                                 </div>
@@ -262,7 +356,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <p class="p-0 m-0 alert-danger">{{ __('Container Charges') }} *</p>
                                 </div>
                                 <div class="col-md-2 col-sm-4 text-center">
-                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.container_charges) %></div>
+                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.container_charges) %> 
+                                    <% 
+                                    
+                                    /* --- Vendor Tax Get Percentage ---- */
+                                    _.each(cart_details.taxRates, function(tax, index){
+                                        if(vendor_product.product.container_charges_tax_id!=null){
+                                            if(vendor_product.product.container_charges_tax_id==index){
+                                                product_container_charges_tax_amount+=parseFloat(vendor_product.pvariant.container_charges)*parseFloat(tax.tax_rate)/100;
+                                            }
+                                        }                         
+                                    });
+                                    console.log("product_container_charges_tax_amount"+product_container_charges_tax_amount);
+                                     %></div>
                                 </div>
                                 <div class="col-md-7 col-sm-4 text-right">
                                     <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_container_charges) %></div>
@@ -303,14 +409,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     @endif
 
                 </div>
+                <input type="hidden" name="cart_product_ids[]" value="<%= vendor_product.id %>">
 
-                <hr>
+                <hr class="my-1">
             <% }); %>
             <div class="row">
                  @if(!$guest_user)
-                 <% if(product.is_promo_code_available > 0) { %>
                 <div class="col-lg-6 mb-3 mb-lg-0 ">
-                    <div class="coupon_box w-100 d-flex align-items-start">
+                <% if(product.is_promo_code_available > 0) { %>
+                    <div class="coupon_box w-100 d-flex align-content-center">
                         <img class="blur-up lazyload" data-src="{{ asset('assets/images/discount_icon.svg') }}">
                         <label class="mb-0 ml-2">
                             <% if(product.coupon) { %>
@@ -323,8 +430,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <% if(product.coupon) { %>
                         <label class="p-1 m-0"><a href="javascript:void(0)" class="remove_promo_code_btn ml-1" data-coupon_id="<%= product.coupon ? product.coupon.promo.id : '' %>" data-cart_id="<%= cart_details.id %>">Remove</a></label>
                     <% } %>
-                </div>
                 <% } %>
+                </div>
                 @endif
                 <div class="col-lg-6">
                     <% if(product.delOptions) { %>
@@ -345,7 +452,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     {{__($fixedFee)}} :</label>
                                 </div>
                             <div class="col-7">
-                                <%= product.vendor.fixed_fee_amount %>
+                            <%= product.vendor.fixed_fee_amount %> 
                             </div>
 
                         </div>
@@ -378,7 +485,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
             </div>
         </div>
-        <hr>
+        <hr class="my-1">
     <% }); %>
     <div class="row">
     <input type="hidden" name="without_category_kyc" value="<%= cart_details.without_category_kyc %>">
@@ -446,7 +553,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             @else
             <div class="row">
 
-                <div class="col-12">
+                <div class="col-12 alFourSpecificInstructions">
                     {{__('Specific instructions')}}
                     <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions">
                 </div>
@@ -458,7 +565,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(cart_details.total_service_fee > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>
-                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_service_fee) %></div>
+                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_service_fee) %></b></div>
                 </div>
                 <hr class="my-2">
             <% } %>
@@ -466,7 +573,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(total_fixed_fee_amount > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__($fixedFee)}}</div>
-                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(total_fixed_fee_amount) %></div>
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(total_fixed_fee_amount) %></b></div>
                     <input type="hidden" name="total_fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="<%= total_fixed_fee_amount %>">
                 </div>
                 <hr class="my-2">
@@ -475,42 +582,50 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(cart_details.total_container_charges > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Total Container Charges')}}</div>
-                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_container_charges) %></div>
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_container_charges) %></b></div>
                 </div>
                 <hr class="my-2">
             <% }
-            if(price_bifurcation!=1){ %>
+            if(product_container_charges_tax_amount!=0){
+                other_taxes=other_taxes+product_container_charges_tax_amount;
+                console.log('product');
+            }else{
+                console.log('vendor');
+                other_taxes=other_taxes+(parseFloat(cart_details.total_container_charges)*tax_container_charges_percentage/100);
+            }
+            if(price_bifurcation!=1){  %>
             <div class="row">
                 <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_taxable_amount) %></div>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+other_taxes) %></b></div>
             </div>
             <% } if(price_bifurcation!=1){ %>
             <hr class="my-2">
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)) %></span></div>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)+other_taxes) %></b></span>
+                <span id="other_taxes" style="display:none;"><%= other_taxes %></span></div>
             </div>
             <% } %>
             <hr class="my-2">
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
-                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_subscription_discount) %></div>
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_subscription_discount) %></b></div>
                 </div>
                 <hr class="my-2">
             <% } %>
             <% if(cart_details.loyalty_amount > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Loyalty Amount')}}</div>
-                    <div class="col-6 text-right"> - {{Session::get('currencySymbol')}}<span id="loyalty_amount"><%= Helper.formatPrice(cart_details.loyalty_amount) %></span></div>
+                    <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="loyalty_amount"><%= Helper.formatPrice(cart_details.loyalty_amount) %></span></b></div>
                 </div>
                 <hr class="my-2">
             <% } %>
             <% if(cart_details.wallet_amount_used > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Wallet Amount')}}</div>
-                    <div class="col-6 text-right" id="wallet_amount_used"> - {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.wallet_amount_used) %></div>
-                    <div class="col-6 text-right" id="wallet_amount_used_fixed" style="display:none"><%= cart_details.wallet_amount_used %></div>
+                    <div class="col-6 text-right" id="wallet_amount_used"> - {{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.wallet_amount_used)+parseFloat(other_taxes)) %></div>
+                    <div class="col-6 text-right" id="wallet_amount_used_fixed" style="display:none"><%= parseFloat(cart_details.wallet_amount_used)+parseFloat(other_taxes) %></div>
                     <div class="col-6 text-right" id="wallet_amount_available" style="display:none"><%= cart_details.wallet_amount_available %></div>
                 </div>
                 <hr class="my-2">
@@ -548,7 +663,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </label>
                         <% } %>
                     </div>
-                    <div class="custom_tip mb-1 <% if(cart_details.total_payable_amount > 0) { %> d-none <% } %>">
+                    <div class="custom_tip my-1 <% if(cart_details.total_payable_amount > 0) { %> d-none <% } %>">
                         <input class="input-number form-control" name="custom_tip_amount" id="custom_tip_amount" placeholder="{{ __('Enter Custom Amount') }}" type="number" value="" step="0.1">
                     </div>
                 </div>
@@ -570,25 +685,37 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% } %>
             <div class="row">
                 <div class="col-6">
-                    <p class="total_amt m-0">{{__('Amount Payable')}}</p>
+                    <p class="total_amt m-0">{{__('Amount Payable')}} <small>(incl. tax)</small> </p>
                 </div>
+
+
+
+
                 <div class="col-6 text-right">
                     <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
-                        <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
+                        <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
+                        <% } else { %>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes) %></p>
+                        <% } %>
+                        <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
+                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                
                         <% }else{ %>
-                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)) %></p>
+                            <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)) %></p>
+                            <% } else { %>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
+                            <% } %>
+                            <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
+                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                             <%
                         } %>
                         <div>
-                            <% if(client_preference_detail.auto_implement_5_percent_tip == 1) { %>
-                                <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
-                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(total_fixed_fee_amount) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
-                                <% }else{ %>
-                                    <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(total_fixed_fee_amount) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
-                                <% } %>
                         <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= cart_details.total_payable_amount %>">
                     </div>
+
+
                 </div>
             </div>
             <hr class="my-2">
@@ -718,7 +845,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                 </div>
 
-                <div class="row mb-md-3">
+                <div class="row mb-md-3 alFourTemplateCartButtons">
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-flex align-items-center justify-content-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
                         <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> </a>
@@ -741,7 +868,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         @else
         <div class="row mt-2 mb-4 mb-lg-5">
             <div class="col-12 text-center">
-                <div class="cart_img_outer">
+                <div class="cart_img_outer" style="height:200px;">
                     <img class="blur-up lazyload" data-src="{{asset('front-assets/images/empty_cart.png')}}">
                 </div>
                 <h3>{{__('Your Cart Is Empty!')}}</h3>
@@ -987,6 +1114,17 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <% } %>
                     </div>
                 <% }); %>
+                {{-- <div class="" id="" role="tabpanel">
+                    <label class="radio mt-2">
+                        Apple Pay
+                        <input type="radio" name="cart_payment_method" id="radio-paytab_apple_pay" value="100" data-payment_option_id="100">
+                        <span class="checkround"></span>
+                    </label>
+                    <div class="col-md-12 mt-3 mb-3 paytab_apple_pay_element_wrapper option-wrapper d-none">
+                        <button type="button" id="applepay-btn">Pay Now</button>
+                        <span class="error text-danger" id="paytab_apple_pay_error"></span>
+                    </div>
+                </div> --}}
                 <div class="payment_response">
                     <div class="alert p-0 m-0" role="alert"></div>
                 </div>
@@ -995,7 +1133,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <div class="modal-footer d-block text-center">
             <div class="row">
                 <div class="col-sm-12 p-0 d-flex flex-fill">
-                    <button type="button" class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}</button>
+                    <button type="button" style="width:100%;" class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}
+                        <img style="width:5%; display:none;" id="proceed_to_pay_loader" src="{{asset('assets/images/loader.gif')}}"/>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1108,7 +1248,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <button class="btn btn-solid w-100 login_continue_btn" type="button">Continue</button>
                         </div>
 
-                        <div class="divider-line"><span>or</span></div>
+                        <div class="divider-line alOR"><span>or</span></div>
                         {{-- <button class="login-button email-btn">
                         <i class="fa fa-envelope" aria-hidden="true"></i>
                         <span>Continue with Email</span>
@@ -1416,12 +1556,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @if(in_array('checkout',$client_payment_options))
 <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 @endif
+@if(in_array('paytabs',$client_payment_options))
+<script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
+@endif
 
 <script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/apple_pay.js')}}"></script>
 
 <script type="text/javascript">
     var stripe_fpx = '';
@@ -1563,7 +1707,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 vendor: vendor
             },
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 if (response.status == "Success") {
 
                 } else {
@@ -1621,10 +1765,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             //transform into simple data/value object
             for(var i = 0; i < s_data.length; i++){
                 var record = s_data[i];
-                console.log(record);
+                // console.log(record);
                 out[record.name] = record.value;
-                var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
-                var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
+                var product_faq_id = $(dom_query+' input[name="'+record.name+'"]').attr('data-product_faq_id');
+                var is_required = $(dom_query+' input[name="'+record.name+'"]').attr('data-required');
                 console.log(is_required);
 
                 if((is_required)==1 && (record.value =='' )){
@@ -1678,16 +1822,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         var out = {};
         var s_data = $(dom_query).serializeArray();
 
-        console.log(s_data);
+        // console.log(s_data);
 
             //transform into simple data/value object
             for(var i = 0; i < s_data.length; i++){
                 var record = s_data[i];
-                console.log(record);
+                // console.log(record);
                 out[record.name] = record.value;
-                var product_faq_id = $(dom_query+" input[name='"+record.name+"']").attr('data-product_faq_id');
-                var is_required = $(dom_query+" input[name='"+record.name+"']").attr('data-required');
-                console.log(is_required);
+                var product_faq_id = $(dom_query+' input[name="'+record.name+'"]').attr('data-product_faq_id');
+                var is_required = $(dom_query+' input[name="'+record.name+'"]').attr('data-required');
+                // console.log(is_required);
 
                 if((is_required)==1 && (record.value =='' )){
                     var errorMsg ="The "+ record.name +" field is required.";

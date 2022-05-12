@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Front;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Front\FrontController;
 use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use Auth;
@@ -15,11 +15,12 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\UserVendor;
+use App\Models\CaregoryKycDoc;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
 use Log;
 
-class FlutterWaveController extends Controller
+class FlutterWaveController extends FrontController
 {
    use ApiResponser;
 
@@ -32,8 +33,8 @@ class FlutterWaveController extends Controller
    {
       $konga = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'flutterwave')->where('status', 1)->first();
       $json = json_decode($konga->credentials);
-      $this->secret_key = $json->client_id;
-      $this->public_key = $json->secret_key;
+      $this->secret_key = $json->secret_key;
+      $this->public_key = $json->client_id;
       $this->enc_key = $json->enc_key;
    }
 
@@ -80,7 +81,7 @@ class FlutterWaveController extends Controller
      //Need to save entry in payment table
 
     $data = array(
-        'public_key'=> $this->secret_key,
+        'public_key'=> $this->public_key,
         'tx_ref'=> $time,
         'amount'=> $request->amt??0,
         'currency'=> "NGN",
@@ -185,11 +186,13 @@ class FlutterWaveController extends Controller
               'schedule_type' => null, 'scheduled_date_time' => null,
               'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
           ]);
+           CaregoryKycDoc::where('cart_id',$cartid)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
             CartAddon::where('cart_id', $cartid)->delete();
             CartCoupon::where('cart_id', $cartid)->delete();
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
-
+            // send sms 
+            $this->sendSuccessSMS($request, $order);
             Payment::create(['amount'=>0,'transaction_id'=>$request->tx_ref,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id]);
 
              // Send Notification

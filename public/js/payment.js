@@ -859,6 +859,47 @@ $(document).ready(function() {
         $.redirect(authorize_before_payment, data);
     }
 
+/////////////////////////////////////////////Square Pamyent Gateway /////////////////////////////////////////
+    window.paymentViaBraintree = function paymentViaBraintree(address_id,order){
+        let total_amount = 0;
+        let tip = 0;
+        let tipElement = $("#cart_tip_amount");
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let cart_id = $("#cart_total_payable_amount").data("cart_id");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        let walletElement = $("input[name='wallet_amount']");
+        let ajaxData = [];
+        let data = [];
+        
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            tip = tipElement.val();
+            data.tip = tip;
+            data.address_id = address_id;
+            data.payment_from = 'cart';
+            data.cart_id = cart_id;
+            data.order_number = order.order_number;
+
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            data.payment_from ='wallet';
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            // ajaxData = $("#subscription_payment_form").serializeArray();
+            data.subscription_id = subscription_id.val();
+            data.payment_from ='subscription';
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            data.payment_from ='tip';
+            data.order_number = $("#order_number").val();
+        }
+        data.amount = total_amount;
+        data.payment_option_id =33;
+        data._token = $('input[name=_token]').val(); 
+        $.redirect(braintree_before_payment, data); 
+    }
+
 ///////////////////////////Checkout payment Gateway //////////////////////////////
     window.paymentViaCheckout = function paymentViaCheckout(address_id,order=''){
         var address_id = address_id;
@@ -989,6 +1030,86 @@ $(document).ready(function() {
             var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
         }
         window.location=create_ccavenue_url+'?'+rowData;
+    }
+    
+    window.payphoneButton = function payphoneButton(order='')
+    {
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        //let amt = cartElement.val()*100;
+        let total_amount = 0;
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscriptionId = $("input[name='subscription_id']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_from = '';
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            payment_from = 'cart';
+            var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            var rowData = 'amt='+total_amount+'&from='+payment_from;
+        }else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            subsId = subscriptionId.val();
+            payment_from = 'subscription';
+            var rowData = 'subsid='+subsId+'&from='+payment_from+'&amt='+total_amount;
+        }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+            var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
+        }
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: create_payphone_url,
+            data: rowData,
+            success: function(resp) {
+
+                payphone.Button({
+                    //token obtenido desde la consola de developer
+                    token: 'm2pmAD_eUV9wicWM8k5gPm7E4dWDtFHVased9IggmMVFShM3K08l4K-OsrmeSxZDaarnAdPT546HydhGc3Ob0eO3G7babe4EMXxYrpsGIBQBy_yIZy-6b_ZA6fs0AwBedz0UiVt2I5nSoAmEatCI0lVKgzmgKOVTh9K3fj_SLlobXwsw4ZrPWFnuDa9cJygacV-WVHeo7n8DK-g-__nt_p0PRZj_tZrmmQHGqIImZu7GlLImzCQAmNRC7kjrVsbO-FPVt6-slaDne15cLo8J2gEvjvxbhzyYBZzHnun0BWcBIS1U5WggYks385Q_C1j2ikHAkF1Tt_XxUj6E4NFuS5j7-40',
+        
+                            //PARÁMETROS DE CONFIGURACIÓN
+                            btnHorizontal: true,
+                            btnCard: true,
+        
+                            createOrder: function(actions){
+                                //Se ingresan los datos de la transaccion ej. monto, impuestos, etc
+                                return actions.prepare({
+        
+                                amount: 100,
+                                amountWithoutTax: 100,
+                                currency: "USD",
+                                clientTransactionId: "10230"
+                                });
+        
+                                },
+                                onComplete: function(model, actions)
+                                {
+                                            //Se confirma el pago realizado
+                                            actions.confirm({
+                                            id: model.id,
+                                            clientTxId: model.clientTxId
+                                            }).then(function(value){
+                                                console.log(value);
+                                            //EN ESTA SECCIÓN SE RECIBE LA RESPUESTA Y SE MUESTRA AL USUARIO
+                                            if (value.transactionStatus == "Approved"){
+                                                alert("Pago " + value.transactionId + " recibido, estado " + value.transactionStatus );
+                                            }
+                                        }).catch(function(err){
+                                        console.log(err);
+                                        });
+                                }
+                    }).render("#pp-button");
+
+          },
+          error: function(error) {
+              console.log(error);
+          }
+        
+        });
     }
 
     window.payWithKPG = function payWithKPG(order='')
@@ -1729,5 +1850,103 @@ $(document).ready(function() {
         data.payment_option_id =13;
         data._token = $('input[name=_token]').val(); 
         $.redirect(paytab_before_payment, data);
+    }
+
+    ///////////////////////////PayU payment Gateway //////////////////////////////
+    window.payWithPayU = function payWithPayU(address_id='', payment_option_id='', order='') {
+        let total_amount = 0;
+        let tip = 0;
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_form = '';
+        let returnParams = '';
+
+        let ajaxData = [];
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            payment_form = 'cart';
+            ajaxData.push(
+                {name: 'address_id', value: address_id},
+                {name: 'order_number', value: order.order_number},
+                {name: 'payment_form', value: 'cart'}
+            );
+            returnParams += 'order=' + order.order_number;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_form = 'wallet';
+            ajaxData.push({name: 'payment_form', value: 'wallet'});
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            payment_form = 'subscription';
+            ajaxData = $("#subscription_payment_form").serializeArray();
+            ajaxData.push({name: 'payment_form', value: 'subscription'});
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            payment_form = 'tip';
+            ajaxData.push( 
+                {name: 'payment_form', value: 'tip'},
+                {name: 'order_number', value: $("#order_number").val()}
+            );
+            returnParams += 'order=' + $("#order_number").val();
+        }
+        ajaxData.push({ name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
+        returnParams += '&amount=' + total_amount + '&payment_form=' + payment_form;
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: post_payment_via_gateway_url.replace(':gateway', 'payu'),
+            data: ajaxData,
+            success: function(resp) {
+                if (resp.status == 'Success') {
+                    if (resp.data != '') {
+                        $("#payu_offsite_form").remove();
+                        var form = '';
+                        $.each(res.formData, function(key, value) {
+                            form += '<input type="hidden" name="' + key + '" value="' + value + '">';
+                        });
+                        form = $('<form id="payu_offsite_form" action="' + res.redirectUrl + '" method="post">' + form + '</form>');
+                        if (path.indexOf("cart") !== -1) {
+                            $('#proceed_to_pay_modal .modal-body').append(form);
+                        } else if (path.indexOf("wallet") !== -1) {
+                            $('#topup_wallet .modal-content').append(form);
+                        }
+                        form.submit();
+                    }
+                } else {
+                    if (path.indexOf("cart") !== -1) {
+                        success_error_alert('error', resp.message, ".payment_response");
+                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                    } else if (path.indexOf("wallet") !== -1) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    } else if (path.indexOf("subscription") !== -1) {
+                        success_error_alert('error', resp.message, "#subscription_payment_form .payment_response");
+                        $(".subscription_confirm_btn").removeAttr("disabled");
+                    } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    }
+                }
+            },
+            error: function(error) {
+                
+                var response = $.parseJSON(error.responseText);
+                if (path.indexOf("cart") !== -1) {
+                    success_error_alert('error', response.message, ".payment_response");
+                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                } else if (path.indexOf("wallet") !== -1) {
+                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                    $(".topup_wallet_confirm").removeAttr("disabled");
+                } else if (path.indexOf("subscription") !== -1) {
+                    success_error_alert('error', response.message, "#subscription_payment_form .payment_response");
+                    $(".subscription_confirm_btn").removeAttr("disabled");
+                }
+            }
+        });
     }
 });

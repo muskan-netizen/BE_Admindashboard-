@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client,Tag,ProductTag,ProductFaq};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client,Tag,ProductTag,ProductFaq,TaxRate};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -247,7 +247,7 @@ class ProductController extends BaseController
         $pro_tags = Tag::with('primary')->whereHas('primary')->get();
         $product_faqs = ProductFaq::with('primary')->where('product_id',$product->id)->get();
 
-
+        
         $set_product_tags = ProductTag::where('product_id',$product->id)->pluck('tag_id')->toArray();
         
         return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags,'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids]);
@@ -323,6 +323,26 @@ class ProductController extends BaseController
         $product->dropoff_delay_order_min        = $request->dropoff_delay_order_min??0;
         $product->minimum_order_count        = $request->minimum_order_count??0;
         $product->batch_count        = $request->batch_count??1;
+
+
+
+   
+        $product->service_charges_tax = ($request->has('service_charges_tax') && $request->service_charges_tax == 'on') ? 1 : 0;
+        $product->service_charges_tax_id=$request->service_charges_tax_id != 0 && $product->service_charges_tax !=0 ? $request->service_charges_tax_id:0;
+       
+        
+        $product->delivery_charges_tax = ($request->has('delivery_charges_tax') && $request->delivery_charges_tax == 'on') ? 1 : 0;
+        $product->delivery_charges_tax_id=$request->delivery_charges_tax_id != 0 && $product->delivery_charges_tax !=0 ? $request->delivery_charges_tax_id:0;
+       
+        $product->container_charges_tax = $request->container_charges_tax == 'on' ? 1 : 0;
+        $product->container_charges_tax_id=$request->container_charges_tax_id != 0 && $product->container_charges_tax !=0 ? $request->container_charges_tax_id:0;
+                
+        $product->fixed_fee_tax = $request->fixed_fee_tax == 'on' ? 1 : 0;
+        $product->fixed_fee_tax_id=$request->fixed_fee_tax_id != 0 && $product->fixed_fee_tax !=0 ? $request->fixed_fee_tax_id:0;
+                
+
+
+
         if (empty($product->publish_at)) {
             $product->publish_at = ($request->is_live == 1) ? date('Y-m-d H:i:s') : '';
         }
