@@ -281,6 +281,12 @@ function createSlug($str, $delimiter = '-'){
 
 }
 
+function remove_special_chars($str, $delimiter = ''){
+    // $result = strtolower(trim(preg_replace('/[^A-Za-z0-9\-]/', $delimiter, $str)));
+    $result = strtolower(trim(preg_replace('/[.*+?^${}()/|[\]\\]+/g', $delimiter, $str)));
+    return $result;
+}
+
 function getBaseprice($dist,$option = 'lalamove')
 {
     $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code',$option)->where('status', 1)->first();
