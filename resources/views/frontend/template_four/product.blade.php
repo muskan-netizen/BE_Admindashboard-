@@ -71,8 +71,8 @@
                                 </div>
                             </div>
                         </div>--}}
-                        <div class="row">
-                            <div class="col-lg-5 pl-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                        <div class="row no-gutters">
+                            <div class="col-lg-5 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -419,73 +419,73 @@
                             </div>
 
                             <div class="col-12 pl-0">
-                            @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                    <section class="tab-product m-0">
-                        <div class="row">
-                            <div class="col-sm-12 col-lg-12">
-                                <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
-                                    <!-- <li class="nav-item"><a class="nav-link active" id="top-home-tab" data-toggle="tab" href="#top-home" role="tab" aria-selected="true"><i class="icofont icofont-ui-home"></i>{{__('Description')}}</a>
-                                        <div class="material-border"></div>
-                                    </li> -->
-                                    <!-- <li class="nav-item"><a class="nav-link" id="profile-top-tab" data-toggle="tab"
-                                            href="#top-profile" role="tab" aria-selected="false"><i
-                                                class="icofont icofont-man-in-glasses"></i>Details</a>
-                                        <div class="material-border"></div>
-                                    </li> -->
-                                    @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                                    <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
-                                        <div class="material-border"></div>
-                                    </li>
-                                    @endif
-                                </ul>
-                                <div class="tab-content nav-material" id="top-tabContent">
-                                    <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
-                                        <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}</p>
-                                    </div>
-                                    <div class="tab-pane fade" id="top-profile" role="tabpanel" aria-labelledby="profile-top-tab">
-                                        <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}</p>
-                                    </div>
-                                    <div class="tab-pane show active" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
-                                        @forelse ($rating_details as $rating)
-                                        <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
-                                            <div class="review-box">
+                                @if($client_preference_detail && $client_preference_detail->rating_check == 1)
+                                <section class="tab-product m-0">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-lg-12">
+                                            <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                                                <!-- <li class="nav-item"><a class="nav-link active" id="top-home-tab" data-toggle="tab" href="#top-home" role="tab" aria-selected="true"><i class="icofont icofont-ui-home"></i>{{__('Description')}}</a>
+                                                    <div class="material-border"></div>
+                                                </li> -->
+                                                <!-- <li class="nav-item"><a class="nav-link" id="profile-top-tab" data-toggle="tab"
+                                                        href="#top-profile" role="tab" aria-selected="false"><i
+                                                            class="icofont icofont-man-in-glasses"></i>Details</a>
+                                                    <div class="material-border"></div>
+                                                </li> -->
+                                                @if($client_preference_detail && $client_preference_detail->rating_check == 1)
+                                                <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
+                                                    <div class="material-border"></div>
+                                                </li>
+                                                @endif
+                                            </ul>
+                                            <div class="tab-content nav-material" id="top-tabContent">
+                                                <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
+                                                    <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
+                                                        $product->translation[0]->body_html : ''!!}</p>
+                                                </div>
+                                                <div class="tab-pane fade" id="top-profile" role="tabpanel" aria-labelledby="profile-top-tab">
+                                                    <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
+                                                        $product->translation[0]->body_html : ''!!}</p>
+                                                </div>
+                                                <div class="tab-pane show active" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
+                                                    @forelse ($rating_details as $rating)
+                                                    <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
+                                                        <div class="review-box">
 
-                                                <div class="review-author mb-1">
-                                                    <p><strong>{{$rating->user->name??'NA'}}</strong> - <i class="fa fa-star{{ $rating->rating >= 1 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 2 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 3 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 4 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                        <i class="fa fa-star{{ $rating->rating >= 5 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                    </p>
-                                                </div>
-                                                <div class="review-comment">
-                                                    <p>{{$rating->review??''}}</p>
-                                                </div>
-                                                <div class="row review-wrapper">
-                                                    @if(isset($rating->reviewFiles))
-                                                    @foreach ($rating->reviewFiles as $files)
-                                                    <a target="_blank" href="{{$files->file['image_fit'].'900/900'.$files->file['image_path']}}" class="col review-photo mt-2 lightBoxGallery" data-gallery="">
-                                                        <img class="blur-up lazyload" data-src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
-                                                    </a>
-                                                    @endforeach
-                                                    @endif
-                                                </div>
-                                                <div class="review-date mt-2">
-                                                    <time> {{ $rating->time_zone_created_at->diffForHumans();}} </time>
+                                                            <div class="review-author mb-1">
+                                                                <p><strong>{{$rating->user->name??'NA'}}</strong> - <i class="fa fa-star{{ $rating->rating >= 1 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 2 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 3 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 4 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    <i class="fa fa-star{{ $rating->rating >= 5 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                </p>
+                                                            </div>
+                                                            <div class="review-comment">
+                                                                <p>{{$rating->review??''}}</p>
+                                                            </div>
+                                                            <div class="row review-wrapper">
+                                                                @if(isset($rating->reviewFiles))
+                                                                @foreach ($rating->reviewFiles as $files)
+                                                                <a target="_blank" href="{{$files->file['image_fit'].'900/900'.$files->file['image_path']}}" class="col review-photo mt-2 lightBoxGallery" data-gallery="">
+                                                                    <img class="blur-up lazyload" data-src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
+                                                                </a>
+                                                                @endforeach
+                                                                @endif
+                                                            </div>
+                                                            <div class="review-date mt-2">
+                                                                <time> {{ $rating->time_zone_created_at->diffForHumans();}} </time>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @empty
+                                                    <p>{{__('No Result Found')}}</p>
+                                                    @endforelse
                                                 </div>
                                             </div>
                                         </div>
-                                        @empty
-                                        <p>{{__('No Result Found')}}</p>
-                                        @endforelse
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                    @endif
+                                </section>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -621,7 +621,7 @@
         </div>
     </div>
     <div class="container pb-md-4">
-        <div class="product-4 product-m  related-products pb-2">
+        <div class="product-4 product-m  related-products pb-2 d-flex">
             @forelse($product->related_products as $related_product)
             <div>
 				<a class="common-product-box scale-effect text-center"

@@ -72,7 +72,7 @@
                             </div>
                         </div>--}}
                         <div class="row">
-                            <div class="col-lg-5 pl-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                            <div class="col-lg-5 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -611,7 +611,7 @@
         </div>
     </div>
     <div class="container pb-md-4">
-        <div class="product-4 product-m  related-products pb-2">
+        <div class="product-4 product-m  related-products pb-2 d-flex">
             @forelse($product->related_products as $related_product)
             <div>
 				<a class="common-product-box scale-effect text-center"
