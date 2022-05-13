@@ -1292,7 +1292,7 @@ $(document).ready(function () {
         });
     }
 
-    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id = 0, tip = 0, delivery_type = 'D') {
+    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id = 0, tip = 0, delivery_type = 'D',other_taxes_string='') {
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
@@ -1308,7 +1308,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount },
+            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount,other_taxes_string:other_taxes_string },
             success: function (response) {
                 if (response.status == "Success") {
                     var ip_address = window.location.host;
@@ -1403,7 +1403,11 @@ $(document).ready(function () {
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
          $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
         var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
-
+        var other_taxes_string='';
+        if($("#other_taxes_string").val()!=null){
+            other_taxes_string=$("#other_taxes_string").val();
+        }
+        
         let address_id = $("input:radio[name='address_id']:checked").val();
 
         if ((vendor_type == 'delivery') && ((address_id == '') || (address_id < 1) || ($("input[name='address_id']").length < 1))) {
@@ -1420,7 +1424,7 @@ $(document).ready(function () {
         // alert(total_amount);
         // return false;
         if (payment_option_id == 1) {
-            placeOrder(address_id, payment_option_id, '', tip, delivery_type);
+            placeOrder(address_id, payment_option_id, '', tip, delivery_type,other_taxes_string);
         } else{
             cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
         }
@@ -2046,7 +2050,8 @@ $(document).ready(function () {
             if ((fixed_fee_amount == '') || (isNaN(fixed_fee_amount))) {
                 fixed_fee_amount = 0;
             }
-            var other_taxes=parseFloat($('#other_taxes').text());
+            // var other_taxes=parseFloat($('#other_taxes').text());
+            var other_taxes=0;
         if (tip != 'custom') {
             if ((tip == '') || (isNaN(tip))) {
                 tip = 0;
@@ -2083,39 +2088,48 @@ $(document).ready(function () {
     
         //$("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     }
+
+    function initialize_values(value){
+        if ((value == '') || (isNaN(value))) {
+            value = 0;
+        }
+        return parseFloat(value);
+    }
     $(document).on('keyup', '#custom_tip_amount', function () {
-        var other_taxes=parseFloat($('#other_taxes').text());
-        var subscription_discount=parseFloat($('#total_subscription_discount').text());
-        if (isNaN(subscription_discount)) subscription_discount = 0;
-        var tip = $(this).val();
-        if ((tip == '') || (isNaN(tip))) {
-            tip = 0;
-        }
-        var fixed_fee_amount = $("#fixed_fee_amount").val();
-        if ((fixed_fee_amount == '') || (isNaN(fixed_fee_amount))) {
-            fixed_fee_amount = 0;
-        }
+        // var other_taxes                 =initialize_values($('#other_taxes').text());
+        var other_taxes                 =0;
+        var loyalty_amount              =initialize_values($('#loyalty_amount').text());
+        var wallet_amount_available     =initialize_values($('#wallet_amount_available').text());
+        var wallet_amount_used_fixed    =initialize_values($('#wallet_amount_used_fixed').text());
+        var gross_amount                =initialize_values($('#gross_amount').text());
+        var total_taxable_amount        =initialize_values($('#total_taxable_amount').text());
+        var total_subscription_discount =initialize_values($('#total_subscription_discount').text());
+        //var fixed_fee_amount            =initialize_values($('#fixed_fee_amount').val());
+        var tip                         =initialize_values($(this).val());
+        
+        
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
-        var amount_payable = parseFloat(amount_elem.val());
-        var lol = parseFloat($('#loyalty_amount').text());
-        if(isNaN(lol)) lol = 0;
-        $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
-        $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
-        $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
-        if(parseFloat($('#wallet_amount_available').text())>0){
-            if(parseFloat($('#wallet_amount_available').text()) >= parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)){
+        var amount_payable =initialize_values(amount_elem.val());
+        var payable_amount=0;
+        
+        $("#cart_tip_amount").val(tip.toFixed(parseInt(digit_count)));
+        // $("#cart_total_payable_amount").html(currency + (amount_payable+other_taxes).toFixed(parseInt(digit_count)));
+        // $("input[name='cart_total_payable_amount']").val((amount_payable+other_taxes).toFixed(parseInt(digit_count)));
+        
+        if(wallet_amount_available>0){
+            if(wallet_amount_available >= wallet_amount_used_fixed+tip){
                 /* Paid amount is less then available wallet amount*/
-                $("#wallet_amount_used").text(" - "+currency+ " "+(parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)).toFixed(parseInt(digit_count)));
+                $("#wallet_amount_used").text(" - "+currency+ " "+(wallet_amount_used_fixed+tip).toFixed(parseInt(digit_count)));
             }else{
                 /* Paid amount is greater then available wallet amount*/
-                $("#wallet_amount_used").text(" - "+currency+ " "+parseFloat($('#wallet_amount_available').text()).toFixed(parseInt(digit_count)));
-                var payable_amount=((parseFloat($('#gross_amount').text()) -   lol)    -    parseFloat($('#wallet_amount_available').text())     +   parseFloat(tip)  );
-                payable_amount = payable_amount + other_taxes;
-                $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count))   );
-                $("input[name='cart_total_payable_amount']").val(  payable_amount.toFixed(parseInt(digit_count))   );
+                $("#wallet_amount_used").text(" - "+currency+ " "+wallet_amount_available.toFixed(parseInt(digit_count)));
+                payable_amount=((gross_amount + tip)  - (total_subscription_discount+wallet_amount_available+loyalty_amount));
+                
+                $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count)));
+                $("input[name='cart_total_payable_amount']").val(  payable_amount.toFixed(parseInt(digit_count)));
             }
-            if(parseFloat(amount_payable)+parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)>=parseFloat($('#mov').text())){
+            if(amount_payable+wallet_amount_used_fixed+tip>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");
                 $("#MOV_Notification").addClass("d-none");
@@ -2125,10 +2139,10 @@ $(document).ready(function () {
                 $("#MOV_Notification").removeClass("d-none");
             }
         }else{
-            var payable_amount = parseFloat(amount_payable) + parseFloat(tip) + other_taxes;
+            payable_amount=((gross_amount + tip + total_taxable_amount)  - (total_subscription_discount+loyalty_amount));
             $("#cart_total_payable_amount").html(currency + payable_amount.toFixed(parseInt(digit_count)));
             $("input[name='cart_total_payable_amount']").val(payable_amount.toFixed(parseInt(digit_count)));
-            if(parseFloat(amount_payable)+parseFloat(tip) >= parseFloat($('#mov').text())){
+            if(amount_payable >= parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");
                 $("#MOV_Notification").addClass("d-none");
@@ -3988,110 +4002,110 @@ $(document).ready(function () {
 
             });
         
-        break;
+            break;
 
-        case 9:
-                paymentViaPaylink('', '');
-        break;
+            case 9:
+                    paymentViaPaylink('', '');
+            break;
 
-        case 10:
-                paymentViaRazorpay_wallet('', payment_option_id);
-        break;
+            case 10:
+                    paymentViaRazorpay_wallet('', payment_option_id);
+            break;
 
-        case 11:
-                paymentViaGCash('', '');
-        break;
+            case 11:
+                    paymentViaGCash('', '');
+            break;
 
-        case 12:
-                paymentViaSimplify('', '');
-        break;
+            case 12:
+                    paymentViaSimplify('', '');
+            break;
 
-        case 13:
-                paymentViaSquare('', '');   
-        break;
+            case 13:
+                    paymentViaSquare('', '');   
+            break;
 
-        case 14:
-                paymentViaOzow('', '');
-        break;
+            case 14:
+                    paymentViaOzow('', '');
+            break;
 
-        case 15:
-                paymentViaPagarme('', '');
-        break;
+            case 15:
+                    paymentViaPagarme('', '');
+            break;
 
-        case 17:
-                paymentViaCheckout('', '');
-        break;
+            case 17:
+                    paymentViaCheckout('', '');
+            break;
 
-        case 18:
-                paymentViaAuthorize('', '');
-        break;
+            case 18:
+                    paymentViaAuthorize('', '');
+            break;
 
-        case 19:
-                paymentViaStripeFPX('', payment_option_id, '');
-        break;
+            case 19:
+                    paymentViaStripeFPX('', payment_option_id, '');
+            break;
 
-        case 20: //Kongapay
-                payWithKPG('');
-        break;
+            case 20: //Kongapay
+                    payWithKPG('');
+            break;
 
-        case 21:
-                payWithVivaWallet('');
-        break;
+            case 21:
+                    payWithVivaWallet('');
+            break;
 
-        case 22:
-                payWithCcAvenue('');
-        break;
+            case 22:
+                    payWithCcAvenue('');
+            break;
 
-        case 23:
-                paymentViaEasyPaisaPay('');
-        break;
+            case 23:
+                    paymentViaEasyPaisaPay('');
+            break;
 
-        case 24:  
-                paymentViaCashfree('', payment_option_id, '');
-        break;
+            case 24:  
+                    paymentViaCashfree('', payment_option_id, '');
+            break;
 
-        case 25:
-                payWithEasebuss('', payment_option_id, '');
-        break;
+            case 25:
+                    payWithEasebuss('', payment_option_id, '');
+            break;
 
-        case 26:
-                paymentViaToyyibPay('', payment_option_id, '');        
-        break;
+            case 26:
+                    paymentViaToyyibPay('', payment_option_id, '');        
+            break;
 
-        case 27:
-                paymentViaPaytab('', payment_option_id, '');  
-        break;
+            case 27:
+                    paymentViaPaytab('', payment_option_id, '');  
+            break;
 
-        case 28:
-                payWithVNpay('', payment_option_id, '');                        
-        break;
+            case 28:
+                    payWithVNpay('', payment_option_id, '');                        
+            break;
 
-        case 29:
-                payWithMvodafone('', payment_option_id, '');
-        break;
+            case 29:
+                    payWithMvodafone('', payment_option_id, '');
+            break;
 
-        case 30:
-                payWithFlutterWave('', payment_option_id, '');
-        break;
+            case 30:
+                    payWithFlutterWave('', payment_option_id, '');
+            break;
 
-        case 32:
-                payphoneButton('', payment_option_id, '');
-        break;
+            case 32:
+                    payphoneButton('', payment_option_id, '');
+            break;
 
-        case 33:
-                paymentViaBraintree('', payment_option_id, ''); 
-        break;
+            case 33:
+                    paymentViaBraintree('', payment_option_id, ''); 
+            break;
 
-        case 34:
-                payWithWindcave('', payment_option_id, ''); 
-        break;
+            case 34:
+                    payWithWindcave('', payment_option_id, ''); 
+            break;
 
-        case 35:
-                payWithPaytech('', payment_option_id, ''); 
-        break;
+            case 35:
+                    payWithPaytech('', payment_option_id, ''); 
+            break;
+        }
     }
 
-}
 });
 
 function numberWithCommas(x) {

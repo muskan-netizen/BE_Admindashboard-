@@ -148,6 +148,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     
     let other_taxes=0;
+    let other_taxes_string="";
     _.each(cart_details.products, function(product, key){
         /*console.log(JSON.stringify(product));*/
        /* if (product.vendor.get_tax_fixed_fee != null) {
@@ -221,6 +222,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         }
 
         other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.delivery_charges)*tax_delivery_charges_percentage/100);
+        other_taxes_string='tax_fixed_fee:'+(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+',tax_service_charges:'+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+',tax_delivery_charges:'+(parseFloat(cart_details.delivery_charges)*tax_delivery_charges_percentage/100);
            
         %>
         <div id="thead_<%= product.vendor.id %>">
@@ -586,17 +588,22 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
                 <hr class="my-2">
             <% }
-            if(product_container_charges_tax_amount!=0){
+            if(product_container_charges_tax_amount>0){
                 other_taxes=other_taxes+product_container_charges_tax_amount;
+                other_taxes_string=other_taxes_string+',tax_product_container_charges:'+product_container_charges_tax_amount;
                 console.log('product');
-            }else{
+            }else if(tax_container_charges_percentage>0){
                 console.log('vendor');
                 other_taxes=other_taxes+(parseFloat(cart_details.total_container_charges)*tax_container_charges_percentage/100);
+                other_taxes_string=other_taxes_string+',tax_vendor_container_charges:'+(parseFloat(cart_details.total_container_charges)*tax_container_charges_percentage/100);
             }
+            %>
+            <input type="hidden" id="other_taxes_string" value="<%= other_taxes_string %>">
+            <%
             if(price_bifurcation!=1){  %>
             <div class="row">
                 <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+other_taxes) %></b></div>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="total_taxable_amount"><%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+other_taxes) %></span></b></div>
             </div>
             <% } if(price_bifurcation!=1){ %>
             <hr class="my-2">
@@ -610,7 +617,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
-                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_subscription_discount) %></b></div>
+                    <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="total_subscription_discount"><%= Helper.formatPrice(cart_details.total_subscription_discount) %><span></b></div>
                 </div>
                 <hr class="my-2">
             <% } %>
@@ -703,7 +710,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 
                         <% }else{ %>
                             <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
-                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)) %></p>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
                             <% } else { %>
                                 <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
                             <% } %>
@@ -712,7 +719,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <%
                         } %>
                         <div>
-                        <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= cart_details.total_payable_amount %>">
+                        <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(other_taxes) %>">
                     </div>
 
 
