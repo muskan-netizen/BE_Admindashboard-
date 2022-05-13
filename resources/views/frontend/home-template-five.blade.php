@@ -149,7 +149,7 @@
 			</a>
 		</div>
 
-		<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel" style="display:none;">
+		<div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;">
 			<div class="carousel-inner">
 
 				@foreach($mobile_banners as $key => $banner)
