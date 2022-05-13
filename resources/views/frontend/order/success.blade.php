@@ -118,7 +118,7 @@ $total = $order->payable_amount+$order->total_other_taxes_amount;
                                         <li>{{__('Other Taxes')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                    
-                                    <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee) * @$clientCurrency->doller_compare)}}</span></li>
+                                    <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges) * @$clientCurrency->doller_compare)}}</span></li>
                                     @if($order->taxable_amount > 0)
                                         <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
