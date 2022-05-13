@@ -1855,6 +1855,7 @@
         var create_payphone_url = "{{route('payphone.createHash')}}";
         var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
         var create_windcave_hash_url = "{{route('windcave.createHash')}}";
+        var create_paytech_hash_url = "{{route('paytech.createHash')}}";
         var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
         var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
         var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";

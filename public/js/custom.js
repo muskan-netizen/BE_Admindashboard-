@@ -2098,7 +2098,8 @@ $(document).ready(function () {
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
         var amount_payable = parseFloat(amount_elem.val());
-        
+        var lol = parseFloat($('#loyalty_amount').text());
+        if(isNaN(lol)) lol = 0;
         $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
         $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
         $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
@@ -2109,7 +2110,7 @@ $(document).ready(function () {
             }else{
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+parseFloat($('#wallet_amount_available').text()).toFixed(parseInt(digit_count)));
-                var payable_amount=((parseFloat($('#gross_amount').text()) -   parseFloat($('#loyalty_amount').text()))    -    parseFloat($('#wallet_amount_available').text())     +   parseFloat(tip)  );
+                var payable_amount=((parseFloat($('#gross_amount').text()) -   lol)    -    parseFloat($('#wallet_amount_available').text())     +   parseFloat(tip)  );
                 payable_amount = payable_amount + other_taxes;
                 $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count))   );
                 $("input[name='cart_total_payable_amount']").val(  payable_amount.toFixed(parseInt(digit_count))   );

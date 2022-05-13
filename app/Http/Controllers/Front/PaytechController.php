@@ -64,30 +64,21 @@ class PaytechController extends FrontController
         $returnUrl = '';
         if($request->from == 'cart')
         {
-         $request->amt = $amt;
          $time = $request->order_number;
          Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'cart','date'=>date('Y-m-d')]);
-   
         }elseif($request->from == 'wallet')
         {
          $time = ($request->transaction_id)??'W_'.time();
          //Save transaction before payment success for get information only
          Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'wallet','date'=>date('Y-m-d')]);
-         $request->amt = $amt;
-   
         }elseif($request->from == 'tip')
         {
          $time = 'T_'.time().'_'.$request->order_number;
          Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'tip','date'=>date('Y-m-d')]);
-        
-         $request->amt = $amt;
-         
         }elseif($request->from == 'subscription')
         {
          $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
          Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'subscription','date'=>date('Y-m-d')]);
-   
-         $request->amt = $amt;
         }
         $request->request->add(['amt'=>$amt]);
         return $time;
@@ -97,11 +88,12 @@ class PaytechController extends FrontController
     {
         $order_number =  $this->orderNumber($request);
         //['XOF', 'EUR', 'USD', 'CAD','GBP','MAD']
-        $postFields = array ("item_name" => 'Test Item', "item_price" => round($request->amt) , "currency" => "USD" , "command_ref" =>   'testing'.$order_number , "command_name" =>   'Testing gateway' , "env" =>   $this->env , "success_url" =>   route('paytech.success') , "ipn_url" => 'https://royo-order.com/payment/windcave/success' , "cancel_url" =>  route('paytech.success') , "custom_field" =>'testing'.$order_number);
+        //orderProductDetails($order_id)
+        $postFields = array ("item_name" => 'Test Item', "item_price" => $request->amt , "currency" => "USD" , "ref_command" =>   'testing'.$order_number , "command_name" =>   'Testing gateway' , "env" =>   $this->env , "success_url" =>   route('paytech.success') , "ipn_url" => 'https://royo-order.com/payment/windcave/success' , "cancel_url" =>  route('paytech.success') , "custom_field" =>'testing'.$order_number);
         \Log::info(json_encode($postFields)); 
         $jsonResponse = $this->post ($this->app_url.'/payment/request-payment',$postFields,["API_KEY: " . $this->api_key , "API_SECRET: " . $this->api_secret]); 
         \Log::info(json_encode(["API_KEY: " . $this->api_key , "API_SECRET: " . $this->api_secret]));
-        return json_encode($jsonResponse);
+        return $jsonResponse;
     }
 
 
