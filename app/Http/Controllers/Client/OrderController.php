@@ -616,7 +616,9 @@ class OrderController extends BaseController
                         }
                         
                         $wallet = User::find($order->user_id)->wallet;
-                        $wallet->depositFloat($refundAmount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $refundAmount]);
+                        if(!empty($refund_amount) && $refund_amount>0){
+                            $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $refund_amount]);
+                        }
 
                         $order->payment_status=2;
                         $order->save();
