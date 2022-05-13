@@ -3953,98 +3953,97 @@ $(document).ready(function () {
 
             });
         
-        break;
+            break;
 
-        case 9:
-                paymentViaPaylink('', '');
-        break;
+            case 9:
+                    paymentViaPaylink('', '');
+            break;
 
-        case 10:
-                paymentViaRazorpay_wallet('', payment_option_id);
-        break;
+            case 10:
+                    paymentViaRazorpay_wallet('', payment_option_id);
+            break;
 
-        case 11:
-                paymentViaGCash('', '');
-        break;
+            case 11:
+                    paymentViaGCash('', '');
+            break;
 
-        case 12:
-                paymentViaSimplify('', '');
-        break;
+            case 12:
+                    paymentViaSimplify('', '');
+            break;
 
-        case 13:
-                paymentViaSquare('', '');   
-        break;
+            case 13:
+                    paymentViaSquare('', '');   
+            break;
 
-        case 14:
-                paymentViaOzow('', '');
-        break;
+            case 14:
+                    paymentViaOzow('', '');
+            break;
 
-        case 15:
-                paymentViaPagarme('', '');
-        break;
+            case 15:
+                    paymentViaPagarme('', '');
+            break;
 
-        case 17:
-                paymentViaCheckout('', '');
-        break;
+            case 17:
+                    paymentViaCheckout('', '');
+            break;
 
-        case 18:
-                paymentViaAuthorize('', '');
-        break;
+            case 18:
+                    paymentViaAuthorize('', '');
+            break;
 
-        case 19:
-                paymentViaStripeFPX('', payment_option_id, '');
-        break;
+            case 19:
+                    paymentViaStripeFPX('', payment_option_id, '');
+            break;
 
-        case 20: //Kongapay
-                payWithKPG('');
-        break;
+            case 20: //Kongapay
+                    payWithKPG('');
+            break;
 
-        case 21:
-                payWithVivaWallet('');
-        break;
+            case 21:
+                    payWithVivaWallet('');
+            break;
 
-        case 22:
-                payWithCcAvenue('');
-        break;
+            case 22:
+                    payWithCcAvenue('');
+            break;
 
-        case 23:
-                paymentViaEasyPaisaPay('');
-        break;
+            case 23:
+                    paymentViaEasyPaisaPay('');
+            break;
 
-        case 24:  
-                paymentViaCashfree('', payment_option_id, '');
-        break;
+            case 24:  
+                    paymentViaCashfree('', payment_option_id, '');
+            break;
 
-        case 25:
-                payWithEasebuss('', payment_option_id, '');
-        break;
+            case 25:
+                    payWithEasebuss('', payment_option_id, '');
+            break;
 
-        case 26:
-                paymentViaToyyibPay('', payment_option_id, '');        
-        break;
+            case 26:
+                    paymentViaToyyibPay('', payment_option_id, '');        
+            break;
 
-        case 27:
-                paymentViaPaytab('', payment_option_id, '');  
-        break;
+            case 27:
+                    paymentViaPaytab('', payment_option_id, '');  
+            break;
 
-        case 28:
-                payWithVNpay('', payment_option_id, '');                        
-        break;
+            case 28:
+                    payWithVNpay('', payment_option_id, '');                        
+            break;
 
-        case 29:
-                payWithMvodafone('', payment_option_id, '');
-        break;
+            case 29:
+                    payWithMvodafone('', payment_option_id, '');
+            break;
 
-        case 30:
-                payWithFlutterWave('', payment_option_id, '');
-        break;
+            case 30:
+                    payWithFlutterWave('', payment_option_id, '');
+            break;
 
-        case 33:
-                paymentViaBraintree('', payment_option_id, ''); 
-        break;
+            case 33:
+                    paymentViaBraintree('', payment_option_id, ''); 
+            break;
+        }
     }
-
-}
 });
 
 function numberWithCommas(x) {
