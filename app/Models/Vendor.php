@@ -31,6 +31,15 @@ class Vendor extends Model implements Auditable{
     public function slots(){
       return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id');
     }
+
+    public function slotsForPickup(){
+      return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id')->where('slot_type', '1');
+    }
+    public function slotsForDropoff(){
+      return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id')->where('slot_type', '2');
+    }
+
+    
     public function slotDates(){
       return $this->hasMany('App\Models\VendorSlotDate', 'vendor_id', 'id');
     }

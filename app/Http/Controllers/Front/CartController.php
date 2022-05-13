@@ -600,7 +600,7 @@ class CartController extends FrontController
         $delifproductnotexist = CartProduct::where('cart_id', $cart_id)->doesntHave('product')->delete();
 
         $cartData = CartProduct::with([
-            'vendor','vendor.slots','vendor.slot.day', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
+            'vendor','vendor.slots','vendor.slot.day', 'vendor.slotsForPickup', 'vendor.slotsForDropoff', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
                 $qry->where('cart_id', $cart_id);
             }, 'vendorProducts.pvariant.media.pimage.image', 'vendorProducts.product.media.image',
             'vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
@@ -1156,27 +1156,83 @@ class CartController extends FrontController
                     $cart->schedule_type =  'schedule';
                     //$cart->closed_store_order_scheduled =  1;
                 }
-                $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
-                if(count((array)$slots) == 0){
-                    $myDate  = date('Y-m-d',strtotime('+1 day'));
-                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
+                if($preferences->scheduling_with_slots != 1 && $preferences->business_type != 'laundry'){
+                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
+                    if(count((array)$slots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+1 day'));
+                        $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
+                    }
+                    if(count((array)$slots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+2 day'));
+                        $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
+                    }
+    
+                    if(count((array)$slots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+3 day'));
+                        $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
+                    }
+                    $cart->slots = $slots;
+                    $cart->vendor_id =  $vendorId;
+                }else{
+                    $cart->slots = [];
+                    $cart->vendor_id =  $vendorId;
+                    $slots = [];
+                    $pickupSlots = [];
+                    $dropoffSlots = [];
                 }
-                if(count((array)$slots) == 0){
-                    $myDate  = date('Y-m-d',strtotime('+2 day'));
-                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
-                }
+                
 
-                if(count((array)$slots) == 0){
-                    $myDate  = date('Y-m-d',strtotime('+3 day'));
-                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
+                // get slots for laundry category
+                if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
+                    // For Pickup
+                    $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    if(count((array)$pickupSlots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+1 day'));
+                        $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    }
+                    if(count((array)$pickupSlots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+2 day'));
+                        $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    }
+                    if(count((array)$pickupSlots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+3 day'));
+                        $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    }
+
+                    // For Dropoff
+                    $myDropoffDate = date('Y-m-d');
+                    $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                    if(count((array)$dropoffSlots) == 0){
+                        $myDropoffDate  = date('Y-m-d',strtotime('+1 day'));
+                        $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                    }
+                    if(count((array)$dropoffSlots) == 0){
+                        $myDropoffDate  = date('Y-m-d',strtotime('+2 day'));
+                        $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                    }
+                    if(count((array)$dropoffSlots) == 0){
+                        $myDropoffDate  = date('Y-m-d',strtotime('+3 day'));
+                        $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                    }
+
+                    $cart->slotsForPickup = $pickupSlots;
+                    $cart->slotsForDropoff  = $dropoffSlots;
+                    $cart->vendor_id = $vendorId;
+                }else{
+                    $cart->slotsForPickup = [];
+                    $slots = [];
+                    $pickupSlots = [];
+                    $dropoffSlots = [];
                 }
-                $cart->slots = $slots;
-                $cart->vendor_id =  $vendorId;
 
             }else{
                 $slots = [];
                 $cart->slots = [];
+                $cart->slotsForPickup = [];
+                $cart->slotsForDropoff = [];
                 $cart->vendor_id =  0;
+                $pickupSlots = [];
+                $dropoffSlots = [];
             }
             $cart->without_category_kyc = 0;
             
@@ -1220,6 +1276,8 @@ class CartController extends FrontController
                 $cart->without_category_kyc = 1;
             }
             $cart->slotsCnt = count((array)$slots);
+            $cart->pickupSlotsCnt = count((array)$pickupSlots);
+            $cart->dropoffSlotsCnt = count((array)$dropoffSlots);
             $cart->total_service_fee = decimal_format($total_service_fee);
             $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
             $cart->gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
@@ -1238,13 +1296,41 @@ class CartController extends FrontController
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;
-            if($cart->slotsCnt==0){
-                $mdate = (object)findSlotNew('',$cart->vendor_id,'');
-                $cart->delay_date =  $mdate->mydate;
-             }else{
-                $cart->delay_date =  $myDate??0;
+
+            if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
+                if($cart->pickupSlotsCnt==0){
+                    $mdate = (object)findSlotNew('',$cart->vendor_id,1);
+                    $cart->delay_date =  $mdate->mydate;
+                 }else{
+                    $cart->delay_date =  $myDate??$delay_date;
+                }
+
+                if($cart->dropoffSlotsCnt==0){
+                    $mdate = (object)findSlotNew('',$cart->vendor_id,2);
+                    $cart->my_dropoff_delay_date =  $mdate->mydate;
+                 }else{
+                    $cart->my_dropoff_delay_date =  $myDropoffDate??$delay_date;
+                }
+
+            }else{
+                if($cart->slotsCnt==0){
+                    $mdate = (object)findSlotNew('',$cart->vendor_id,0);
+                    $cart->delay_date =  $mdate->mydate;
+                 }else{
+                    $cart->delay_date =  $myDate??$delay_date;
+                }
             }
 
+            if($preferences->same_day_delivery_for_schedule == 0){
+                if($cart->my_dropoff_delay_date == date('Y-m-d') ){
+                    $cart->my_dropoff_delay_date = date('Y-m-d',strtotime('+1 day')); 
+                }
+
+                if($cart->delay_date == date('Y-m-d') ){
+                    $cart->delay_date = date('Y-m-d',strtotime('+1 day')); 
+                }
+
+            }
 
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
@@ -1260,11 +1346,57 @@ class CartController extends FrontController
     {
         $message = '';
         $status = 'Success';
+        $vendorId = $request->vendor_id;
+        $option = "";
+        //type must be a : delivery , takeaway,dine_in
+        $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
+        $slots = (object)showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes, 0);
+        $option ="<option value=''>".__("Select Slot")."</option>";
+        if(count((array)$slots)<=0){
+            $message = 'Slot not found.';
+            $status = 'error';
+        }else{
+            foreach($slots as $opt)
+            {
+                $option .="<option value='".$opt['value']."'>".$opt['name']."</option>";
+            }
+        }
+        $data = array('status'=>$status,'data'=>$option,'message'=>$message);
+        return response()->json($data);
+    }
+
+    public function checkPickupScheduleSlots(Request $request)
+    {
+        $message = '';
+        $status = 'Success';
         $vendorId = $request->vendor_id??0;
         $option = "";
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
-        $slots = (object)showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes);
+        $slots = (object)showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes,1);
+        $option ="<option value=''>".__("Select Slot")."</option>";
+        if(count((array)$slots)<=0){
+            $message = 'Slot not found.';
+            $status = 'error';
+        }else{
+            foreach($slots as $opt)
+            {
+                $option .="<option value='".$opt['value']."'>".$opt['name']."</option>";
+            }
+        }
+        $data = array('status'=>$status,'data'=>$option,'message'=>$message);
+        return response()->json($data);
+    }
+
+    public function checkDropoffScheduleSlots(Request $request){
+        $message = '';
+        $status = 'Success';
+        $vendorId = $request->vendor_id??0;
+        $option = "";
+        //type must be a : delivery , takeaway,dine_in
+        $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
+
+        $slots = (object)showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes,2);
         $option ="<option value=''>".__("Select Slot")."</option>";
         if(count((array)$slots)<=0){
             $message = 'Slot not found.';

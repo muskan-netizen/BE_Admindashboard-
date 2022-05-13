@@ -245,17 +245,36 @@ class ReturnOrderController extends FrontController{
      * vendor  details
     */
     public function getVendorOrderForCancel(Request $request){
+
+        $client_preferences = ClientPreference::first();
+        $user = Auth::user();
+        // For Deduction of cancelation charges for laundry
+        if($client_preferences->business_type == 'laundry'){
+            $pickup_cancelling_charges  = substr($request->pickup_cancelling_charges, 1);
+            $order_id                   = $request->order_id;
+            $order_number               = $request->order_number;
+            $pickup_order_date          = $request->pickup_order_date;
+        }
+
         try {
 
             $order_vendor = OrderVendor::where('id',$request->id)->first();
-            if(isset($order_vendor)){
-
-                if ($request->ajax()) {
-                 return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor))->render());
+            if($client_preferences->business_type == 'laundry'){
+                return \Response::json(\View::make('frontend.modals.vendor-cancel-order')->with([
+                    'order_vendor' => $order_vendor,
+                    'pickup_cancelling_charges' => $pickup_cancelling_charges,
+                    'pickup_order_date' => $pickup_order_date,
+                    'order_number'  => $order_number,
+                    'order_id'  => $order_id,
+                ])->render());
+            }else{
+                if(isset($order_vendor)){
+                    if ($request->ajax()) {
+                     return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor))->render());
+                    }
                 }
-
+                return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor))->render());
             }
-            return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor))->render());
 
 
         } catch (Exception $e) {
@@ -276,6 +295,30 @@ class ReturnOrderController extends FrontController{
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
         try {
+
+            $today = date('Y-m-d');
+            $user = Auth::user();
+            if($client_preferences->business_type == 'laundry'){
+                if($request->pickup_order_date == $today){
+                    if($user->balanceFloat >= $request->pickup_cancelling_charges){
+                        if ($user) {
+                            $wallet_amount_used = $user->balanceFloat;
+                            if ($wallet_amount_used >= $request->pickup_cancelling_charges) {
+                                if ($wallet_amount_used > 0) {
+                                    $wallet->withdrawFloat($request->pickup_cancelling_charges, ['Wallet has been <b>debited</b> for cancelling the order on pickup day under order number <b>#' . $request->order_number . '</b>']);
+                                }
+                            }
+                        }
+                    }else{
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => __('Insufficient wallet balance, required cancelling charges are '.$request->pickup_cancelling_charges.'. Please recharge your wallet.')
+                        ]);
+                    }
+                }
+            }
+
+
             $timezone = Auth::user()->timezone;
             $request->status_option_id = 3;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();

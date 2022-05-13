@@ -97,19 +97,19 @@
 
                     
 
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                    <div class="form-group w-100">
-                     {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
-                        <select class="form-control" name="slot_minutes">
-                            <option value="">{{__('Slot Duration')}}</option>
-                            <option value="15" {{$vendor->slot_minutes == '15'? 'selected':''}}>15 {{__(' Minutes')}}</option>
-                            <option value="30" {{$vendor->slot_minutes == '30'? 'selected':''}}>30 {{__(' Minutes')}}</option>
-                            <option value="45" {{$vendor->slot_minutes == '45'? 'selected':''}}>45 {{__(' Minutes')}}</option>
-                            @for($i=1;$i<=8;$i++)
-                                <option value="{{$i*60}}" {{$vendor->slot_minutes == ($i*60)? 'selected':''}}>{{ $i. __(' Hour')}}</option>
-                            @endfor
-                        </select>
-                    </div>
+                    <div class="col-md-12 d-flex align-items-center justify-content-between">
+                        <div class="form-group w-100">
+                        {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
+                            <select class="form-control" name="slot_minutes">
+                                <option value="">{{__('Slot Duration')}}</option>
+                                <option value="15" {{$vendor->slot_minutes == '15'? 'selected':''}}>15 {{__(' Minutes')}}</option>
+                                <option value="30" {{$vendor->slot_minutes == '30'? 'selected':''}}>30 {{__(' Minutes')}}</option>
+                                <option value="45" {{$vendor->slot_minutes == '45'? 'selected':''}}>45 {{__(' Minutes')}}</option>
+                                @for($i=1;$i<=8;$i++)
+                                    <option value="{{$i*60}}" {{$vendor->slot_minutes == ($i*60)? 'selected':''}}>{{ $i. __(' Hour')}}</option>
+                                @endfor
+                            </select>
+                        </div>
                     </div>
 
                     <div class="col-md-12 mb-2">
@@ -372,6 +372,62 @@
         </div>
     </div>
 </div>
+
+@if($client_preference_detail->business_type == 'laundry')
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Rescheduling Order Charges") }} ({{ __("Visible For Admin") }})</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="form-group" id="rescheduling_chargesInput">
+                            {!! Form::label('title', __('Rescheduling Charges'),['class' => 'control-label']) !!} 
+                            <input class="form-control" name="rescheduling_charges" type="text" min="0" maxlength="5" value="{{$vendor->rescheduling_charges}}" onkeypress="return isNumberKey(event)">
+                            <small>(When rescheduling is done on the day of delivery.)</small>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Pickup Cancelling/Rescheduling Charges") }} ({{ __("Visible For Admin") }})</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="form-group" id="rescheduling_chargesInput">
+                            {!! Form::label('title', __('Pickup Cancelling & Rescheduling Charges'),['class' => 'control-label']) !!} 
+                            <input class="form-control" name="pickup_cancelling_charges" type="text" min="0" maxlength="5" value="{{$vendor->pickup_cancelling_charges}}" onkeypress="return isNumberKey(event)">
+                            <small>(When cancelling or rescheduling is done on the day of pickup.)</small>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 <style type="text/css">
     #nestable_list_1 ol,
     #nestable_list_1 ul {

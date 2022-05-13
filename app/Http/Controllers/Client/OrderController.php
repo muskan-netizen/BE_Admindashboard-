@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
+use App\Models\RescheduleOrder;
 use App\Models\{Tax,Order,User,VendorOrderDispatcherStatus,OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency,UserDocs,UserRegistrationDocuments, OrderCancelRequest,CaregoryKycDoc,ThirdPartyAccounting, OrderVendorReport,OrderRefund,Wallet};
 use DB;
 use GuzzleHttp\Client;
@@ -54,6 +55,7 @@ class OrderController extends BaseController
         //     }
         // }
         $return_requests = OrderReturnRequest::where('status', 'Pending');
+        $rescheduleOrderCount = RescheduleOrder::count();
         if ($user->is_superadmin == 0) {
             $return_requests = $return_requests->whereHas('order.vendors.vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -142,11 +144,12 @@ class OrderController extends BaseController
         }
         $vendors = $vendors->get();
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+        $client_preferences = ClientPreference::first();
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
         $accounting = ThirdPartyAccounting::where('status',1)->get();
         $del_order_count = OrderVendor::has('accounting', '<', 1)->where('order_status_option_id',6)->count();
-        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors','fixedFee','accounting','del_order_count'));
+        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors','fixedFee','accounting','del_order_count', 'rescheduleOrderCount', 'client_preferences'));
     }
 
     public function postOrderFilter(Request $request, $domain = '')
@@ -959,6 +962,7 @@ class OrderController extends BaseController
                 'task_type' => $task_type,
                 'schedule_time' => $schedule_time ?? null,
                 'cash_to_be_collected' => $payable_amount ?? 0.00,
+                'order_number' => $order->order_number,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
@@ -1306,6 +1310,21 @@ class OrderController extends BaseController
                     'status' => $status
                 ]
             );
+        } catch (\Throwable $th) {
+            return redirect()->back();
+        }
+    }
+
+    /**
+    * View Rescheduled Orders
+    * Get Route
+    * Added by Ovi
+    */
+    public function rescheduledOrders(Request $request)
+    {
+        try {
+            $rescheduleOrders = RescheduleOrder::all();
+            return view('backend.order.reschedule',['rescheduleOrders' => $rescheduleOrders]);
         } catch (\Throwable $th) {
             return redirect()->back();
         }

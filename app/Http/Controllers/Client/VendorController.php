@@ -937,7 +937,9 @@ class VendorController extends BaseController
         $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
         $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
         $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
-        $vendor->slot_minutes = ($request->slot_minutes>0)?$request->slot_minutes:0;
+        if($request->has('slot_minutes')){
+            $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;
+        }
         $vendor->closed_store_order_scheduled = (($request->has('show_slot')) ? 0 : ($request->closed_store_order_scheduled == 'on')) ? 1 : 0;
         $vendor->fixed_fee = ($request->has('fixed_fee') && $request->fixed_fee == 'on') ? 1 : 0;
         $vendor->price_bifurcation = ($request->has('price_bifurcation') && $request->price_bifurcation == 'on') ? 1 : 0;
@@ -980,6 +982,12 @@ class VendorController extends BaseController
             //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
             $vendor->show_slot         = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
             $msg = 'commission configuration';
+        }
+        if($request->has('rescheduling_charges')){
+            $vendor->rescheduling_charges   = $request->rescheduling_charges;
+        }
+        if($request->has('pickup_cancelling_charges')){
+            $vendor->pickup_cancelling_charges   = $request->pickup_cancelling_charges;
         }
         // if ($request->has('service_fee_percent')) {
         //     $vendor->service_fee_percent         = $request->service_fee_percent;

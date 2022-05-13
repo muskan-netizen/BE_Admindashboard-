@@ -1285,6 +1285,30 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                </div>
 
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="scheduling_with_slots" class="mr-2 mb-0">{{__('Schedule Pickup & Dropoff With Slots')}}<small class="d-block pr-5">Enable or disable schedule pickup & dropoff with slots for laundry.</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="scheduling_with_slots" id="scheduling_with_slots" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->scheduling_with_slots == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Scheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for scheduling.</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="same_day_delivery_for_schedule" id="same_day_delivery_for_schedule" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_delivery_for_schedule == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Rescheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for rescheduling.</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="same_day_orders_for_rescheduing" id="same_day_orders_for_rescheduing" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_orders_for_rescheduing == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
                </div>
             </div>
          </form>
