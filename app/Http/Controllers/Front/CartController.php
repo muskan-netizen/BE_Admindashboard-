@@ -828,7 +828,7 @@ class CartController extends FrontController
                     $taxData = array();
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
-                            $rate = round($tax_value->tax_rate);
+                            $rate = $tax_value->tax_rate;
                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
                             $product_tax = $quantity_price * $rate / 100; 
                             $taxData[$tckey]['identifier'] = $tax_value->identifier;
