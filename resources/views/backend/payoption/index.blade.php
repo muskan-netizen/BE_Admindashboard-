@@ -845,6 +845,31 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'mycash'))
+                    <div class="mt-2" id="mycash_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mycash_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="mycash_api_key" id="mycash_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mycash_username" class="mr-3">{{ __("Username") }}</label>
+                                    <input type="text" name="mycash_username" id="mycash_username" class="form-control" value="{{$username}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mycash_password" class="mr-3">{{ __("Password") }}</label>
+                                    <input type="password" name="mycash_password" id="mycash_password" class="form-control" value="{{$password}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
             </div>
             @endforeach
