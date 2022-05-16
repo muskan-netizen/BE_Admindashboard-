@@ -38,16 +38,16 @@ class CartController extends FrontController
                 $order = Order::where('order_number', $request->order)->first();
                 if($order){
                     if($request->status == 0){
-                        $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-                        foreach($order_products as $order_prod){
-                            OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
-                        }
-                        OrderProduct::where('order_id', $order->id)->delete();
-                        OrderProductPrescription::where('order_id', $order->id)->delete();
-                        VendorOrderStatus::where('order_id', $order->id)->delete();
-                        OrderVendor::where('order_id', $order->id)->delete();
-                        OrderTax::where('order_id', $order->id)->delete();
-                        $order->delete();
+                        // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                        // foreach($order_products as $order_prod){
+                        //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                        // }
+                        // OrderProduct::where('order_id', $order->id)->delete();
+                        // OrderProductPrescription::where('order_id', $order->id)->delete();
+                        // VendorOrderStatus::where('order_id', $order->id)->delete();
+                        // OrderVendor::where('order_id', $order->id)->delete();
+                        // OrderTax::where('order_id', $order->id)->delete();
+                        // $order->delete();
                         return redirect()->route('showCart')->with('error', 'Your order has been cancelled');
                     }
                     elseif($request->status == 200){
@@ -828,7 +828,7 @@ class CartController extends FrontController
                     $taxData = array();
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
-                            $rate = round($tax_value->tax_rate);
+                            $rate = $tax_value->tax_rate;
                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
                             $product_tax = $quantity_price * $rate / 100; 
                             $taxData[$tckey]['identifier'] = $tax_value->identifier;
@@ -1099,7 +1099,7 @@ class CartController extends FrontController
                 // if ($loyalty_amount_saved > 0) {
                 // dd($payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)); //36.81
                 // }
-                if((float)($vendorData->vendor->order_min_amount) > $payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)){  # if any vendor total amount of order is less then minimum order amount
+                if((float)($vendorData->vendor->order_min_amount) > $payable_amount+(float)($vendorData->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)){  # if any vendor total amount of order is less then minimum order amount
                     $delivery_status = 0;
                 }
 
@@ -1107,7 +1107,7 @@ class CartController extends FrontController
 
 
 
-                $total_payable_amount = $total_payable_amount + $payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount);
+                $total_payable_amount = $total_payable_amount + $payable_amount+$vendorData->vendor->fixed_fee_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;

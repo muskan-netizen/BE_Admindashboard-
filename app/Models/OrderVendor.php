@@ -12,6 +12,9 @@ class OrderVendor extends Model{
 	public function orderDetail(){
 	    return $this->hasOne('App\Models\Order' , 'id', 'order_id'); 
 	}
+	public function paymentOption(){
+	    return $this->hasOne('App\Models\PaymentOption' , 'id', 'payment_option_id'); 
+	}
     public function vendor(){
 	    return $this->hasOne('App\Models\Vendor' , 'id', 'vendor_id'); 
 	}

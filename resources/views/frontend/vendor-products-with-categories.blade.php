@@ -154,7 +154,7 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6 alScrollspyProduct">
-                                            <div class="row mt-2 d-flex align-items-center mb-sm-2">
+                                            <div class="row mt-2 d-flex align-items-start mb-sm-2 justify-content-center">
                                                 <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
                                                     <div class="radius-bar w-100">
                                                         <div class="search_form d-flex align-items-center border">
@@ -166,7 +166,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-5 text-right pl-0"><span > {{ __('Sort By') }} :</span>
+                                                <div class="col-5 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
                                                     <select name="order_type" id='order_type' class="product_tag_filter p-1">
                                                         <option value="featured">{{ __('Featured') }}</option>
                                                         <option value="a_to_z">{{ __('A to Z') }}</option>
@@ -497,7 +497,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <hr>
+                                <hr class="d-none d-md-block">
                             </div>
                         </div>
                     </div>
@@ -553,7 +553,7 @@
                                                     <div class="extra-items-price font-14">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.price_in_cart) %></div>
                                                 </div>
                                                 <div class="col-md-3 col-sm-4 text-right">
-                                                    <div class="extra-items-price font-14 mr-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
+                                                    <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
                                                 </div>
                                             </div>
                                             <% }); %>
@@ -566,7 +566,7 @@
                                                 <h6 class="m-0 font-14"><b>{{ __('Delivery fee') }}</b></h6>
                                             </div>
                                             <div class="col-md-6 col-sm-6 text-right">
-                                                <div class="extra-items-price font-14 mr-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.delivery_fee_charges) %></div>
+                                                <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.delivery_fee_charges) %></div>
                                             </div>
                                         </div>
                                     <% } %>
