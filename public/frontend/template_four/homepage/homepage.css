@@ -3,6 +3,7 @@
 --star-color: #FFEEA3;
 --star-background: #fc0;
 }
+
 /* order page css */
 .step{display: flex;align-items: center;flex-direction: column;position: relative;z-index: 1;}
 .step-indicator{margin-top: 50px;display: flex;align-items: center;padding: 0 15px;}
@@ -272,7 +273,8 @@ a.morelink{color:var(--theme-deafult)}
 
 /* subscription page css start */
 .pricingtable{width:calc(100% - 10px);background:#fff;box-shadow:0 .75rem 6rem rgb(56 65 74 / 7%);color:#cad0de;margin:auto}.dark .pricingtable{background-color:#242424}.gold-icon{background:#ebcd71;height:100%;display:flex;align-items:center;border-radius:4px;justify-content:center;padding:20px}.gold-icon img{height:120px;width:120px;-webkit-border-radius:50%;border-radius:50%}.pricingtable .pricingtable-header{padding:0 10px;background:rgb(0,0%,0 / 20%);width:100%;height:100%;transition:all .5s ease 0s;text-align:right}.pricingtable .price-value{font-size:30px;color:#fff;transition:all .5s ease 0s}.pricingtable .month{display:block;font-size:14px;color:#fff}.pricingtable .heading{font-size:24px}.pricingtable-purchase{padding:0 10px 10px}
-/* subscription page css start */
+/* subscription page css end */
+
 li.has-children{position: relative;padding-right: 10px;}
 li.has-children:after,li.has-children:before{position: absolute;content: "";width: 0;height: 0;border-left: 6px solid transparent;border-right: 6px solid transparent;border-top: 6px solid #FBCC04;top: 10px;right: 4px;}
 li.has-children:after{border-top: 6px solid #fff;top: 8px;}
