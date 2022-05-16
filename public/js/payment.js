@@ -1900,7 +1900,8 @@ $(document).ready(function() {
             data: ajaxData,
             success: function(resp) {
                 if (resp.status == 'Success') {
-                    if (resp.data != '') {
+                    var res = resp.data;
+                    if (res.formData != '') {
                         $("#payu_offsite_form").remove();
                         var form = '';
                         $.each(res.formData, function(key, value) {

@@ -23,8 +23,8 @@ class PagarmeController extends BaseController
   	{
 		$pagarme_creds = PayoutOption::getCredentials('pagarme');
 	    $creds_arr = json_decode($pagarme_creds->credentials);
-	    $this->api_key = $creds_arr->api_key??'';
-	    $this->secret_key = $creds_arr->secret_key??'';
+	    $this->api_key = $creds_arr->api_key ?? '';
+	    $this->secret_key = $creds_arr->secret_key ?? '';
 
         $this->pagarme = new \PagarMe\Client($this->api_key);
 
@@ -76,28 +76,78 @@ class PagarmeController extends BaseController
 					'type.required' => __('The account type field is required.'),
 				]);
 
-				$bankAccount = $this->pagarme->bankAccounts()->create([
-					'bank_code' => $request->bank_code,
-					'agencia' => $request->agencia,
-					'agencia_dv' => $request->agencia_dv,
-					'conta' => $request->conta,
-					'conta_dv' => $request->conta_dv,
-					'document_number' => $request->document_number,
-					'legal_name' => $request->legal_name,
-					'type' => $request->type
-				]);
-				$bank_account_id = $recipient_id = '';
-				if($bankAccount){
-					$bank_account_id = $bankAccount->id;
-				}
+				$data = array(
+					'name' => $request->legal_name,
+					'document' => $request->document_number,
+					'type' => 'individual',
+					// 'api_key' => $this->api_key,
+					'default_bank_account' => [
+						'holder_name' => $request->legal_name,
+						'bank' => $request->bank_code,
+						'branch_number' => $request->agencia,
+						'branch_check_digit' => $request->agencia_dv,
+						'account_number' => $request->conta,
+						'account_check_digit' => $request->conta_dv,
+						'holder_type' => 'individual',
+						'holder_document' => $request->document_number,
+						'type' => 'checking',
+						// 'type' => $request->type
+					]
+				);
 
-				if(!empty($bank_account_id)){
-					$recipient = $this->pagarme->recipients()->create([
-						'automatic_anticipation_enabled' => 'false', 
-						'bank_account_id' => $bank_account_id,
-						'transfer_enabled' => 'false',
+				// $bankAccount = $this->pagarme->bankAccounts()->create($data);
+
+				// $curl = curl_init();
+				// curl_setopt_array($curl, [
+				// 	CURLOPT_URL => 'https://api.pagar.me/1/bank_accounts',
+				// 	CURLOPT_RETURNTRANSFER => true,
+				// 	CURLOPT_CUSTOMREQUEST => "POST",
+				// 	CURLOPT_POSTFIELDS => json_encode($data),
+				// 	CURLOPT_HTTPHEADER => [
+				// 		"Content-Type: application/json",
+				// 	],
+				// ]);
+	
+				// $response = curl_exec($curl);
+				// $err = curl_error($curl);
+				// curl_close($curl);
+				// // dd($response);
+				// $bankAccount = json_decode($response);
+
+				// // dd($bankAccount);
+				// $bank_account_id = $recipient_id = '';
+				// if($bankAccount){
+				// 	$bank_account_id = $bankAccount->id;
+				// }
+
+				// if(!empty($bank_account_id)){
+				// 	$data = array(
+				// 		'api_key' => $this->api_key,
+				// 		// 'automatic_anticipation_enabled' => 'false', 
+				// 		'bank_account_id' => $bank_account_id,
+				// 		// 'transfer_enabled' => 'false'
+				// 	);
+					// $recipient = $this->pagarme->recipients()->create($data);
+	
+					$curl = curl_init();
+					curl_setopt_array($curl, [
+						CURLOPT_URL => 'https://api.pagar.me/core/v5/recipients',
+						CURLOPT_RETURNTRANSFER => true,
+						CURLOPT_CUSTOMREQUEST => "POST",
+						CURLOPT_POSTFIELDS => json_encode($data),
+						CURLOPT_USERPWD => $this->secret_key,
+						CURLOPT_HTTPHEADER => [
+							"Content-Type: application/json",
+							// "Authorization: Basic ". base64_encode($this->secret_key)
+						],
 					]);
-					if($recipient){
+		
+					$response = curl_exec($curl);
+					$err = curl_error($curl);
+					curl_close($curl);
+					$recipient = json_decode($response);
+					
+					if(isset($recipient->id)){
 						$connectdAccount = new VendorConnectedAccount();
 						$connectdAccount->user_id = $user->id;
 						$connectdAccount->vendor_id = $vendor;
@@ -105,14 +155,17 @@ class PagarmeController extends BaseController
 						$connectdAccount->payment_option_id = 3;
 						$connectdAccount->status = 1;
 						$connectdAccount->save();
+					}else{
+						return $this->errorResponse($recipient->message, 400)->getData();
 					}
-				}
+				// }
 				
 			}else{
-				return response()->json(['status'=> 'Error', 'message' => __('Invalid Data')]);
+				return $this->errorResponse(__('Invalid Data'), 400)->getData();
+				// return response()->json(['status'=> 'Error', 'message' => __('Invalid Data')]);
 			}
 
-			return $this->successResponse($bankAccount, __('Your bank account has been created successfully'));
+			return $this->successResponse('', __('Your bank account has been created successfully'));
 		// }
 		// catch(\Exception $ex){
 		// 	return response()->json(['status'=> 'Error', 'message' => $ex->getMessage()]);
@@ -135,21 +188,67 @@ class PagarmeController extends BaseController
                 $amount = getDollarCompareAmount($request->amount, $this->currency_id);
                 
 				$balance = $this->pagarme->balances()->get();
-				// dd($balance);
+				dd($balance);
 				if($balance->available->amount < $amount * 100){
 					return $this->errorResponse(__('Insufficient balance in your pagarme account'), 400);
 				}
 
                 // Create transfer
-                $transfer = $this->pagarme->transfers()->create([
-					'amount' => $amount * 100,
+                // $transfer = $this->pagarme->transfers()->create([
+				// 	'amount' => $amount * 100,
+				// 	'recipient_id' => $connected_account->account_id
+				// ]);
+
+				$data = array(
+					'amount' => 100,
+					'api_key' => $this->api_key,
 					'recipient_id' => $connected_account->account_id
-				]);
-                $transactionReference = $transfer->balance_transaction;
-                return $this->successResponse($transactionReference, __('Payout is completed successfully'), 200);
+				);
+				// dd($data);
+	
+				$curl = curl_init();
+
+				curl_setopt_array($curl, array(
+					CURLOPT_URL => 'https://api.pagar.me/1/transfers',
+					CURLOPT_RETURNTRANSFER => true,
+					CURLOPT_ENCODING => '',
+					CURLOPT_MAXREDIRS => 10,
+					CURLOPT_TIMEOUT => 0,
+					CURLOPT_FOLLOWLOCATION => true,
+					CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+					CURLOPT_CUSTOMREQUEST => 'POST',
+					CURLOPT_POSTFIELDS =>json_encode($data),
+					CURLOPT_HTTPHEADER => array(
+						'cache-control: no-cache',
+						'content-type: application/json'
+					),
+				));
+	
+				// curl_setopt_array($curl, [
+				// 	CURLOPT_URL => 'https://api.pagar.me/1/transfers',
+				// 	CURLOPT_RETURNTRANSFER => true,
+				// 	CURLOPT_CUSTOMREQUEST => "POST",
+				// 	CURLOPT_POSTFIELDS => json_encode($data),
+				// 	CURLOPT_HTTPHEADER => [
+				// 		"Content-Type: application/json",
+				// 	],
+				// ]);
+	
+				$response = curl_exec($curl);
+				$err = curl_error($curl);
+				curl_close($curl);
+				dd($response);
+				$transfer = json_decode($response);
+	
+				if ($err) {
+					return $this->errorResponse($err->message, 400);
+				} else {
+					$transactionReference = $transfer->id;
+					return $this->successResponse($transactionReference, __('Payout is completed successfully'), 200);
+				}
 
             }else{
-                return $this->errorResponse(getNomenclatureName('vendors', false) . __(' is not connected to pagarme'), 400);
+                return $this->errorResponse(__('You are not connected to pagarme'), 400);
             }
         }catch(\Exception $ex){
             return $this->errorResponse($ex->getMessage(), 400);

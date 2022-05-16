@@ -104,33 +104,39 @@ class PayUGatewayController extends FrontController
             }
 
             $request_arr = array(
-                'key' => $this->merchant_key,
+                'key' => 'Haaqd0kz', //$this->merchant_key,
                 'txnid' => $request->order_number,
-                'productinfo' => 'Sample Product',
                 'amount' => $amount,
-                'email' => $user->email,
+                'productinfo' => 'Sample Product',
                 'firstname' => $user->name,
-                'lastname' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone_number,
+                // 'lastname' => '',
                 'surl' => $returnUrl,
                 'furl' => $cancelUrl,
-                'phone' => $user->phone_number,
                 'udf1' => $user->id, // user id
                 'udf2' => $address_id, // address id
                 'udf3' => ($subscription_slug != '') ? $subscription_slug : $cart_id, //subscription slug or cart ID
                 'udf4' => $tip, // tip amount
                 'udf5' => $payment_form,
-                'custom_note' => $description,
+                // 'custom_note' => $description,
                 // 'metadata' => ['user_id' => $user->id],
             );
 
             $sha512_string = '';
+            $i = 0;
             foreach($request_arr as $key => $val){
                 $sha512_string .= $val;
-                if($key != 'udf5'){
+                if($key != count($request_arr)-1){
                     $sha512_string .= '|';
                 }
+                else{
+                    $sha512_string .= '||||||xcl3bIVFu6';//.$this->merchant_salt_v1;
+                }
+                $i++;
             }
-            $hash = hash('sha512', $sha512_string);            
+            // dd($sha512_string);
+            $hash = hash('sha512', $sha512_string);
             $request_arr['hash'] = $hash;
 
             $data['formData'] = $request_arr;

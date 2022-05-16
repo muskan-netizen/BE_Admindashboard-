@@ -38,16 +38,16 @@ class CartController extends FrontController
                 $order = Order::where('order_number', $request->order)->first();
                 if($order){
                     if($request->status == 0){
-                        $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-                        foreach($order_products as $order_prod){
-                            OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
-                        }
-                        OrderProduct::where('order_id', $order->id)->delete();
-                        OrderProductPrescription::where('order_id', $order->id)->delete();
-                        VendorOrderStatus::where('order_id', $order->id)->delete();
-                        OrderVendor::where('order_id', $order->id)->delete();
-                        OrderTax::where('order_id', $order->id)->delete();
-                        $order->delete();
+                        // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                        // foreach($order_products as $order_prod){
+                        //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                        // }
+                        // OrderProduct::where('order_id', $order->id)->delete();
+                        // OrderProductPrescription::where('order_id', $order->id)->delete();
+                        // VendorOrderStatus::where('order_id', $order->id)->delete();
+                        // OrderVendor::where('order_id', $order->id)->delete();
+                        // OrderTax::where('order_id', $order->id)->delete();
+                        // $order->delete();
                         return redirect()->route('showCart')->with('error', 'Your order has been cancelled');
                     }
                     elseif($request->status == 200){
