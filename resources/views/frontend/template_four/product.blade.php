@@ -11,8 +11,7 @@
     <link rel="stylesheet" href="{{ asset('front-assets/css/easyzoom.css') }}" />
     <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
-    <link rel="stylesheet" href="https://www.jqueryscript.net/css/jquerysctipttop.css">
-    <link rel="stylesheet" href="https://www.jqueryscript.net/demo/Product-Carousel-Magnifying-Effect-exzoom/jquery.exzoom.css">
+    <link rel="stylesheet" href="{{asset('css/jquery.exzoom.css')}}">
     <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}

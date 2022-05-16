@@ -368,6 +368,10 @@ $(document).ready(function () {
         var changLang = $(this).attr('langId');
         settingData('language', changLang);
     });
+    $('.change_language_selector').on('change',function(){
+        var changLang = $(this).val();
+        settingData('language', changLang);
+    });
 
     $('.customerCurr').click(function () {
         var changcurrId = $(this).attr('currId');

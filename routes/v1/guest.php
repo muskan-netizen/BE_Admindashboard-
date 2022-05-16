@@ -55,8 +55,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('promo-code-open/list', 'Api\v1\PickupDeliveryController@postPromoCodeListOpen');
         Route::post('order/after/payment', 'Front\PaytabController@after_app_payment');
-        //Passbase Store 
-        Route::post('passbase/store','Api\v1\PassbaseController@storeAuthkey');
 
 
     });
@@ -73,5 +71,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('promo-code/vendor_promo_code', 'Api\v1\PromoCodeController@vendorPromoCodeList');
         Route::post('cart/product-schedule/update', 'Api\v1\CartController@updateProductSchedule');
         Route::post('cart/productfaq/update', 'Api\v1\CartController@updateCartProductFaq');
+        //Passbase Store 
+        Route::post('passbase/store','Api\v1\PassbaseController@storeAuthkey'); 
     });
 });
