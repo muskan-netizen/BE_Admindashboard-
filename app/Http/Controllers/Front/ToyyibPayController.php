@@ -140,7 +140,7 @@ class ToyyibPayController extends FrontController
             }
         
            // $uniquetoken = md5(uniqid(rand(), true));
-            $subsciptionid = $data['subscription_id'] ?? "";
+           $subsciptionid = $data['subscription_id'] ?? ""; // Added for Gaurav Sir
             $some_data = array(
                 'userSecretKey'=> $this->api_key,
                 'categoryCode'=> $codeCategory,

@@ -902,7 +902,7 @@
                                 @endphp
                                 @foreach($category_kyc_document->categoryMapping as $category_ones)
                                 {{ ($category_other =='1') ? ", " : "" }}
-                                {{ $category_ones->category->translation_one->name }}
+                                {{ $category_ones->category->translation_one->name ?? '' }}
                                 @php
                                 $category_other='1';
                                 @endphp

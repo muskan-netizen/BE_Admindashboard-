@@ -31,7 +31,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech');
         //,'easebuzz' 
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
@@ -445,6 +445,24 @@ class PaymentOptionController extends BaseController
                         'merchant_key' => $request->payu_merchant_key,
                         'merchant_salt_v1' => $request->payu_merchant_salt_v1,
                         'merchant_salt_v2' => $request->payu_merchant_salt_v2
+                    ));
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'windcave')) {
+                    $validatedData = $request->validate([
+                        'windcave_id' => 'required',
+                        'windcave_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'app_id' => $request->windcave_id,
+                        'api_key' => $request->windcave_key
+                    ));
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paytech')) {
+                    $validatedData = $request->validate([
+                        'paytech_key' => 'required',
+                        'paytech_secret_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'api_key' => $request->paytech_key,
+                        'secret_key' => $request->paytech_secret_key
                     ));
                 }
             }

@@ -79,80 +79,6 @@ class ShippoController extends BaseController
     }
 
 
-    public function index()
-    {
-        // $shipping_codes = ['shippo'];
-        // $shipingOption = ShippingOption::whereIn('code', $shipping_codes)->get();
-        // return view('backend/shipoption/index')->with(['shipingOption' => $shipingOption]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
-
     	# get delivery fee Shiprocket Courier Service
 		public function getServices($vendorId)
 		{
@@ -166,6 +92,14 @@ class ShippoController extends BaseController
 			}
 		}
 
+        public function createOrderRequestShippo($orderVendor){
+            $data = ["rate" => $orderVendor->courier_id];
+            $response=$this->createOrder($data);
+            return $response;
+        }
+
+        
+
          # get delivery fee getShiprocketBaseFee
 		 public function getShiprocketBaseFee($vendorId)
 		 {	
@@ -176,17 +110,17 @@ class ShippoController extends BaseController
 				$distance = $this->getDistance($vendorId);
 				if($distance){
 					//Helper Function
-					$fees =   getBaseprice($distance,'shiprocket');
+					$fees =   getBaseprice($distance,'shippo');
 					if($fees>0){
 						$fee[] = array(
-							'type'=>'S',
+							'type'=>'SH',
 							'courier_name' => 'Shippo',
 							'rate' => number_format(round($fees), 2, '.', ''),
 							'courier_company_id' => '',
 							'etd' => 0,
 							'etd_hours' => 0,
 							'estimated_delivery_days' => 0,
-							'code' => 'S_0'
+							'code' => 'SH_0'
 						);
 					}
 				}
