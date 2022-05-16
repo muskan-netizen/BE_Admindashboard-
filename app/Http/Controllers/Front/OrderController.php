@@ -286,7 +286,11 @@ class OrderController extends FrontController
                 return Redirect::route('front.booking.details', $order->order_number);
             }
         }
-
+        $total_other_taxes=0.00;
+        foreach(explode(":",$order->total_other_taxes) as $row){
+            $total_other_taxes+=(float)$row;
+        }
+        $order->total_other_taxes_amount=$total_other_taxes;
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
@@ -656,7 +660,7 @@ class OrderController extends FrontController
 
     public function placeOrder(Request $request, $domain = '')
     {
-
+        //dd($request->other_taxes_string);
         //$stock = $this->ProductVariantStock('18');
 
         // dd($request->all());
@@ -731,6 +735,7 @@ class OrderController extends FrontController
                 $order->address_id = $cart->address_id??null;
             }
             $order->payment_option_id = $request->payment_option_id;
+            $order->total_other_taxes = $request->other_taxes_string;
             $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
             $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver ?? null;
             $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
@@ -769,6 +774,7 @@ class OrderController extends FrontController
             $total_amount = 0;
             $total_discount = 0;
             $taxable_amount = 0;
+            $total_taxable_amount = 0;
             $payable_amount = 0;
             $tax_rate = 0;
             $tax_category_ids = [];
@@ -783,7 +789,7 @@ class OrderController extends FrontController
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
                 $delivery_fee = 0;
-                $deliver_charge = $ptaxable_amount =$total_taxable_amount = $delivery_fee_charges = 0.00;
+                $deliver_charge = $ptaxable_amount =$delivery_fee_charges = 0.00;
                 $delivery_count = 0;
                 $vendor_payable_amount = 0;
                 $vendor_discount_amount = 0;
@@ -819,7 +825,7 @@ class OrderController extends FrontController
                     // $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
                     $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                    $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges+$fixed_fee_amount;
+                    $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
                     
                     //$payable_amount = $payable_amount + $quantity_price;
                     //$vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
@@ -830,7 +836,7 @@ class OrderController extends FrontController
                             if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
                                 $tax_category_ids[] = $tax_rate_detail->id;
                             }
-                            $rate = round($tax_rate_detail->tax_rate);
+                            $rate = $tax_rate_detail->tax_rate;
                             $tax_amount = ($price_in_dollar_compare * $rate) / 100;
                             $product_tax = $quantity_price * $rate / 100;
                             $product_taxable_amount += $product_tax;
@@ -1004,6 +1010,7 @@ class OrderController extends FrontController
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
                 $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
+                $total_taxable_amount+=$new_vendor_taxable_amount;
                 // $OrderVendor->taxable_amount   = $vendor_taxable_amount;
                 $OrderVendor->taxable_amount = $new_vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
@@ -1050,8 +1057,8 @@ class OrderController extends FrontController
             $order->total_amount = $total_amount;
             $order->total_discount = $total_discount;
              // $order->taxable_amount = $taxable_amount;
-            $new_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
-            $order->taxable_amount = $new_taxable_amount;
+            //$new_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
+            $order->taxable_amount = $total_taxable_amount;
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
             if ($loyalty_amount_saved > 0) {
                 if ($loyalty_amount_saved > $payable_amount) {
@@ -1083,7 +1090,7 @@ class OrderController extends FrontController
                     $order->tip_amount = $tip_amount;
                 }
             }
-            $payable_amount = $payable_amount + $tip_amount;
+            $payable_amount = $payable_amount + $tip_amount + $fixed_fee_amount;
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;
             $order->loyalty_points_used = $loyalty_points_used;
@@ -1104,7 +1111,7 @@ class OrderController extends FrontController
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [4,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu
+            $ex_gateways = [4,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31,32,34,35]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu
            
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 
