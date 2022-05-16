@@ -30,7 +30,7 @@
                                     <div class="vender-icon mr-sm-3">
                                         <div class="vendor-stories">
                                             <div class="circle-wrapper"></div>
-                                            <a href="" data-toggle="modal" data-target="#vendorStories">
+                                            <a href="" data-toggle="modal" data-target="#vendorStories_">
                                                 <img id="vendorStoriesImg" src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-sm" alt="profile-image">
                                             </a>
                                         </div>
@@ -846,11 +846,11 @@
         </div>
     </div>
     <!-- vendorStories -->
-    <div id="vendorStories" class="modal fade" tabindex="-1" aria-labelledby="vendorStoriesLabel" aria-hidden="true">
+    <!-- <div id="vendorStories" class="modal fade" tabindex="-1" aria-labelledby="vendorStoriesLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
                 <img class="modal-content" id="img01">
         </div>
-    </div>
+    </div> -->
 
 @endsection
 @section('script')
