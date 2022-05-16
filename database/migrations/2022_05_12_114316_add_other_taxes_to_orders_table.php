@@ -16,8 +16,9 @@ class AddOtherTaxesToOrdersTable extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->text('total_other_taxes')->nullable()->comment('Other taxes like tax on fixed fee, service fee, container changes, delivery fee etc.');
-            DB::statement("ALTER TABLE `orders` MODIFY `type` tinyint UNSIGNED NULL default(0) comment '0=none, 1=cab book for friend'");
-        });
+            $table->integer('type')->default(0)->nullable()->comment('0=none, 1=cab book for friend')->change();
+        // DB::statement("ALTER TABLE `orders` MODIFY `type` tinyint UNSIGNED NULL default(0) comment '0=none, 1=cab book for friend'");
+        }); 
     }
     
     /**

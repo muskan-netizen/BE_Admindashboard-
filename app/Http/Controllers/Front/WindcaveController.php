@@ -20,6 +20,7 @@ use App\Models\CaregoryKycDoc;
 use Illuminate\Support\Carbon;
 use App\Http\Traits\ApiResponser;
 use App\Models\CartProductPrescription;
+use App\Models\ClientCurrency;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Redirect;
@@ -46,6 +47,9 @@ class WindcaveController extends FrontController
         } else {
             $this->app_url = 'https://sec.windcave.com/api/v1/sessions';
         }
+
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'FJD';
     }
 
     public function orderNumber($request)
@@ -82,12 +86,12 @@ class WindcaveController extends FrontController
          
         }elseif($request->from == 'subscription')
         {
-         $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+         $time = 'S_'.time().'_'.$request->subsid??$request->subscription_id;
          Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'subscription','date'=>date('Y-m-d')]);
    
          $request->amt = $amt;
         }
-        $request->request->add(['amt'=>$amt]);
+        $request->request->add(['amt'=>number_format($amt,2)]);
         return $time;
     }
 
@@ -96,8 +100,8 @@ class WindcaveController extends FrontController
         $order_number =  $this->orderNumber($request);
         $data = array(
             "type" => 'purchase',
-            "amount" => round($request->amt),
-            "currency" => 'FJD',
+            "amount" => number_format($request->amt,2),
+            "currency" => $this->currency,
             "merchantReference" => $order_number,
             "storeCard" => true,
             "storedCardIndicator" => 'credentialonfileinitial',
@@ -106,6 +110,27 @@ class WindcaveController extends FrontController
         );
         $url = $this->postCurl($data,$this->token);
         return json_encode($url->links[1]);
+    }
+
+    public function createHashApp(Request $request)
+    {
+        $request->request->add(['from'=>$request->action,'amt'=>number_format($request->amount,2),'subsid'=>$request->subscription_id??'']);
+        $user = auth()->user();
+        $order_number =  $this->orderNumber($request);
+        $data = array(
+            "type" => 'purchase',
+            "amount" => number_format($request->amt,2),
+            "currency" => $this->currency,
+            "merchantReference" => $order_number,
+            "storeCard" => true,
+            "storedCardIndicator" => 'credentialonfileinitial',
+            "callbackUrls" => ["approved"=> url($request->serverUrl.'payment/windcave/success?auth_token='.$user->id.'&oid='.$order_number), "declined"=> url($request->serverUrl.'payment/windcave/fail?auth_token='.$user->id.'&oid='.$order_number), "cancelled"=> url($request->serverUrl.'payment/windcave/fail?auth_token='.$user->id.'&oid='.$order_number) ],
+            "notificationUrl" => url($request->serverUrl.'payment/windcave/success?auth_token='.$user->id.'&oid='.$order_number)
+        );
+        $url = $this->postCurl($data,$this->token);
+        \Log::info('resp=');
+        \Log::info(json_encode($url));
+        return $this->successResponse($url->links[1]->href);
     }
 
 
@@ -130,13 +155,18 @@ class WindcaveController extends FrontController
             \Log::info(curl_error($ch));
         }
         curl_close($ch);
-        \Log::info($result);
+       // \Log::info($result);
         return json_decode($result); 
     }
 
 
     public function successPage(Request $request)
     {   
+        if(isset($request->auth_token))
+            {
+                $user = User::find($request->auth_token);
+                auth()->login($user);
+            }
         //sucess Status 0000
         $request->request->add(['status'=>'0000']);
         $payment = Payment::where('transaction_id',$request->oid)->first();
@@ -153,6 +183,11 @@ class WindcaveController extends FrontController
 
     public function failPage(Request $request)
     {   
+        if(isset($request->auth_token))
+            {
+                $user = User::find($request->auth_token);
+                auth()->login($user);
+            }
         //Failed Status 101
         $request->request->add(['status'=>'101']);
         $payment = Payment::where('transaction_id',$request->oid)->first();
@@ -206,7 +241,7 @@ class WindcaveController extends FrontController
             $super_admin = User::where('is_superadmin', 1)->pluck('id');
             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
-            if (isset($request->auth) && $request->auth != '') {
+            if (isset($request->auth_token) && $request->auth_token != '') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=200&order=' . $order->order_number;
                 return Redirect::to($returnUrl);
             } else {
@@ -221,7 +256,7 @@ class WindcaveController extends FrontController
             if (isset($order->wallet_amount_used)) {
                 $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number]);
             }
-            if (isset($request->auth) && $request->auth != '') {
+            if (isset($request->auth_token) && $request->auth_token != '') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=00&order=' . $order->order_number;
                 return Redirect::to($returnUrl);
             } else {
@@ -239,7 +274,7 @@ class WindcaveController extends FrontController
             $wallet = $user->wallet;
             $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->order_id . '</b>']);
 
-            if (isset($request->auth) && $request->auth != '') {
+            if (isset($request->auth_token) && $request->auth_token != '') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=200&transaction_id=' . $request->sessionId . '&action=wallet';
                 return Redirect::to($returnUrl);
             } else {
@@ -248,7 +283,7 @@ class WindcaveController extends FrontController
         } else {
             $data->delete();
 
-            if (isset($request->auth) && $request->auth != '') {
+            if (isset($request->auth_token) && $request->auth_token != '') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=00&transaction_id=' . $request->oid . '&action=wallet';
                 return Redirect::to($returnUrl);
             } else {
@@ -265,11 +300,11 @@ class WindcaveController extends FrontController
         $data = Payment::where('transaction_id', $request->oid)->first();
         if (isset($request->oid) && $request->status == '0000') {
             $subscription = explode('_', $request->oid);
-            $request->request->add(['user_id' => $user->id, 'payment_option_id' =>33, 'amount' => $data->balance_transaction, 'transaction_id' => $request->oid]);
+            $request->request->add(['user_id' => $user->id, 'payment_option_id' =>34, 'amount' => $data->balance_transaction, 'transaction_id' => $request->oid]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription[2]);
 
-            if (isset($request->auth) && $request->auth != '') {
+            if (isset($request->auth_token) && $request->auth_token != '') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=200&transaction_id=' . $request->oid . '&action=subscription';
                 return Redirect::to($returnUrl);
             } else {
@@ -278,7 +313,7 @@ class WindcaveController extends FrontController
         } else {
             $data->delete();
 
-            if (isset($request->auth) && $request->auth != '') {
+            if (isset($request->auth_token) && $request->auth_token != '') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=00&transaction_id=' . $request->order_id . '&action=subscription';
                 return Redirect::to($returnUrl);
             } else {
@@ -297,7 +332,7 @@ class WindcaveController extends FrontController
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
 
-            if (isset($request->auth) && $request->auth != '') {
+            if (isset($request->auth_token) && $request->auth_token != '') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=200&order=' . $order_number[2] . '&action=tip';
                 return Redirect::to($returnUrl);
             } else {
@@ -306,7 +341,7 @@ class WindcaveController extends FrontController
         } else {
             $data->delete();
 
-            if (isset($request->auth) && $request->auth != '') {
+            if (isset($request->auth_token) && $request->auth_token != '') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=00&transaction_id=' . $request->order_id . '&action=tip';
                 return Redirect::to($returnUrl);
             } else {

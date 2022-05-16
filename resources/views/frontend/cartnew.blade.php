@@ -115,7 +115,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h3 class="page-title text-uppercase mt-sm-4">{{__('Cart')}}</h3>
+                <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
             </div>
             <div class="cart_response mt-3 mb-3 d-none">
                 <div class="alert p-0" role="alert"></div>
@@ -283,7 +283,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
-                            <div class="col-md-3">
+                            <div class="col-md-3 order-md-1">
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
@@ -292,11 +292,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <% } %>
                                 <% }); %>
                             </div>
-                            <div class="col-md-2 mb-1 mb-md-0">
+                            <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2">
                                 <span class="alFourTempTitle">Price</span>
                                 <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></div>
                             </div>
-                            <div class="col-7 col-md-4 text-md-center">
+                            <div class="col-6 col-md-2 text-left order-md-4">
+                                <span class="alFourTempTitle">Total</span>
+                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_price) %></div>
+                            </div>
+                            <div class="col-10 col-md-4 text-md-center order-md-3">
                                 <div class="number d-flex justify-content-md-center">
                                     <div class="counter-container d-flex align-items-center">
                                         <span class="minus qty-minus" data-minimum_order_count="<%= vendor_product.product.minimum_order_count %>"
@@ -317,12 +321,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <% } %>
                                 <% } %>
                             </div>
-
-                            <div class="col-5 col-md-2 text-left">
-                                <span class="alFourTempTitle">Total</span>
-                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_price) %></div>
-                            </div>
-                            <div class="col-md-1 text-right text-md-center p-in">
+                            <div class="col-2 col-md-1 text-right text-md-center p-in order-md-5">
                                 <a class="action-icon d-block remove_product_via_cart" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 </a>
@@ -417,7 +416,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% }); %>
             <div class="row">
                  @if(!$guest_user)
-                <div class="col-lg-6 mb-3 mb-lg-0 ">
+                <div class="col-lg-6 ">
                 <% if(product.is_promo_code_available > 0) { %>
                     <div class="coupon_box w-100 d-flex align-content-center">
                         <img class="blur-up lazyload" data-src="{{ asset('assets/images/discount_icon.svg') }}">
@@ -853,7 +852,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
 
                 <div class="row mb-md-3 alFourTemplateCartButtons">
-                    <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-flex align-items-center justify-content-between">
+                    <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
                         <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> </a>
                     </div>
@@ -1012,7 +1011,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
             <div class="modal-body mt-0 pb-0 pt-4">
                 <div class="row validate_promo_div">
-                    <div class="col-10">
+                    <div class="col-9">
                         <div class="form-group" >
                             <input class="form-control manual_promocode_input" name="name" type="text" placeholder="{{ __('Enter a promocode')}}" >
                             <button class="btn btn-solid apply_promo_code_btn" data-vendor_id="" data-cart_id=""
@@ -1022,7 +1021,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </span>
                         </div>
                     </div>
-                    <div class="col-2">
+                    <div class="col-3 p-0">
                         <button class="btn btn-solid validate_promo_code_btn" data-vendor_id="" data-cart_id=""
                             data-coupon_id="" data-amount="" style="cursor: pointer;">Apply</button>
                     </div>
