@@ -1,7 +1,11 @@
+.dark.al_body_template_three .category-list li.active a, .al_body_template_three .category-list li:hover a,
+.dark.al_body_template_three .top-header .header-dropdown .onhover-dropdown .onhover-show-div li:hover a,
 .dark .dashboard-left .block-content ul li.active a,
 .dark .dashboard-left .block-content ul li:hover a {
     background: linear-gradient(90deg,var(--theme-deafult) -540%,#242424 100%);
 }
+.dark.al_body_template_three .category-list li.active a, .al_body_template_three .category-list li:hover a,
+.dark.al_body_template_three .top-header .header-dropdown .onhover-dropdown .onhover-show-div li:hover a{color: var(--theme-deafult) !important;}
 @media (max-width: 1430px){
 .al_new_wrapper_design .top-banner-wrapper.text-center .common-banner{border-radius:20px;height:200px; margin-bottom: 30px;}
 .al_desktop_banner {height: 240px;}

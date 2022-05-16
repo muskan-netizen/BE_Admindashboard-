@@ -280,7 +280,7 @@ $pages = \App\Models\Page::with([
                                     <div class="col-2 d-flex justify-content-end align-items-center">
                                         <div class="onhover-div pl-0 ml-xl-3 ml-lg-1 shake-effect d-block d-md-none">
                                             @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
-                                            <a class="btn btn-solid d-flex align-items-center " href="{{route('showCart')}}">
+                                            <a class="addToCardBtn d-flex align-items-center " href="{{route('showCart')}}">
                                                 <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i>
                                                 <span id="cart_qty_span"></span>
                                             </a> @endif @endif
@@ -294,7 +294,7 @@ $pages = \App\Models\Page::with([
                         </div>
                         <div class="col-lg-10">
                             <div class="row">
-                                <div class="col-sm-12 p-lg-0 d-flex align-items-center justify-content-around pr-lg-3 pl-lg-0">
+                                <div class="col-sm-12 p-lg-0 d-flex align-items-center justify-content-md-around justify-content-between  pr-lg-3 pl-lg-0">
                                     @if(isset($client_preference_detail))
                                     @if(($client_preference_detail->is_hyperlocal) && ($client_preference_detail->is_hyperlocal == 1))
                                     <div class="location-bar d-inline-flex align-items-center position-relative mr-xl-3 mr-lg-1" href="#edit-address" data-toggle="modal">
@@ -429,7 +429,7 @@ $pages = \App\Models\Page::with([
                                         <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
                                             @foreach($navCategories as $cate)
                                             @if($cate['name'])
-                                            <li class="">
+                                            <li class=" @if(!empty($cate['children'])) has-children @endif ">
                                                 <a href="{{route('categoryDetail', $cate['slug'])}}">
 
                                                     {{$cate['name']}}
@@ -437,7 +437,7 @@ $pages = \App\Models\Page::with([
                                                 @if(!empty($cate['children']))
                                                 <ul class="">
                                                     @foreach($cate['children'] as $childs)
-                                                    <li>
+                                                    <li >
                                                     <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
                                                         @if(!empty($childs['children']))
                                                     <ul class="">
@@ -485,7 +485,7 @@ $pages = \App\Models\Page::with([
         icon_two_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
       }
     %>
-    <li class="al_main_category"  >
+    <li class="al_main_category  <% if(category.children){%> has-children <%}%> "  >
         <a href="{{route('categoryDetail')}}/<%=category.slug %>">
             <%=category.name %>
         </a>
