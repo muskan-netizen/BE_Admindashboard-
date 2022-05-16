@@ -12,8 +12,10 @@
                 background-color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;
                 background-size: cover;
                 background-position: center;
-                }
-
+            }
+            .primary_bg_color{
+                background-color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;
+            }
         </style>
     
     </head>
@@ -79,7 +81,7 @@
                                         </div>
                                     </div>--}}
                                     <div class="form-group mb-0 text-center">
-                                        <button class="btn btn-primary btn-block" type="submit"> Log In </button>
+                                        <button class="btn btn-primary btn-block primary_bg_color" type="submit"> Log In </button>
                                     </div>
                                 </form>
                             </div>
