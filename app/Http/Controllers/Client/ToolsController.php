@@ -114,8 +114,10 @@ class ToolsController extends BaseController
                     }
 
                     foreach ($from_products as $from_product) {
-                        $product_slug = createSlug(!is_null($from_product->title) ? $from_product->title : $from_product->url_slug);
-                        $product_sku = $sku_url . '.' . $product_slug;
+                        // $product_slug = createSlug(!is_null($from_product->title) ? $from_product->title : $from_product->url_slug);
+                        // $product_sku = $sku_url . '.' . $product_slug;
+                        $product_slug = !is_null($from_product->title) ? $from_product->title : $from_product->url_slug;
+                        $product_sku = $sku_url . '.' . remove_special_chars($product_slug);
                         $check_product = $this->productObj->getProductBySku($product_sku);
                         if ($check_product) {
                             $this->deleteProduct($check_product->id);

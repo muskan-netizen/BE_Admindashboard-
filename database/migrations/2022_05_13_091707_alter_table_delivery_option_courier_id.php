@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateClientTypeToClients extends Migration
+class AlterTableDeliveryOptionCourierId extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class UpdateClientTypeToClients extends Migration
      */
     public function up()
     {
-        Schema::table('clients', function (Blueprint $table) {
-            $table->tinyInteger('client_type')->comment('1=>Live, 2=>demo')->default(1);
-        });
+        DB::statement("ALTER TABLE `order_vendors` MODIFY `courier_id` VARCHAR(50);");
+        DB::statement("ALTER TABLE `cart_vendor_delivery_fee` MODIFY `courier_id` VARCHAR(50);");
+        
     }
 
     /**
@@ -25,8 +25,6 @@ class UpdateClientTypeToClients extends Migration
      */
     public function down()
     {
-        Schema::table('clients', function (Blueprint $table) {
-            $table->dropColumn('client_type');
-        });
+        //
     }
 }
