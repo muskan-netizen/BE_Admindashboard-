@@ -476,7 +476,7 @@ class ClientController extends Controller{
 
                 foreach ($client as $key => $value) {
                     if($key == 'logo'){
-                        $clientData[$key] = $value['original'];
+                        $clientData[$key] = $value['logo_db_value'];
                     }else{
                         $clientData[$key] = $value;
                     }
