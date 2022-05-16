@@ -251,14 +251,23 @@ $pages = \App\Models\Page::with([
                                                 <div class="input-group-prepend al_BGcolor">
                                                     <label class="input-group-text" for="inputGroupSelect01"><i class="fa fa-globe" aria-hidden="true"></i></label>
                                                 </div>
-                                                <select class="custom-select" id="inputGroupSelect01">
-                                                    <option selected>Language</option>
-                                                    <option value="1">English</option>
-                                                    <option value="2">Arabic</option>
-                                                    <option value="3">Spanish</option>
+                                                <select class="custom-select change_language_selector" id="inputGroupSelect01">
+                                                    <option>Language</option>
+                                                     @foreach ($languageList as $key => $listl)
+
+                                                    <option class="customerLang" value="{{ $listl->language_id }}" {{ session()->get('locale') == $listl->language->sort_code ? 'selected' : '' }}>{{ $listl->language->name }}</option>
+                                                   @endforeach
                                                 </select>
                                             </div>
-                                        </li>
+                                        </li> 
+
+                                   <!--      @foreach ($languageList as $key => $listl)
+                                    <li
+                                        class="{{ session()->get('locale') == $listl->language->sort_code ? 'active' : '' }}">
+                                        <a href="javascript:void(0)" class="customerLang"
+                                            langId="{{ $listl->language_id }}">{{ $listl->language->name }}</a>
+                                    </li>
+                                @endforeach -->
                                         @endif
 
 
