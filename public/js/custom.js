@@ -2090,6 +2090,7 @@ $(document).ready(function () {
     }
 
     function initialize_values(value){
+        value = value.replace(',', '');
         if ((value == '') || (isNaN(value))) {
             value = 0;
         }
