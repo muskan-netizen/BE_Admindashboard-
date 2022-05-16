@@ -475,11 +475,11 @@ class ClientController extends Controller{
                 $clientData = array();
 
                 foreach ($client as $key => $value) {
-                    // if($key == 'logo'){
-                    //     $clientData[$key] = $value['original'];
-                    // }else{
+                    if($key == 'logo'){
+                        $clientData[$key] = $value['logo_db_value'];
+                    }else{
                         $clientData[$key] = $value;
-                    // }
+                    }
 
 
                     if($key == 'database_host'){
