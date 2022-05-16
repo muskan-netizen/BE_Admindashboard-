@@ -36,9 +36,10 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/inner_page.css')}}">
 <link defer type="text/css" rel="stylesheet" href="{{asset('assets/css/thiredtemplate.css')}}"   />
 @elseif(isset($set_template)  && $set_template->template_id == 4)
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/homepage/homepage.css')}}">
+
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/footer/footer.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/homepage/homepage.css')}}">
 @elseif(isset($set_template)  && $set_template->template_id == 5)
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/homepage.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/header.css')}}">

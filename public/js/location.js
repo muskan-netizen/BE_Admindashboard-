@@ -529,7 +529,7 @@ $(document).ready(function () {
                                     arrows: true,
                                     responsive: [
                                         { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                                        { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2 } },
+                                        { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
                                         { breakpoint: 767, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 1 ,centerPadding: '0px',} }
                                     ]
                                 });

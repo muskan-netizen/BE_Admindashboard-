@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
+use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\DunzoController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\Front\TempCartController;
@@ -600,6 +601,27 @@ class OrderController extends BaseController
 
     /// ******************  check If any Product Last Mile on   ************************ ///////////////
 
+    public function placeOrderRequestShippo($request)
+    {
+        $ship = new ShippoController();
+        //Create Shipping place order request for Shiprocket
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+                $order_ship = $ship->createOrderRequestShippo($checkdeliveryFeeAdded);
+                \Log::info($order_ship);
+            }
+            if ($order_ship->object_id){
+                    $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])->update([
+                    'ship_order_id' => $order_ship->object_id,
+                    'ship_shipment_id' => $order_ship->rate,
+                    'ship_awb_id' => $order_ship->parcel
+                    ]);
+                return 1;
+            }
+
+        return 2;
+    }
     public function placeOrderRequestShiprocket($request)
     {
         $ship = new ShiprocketController();
@@ -2283,6 +2305,9 @@ class OrderController extends BaseController
                     }elseif($orderData->shipping_delivery_type=='M'){
                         //Create Shipping place order request for Ahoy Masa
                         $orderPlaced = $this->placeOrderRequestAhoy($request);
+                    }elseif($orderData->shipping_delivery_type=='SH'){
+                        //Create Shipping place order request for Shippo Masa
+                        $orderPlaced = $this->placeOrderRequestShippo($request);
                     }
                     $orderData->accepted_by = auth()->id();
                     $orderData->save();

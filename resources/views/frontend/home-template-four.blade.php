@@ -19,19 +19,19 @@
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
-	<div class="container-fliud mb-5 shimmer_effect al_tabsShimmer">
+	<div class="container-fliud mb-md-5 mb-2 shimmer_effect al_tabsShimmer">
 		<div class="row">
-			<div class="col-md-10 offset-md-1 cards">
+			<div class="col-lg-10 offset-lg-1 cards">
 				<div class="cardbanner loading"></div>
 			</div>
 		</div>
 	</div>
-	<div class="container-fliud mb-5 shimmer_effect px-3">
+	<div class="container-fliud mb-5 shimmer_effect px-md-3">
 		<div class="row">
-			<div class="col-md-10 offset-md-1 cards">
+			<div class="col-lg-10 offset-lg-1 cards">
 				<h2 class="h2-heading loading mb-3"></h2> </div>
 		</div>
-		<div class="col-md-10 offset-md-1">
+		<div class="col-lg-10 offset-lg-1">
 			<div class="grid-row grid-4-4">
 				<div class="cards">
 					<div class="card_image loading"></div>
@@ -143,7 +143,7 @@
 	<section class="home-slider-wrapper"  >
 		<div class="container-fluid d-flex justify-content-center">
 
-			<div class="col-sm-10">
+			<div class="col-lg-10 p-0">
 				<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 				<div class="carousel-inner">
 
@@ -216,7 +216,7 @@
 <script type="text/template" id="vendors_template" >
 	<% _.each(vendors, function(vendor, k){%>
 		<% if(k < 7){%>
-			<div class="col-sm-3">
+			<div class="col-lg-3 col-md-4 col-6">
 				<div class="product-card-box position-relative text-center al_custom_vendors_sec_al p-3">
 					<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 						<div class="suppliers-img-outer position-relative " style="height:100px">
@@ -463,11 +463,11 @@
 		</section> @else
 		<section class="container-fliud mb-0 render_full_{{$homePageLabel->slug}} " id="{{$homePageLabel->slug.$key}}"  >
 
-				<div class=" col-md-10 offset-md-1 top-heading d-flex align-items-center justify-content-between">
+				<div class=" col-lg-10 offset-lg-1 top-heading d-flex align-items-center justify-content-between">
 				<h2 class="h2-heading mb-3 "> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
 
 			<div class="row">
-				<div class="col-md-10 offset-md-1"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
+				<div class="col-lg-10 offset-lg-1"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
 					<div class="product-5 product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@elseif($homePageLabel->slug=='recent_orders')
 					<div class="recent-orders product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@else
 					<div class="al product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif </div>
