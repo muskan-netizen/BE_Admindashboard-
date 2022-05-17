@@ -20,8 +20,8 @@ class VendorOrderDispatcherStatus extends Model
        $dispatcher_status_option = $this->attributes['dispatcher_status_option_id'];
        $type = $this->attributes['type'];
 
-       $check = ClientPreference::orderBy('id'.'asc')->select('business_type')->first();
-
+       $check = ClientPreference::orderBy('id','asc')->select('business_type')->first();
+       $business_type = $check->business_type ?? null;
 
        $status_data = [];
 
