@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client,Tag,ProductTag,ProductFaq};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Vendor, AddonSet,  ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client,Tag,ProductTag,ProductFaq};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -363,7 +363,6 @@ class ProductController extends BaseController
             $delete = ProductAddon::where('product_id', $product->id)->delete();
             $delete = ProductUpSell::where('product_id', $product->id)->delete();
             $delete = ProductCrossSell::where('product_id', $product->id)->delete();
-            $delete = ProductRelated::where('product_id', $product->id)->delete();
             $delete = ProductCelebrity::where('product_id', $product->id)->delete();
             $delete = ProductTag::where('product_id', $product->id)->delete();
 
@@ -417,15 +416,7 @@ class ProductController extends BaseController
                 ProductCrossSell::insert($crossArray);
             }
 
-            if ($request->has('releted_product') && count($request->releted_product) > 0) {
-                foreach ($request->releted_product as $key => $value) {
-                    $relateArray[] = [
-                        'product_id' => $product->id,
-                        'related_product_id' => $value
-                    ];
-                }
-                ProductRelated::insert($relateArray);
-            }
+            
 
             $existv = array();
 

@@ -147,7 +147,7 @@ class ClientPreferenceController extends BaseController{
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id');
+        $keyShouldNot = array('last_mile_team','hide_order_address','address_is_car','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_inventory_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id');
      
 
         foreach ($request->all() as $key => $value) {
@@ -290,6 +290,7 @@ class ClientPreferenceController extends BaseController{
             $preference->third_party_accounting = ($request->has('third_party_accounting') && $request->third_party_accounting == 'on') ? 1 : 0;
             $preference->hide_order_prepare_time = ($request->has('hide_order_prepare_time') && $request->hide_order_prepare_time == 'on') ? 1 : 0;
             $preference->is_cancel_order_user = ($request->has('is_cancel_order_user') && $request->is_cancel_order_user == 'on') ? 1 : 0;
+            $preference->enable_inventory_service = ($request->has('enable_inventory_service') && $request->enable_inventory_service == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
@@ -485,6 +486,36 @@ class ClientPreferenceController extends BaseController{
         }else{
             $preferenceset->need_dispacher_home_other_service = ($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on') ? 1 : 0;
         }
+        }
+
+
+        # inventory service 
+        if(isset($request->need_inventory_service_submit_btn) && !empty($request->need_inventory_service_submit_btn))
+        {
+
+            if(isset($request->need_inventory_service) && !empty($request->need_inventory_service))
+            {
+                try {
+                    $client = new GClient(['headers' => ['personaltoken' => $request->inventory_service_key,
+                                                                'shortcode' => $request->inventory_service_key_code,
+                                                                'content-type' => 'application/json']
+                                                                    ]);
+                    $url = $request->inventory_service_key_url;
+                    $res = $client->post($url.'/api/check-inventory-keys');
+                    $response = json_decode($res->getBody(), true);
+                    if($response && $response['status'] == 400){
+                        return redirect()->route('configure.index')->with('error', 'Inventory Services Keys incorrect !');
+                    }
+                }catch(\Exception $e){
+                        return redirect()->route('configure.index')->with('error', 'Invalid Inventory Services Dispatcher URL !');
+                }
+                $preferenceset->need_inventory_service = ($request->has('need_inventory_service') && $request->need_inventory_service == 'on') ? 1 : 0;
+                $preferenceset->inventory_service_key_url = $request->inventory_service_key_url;
+                $preferenceset->inventory_service_key_code = $request->inventory_service_key_code;
+                $preferenceset->inventory_service_key = $request->inventory_service_key;
+            }else{
+                $preferenceset->need_inventory_service = ($request->has('need_inventory_service') && $request->need_inventory_service == 'on') ? 1 : 0;
+            }
         }
 
         $preferenceset->save();
