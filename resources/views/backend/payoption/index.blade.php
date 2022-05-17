@@ -103,6 +103,7 @@
                 $easebuzz_Sub_merchant = (isset($creds->easebuzz_Sub_merchant)) ? $creds->easebuzz_Sub_merchant : '';
                 $vnpay_website_id = (isset($creds->vnpay_website_id)) ? $creds->vnpay_website_id : '';
                 $vnpay_server_key = (isset($creds->vnpay_server_key)) ? $creds->vnpay_server_key : '';
+                $merchant_phone = (isset($creds->merchant_phone)) ? $creds->merchant_phone : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -864,6 +865,12 @@
                                 <div class="form-group mb-2">
                                     <label for="mycash_password" class="mr-3">{{ __("Password") }}</label>
                                     <input type="password" name="mycash_password" id="mycash_password" class="form-control" value="{{$password}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="mycash_merchant_phone" class="mr-3">{{ __("Mobile Number") }}</label>
+                                    <input type="text" name="mycash_merchant_phone" id="mycash_merchant_phone" class="form-control" value="{{$merchant_phone}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

@@ -3921,6 +3921,15 @@ $(document).ready(function () {
                 }
             break;
 
+            case '33':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaBraintree(address_id, order);
+                    } else {
+                        return false;
+                    }
+            break;
+
             case '34':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
@@ -3932,15 +3941,6 @@ $(document).ready(function () {
                 }
             break;
 
-            case '33':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                    if (order != '') {
-                        paymentViaBraintree(address_id, order);
-                    } else {
-                        return false;
-                    }
-            break;
-
             case '35':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
@@ -3950,6 +3950,15 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '36':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaMyCash(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
         
         }
 
@@ -4107,6 +4116,10 @@ $(document).ready(function () {
 
             case 35:
                     payWithPaytech('', payment_option_id, ''); 
+            break;
+
+            case 36:
+                    paymentViaMyCash('', payment_option_id, ''); 
             break;
         }
     }

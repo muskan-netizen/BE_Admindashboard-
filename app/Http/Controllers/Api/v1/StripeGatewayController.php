@@ -94,8 +94,8 @@ class StripeGatewayController extends BaseController
                 $postdata['metadata']['order_number'] = $order_number;
                
             } 
-            $authorizeResponse = $this->gateway->authorize($postdata)->send();
-            if ($authorizeResponse->isSuccessful()) {
+            // $authorizeResponse = $this->gateway->authorize($postdata)->send();
+            // if ($authorizeResponse->isSuccessful()) {
                 $response = $this->gateway->purchase($postdata)->send();
                 // $response = $this->gateway->purchase([
                 //     'currency' => $this->currency,
@@ -192,9 +192,9 @@ class StripeGatewayController extends BaseController
                     // $this->failMail();
                     return $this->errorResponse($response->getMessage(), 400);
                 }
-            }else {
-                return $this->errorResponse($authorizeResponse->getMessage(), 400);
-            }
+            // }else {
+            //     return $this->errorResponse($authorizeResponse->getMessage(), 400);
+            // }
         // } catch (\Exception $ex) {
         //     // $this->failMail();
         //     return $this->errorResponse($ex->getMessage(), 400);

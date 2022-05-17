@@ -145,6 +145,11 @@ class PaymentController extends FrontController{
 
     public function postPaymentVia_payu(Request $request){
         $gateway = new PayUGatewayController();
-        return $gateway->payUPurchase($request);
+        return $gateway->purchase($request);
+    }
+
+    public function postPaymentVia_mycash(Request $request){
+        $gateway = new MyCashGatewayController();
+        return $gateway->purchase($request);
     }
 }
