@@ -28,7 +28,7 @@ class CartController extends FrontController
             $random_string = substr(md5(microtime()), 0, 32);
         }
         return $random_string;
-    } 
+    }
 
     public function showCart(Request $request, $domain = '')
     {
@@ -75,7 +75,7 @@ class CartController extends FrontController
             $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         }
         $navCategories = $this->categoryNav($langId);
-    
+
         $subscription_features = array();
         $user_subscription = null;
         if ($user) {
@@ -99,7 +99,7 @@ class CartController extends FrontController
             $vendorId=$cartData[0]->vendor_id;
             $vendorWeeklySlotDay=VendorSlot::select('start_time','end_time','day')->join('slot_days','slot_days.slot_id','=','vendor_slots.id')->where(['vendor_slots.vendor_id'=>$vendorId])->get()->toArray();
         }
-        
+
         $data = array(
             'navCategories'=>$navCategories,
             'cartData'=>$cartData,
@@ -121,7 +121,7 @@ class CartController extends FrontController
             $public_key_yoco= $public_key_yoco->credentials??'';
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
-        } 
+        }
 
         $ageVerify= VerificationOption::where('code','yoti')->first();
 
@@ -159,7 +159,7 @@ class CartController extends FrontController
                 }
             }
         }
-     
+
         // Return JSON Response
         return response()->json([
             'orderCount' => $orderCount,
@@ -537,7 +537,7 @@ class CartController extends FrontController
 
         Session()->forget('vendorType');
         Session()->put('vendorType', $request->type);
-       
+
         $cart_details = [];
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
@@ -555,8 +555,8 @@ class CartController extends FrontController
                 'data' => $cart_details,
             ]);
         }
-       
-        
+
+
         return response()->json([
             'message' => "No product found in cart",
             'data' => $cart_details,
@@ -693,7 +693,7 @@ class CartController extends FrontController
                 $delivery_count = 0;
                 $delivery_count_lm = 0;
                 $coupon_amount_used = 0;
-               
+
 
                 if(Session::has('vendorTable')){
                     if((Session::has('vendorTableVendorId')) && (Session::get('vendorTableVendorId') == $vendorData->vendor_id)){
@@ -736,8 +736,8 @@ class CartController extends FrontController
                     if($vendorData->coupon->promo->restriction_on == 0)
                     {
                         $coupon_product_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
-                        $in_or_not = $vendorData->coupon->promo->restriction_type; 
-                        
+                        $in_or_not = $vendorData->coupon->promo->restriction_type;
+
                     }
                 }
                 $cart_product_ids = [];
@@ -754,7 +754,7 @@ class CartController extends FrontController
                     if($cart_dinein_table_id > 0){
                         $prod->update(['vendor_dinein_table_id' => $cart_dinein_table_id]);
                     }
-                    
+
                     $prod->product_out_of_stock =  $product_out_of_stock;
                     $prod->faq_count = 0;
                     if( $preferences->product_order_form ==1 ){
@@ -771,7 +771,7 @@ class CartController extends FrontController
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price;
-                    $price_in_doller_compare = $prod->pvariant->price; 
+                    $price_in_doller_compare = $prod->pvariant->price;
                     $container_charges_in_currency = $prod->pvariant->container_charges;
                     $container_charges_in_doller_compare = $prod->pvariant->container_charges;
                     if($customerCurrency){
@@ -827,7 +827,7 @@ class CartController extends FrontController
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                             $rate = round($tax_value->tax_rate);
                             $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                            $product_tax = $quantity_price * $rate / 100; 
+                            $product_tax = $quantity_price * $rate / 100;
                             $taxData[$tckey]['identifier'] = $tax_value->identifier;
                             $taxData[$tckey]['rate'] = $rate;
                             $taxData[$tckey]['tax_amount'] = decimal_format($tax_amount);
@@ -838,7 +838,7 @@ class CartController extends FrontController
                         unset($prod->product->taxCategory);
                     }
                     $prod->taxdata = $taxData;
-                    
+
                     if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
                         $prod->cartImg = $prod->pvariant->image->imagedata;
                     } else {
@@ -858,7 +858,7 @@ class CartController extends FrontController
                         if($prod->product->dropoff_delay_hrs_min > $delay_date)
                         $dropoff_delay_date = $prod->product->dropoff_delay_hrs_min;
                     }
-                    
+
                     $select = '';
 
                     if($action == 'delivery'){
@@ -1039,7 +1039,7 @@ class CartController extends FrontController
                 //}
                 //$payable_amount = $payable_amount + $deliver_charge;
                 //Start applying service fee on vendor products total
-                   
+
                 $slotsDate = findSlot('',$vendorData->vendor->id,'');
                 $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
 
@@ -1049,7 +1049,7 @@ class CartController extends FrontController
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
 
-                
+
                 //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
@@ -1148,7 +1148,7 @@ class CartController extends FrontController
             $wallet_amount_available = 0;
             $wallet_amount_used = 0;
             if($user){
-               
+
                 if($user->balanceFloat > 0){
                     $wallet_amount_available=$user->balanceFloat;
                     if($customerCurrency){
@@ -1187,6 +1187,8 @@ class CartController extends FrontController
                     $myDate = (($myDate)?date('Y-m-d',$sttime):date('Y-m-d',strtotime('+1 day')));
                     $cart->schedule_type =  'schedule';
                     //$cart->closed_store_order_scheduled =  1;
+                }else{
+                    $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled;
                 }
                 $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
                 if(count((array)$slots) == 0){
@@ -1211,9 +1213,9 @@ class CartController extends FrontController
                 $cart->vendor_id =  0;
             }
             $cart->without_category_kyc = 0;
-            
+
             if( $preferences->category_kyc_documents ==1 && $user ){
-                      
+
                 $category_query =  CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_array){
                     $q->whereIn('category_id',$category_array);
                 });
@@ -1222,10 +1224,10 @@ class CartController extends FrontController
             //     $category_kyc_category_ids =  $category_query->categoryMapping->pluck('category_id');
                // pr( $category_query->first()->toArray());
                 $category_kyc_document_ids = $category_kyc_document_ids->isNotEmpty() ? $category_kyc_document_ids->toArray() : [];
-               
-              
+
+
                 $category_kyc_count =  $category_query->count();
-                
+
                 $is_alrady_submit = CaregoryKycDoc::whereIn('category_kyc_document_id', $category_kyc_document_ids)->where('cart_id',$cart_id)->count();
             //     echo  $is_alrady_submit." <br>";
             //    pr($category_kyc_document_ids);
@@ -1240,10 +1242,10 @@ class CartController extends FrontController
                 })->with('primary')->get();
                 foreach ($ALLcategory_kyc_documents as $vendor_registration_document) {
                     if($vendor_registration_document->is_required == 1){
-                      
+
                         $check = CaregoryKycDoc::where(['cart_id'=>$cart_id,'category_kyc_document_id'=>$vendor_registration_document->id])->first();
                         if($check)
-                        {  
+                        {
                             $cart->without_category_kyc = 1;
                         }
                     }
@@ -1278,7 +1280,7 @@ class CartController extends FrontController
                 $cart->delay_date =  $myDate??0;
             }
 
-            
+
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
@@ -1550,11 +1552,11 @@ class CartController extends FrontController
             $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->update(['is_primary' => 1]);
         }
 
-        
+
         if ($cart) {
             $cart_details = $this->getCart($cart, $address_id,$request->code);
         }
-        
+
         $client_preference_detail = ClientPreference::first();
 
         $expected_vendors = [];
@@ -1609,10 +1611,10 @@ class CartController extends FrontController
                 if($vendorData->vendor_id)
                 {
                    Session()->put('vid',$vendorData->vendor_id);
-                   
+
             if($preferences->static_delivey_fee != 1)
             {
-               
+
                 //Dispatcher Delivery changes code
                 $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
                 if (!empty($deliver_charge)){
@@ -1686,7 +1688,7 @@ class CartController extends FrontController
                 if(isset($vendorData->vendor->ahoy_location)){
                   //getAhoy (Masa) Delivery fee changes code
                   $ahoy = new AhoyController();
-                  if($ahoy->status){ 
+                  if($ahoy->status){
                       $deliver_ahoy_fee = $ahoy->getPreOrderFee($vendorData->vendor_id,$address);
                       if($deliver_ahoy_fee>0)
                       {
@@ -1827,36 +1829,36 @@ class CartController extends FrontController
     }
 
     public function updateSchedule(Request $request, $domain = '')
-    {      
+    {
         //pr($request->all());
         DB::beginTransaction();
         try{
-            $user = Auth::user();            
-            $client_timezone = DB::table('clients')->first('timezone'); 
+            $user = Auth::user();
+            $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
             $new_session_token = session()->get('_token');
-            if ($user || $new_session_token) {                
+            if ($user || $new_session_token) {
                 if($request->task_type == 'now'){
-                    $time = Carbon::now()->format('Y-m-d H:i:s');                  
-                    
+                    $time = Carbon::now()->format('Y-m-d H:i:s');
+
                 }else{
                     if($request->schedule_dt){
                         if(isset($request->slot))
-                        { 
+                        {
                             $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                            $slot = $request->slot;                        
-                        }else{                       
-                     
+                            $slot = $request->slot;
+                        }else{
+
                         if(isset($request->schedule_dt) && !empty($request->schedule_dt))
                         $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                      
+
                         }
                     }
-                    
+
 
                 }
 
-               
+
 
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup) &&  $request->schedule_pickup != 'undefined undefined')    # for pickup laundry
                 $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
@@ -1864,7 +1866,7 @@ class CartController extends FrontController
                 if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff) &&  $request->schedule_dropoff != 'undefined undefined')  # for pickup laundry
                 $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
-               
+
 
                 if ($user) {
                     $cart_detail = Cart::where('user_id', $user->id)->first();
@@ -1887,18 +1889,18 @@ class CartController extends FrontController
                 // 'scheduled_slot' => $request->schedule_time??null
                 ]);
                 CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
-               
+
                 DB::commit();
-                if ($user) { 
+                if ($user) {
                     $checkpreference = ClientPreference::select('verify_email','verify_phone','third_party_accounting')->first();
                     $age_restriction = CartProduct::whereHas('product',function($q){
                         $q->where('age_restriction',1);
-                    })->count();     
+                    })->count();
                     $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                     if($checkpreference->third_party_accounting == 1 && $passbase_check && $age_restriction)
                     {
                         if(is_null($user->passbase_verification)){
-                            return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alochol/Tobacco contents. It is mandatory to provide the verification documents to proceed']); 
+                            return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alochol/Tobacco contents. It is mandatory to provide the verification documents to proceed']);
                         }elseif($user->passbase_verification->status == 'pending'){
                             return response()->json(['status'=>'passbase_submitted', 'message'=>'We have recieved your request for verification. Check back soon and order OR remove Alcohol/Tobocco items']);
                         }elseif($user->passbase_verification->status == 'approved'){
@@ -1907,19 +1909,19 @@ class CartController extends FrontController
                     }
 
                     if($checkpreference->verify_email == 1 || $checkpreference->verify_phone == 1)
-                    {             
+                    {
                         if($checkpreference->verify_email == 1)
-                        { 
-                            
+                        {
+
                             if($user->is_email_verified == 0)
-                            {                        
+                            {
                                 return response()->json(['status'=>'Pending', 'message'=>'Verify your account first']);
-                            }                        
+                            }
                         }
                         if($checkpreference->verify_phone == 1)
-                        {                     
+                        {
                             if($user->is_phone_verified == 0)
-                            {                        
+                            {
                                 return response()->json(['status'=>'Pending', 'message'=>'Verify your account first']);
                             }
                         }
@@ -2064,7 +2066,7 @@ class CartController extends FrontController
 
 
     public function updateCartProductFaq(Request $request, $domain=''){
-       
+
         $user = Auth::user();
         $new_session_token = session()->get('_token');
         if ($user) {
@@ -2073,12 +2075,12 @@ class CartController extends FrontController
             $cart = Cart::where('unique_identifier', $new_session_token)->first();
         }
         $user_product_order_form = null;
-       
+
         $cartData_id = CartProduct::where('cart_id', $cart->id)->where('product_id', $request->product_id)->pluck('id');
-       
+
         if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
         $user_product_order_form = json_encode($request->user_product_order_form);
-       
+
         CartProduct::whereIn('id', $cartData_id)->update(['user_product_order_form'=> $user_product_order_form]);
 
         return response()->json(['status'=>'Success', 'message'=>__('Product form Submit successfully.')]);
@@ -2106,15 +2108,15 @@ class CartController extends FrontController
         } else {
             $cart = Cart::where('unique_identifier', $new_session_token)->first();
         }
-       
+
         //pr($category_ids);
         $user_product_order_form = null;
-        
+
         foreach ($category_ids as $category_id){
             $category_kyc_documents =CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_id){
                 $q->where('category_id',$category_id);
            })->with('primary')->get();
-    
+
             //  pr($category_kyc_documents->first());
 
             if ($category_kyc_documents->count() > 0) {
@@ -2123,7 +2125,7 @@ class CartController extends FrontController
                     if ($vendor_registration_document->file_type != "Text" && $vendor_registration_document->file_type != "selector") {
                         $check = CaregoryKycDoc::where(['cart_id'=>$cart->id,'category_kyc_document_id'=>$vendor_registration_document->id])->first();
                         if ($request->hasFile($doc_name) && !$check) {
-                        
+
                             $vendor_docs =  new CaregoryKycDoc();
                             $vendor_docs->user_id = $user->id;
                             $vendor_docs->category_kyc_document_id = $vendor_registration_document->id;
@@ -2133,7 +2135,7 @@ class CartController extends FrontController
                             $vendor_docs->cart_id = $cart->id;
                             $vendor_docs->save();
                         }
-                     } 
+                     }
                      //else {
                     //     if (!empty($request->$doc_name)) {
                     //         $vendor_docs =  new CaregoryKycDoc();
@@ -2155,10 +2157,10 @@ class CartController extends FrontController
         // $res = CaregoryKycDoc::where('user_id',$user->id)->get();
         // pr($res);
         // $cartData_id = CartProduct::where('cart_id', $cart->id)->where('product_id', $request->product_id)->pluck('id');
-       
+
         // if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
         // $user_product_order_form = json_encode($request->user_product_order_form);
-       
+
         // CartProduct::whereIn('id', $cartData_id)->update(['user_product_order_form'=> $user_product_order_form]);
 
         //return response()->json(['status'=>'Success', 'message'=>__('Product form Submit successfully.')]);
@@ -2166,10 +2168,10 @@ class CartController extends FrontController
 
     function ajaxGetScheduleDateDetails(Request $request){
         $vendorWeeklySlotDay=VendorSlot::select('start_time','end_time','day')->join('slot_days','slot_days.slot_id','=','vendor_slots.id')->where(['vendor_slots.vendor_id'=>$request->vendorId])->get()->toArray();
-        $today=['start_time'=>"00:00",'end_time'=>"00:00"]; 
+        $today=['start_time'=>"00:00",'end_time'=>"00:00"];
         $dt=new \DateTime($request->date);
         foreach($vendorWeeklySlotDay as $row){
-            
+
             if(($row['day']-1)==(int)$dt->format('w'))
             {
                 $today=['start_time'=>convertDateTimeInTimeZone(date('Y-M-d')." ".$row['start_time'], Auth()->user()->timezone, 'H:i'),'end_time'=>substr($row['end_time'],0,-3)];
