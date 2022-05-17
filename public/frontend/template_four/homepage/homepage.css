@@ -66,10 +66,9 @@ article#page-container{position:relative;min-height:100vh;overflow:hidden}.slick
 .al_body_template_four .common-product-box.scale-effect a .img-outer-box{border-radius:10px;overflow: hidden;}
 .al_body_template_four .pixelstrap a.alMainLink:active,
 .al_body_template_four .pixelstrap a.alMainLink:hover,
-.al_body_template_four .pixelstrap a.alMainLink{width: max-content;padding: 0px 10px 10px;-webkit-transform: scale(1);transform: scale(1);letter-spacing: 0;white-space: nowrap;}
+.al_body_template_four .pixelstrap a.alMainLink{width: max-content;padding:10px;-webkit-transform: scale(1);transform: scale(1);letter-spacing: 0;white-space: nowrap;}
 li.has-children:hover .alInnerMenu{display:block}
-.al_body_template_four .pixelstrap ul.alInnerMenu{top: 20px;padding: 0;}
-.alOverflow{overflow: hidden;}
+.al_body_template_four .pixelstrap ul.alInnerMenu{top: 30px;padding: 0;}
 .al_body_template_four .pixelstrap li.alInnerLink a{padding:7px 0 !important;margin: 0;}
 .al_body_template_four .suppliers-img-outer{overflow: hidden;}
 .flag-container li,.iti__flag-container li{display: block;}
@@ -296,10 +295,21 @@ a.morelink{color:var(--theme-deafult)}
 /* subscription page css end */
 
 li.has-children{position: relative;padding-right: 10px;}
-li.has-children:after,li.has-children:before{position: absolute;content: "";width: 0;height: 0;border-left: 6px solid transparent;border-right: 6px solid transparent;border-top: 6px solid #FBCC04;top: 10px;right: 4px;}
-li.has-children:after{border-top: 6px solid #fff;top: 8px;}
+li.has-children:after, li.has-children:before{
+    position: absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #FBCC04;
+    top: 50%;
+    right: 4px;
+    -webkit-transform: translate(0, -50%);transform: translate(0, -50%);
+}
+li.has-children:after{border-top: 6px solid #fff;top: 47%;-webkit-transform: translate(0, -47%);transform: translate(0, -47%);}
 .al_body_template_four a.add-address i{margin:0 !important}
-
+li.has-children:hover ul.alInnerMenu{display:block}
 
 /* responsive css start */
 @media(max-width:1400px){
