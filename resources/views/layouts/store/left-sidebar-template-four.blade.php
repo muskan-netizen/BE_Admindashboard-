@@ -445,27 +445,27 @@ $pages = \App\Models\Page::with([
 
                                 </div>
 
-                                <div class="col-sm-12 p-0 d-flex align-items-center">
+                                <div class="col-sm-12 p-0 d-flex align-items-center alOverflow">
                                     <div class="menu_navigation_al_four mt-lg-3">
                                         <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
                                             @foreach($navCategories as $cate)
                                             @if($cate['name'])
-                                            <li class=" @if(!empty($cate['children'])) has-children @endif ">
-                                                <a href="{{route('categoryDetail', $cate['slug'])}}">
+                                            <li class=" alMainMenu @if(!empty($cate['children'])) has-children @endif ">
+                                                <a class="alMainLink" href="{{route('categoryDetail', $cate['slug'])}}">
 
                                                     {{$cate['name']}}
                                                 </a>
                                                 @if(!empty($cate['children']))
-                                                <ul class="">
+                                                <ul class="alInnerMenu">
                                                     @foreach($cate['children'] as $childs)
-                                                    <li >
-                                                    <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
+                                                    <li class="alInnerLink">
+                                                        <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
                                                         @if(!empty($childs['children']))
-                                                    <ul class="">
-                                                        @foreach($childs['children'] as $chld)
-                                                        <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
-                                                        @endforeach
-                                                    </ul>
+                                                        <ul class="alInnerSubMenu">
+                                                            @foreach($childs['children'] as $chld)
+                                                            <li class="alInnerSublink"><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
+                                                            @endforeach
+                                                        </ul>
                                                     @endif
                                                     </li>
                                                     @endforeach
