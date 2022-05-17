@@ -176,7 +176,7 @@
                                                         $vendor_url = route('vendorDetail', $data->slug);
                                                     }
                                                     @endphp
-                                                    <div class=" col-md-3 col-6 col-grid-box mt-sm-3 mt-1" >
+                                                    <div class="col-xl-3 col-lg-4 col-6 col-grid-box mt-sm-3 mt-1" >
                                                         <div class="product-card-box position-relative">
                                                             <div class="add-to-fav">
                                                                 <input id="fav_pro_one" type="checkbox">

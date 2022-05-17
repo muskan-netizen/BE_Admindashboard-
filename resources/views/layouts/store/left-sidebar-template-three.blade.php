@@ -235,11 +235,11 @@ $pages = \App\Models\Page::with([
                                         </a> <%}); %>
                                     </div>
                                     </script> @if(auth()->user()) @if($client_preference_detail->show_wishlist==1)
-                                    <div class="icon-nav mr-2 d-none d-sm-block"> <a class="fav-button" href="{{route('user.wishlists')}}">
+                                    <div class="icon-nav mr-2 d-none d-lg-block"> <a class="fav-button" href="{{route('user.wishlists')}}">
                                         <i class="fa fa-heart" aria-hidden="true"></i>
                                     </a> </div>
                                     @endif @endif
-                                    <div class="icon-nav d-none d-sm-inline-block">
+                                    <div class="icon-nav d-none d-lg-inline-block">
                                         <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}"> @csrf <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}"> </form>
                                         <ul class="d-flex align-items-center m-0">
                                             <!-- <li class="mr-2 pl-0 d-ipad"> <span class="mobile-search-btn">

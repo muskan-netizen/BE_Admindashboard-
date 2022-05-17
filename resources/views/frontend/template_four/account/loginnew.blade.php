@@ -14,16 +14,16 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
 <section class="wrapper-main container-fluid">
     <article class="BGcenter">
         <div class="container">
-            <div class=" col-xl-8 offset-xl-2 p-3" id="login-section">
+            <div class=" col-xl-8 offset-xl-2 py-3" id="login-section">
                 <div class="row d-flex align-items-center h-100">
                     <div class="col-sm-6">
                         <div class="LoginLogoBG">
                             <img class="LoginLogo" style="height:80px" alt="" src="{{$urlImg}}">
                         </div>
                     </div>
-                    <div class="col-sm-6 px-sm-5 LogoInArea">
+                    <div class="col-sm-6 px-xl-5 px-3 LogoInArea">
                         <h3 class="mb-2 text-center">{{ __('Login') }}</h3>
-                        <form id="login-form-new" class="arabic-language" action="">
+                        <form id="login-form-new" class="arabic-language" action="" class="pl-2">
                             @csrf
                                 <input type="hidden" name="device_type" value="web">
                                 <input type="hidden" name="device_token" value="web">
@@ -177,7 +177,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
 
     </article>
 </section>
-    
+
 
 @endsection
 @section('script')
