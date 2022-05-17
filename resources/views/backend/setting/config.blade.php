@@ -156,7 +156,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div>
             </div><!-- On Demand Services section end -->
          </div>
-
+         @endif
 
          @if($client_preference_detail->enable_inventory_service == 1 && 1 == 2)
          <div class="col-lg-3 col-md-6 mb-3">
