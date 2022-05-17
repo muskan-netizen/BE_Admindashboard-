@@ -608,7 +608,6 @@ class CategoryController extends FrontController{
         $user = Auth::user();
         $timezone = $user->timezone ?? 'Asia/Kolkata';
 
-
         $dates = new DateTime("now", new DateTimeZone($timezone) );
         $today = $dates->format('Y-m-d');
 
@@ -617,25 +616,37 @@ class CategoryController extends FrontController{
         }else{
             $daten = new DateTime("now", new DateTimeZone($timezone) );
             $curr_time = $daten->format('h:i');
-
         }
-        $slots = showSlot($today,$request->product_vendor_id,'delivery');
 
-       // $date =new DateTime($request->cur_date);
+        if(!empty($request->cur_date)){
+            $date = $request->cur_date;
+        }else{
+            $date = $today;
+        }
+
+        $slots = showSlot($date,$request->product_vendor_id,'delivery');
 
         $start_time = new DateTime("now", new  DateTimeZone($timezone) );
         $start_time = $start_time->format('Y-m-d H:m');
         $end_time = date('Y-m-d 23:59');
 
-        // $start_time = $date." ".$curr_time;
-        // $end_time = $date." 23:59";
-      //pr( $slots);
+        $time_slots = [];
+        if(!empty($slots)){
+            $i = 0;
+            foreach($slots as $slot){
+                $newSlot = explode('-', $slot['value']);
+                $time_slots[$i++] = trim($newSlot[0]);
+            }
+        }else{
         $time_slots = $this->SplitTime($start_time, $end_time, "60");
+        }
+
         $cart_product_id = $request->cart_product_id??0;
         if ($request->ajax()) {
            return \Response::json(\View::make('frontend.ondemand.time-slots-for-date', array('time_slots' => $time_slots,'cart_product_id'=> $cart_product_id))->render());
         }
     }
+    
     # get product faq
     public function getcategoryKycDocument(Request $request,$domain = ''){
         $user = Auth::user();

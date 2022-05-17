@@ -159,7 +159,7 @@ class HomeController extends BaseController
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
-            $payment_codes = ['stripe', 'stripe_fpx', 'razorpay', 'checkout'];
+            $payment_codes = ['stripe', 'stripe_fpx', 'razorpay', 'checkout', 'paytab','flutterwave'];
             $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
                 foreach ($payment_creds as $creds) {
@@ -175,6 +175,14 @@ class HomeController extends BaseController
                     }
                     if ($creds->code == 'checkout') {
                         $homeData['profile']->preferences->checkout_public_key = (isset($creds_arr->public_key) && (!empty($creds_arr->public_key))) ? $creds_arr->public_key : '';
+                    }
+                    if ($creds->code == 'paytab') {
+                        $homeData['profile']->preferences->paytab_profile_id = (isset($creds_arr->profile_id) && (!empty($creds_arr->profile_id))) ? $creds_arr->profile_id : '';
+                        $homeData['profile']->preferences->paytab_server_key = (isset($creds_arr->mobile_server_key) && (!empty($creds_arr->mobile_server_key))) ? $creds_arr->mobile_server_key : '';
+                        $homeData['profile']->preferences->paytab_client_key = (isset($creds_arr->mobile_client_key) && (!empty($creds_arr->mobile_client_key))) ? $creds_arr->mobile_client_key : '';
+                    }
+                    if ($creds->code == 'flutterwave') {
+                        $homeData['profile']->preferences->flutterwave_public_key = (isset($creds_arr->client_id) && (!empty($creds_arr->client_id))) ? $creds_arr->client_id : '';
                     }
                 }
             }
@@ -417,14 +425,18 @@ class HomeController extends BaseController
     public function getEditedOrders(Request $request){
         // Get user Edited Orders from Temp Cart
         $user = Auth::user();
-        $temp_order_vendors = TempCart::where('status', '0')->where('user_id', $user->id)->where('is_submitted', 1)->where('is_approved', 0)->pluck('order_vendor_id');
-        $temp_orders = Order::with(['vendors'=> function($q){
-            $q->select('order_id','vendor_id', 'dispatch_traking_url');
-        }])->whereHas('vendors', function($q) use($temp_order_vendors){
-            $q->whereIn('id', $temp_order_vendors);
-        })
-        ->select('id','order_number')
-        ->get();
+        $temp_orders = array();
+        if($user){
+            $temp_order_vendors = TempCart::where('status', '0')->where('user_id', $user->id)->where('is_submitted', 1)->where('is_approved', 0)->pluck('order_vendor_id');
+            $temp_orders = Order::with(['vendors'=> function($q){
+                $q->select('order_id','vendor_id', 'dispatch_traking_url');
+            }])->whereHas('vendors', function($q) use($temp_order_vendors){
+                $q->whereIn('id', $temp_order_vendors);
+            })
+            ->select('id','order_number')
+            ->get();
+        }
+        
 
         return $this->successResponse($temp_orders, '', 200);
     }

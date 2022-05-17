@@ -72,7 +72,7 @@ class PaytabController extends BaseController
                             $orderController->sendSuccessEmail($request, $order, $vendor_id);
                         }
                         //Send SMS to customer
-                        $this->sendSuccessSMS($request, $order);
+                        $orderController->sendSuccessSMS($request, $order);
                     }
                 }
             } elseif($request->action == 'wallet'){
@@ -99,6 +99,7 @@ class PaytabController extends BaseController
     public function failedPayment(Request $request)
     {
         try{
+            $user = Auth::user();
             if($request->action == 'cart'){
                 $order_number = $request->order_number;
                 $order = Order::where('order_number', $order_number)->first();

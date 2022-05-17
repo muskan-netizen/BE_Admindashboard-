@@ -30,7 +30,16 @@ function orderProductDetails($order_id)
     }
     return $itemsDetails;
 }
-
+function EasebuzzSubMerchent()
+{
+    $access = 0;
+    $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'easebuzz')->where('status', 1)->first();
+    if($payOpt){
+        $json = json_decode($payOpt->credentials);
+        $access = $json->easebuzz_Sub_merchant ;
+    }
+    return $access;
+}
 
 if (!function_exists('pr')) {
     function pr($var) {
@@ -128,15 +137,8 @@ function getClientPreferenceDetail()
 {   
     
     $client_preference_detail = ClientPreference::first();
-    if($client_preference_detail){
-        list($r, $g, $b) = sscanf($client_preference_detail->web_color, "#%02x%02x%02x");
-        $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
-    }else{
-        $client_preference_detail = new  stdClass();
-        $client_preference_detail->wb_color_rgb = "rgb(200, 400, 600)";
-        $client_preference_detail->site_top_header_color = "rgb(200, 400, 600)";
-    }
-   
+    list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
+    $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
     return $client_preference_detail;
 }
 function getClientDetail()
@@ -280,6 +282,12 @@ function createSlug($str, $delimiter = '-'){
 
 }
 
+function remove_special_chars($str, $delimiter = ''){
+    // $result = strtolower(trim(preg_replace('/[^A-Za-z0-9\-]/', $delimiter, $str)));
+    $result = strtolower(trim(preg_replace('/[.*+?^${}()/|[\]\\]+/g', $delimiter, $str)));
+    return $result;
+}
+
 function getBaseprice($dist,$option = 'lalamove')
 {
     $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code',$option)->where('status', 1)->first();
@@ -390,10 +398,15 @@ function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
     }
 
     if(isset($slots) && count($slots)>0){
+        $slotss = [];
         foreach($slots as $slott){
             if(isset($slott->days->id))
             {
-                $slotss[] = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
+               $new_slot = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
+               if(!in_array($new_slot, $slotss))
+               {
+                   $slotss[] = $new_slot; 
+               }
             }else{
                 $slotss[] = [];
             }
@@ -414,7 +427,7 @@ function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
             }
         }
     }
-
+    
     return $viewSlot;
 }
 
@@ -734,4 +747,10 @@ function decimal_format($number,$format="")
     $preference = session()->get('preferences');
     $digits = $preference['digit_after_decimal'] ?? 2;
     return number_format($number,$digits,'.',$format);
+}
+
+if (!function_exists('taxRates')) {
+    function taxRates(){
+        return App\Models\TaxRate::all();
+    }
 }

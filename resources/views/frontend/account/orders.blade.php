@@ -1816,7 +1816,11 @@
     @if(in_array('flutterwave',$client_payment_options))
     <script src="https://checkout.flutterwave.com/v3.js"></script>
     @endif
+    @if(in_array('payphone',$client_payment_options))
+    <script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
+    @endif
     <script src="{{ asset('js/payment.js') }}"></script>
+    <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
     <script type="text/javascript">
         $(document).delegate(".topup_wallet_btn_tip", "click", function() {
             $('#topup_wallet').modal('show');
@@ -1848,6 +1852,10 @@
         var credit_tip_url = "{{ route('user.tip_after_order') }}";
         var payment_stripe_url = "{{ route('payment.stripe') }}";
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+        var create_payphone_url = "{{route('payphone.createHash')}}";
+        var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
+        var create_windcave_hash_url = "{{route('windcave.createHash')}}";
+        var create_paytech_hash_url = "{{route('paytech.createHash')}}";
         var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
         var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
         var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";

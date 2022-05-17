@@ -46,8 +46,8 @@ class PaymentResourceController extends BaseController
         \Stripe\Stripe::setApiKey($api_key);
 
         $payment_form = $request->action;
-        $saved_payment_method = UserSavedPaymentMethods::where('user_id', $user->id)->where('payment_option_id', $request->payment_option_id)->first();
-        if (!$saved_payment_method) {
+        // $saved_payment_method = UserSavedPaymentMethods::where('user_id', $user->id)->where('payment_option_id', $request->payment_option_id)->first();
+        // if (!$saved_payment_method) {
             $customerResponse = \Stripe\Customer::create(array(  
                 'description' => 'Creating Customer',
                 'name' => $user->name,
@@ -65,9 +65,9 @@ class PaymentResourceController extends BaseController
                 $payment_method->customerReference = $customer_id;
                 $payment_method->save();
             }
-        }else {
-            $customer_id = $saved_payment_method->customerReference;
-        }
+        // }else {
+        //     $customer_id = $saved_payment_method->customerReference;
+        // }
 
         $postdata = array(
             'payment_method'       => $request->payment_method_id,

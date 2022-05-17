@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
 use App\Http\Controllers\Front\PickupDeliveryController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
+use App\Models\{User, UserVendor, CaregoryKycDoc,Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
 
 class StripeGatewayController extends FrontController
 {
@@ -53,9 +53,9 @@ class StripeGatewayController extends FrontController
            
             $payment_form = $request->payment_form;
            
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
            
-            if (!$saved_payment_method) {
+            // if (!$saved_payment_method) {
                 $customerResponse = $this->gateway->createCustomer(array(
                     'description' => 'Creating Customer',
                     'name' => $user->name,
@@ -73,14 +73,14 @@ class StripeGatewayController extends FrontController
                     $request->request->set('customerReference', $customer_id);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            }else {
-                $customer_id = $saved_payment_method->customerReference;
-                // \Stripe\Stripe::setApiKey($this->API_KEY);
-                // $retrieve_customer = \Stripe\Customer::retrieve(
-                //     $customer_id, 
-                //     []
-                // );
-            }
+            // }else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            //     // \Stripe\Stripe::setApiKey($this->API_KEY);
+            //     // $retrieve_customer = \Stripe\Customer::retrieve(
+            //     //     $customer_id, 
+            //     //     []
+            //     // );
+            // }
             
 
             $postdata = [
@@ -125,10 +125,10 @@ class StripeGatewayController extends FrontController
                
             }
 
-            $authorizeResponse = $this->gateway->authorize($postdata)->send();
+            // $authorizeResponse = $this->gateway->authorize($postdata)->send();
 
-            // dd($authorizeResponse->isSuccessful());
-            if ($authorizeResponse->isSuccessful()) {
+            // // dd($authorizeResponse->isSuccessful());
+            // if ($authorizeResponse->isSuccessful()) {
                 $response = $this->gateway->purchase($postdata)->send();
                  
                 if ($response->isSuccessful()) {
@@ -160,6 +160,7 @@ class StripeGatewayController extends FrontController
                                 $orderController->autoAcceptOrderIfOn($order->id);
         
                                 // Remove cart
+                                CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                                 Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                                 CartAddon::where('cart_id', $cart_id)->delete();
                                 CartCoupon::where('cart_id', $cart_id)->delete();
@@ -167,6 +168,9 @@ class StripeGatewayController extends FrontController
                                 CartProductPrescription::where('cart_id', $cart_id)->delete();
                                 CartDeliveryFee::where('cart_id', $cart_id)->delete();
         
+                                // send success sms
+                                  $this->sendSuccessSMS($request, $order);
+
                                 // Send Notification
                                 if (!empty($order->vendors)) {
                                     foreach ($order->vendors as $vendor_value) {
@@ -218,9 +222,9 @@ class StripeGatewayController extends FrontController
                 else {
                     return $this->errorResponse($response->getMessage(), 400);
                 }
-            }else {
-                return $this->errorResponse($authorizeResponse->getMessage(), 400);
-            }
+            // }else {
+            //     return $this->errorResponse($authorizeResponse->getMessage(), 400);
+            // }
         } catch (\Exception $ex) {
             Log::info($ex->getMessage());
             return $this->errorResponse('Server Error', $ex->getCode());
@@ -234,8 +238,8 @@ class StripeGatewayController extends FrontController
             $address = UserAddress::where('user_id', $user->id);
             $token = $request->stripe_token;
             $plan = SubscriptionPlansUser::where('slug', $request->subscription_id)->firstOrFail();
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
-            if (!$saved_payment_method) {
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // if (!$saved_payment_method) {
                 $customerResponse = $this->gateway->createCustomer(array(
                     'description' => 'Creating Customer for subscription',
                     'email' => $request->email,
@@ -247,9 +251,9 @@ class StripeGatewayController extends FrontController
                     $request->request->set('customerReference', $customer_id);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            } else {
-                $customer_id = $saved_payment_method->customerReference;
-            }
+            // } else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            // }
 
             // $subscriptionResponse = $this->gateway->createSubscription(array(
             //     "customerReference" => $customer_id,
@@ -257,13 +261,13 @@ class StripeGatewayController extends FrontController
             // ))->send();
 
             $amount = $this->getDollarCompareAmount($request->amount);
-            $authorizeResponse = $this->gateway->authorize([
-                'amount' => $amount,
-                'currency' => $this->currency,
-                'description' => 'This is a subscription purchase transaction.',
-                'customerReference' => $customer_id
-            ])->send();
-            if ($authorizeResponse->isSuccessful()) {
+            // $authorizeResponse = $this->gateway->authorize([
+            //     'amount' => $amount,
+            //     'currency' => $this->currency,
+            //     'description' => 'This is a subscription purchase transaction.',
+            //     'customerReference' => $customer_id
+            // ])->send();
+            // if ($authorizeResponse->isSuccessful()) {
                 $purchaseResponse = $this->gateway->purchase([
                     'currency' => $this->currency,
                     'amount' => $amount,
@@ -278,10 +282,10 @@ class StripeGatewayController extends FrontController
                     $this->failMail();
                     return $this->errorResponse($purchaseResponse->getMessage(), 400);
                 }
-            } else {
-                $this->failMail();
-                return $this->errorResponse($authorizeResponse->getMessage(), 400);
-            }
+            // } else {
+            //     $this->failMail();
+            //     return $this->errorResponse($authorizeResponse->getMessage(), 400);
+            // }
         } catch (\Exception $ex) {
             $this->failMail();
             return $this->errorResponse($ex->getMessage(), 400);
@@ -335,9 +339,9 @@ class StripeGatewayController extends FrontController
 
             $user = Auth::user();
 
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
            
-            if (!$saved_payment_method) {
+            // if (!$saved_payment_method) {
                 $customerResponse = $stripe->customers->create([
                     'name' => $user->name,
                     'email' => $user->email,
@@ -351,17 +355,17 @@ class StripeGatewayController extends FrontController
                 // Find the card ID
                 $customer_id = $customerResponse->id;
                 if ($customer_id) {
-                    $request->request->set('customerReference', $customer_id);
+                    $request->request->add(['customerReference' => $customer_id, 'payment_option_id' => 19]);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            }else {
-                $customer_id = $saved_payment_method->customerReference;
-                // \Stripe\Stripe::setApiKey($this->API_KEY);
-                // $retrieve_customer = \Stripe\Customer::retrieve(
-                //     $customer_id, 
-                //     []
-                // );
-            }
+            // }else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            //     // \Stripe\Stripe::setApiKey($this->API_KEY);
+            //     // $retrieve_customer = \Stripe\Customer::retrieve(
+            //     //     $customer_id, 
+            //     //     []
+            //     // );
+            // }
 
             $description = '';
             $payment_form = $request->payment_form;
@@ -530,12 +534,16 @@ class StripeGatewayController extends FrontController
                             $orderController->autoAcceptOrderIfOn($order->id);
     
                             // Remove cart
+                            CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                             Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                             CartAddon::where('cart_id', $cart_id)->delete();
                             CartCoupon::where('cart_id', $cart_id)->delete();
                             CartProduct::where('cart_id', $cart_id)->delete();
                             CartProductPrescription::where('cart_id', $cart_id)->delete();
-    
+                  
+                            // send sms 
+                            $this->sendSuccessSMS($request, $order);
+                        
                             // Send Notification
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {

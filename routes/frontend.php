@@ -125,6 +125,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/square/page','Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square','Front\SquareController@createPayment')->name('payment.square.createPayment');
 
+	//Braintree
+	Route::match(['get','post'],'payment/braintree/page','Front\BraintreeController@beforePayment')->name('payment.braintree.beforePayment');
+	Route::post('payment/braintree','Front\BraintreeController@createPayment')->name('payment.braintree.createPayment'); 
+
 	//Ozow
 	Route::match(['get','post'],'payment/ozow/page','Front\OzowController@beforePayment')->name('payment.ozow.beforePayment');
 	Route::post('payment/ozow','Front\OzowController@createPayment')->name('payment.ozow.createPayment');
@@ -141,6 +145,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//Paytab
 	Route::match(['get','post'],'payment/paytab/page','Front\PaytabController@beforePayment')->name('payment.paytab.beforePayment');
 	Route::post('payment/paytab','Front\PaytabController@createPayment')->name('payment.paytab.createPayment');
+
+	//Coinbase
+	Route::match(['get','post'],'payment/coinbase/page','Front\CoinbaseController@beforePayment')->name('payment.coinbase.beforePayment');
+	Route::post('payment/coinbase','Front\CoinbaseController@createPayment')->name('payment.coinbase.createPayment');
 
 	// toyyibpay
 	Route::match(['get','post'],'payment/toyyib', 'Front\ToyyibPayController@index')->name('payment.toyyibpay.index');
@@ -187,6 +195,24 @@ Route::group(['middleware' => ['domain']], function () {
 	//Flutterwave routes 
 	Route::post('payment/flutterwave', 'Front\FlutterWaveController@createHash')->name('flutterwave.createHash');
 	Route::match(['get','post'],'payment/flutter/success', 'Front\FlutterWaveController@successPage')->name('flutterwave.success');
+
+	//Easypaisa routes
+	Route::post('payment/easypaisa', 'Front\EasypaisaController@createHash')->name('easypaisa.createHash');
+	Route::get('payment/easypaisa', 'Front\EasypaisaController@successPage')->name('easypaisa.success');
+
+	//Windcave routes 
+	Route::post('payment/windcave', 'Front\WindcaveController@createHash')->name('windcave.createHash');
+	Route::get('payment/windcave/success', 'Front\WindcaveController@successPage')->name('windcave.success');
+	Route::get('payment/windcave/fail', 'Front\WindcaveController@failPage')->name('windcave.fail');
+
+	//Paytech routes 
+	Route::post('payment/paytech', 'Front\PaytechController@createHash')->name('paytech.createHash');
+	Route::get('payment/paytech/success', 'Front\PaytechController@successPage')->name('paytech.success');
+	Route::get('payment/paytech/fail', 'Front\PaytechController@failPage')->name('paytech.fail');
+	
+	//payPhone routes
+	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
+	Route::get('payment/payphone/success', 'Front\PayphoneController@successPage')->name('payphone.success');
 
 
 	//KongaPay routes 

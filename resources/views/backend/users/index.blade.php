@@ -193,10 +193,10 @@
                         }
                     },
                     "initComplete": function(settings, json) {
-                        var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
-                        elems.forEach(function(html) {
-                            var switchery = new Switchery(html);
-                        });
+                        // var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
+                        // elems.forEach(function(html) {
+                        //     var switchery = new Switchery(html);
+                        // });
                         $('.dataTables_filter input[type="search"]').css({
                             'width': '280px',
                             'display': 'inline-block'
@@ -370,7 +370,20 @@
                                 }
                             }
                         },
-                    ]
+                    ],
+                    "drawCallback": function (settings, json) {
+                        var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
+                        elems.forEach(function(html) {
+                            var switchery = new Switchery(html);
+                        });
+                        $('.dataTables_filter input[type="search"]').css({
+                            'width': '280px',
+                            'display': 'inline-block'
+                        });
+                        $("#user_datatable_wrapper").find($(".dt-buttons.btn-group.flex-wrap")).css({
+                            'right': '320px'
+                        });
+                    }
                 });
             } finally {
                 var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));

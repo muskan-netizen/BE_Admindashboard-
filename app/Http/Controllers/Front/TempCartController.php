@@ -914,10 +914,11 @@ class TempCartController extends FrontController
             }
             $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
             $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
-            $cart = TempCart::where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->first();
+            $cart = TempCart::where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', '!=', 1)->where('is_approved', '!=', 1)->first();
             if(!$cart){
                 foreach($getallproduct->products as $data){
                     $request->request->add([
+                        'set_temp_cart' => 1,
                         'vendor_id' => $data->vendor_id,
                         'product_id' => $data->product_id,
                         'quantity' => $data->quantity,
@@ -934,7 +935,7 @@ class TempCartController extends FrontController
                     $this->postAddToTempCart($request);
                 }
             }
-            $cart = TempCart::with(['address','currency','coupon.promo'])->where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->first();
+            $cart = TempCart::with(['address','currency','coupon.promo'])->where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->orderBy('id', 'desc')->first();
             $cartData = $this->getCart($cart, $langId, $currId, '');
 
             return $this->successResponse($cartData, 'Order added to cart.', 201);
@@ -992,7 +993,7 @@ class TempCartController extends FrontController
             ])->find($request->product_id);
 
             # if product type is not equal to on demand
-            if($productDetail->category->categoryDetail->type_id != 8  && $productDetail->sell_when_out_of_stock == 0){
+            if(($productDetail->category->categoryDetail->type_id != 8)  && ($productDetail->sell_when_out_of_stock) == 0 && (!isset($request->set_temp_cart))){
                 if(!empty($already_added_product_in_cart)){
                     if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
                         return $this->errorResponse(__('Maximum quantity already added in your cart s'), 422);
@@ -1002,7 +1003,7 @@ class TempCartController extends FrontController
                     }
                 }
                 if($productDetail->variant[0]->quantity < $request->quantity){
-                    if($productDetail->variant[0]->quantity == 0){
+                    if($productDetail->variant[0]->quantity <= 0){
                         $productDetail->variant[0]->quantity = 1;
                     }
                      $request->quantity = $productDetail->variant[0]->quantity;

@@ -6,6 +6,18 @@
         <script src="{{asset('assets/js/jquery-3.1.1.min.js')}}"></script>
         <script src="{{asset('assets/js/vendor.min.js')}}"></script>
         <script src="{{asset('assets/js/jquery-ui.min.js')}}" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+        <style type="text/css">
+            
+            body.authentication-bg {
+                background-color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;
+                background-size: cover;
+                background-position: center;
+            }
+            .primary_bg_color{
+                background-color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;
+            }
+        </style>
+    
     </head>
     @php
     $clientData = App\Models\Client::first();
@@ -69,7 +81,7 @@
                                         </div>
                                     </div>--}}
                                     <div class="form-group mb-0 text-center">
-                                        <button class="btn btn-primary btn-block" type="submit"> Log In </button>
+                                        <button class="btn btn-primary btn-block primary_bg_color" type="submit"> Log In </button>
                                     </div>
                                 </form>
                             </div>
@@ -90,5 +102,6 @@
 
         @include('layouts.shared.footer-script')
         <script src="{{asset('assets/js/app.min.js')}}"></script>
+       
     </body>
 </html>

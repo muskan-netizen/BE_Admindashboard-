@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Front\FrontController;
 
 use Auth;
 use App\Models\User;
@@ -16,14 +16,16 @@ use App\Models\UserAddress;
 use App\Models\CartProduct;
 use Illuminate\Http\Request;
 use App\Models\PaymentOption;
+use App\Models\CaregoryKycDoc;
 use Illuminate\Support\Carbon;
 use App\Http\Traits\ApiResponser;
 use App\Models\CartProductPrescription;
 use Illuminate\Contracts\Session\Session;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Redirect;
 use Log;
 
-class EasypaisaController extends Controller
+class EasypaisaController extends FrontController
 {
     use ApiResponser;
 
@@ -37,70 +39,97 @@ class EasypaisaController extends Controller
         $json = json_decode($payOpt->credentials);
         $this->storeId = $json->easypaisa_store_id;
         if ($payOpt->test_mode == '1') {
-            $this->token_url = 'https://easypaystg.easypaisa.com.pk/easypay/Index.jsf';
-            $this->confirm_url = 'https://easypaystg.easypaisa.com.pk/easypay/Confirm.jsf';
+            $this->token_url = 'https://easypaystg.easypaisa.com.pk/tpg/?';
         } else {
-            $this->token_url = 'https://easypay.easypaisa.com.pk/easypay/Index.jsf';
-            $this->confirm_url = 'https://easypay.easypaisa.com.pk/easypay/Confirm.jsf';
+            $this->token_url = 'https://easypay.easypaisa.com.pk/tpg/?';
         }
     }
 
     public function orderNumber($request)
     {
-        $time = rand(12, 9999);
-        if ($request->from == 'cart') {
-            $time = $request->order_number;
-        } elseif ($request->from == 'wallet') {
-            $time = ($request->transaction_id) ?? 'W_' . time();
-            Payment::create(['amount' => 0, 'transaction_id' => $time, 'balance_transaction' => $request->amt, 'type' => 'wallet', 'date' => date('Y-m-d')]);
-        } elseif ($request->from == 'tip') {
-            $time = 'T_' . time() . '_' . $request->order_number;
-            Payment::create(['amount' => 0, 'transaction_id' => $time, 'balance_transaction' => $request->amt, 'type' => 'tip', 'date' => date('Y-m-d')]);
-        } elseif ($request->from == 'subscription') {
-            $time = ($request->subscription_id) ?? 'S_' . time() . '_' . $request->subsid;
-            Payment::create(['amount' => 0, 'transaction_id' => $time, 'balance_transaction' => $request->amt, 'type' => 'subscription', 'date' => date('Y-m-d')]);
+        $time = '';
+        $amt = $request->amt??$request->amount;
+       if(isset($request->auth_token) && !empty($request->auth_token)){
+         $user = User::where('auth_token', $request->auth_token)->first();
+         FacadesAuth::login($user);
+       }else{
+         $user = auth()->user();
+       }
+        $name = explode(' ',$user->name);
+        $returnUrl = '';
+        if($request->from == 'cart')
+        {
+         $request->amt = $amt;
+         $time = $request->order_number;
+         Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'cart','date'=>date('Y-m-d')]);
+   
+        }elseif($request->from == 'wallet')
+        {
+         $time = ($request->transaction_id)??'W_'.time();
+         //Save transaction before payment success for get information only
+         Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'wallet','date'=>date('Y-m-d')]);
+         $request->amt = $amt;
+   
+        }elseif($request->from == 'tip')
+        {
+         $time = 'T_'.time().'_'.$request->order_number;
+         Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'tip','date'=>date('Y-m-d')]);
+        
+         $request->amt = $amt;
+         
+        }elseif($request->from == 'subscription')
+        {
+         $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+         Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'subscription','date'=>date('Y-m-d')]);
+   
+         $request->amt = $amt;
+        
         }
+
+        if(isset($request->app) && !empty($request->app))
+        {
+            $returnUrl = route('easypaisa.success',['from'=>'?auth_token='.$request->auth_token]);
+        }else{ 
+            $returnUrl = route('easypaisa.success');
+        }
+
         return $time;
     }
 
-    public function create_token(Request $request)
+    public function createHash(Request $request)
     {
-
-        $get_token_url = route('easypaisa.gettoken');
-        $date = Carbon::now();
-        $expiryDate = $date->addHour()->format('Ymd His');  //YYYYMMDD HHMMSS
+        $date = convertDateTimeInTimeZone(date('Y-m-d'), 'Asia/Karachi','Y-m-d');
+        $dateTime = convertDateTimeInTimeZone(date('H:i:s'), 'Asia/Karachi','H:i:s');
         $order_number =  $this->orderNumber($request);
-        $post_data = array(
+        $hashUrl = 'amount='.$request->amt.'&orderRefNum='.$order_number.'&paymentMethod=InitialRequest&postBackURL='.route('easypaisa.success').'&storeId='.$this->storeId.'&timeStamp='.$date.'T'.$dateTime;
+        $hashNo =  $this->genrateHash($hashUrl);
+        $data = array(
             "storeId" => $this->storeId,
-            "amount" =>  '10.0',
-            'postBackURL' => $get_token_url,
-            'orderRefNum' => $order_number,
-            'expiryDate' => $expiryDate,
+            "orderId" => $order_number,
+            "transactionAmount" => $request->amt,
+            "mobileAccountNo" => '',
+            "emailAddress" => '',
+            "transactionType" => 'InitialRequest',
+            "tokenExpiry" => '',
+            "bankIdentificationNumber" => '',
+            "encryptedHashRequest" => $hashNo,
+            "merchantPaymentMethod" => '',
+            'postBackURL' => route('easypaisa.success'),
+            'signature' => ''
         );
-        return view('frontend.payment_gatway.easypaisa_view')
-            ->with([
-                'post_data' => (object)$post_data,
-                'url' => $this->token_url
-            ]);
+        $detail =  array('data'=>$data,'url'=>$this->token_url);
+        return json_encode($detail);
     }
-    public function get_token_view_payment(Request $request)
+
+
+    public function genrateHash($url)
     {
-        $auth_token =   $request->auth_token; //This is the response sent by the Easypaisa Server
-        if (!$auth_token) {
-            echo "tokon not fount";
-        }
-        $post_back_url = route('responseConformation');
-        return view('frontend.payment_gatway.easypaisa_confirm')
-            ->with([
-                'auth_token' => $auth_token,
-                'post_back_url' => $post_back_url,
-                'url' => $this->confirm_url
-            ]);
+        $cipher = "aes-128-ecb";
+        $crypttext = openssl_encrypt($url, $cipher, 'W867WNCYCISAXGTV',OPENSSL_RAW_DATA);
+        $hashRequest = base64_encode($crypttext);
+        return $hashRequest;
     }
-    public function get_respons_payment(Request $request)
-    {
-        pr($request->all());
-    }
+
     public function payForm(Request $request)
     {
         $merchant_data = '';
@@ -133,37 +162,29 @@ class EasypaisaController extends Controller
         return view('frontend.payment_gatway.ccavenue_view', compact('encrypted_data', 'access_code', 'url'));
     }
 
-    public function successForm(Request $request)
-    {
-        $encResponse = $request->encResp;            //This is the response sent by the CCAvenue Server
-        $rcvdString = $this->decrypt($encResponse, $this->access_key);        //Crypto Decryption used as per the specified working key.
-        $order_status = "";
-        $decryptValues = explode('&', $rcvdString);
 
-        $dataSize = sizeof($decryptValues);
-        $dataArray = array();
-        for ($i = 0; $i < $dataSize; $i++) {
-            $information = explode('=', $decryptValues[$i]);
-            $request->request->add([$information[0] => $information[1]]);
-        }
-
-        if ($request->merchant_param2 == 'cart') {
-            return $this->completeOrderCart($request);
-        } elseif ($request->merchant_param2 == 'wallet') {
-            return $this->completeOrderWallet($request);
-        } elseif ($request->merchant_param2 == 'tip') {
-            return $this->completeOrderTip($request);
-        } elseif ($request->merchant_param2 == 'subscription') {
-            return $this->completeOrderSubs($request);
-        }
+    public function successPage(Request $request)
+    {   
+        // orderRefrenceNumber , orderRefNumber
+        $request->request->add(['orderRefNumber'=>$request->orderRefNumber??$request->orderRefrenceNumber]);
+        $payment = Payment::where('transaction_id',$request->orderRefNumber)->first();
+        if($payment->type=='cart'){
+           return $this->completeOrderCart($request,$payment);
+         }elseif($payment->type=='wallet'){
+             return $this->completeOrderWallet($request,$payment);
+         }elseif($payment->type=='tip'){
+             return $this->completeOrderTip($request,$payment);
+         }elseif($payment->type=='subscription'){
+             return $this->completeOrderSubs($request,$payment);
+         }
     }
 
 
 
     public function completeOrderCart($request)
     {
-        $order = Order::where('order_number', $request->order_id)->first();
-        if (isset($request->order_status) && $request->order_status == 'Success') {
+        $order = Order::where('order_number', $request->orderRefNumber)->first();
+        if (isset($request->status) && $request->status == '0000') {
             //Success from cart
             $order->payment_status = '1';
             $order->save();
@@ -176,13 +197,14 @@ class EasypaisaController extends Controller
                 'schedule_type' => null, 'scheduled_date_time' => null,
                 'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
             ]);
-
+            CaregoryKycDoc::where('cart_id',$cartid)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
             CartAddon::where('cart_id', $cartid)->delete();
             CartCoupon::where('cart_id', $cartid)->delete();
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
-
-            Payment::create(['amount' => 0, 'transaction_id' => $request->tracking_id, 'balance_transaction' => $order->payable_amount, 'type' => 'cart', 'date' => date('Y-m-d'), 'order_id' => $order->id]);
+            // send sms 
+            $this->sendSuccessSMS($request, $order);
+            Payment::create(['amount' => 0, 'transaction_id' => $request->orderRefNumber, 'balance_transaction' => $order->payable_amount, 'type' => 'cart', 'date' => date('Y-m-d'), 'order_id' => $order->id]);
 
             // Send Notification
             if (!empty($order->vendors)) {
@@ -196,8 +218,8 @@ class EasypaisaController extends Controller
             $super_admin = User::where('is_superadmin', 1)->pluck('id');
             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
-            if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=kongapay' . '&status=200&order=' . $order->order_number;
+            if (isset($request->auth) && $request->auth != '') {
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=easypaisa' . '&status=200&order=' . $order->order_number;
                 return Redirect::to($returnUrl);
             } else {
                 return Redirect::to(route('order.success', [$order->id]));
@@ -210,8 +232,8 @@ class EasypaisaController extends Controller
             if (isset($order->wallet_amount_used)) {
                 $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number]);
             }
-            if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=kongapay' . '&status=00&order=' . $order->order_number;
+            if (isset($request->auth) && $request->auth != '') {
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=easypaisa' . '&status=00&order=' . $order->order_number;
                 return Redirect::to($returnUrl);
             } else {
                 return Redirect::to(route('showCart'))->with('error', $request->message);
@@ -222,25 +244,25 @@ class EasypaisaController extends Controller
 
     public function completeOrderWallet($request)
     {
-        if (isset($request->order_status) && $request->order_status == 'Success') {
-            $data = Payment::where('transaction_id', $request->order_id)->first();
+        if (isset($request->status) && $request->status == '0000') {
+            $data = Payment::where('transaction_id', $request->orderRefNumber)->first();
             $user = auth()->user();
             $wallet = $user->wallet;
             $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->order_id . '</b>']);
 
-            if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=kongapay' . '&status=200&transaction_id=' . $request->order_id . '&action=wallet';
+            if (isset($request->auth) && $request->auth != '') {
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=easypaisa' . '&status=200&transaction_id=' . $request->orderRefNumber . '&action=wallet';
                 return Redirect::to($returnUrl);
             } else {
                 return Redirect::to(route('user.wallet'));
             }
         } else {
-            $data = Payment::where('transaction_id', $request->order_id)->first();
+            $data = Payment::where('transaction_id', $request->orderRefNumber)->first();
             $data->delete();
 
-            if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=kongapay' . '&status=00&transaction_id=' . $request->order_id . '&action=wallet';
-                return Redirect::to($returnUrl);
+            if (isset($request->auth) && $request->auth != '') {
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=easypaisa' . '&status=00&transaction_id=' . $request->orderRefNumber . '&action=wallet';
+                return Redirect::to($returnUrl)->with('success','Wallet amount added successfuly.');
             } else {
                 return Redirect::to(route('user.wallet'))->with('error', $request->message);
             }
@@ -252,24 +274,24 @@ class EasypaisaController extends Controller
     public function completeOrderSubs($request)
     {
         $user = auth()->user();
-        $data = Payment::where('transaction_id', $request->order_id)->first();
-        if (isset($request->order_status) && $request->order_status == 'Success') {
-            $subscription = explode('_', $request->order_id);
-            $request->request->add(['user_id' => $user->id, 'payment_option_id' => 22, 'amount' => $data->balance_transaction, 'transaction_id' => $request->order_id]);
+        $data = Payment::where('transaction_id', $request->orderRefNumber)->first();
+        if (isset($request->status) && $request->status == '0000') {
+            $subscription = explode('_', $request->orderRefNumber);
+            $request->request->add(['user_id' => $user->id, 'payment_option_id' =>23, 'amount' => $data->balance_transaction, 'transaction_id' => $request->orderRefNumber]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription[2]);
 
-            if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=kongapay' . '&status=200&transaction_id=' . $request->order_id . '&action=subscription';
-                return Redirect::to($returnUrl);
+            if (isset($request->auth) && $request->auth != '') {
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=easypaisa' . '&status=200&transaction_id=' . $request->orderRefNumber . '&action=subscription';
+                return Redirect::to($returnUrl)->with('success','Subscription added successfuly.');;
             } else {
                 return Redirect::to(route('user.subscription.plans'))->with('error', $request->message);
             }
         } else {
             $data->delete();
 
-            if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=kongapay' . '&status=00&transaction_id=' . $request->order_id . '&action=subscription';
+            if (isset($request->auth) && $request->auth != '') {
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=easypaisa' . '&status=00&transaction_id=' . $request->order_id . '&action=subscription';
                 return Redirect::to($returnUrl);
             } else {
                 return Redirect::to(route('user.subscription.plans'))->with('error', $request->message);
@@ -280,24 +302,24 @@ class EasypaisaController extends Controller
 
     public function completeOrderTip($request)
     {
-        $data = Payment::where('transaction_id', $request->order_id)->first();
-        if (isset($request->order_status) && $request->order_status == 'Success') {
-            $order_number = explode('_', $request->order_id);
-            $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $request->order_id]);
+        $data = Payment::where('transaction_id', $request->orderRefNumber)->first();
+        if (isset($request->status) && $request->status == '0000') {
+            $order_number = explode('_', $request->orderRefNumber);
+            $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $request->orderRefNumber]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
 
-            if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=kongapay' . '&status=200&order=' . $order_number[2] . '&action=tip';
-                return Redirect::to($returnUrl);
+            if (isset($request->auth) && $request->auth != '') {
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=easypaisa' . '&status=200&order=' . $order_number[2] . '&action=tip';
+                return Redirect::to($returnUrl)->with('success','Tip amount added successfuly.');;
             } else {
                 return Redirect::to(route('user.orders'))->with('success', $request->message);
             }
         } else {
             $data->delete();
 
-            if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=kongapay' . '&status=00&transaction_id=' . $request->order_id . '&action=tip';
+            if (isset($request->auth) && $request->auth != '') {
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=easypaisa' . '&status=00&transaction_id=' . $request->order_id . '&action=tip';
                 return Redirect::to($returnUrl);
             } else {
                 return Redirect::to(route('user.orders'))->with('error', $request->message);
@@ -307,56 +329,4 @@ class EasypaisaController extends Controller
     }
 
 
-
-
-    //*********** Function *********************
-
-
-    function encrypt($plainText, $key)
-    {
-        $key = $this->hextobin(md5($key));
-
-        $initVector = pack("C*", 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f);
-
-        $openMode = openssl_encrypt($plainText, 'AES-128-CBC', $key, OPENSSL_RAW_DATA, $initVector);
-        $encryptedText = bin2hex($openMode);
-        return $encryptedText;
-    }
-
-    function decrypt($encryptedText, $key)
-    {
-        $key = $this->hextobin(md5($key));
-        $initVector = pack("C*", 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f);
-        $encryptedText = $this->hextobin($encryptedText);
-        $decryptedText = openssl_decrypt($encryptedText, 'AES-128-CBC', $key, OPENSSL_RAW_DATA, $initVector);
-        return $decryptedText;
-    }
-    //*********** Padding Function *********************
-
-    function pkcs5_pad($plainText, $blockSize)
-    {
-        $pad = $blockSize - (strlen($plainText) % $blockSize);
-        return $plainText . str_repeat(chr($pad), $pad);
-    }
-
-    //********** Hexadecimal to Binary function for php 4.0 version ********
-
-    function hextobin($hexString)
-    {
-        $length = strlen($hexString);
-        $binString = "";
-        $count = 0;
-        while ($count < $length) {
-            $subString = substr($hexString, $count, 2);
-            $packedString = pack("H*", $subString);
-            if ($count == 0) {
-                $binString = $packedString;
-            } else {
-                $binString .= $packedString;
-            }
-
-            $count += 2;
-        }
-        return $binString;
-    }
 }

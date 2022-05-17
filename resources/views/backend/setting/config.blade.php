@@ -38,7 +38,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       @csrf
       <div class="row">
          @if($client_preference_detail->business_type != 'taxi')
-         <div class="col-lg-3 col-md-6 mb-3">
+         <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
             <div class="row h-100">
                <div class="col-12">
                   <!-- Hyperlocal start -->
@@ -104,9 +104,9 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div>
          @endif
 
-          
-         <div class="col-lg-3 col-md-6 mb-3">
-            <!-- Order Panel section start -->
+         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
+         <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
+            <!-- On Demand Services section start -->
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
                   <h4 class="header-title mb-0">{{ __('On Demand Service') }}</h4>
@@ -450,7 +450,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       </div>
    </div>
    <div class="row">
-      <div class="col-xl-3 mb-3">
+      <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
          <!-- Map Configuration start -->
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
@@ -506,7 +506,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- Map Configuration end -->
       </div>
-      <div class="col-xl-3 mb-3">
+      <div class="col-xl-3 col-lg-6 mb-xl-0 mb-3">
          <!-- SMS Configuration start -->
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
@@ -689,7 +689,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
          </form><!-- SMS Configuration end -->
       </div>
-      <div class="col-xl-6 mb-3">
+      <div class="col-xl-6 col-lg-12 mb-xl-0 mb-3">
          <!-- Mail Configuration start -->
          <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
             @csrf
@@ -968,7 +968,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
 
                <div class="row align-items-start">
-                  @if($client_preference_detail->business_type != 'taxi')
+                  @if($client_preference_detail->business_type != 'taxi')  
 
                      @if($client_preference_detail->business_type != 'laundry')
                      <div class="col-md-4">
@@ -1007,8 +1007,16 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
                         <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">Enable the option to create Subscriptions for Customers and Vendors.</small></label>
-                       <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
-                     </span>
+                        <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+                  @elseif($client_preference_detail->subscription_tab_taxi == 1)
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">Enable the option to create Subscriptions for Customers and Vendors.</small></label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
+                        </span>
                      </div>
                   </div>
                   @endif
@@ -1051,6 +1059,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      <div class="form-group d-flex justify-content-between mb-3">
                         <label for="gifting" class="mr-2 mb-0">{{__('Gifting')}}<small class="d-block pr-5">Enable option to mark an Order to be gift wrapped.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="gifting" id="gifting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->gifting == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="gifting" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">Enable subscription tab for taxi/cab.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="subscription_tab_taxi" id="subscription_tab_taxi" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_tab_taxi == '1')) checked='checked' @endif>
                      </span>
                      </div>
                   </div>

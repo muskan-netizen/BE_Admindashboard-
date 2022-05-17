@@ -186,7 +186,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .page-section .content-detail .global-title {
     display: block;
-    color: #111;
+    color: <?php echo getClientPreferenceDetail()->web_color??'#fff'; ?>;
     font-size: 150px;
     font-weight: 800;
     margin: 0;

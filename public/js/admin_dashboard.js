@@ -1,17 +1,17 @@
 $(document).ready(function () {
     const $flatpickr =  $("#range-datepicker").flatpickr({
         mode: "range",
-        locale: {
-            firstDayOfWeek: 1,
-            weekdays: {
-                shorthand: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
-                longhand: ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"]
-            },
-            months: {
-                shorthand: ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"],
-                longhand: ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"]
-            },
-        },
+        // locale: {
+        //     firstDayOfWeek: 1,
+        //     weekdays: {
+        //         shorthand: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+        //         longhand: ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"]
+        //     },
+        //     months: {
+        //         shorthand: ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"],
+        //         longhand: ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"]
+        //     },
+        // },
         onClose: function(selectedDates, dateStr, instance) {
             getDashboardData(dashboard_filter_url);
         }
@@ -27,16 +27,21 @@ $(document).ready(function () {
     getDashboardData(dashboard_filter_url);
     $(".yearSales").click(function () {
         $flatpickr.clear();
-        var url = yearlyInfo_url;
         getDashboardData(dashboard_filter_url, 'yearly');
+        $('.weeklySales, .monthlySales').removeClass('btn-light').removeClass('btn-secondary').addClass('btn-light');
+        $(this).removeClass('btn-light').removeClass('btn-secondary').addClass('btn-secondary');
     });
     $(".monthlySales").click(function () {
         $flatpickr.clear();
         getDashboardData(dashboard_filter_url, 'monthly');
+        $('.yearSales, .weeklySales').removeClass('btn-light').removeClass('btn-secondary').addClass('btn-light');
+        $(this).removeClass('btn-light').removeClass('btn-secondary').addClass('btn-secondary');
     });
     $(".weeklySales").click(function () {
         $flatpickr.clear();
         getDashboardData(dashboard_filter_url, 'weekly');
+        $('.yearSales, .monthlySales').removeClass('btn-light').removeClass('btn-secondary').addClass('btn-light');
+        $(this).removeClass('btn-light').removeClass('btn-secondary').addClass('btn-secondary');
     });
     function getDashboardData(dashboard_filter_url, type = 'yearly'){
         var date_filter = $('#range-datepicker').val();
@@ -92,7 +97,7 @@ $(document).ready(function () {
                 data: revenue
             }, {
                 name: Sales_lng,
-                type: 'line',
+                type: '',
                 data: sales
             }],
             chart: {
@@ -185,8 +190,8 @@ $(document).ready(function () {
                 }],
                 legend: {
                     position: 'bottom',
-                    height: 150,
-                    width : 240
+                    height: 80,
+                    width : 306
                 },
                 noData: {
                     text: "No Data Found",

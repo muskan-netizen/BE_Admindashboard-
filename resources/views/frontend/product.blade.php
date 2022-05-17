@@ -11,8 +11,7 @@
     <link rel="stylesheet" href="{{ asset('front-assets/css/easyzoom.css') }}" />
     <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
-    <link rel="stylesheet" href="https://www.jqueryscript.net/css/jquerysctipttop.css">
-    <link rel="stylesheet" href="https://www.jqueryscript.net/demo/Product-Carousel-Magnifying-Effect-exzoom/jquery.exzoom.css">
+    <link rel="stylesheet" href="{{asset('css/jquery.exzoom.css')}}">
     <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
@@ -72,7 +71,7 @@
                             </div>
                         </div>--}}
                         <div class="row">
-                            <div class="col-lg-5 pl-0 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
+                            <div class="col-lg-5 @php if(count($product->media) == 0){  echo 'd-none'; } @endphp ">
                                 {{-- <div class="product__carousel">
                                     <div class="gallery-parent">
                                         @php
@@ -611,38 +610,38 @@
         </div>
     </div>
     <div class="container pb-md-4">
-        <div class="product-4 product-m  related-products pb-2">
+        <div class="product-4 product-m  related-products pb-2 d-flex">
             @forelse($product->related_products as $related_product)
             <div>
-				<a class="common-product-box scale-effect text-center"
-						href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
-					<div class="img-outer-box position-relative">
-						<img class="img-fluid blur-up lazyload" data-src="{{ $related_product->image_url }}" alt="">
-						<!-- <div class="pref-timing">
-							<span>5-10 min</span>
-						</div> -->
-						<!-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> -->
-					</div>
-					<div class="media-body align-self-center">
-						<div class="inner_spacing px-0">
-							<div class="product-description">
-								<div class="d-flex align-items-center justify-content-between">
-									<h6 class="card_title mb-1 ellips">{{ $related_product->translation_title }}</h6>
-								</div>
-								<p>{{ $related_product->vendor_name }}</p>
-								<p class="border-bottom pb-1">In {{$related_product->category_name}}</p>
-								<div class="d-flex align-items-center justify-content-between">
-									<b>
-										@if($related_product->inquiry_only == 0)
-										{{ Session::get('currencySymbol') . $related_product->variant_price }}
-										@endif
-									</b>
-								</div>
-							</div>
-						</div>
-					</div>
-				</a>
-			</div>
+                <a class="common-product-box scale-effect text-center"
+                        href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
+                    <div class="img-outer-box position-relative">
+                        <img class="img-fluid blur-up lazyload" data-src="{{ $related_product->image_url }}" alt="">
+                        <!-- <div class="pref-timing">
+                            <span>5-10 min</span>
+                        </div> -->
+                        <!-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> -->
+                    </div>
+                    <div class="media-body align-self-center">
+                        <div class="inner_spacing px-0">
+                            <div class="product-description">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h6 class="card_title ellips">{{ $related_product->translation_title }}</h6>
+                                </div>
+                                <p>{{ $related_product->vendor_name }}</p>
+                                <p class="border-bottom pb-1">In {{$related_product->category_name}}</p>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <b>
+                                        @if($related_product->inquiry_only == 0)
+                                        {{ Session::get('currencySymbol') . $related_product->variant_price }}
+                                        @endif
+                                    </b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
             @empty
             @endforelse
         </div>

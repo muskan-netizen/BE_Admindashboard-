@@ -15,7 +15,23 @@
             <div class="loader-outer d-none">
                 <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
             </div>
+            <!-- <select name="is_for_friend" class="form-control">
+                    <option value="0">For Me</option>
+                    <option value="1">For Friend</option>
+                </select> -->
 
+                <div class="tip_radio_controls_book_friend text-center my-2">
+                    <input type="radio" class="tip_radio" id="for_me" name="is_for_friend" value="0">
+                    <label class="tip_label mb-0  my-2 active" for="for_me" id="label_for_me">
+                        <h5 class="m-0" id="tip_5">Book</h5>
+                        <p class="m-0">For Me</p>
+                    </label>       
+                    <input type="radio" class="tip_radio" id="for_friend" name="is_for_friend" value="1">
+                    <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
+                        <h5 class="m-0" id="tip_5">Book</h5>
+                        <p class="m-0">For A Friend</p>
+                    </label>                      
+                </div>
             <div class="location-box check-pick-first">
                 <div class="where-to-go">
                     <div class="title title-36">{{__('Where can we pick you up?')}}</div>
@@ -40,6 +56,9 @@
             <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
             <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude"/>
             <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude"/>
+            <input type="hidden" id="address-input" value=""/>
+            <input type="hidden" id="address-latitude" value=""/>
+            <input type="hidden" id="address-longitude" value=""/>
             <input type="hidden" name="schedule_date" value="" id="schedule_date"/>
             <div class="location-container style-4">
                 <div class="location-search d-flex align-items-center check-pickup">
@@ -81,6 +100,7 @@
                                 <h4><b>{{__('Allow location Access')}}</b></h4>
                                 <div class="current-location ellips text-color mb-2">{{__('Your current location')}}</div>
                                 <hr class="m-0">
+                                
                             </div>
                         </a>
                     @forelse($user_addresses as $user_address)
@@ -227,6 +247,18 @@
                     <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
+                <div class="for_friend_fields_div px-2 py-2">
+                    <h4 class="pb-2">Friend's Details</h4>
+                    <div class="form-group">
+                        <label for="friendName">Friend's Name</label>
+                        <input type="text" class="form-control" name="friendName" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="friendPhoneNumber">Friend's Phone Number</label>
+                        <input type="number" class="form-control" name="friendPhoneNumber" placeholder="Phone Number">
+                    </div>
+                </div>
+                
             </div>
             <span id="show_error_of_booking" class="error"></span>
 
@@ -490,6 +522,9 @@
                         <span class="error text-danger" id="stripe_card_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'payphone') { %>
+                    <div id="pp-button"></div>
+                <% } %>
             <% } %>
         <% }); %>
     <% } %>
@@ -521,14 +556,20 @@
 @if(in_array('stripe',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 @endif
-
+@if(in_array('payphone',$client_payment_options))
+<script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
+@endif
 <!-- <script src="https://js.stripe.com/v3/"></script> -->
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_payphone_url = "{{route('payphone.createHash')}}";
+    var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
+    var create_windcave_hash_url = "{{route('windcave.createHash')}}";
+    var create_paytech_hash_url = "{{route('paytech.createHash')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
@@ -648,7 +689,15 @@ $('body').on('click', '.clproduct_order_form', function (event) {
 
 <script type="text/javascript">
     $(document).ready(function (e) {
-
+        
+        // if(parseInt($('input[name=is_for_friend]:checked')).val()==1){
+        //     $('#label_for_me').removeClass('active');
+        //     $('#label_for_friend').addClass('active');
+        //     alert("here");
+        // }
+        $('#label_for_friend').click(function(){
+            $('#label_for_me').removeClass('active');
+        });
         $(document).delegate('#submit_productfaq', 'click', function() {
        var product_order_form_element = getFormData('#product-order-form-name');
         $('#product_order_form').modal('hide');
@@ -668,7 +717,7 @@ $('body').on('click', '.clproduct_order_form', function (event) {
         return out;
         }
 
-    });
+     });
 </script>
 
 

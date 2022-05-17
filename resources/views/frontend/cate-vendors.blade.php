@@ -54,7 +54,7 @@
                                             $imagePath = $v['image']['path']['proxy_url'].'300/300'.$v['image']['path']['image_path'];
                                         } ?>
                                         <div class="common-product-box scale-effect mb-2">
-                                            <a class="row" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                            <a class="row  w-100" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                                 <div class="col-4">
                                                     <div class="img-outer-box position-relative  p-0">
                                                         <img  class="blur-up lazyload w-100 p-0" data-src="{{$imagePath}}" alt="">
@@ -69,7 +69,7 @@
                                                         <div class="inner_spacing px-0">
                                                             <div class="product-description">
                                                                 <div class="d-flex align-items-center justify-content-between">
-                                                                    <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                                    <h6 class="card_title ellips">{{ $new['translation_title'] }}</h6>
                                                                     <!--<span class="rating-number">2.0</span>-->
                                                                 </div>
                                                                 <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->
@@ -176,7 +176,7 @@
                                                         $vendor_url = route('vendorDetail', $data->slug);
                                                     }
                                                     @endphp
-                                                    <div class=" col-md-3 col-6 col-grid-box mt-sm-3 mt-1" >
+                                                    <div class="col-xl-3 col-lg-4 col-6 col-grid-box mt-sm-3 mt-1" >
                                                         <div class="product-card-box position-relative">
                                                             <div class="add-to-fav">
                                                                 <input id="fav_pro_one" type="checkbox">

@@ -43,9 +43,9 @@ class StripeGatewayController extends BaseController
             $amount = $this->getDollarCompareAmount($request->amount);
             $token = $request->input('stripe_token');
 
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
            
-            if (!$saved_payment_method) {
+            // if (!$saved_payment_method) {
                 $customerResponse = $this->gateway->createCustomer(array(
                     'description' => 'Creating Customer',
                     'name' => $user->name,
@@ -63,9 +63,9 @@ class StripeGatewayController extends BaseController
                     $request->request->set('customerReference', $customer_id);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            }else {
-                $customer_id = $saved_payment_method->customerReference;
-            }
+            // }else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            // }
             $postdata = [
                 'currency' => $this->currency,
                 // 'token' => $token,
@@ -94,8 +94,8 @@ class StripeGatewayController extends BaseController
                 $postdata['metadata']['order_number'] = $order_number;
                
             } 
-            $authorizeResponse = $this->gateway->authorize($postdata)->send();
-            if ($authorizeResponse->isSuccessful()) {
+            // $authorizeResponse = $this->gateway->authorize($postdata)->send();
+            // if ($authorizeResponse->isSuccessful()) {
                 $response = $this->gateway->purchase($postdata)->send();
                 // $response = $this->gateway->purchase([
                 //     'currency' => $this->currency,
@@ -192,9 +192,9 @@ class StripeGatewayController extends BaseController
                     // $this->failMail();
                     return $this->errorResponse($response->getMessage(), 400);
                 }
-            }else {
-                return $this->errorResponse($authorizeResponse->getMessage(), 400);
-            }
+            // }else {
+            //     return $this->errorResponse($authorizeResponse->getMessage(), 400);
+            // }
         // } catch (\Exception $ex) {
         //     // $this->failMail();
         //     return $this->errorResponse($ex->getMessage(), 400);
@@ -208,8 +208,8 @@ class StripeGatewayController extends BaseController
             $address = UserAddress::where('user_id', $user->id);
             $token = $request->stripe_token;
             $plan = SubscriptionPlansUser::where('slug', $request->subscription_id)->firstOrFail();
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
-            if (!$saved_payment_method) {
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // if (!$saved_payment_method) {
                 $customerResponse = $this->gateway->createCustomer(array(
                     'description' => 'Creating Customer for subscription',
                     'email' => $request->email,
@@ -221,9 +221,9 @@ class StripeGatewayController extends BaseController
                     $request->request->set('customerReference', $customer_id);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            } else {
-                $customer_id = $saved_payment_method->customerReference;
-            }
+            // } else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            // }
 
             // $subscriptionResponse = $this->gateway->createSubscription(array(
             //     "customerReference" => $customer_id,
@@ -309,9 +309,9 @@ class StripeGatewayController extends BaseController
 
             $user = Auth::user();
 
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
            
-            if (!$saved_payment_method) {
+            // if (!$saved_payment_method) {
                 $customerResponse = $stripe->customers->create([
                     'name' => $user->name,
                     'email' => $user->email,
@@ -328,9 +328,9 @@ class StripeGatewayController extends BaseController
                     $request->request->set('customerReference', $customer_id);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            }else {
-                $customer_id = $saved_payment_method->customerReference;
-            }
+            // }else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            // }
 
             $description = '';
             $payment_form = $request->payment_form;

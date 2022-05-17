@@ -77,6 +77,10 @@ class VendorImport implements ToCollection
                             }
                         }
                         $rownumber = 17;
+                        $EasebuzzSubMerchent = EasebuzzSubMerchent();
+                        if($EasebuzzSubMerchent ==1 ){
+                            $rownumber = 18;
+                        }
                         foreach ($vendor_registration_documents as $vendor_registration_document) {
 
                             if ($vendor_registration_document->file_type == "selector") {
@@ -167,9 +171,17 @@ class VendorImport implements ToCollection
                             'latitude' => $latitude,
                             'longitude' => $longitude,
                         );
-                        $vendorID =  Vendor::insertGetId($insert_vendor_details);
+                        $vendorID  =  Vendor::insertGetId($insert_vendor_details);
+                        $vendorData = Vendor::where('id', $vendorID)->first();
 
-                        $daKey = 17;
+                        $daKey = 17;                    
+                        $EasebuzzSubMerchent = EasebuzzSubMerchent();
+                        if($EasebuzzSubMerchent ==1 ){
+                            $vendorData->easebuzz_sub_merchent_id = ($da[17] == "") ? NULL : $da[17];
+                            $vendorData->save();
+                            $daKey = 18;
+                        }
+                       
                         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
                         if ($vendor_registration_documents->count() > 0) {
                             foreach ($vendor_registration_documents as $vendor_registration_document) {
@@ -206,7 +218,7 @@ class VendorImport implements ToCollection
                             }
                         }
                     }
-                    $vendorData = Vendor::where('id', $vendorID)->first();
+                   
                     $vendorData->document = VendorDocs::where('vendor_id', $vendorID)->get()->toArray();
                 }
             } catch (\Exception $ex) {

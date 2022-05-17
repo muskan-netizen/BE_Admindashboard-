@@ -62,7 +62,7 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
-    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt'],
+    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt','144'=>'sk'],
 
     /*
     |--------------------------------------------------------------------------
@@ -203,7 +203,6 @@ return [
         App\Providers\MailConfigServiceProvider::class,
         // OwenIt\Auditing\AuditingServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
-        Paytabscom\Laravel_paytabs\PaypageServiceProvider::class, 
     ],
 
     /*

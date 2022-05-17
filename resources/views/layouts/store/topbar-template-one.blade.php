@@ -220,36 +220,4 @@ $preference = $client_preference_detail;
 
 </div>
 
-<!-- Modal -->
-<div class="modal fade mobile-setting" id="setting_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="setting-modalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="setting-modalLabel">Language & Currency</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body pt-0">
-        <div class="show-div setting">
-            <h6 class="mb-1">{{ __("language") }}</h6>
-            <ul>
-                @foreach($languageList as $key => $listl)
-                    <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
-                    </li>
-                @endforeach
-            </ul>
-            <h6 class="mb-1">{{ __("currency") }}</h6>
-            <ul class="list-inline">
-                @foreach($currencyList as $key => $listc)
-                    <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
-                        <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
