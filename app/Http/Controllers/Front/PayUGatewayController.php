@@ -56,7 +56,7 @@ class PayUGatewayController extends FrontController
         return md5( $getString );
     }
 
-    public function payUPurchase(Request $request, $domain = ''){
+    public function purchase(Request $request, $domain = ''){
         try{
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);

@@ -517,12 +517,14 @@ class PaymentOptionController extends BaseController
                             $validatedData = $request->validate([
                                 'mycash_api_key' => 'required',
                                 'mycash_username' => 'required',
-                                'mycash_password' => 'required'
+                                'mycash_password' => 'required',
+                                'mycash_merchant_phone' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'api_key' => $request->mycash_api_key,
                                 'username' => $request->mycash_username,
                                 'password' => $request->mycash_password,
+                                'merchant_phone' => $request->mycash_merchant_phone,
                             ));
                             break;
 
