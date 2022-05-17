@@ -421,10 +421,10 @@ $timezone = Auth::user()->timezone;
                                             <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor_service_fee)}}</td>
                                         </tr>
                                     @endif
-                                    @if($vendor->admin_commission_fixed_amount > 0)
+                                    @if($order->fixed_fee_amount > 0)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Fixed Fee") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->admin_commission_fixed_amount)}}</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($order->fixed_fee_amount)}}</td>
                                     </tr>
                                 @endif
 

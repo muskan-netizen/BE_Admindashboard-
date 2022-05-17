@@ -296,7 +296,7 @@ trait XeroManager{
         $invoice->setDate($dateValue);
         $invoice->setDueDate($dueDateValue);
         $invoice->setLineItems($lineItems);
-        $invoice->setReference(' ');
+        $invoice->setReference('Payment Via "'.$order->paymentOption->title ?? 'Cash On Delivery'.'"');
         $invoice->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_AUTHORISED); 
 
         $invoices = new XeroAPI\XeroPHP\Models\Accounting\Invoices;

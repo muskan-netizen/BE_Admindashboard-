@@ -2717,4 +2717,16 @@ class VendorController extends BaseController{
         }
     }
 
+
+
+    /******************    ---- vendor data sync with inventory -----   ******************/
+    public function vendorSyncInventory(Request $request){
+
+        
+        return response()->json([
+        'status' => 200,
+        'message' => 'Connected',
+        'data' => $request->toArray()]);
+    }
+
 }

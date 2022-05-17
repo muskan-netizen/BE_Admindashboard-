@@ -259,18 +259,30 @@ class CheckoutGatewayController extends FrontController
         } 
         else {
             if($request->payment_form == 'cart'){
+                $user = Auth::user();
                 $order_number = $request->order_number;
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-                $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-                foreach ($order_products as $order_prod) {
-                    OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                if($order){
+                    $wallet_amount_used = $order->wallet_amount_used;
+                    if($wallet_amount_used > 0){
+                        $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                        if(!$transaction){
+                            $wallet = $user->wallet;
+                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                        }
+                    }
                 }
-                OrderProduct::where('order_id', $order->id)->delete();
-                OrderProductPrescription::where('order_id', $order->id)->delete();
-                VendorOrderStatus::where('order_id', $order->id)->delete();
-                OrderVendor::where('order_id', $order->id)->delete();
-                OrderTax::where('order_id', $order->id)->delete();
-                Order::where('id', $order->id)->delete();
+
+                // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                // foreach ($order_products as $order_prod) {
+                //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                // }
+                // OrderProduct::where('order_id', $order->id)->delete();
+                // OrderProductPrescription::where('order_id', $order->id)->delete();
+                // VendorOrderStatus::where('order_id', $order->id)->delete();
+                // OrderVendor::where('order_id', $order->id)->delete();
+                // OrderTax::where('order_id', $order->id)->delete();
+                // Order::where('id', $order->id)->delete();
                 return Redirect::to(route('showCart'));
             }
             elseif($request->payment_form == 'wallet'){

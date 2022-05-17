@@ -258,7 +258,7 @@ class KongapayController extends FrontController
               $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.wallet'));
+              return Redirect::to(route('user.wallet'))->with('success','Wallet updated successfully.');
             }
 
             
@@ -271,7 +271,7 @@ class KongapayController extends FrontController
               $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.wallet'))->with('error',$request->message);
+              return Redirect::to(route('user.wallet'))->with('error','Wallet not updated.');
             }
 
            
@@ -297,7 +297,7 @@ class KongapayController extends FrontController
               $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.subscription.plans'))->with('success',$request->message);
+              return Redirect::to(route('user.subscription.plans'))->with('success','Subscription added successfully.');
             }
           }else{
             $data->delete();
@@ -307,7 +307,7 @@ class KongapayController extends FrontController
               $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
+              return Redirect::to(route('user.subscription.plans'))->with('error','Somthing went wrong please try again.');
             }
 
           }
@@ -330,7 +330,7 @@ class KongapayController extends FrontController
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order_number[2].'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
-                return Redirect::to(route('user.orders'))->with('success', $request->message);
+                return Redirect::to(route('user.orders'))->with('success','Tip added successfully.');
               }
 
           }else{
@@ -341,7 +341,7 @@ class KongapayController extends FrontController
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
-                return Redirect::to(route('user.orders'))->with('error', $request->message);
+                return Redirect::to(route('user.orders'))->with('error','Somthing went wrong please try again.');
               }
 
           }

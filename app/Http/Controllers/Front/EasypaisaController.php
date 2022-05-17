@@ -165,6 +165,8 @@ class EasypaisaController extends FrontController
 
     public function successPage(Request $request)
     {   
+        // orderRefrenceNumber , orderRefNumber
+        $request->request->add(['orderRefNumber'=>$request->orderRefNumber??$request->orderRefrenceNumber]);
         $payment = Payment::where('transaction_id',$request->orderRefNumber)->first();
         if($payment->type=='cart'){
            return $this->completeOrderCart($request,$payment);

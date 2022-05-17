@@ -134,7 +134,8 @@ function convertDateTimeInTimeZone($date, $timezone, $format = 'Y-m-d H:i:s'){
     return $date->format($format);
 }
 function getClientPreferenceDetail()
-{
+{   
+    
     $client_preference_detail = ClientPreference::first();
     list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
     $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
@@ -279,6 +280,12 @@ function createSlug($str, $delimiter = '-'){
     $slug = strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $str))))), $delimiter));
     return $slug;
 
+}
+
+function remove_special_chars($str, $delimiter = ''){
+    // $result = strtolower(trim(preg_replace('/[^A-Za-z0-9\-]/', $delimiter, $str)));
+    $result = strtolower(trim(preg_replace('/[.*+?^${}()/|[\]\\]+/g', $delimiter, $str)));
+    return $result;
 }
 
 function getBaseprice($dist,$option = 'lalamove')

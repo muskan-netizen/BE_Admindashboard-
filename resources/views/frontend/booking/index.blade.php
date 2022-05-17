@@ -15,12 +15,8 @@
             <div class="loader-outer d-none">
                 <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
             </div>
-            <!-- <select name="is_for_friend" class="form-control">
-                    <option value="0">For Me</option>
-                    <option value="1">For Friend</option>
-                </select> -->
 
-                <div class="tip_radio_controls_book_friend text-center my-2">
+                <!--<div class="tip_radio_controls_book_friend text-center my-2">
                     <input type="radio" class="tip_radio" id="for_me" name="is_for_friend" value="0">
                     <label class="tip_label mb-0  my-2 active" for="for_me" id="label_for_me">
                         <h5 class="m-0" id="tip_5">Book</h5>
@@ -31,7 +27,7 @@
                         <h5 class="m-0" id="tip_5">Book</h5>
                         <p class="m-0">For A Friend</p>
                     </label>                      
-                </div>
+                </div> -->
             <div class="location-box check-pick-first">
                 <div class="where-to-go">
                     <div class="title title-36">{{__('Where can we pick you up?')}}</div>
@@ -522,6 +518,9 @@
                         <span class="error text-danger" id="stripe_card_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'payphone') { %>
+                    <div id="pp-button"></div>
+                <% } %>
             <% } %>
         <% }); %>
     <% } %>
@@ -553,15 +552,20 @@
 @if(in_array('stripe',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 @endif
-
+@if(in_array('payphone',$client_payment_options))
+<script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
+@endif
 <!-- <script src="https://js.stripe.com/v3/"></script> -->
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_payphone_url = "{{route('payphone.createHash')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
+    var create_windcave_hash_url = "{{route('windcave.createHash')}}";
+    var create_paytech_hash_url = "{{route('paytech.createHash')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";

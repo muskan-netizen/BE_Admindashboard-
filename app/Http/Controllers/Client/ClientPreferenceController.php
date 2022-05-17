@@ -290,6 +290,7 @@ class ClientPreferenceController extends BaseController{
             $preference->third_party_accounting = ($request->has('third_party_accounting') && $request->third_party_accounting == 'on') ? 1 : 0;
             $preference->hide_order_prepare_time = ($request->has('hide_order_prepare_time') && $request->hide_order_prepare_time == 'on') ? 1 : 0;
             $preference->is_cancel_order_user = ($request->has('is_cancel_order_user') && $request->is_cancel_order_user == 'on') ? 1 : 0;
+            $preference->enable_inventory_service = ($request->has('enable_inventory_service') && $request->enable_inventory_service == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
@@ -485,6 +486,36 @@ class ClientPreferenceController extends BaseController{
         }else{
             $preferenceset->need_dispacher_home_other_service = ($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on') ? 1 : 0;
         }
+        }
+
+
+        # inventory service 
+        if(isset($request->need_inventory_service_submit_btn) && !empty($request->need_inventory_service_submit_btn))
+        {
+
+            if(isset($request->need_inventory_service) && !empty($request->need_inventory_service))
+            {
+                try {
+                    $client = new GClient(['headers' => ['personaltoken' => $request->inventory_service_key,
+                                                                'shortcode' => $request->inventory_service_key_code,
+                                                                'content-type' => 'application/json']
+                                                                    ]);
+                    $url = $request->inventory_service_key_url;
+                    $res = $client->post($url.'/api/check-inventory-keys');
+                    $response = json_decode($res->getBody(), true);
+                    if($response && $response['status'] == 400){
+                        return redirect()->route('configure.index')->with('error', 'Inventory Services Keys incorrect !');
+                    }
+                }catch(\Exception $e){
+                        return redirect()->route('configure.index')->with('error', 'Invalid Inventory Services Dispatcher URL !');
+                }
+                $preferenceset->need_inventory_service = ($request->has('need_inventory_service') && $request->need_inventory_service == 'on') ? 1 : 0;
+                $preferenceset->inventory_service_key_url = $request->inventory_service_key_url;
+                $preferenceset->inventory_service_key_code = $request->inventory_service_key_code;
+                $preferenceset->inventory_service_key = $request->inventory_service_key;
+            }else{
+                $preferenceset->need_inventory_service = ($request->has('need_inventory_service') && $request->need_inventory_service == 'on') ? 1 : 0;
+            }
         }
 
         $preferenceset->save();
