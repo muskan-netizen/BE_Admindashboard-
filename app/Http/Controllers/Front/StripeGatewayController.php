@@ -125,10 +125,10 @@ class StripeGatewayController extends FrontController
                
             }
 
-            $authorizeResponse = $this->gateway->authorize($postdata)->send();
+            // $authorizeResponse = $this->gateway->authorize($postdata)->send();
 
-            // dd($authorizeResponse->isSuccessful());
-            if ($authorizeResponse->isSuccessful()) {
+            // // dd($authorizeResponse->isSuccessful());
+            // if ($authorizeResponse->isSuccessful()) {
                 $response = $this->gateway->purchase($postdata)->send();
                  
                 if ($response->isSuccessful()) {
@@ -222,9 +222,9 @@ class StripeGatewayController extends FrontController
                 else {
                     return $this->errorResponse($response->getMessage(), 400);
                 }
-            }else {
-                return $this->errorResponse($authorizeResponse->getMessage(), 400);
-            }
+            // }else {
+            //     return $this->errorResponse($authorizeResponse->getMessage(), 400);
+            // }
         } catch (\Exception $ex) {
             Log::info($ex->getMessage());
             return $this->errorResponse('Server Error', $ex->getCode());
@@ -261,13 +261,13 @@ class StripeGatewayController extends FrontController
             // ))->send();
 
             $amount = $this->getDollarCompareAmount($request->amount);
-            $authorizeResponse = $this->gateway->authorize([
-                'amount' => $amount,
-                'currency' => $this->currency,
-                'description' => 'This is a subscription purchase transaction.',
-                'customerReference' => $customer_id
-            ])->send();
-            if ($authorizeResponse->isSuccessful()) {
+            // $authorizeResponse = $this->gateway->authorize([
+            //     'amount' => $amount,
+            //     'currency' => $this->currency,
+            //     'description' => 'This is a subscription purchase transaction.',
+            //     'customerReference' => $customer_id
+            // ])->send();
+            // if ($authorizeResponse->isSuccessful()) {
                 $purchaseResponse = $this->gateway->purchase([
                     'currency' => $this->currency,
                     'amount' => $amount,
@@ -282,10 +282,10 @@ class StripeGatewayController extends FrontController
                     $this->failMail();
                     return $this->errorResponse($purchaseResponse->getMessage(), 400);
                 }
-            } else {
-                $this->failMail();
-                return $this->errorResponse($authorizeResponse->getMessage(), 400);
-            }
+            // } else {
+            //     $this->failMail();
+            //     return $this->errorResponse($authorizeResponse->getMessage(), 400);
+            // }
         } catch (\Exception $ex) {
             $this->failMail();
             return $this->errorResponse($ex->getMessage(), 400);

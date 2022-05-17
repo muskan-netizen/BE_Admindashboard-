@@ -29,22 +29,7 @@ class Product extends Model implements Auditable{
        return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled','need_container_charges','fixed_fee','fixed_fee_amount','price_bifurcation','fixed_fee_tax_id');
     }
 
-    public function related(){
-       return $this->hasMany('App\Models\ProductRelated')->select('product_id', 'related_product_id');
-    }
-
-    public function celebrities(){
-       return $this->hasMany('App\Models\ProductCelebrity')->select('product_id', 'celebrity_id');
-    }
-
-    public function upSell(){
-       return $this->hasMany('App\Models\ProductUpSell')->select('product_id', 'upsell_product_id');
-    }
-
-    public function crossSell(){
-       return $this->hasMany('App\Models\ProductCrossSell')->select('product_id', 'cross_product_id');
-    }
-
+   
     public function variant(){
       return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges')->where('status', 1);
     }
