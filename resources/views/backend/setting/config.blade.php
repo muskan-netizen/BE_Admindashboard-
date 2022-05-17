@@ -1119,13 +1119,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      @endif
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
-                       <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->off_scheduling_at_cart == '1')) checked='checked' @endif>
-                     </span>
-                     </div>
-                  </div>
-                  <div class="col-md-4">
-                     <div class="form-group d-flex justify-content-between mb-3">
                         <label for="isolate_single_vendor_order" class="mr-2 mb-0">{{__('Isolate Single Vendor Order')}} <small class="d-block pr-5">Only allow customers to place order from one vendor at a time.Only allow customers to place order from one vendor at a time.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="isolate_single_vendor_order" id="isolate_single_vendor_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->isolate_single_vendor_order == '1')) checked='checked' @endif>
                      </span>
@@ -1168,13 +1161,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                        </span>
                     </div>
                  </div>
-                  <div class="col-md-4">
-                     <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.</small></label>
-                       <span> <input type="checkbox" data-plugin="switchery" name="delay_order" id="delay_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delay_order == '1')) checked='checked' @endif>
-                     </span>
-                     </div>
-                  </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
                         <label for="product_order_form" class="mr-2 mb-0">{{__('Product Order Form')}}<small class="d-block pr-5">{{__('Add a Product Order form. Create Dynamic questions per product.')}}</small></label>
@@ -1281,30 +1267,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="form-group d-flex justify-content-between mb-3">
                      <label for="db_audit_logs" class="mr-2 mb-0">{{__('Order Cancellation By User')}}<small class="d-block pr-5">{{__('Enable to give permission to user for cancelling order.')}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_cancel_order_user" id="is_cancel_order_user" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_cancel_order_user == '1')) checked='checked' @endif>
-                     </span>
-                  </div>
-               </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3">
-                     <label for="scheduling_with_slots" class="mr-2 mb-0">{{__('Schedule Pickup & Dropoff With Slots')}}<small class="d-block pr-5">Enable or disable schedule pickup & dropoff with slots for laundry.</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="scheduling_with_slots" id="scheduling_with_slots" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->scheduling_with_slots == '1')) checked='checked' @endif>
-                     </span>
-                  </div>
-               </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3">
-                     <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Scheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for scheduling.</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="same_day_delivery_for_schedule" id="same_day_delivery_for_schedule" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_delivery_for_schedule == '1')) checked='checked' @endif>
-                     </span>
-                  </div>
-               </div>
-
-               <div class="col-md-4">
-                  <div class="form-group d-flex justify-content-between mb-3">
-                     <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Rescheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for rescheduling.</small></label>
-                    <span> <input type="checkbox" data-plugin="switchery" name="same_day_orders_for_rescheduing" id="same_day_orders_for_rescheduing" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_orders_for_rescheduing == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>

@@ -358,7 +358,7 @@ function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
     return $ReturnArray;
 }
     
-function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60", $slot_type=0)
+function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60", $slot_type=0, $request_from='')
 {
     $slotDuration = Vendor::select('slot_minutes')->where('id',$vid)->first();
     $duration = ($slotDuration->slot_minutes) ?? $duration;

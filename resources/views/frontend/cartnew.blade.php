@@ -415,7 +415,7 @@ $client_preferences = \App\Models\ClientPreference::first();
             </div>
 
             <hr class="my-2">
-                @if($client_preference_detail->scheduling_with_slots == 1)
+                @if($client_preference_detail->scheduling_with_slots == 1 && $client_preference_detail->off_scheduling_at_cart == 0 )
                     <div class="row">
                         <div class="col-md-6">
                             <label for="">{{__('Schedule Pickup ')}}</label> <span class="loaderforjs"><img class="img-fluid" style="display:none;" id="loaderforjs" src="{{asset('front-assets/images/loading.gif')}}" alt=""></span>
@@ -1442,6 +1442,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 <script type="text/javascript">
     var business_type = "<?= $client_preferences->business_type; ?>";
     var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";
+    var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
 </script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>

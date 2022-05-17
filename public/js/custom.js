@@ -780,7 +780,7 @@ $(document).ready(function () {
                 return false;
             }
         }
-        if(business_type == 'laundry' && scheduling_with_slots == 1){
+        if(business_type == 'laundry' && scheduling_with_slots == 1 && off_scheduling_at_cart == 0){
             var task_type = 'schedule';
             var schedule_dt = $("#pickup_schedule_datetime").val();
             var schedule_dt_dropoff = $("#dropoff_schedule_datetime").val();

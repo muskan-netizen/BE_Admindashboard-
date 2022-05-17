@@ -1090,8 +1090,14 @@ class CartController extends BaseController
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
             $slotsDate = findSlot('',$vendorId,'','api');
-            $slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes);
+            $slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes, 1);
             $cart->slots = $slots;
+            if($preferences->business_type == 'laundry'){
+                $dropoff_slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                $cart->dropoff_slots = $dropoff_slots;
+            }else{
+                $cart->dropoff_slots = [];
+            }
             if(count($slots)>0){
                 $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled ?? 0;
              }else{
@@ -1100,6 +1106,7 @@ class CartController extends BaseController
         }else{
             $duration = (object)['closed_store_order_scheduled'=>'0'];
             $slots = [];
+            $dropoff_slots = [];
             $cart->slots = [];
             $cart->closed_store_order_scheduled = 0;
         }
@@ -1199,6 +1206,10 @@ class CartController extends BaseController
         $cart->delay_date =  $delay_date??0;
         $cart->pickup_delay_date =  $pickup_delay_date??0;
         $cart->dropoff_delay_date =  $dropoff_delay_date??0;
+        if($preferences->business_type == 'laundry'){
+            $cart->same_day_delivery_for_schedule =  $preferences->same_day_delivery_for_schedule;
+            $cart->off_scheduling_at_cart =  $preferences->off_scheduling_at_cart;
+        }
         return $cart;
     }
 
@@ -1210,7 +1221,28 @@ class CartController extends BaseController
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
        // $duration = $duration->slot_minutes??'';
-        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes);
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes, 1, 'pickup'); // Added 1 for pickup
+        if(count($slots)<=0){
+            $slot = [];
+        }else{
+            $slot = $slots;
+        }
+
+        return response()->json($slot);
+    }
+
+    /**
+    * GET Request
+    * To Get Drop Off Slots
+    * Added By Ovi
+    */
+    public function checkScheduleDropoffSlots(Request $request)
+    {
+        $slot = [];
+        $vendorId = $request->vendor_id??0;
+        $delivery = $request->delivery??'delivery';
+        $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes, 2, 'dropoff');
         if(count($slots)<=0){
             $slot = [];
         }else{
