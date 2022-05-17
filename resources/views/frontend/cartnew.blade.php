@@ -733,7 +733,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     </div>
     {{-- Schedual code Start at down --}}
 
-            <% if(client_preference_detail.off_scheduling_at_cart != 1 && cart_details.vendorCnt==1) { %>
+            <% if(cart_details.closed_store_order_scheduled == 1 && cart_details.vendorCnt==1) { %>
                 @if($client_preference_detail->business_type != 'laundry')
             <div class="row arabic-lng position-relative mb-2" id="dateredio">
                 <div class=" col-md-12 mb-2 mb-md-0 text-right">

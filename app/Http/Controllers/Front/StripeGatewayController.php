@@ -432,6 +432,144 @@ class StripeGatewayController extends FrontController
         }
     }
 
+
+    public function createStripeOXXOPaymentIntent(Request $request, $domain='')
+    {
+        try{
+            ////// Create webhook Endpoint ///////
+            $secret_key = stripeFPXPaymentCredentials()->secret_key;
+            $stripe = new \Stripe\StripeClient($secret_key);
+            
+            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_fpx';
+            $webhook_exists = false;
+
+            // $stripe->webhookEndpoints->delete(
+            //     'we_1KQXhFA3MquWN79FKLUy0Zzp',
+            //     []
+            // );
+            // $stripe->webhookEndpoints->delete(
+            //     'we_1KQXc3A3MquWN79FjGGWHT66',
+            //     []
+            // );
+            // $stripe->webhookEndpoints->delete(
+            //     'we_1KQX8gA3MquWN79FmZFGhD9G',
+            //     []
+            // );
+            $endpoints = $stripe->webhookEndpoints->all();
+
+            foreach($endpoints->data as $obj){
+                if($obj->url == $webhook_url){
+                    $webhook_exists = true;
+                    break;
+                }
+            }
+            
+            if(!$webhook_exists){
+                $res = $stripe->webhookEndpoints->create([
+                    'url' => $webhook_url,
+                    'enabled_events' => [
+                        'payment_intent.succeeded',
+                        'payment_intent.payment_failed'
+                    ]
+                ]);
+            }
+            // return $webhook_exists;
+
+            $user = Auth::user();
+
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+           
+            // if (!$saved_payment_method) {
+                $customerResponse = $stripe->customers->create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone_number,
+                    'description' => 'Creating Customer',
+                    'metadata' => [
+                        'user_id' => $user->id
+                    ]
+                ]);
+
+                // Find the card ID
+                $customer_id = $customerResponse->id;
+                if ($customer_id) {
+                    $request->request->add(['customerReference' => $customer_id, 'payment_option_id' => 19]);
+                    $save_payment_method_response = $this->saveUserPaymentMethod($request);
+                }
+            // }else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            //     // \Stripe\Stripe::setApiKey($this->API_KEY);
+            //     // $retrieve_customer = \Stripe\Customer::retrieve(
+            //     //     $customer_id, 
+            //     //     []
+            //     // );
+            // }
+
+            $description = '';
+            $payment_form = $request->payment_form;
+            $amount = $this->getDollarCompareAmount($request->amount);
+
+            $postdata = [
+                'payment_method_types' => ['oxxo'],
+                'amount' => $amount * 100,
+                'currency' => 'mxn', //$this->currency
+                // 'customer' => '',
+                'receipt_email' => $user->email ?? '',
+                'metadata' => [
+                    'user_id' => $user->id,
+                    'payment_form' => $payment_form
+                ]
+            ];
+
+            if(isset($customer_id) && !empty($customer_id)){
+                $postdata['customer'] = $customer_id;
+            }
+
+            if($payment_form == 'cart'){
+                $user_address = '';
+                if($request->has('address_id')){
+                    $address_id = $request->address_id;
+                    $user_address = UserAddress::where('id', $address_id)->first();
+                }
+                $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                $order_number = $request->order_number;
+
+                $postdata['description'] = 'Order Checkout';
+                $postdata['metadata']['cart_id'] = $cart->id;
+                $postdata['metadata']['order_number'] = $order_number;
+                $postdata['shipping']['name'] = $user->name;
+                $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
+                if(!empty($user_address)){
+                    $postdata['shipping']['address']['line1'] = $user_address->street;
+                    $postdata['shipping']['address']['city'] = $user_address->city;
+                    $postdata['shipping']['address']['state'] = $user_address->state;
+                    $postdata['shipping']['address']['country'] = $user_address->country;
+                    $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
+                }
+            }
+            elseif($payment_form == 'wallet'){
+                $postdata['description'] = 'Wallet Checkout';
+            }
+            if($payment_form == 'tip'){
+                $postdata['description'] = 'Tip Checkout';
+                $order_number = $request->order_number;
+                $postdata['metadata']['order_number'] = $order_number;
+            }
+            elseif($request->payment_form == 'subscription'){
+                $postdata['description'] = 'Subscription Checkout';
+                $postdata['metadata']['subscription_id'] = $request->subscription_id;
+            }
+            
+            $payment_intent = $stripe = $stripe->paymentIntents->create($postdata);
+            Log::info(json_encode($payment_intent->client_secret));
+            return $this->successResponse($payment_intent);
+        }
+        catch (\Exception $ex) {
+            Log::info($ex->getMessage());
+            return $this->errorResponse('Server Error', $ex->getCode());
+        }
+    }
+
     public function retrieveStripeFPXPaymentIntent(Request $request)
     {
         if($request->has('payment_intent')){

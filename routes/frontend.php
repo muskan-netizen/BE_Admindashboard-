@@ -213,7 +213,7 @@ Route::group(['middleware' => ['domain']], function () {
 	//payPhone routes
 	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
 	Route::get('payment/payphone/success', 'Front\PayphoneController@successPage')->name('payphone.success');
-
+	Route::any('payment/payphone/api', 'Front\PayphoneController@webViewPay')->name('payphone.webview');
 
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');

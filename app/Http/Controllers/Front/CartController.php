@@ -1192,6 +1192,8 @@ class CartController extends FrontController
                     $myDate = (($myDate)?date('Y-m-d',$sttime):date('Y-m-d',strtotime('+1 day')));
                     $cart->schedule_type =  'schedule';
                     //$cart->closed_store_order_scheduled =  1;
+                }else{
+                    $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled;
                 }
                 $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
                 if(count((array)$slots) == 0){
