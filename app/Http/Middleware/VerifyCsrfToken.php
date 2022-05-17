@@ -38,6 +38,7 @@ class VerifyCsrfToken extends Middleware
         'payment/webhook/*',
         
         'payment/paytab/return',
-        'payment/paytab/callback'
+        'payment/paytab/callback',
+        'dispatch/customer/distance/notification/*'
     ];
 }
