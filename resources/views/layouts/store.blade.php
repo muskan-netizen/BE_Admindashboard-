@@ -5,6 +5,7 @@ $set_common_business_type = $client_preference_detail->business_type??'';
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
   @include('layouts.store.title-meta')
   @include('layouts.store.head-content', ["demo" => "creative"])
 </head>
