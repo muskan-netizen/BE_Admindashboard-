@@ -732,8 +732,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     </div>
     {{-- Schedual code Start at down --}}
-
-            <% if(client_preference_detail.off_scheduling_at_cart != 1 && cart_details.vendorCnt==1) { %>
+            <% if(cart_details.closed_store_order_scheduled == 1 && cart_details.vendorCnt==1) { %>
                 @if($client_preference_detail->business_type != 'laundry')
             <div class="row arabic-lng position-relative mb-2" id="dateredio">
                 <div class=" col-md-12 mb-2 mb-md-0 text-right">
@@ -756,17 +755,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </li>
                             <% if(cart_details.closed_store_order_scheduled != 1 && cart_details.deliver_status == 0) { %>
                             <li class="close-window">
-                                <i class="fa fa-window-close cross"  aria-hidden="true"></i>
+                                <i class="fa fa-times cross" aria-hidden="true"></i>
                             </li>
                             <% }else{ %>
                                 <li class="close-window">
-                                    <i class="fa fa-window-close cross" style="display:none!important"  aria-hidden="true"></i>
+                                    <i class="fa fa-times cross" style="display:none!important"  aria-hidden="true"></i>
                                 </li>
                                 <% } %>
-
                         </ul>
-                        <div class=" col-sm-4 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="<%= ((cart_details.schedule_type != 'schedule' ) ? 'display:none!important' : '') %>">
-                    <% if(cart_details.slotsCnt ==0) { %>
+                        <div class=" col-sm-4 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="display:none !important">
+                    <% if(cart_details.slotsCnt == 0) { %>
                     <% if(cart_details.delay_date != 0) { %>
                         <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
                         min="<%= ((cart_details.delay_date != '0') ? cart_details.delay_date : '') %>">
