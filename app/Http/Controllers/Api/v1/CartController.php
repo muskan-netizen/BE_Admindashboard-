@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
-use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc};
+use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption}; 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
 //use App\Http\Traits\MpesaStkpush;
@@ -56,7 +56,6 @@ class CartController extends BaseController
             //         }
             //     }
             // }
-
             $user = Auth::user();
             if (!$user->id) {
                 $cart = Cart::where('unique_identifier', $user->system_user);
@@ -65,9 +64,27 @@ class CartController extends BaseController
             }
             $cart = $cart->first();
             if ($cart) {
+                $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+                                $q->where('age_restriction',1);
+                            })->count();
+                $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+                $passbase['check'] = 0;
+                if($passbase_check && $age_restriction)
+                {
+                    $passbase['check'] = 1;
+                    if(is_null($user->passbase_verification)){
+                        $passbase['status'] = 'pending';
+                    }else{
+                        $passbase['status'] = $user->passbase_verification->status;
+                    }
+                }
+
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+                $cartData->passbase_check = $passbase['check'];
+                $cartData->passbase_status= $passbase['status'];
                 return $this->successResponse($cartData);
             }
+
             return $this->successResponse($cart);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

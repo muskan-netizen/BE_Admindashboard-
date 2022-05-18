@@ -1912,7 +1912,7 @@ class CartController extends FrontController
                         $q->where('age_restriction',1);
                     })->count();
                     $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
-                    if($checkpreference->third_party_accounting == 1 && $passbase_check && $age_restriction)
+                    if($passbase_check && $age_restriction)
                     {
                         if(is_null($user->passbase_verification)){
                             return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alochol/Tobacco contents. It is mandatory to provide the verification documents to proceed']);
