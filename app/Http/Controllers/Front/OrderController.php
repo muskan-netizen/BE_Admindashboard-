@@ -1088,6 +1088,8 @@ class OrderController extends FrontController
                 }
             }
             $payable_amount = $payable_amount - $loyalty_amount_saved;
+
+            $ex_gateways_wallet = [36]; // mycash
             $wallet_amount_used = 0;
             if ($user) {
                 if ($user->balanceFloat > 0) {
@@ -1097,7 +1099,8 @@ class OrderController extends FrontController
                         $wallet_amount_used = $payable_amount;
                     }
                     $order->wallet_amount_used = $wallet_amount_used;
-                    if ($wallet_amount_used > 0) {
+                    // Deduct wallet amount if payable amount is successfully done on gateway
+                    if ( ($wallet_amount_used > 0) && (!in_array($request->payment_option_id, $ex_gateways_wallet)) ) {
                         $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                     }
                 }

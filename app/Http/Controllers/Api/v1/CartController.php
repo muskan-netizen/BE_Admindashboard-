@@ -215,6 +215,12 @@ class CartController extends BaseController
                 }
             }
 
+            if ( (isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1) ) {
+                if ($checkVendorId) {
+                    return $this->errorResponse(['error' => __('Your cart has existing items from another vendor'), 'alert' => '1'], 400);
+                }
+            }
+
             if ((isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1)) {
                 if ($checkVendorId) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
