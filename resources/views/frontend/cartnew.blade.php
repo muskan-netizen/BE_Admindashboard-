@@ -1553,8 +1553,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options))
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+@endif
+@if(in_array('stripe_oxxo',$client_payment_options))
+<script>
+var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
 @endif
 @if(in_array('yoco',$client_payment_options))
 <script type="text/javascript" src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
@@ -1598,6 +1603,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
+    var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var cart_clear_stripe_oxxo_url = "{{url('payment/stripe_oxxo/clear')}}";
     var user_store_address_url = "{{route('address.store')}}";
     var product_faq_update_url = "{{ route('cart.productfaq') }}";
     var promo_code_remove_url = "{{ route('remove.promocode') }}";
