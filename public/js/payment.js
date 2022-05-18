@@ -1578,40 +1578,45 @@ $(document).ready(function() {
         $.ajax({
             type: "POST",
             dataType: 'json',
-            url: payment_create_stripe_fpx_url,
+            url: payment_create_stripe_oxxo_url,
             data: ajaxData,
             success: function(resp) {
                 if (resp.status == 'Success') {
                     const clientSecret = resp.data.client_secret;
-                    const result = stripe_fpx.confirmOxxoPayment(clientSecret, {
-                        payment_method: {
+                    stripeOxxo.confirmOxxoPayment(clientSecret,{
+                          payment_method: {
                             billing_details: {
                                 name: resp.data.shipping.name,
                                 email: resp.data.receipt_email,
-                              },
-                        },
-                        // Return URL where the customer should be redirected after the authorization
-                       // return_url: payment_retrive_stripe_fpx_url + '?' + returnParams,
-                    });
-                    if (result.error) {
-                        // Inform the customer that there was an error.
-                        if (path.indexOf("cart") !== -1) {
-                            success_error_alert('error', result.error.message, ".payment_response");
-                            $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                        } else if (path.indexOf("wallet") !== -1) {
-                            success_error_alert('error', result.error.message, "#wallet_topup_form .payment_response");
-                            $(".topup_wallet_confirm").removeAttr("disabled");
-                        } else if (path.indexOf("subscription") !== -1) {
-                            success_error_alert('error', result.error.message, "#subscription_payment_form .payment_response");
-                            $(".subscription_confirm_btn").removeAttr("disabled");
-                        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
-                            success_error_alert('error', result.error.message, "#wallet_topup_form .payment_response");
-                            $(".topup_wallet_confirm").removeAttr("disabled");
-                        } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
-                            success_error_alert('error', result.error.message, "#wallet_topup_form .payment_response");
-                            $(".topup_wallet_confirm").removeAttr("disabled");
-                        }
-                    }
+                            },
+                          },
+                        }) // Stripe.js will open a modal to display the OXXO voucher to your customer
+                        .then(function(result) {
+                          // This promise resolves when the customer closes the modal
+                          
+                            if (result.error) {
+                                // Inform the customer that there was an error.
+                                if (path.indexOf("cart") !== -1) {
+                                    success_error_alert('error', result.error.message, ".payment_response");
+                                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                                } else if (path.indexOf("wallet") !== -1) {
+                                    success_error_alert('error', result.error.message, "#wallet_topup_form .payment_response");
+                                    $(".topup_wallet_confirm").removeAttr("disabled");
+                                } else if (path.indexOf("subscription") !== -1) {
+                                    success_error_alert('error', result.error.message, "#subscription_payment_form .payment_response");
+                                    $(".subscription_confirm_btn").removeAttr("disabled");
+                                } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+                                    success_error_alert('error', result.error.message, "#wallet_topup_form .payment_response");
+                                    $(".topup_wallet_confirm").removeAttr("disabled");
+                                } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
+                                    success_error_alert('error', result.error.message, "#wallet_topup_form .payment_response");
+                                    $(".topup_wallet_confirm").removeAttr("disabled");
+                                }
+                            }else{
+                                window.location.href=cart_clear_stripe_oxxo_url+'?no='+order.order_number;
+                            }
+                        });
+
                 } else {
                     if (path.indexOf("cart") !== -1) {
                         success_error_alert('error', resp.message, ".payment_response");

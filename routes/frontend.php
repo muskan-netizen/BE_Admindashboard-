@@ -85,6 +85,15 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/webview/stripe_fpx', 'Front\StripeGatewayController@paymentWebViewStripeFPX')->name('payment.webview.stripe_fpx');
 	Route::get('payment/webview/response/stripe_fpx', 'Front\StripeGatewayController@webViewResponseStripeFPX')->name('payment.webview.response.stripe_fpx');
 
+
+		// Stripe OXXO
+		Route::post('payment/create/stripe_oxxo', 'Front\StripeGatewayController@createStripeOXXOPaymentIntent')->name('payment.create.stripe_oxxo');
+		 Route::get('payment/stripe_oxxo/clear', 'Front\StripeGatewayController@cartStripeOXXOClear')->name('payment.stripe_oxxo_clear');
+		Route::post('payment/webhook/stripe_oxxo', 'Front\StripeGatewayController@stripeOXXOWebhook')->name('payment.webhook.stripe_oxxo');
+		Route::get('payment/webview/stripe_oxxo', 'Front\StripeGatewayController@paymentWebViewStripeOXXO')->name('payment.webview.stripe_oxxo');
+		Route::get('payment/webview/response/stripe_oxxo', 'Front\StripeGatewayController@webViewResponseStripeOXXO')->name('payment.webview.response.stripe_oxxo');
+
+
 	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
 	Route::get('payment/paypal/CompletePurchase', 'Front\PaypalGatewayController@paypalCompletePurchase')->name('payment.paypalCompletePurchase');

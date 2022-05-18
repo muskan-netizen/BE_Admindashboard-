@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
 use App\Http\Controllers\Front\PickupDeliveryController;
-use App\Models\{User, UserVendor, CaregoryKycDoc,Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
+use App\Models\{User, UserVendor, CaregoryKycDoc,Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress, Webhook};
 
 class StripeGatewayController extends FrontController
 {
@@ -440,21 +440,9 @@ class StripeGatewayController extends FrontController
             $secret_key = stripeFPXPaymentCredentials()->secret_key;
             $stripe = new \Stripe\StripeClient($secret_key);
             
-            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_fpx';
+            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_oxxo';
             $webhook_exists = false;
 
-            // $stripe->webhookEndpoints->delete(
-            //     'we_1KQXhFA3MquWN79FKLUy0Zzp',
-            //     []
-            // );
-            // $stripe->webhookEndpoints->delete(
-            //     'we_1KQXc3A3MquWN79FjGGWHT66',
-            //     []
-            // );
-            // $stripe->webhookEndpoints->delete(
-            //     'we_1KQX8gA3MquWN79FmZFGhD9G',
-            //     []
-            // );
             $endpoints = $stripe->webhookEndpoints->all();
 
             foreach($endpoints->data as $obj){
@@ -473,37 +461,26 @@ class StripeGatewayController extends FrontController
                     ]
                 ]);
             }
-            // return $webhook_exists;
 
             $user = Auth::user();
 
-            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
-           
-            // if (!$saved_payment_method) {
-                $customerResponse = $stripe->customers->create([
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'phone' => $user->phone_number,
-                    'description' => 'Creating Customer',
-                    'metadata' => [
-                        'user_id' => $user->id
-                    ]
-                ]);
+                // $customerResponse = $stripe->customers->create([
+                //     'name' => $user->name,
+                //     'email' => $user->email,
+                //     'phone' => $user->phone_number,
+                //     'description' => 'Creating Customer',
+                //     'metadata' => [
+                //         'user_id' => $user->id
+                //     ]
+                // ]);
 
-                // Find the card ID
-                $customer_id = $customerResponse->id;
-                if ($customer_id) {
-                    $request->request->add(['customerReference' => $customer_id, 'payment_option_id' => 19]);
-                    $save_payment_method_response = $this->saveUserPaymentMethod($request);
-                }
-            // }else {
-            //     $customer_id = $saved_payment_method->customerReference;
-            //     // \Stripe\Stripe::setApiKey($this->API_KEY);
-            //     // $retrieve_customer = \Stripe\Customer::retrieve(
-            //     //     $customer_id, 
-            //     //     []
-            //     // );
-            // }
+                // // Find the card ID
+                // $customer_id = $customerResponse->id;
+                // if ($customer_id) {
+                //     $request->request->add(['customerReference' => $customer_id, 'payment_option_id' => 19]);
+                //     $save_payment_method_response = $this->saveUserPaymentMethod($request);
+                // }
+           
 
             $description = '';
             $payment_form = $request->payment_form;
@@ -513,7 +490,6 @@ class StripeGatewayController extends FrontController
                 'payment_method_types' => ['oxxo'],
                 'amount' => $amount * 100,
                 'currency' => 'mxn', //$this->currency
-                // 'customer' => '',
                 'receipt_email' => $user->email ?? '',
                 'metadata' => [
                     'user_id' => $user->id,
@@ -521,9 +497,9 @@ class StripeGatewayController extends FrontController
                 ]
             ];
 
-            if(isset($customer_id) && !empty($customer_id)){
-                $postdata['customer'] = $customer_id;
-            }
+            // if(isset($customer_id) && !empty($customer_id)){
+            //     $postdata['customer'] = $customer_id;
+            // }
 
             if($payment_form == 'cart'){
                 $user_address = '';
@@ -561,7 +537,6 @@ class StripeGatewayController extends FrontController
             }
             
             $payment_intent = $stripe = $stripe->paymentIntents->create($postdata);
-            Log::info(json_encode($payment_intent->client_secret));
             return $this->successResponse($payment_intent);
         }
         catch (\Exception $ex) {
@@ -612,7 +587,6 @@ class StripeGatewayController extends FrontController
             }
         }
     }
-
 
     public function stripeFPXWebhook(Request $request)
     {
@@ -678,6 +652,173 @@ class StripeGatewayController extends FrontController
                             CartCoupon::where('cart_id', $cart_id)->delete();
                             CartProduct::where('cart_id', $cart_id)->delete();
                             CartProductPrescription::where('cart_id', $cart_id)->delete();
+                  
+                            // send sms 
+                            $this->sendSuccessSMS($request, $order);
+                        
+                            // Send Notification
+                            if (!empty($order->vendors)) {
+                                foreach ($order->vendors as $vendor_value) {
+                                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                                    $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                                    $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                                }
+                            }
+                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                            $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                            $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                        }
+    
+                        // Send Email
+                        //   $this->successMail();
+                    }
+                } elseif($payment_form == 'wallet'){
+                    $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
+                    $walletController = new WalletController();
+                    $walletController->creditWallet($request);
+                }
+                elseif($payment_form == 'tip'){
+                    $order_number = $charges[0]->metadata->order_number;
+                    $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
+                    $orderController = new OrderController();
+                    $orderController->tipAfterOrder($request);
+                }
+                elseif($payment_form == 'subscription'){
+                    $subscription = $charges[0]->metadata->subscription_id;
+                    $request->request->add(['user_id' => $user_id, 'payment_option_id' => 19, 'amount' => $amount, 'transaction_id' => $transactionId]);
+                    $subscriptionController = new UserSubscriptionController();
+                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
+                }
+                break;
+            
+            case 'payment_intent.payment_failed':
+                $paymentIntent = $event->data->object;
+                // \Log::info($paymentIntent);
+
+                $meta = $paymentIntent->metadata;
+                // \Log::info($meta);
+                $user_id = $payment_form = $order_number = '';
+                // $amount = $paymentIntent->amount / 100;
+                if($meta){
+                    $payment_form = $meta->payment_form;
+                    $user_id = $meta->user_id;
+                }
+                $user = User::find($user_id);
+
+                if($payment_form == 'cart'){
+                    $order_number = $meta->order_number;
+                    $order = Order::where('order_number', $order_number)->first();
+                    if($order){
+                        $wallet_amount_used = $order->wallet_amount_used;
+                        if($wallet_amount_used > 0){
+                            $wallet = $user->wallet;
+                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                        }
+
+                        // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                        // foreach($order_products as $order_prod){
+                        //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                        // }
+                        // OrderProduct::where('order_id', $order->id)->delete();
+                        // OrderProductPrescription::where('order_id', $order->id)->delete();
+                        // VendorOrderStatus::where('order_id', $order->id)->delete();
+                        // OrderVendor::where('order_id', $order->id)->delete();
+                        // OrderTax::where('order_id', $order->id)->delete();
+                        // $order->delete();
+                    }
+                }
+                break;
+            
+            // ... handle other event types
+            default:
+                echo 'Received unknown event type ' . $event->type;
+        }
+        
+        http_response_code(200);
+    }
+
+    public function cartStripeOXXOClear(Request $request)
+    {
+        $cart = Cart::where('user_id',auth()->id())->select('id')->first();
+        $cart_id = $cart->id;
+        $order = Order::where('order_number',$request->no)->first();
+        
+        // Remove cart
+        CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+        Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+        CartAddon::where('cart_id', $cart_id)->delete();
+        CartCoupon::where('cart_id', $cart_id)->delete();
+        CartProduct::where('cart_id', $cart_id)->delete();
+        CartProductPrescription::where('cart_id', $cart_id)->delete();
+        return Redirect::to(route('order.success',[$order->id]));
+    }
+
+
+    public function stripeOXXOWebhook(Request $request)
+    {
+        $secret_key = stripeOXXOPaymentCredentials()->secret_key;
+        \Stripe\Stripe::setApiKey($secret_key);
+
+        $payload = @file_get_contents('php://input');
+        $event = null;
+        \Log::info($payload);
+        try {
+            $event = \Stripe\Event::constructFrom(
+                json_decode($payload, true)
+            );
+        } catch(\UnexpectedValueException $e) {
+            // Invalid payload
+            http_response_code(400);
+            exit();
+        }
+        \Log::info(json_encode($event));
+        Webhook::create(['tracking_order_id'=>'','response'=>$request->getContent()??json_encode($payload)]);
+        // Handle the event
+        switch ($event->type) {
+            case 'payment_intent.succeeded':
+                $paymentIntent = $event->data->object;
+                // \Log::info($paymentIntent);
+
+                $payment_intent_id = $paymentIntent->id;
+                $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
+                $charges = $intent->charges->data;
+                $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
+                $amount = 0;
+                if(count($charges)){
+                    $transactionId = $charges[0]->balance_transaction;
+                    $payment_form = $charges[0]->metadata->payment_form;
+                    $amount = $charges[0]->amount / 100;
+                    $user_id = $charges[0]->metadata->user_id;
+                }
+
+                if($payment_form == 'cart'){
+                    $order_number = $charges[0]->metadata->order_number;
+                    $cart_id = $charges[0]->metadata->cart_id ?? '';
+                    $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                    if ($order) {
+                        $order->payment_status = 1;
+                        $order->save();
+                        $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                        if (!$payment_exists) {
+                            $payment = new Payment();
+                            $payment->date = date('Y-m-d');
+                            $payment->order_id = $order->id;
+                            $payment->transaction_id = $transactionId;
+                            $payment->balance_transaction = $amount;
+                            $payment->type = 'cart';
+                            $payment->save();
+    
+                            // Auto accept order
+                            $orderController = new OrderController();
+                            $orderController->autoAcceptOrderIfOn($order->id);
+    
+                            // Remove cart
+                            // CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+                            // Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                            // CartAddon::where('cart_id', $cart_id)->delete();
+                            // CartCoupon::where('cart_id', $cart_id)->delete();
+                            // CartProduct::where('cart_id', $cart_id)->delete();
+                            // CartProductPrescription::where('cart_id', $cart_id)->delete();
                   
                             // send sms 
                             $this->sendSuccessSMS($request, $order);

@@ -389,6 +389,10 @@ $(document).ready(function () {
         card.mount('#stripe-card-element');
     }
 
+    function stripeOXXOInitialize() {
+        stripeOxxo = Stripe(stripe_oxxo_publishable_key);
+    }
+
     function stripeFPXInitialize() {
         stripe_fpx = Stripe(stripe_fpx_publishable_key);
         var elements = stripe_fpx.elements();
@@ -3621,6 +3625,10 @@ $(document).ready(function () {
             case 35:
                 payWithPaytech('','');
             break;
+
+            case 37:
+                paymentViaStripeOXXO('', 19, '');
+            break;
         
         }
 
@@ -3959,6 +3967,16 @@ $(document).ready(function () {
                 else{
                     return false;
                 }
+
+            case '37':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    stripeOXXOInitialize();
+                    paymentViaStripeOXXO(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
         
         }
 
@@ -4121,6 +4139,11 @@ $(document).ready(function () {
             case 36:
                     paymentViaMyCash('', payment_option_id, ''); 
             break;
+
+            case 36:
+                    paymentViaStripeOXXO('', payment_option_id, ''); 
+            break;
+
         }
     }
 
