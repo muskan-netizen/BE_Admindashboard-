@@ -21,6 +21,7 @@ use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\ApiResponser;
 use Log;
 use Carbon\Carbon;
+use App\Models\{LoyaltyCard,VendorOrderCancelReturnPayment};
 class OrderController extends BaseController
 {
     private $folderName = '/order/reports';
@@ -518,7 +519,7 @@ class OrderController extends BaseController
         $orderPlacedNo = '';
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-        $orderPlaced = true;
+        
         try {
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
@@ -570,7 +571,7 @@ class OrderController extends BaseController
                     //Create Shipping place order request for Lalamove when order in processing state
                     $orderPlaced = $this->placeOrderRequestlalamove($request);
                     $orderPlacedNo = $orderPlaced;
-               }
+                }
 
                 if($orderPlaced){
 
@@ -581,79 +582,125 @@ class OrderController extends BaseController
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
 
-                    OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
+                  
                     
-                    $order = Order::find($request->order_id);
+                  
 
-                    //Refund to wallet
-                    if( (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) && $request->status_option_id == 3){
+                    // //Refund to wallet 
+                    // if( (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) && $request->status_option_id == 3){
                         
-                        $orderRefund=new OrderRefund();
-                        $orderRefund->user_id=$order->user_id;
-                        $orderRefund->order_id=$order->id;
-                        $payment_id=Order::select('payments.id')
-                            ->leftJoin('payments','payments.order_id','=','orders.id')
-                            ->where('orders.id',$order->id)->first()->id;
+                    //     $orderRefund=new OrderRefund();
+                    //     $orderRefund->user_id=$order->user_id;
+                    //     $orderRefund->order_id=$order->id;
+                    //     $payment_id=Order::select('payments.id')
+                    //         ->leftJoin('payments','payments.order_id','=','orders.id')
+                    //         ->where('orders.id',$order->id)->first()->id;
                             
-                        if(!empty($payment_id)){
-                            $orderRefund->payment_id=$payment_id;
-                        }else{
-                            $orderRefund->payment_id=0;
+                    //     if(!empty($payment_id)){
+                    //         $orderRefund->payment_id=$payment_id;
+                    //     }else{
+                    //         $orderRefund->payment_id=0;
+                    //     }
+                    //     $orderRefund->payment_option_id=$order->payment_option_id;
+                    //     $orderRefund->amount=$order->wallet_amount_used+$order->payable_amount;
+                    //     $orderRefund->paid_to_wallet=1;
+                    //     $orderRefund->save();
+
+
+                    //     $refund_amount = $order->wallet_amount_used + $order->payable_amount;
+                    //     if($refund_amount > 0){
+                    //         $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                    //         if(!$transaction){
+                    //             $user = User::find($order->user_id);
+                    //             if($user){
+                    //                 $wallet = $user->wallet;
+                    //                 $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                    //             }
+                    //         }
+                    //     }
+                        
+                    //     $wallet = User::find($order->user_id)->wallet;
+                    //     if(!empty($refund_amount) && $refund_amount>0){
+                    //         $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $refund_amount]);
+                    //     }
+
+                    //     $order->payment_status=2;
+                    //     $order->save();
+                        
+                    // }
+
+
+                   
+                   
+
+                    if ($request->status_option_id == 3) {
+                        if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
+                            $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
+                            $response = Http::get($dispatch_traking_url);
+                        }elseif($orderData->shipping_delivery_type=='L'){
+                            //Cancel Shipping place order request for Lalamove
+                            $lala = new LalaMovesController();
+                            $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
+                        }elseif($orderData->shipping_delivery_type=='SR'){
+                            //Cancel Shipping place order request for Shiprocket
+                            $ship = new ShiprocketController();
+                            $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
+                        }elseif($orderData->shipping_delivery_type=='DU'){
+                            //Cancel Dunzo place order request for Dunzo
+                            $ship = new DunzoController();
+                            $order_ship = $ship->cancelOrderRequestDunzo($currentOrderStatus->web_hook_code);
+                        }elseif($orderData->shipping_delivery_type=='M'){
+                            //Create Shipping place order request for Ahoy
+                            $ship = new AhoyController();
+                            $order_ship = $ship->cancelOrderRequestAhoy($currentOrderStatus->web_hook_code);
                         }
-                        $orderRefund->payment_option_id=$order->payment_option_id;
-                        $orderRefund->amount=$order->wallet_amount_used+$order->payable_amount;
-                        $orderRefund->paid_to_wallet=1;
-                        $orderRefund->save();
 
-
-                        $refund_amount = $order->wallet_amount_used + $order->payable_amount;
-                        if($refund_amount > 0){
-                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                            if(!$transaction){
-                                $user = User::find($order->user_id);
-                                if($user){
-                                    $wallet = $user->wallet;
-                                    $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                        // return amount to user wallet worked by harbans
+                            $vendor_id = $request->vendor_id;
+                            $order = Order::with(array(
+                                'vendors' => function ($query) use ($vendor_id) {
+                                    $query->where('vendor_id', $vendor_id);
                                 }
+                            ))->find($request->order_id);
+                            
+                            // get vendor return amount from order
+                            $return_response =  $this->GetVendorReturnAmount($request,$order);
+                            // return amount to user wallet 
+                            if($return_response['vendor_return_amount'] > 0){
+                                $user = User::find($currentOrderStatus->user_id);
+                                $wallet = $user->wallet;
+                                $credit_amount = $return_response['vendor_return_amount'] ; //$currentOrderStatus->payable_amount;
+                                $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
                             }
-                        }
-                        
-                        $wallet = User::find($order->user_id)->wallet;
-                        if(!empty($refund_amount) && $refund_amount>0){
-                            $wallet->depositFloat($refund_amount, ['Wallet has been <b>refunded</b> for cancellation of order #'. $refund_amount]);
-                        }
-
-                        $order->payment_status=2;
-                        $order->save();
-                        
-                    }
-                }
-                if ($request->status_option_id == 3) {
-                    if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
-                        $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
-                        $response = Http::get($dispatch_traking_url);
-                    }elseif($orderData->shipping_delivery_type=='L'){
-                        //Cancel Shipping place order request for Lalamove
-                        $lala = new LalaMovesController();
-                        $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
-                    }elseif($orderData->shipping_delivery_type=='SR'){
-                        //Cancel Shipping place order request for Shiprocket
-                        $ship = new ShiprocketController();
-                        $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
-                    }elseif($orderData->shipping_delivery_type=='DU'){
-                        //Cancel Dunzo place order request for Dunzo
-                        $ship = new DunzoController();
-                        $order_ship = $ship->cancelOrderRequestDunzo($currentOrderStatus->web_hook_code);
-                    }elseif($orderData->shipping_delivery_type=='M'){
-                        //Create Shipping place order request for Ahoy
-                        $ship = new AhoyController();
-                        $order_ship = $ship->cancelOrderRequestAhoy($currentOrderStatus->web_hook_code);
+                            
+                            // diarise loyalty in order table 
+                            $order->loyalty_points_used    =  $order->loyalty_points_used - $return_response['vendor_loyalty_points'];
+                            $order->loyalty_amount_saved   =  $order->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
+                            $order->loyalty_points_earned  =  $order->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
+                            $order->save();
+                            // save payment in table
+                            $vendor_return_payment                          = new VendorOrderCancelReturnPayment();
+                            $vendor_return_payment->order_id                = $order ->id;
+                            $vendor_return_payment->order_vendor_id         = $currentOrderStatus->id;
+                            $vendor_return_payment->wallet_amount           = $return_response['vendor_wallet_amount'] ;
+                            $vendor_return_payment->online_payment_amount   = $return_response['vendor_online_payment_amount'];
+                            $vendor_return_payment->loyalty_amount          = $return_response['vendor_loyalty_amount'];
+                            $vendor_return_payment->loyalty_points          = $return_response['vendor_loyalty_points'];
+                            $vendor_return_payment->loyalty_points_earned   = $return_response['vendor_loyalty_points_earned'];
+                            $vendor_return_payment->total_return_amount     = $return_response['vendor_return_amount'];
+                            $vendor_return_payment->save();
+                        // end amount to user wallet worked by harbans
                     }
 
+                   
                 }
+                
                 if($request->status_option_id == 2){
                     $this->ProductVariantStock($request->order_id);
                 }
+
+                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
+
                 DB::commit();
                 $orderData = Order::find($request->order_id);
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
