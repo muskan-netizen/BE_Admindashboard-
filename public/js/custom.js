@@ -3627,7 +3627,8 @@ $(document).ready(function () {
             break;
 
             case 37:
-                paymentViaStripeOXXO('', 19, '');
+                stripeOXXOInitialize();
+                paymentViaStripeOXXO('', 37, '');
             break;
         
         }
@@ -4140,7 +4141,8 @@ $(document).ready(function () {
                     paymentViaMyCash('', payment_option_id, ''); 
             break;
 
-            case 36:
+            case 37:
+                    stripeOXXOInitialize();
                     paymentViaStripeOXXO('', payment_option_id, ''); 
             break;
 
