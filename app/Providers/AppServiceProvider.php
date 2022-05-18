@@ -50,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
         $client_head = Client::where(['id' => 1])->first();
 
         $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo'];
-        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = '';
+        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = $stripe_oxxo_publishable_key = '';
         $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
         if($payment_options){
             foreach($payment_options as $option){
