@@ -156,6 +156,14 @@
                                                 <div class="row">
                                                     @if ($activeOrders->isNotEmpty())
                                                         @foreach ($activeOrders as $key => $order)
+                                                        @php
+                                                            
+                                                            $total_other_taxes=0.00;
+                                                            foreach(explode(":",$order->total_other_taxes) as $row){
+                                                                $total_other_taxes+=(float)$row;
+                                                            }
+                                                           
+                                                        @endphp
                                                             <div class="col-12">
                                                                 <div class="row no-gutters order_head">
                                                                     <div class="col-md-3 alOrderStatus">
@@ -497,9 +505,17 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tax') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->taxable_amount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format(($order->taxable_amount+$total_other_taxes)
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                                @if ($order->taxable_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Container Charges') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format(($vendor->total_container_charges) * $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->total_service_fee > 0)
@@ -1793,8 +1809,13 @@
     @if(in_array('razorpay',$client_payment_options))
     <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
     @endif
-    @if(in_array('stripe',$client_payment_options))
-    <script src="https://js.stripe.com/v3/"></script>
+    @if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
+    <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+    @endif
+    @if(in_array('stripe_oxxo',$client_payment_options))
+    <script>
+    var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+    </script>
     @endif
     @if(in_array('yoco',$client_payment_options))
     <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>

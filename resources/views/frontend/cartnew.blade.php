@@ -602,17 +602,18 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             if(price_bifurcation!=1){  %>
             <div class="row">
                 <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="total_taxable_amount"><%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+other_taxes) %></span></b></div>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="total_taxable_amount"><%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+parseFloat(other_taxes)) %></span></b></div>
             </div>
             <% } if(price_bifurcation!=1){ %>
             <hr class="my-2">
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)+other_taxes) %></b></span>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)) %></b></span>
                 <span id="other_taxes" style="display:none;"><%= other_taxes %></span></div>
             </div>
             <% } %>
             <hr class="my-2">
+            
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
@@ -702,19 +703,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
                             <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
                         <% } else { %>
-                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes) %></p>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(other_taxes)) %></p>
                         <% } %>
                         <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
-                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(other_taxes) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                                 
                         <% }else{ %>
                             <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
-                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(other_taxes)) %></p>
                             <% } else { %>
-                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(other_taxes)) %></p>
                             <% } %>
                             <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(other_taxes) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                             <%
                         } %>
                         <div>
@@ -732,8 +733,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     </div>
     {{-- Schedual code Start at down --}}
-
-            <% if(client_preference_detail.off_scheduling_at_cart != 1 && cart_details.vendorCnt==1) { %>
+            <% if(cart_details.closed_store_order_scheduled == 1 && cart_details.vendorCnt==1) { %>
                 @if($client_preference_detail->business_type != 'laundry')
             <div class="row arabic-lng position-relative mb-2" id="dateredio">
                 <div class=" col-md-12 mb-2 mb-md-0 text-right">
@@ -756,17 +756,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </li>
                             <% if(cart_details.closed_store_order_scheduled != 1 && cart_details.deliver_status == 0) { %>
                             <li class="close-window">
-                                <i class="fa fa-window-close cross"  aria-hidden="true"></i>
+                                <i class="fa fa-times cross" aria-hidden="true"></i>
                             </li>
                             <% }else{ %>
                                 <li class="close-window">
-                                    <i class="fa fa-window-close cross" style="display:none!important"  aria-hidden="true"></i>
+                                    <i class="fa fa-times cross" style="display:none!important"  aria-hidden="true"></i>
                                 </li>
                                 <% } %>
-
                         </ul>
-                        <div class=" col-sm-4 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="<%= ((cart_details.schedule_type != 'schedule' ) ? 'display:none!important' : '') %>">
-                    <% if(cart_details.slotsCnt ==0) { %>
+                        <div class=" col-sm-4 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="display:none !important">
+                    <% if(cart_details.slotsCnt == 0) { %>
                     <% if(cart_details.delay_date != 0) { %>
                         <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
                         min="<%= ((cart_details.delay_date != '0') ? cart_details.delay_date : '') %>">
@@ -1555,8 +1554,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options))
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+@endif
+@if(in_array('stripe_oxxo',$client_payment_options))
+<script>
+var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
 @endif
 @if(in_array('yoco',$client_payment_options))
 <script type="text/javascript" src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
@@ -1600,6 +1604,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
+    var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var cart_clear_stripe_oxxo_url = "{{url('payment/stripe_oxxo/clear')}}";
     var user_store_address_url = "{{route('address.store')}}";
     var product_faq_update_url = "{{ route('cart.productfaq') }}";
     var promo_code_remove_url = "{{ route('remove.promocode') }}";

@@ -134,7 +134,8 @@ function convertDateTimeInTimeZone($date, $timezone, $format = 'Y-m-d H:i:s'){
     return $date->format($format);
 }
 function getClientPreferenceDetail()
-{
+{   
+    
     $client_preference_detail = ClientPreference::first();
     list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
     $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
@@ -690,6 +691,15 @@ function stripePaymentCredentials(){
 
 function stripeFPXPaymentCredentials(){
     $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_fpx')->where('status', 1)->first();
+    $creds_arr = json_decode($stripe_creds->credentials);
+    $response = collect();
+    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+    return $response;
+}
+
+function stripeOXXOPaymentCredentials(){
+    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_oxxo')->where('status', 1)->first();
     $creds_arr = json_decode($stripe_creds->credentials);
     $response = collect();
     $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
