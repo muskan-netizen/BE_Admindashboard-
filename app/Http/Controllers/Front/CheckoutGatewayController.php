@@ -14,7 +14,7 @@ use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser};
+use App\Models\{User, UserVendor, Cart,CaregoryKycDoc, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser};
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class CheckoutGatewayController extends FrontController
@@ -205,12 +205,16 @@ class CheckoutGatewayController extends FrontController
                         $orderController->autoAcceptOrderIfOn($order->id);
 
                         // Remove cart
+                        CaregoryKycDoc::where('cart_id',$request->cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
                         Cart::where('id', $request->cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
                         CartAddon::where('cart_id', $request->cart_id)->delete();
                         CartCoupon::where('cart_id', $request->cart_id)->delete();
                         CartProduct::where('cart_id', $request->cart_id)->delete();
                         CartProductPrescription::where('cart_id', $request->cart_id)->delete();
-
+                        
+                        // send success sms
+                        $this->sendSuccessSMS($request, $order);
+                       
                         // Send Notification
                         if (!empty($order->vendors)) {
                             foreach ($order->vendors as $vendor_value) {
@@ -255,18 +259,30 @@ class CheckoutGatewayController extends FrontController
         } 
         else {
             if($request->payment_form == 'cart'){
+                $user = Auth::user();
                 $order_number = $request->order_number;
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-                $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-                foreach ($order_products as $order_prod) {
-                    OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                if($order){
+                    $wallet_amount_used = $order->wallet_amount_used;
+                    if($wallet_amount_used > 0){
+                        $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                        if(!$transaction){
+                            $wallet = $user->wallet;
+                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                        }
+                    }
                 }
-                OrderProduct::where('order_id', $order->id)->delete();
-                OrderProductPrescription::where('order_id', $order->id)->delete();
-                VendorOrderStatus::where('order_id', $order->id)->delete();
-                OrderVendor::where('order_id', $order->id)->delete();
-                OrderTax::where('order_id', $order->id)->delete();
-                Order::where('id', $order->id)->delete();
+
+                // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                // foreach ($order_products as $order_prod) {
+                //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                // }
+                // OrderProduct::where('order_id', $order->id)->delete();
+                // OrderProductPrescription::where('order_id', $order->id)->delete();
+                // VendorOrderStatus::where('order_id', $order->id)->delete();
+                // OrderVendor::where('order_id', $order->id)->delete();
+                // OrderTax::where('order_id', $order->id)->delete();
+                // Order::where('id', $order->id)->delete();
                 return Redirect::to(route('showCart'));
             }
             elseif($request->payment_form == 'wallet'){

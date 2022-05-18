@@ -317,6 +317,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('tool/uploadImage','Client\ToolsController@uploadImage')->name('tools.uploadImage');
         Route::post('updateAll', 'Client\PaymentOptionController@updateAll')->name('payoption.updateAll');
         Route::post('shippment/updateAll', 'Client\ShippingOptionController@updateAll')->name('shipoption.updateAll');
+        Route::post('shippo/updateAll', 'Client\ShippoController@updateAll')->name('shippo.updateAll');
         Route::post('payoutUpdateAll', 'Client\PaymentOptionController@payoutUpdateAll')->name('payoutOption.payoutUpdateAll');
         Route::resource('inquiry', 'Client\ProductInquiryController');
         Route::get('inquiry/filter', [ProductInquiryController::class, 'show'])->name('inquiry.filter');

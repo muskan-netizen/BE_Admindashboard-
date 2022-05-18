@@ -4,7 +4,7 @@ $(document).ready(function () {
     var window_height = $(window).height();
     var header_content_width = $('#content-wrap').height();
 
-    console.log('header_height',header_height,'footer_height',footer_height);
+    // console.log('header_height',header_height,'footer_height',footer_height);
     jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
     jQuery("#content-wrap").css('padding-bottom', footer_height);
 
@@ -368,6 +368,10 @@ $(document).ready(function () {
         var changLang = $(this).attr('langId');
         settingData('language', changLang);
     });
+    $('.change_language_selector').on('change',function(){
+        var changLang = $(this).val();
+        settingData('language', changLang);
+    });
 
     $('.customerCurr').click(function () {
         var changcurrId = $(this).attr('currId');
@@ -383,6 +387,10 @@ $(document).ready(function () {
         };
         card = elements.create('card', { hidePostalCode: true, style: style });
         card.mount('#stripe-card-element');
+    }
+
+    function stripeOXXOInitialize() {
+        stripeOxxo = Stripe(stripe_oxxo_publishable_key);
     }
 
     function stripeFPXInitialize() {
@@ -469,6 +477,81 @@ $(document).ready(function () {
         var payment_option_id = selected_option.data("payment_option_id");
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
+            // $('#subscription_payment').modal('hide');
+            if (payment_option_id == 4) {
+                stripe.createToken(card).then(function (result) {
+                    if (result.error) {
+                        $('#stripe_card_error').html(result.error.message);
+                        _this.attr("disabled", false);
+                    } else {
+                        $("#card_last_four_digit").val(result.token.card.last4);
+                        $("#card_expiry_month").val(result.token.card.exp_month);
+                        $("#card_expiry_year").val(result.token.card.exp_year);
+                        paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                    }
+                });
+            } else if (payment_option_id == 3) {
+                paymentViaPaypal('', payment_option_id);
+            } else if (payment_option_id == 8) {
+                inline.createToken().then(function (result) {
+                    if (result.error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: result.error.message,
+                        });
+                        // $('#yoco_card_error').html(result.error.message);
+                        _this.attr("disabled", false);
+                    } else {
+                        const token = result;
+                        paymentViaYoco(token.id, '', '');
+                    }
+                }).catch(function (error) {
+                    // Re-enable button now that request is complete
+                    _this.attr("disabled", false);
+                    //alert("error occured: " + error);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: "error occured: " + error,
+                        icon: "error",
+                        button: "OK",
+                    });
+                });
+            } else if (payment_option_id == 9) {
+                paymentViaPaylink('', '');
+            } else if (payment_option_id == 10) {
+                paymentViaRazorpay_wallet('', payment_option_id);
+            }
+            else if (payment_option_id == 12) {
+                paymentViaSimplify('', '');
+            }
+            else if (payment_option_id == 13) {
+                paymentViaSquare('', '');
+            } else if (payment_option_id == 14) {
+                paymentViaOzow('', '');
+            } else if (payment_option_id == 15) {
+                paymentViaPagarme('', '');
+            } else if (payment_option_id == 17) {
+                paymentViaCheckout('', '');
+            } else if (payment_option_id == 18) {
+                paymentViaAuthorize('', '');
+            } else if (payment_option_id == 19) {
+                paymentViaStripeFPX('', 19, '');
+            } else if (payment_option_id == 20) {
+                payWithKPG('');
+            }else if (payment_option_id == 21) {
+                payWithVivaWallet('');
+            }else if(payment_option_id == 22) {
+                payWithCcAvenue('');
+            } else if (payment_option_id == 24) {
+                paymentViaCashfree('');
+            } else if (payment_option_id == 26) {
+                paymentViaToyyibPay('');
+            } else if (payment_option_id == 25) {
+                payWithEasebuss('');
+            }else if (payment_option_id == 33) {
+                paymentViaBraintree('');
+            }
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -1308,7 +1391,7 @@ $(document).ready(function () {
         });
     }
 
-    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id = 0, tip = 0, delivery_type = 'D') {
+    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id = 0, tip = 0, delivery_type = 'D',other_taxes_string='') {
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
@@ -1329,7 +1412,8 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount, schedule_dropoff_slot:schedule_dropoff_slot },
+            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot },
+
             success: function (response) {
                 if (response.status == "Success") {
                     var ip_address = window.location.host;
@@ -1419,12 +1503,16 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-
-    $(document).on("click", ".proceed_to_pay", function () {
+    $(document).on("click", ".proceed_to_pay", function () {       
+        $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
-        $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
+         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
         var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
-
+        var other_taxes_string='';
+        if($("#other_taxes_string").val()!=null){
+            other_taxes_string=$("#other_taxes_string").val();
+        }
+        
         let address_id = $("input:radio[name='address_id']:checked").val();
 
         if ((vendor_type == 'delivery') && ((address_id == '') || (address_id < 1) || ($("input[name='address_id']").length < 1))) {
@@ -1441,9 +1529,9 @@ $(document).ready(function () {
         // alert(total_amount);
         // return false;
         if (payment_option_id == 1) {
-            placeOrder(address_id, payment_option_id, '', tip, delivery_type);
+            placeOrder(address_id, payment_option_id, '', tip, delivery_type,other_taxes_string);
         } else{
-            cartPaymentOptions(payment_option_id,address_id = '',tip = '', delivery_type);
+            cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
         }
     });
 
@@ -1588,15 +1676,16 @@ $(document).ready(function () {
         });
     });
     $(document).on("click", ".promo_code_list_btn", function () {
+        let cart_product_ids = $("input[name='cart_product_ids[]']").map(function(){return $(this).val();}).get();;
         let amount = $(this).attr('data-amount');
         let cart_id = $(this).attr('data-cart_id');
-        let vendor_id = $(this).attr('data-vendor_id');
+        let vendor_id = $(this).attr('data-vendor_id');    
         $(".invalid-feedback.manual_promocode").html("");
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: promocode_list_url,
-            data: { vendor_id: vendor_id, amount: amount, cart_id: cart_id },
+            data: { vendor_id: vendor_id, amount: amount, cart_id: cart_id, cart_product_ids:cart_product_ids },
             success: function (response) {
                 $("#promo_code_list_main_div").html('');
                 $(document).find('.manual_promocode_input').val("");
@@ -2046,7 +2135,7 @@ $(document).ready(function () {
     }
     $(document).on('click', '.tip_radio_controls .tip_radio', function () {
         var tip = $(this).val();
-        var amount_payable = $("#cart_payable_amount_original").val();
+        var amount_payable = parseFloat($("#cart_payable_amount_original").val());
         var currency = $("#cart_payable_amount_original").attr('data-curr');
         // if this was previously checked
         if ($(this).hasClass("active")) {
@@ -2066,19 +2155,22 @@ $(document).ready(function () {
             if ((fixed_fee_amount == '') || (isNaN(fixed_fee_amount))) {
                 fixed_fee_amount = 0;
             }
+            // var other_taxes=parseFloat($('#other_taxes').text());
+            var other_taxes=0;
         if (tip != 'custom') {
             if ((tip == '') || (isNaN(tip))) {
                 tip = 0;
             }
             var wallet_amount_used_fixed=parseFloat($('#wallet_amount_used_fixed').text());
+            
+            
             if(isNaN(wallet_amount_used_fixed) || wallet_amount_used_fixed== null){
                 wallet_amount_used_fixed=0;
             }
-            console.log(wallet_amount_used_fixed);
-            amount_payable = parseFloat(amount_payable) + parseFloat(tip)  ;
-            // console.log(parseFloat(amount_payable)  +"|"+$('#mov').text());
+            amount_payable = parseFloat(amount_payable) + parseFloat(tip)+other_taxes  ;
             $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
             $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+            $("input[name='cart_total_payable_amount']").val( parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
             if(parseFloat(amount_payable)+ wallet_amount_used_fixed>=parseFloat($('#mov').text())){
@@ -2092,42 +2184,58 @@ $(document).ready(function () {
             }
         } else {
             // amount_payable = parseFloat(amount_payable) +parseFloat(fixed_fee_amount);
-            $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+            $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
+            $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
         }
     
-        $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+        //$("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+    }
+
+    function initialize_values(value){
+        value = value.replace(',', '');
+        if ((value == '') || (isNaN(value))) {
+            value = 0;
+        }
+        return parseFloat(value);
     }
     $(document).on('keyup', '#custom_tip_amount', function () {
-        var tip = $(this).val();
-        if ((tip == '') || (isNaN(tip))) {
-            tip = 0;
-        }
-        var fixed_fee_amount = $("#fixed_fee_amount").val();
-        if ((fixed_fee_amount == '') || (isNaN(fixed_fee_amount))) {
-            fixed_fee_amount = 0;
-        }
+        // var other_taxes                 =initialize_values($('#other_taxes').text());
+        var other_taxes                 =0;
+        var loyalty_amount              =initialize_values($('#loyalty_amount').text());
+        var wallet_amount_available     =initialize_values($('#wallet_amount_available').text());
+        var wallet_amount_used_fixed    =initialize_values($('#wallet_amount_used_fixed').text());
+        var gross_amount                =initialize_values($('#gross_amount').text());
+        var total_taxable_amount        =initialize_values($('#total_taxable_amount').text());
+        var total_subscription_discount =initialize_values($('#total_subscription_discount').text());
+        //var fixed_fee_amount            =initialize_values($('#fixed_fee_amount').val());
+        var tip                         =initialize_values($(this).val());
+        
+        
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
-        var amount_payable = parseFloat(amount_elem.val());
+        var amount_payable =initialize_values(amount_elem.val());
+        var payable_amount=0;
         
-        $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
-        $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
-        $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+        $("#cart_tip_amount").val(tip.toFixed(parseInt(digit_count)));
+        // $("#cart_total_payable_amount").html(currency + (amount_payable+other_taxes).toFixed(parseInt(digit_count)));
+        // $("input[name='cart_total_payable_amount']").val((amount_payable+other_taxes).toFixed(parseInt(digit_count)));
         
-        if(parseFloat($('#wallet_amount_available').text())>0){
-            if(parseFloat($('#wallet_amount_available').text()) >= parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)){
+        if(wallet_amount_available>0){
+            if(wallet_amount_available >= wallet_amount_used_fixed+tip){
                 /* Paid amount is less then available wallet amount*/
-                $("#wallet_amount_used").text(" - "+currency+ " "+(parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)).toFixed(parseInt(digit_count)));
+                $("#wallet_amount_used").text(" - "+currency+ " "+(wallet_amount_used_fixed+tip).toFixed(parseInt(digit_count)));
             }else{
                 /* Paid amount is greater then available wallet amount*/
-                $("#wallet_amount_used").text(" - "+currency+ " "+parseFloat($('#wallet_amount_available').text()).toFixed(parseInt(digit_count)));
-                var payable_amount=((parseFloat($('#gross_amount').text()) -   parseFloat($('#loyalty_amount').text()))    -    parseFloat($('#wallet_amount_available').text())     +   parseFloat(tip)  );
-                $("#cart_total_payable_amount").html( currency +   payable_amount .toFixed(parseInt(digit_count))   );
+                $("#wallet_amount_used").text(" - "+currency+ " "+wallet_amount_available.toFixed(parseInt(digit_count)));
+                payable_amount=((gross_amount + tip)  - (total_subscription_discount+wallet_amount_available+loyalty_amount));
+                
+                $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count)));
+                $("input[name='cart_total_payable_amount']").val(  payable_amount.toFixed(parseInt(digit_count)));
             }
-            if(parseFloat(amount_payable)+parseFloat($('#wallet_amount_used_fixed').text())+parseFloat(tip)>=parseFloat($('#mov').text())){
+            if(amount_payable+wallet_amount_used_fixed+tip>=parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");
                 $("#MOV_Notification").addClass("d-none");
@@ -2137,8 +2245,10 @@ $(document).ready(function () {
                 $("#MOV_Notification").removeClass("d-none");
             }
         }else{
-            $("#cart_total_payable_amount").html(currency + (parseFloat(amount_payable)+parseFloat(tip)).toFixed(parseInt(digit_count)));
-            if(parseFloat(amount_payable)+parseFloat(tip)>=parseFloat($('#mov').text())){
+            payable_amount=((gross_amount + tip + total_taxable_amount)  - (total_subscription_discount+loyalty_amount));
+            $("#cart_total_payable_amount").html(currency + payable_amount.toFixed(parseInt(digit_count)));
+            $("input[name='cart_total_payable_amount']").val(payable_amount.toFixed(parseInt(digit_count)));
+            if(amount_payable >= parseFloat($('#mov').text())){
                 $("#order_placed_btn").removeAttr("disabled");
                 $("#order_placed_btn").removeClass("d-none");
                 $("#MOV_Notification").addClass("d-none");
@@ -3290,7 +3400,7 @@ $(document).ready(function () {
         // var res = parseInt(str.substring(10, str.length - 1));
 
 
-        console.log(minimum_order_count);
+        // console.log(minimum_order_count);
 
         var s = $(".qty-box .input-qty-number"),
             i = parseInt(s.val(), 10);
@@ -3441,7 +3551,6 @@ $(document).ready(function () {
         });
     }
 
-    // *****************************  End tip after order place ****************************///
 
     $(document).on('click', '.validate_promo_code_btn', function () {
         let amount = $(this).attr('data-amount');
@@ -3476,7 +3585,8 @@ $(document).ready(function () {
         } else {
             $(".invalid-feedback.manual_promocode").html("<strong>Please enter promocode</strong>");
         }
-    })
+    });
+
 
     function subscriptionPaymentOPtions(payment_option_id)
     {
@@ -3599,6 +3709,22 @@ $(document).ready(function () {
 
             case 30:
                     payWithFlutterWave('','');
+            break;
+
+            case 32:
+                    payphoneButton('','');
+            break;
+
+            case 34:
+                    payWithWindcave('','');
+            break;
+
+            case 35:
+                payWithPaytech('','');
+            break;
+
+            case 37:
+                paymentViaStripeOXXO('', 19, '');
             break;
         
         }
@@ -3877,6 +4003,77 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '31':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //PayU
+                    payWithPayU(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '32':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //payphoneButton
+                    payphoneButton(order);
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '33':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaBraintree(address_id, order);
+                    } else {
+                        return false;
+                    }
+            break;
+
+            case '34':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //payWithWindcave
+                    payWithWindcave(order);
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '35':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    payWithPaytech(order);
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '36':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaMyCash(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+
+            case '37':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    stripeOXXOInitialize();
+                    paymentViaStripeOXXO(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
         
         }
 
@@ -3925,15 +4122,15 @@ $(document).ready(function () {
                 }).catch(function (error) {
                     // Re-enable button now that request is complete
                     // alert("error occured: " + error);
-                    Swal.fire({
-                        // title: "Warning!",
-                        text: "error occured: " + error,
-                        icon: "error",
-                        button: "OK",
-                    });
-
+                Swal.fire({
+                    // title: "Warning!",
+                    text: "error occured: " + error,
+                    icon: "error",
+                    button: "OK",
                 });
-            
+
+            });
+        
             break;
 
             case 9:
@@ -4019,9 +4216,34 @@ $(document).ready(function () {
             case 30:
                     payWithFlutterWave('', payment_option_id, '');
             break;
-        }
 
+            case 32:
+                    payphoneButton('', payment_option_id, '');
+            break;
+
+            case 33:
+                    paymentViaBraintree('', payment_option_id, ''); 
+            break;
+
+            case 34:
+                    payWithWindcave('', payment_option_id, ''); 
+            break;
+
+            case 35:
+                    payWithPaytech('', payment_option_id, ''); 
+            break;
+
+            case 36:
+                    paymentViaMyCash('', payment_option_id, ''); 
+            break;
+
+            case 36:
+                    paymentViaStripeOXXO('', payment_option_id, ''); 
+            break;
+
+        }
     }
+
 });
 
 function numberWithCommas(x) {

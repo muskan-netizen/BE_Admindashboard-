@@ -15,11 +15,14 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\UserVendor;
+use App\Models\CaregoryKycDoc;
+
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
 use Log;
+use App\Http\Controllers\Front\FrontController;
 
-class KongapayController extends Controller
+class KongapayController extends FrontController
 {
    use ApiResponser;
 
@@ -187,6 +190,7 @@ class KongapayController extends Controller
 
             $cart = Cart::where('user_id',auth()->id())->select('id')->first();
             $cartid = $cart->id;
+            CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
             Cart::where('id', $cartid)->update([
               'schedule_type' => null, 'scheduled_date_time' => null,
               'comment_for_pickup_driver' => null, 'comment_for_dropoff_driver' => null, 'comment_for_vendor' => null, 'schedule_pickup' => null, 'schedule_dropoff' => null, 'specific_instructions' => null
@@ -195,7 +199,8 @@ class KongapayController extends Controller
             CartCoupon::where('cart_id', $cartid)->delete();
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
-
+            // send sms 
+            $this->sendSuccessSMS($request, $order);
             Payment::create(['amount'=>0,'transaction_id'=>$request->merchant_reference,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id]);
 
              // Send Notification
@@ -253,7 +258,7 @@ class KongapayController extends Controller
               $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.wallet'));
+              return Redirect::to(route('user.wallet'))->with('success','Wallet updated successfully.');
             }
 
             
@@ -266,7 +271,7 @@ class KongapayController extends Controller
               $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.wallet'))->with('error',$request->message);
+              return Redirect::to(route('user.wallet'))->with('error','Wallet not updated.');
             }
 
            
@@ -292,7 +297,7 @@ class KongapayController extends Controller
               $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.subscription.plans'))->with('success',$request->message);
+              return Redirect::to(route('user.subscription.plans'))->with('success','Subscription added successfully.');
             }
           }else{
             $data->delete();
@@ -302,7 +307,7 @@ class KongapayController extends Controller
               $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
-              return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
+              return Redirect::to(route('user.subscription.plans'))->with('error','Somthing went wrong please try again.');
             }
 
           }
@@ -325,7 +330,7 @@ class KongapayController extends Controller
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order_number[2].'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
-                return Redirect::to(route('user.orders'))->with('success', $request->message);
+                return Redirect::to(route('user.orders'))->with('success','Tip added successfully.');
               }
 
           }else{
@@ -336,7 +341,7 @@ class KongapayController extends Controller
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
-                return Redirect::to(route('user.orders'))->with('error', $request->message);
+                return Redirect::to(route('user.orders'))->with('error','Somthing went wrong please try again.');
               }
 
           }

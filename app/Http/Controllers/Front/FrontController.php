@@ -884,4 +884,35 @@ class FrontController extends Controller
         return $hours;
 
     }
+    protected function sendSuccessSMS($request, $order, $vendor_id = '')
+    {
+        //Log::info('sendSuccessSMS FrontController');
+        try {
+
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
+            // $currId = Session::get('customerCurrency');
+            // $currSymbol = Session::get('currencySymbol');
+            $customerCurrency = ClientCurrency::with('currency')->where('is_primary', '1')->first();
+            $currSymbol =$customerCurrency->currency->symbol;
+            $user = User::where('id', $order->user_id)->first();
+            if ($user) {
+                if ($user->dial_code == "971") {
+                    $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                } else {
+                    $to = '+' . $user->dial_code . $user->phone_number;
+                }
+                
+                $provider = $prefer->sms_provider;
+                $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
+                $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
+            //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                if (!empty($prefer->sms_provider)) {
+                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                }
+            }
+        } catch (\Exception $ex) {
+            
+        }
+
+    }
 }

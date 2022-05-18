@@ -85,6 +85,15 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/webview/stripe_fpx', 'Front\StripeGatewayController@paymentWebViewStripeFPX')->name('payment.webview.stripe_fpx');
 	Route::get('payment/webview/response/stripe_fpx', 'Front\StripeGatewayController@webViewResponseStripeFPX')->name('payment.webview.response.stripe_fpx');
 
+
+		// Stripe OXXO
+		Route::post('payment/create/stripe_oxxo', 'Front\StripeGatewayController@createStripeOXXOPaymentIntent')->name('payment.create.stripe_oxxo');
+		 Route::get('payment/stripe_oxxo/clear', 'Front\StripeGatewayController@cartStripeOXXOClear')->name('payment.stripe_oxxo_clear');
+		Route::post('payment/webhook/stripe_oxxo', 'Front\StripeGatewayController@stripeOXXOWebhook')->name('payment.webhook.stripe_oxxo');
+		Route::get('payment/webview/stripe_oxxo', 'Front\StripeGatewayController@paymentWebViewStripeOXXO')->name('payment.webview.stripe_oxxo');
+		Route::get('payment/webview/response/stripe_oxxo', 'Front\StripeGatewayController@webViewResponseStripeOXXO')->name('payment.webview.response.stripe_oxxo');
+
+
 	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
 	Route::get('payment/paypal/CompletePurchase', 'Front\PaypalGatewayController@paypalCompletePurchase')->name('payment.paypalCompletePurchase');
@@ -124,6 +133,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//Square
 	Route::match(['get','post'],'payment/square/page','Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square','Front\SquareController@createPayment')->name('payment.square.createPayment');
+
+	//Braintree
+	Route::match(['get','post'],'payment/braintree/page','Front\BraintreeController@beforePayment')->name('payment.braintree.beforePayment');
+	Route::post('payment/braintree','Front\BraintreeController@createPayment')->name('payment.braintree.createPayment'); 
 
 	//Ozow
 	Route::match(['get','post'],'payment/ozow/page','Front\OzowController@beforePayment')->name('payment.ozow.beforePayment');
@@ -196,6 +209,20 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/easypaisa', 'Front\EasypaisaController@createHash')->name('easypaisa.createHash');
 	Route::get('payment/easypaisa', 'Front\EasypaisaController@successPage')->name('easypaisa.success');
 
+	//Windcave routes 
+	Route::post('payment/windcave', 'Front\WindcaveController@createHash')->name('windcave.createHash');
+	Route::get('payment/windcave/success', 'Front\WindcaveController@successPage')->name('windcave.success');
+	Route::get('payment/windcave/fail', 'Front\WindcaveController@failPage')->name('windcave.fail');
+
+	//Paytech routes 
+	Route::post('payment/paytech', 'Front\PaytechController@createHash')->name('paytech.createHash');
+	Route::get('payment/paytech/success', 'Front\PaytechController@successPage')->name('paytech.success');
+	Route::get('payment/paytech/fail', 'Front\PaytechController@failPage')->name('paytech.fail');
+	
+	//payPhone routes
+	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
+	Route::get('payment/payphone/success', 'Front\PayphoneController@successPage')->name('payphone.success');
+	Route::any('payment/payphone/api', 'Front\PayphoneController@webViewPay')->name('payphone.webview');
 
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');

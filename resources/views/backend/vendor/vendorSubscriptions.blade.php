@@ -20,7 +20,7 @@
                             <div class="col-12">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <h3 class="d-inline-block"><b>{{ $subscription->plan->title }}</b></h3>
-                                    <span class="plan-price">{{$clientCurrency->currency->symbol}}{{ $subscription->subscription_amount }} / {{ $subscription->frequency }}</span>
+                                    <span class="plan-price">{{$clientCurrency->currency->symbol}}{{ decimal_format($subscription->subscription_amount) }} / {{ $subscription->frequency }}</span>
                                 </div>
                                 <p>{{ $subscription->plan->description }}</p>
                             </div>
@@ -81,7 +81,7 @@
                     <div class="gold-icon position-relative">
                         <img src="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}">
                         <div class="pricingtable-header position-absolute">
-                            <div class="price-value"> <b>{{$clientCurrency->currency->symbol}}{{ $plan->price }}</b> <span class="month">{{ $plan->frequency }}</span> </div>
+                            <div class="price-value"> <b>{{$clientCurrency->currency->symbol}}{{ decimal_format($plan->price) }}</b> <span class="month">{{ $plan->frequency }}</span> </div>
                         </div>
                     </div>
                     <div class="p-2">

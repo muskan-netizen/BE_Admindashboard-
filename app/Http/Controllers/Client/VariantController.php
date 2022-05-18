@@ -162,7 +162,7 @@ class VariantController extends BaseController
         $variant->type = $request->type;
         $variant->save();
 
-        $affected = VariantCategory::where('variant_id', $variant->id)->update(['category_id' => $request->cate_id]);
+        $affected = VariantCategory::updateOrCreate(['variant_id' => $variant->id],['category_id' => $request->cate_id]);
 
         foreach ($request->language_id as $key => $value) {
 

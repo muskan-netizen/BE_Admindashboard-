@@ -134,9 +134,10 @@ function convertDateTimeInTimeZone($date, $timezone, $format = 'Y-m-d H:i:s'){
     return $date->format($format);
 }
 function getClientPreferenceDetail()
-{
+{   
+    
     $client_preference_detail = ClientPreference::first();
-    list($r, $g, $b) = sscanf($client_preference_detail->web_color, "#%02x%02x%02x");
+    list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
     $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
     return $client_preference_detail;
 }
@@ -279,6 +280,12 @@ function createSlug($str, $delimiter = '-'){
     $slug = strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $str))))), $delimiter));
     return $slug;
 
+}
+
+function remove_special_chars($str, $delimiter = ''){
+    // $result = strtolower(trim(preg_replace('/[^A-Za-z0-9\-]/', $delimiter, $str)));
+    $result = strtolower(trim(preg_replace('/[.*+?^${}()/|[\]\\]+/g', $delimiter, $str)));
+    return $result;
 }
 
 function getBaseprice($dist,$option = 'lalamove')
@@ -698,6 +705,15 @@ function stripeFPXPaymentCredentials(){
     return $response;
 }
 
+function stripeOXXOPaymentCredentials(){
+    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_oxxo')->where('status', 1)->first();
+    $creds_arr = json_decode($stripe_creds->credentials);
+    $response = collect();
+    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+    return $response;
+}
+
  function OnLAstMileDelivery()
     {
         $count = ShippingOption::where('status',1)->count();
@@ -747,4 +763,10 @@ function decimal_format($number,$format="")
     $preference = session()->get('preferences');
     $digits = $preference['digit_after_decimal'] ?? 2;
     return number_format($number,$digits,'.',$format);
+}
+
+if (!function_exists('taxRates')) {
+    function taxRates(){
+        return App\Models\TaxRate::all();
+    }
 }

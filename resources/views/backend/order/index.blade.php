@@ -206,7 +206,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% } %>
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.payable_amount)+parseFloat(order.fixed_fee_amount)) %></span>
+                                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.payable_amount)+parseFloat(order.fixed_fee_amount)) %></span> --}}
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(vendor.subtotal_amount) - parseFloat(vendor.discount_amount) ) + parseFloat(vendor.total_container_charges) + parseFloat(vendor.taxable_amount) + parseFloat(vendor.service_fee_percentage_amount) + parseFloat(order.fixed_fee_amount) + parseFloat(vendor.delivery_fee )) %></span>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -310,7 +311,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     <% } %>
                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Payable') }} </label>
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount)+parseFloat(order.fixed_fee_amount))%></span>
+                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount)+parseFloat(order.fixed_fee_amount))%></span> --}}
+
+                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(order.total_amount) - parseFloat(order.total_discount_calculate) ) + parseFloat(order.total_container_charges) + parseFloat(order.taxable_amount) + parseFloat(order.total_service_fee) + parseFloat(order.fixed_fee_amount) + parseFloat(order.total_delivery_fee )) %></span>
                                     </li>
                                 </ul>
                             </div>

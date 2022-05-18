@@ -176,7 +176,7 @@ h1, h2, h3, h4, h5, h6 {
 .page-section .content-detail .sub-title,
 .page-section .content-detail .detail-text {
     display: block;
-    color: {{ getClientPreferenceDetail()->web_color??'#fff' }};
+    color: rgb(24, 6, 6);
     text-align: center;
 }
 .page-section .content-detail .sub-title {
@@ -186,14 +186,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 .page-section .content-detail .global-title {
     display: block;
-    color: <?php echo getClientPreferenceDetail()->web_color; ?>;
+    color: <?php echo getClientPreferenceDetail()->web_color??'#fff'; ?>;
     font-size: 150px;
     font-weight: 800;
     margin: 0;
 }
-/* .page-section .content-detail .global-title span {
-    animation: animateblur 2s linear infinite;
-} */
+
 .page-section .content-detail .global-title span {
 animation-name: animateblur;
 animation-duration: 1.5s;
