@@ -271,9 +271,7 @@ class ClientPreferenceController extends BaseController{
             $preference->subscription_mode = ($request->has('subscription_mode') && $request->subscription_mode == 'on') ? 1 : 0;
             $preference->tip_before_order = ($request->has('tip_before_order') && $request->tip_before_order == 'on') ? 1 : 0;
             $preference->tip_after_order = ($request->has('tip_after_order') && $request->tip_after_order == 'on') ? 1 : 0;
-            $preference->delay_order = ($request->has('delay_order') && $request->delay_order == 'on') ? 1 : 0;
             $preference->product_order_form = ($request->has('product_order_form') && $request->product_order_form == 'on') ? 1 : 0;
-            $preference->off_scheduling_at_cart = ($request->has('off_scheduling_at_cart') && $request->off_scheduling_at_cart == 'on') ? 1 : 0;
             $preference->isolate_single_vendor_order = ($request->has('isolate_single_vendor_order') && $request->isolate_single_vendor_order == 'on') ? 1 : 0;
             $preference->gifting = ($request->has('gifting') && $request->gifting == 'on') ? 1 : 0;
             $preference->pickup_delivery_service_area = ($request->has('pickup_delivery_service_area') && $request->pickup_delivery_service_area == 'on') ? 1 : 0;
@@ -281,6 +279,7 @@ class ClientPreferenceController extends BaseController{
             $preference->static_delivey_fee = ($request->has('static_delivey_fee') && $request->static_delivey_fee == 'on') ? 1 : 0;
             $preference->get_estimations = ($request->has('get_estimations') && $request->get_estimations == 'on') ? 1 : 0;
             $preference->max_safety_mod = ($request->has('max_safety_mod') && $request->max_safety_mod == 'on') ? 1 : 0;
+
             $preference->address_is_car = ($request->has('address_is_car') && $request->address_is_car == 'on') ? 1 : 0;
             $preference->hide_order_address = ($request->has('hide_order_address') && $request->hide_order_address == 'on') ? 1 : 0;
             $preference->auto_implement_5_percent_tip = ($request->has('auto_implement_5_percent_tip') && $request->auto_implement_5_percent_tip == 'on') ? 1 : 0;
@@ -382,6 +381,15 @@ class ClientPreferenceController extends BaseController{
 
         if($request->has('admin_email')){
             $preference->admin_email = $request->admin_email ;
+        }
+
+        // Check if the request is coming from customize page
+        if($request->has('send_to') && $request->send_to == 'customize'){
+            $preference->delay_order = ($request->has('delay_order') && $request->delay_order == 'on') ? 1 : 0; // Moved by ovi
+            $preference->off_scheduling_at_cart = ($request->has('off_scheduling_at_cart') && $request->off_scheduling_at_cart == 'on') ? 1 : 0; // Moved by ovi
+            $preference->scheduling_with_slots = ($request->has('scheduling_with_slots') && $request->scheduling_with_slots == 'on') ? 1 : 0; //Added by ovi
+            $preference->same_day_delivery_for_schedule = ($request->has('same_day_delivery_for_schedule') && $request->same_day_delivery_for_schedule == 'on') ? 1 : 0;  //Added by ovi
+            $preference->same_day_orders_for_rescheduing = ($request->has('same_day_orders_for_rescheduing') && $request->same_day_orders_for_rescheduing == 'on') ? 1 : 0; //Added by ovi
         }
 
         $preference->save();

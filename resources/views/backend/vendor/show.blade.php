@@ -388,33 +388,93 @@
                         </div>
                         @endif
                         @if($vendor->show_slot == 0)
-                        <div class="card-box">
-                            <div class="row">
-                                <h4 class="mb-4 "> {{ __('Weekly Slot') }}</h4>
-                                <div class="col-md-12">
-                                    <div class="row mb-2">
-                                        <div class="col-md-12 col-lg-4">
-                                            <div id='calendar_slot_alldays'>
-                                                <table class="table table-centered table-nowrap table-striped" id="calendar_slot_alldays_table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th colspan="2">This week</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    </tbody>
-                                                </table>
+                        @if($client_preferences->scheduling_with_slots != 1)
+                        @if($client_preference_detail->business_type != 'laundry')
+                            <div class="card-box">
+                                <div class="row">
+                                    <h4 class="mb-4 "> {{ __('Weekly Slot') }}</h4>
+                                    <div class="col-md-12">
+                                        <div class="row mb-2">
+                                            <div class="col-md-12 col-lg-4">
+                                                <div id='calendar_slot_alldays'>
+                                                    <table class="table table-centered table-nowrap table-striped" id="calendar_slot_alldays_table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="2">This week</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-12 col-lg-8">
-                                            <div id='calendar'>
+                                            <div class="col-md-12 col-lg-8">
+                                                <div id='calendar'>
 
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
+                    @else
+                        @if($client_preference_detail->business_type == 'laundry')
+                            <div class="card-box">
+                                <div class="row">
+                                    <h4 class="mb-4 "> {{ __('Weekly Slot For Pickup') }}</h4>
+                                    <div class="col-md-12">
+                                        <div class="row mb-2">
+                                            <div class="col-md-12 col-lg-4">
+                                                <div id='calendar_slot_alldays'>
+                                                    <table class="table table-centered table-nowrap table-striped" id="calendar_pickup_slot_alldays_table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="2">This week</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-lg-8">
+                                                <div id='calendarForPickUp'>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <h4 class="mb-4 "> {{ __('Weekly Slot For Dropoff') }}</h4>
+                                    <div class="col-md-12">
+                                        <div class="row mb-2">
+                                            <div class="col-md-12 col-lg-4">
+                                                <div id='calendar_slot_alldays'>
+                                                    <table class="table table-centered table-nowrap table-striped" id="calendar_dropoff_slot_alldays_table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="2">This week</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-lg-8">
+                                                <div id='calendarForDropoff'>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @endif
                         @endif
 
                         @if(($client_preferences->dinein_check == 1) && ($vendor->dine_in == 1))
@@ -735,6 +795,8 @@
 <form name="noPurpose" id="noPurpose"> @csrf </form>
 
 @include('backend.vendor.profile-modals')
+@include('backend.vendor.modals.laundry.pickup-modals')
+@include('backend.vendor.modals.laundry.dropoff-modals')
 @endsection
 
 @section('script')
@@ -742,7 +804,14 @@
 @include('backend.vendor.pagescript')
 
 <script src="{{asset('assets/libs/moment/moment.min.js')}}"></script>
-
+<script type="text/javascript">
+    var vendor_id = "<?= $vendor->id ?>";
+    var getURLForPickUp = "{{route('vendor.calender.pickup', $vendor->id)}}";
+    var getURLForDropOff = "{{route('vendor.calender.dropoff', $vendor->id)}}";
+    var hour12FromBlade = "{{$hour12}}";
+</script>
+<script src="{{asset('assets/js/pickup_laundry.js')}}"></script>
+<script src="{{asset('assets/js/dropoff_laundry.js')}}"></script>
 <script src="{{asset('assets/js/calendar_main-5.9.js')}}"></script>
 <script src="{{ asset('assets/js/pages/jquery.cookie.js') }}"></script>
 <script>
