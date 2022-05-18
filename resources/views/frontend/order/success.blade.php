@@ -123,7 +123,6 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                     <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount+$order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
                                     @else
-                                    {{$total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charge}}
                                     <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                     @if($order->subscription_discount > 0)

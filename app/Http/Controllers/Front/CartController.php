@@ -689,6 +689,7 @@ class CartController extends FrontController
             $d = 0;
             $total_container_charges = 0 ;
             foreach ($cartData as $ven_key => $vendorData) {
+                $opt_quantity_price_new = 0.00;
                 $addon_price=0;
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = $delivery_fee_charges_static =  $deliver_charges_lalmove = 0.00;
@@ -803,7 +804,7 @@ class CartController extends FrontController
                     {
                         $coupon_product_discount = $coupon_product_discount + $quantity_price + $quantity_container_charges;
                     }
-                    $opt_quantity_price_new = 0.00;
+                   
                     if($prod->addon->isNotEmpty()){
                         foreach ($prod->addon as $ck => $addons) {
                             if(isset($addons->option)){
@@ -1056,10 +1057,10 @@ class CartController extends FrontController
                 if($vendorData->vendor->service_fee_percent > 0){
                     $amount_for_service = $opt_quantity_price_new+$vendor_products_total_amount;
                     // dd($opt_quantity_price_new.' '.$vendor_products_total_amount.' '.$vendorData->vendor->service_fee_percent);
-                    $vendor_service_fee_percentage_amount = (($amount_for_service+$addon_price) * $vendorData->vendor->service_fee_percent) / 100 ;
+                    //dd($opt_quantity_price_new." | ".$vendor_products_total_amount);
+                    $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
-
 
                 //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
