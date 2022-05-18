@@ -437,7 +437,7 @@ class StripeGatewayController extends FrontController
     {
         try{
             ////// Create webhook Endpoint ///////
-            $secret_key = stripeFPXPaymentCredentials()->secret_key;
+            $secret_key = stripeOXXOPaymentCredentials()->secret_key;
             $stripe = new \Stripe\StripeClient($secret_key);
             
             $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_oxxo';
