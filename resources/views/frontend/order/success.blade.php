@@ -1,7 +1,9 @@
 @extends('layouts.store', ['title' => 'Checkout'])
 @section('content')
 @php
-$total = $order->payable_amount+$order->total_other_taxes_amount;
+//$total_amount = $order->payable_amount+$order->total_other_taxes_amount;
+$total_amount = $order->payable_amount;
+$total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges;
 @endphp
 <section class="section-b-space light-layout_alFour">
     <div class="container">
@@ -114,22 +116,24 @@ $total = $order->payable_amount+$order->total_other_taxes_amount;
                                     @if($order->total_delivery_fee > 0)
                                         <li>{{__('Delivery Fee')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_delivery_fee * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
-                                    @if($order->total_other_taxes_amount > 0)
-                                        <li>{{__('Other Taxes')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
-                                    @endif
+                                    
                                    
-                                    <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges) * @$clientCurrency->doller_compare)}}</span></li>
-                                    @if($order->taxable_amount > 0)
-                                        <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)}}</span></li>
+                                    @if($order->taxable_amount > 0 || $order->total_other_taxes_amount> 0 )
+                                    
+                                    <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount+$order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
+                                    <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
+                                    @else
+                                    {{$total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charge}}
+                                    <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                     @if($order->subscription_discount > 0)
-                                        <li>{{__('Subscription Discount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)}}</span></li>
+                                        <li>{{__('Subscription Discount')}} <span> - {{Session::get('currencySymbol')}}{{decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                     @if($order->loyalty_amount_saved > 0)
-                                        <li>{{__('Loyalty Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->loyalty_amount_saved * @$clientCurrency->doller_compare)}}</span></li>
+                                        <li>{{__('Loyalty Amount')}} <span> - {{Session::get('currencySymbol')}}{{decimal_format($order->loyalty_amount_saved * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                     @if($order->wallet_amount_used > 0)
-                                        <li>{{__('Wallet Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}</span></li>
+                                        <li>{{__('Wallet Amount')}} <span> {{Session::get('currencySymbol')}}{{decimal_format($order->wallet_amount_used * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                     @if($order->tip_amount > 0)
                                         <li>{{__('Tip Amount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->tip_amount * @$clientCurrency->doller_compare)}}</span></li>
@@ -142,7 +146,7 @@ $total = $order->payable_amount+$order->total_other_taxes_amount;
                             //$total = $order->taxable_amount+$order->total_service_fee+$order->fixed_fee_amount+$order->total_container_charges+$order->total_delivery_fee+$order->tip_amount+$order->subscription_discount+$order->total_amount
                             
                         @endphp
-                        <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></h3>
+                        <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($total_amount) * @$clientCurrency->doller_compare)}}</span></h3>
                     </div>
                 </div></div>
                                <div class="col-lg-6">
@@ -158,7 +162,7 @@ $total = $order->payable_amount+$order->total_other_taxes_amount;
                                     @endif
                                 </ul>
                                 <ul class="order-detail row">
-                                    <li class="col-4">{{__('Order Total')}}:<span> {{Session::get('currencySymbol')}}{{decimal_format(($order->payable_amount+$order->total_other_taxes_amount) * @$clientCurrency->doller_compare)}}</span></li>
+                                    <li class="col-4">{{__('Order Total')}}:<span> {{Session::get('currencySymbol')}}{{decimal_format($total_amount)}}</span></li>
                                     <li class="Shipping col-8">
 
                                         @if($order->luxury_option_id == 1)
