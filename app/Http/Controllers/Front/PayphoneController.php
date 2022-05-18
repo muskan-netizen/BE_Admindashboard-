@@ -42,115 +42,126 @@ class PayphoneController extends FrontController
    {
      $time = '';
      $amt = $request->amt??$request->amount;
+     $amt =  $this->getDollarCompareAmount($request->amt);
     if(isset($request->auth_token) && !empty($request->auth_token)){
       $user = User::where('auth_token', $request->auth_token)->first();
       Auth::login($user);
     }else{
       $user = auth()->user();
     }
+
      $name = explode(' ',$user->name);
      $returnUrl = '';
      if($request->from == 'cart')
      {
-      $request->amt = $amt*100;
       $time = $request->order_number;
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'cart','date'=>date('Y-m-d')]);
 
      }elseif($request->from == 'wallet')
      {
       $time = ($request->transaction_id)??'W_'.time();
       //Save transaction before payment success for get information only
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'wallet','date'=>date('Y-m-d')]);
-      $request->amt = $amt*100;
 
      }elseif($request->from == 'tip')
      {
       $time = 'T_'.time().'_'.$request->order_number;
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'tip','date'=>date('Y-m-d')]);
-     
-      $request->amt = $amt*100;
       
      }elseif($request->from == 'subscription')
      {
       $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'subscription','date'=>date('Y-m-d')]);
-
-      $request->amt = $amt*100;
-     
      }
-       
-     $key = $request->amt.'|'.$this->api_key.'|'.$time;
-
      //Need to save entry in payment table
-
      $data = (object)array(
-            "hash"=> hash('Sha512',$key),
-            "amount"=> $request->amt??0,
-            "description"=> "web payment",
-            "email"=> $user->email??'',
-            "merchantId"=> $this->merchant_id,
-            "reference"=> $time,
-            "firstname" => $name[0]??'',
-            "lastname" => $name[1]??'last name',
-            "phone" => $user->phone_number,
-            "enableFrame"=> true,
-            "callback" => $returnUrl,
-            "customerId" => $user->email
+            "token"=> $this->token,
+            "amount"=> $amt*100,
+            "orderNo"=> $time,
+            "returnUrl"=>route('payphone.success')
         );
       return json_encode($data);
    }  
 
 
+   public function createHashApp(Request $request)
+   {
+     $time = '';
+     $amt = $request->amt??$request->amount;
+     $amt =  $this->getDollarCompareAmount($amt);
+    if(isset($request->auth_token) && !empty($request->auth_token)){
+      $user = User::where('auth_token', $request->auth_token)->first();
+      Auth::login($user);
+    }else{
+      $user = auth()->user();
+    }
+
+     $name = explode(' ',$user->name);
+     $returnUrl = '';
+     if($request->from == 'cart')
+     {
+      $time = $request->order_number;
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'cart','date'=>date('Y-m-d')]);
+
+     }elseif($request->from == 'wallet')
+     {
+      $time = ($request->transaction_id)??'W_'.time();
+      //Save transaction before payment success for get information only
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'wallet','date'=>date('Y-m-d')]);
+
+     }elseif($request->from == 'tip')
+     {
+      $time = 'T_'.time().'_'.$request->order_number;
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'tip','date'=>date('Y-m-d')]);
+      
+     }elseif($request->from == 'subscription')
+     {
+      $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'subscription','date'=>date('Y-m-d')]);
+     }
+     //Need to save entry in payment table
+     $data = array(
+            "token"=> $this->token,
+            "amount"=> $amt*100,
+            "orderNo"=> $time,
+            "returnUrl"=>url($request->serverUrl.'payment/payphone/success'),
+            "from"=>$request->from,
+        );
+        $params = http_build_query ( $data );  
+      // return json_encode($data);
+      return $this->successResponse(url($request->serverUrl.'payment/payphone/api?'.$params)); 
+   }  
+
+
+
    public function webViewPay(Request $request)
    {
-     $request->request->add(['amt'=>$request->amount,'from'=>$request->from,'order_number'=>$request->order_no??time()]);
-    // $data = $request->all();
-    // $request['from']=$request->from;
-    // $request['amt']=$request->amount??'100';
-    // $request['order_number']=$request->order_no??time(); // order no
-    $data = json_decode($this->createHash($request));
-    $inputs = '
-    <input type="text" value="'.$data->hash.'" name="hash"/>
-    <input type="number" value="'.$data->amount.'" name="amount"/>
-    <input type="text" value="mobile payment" name="description">
-    <input type="email" value="'.$data->email.'" name="email">
-    <input type="text" value="Kongadel" name="merchant_id">
-    <input type="text" value="'.$data->reference.'" name="reference">
-    <input type="text" value="'.$data->firstname.'" name="firstname">
-    <input type="text" value="'.$data->lastname.'" name="lastname">
-    <input type="text" value="'.$data->phone.'" name="phone">
-    <input type="text" value="'.$data->callback.'" name="callback">
-    <input type="text" value="'.$data->customerId.'" name="customerId">
-    ';
-    return view('frontend.payment_gatway.kongapay_view', compact('inputs'));
+    $request->request->add(['amt'=>$request->amount,'from'=>$request->from,'order_number'=>$request->orderNo??time(),'payid'=>$this->id,'payToken'=>$this->token]);
+    return view('frontend.payment_gatway.payphone_view', compact('request'));
    }
 
-   public function kongapayPurchase(Request $request)
-   {
-       $amount = $request->amount;
-       $user = auth()->user();
-       $action = isset($request->action) ? $request->action : ''; 
-       $params = '?amount=' . $amount.'&auth_token='.$user->auth_token.'&from='.$action;
-       if($action == 'cart'){
-           $params = $params . '&order_no=' . $request->order_number.'&app=1';
-       }elseif($action == 'wallet'){
-         //app = 2 is for wallet
-        $params = $params .'&app=2&transaction_id=W_'.time();
-       }elseif($action == 'subscription'){
-        //app = 2 is for wallet
-       $params = $params .'&app=3&subscription_id='.'S_'.time().'_'.$request->subscription_id;
-      }elseif($action == 'tip'){
-        //app = 2 is for wallet
-       $params = $params .'&app=3&order_no='.$request->order_number;
-      }
 
-       return $this->successResponse(url($request->serverUrl.'payment/kongapay/api/'.$params)); 
+
+   public function successPage(Request $request)
+   {   
+       $payment = Payment::where('transaction_id',$request->clientTransactionId)->first();
+       if($payment->type=='cart'){
+          return $this->completeOrderCart($request,$payment);
+        }elseif($payment->type=='wallet'){
+            return $this->completeOrderWallet($request,$payment);
+        }elseif($payment->type=='tip'){
+            return $this->completeOrderTip($request,$payment);
+        }elseif($payment->type=='subscription'){
+            return $this->completeOrderSubs($request,$payment);
+        }
    }
+
 
    public function completeOrderCart(Request $request)
     {
 
-      $order = Order::where('order_number',$request->merchant_reference)->first();
-          if(isset($request->merchant_reference) && $request->status == 'success')
+      $order = Order::where('order_number',$request->clientTransactionId)->first();
+          if(isset($request->clientTransactionId) && $request->status == 'Approved')
           {
            
             $order->payment_status = '1';
@@ -173,7 +184,7 @@ class PayphoneController extends FrontController
             CartProductPrescription::where('cart_id', $cartid)->delete();
             // send sms 
             $this->sendSuccessSMS($request, $order);
-            Payment::create(['amount'=>0,'transaction_id'=>$request->merchant_reference,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id]);
+            Payment::create(['amount'=>0,'transaction_id'=>$request->id,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id]);
 
              // Send Notification
              if (!empty($order->vendors)) {
@@ -189,7 +200,7 @@ class PayphoneController extends FrontController
 
           if(isset($request->auth_token) && !empty($request->auth_token))
           {
-            $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order->order_number;
+            $returnUrl = route('payment.gateway.return.response').'/?gateway=payphone'.'&status=200&order='.$order->order_number;
             return Redirect::to($returnUrl); 
           }else{
             return Redirect::to(route('order.success',[$order->id]));
@@ -218,16 +229,16 @@ class PayphoneController extends FrontController
 
     public function completeOrderWallet(Request $request)
     {
-          if(isset($request->merchant_reference) && $request->status == 'success')
+          if(isset($request->clientTransactionId) && $request->status == 'Approved')
           {
-            $data = Payment::where('transaction_id',$request->merchant_reference)->first();
+            $data = Payment::where('transaction_id',$request->clientTransactionId)->first();
             $user = auth()->user();
             $wallet = $user->wallet;
-            $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->merchant_reference . '</b>']);
+            $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->clientTransactionId . '</b>']);
 
-            if(isset($request->transaction_id) && !empty($request->transaction_id))
+            if(isset($request->auth) && !empty($request->auth))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=wallet';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=payphone'.'&status=200&transaction_id='.$request->id.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
               return Redirect::to(route('user.wallet'));
@@ -235,12 +246,12 @@ class PayphoneController extends FrontController
 
             
           }else{
-            $data = Payment::where('transaction_id',$request->merchant_reference)->first();
+            $data = Payment::where('transaction_id',$request->clientTransactionId)->first();
             $data->delete();
 
-            if(isset($request->transaction_id) && !empty($request->transaction_id))
+            if(isset($request->auth) && !empty($request->auth))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=wallet';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=payphone'.'&status=00&transaction_id='.$request->id.'&action=wallet';
               return Redirect::to($returnUrl); 
             }else{
               return Redirect::to(route('user.wallet'))->with('error',$request->message);
@@ -256,27 +267,27 @@ class PayphoneController extends FrontController
     public function completeOrderSubs(Request $request)
     {
       $user = auth()->user();
-      $data = Payment::where('transaction_id',$request->merchant_reference)->first();
-      if(isset($request->merchant_reference) && $request->status == 'success')
+      $data = Payment::where('transaction_id',$request->clientTransactionId)->first();
+      if(isset($request->clientTransactionId) && $request->status == 'Approved')
           {
-            $subscription = explode('_',$request->merchant_reference);
-            $request->request->add(['user_id' => $user->id, 'payment_option_id' => 20, 'amount' => $data->balance_transaction, 'transaction_id' => $request->merchant_reference]);
+            $subscription = explode('_',$request->clientTransactionId);
+            $request->request->add(['user_id' => $user->id, 'payment_option_id' => 32, 'amount' => $data->balance_transaction, 'transaction_id' => $request->clientTransactionId]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription[2]);
 
-            if(isset($request->subscription_id) && !empty($request->subscription_id))
+            if(isset($request->auth) && !empty($request->auth))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=subscription';
-              return Redirect::to($returnUrl); 
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=payphone'.'&status=200&transaction_id='.$request->id.'&action=subscription';
+              return Redirect::to($returnUrl);
             }else{
               return Redirect::to(route('user.subscription.plans'))->with('success',$request->message);
             }
           }else{
             $data->delete();
 
-            if(isset($request->subscription_id) && !empty($request->subscription_id))
+            if(isset($request->auth) && !empty($request->auth))
             {
-              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=subscription';
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=payphone'.'&status=00&transaction_id='.$request->id.'&action=subscription';
               return Redirect::to($returnUrl); 
             }else{
               return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
@@ -289,20 +300,20 @@ class PayphoneController extends FrontController
 
     public function completeOrderTip(Request $request)
     {
-      $data = Payment::where('transaction_id',$request->merchant_reference)->first();
-      if(isset($request->merchant_reference) && $request->status == 'success')
+      $data = Payment::where('transaction_id',$request->clientTransactionId)->first();
+      if(isset($request->clientTransactionId) && $request->status == 'Approved')
           {
-            $order_number = explode('_',$request->merchant_reference);
-            $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $request->merchant_reference]);
+            $order_number = explode('_',$request->clientTransactionId);
+            $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $request->clientTransactionId]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
 
             if(isset($request->order_no) && !empty($request->order_no))
               {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order_number[2].'&action=tip';
-                return Redirect::to($returnUrl); 
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=payphone'.'&status=200&order='.$order_number[2].'&action=tip';
+                return Redirect::to($returnUrl);
               }else{
-                return Redirect::to(route('user.orders'))->with('success', $request->message);
+                return Redirect::to(route('user.orders'))->with('success', "Tip added Successfully.");
               }
 
           }else{
@@ -310,7 +321,7 @@ class PayphoneController extends FrontController
 
               if(isset($request->order_no) && !empty($request->order_no))
               {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=tip';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=payphone'.'&status=00&transaction_id='.$request->clientTransactionId.'&action=tip';
                 return Redirect::to($returnUrl); 
               }else{
                 return Redirect::to(route('user.orders'))->with('error', $request->message);

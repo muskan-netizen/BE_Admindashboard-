@@ -96,6 +96,9 @@
                         <span class="error text-danger" id="checkout_card_error"></span>
                     </div>
                   <% } %>
+                  <% if(payment_option.slug == 'payphone') { %>
+                    <div id="pp-button"></div>
+                <% } %>
 
               <% } %>
           <% }); %>

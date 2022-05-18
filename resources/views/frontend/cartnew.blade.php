@@ -115,7 +115,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h3 class="page-title text-uppercase mt-sm-4">{{__('Cart')}}</h3>
+                <h3 class="page-title text-uppercase mt-lg-4">{{__('Cart')}}</h3>
             </div>
             <div class="cart_response mt-3 mb-3 d-none">
                 <div class="alert p-0" role="alert"></div>
@@ -283,7 +283,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
-                            <div class="col-md-3">
+                            <div class="col-md-3 order-md-1">
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
@@ -292,11 +292,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <% } %>
                                 <% }); %>
                             </div>
-                            <div class="col-md-2 mb-1 mb-md-0">
+                            <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2">
                                 <span class="alFourTempTitle">Price</span>
                                 <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></div>
                             </div>
-                            <div class="col-7 col-md-4 text-md-center">
+                            <div class="col-6 col-md-2 text-left order-md-4">
+                                <span class="alFourTempTitle">Total</span>
+                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_price) %></div>
+                            </div>
+                            <div class="col-10 col-md-4 text-md-center order-md-3">
                                 <div class="number d-flex justify-content-md-center">
                                     <div class="counter-container d-flex align-items-center">
                                         <span class="minus qty-minus" data-minimum_order_count="<%= vendor_product.product.minimum_order_count %>"
@@ -317,12 +321,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <% } %>
                                 <% } %>
                             </div>
-
-                            <div class="col-5 col-md-2 text-left">
-                                <span class="alFourTempTitle">Total</span>
-                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_price) %></div>
-                            </div>
-                            <div class="col-md-1 text-right text-md-center p-in">
+                            <div class="col-2 col-md-1 text-right text-md-center p-in order-md-5">
                                 <a class="action-icon d-block remove_product_via_cart" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 </a>
@@ -417,7 +416,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% }); %>
             <div class="row">
                  @if(!$guest_user)
-                <div class="col-lg-6 mb-3 mb-lg-0 ">
+                <div class="col-lg-6 ">
                 <% if(product.is_promo_code_available > 0) { %>
                     <div class="coupon_box w-100 d-flex align-content-center">
                         <img class="blur-up lazyload" data-src="{{ asset('assets/images/discount_icon.svg') }}">
@@ -734,8 +733,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     </div>
     {{-- Schedual code Start at down --}}
-
-            <% if(client_preference_detail.off_scheduling_at_cart != 1 && cart_details.vendorCnt==1) { %>
+            <% if(cart_details.closed_store_order_scheduled == 1 && cart_details.vendorCnt==1) { %>
                 @if($client_preference_detail->business_type != 'laundry')
             <div class="row arabic-lng position-relative mb-2" id="dateredio">
                 <div class=" col-md-12 mb-2 mb-md-0 text-right">
@@ -758,17 +756,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </li>
                             <% if(cart_details.closed_store_order_scheduled != 1 && cart_details.deliver_status == 0) { %>
                             <li class="close-window">
-                                <i class="fa fa-window-close cross"  aria-hidden="true"></i>
+                                <i class="fa fa-times cross" aria-hidden="true"></i>
                             </li>
                             <% }else{ %>
                                 <li class="close-window">
-                                    <i class="fa fa-window-close cross" style="display:none!important"  aria-hidden="true"></i>
+                                    <i class="fa fa-times cross" style="display:none!important"  aria-hidden="true"></i>
                                 </li>
                                 <% } %>
-
                         </ul>
-                        <div class=" col-sm-4 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="<%= ((cart_details.schedule_type != 'schedule' ) ? 'display:none!important' : '') %>">
-                    <% if(cart_details.slotsCnt ==0) { %>
+                        <div class=" col-sm-4 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="display:none !important">
+                    <% if(cart_details.slotsCnt == 0) { %>
                     <% if(cart_details.delay_date != 0) { %>
                         <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
                         min="<%= ((cart_details.delay_date != '0') ? cart_details.delay_date : '') %>">
@@ -854,7 +851,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
 
                 <div class="row mb-md-3 alFourTemplateCartButtons">
-                    <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-flex align-items-center justify-content-between">
+                    <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
                         <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> </a>
                     </div>
@@ -1013,7 +1010,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
             <div class="modal-body mt-0 pb-0 pt-4">
                 <div class="row validate_promo_div">
-                    <div class="col-10">
+                    <div class="col-9">
                         <div class="form-group" >
                             <input class="form-control manual_promocode_input" name="name" type="text" placeholder="{{ __('Enter a promocode')}}" >
                             <button class="btn btn-solid apply_promo_code_btn" data-vendor_id="" data-cart_id=""
@@ -1023,7 +1020,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </span>
                         </div>
                     </div>
-                    <div class="col-2">
+                    <div class="col-3 p-0">
                         <button class="btn btn-solid validate_promo_code_btn" data-vendor_id="" data-cart_id=""
                             data-coupon_id="" data-amount="" style="cursor: pointer;">Apply</button>
                     </div>
@@ -1118,6 +1115,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <!-- form will be added here -->
                                 </div>
                                 <span class="error text-danger" id="checkout_card_error"></span>
+                            </div>
+                        <% } %>
+
+                        <% if(payment_option.slug == 'payphone') { %>
+                            <div class="col-md-12 mt-3 mb-3">
+                                <div id="pp-button"></div>
                             </div>
                         <% } %>
                     </div>
@@ -1545,12 +1548,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
 </script>
-
+@if(in_array('payphone',$client_payment_options))
+<script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
+@endif
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options))
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+@endif
+@if(in_array('stripe_oxxo',$client_payment_options))
+<script>
+var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
 @endif
 @if(in_array('yoco',$client_payment_options))
 <script type="text/javascript" src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
@@ -1582,7 +1592,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_payphone_url = "{{route('payphone.createHash')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
+    var create_windcave_hash_url = "{{route('windcave.createHash')}}";
+    var create_paytech_hash_url = "{{route('paytech.createHash')}}";
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
@@ -1591,6 +1604,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
+    var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var cart_clear_stripe_oxxo_url = "{{url('payment/stripe_oxxo/clear')}}";
     var user_store_address_url = "{{route('address.store')}}";
     var product_faq_update_url = "{{ route('cart.productfaq') }}";
     var promo_code_remove_url = "{{ route('remove.promocode') }}";

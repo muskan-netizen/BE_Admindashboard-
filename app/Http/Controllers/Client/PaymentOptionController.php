@@ -31,7 +31,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo');
         //,'easebuzz' 
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
@@ -111,341 +111,435 @@ class PaymentOptionController extends BaseController
                     $test_mode = 1;
                 }
 
-                if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paypal')) {
-                    $validatedData = $request->validate([
-                        'paypal_username'       => 'required',
-                        'paypal_password'       => 'required',
-                        'paypal_signature'      => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'username' => $request->paypal_username,
-                        'password' => $request->paypal_password,
-                        'signature' => $request->paypal_signature,
-                    ));
-                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe')) {
-                    $validatedData = $request->validate([
-                        'stripe_api_key'        => 'required',
-                        'stripe_publishable_key' => 'required'
-                    ], [
-                        'stripe_api_key.required' => 'Stripe secret key field is required'
-                    ]);
+                if (isset($method_name_arr[$key]))
+                {
+                    switch( strtolower($method_name_arr[$key]) )
+                    {
+                        case 'paypal':
+                            $validatedData = $request->validate([
+                                'paypal_username'       => 'required',
+                                'paypal_password'       => 'required',
+                                'paypal_signature'      => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'username' => $request->paypal_username,
+                                'password' => $request->paypal_password,
+                                'signature' => $request->paypal_signature,
+                            ));
+                            break;
+                        
+                        case 'stripe':
+                            $validatedData = $request->validate([
+                                'stripe_api_key'        => 'required',
+                                'stripe_publishable_key' => 'required'
+                            ], [
+                                'stripe_api_key.required' => 'Stripe secret key field is required'
+                            ]);
 
-                    if($request->stripe_api_key != 'admin@640'){
-                        $stripe_arr = array(
-                            'api_key' => $request->stripe_api_key,
-                            'publishable_key' => $request->stripe_publishable_key
-                        );
-                        if(isset($request->stripe_client_id)){
-                            $stripe_arr['client_id'] = $request->stripe_client_id;
-                        }
-                        $json_creds = json_encode($stripe_arr);
+                            if($request->stripe_api_key != 'admin@640'){
+                                $stripe_arr = array(
+                                    'api_key' => $request->stripe_api_key,
+                                    'publishable_key' => $request->stripe_publishable_key
+                                );
+                                if(isset($request->stripe_client_id)){
+                                    $stripe_arr['client_id'] = $request->stripe_client_id;
+                                }
+                                $json_creds = json_encode($stripe_arr);
+                            }
+                            break;
+                        
+                        case 'toyyibpay':
+                            $validatedData = $request->validate([
+                                'toyyibpay_api_key'        => 'required',
+                                'toyyibpay_redirect_uri'   => 'required'
+                            ], [
+                                'toyyibpay_api_key.required' => 'Toyyibpay secret key field is required'
+                            ]);
+
+                            if($request->stripe_api_key != 'admin@640'){
+                                $toyyibpay_arr = array(
+                                    'toyyibpay_api_key' => $request->toyyibpay_api_key,
+                                    'toyyibpay_redirect_uri' => $request->toyyibpay_redirect_uri
+                                );
+                            
+                                $json_creds = json_encode($toyyibpay_arr);
+                            }
+                            break;
+
+                        case 'stripe_fpx':
+                            $validatedData = $request->validate([
+                                'stripe_fpx_secret_key' => 'required',
+                                'stripe_fpx_secret_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'secret_key' => $request->stripe_fpx_secret_key,
+                                'publishable_key' => $request->stripe_fpx_publishable_key
+                            ));
+                            break;
+
+                        case 'yoco':
+                            $validatedData = $request->validate([
+                                'yoco_secret_key'        => 'required',
+                                'yoco_public_key' => 'required'
+                            ], [
+                                'yoco_secret_key.required' => 'Yoco secret key field is required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'secret_key' => $request->yoco_secret_key,
+                                'public_key' => $request->yoco_public_key
+                            ));
+                            break;
+                        
+                        case 'paystack':
+                            $validatedData = $request->validate([
+                                'paystack_secret_key' => 'required',
+                                'paystack_public_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'secret_key' => $request->paystack_secret_key,
+                                'public_key' => $request->paystack_public_key
+                            ));
+                            break;
+
+                        case 'paylink':
+                            $validatedData = $request->validate([
+                                'paylink_api_key' => 'required',
+                                'paylink_api_secret_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'api_key' => $request->paylink_api_key,
+                                'api_secret_key' => $request->paylink_api_secret_key
+                            ));
+                            break;
+                        
+                        case 'razorpay':
+                            $validatedData = $request->validate([
+                                'razorpay_api_key' => 'required',
+                                'razorpay_api_secret_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'api_key' => $request->razorpay_api_key,
+                                'api_secret_key' => $request->razorpay_api_secret_key
+                            ));
+                            break;
+
+                        case 'payfast':
+                            $validatedData = $request->validate([
+                                'payfast_merchant_id' => 'required',
+                                'payfast_merchant_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'merchant_id' => $request->payfast_merchant_id,
+                                'merchant_key' => $request->payfast_merchant_key,
+                                'passphrase' => $request->payfast_passphrase
+                            ));
+                            break;
+
+                        case 'mobbex':
+                            $validatedData = $request->validate([
+                                'mobbex_api_key' => 'required',
+                                'mobbex_api_access_token' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'api_key' => $request->mobbex_api_key,
+                                'api_access_token' => $request->mobbex_api_access_token
+                            ));
+                            break;
+
+                        case 'gcash':
+                            $validatedData = $request->validate([
+                                'gcash_public_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'public_key' => $request->gcash_public_key,
+                            ));
+                            break;
+
+                        case 'simplify':
+                            $validatedData = $request->validate([
+                                'simplify_public_key' => 'required',
+                                'simplify_private_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'public_key' => $request->simplify_public_key,
+                                'private_key' => $request->simplify_private_key,
+                            ));
+                            break;
+
+                        case 'square':
+                            $validatedData = $request->validate([
+                                'square_application_id' => 'required',
+                                'square_access_token' => 'required',
+                                'square_location_id' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'application_id' => $request->square_application_id,
+                                'api_access_token' => $request->square_access_token,
+                                'location_id' => $request->square_location_id,
+                            ));
+                            break;
+
+                        case 'ozow':
+                            $validatedData = $request->validate([
+                                'ozow_site_code' => 'required',
+                                'ozow_private_key' => 'required',
+                                'ozow_api_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'site_code' => $request->ozow_site_code,
+                                'private_key' => $request->ozow_private_key,
+                                'api_key' => $request->ozow_api_key,
+                            ));
+                            break;
+
+                        case 'pagarme':
+                            $validatedData = $request->validate([
+                                'pagarme_api_key' => 'required',
+                                'pagarme_secret_key' => 'required',
+                                'pagarme_multiplier' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'api_key' => $request->pagarme_api_key,
+                                'secret_key' => $request->pagarme_secret_key,
+                                'multiplier' => $request->pagarme_multiplier,
+                            ));
+                            break;
+
+                        case 'checkout':
+                            $validatedData = $request->validate([
+                                'checkout_secret_key' => 'required',
+                                'checkout_public_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'secret_key' => $request->checkout_secret_key,
+                                'public_key' => $request->checkout_public_key
+                            ));
+                            break;
+
+                        case 'authorize_net':
+                            $validatedData = $request->validate([
+                                'authorize_net_login_id' => 'required',
+                                'authorize_net_transaction_key' => 'required',
+                                'authorize_net_client_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'login_id' => $request->authorize_net_login_id,
+                                'transaction_key' => $request->authorize_net_transaction_key,
+                                'client_key' => $request->authorize_net_client_key
+                            ));
+                            break;
+
+                        case 'kongapay':
+                            $validatedData = $request->validate([
+                                'kongapay_api_key' => 'required',
+                                'kongapay_merchant_id' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'api_key' => $request->kongapay_api_key,
+                                'merchant_id' => $request->kongapay_merchant_id
+                            ));
+                            break;
+
+                        case 'ccavenue':
+                            $validatedData = $request->validate([
+                                'ccavenue_enc_key' => 'required',
+                                'ccavenue_access_code' => 'required',
+                                'ccavenue_merchant_id' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'enc_key' => $request->ccavenue_enc_key,
+                                'access_code' => $request->ccavenue_access_code,
+                                'merchant_id' => $request->ccavenue_merchant_id
+                            ));
+                            break;
+
+                        case 'viva_wallet':
+                            $validatedData = $request->validate([
+                                'viva_wallet_client_id' => 'required',
+                                'viva_wallet_client_key' => 'required',
+                                'viva_wallet_merchant_id' => 'required',
+                                'viva_wallet_merchant_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'client_id' => $request->viva_wallet_client_id,
+                                'client_key' => $request->viva_wallet_client_key,
+                                'merchant_id' => $request->viva_wallet_merchant_id,
+                                'merchant_key' => $request->viva_wallet_merchant_key
+                            ));
+                            break;
+
+                        case 'easypaisa':
+                            $validatedData = $request->validate([
+                                'easypaisa_store_id' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'easypaisa_store_id' => $request->easypaisa_store_id
+                            ));
+                            break;
+
+                        case 'cashfree':
+                            $validatedData = $request->validate([
+                                'cashfree_app_id' => 'required',
+                                'cashfree_secret_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'app_id' => $request->cashfree_app_id,
+                                'secret_key' => $request->cashfree_secret_key
+                            ));
+                            break;
+                        
+                        case 'easebuzz':
+                            $validatedData = $request->validate([
+                                'easebuzz_merchant_key' => 'required',
+                                'easebuzz_salt' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'easebuzz_Sub_merchant' =>  ($request->has('easebuzz_Sub_merchant') && $request->easebuzz_Sub_merchant == 'on') ? 1 : 0,
+                                'easebuzz_merchant_key' => $request->easebuzz_merchant_key,
+                                'easebuzz_salt' => $request->easebuzz_salt
+                            ));
+                            break;
+                        
+                        case 'paytab':
+                            $validatedData = $request->validate([
+                                'paytab_profile_id' => 'required',
+                                'paytab_server_key' => 'required',
+                                'paytab_client_key' => 'required',
+                                'paytab_mobile_server_key' => 'required',
+                                'paytab_mobile_client_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'profile_id' => $request->paytab_profile_id,
+                                'server_key' => $request->paytab_server_key,
+                                'client_key' => $request->paytab_client_key,
+                                'mobile_server_key' => $request->paytab_mobile_server_key,
+                                'mobile_client_key' => $request->paytab_mobile_client_key
+                            ));
+                            break;
+
+                        case 'vnpay':
+                            $validatedData = $request->validate([
+                                'vnpay_website_id' => 'required',
+                                'vnpay_server_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'vnpay_website_id' => $request->vnpay_website_id,
+                                'vnpay_server_key' => $request->vnpay_server_key
+                            ));
+                            break;
+
+                        case 'mvodafone':
+                            $validatedData = $request->validate([
+                                'mvodafone_client_id' => 'required',
+                                'mvodafone_secret_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'client_id' => $request->mvodafone_client_id,
+                                'secret_key' => $request->mvodafone_secret_key
+                            ));
+                            break;
+                        
+                        case 'flutterwave':
+                            $validatedData = $request->validate([
+                                'flutterwave_client_id' => 'required',
+                                'flutterwave_secret_key' => 'required',
+                                'flutterwave_enc_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'client_id' => $request->flutterwave_client_id,
+                                'secret_key' => $request->flutterwave_secret_key,
+                                'enc_key' => $request->flutterwave_enc_key
+                            ));
+                            break;
+
+                        case 'braintree':
+                            $validatedData = $request->validate([
+                                'braintree_merchant_id' => 'required',
+                                'braintree_public_key' => 'required',
+                                'braintree_private_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'merchant_id' => $request->braintree_merchant_id,
+                                'public_key' => $request->braintree_public_key,
+                                'private_key' => $request->braintree_private_key
+                            ));
+                            break;
+
+                        case 'payphone':
+                            $validatedData = $request->validate([
+                                'payphone_id' => 'required',
+                                'payphone_client_id' => 'required',
+                                'payphone_token' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'id' => $request->payphone_id,
+                                'client_id' => $request->payphone_client_id,
+                                'token' => $request->payphone_token
+                            ));
+                            break;
+
+                        case 'payu':
+                            $validatedData = $request->validate([
+                                'payu_merchant_key' => 'required',
+                                'payu_merchant_salt_v1' => 'required',
+                                'payu_merchant_salt_v2' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'merchant_key' => $request->payu_merchant_key,
+                                'merchant_salt_v1' => $request->payu_merchant_salt_v1,
+                                'merchant_salt_v2' => $request->payu_merchant_salt_v2
+                            ));
+                            break;
+
+                        case 'windcave':
+                            $validatedData = $request->validate([
+                                'windcave_id' => 'required',
+                                'windcave_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'app_id' => $request->windcave_id,
+                                'api_key' => $request->windcave_key
+                            ));
+                            break;
+
+                        case 'paytech':
+                            $validatedData = $request->validate([
+                                'paytech_key' => 'required',
+                                'paytech_secret_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'api_key' => $request->paytech_key,
+                                'secret_key' => $request->paytech_secret_key
+                            ));
+                            break;
+
+                        case 'mycash':
+                            $validatedData = $request->validate([
+                                'mycash_api_key' => 'required',
+                                'mycash_username' => 'required',
+                                'mycash_password' => 'required',
+                                'mycash_merchant_phone' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'api_key' => $request->mycash_api_key,
+                                'username' => $request->mycash_username,
+                                'password' => $request->mycash_password,
+                                'merchant_phone' => $request->mycash_merchant_phone,
+                            ));
+                            break;
+
+                        case 'stripe_oxxo':
+                            $validatedData = $request->validate([
+                                'stripe_oxxo_secret_key' => 'required',
+                                'stripe_oxxo_secret_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'secret_key' => $request->stripe_oxxo_secret_key,
+                                'publishable_key' => $request->stripe_oxxo_publishable_key
+                            ));
+                            break;
+
                     }
-
-                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'toyyibpay')) {
-                    $validatedData = $request->validate([
-                        'toyyibpay_api_key'        => 'required',
-                        'toyyibpay_redirect_uri'   => 'required'
-                    ], [
-                        'toyyibpay_api_key.required' => 'Toyyibpay secret key field is required'
-                    ]);
-
-                    if($request->stripe_api_key != 'admin@640'){
-                        $toyyibpay_arr = array(
-                            'toyyibpay_api_key' => $request->toyyibpay_api_key,
-                            'toyyibpay_redirect_uri' => $request->toyyibpay_redirect_uri
-                        );
-                       
-                        $json_creds = json_encode($toyyibpay_arr);
-                    }
-
-                }
-
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe_fpx')) {
-                    $validatedData = $request->validate([
-                        'stripe_fpx_secret_key' => 'required',
-                        'stripe_fpx_secret_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'secret_key' => $request->stripe_fpx_secret_key,
-                        'publishable_key' => $request->stripe_fpx_publishable_key
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco')) {
-                    $validatedData = $request->validate([
-                        'yoco_secret_key'        => 'required',
-                        'yoco_public_key' => 'required'
-                    ], [
-                        'yoco_secret_key.required' => 'Yoco secret key field is required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'secret_key' => $request->yoco_secret_key,
-                        'public_key' => $request->yoco_public_key
-                    ));
-                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paystack')) {
-                    $validatedData = $request->validate([
-                        'paystack_secret_key' => 'required',
-                        'paystack_public_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'secret_key' => $request->paystack_secret_key,
-                        'public_key' => $request->paystack_public_key
-                    ));
-                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paylink')) {
-                    $validatedData = $request->validate([
-                        'paylink_api_key' => 'required',
-                        'paylink_api_secret_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'api_key' => $request->paylink_api_key,
-                        'api_secret_key' => $request->paylink_api_secret_key
-                    ));
-                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'razorpay')) {
-                    $validatedData = $request->validate([
-                        'razorpay_api_key' => 'required',
-                        'razorpay_api_secret_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'api_key' => $request->razorpay_api_key,
-                        'api_secret_key' => $request->razorpay_api_secret_key
-                    ));
-                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'payfast')) {
-                    $validatedData = $request->validate([
-                        'payfast_merchant_id' => 'required',
-                        'payfast_merchant_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'merchant_id' => $request->payfast_merchant_id,
-                        'merchant_key' => $request->payfast_merchant_key,
-                        'passphrase' => $request->payfast_passphrase
-                    ));
-                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'mobbex')) {
-                    $validatedData = $request->validate([
-                        'mobbex_api_key' => 'required',
-                        'mobbex_api_access_token' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'api_key' => $request->mobbex_api_key,
-                        'api_access_token' => $request->mobbex_api_access_token
-                    ));
-                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'gcash')) {
-                    $validatedData = $request->validate([
-                        'gcash_public_key' => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'public_key' => $request->gcash_public_key,
-                    ));
-                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'simplify')) {
-                    $validatedData = $request->validate([
-                        'simplify_public_key' => 'required',
-                        'simplify_private_key' => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'public_key' => $request->simplify_public_key,
-                        'private_key' => $request->simplify_private_key,
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'square')) {
-                    $validatedData = $request->validate([
-                        'square_application_id' => 'required',
-                        'square_access_token' => 'required',
-                        'square_location_id' => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'application_id' => $request->square_application_id,
-                        'api_access_token' => $request->square_access_token,
-                        'location_id' => $request->square_location_id,
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'ozow')) {
-                    $validatedData = $request->validate([
-                        'ozow_site_code' => 'required',
-                        'ozow_private_key' => 'required',
-                        'ozow_api_key' => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'site_code' => $request->ozow_site_code,
-                        'private_key' => $request->ozow_private_key,
-                        'api_key' => $request->ozow_api_key,
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'pagarme')) {
-                    $validatedData = $request->validate([
-                        'pagarme_api_key' => 'required',
-                        'pagarme_secret_key' => 'required',
-                        'pagarme_multiplier' => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'api_key' => $request->pagarme_api_key,
-                        'secret_key' => $request->pagarme_secret_key,
-                        'multiplier' => $request->pagarme_multiplier,
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'checkout')) {
-                    $validatedData = $request->validate([
-                        'checkout_secret_key' => 'required',
-                        'checkout_public_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'secret_key' => $request->checkout_secret_key,
-                        'public_key' => $request->checkout_public_key
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'authorize_net')) {
-                    $validatedData = $request->validate([
-                        'authorize_net_login_id' => 'required',
-                        'authorize_net_transaction_key' => 'required',
-                        'authorize_net_client_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'login_id' => $request->authorize_net_login_id,
-                        'transaction_key' => $request->authorize_net_transaction_key,
-                        'client_key' => $request->authorize_net_client_key
-                    ));
-                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'kongapay')) {
-                    $validatedData = $request->validate([
-                        'kongapay_api_key' => 'required',
-                        'kongapay_merchant_id' => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'api_key' => $request->kongapay_api_key,
-                        'merchant_id' => $request->kongapay_merchant_id
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'ccavenue')) {
-                    $validatedData = $request->validate([
-                        'ccavenue_enc_key' => 'required',
-                        'ccavenue_access_code' => 'required',
-                        'ccavenue_merchant_id' => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'enc_key' => $request->ccavenue_enc_key,
-                        'access_code' => $request->ccavenue_access_code,
-                        'merchant_id' => $request->ccavenue_merchant_id
-                    ));
-                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'viva_wallet')) {
-                    $validatedData = $request->validate([
-                        'viva_wallet_client_id' => 'required',
-                        'viva_wallet_client_key' => 'required',
-                        'viva_wallet_merchant_id' => 'required',
-                        'viva_wallet_merchant_key' => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'client_id' => $request->viva_wallet_client_id,
-                        'client_key' => $request->viva_wallet_client_key,
-                        'merchant_id' => $request->viva_wallet_merchant_id,
-                        'merchant_key' => $request->viva_wallet_merchant_key
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'easypaisa')) {
-                    $validatedData = $request->validate([
-                        'easypaisa_store_id' => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'easypaisa_store_id' => $request->easypaisa_store_id
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'cashfree')) {
-                    $validatedData = $request->validate([
-                        'cashfree_app_id' => 'required',
-                        'cashfree_secret_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'app_id' => $request->cashfree_app_id,
-                        'secret_key' => $request->cashfree_secret_key
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'easebuzz')) {
-                    $validatedData = $request->validate([
-                        'easebuzz_merchant_key' => 'required',
-                        'easebuzz_salt' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'easebuzz_Sub_merchant' =>  ($request->has('easebuzz_Sub_merchant') && $request->easebuzz_Sub_merchant == 'on') ? 1 : 0,
-                        'easebuzz_merchant_key' => $request->easebuzz_merchant_key,
-                        'easebuzz_salt' => $request->easebuzz_salt
-                    ));
-                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paytab')) {
-                    $validatedData = $request->validate([
-                        'paytab_profile_id' => 'required',
-                        'paytab_server_key' => 'required',
-                        'paytab_client_key' => 'required',
-                        'paytab_mobile_server_key' => 'required',
-                        'paytab_mobile_client_key' => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'profile_id' => $request->paytab_profile_id,
-                        'server_key' => $request->paytab_server_key,
-                        'client_key' => $request->paytab_client_key,
-                        'mobile_server_key' => $request->paytab_mobile_server_key,
-                        'mobile_client_key' => $request->paytab_mobile_client_key
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'vnpay')) {
-                    $validatedData = $request->validate([
-                        'vnpay_website_id' => 'required',
-                        'vnpay_server_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'vnpay_website_id' => $request->vnpay_website_id,
-                        'vnpay_server_key' => $request->vnpay_server_key
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'mvodafone')) {
-                    $validatedData = $request->validate([
-                        'mvodafone_client_id' => 'required',
-                        'mvodafone_secret_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'client_id' => $request->mvodafone_client_id,
-                        'secret_key' => $request->mvodafone_secret_key
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'flutterwave')) {
-                    $validatedData = $request->validate([
-                        'flutterwave_client_id' => 'required',
-                        'flutterwave_secret_key' => 'required',
-                        'flutterwave_enc_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'client_id' => $request->flutterwave_client_id,
-                        'secret_key' => $request->flutterwave_secret_key,
-                        'enc_key' => $request->flutterwave_enc_key
-                    ));
-                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'braintree')) {
-                    $validatedData = $request->validate([
-                        'braintree_merchant_id' => 'required',
-                        'braintree_public_key' => 'required',
-                        'braintree_private_key' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'merchant_id' => $request->braintree_merchant_id,
-                        'public_key' => $request->braintree_public_key,
-                        'private_key' => $request->braintree_private_key
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'payphone')) {
-                    $validatedData = $request->validate([
-                        'payphone_id' => 'required',
-                        'payphone_client_id' => 'required',
-                        'payphone_token' => 'required',
-                    ]);
-                    $json_creds = json_encode(array(
-                        'id' => $request->payphone_id,
-                        'client_id' => $request->payphone_client_id,
-                        'token' => $request->payphone_token
-                    ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'payu')) {
-                    $validatedData = $request->validate([
-                        'payu_merchant_key' => 'required',
-                        'payu_merchant_salt_v1' => 'required',
-                        'payu_merchant_salt_v2' => 'required'
-                    ]);
-                    $json_creds = json_encode(array(
-                        'merchant_key' => $request->payu_merchant_key,
-                        'merchant_salt_v1' => $request->payu_merchant_salt_v1,
-                        'merchant_salt_v2' => $request->payu_merchant_salt_v2
-                    ));
                 }
             }
             PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);

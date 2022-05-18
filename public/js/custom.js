@@ -368,6 +368,10 @@ $(document).ready(function () {
         var changLang = $(this).attr('langId');
         settingData('language', changLang);
     });
+    $('.change_language_selector').on('change',function(){
+        var changLang = $(this).val();
+        settingData('language', changLang);
+    });
 
     $('.customerCurr').click(function () {
         var changcurrId = $(this).attr('currId');
@@ -383,6 +387,10 @@ $(document).ready(function () {
         };
         card = elements.create('card', { hidePostalCode: true, style: style });
         card.mount('#stripe-card-element');
+    }
+
+    function stripeOXXOInitialize() {
+        stripeOxxo = Stripe(stripe_oxxo_publishable_key);
     }
 
     function stripeFPXInitialize() {
@@ -1401,7 +1409,7 @@ $(document).ready(function () {
     $(document).on("click", ".proceed_to_pay", function () {       
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
-        // $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
+         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
         var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
         var other_taxes_string='';
         if($("#other_taxes_string").val()!=null){
@@ -3605,6 +3613,22 @@ $(document).ready(function () {
             case 30:
                     payWithFlutterWave('','');
             break;
+
+            case 32:
+                    payphoneButton('','');
+            break;
+
+            case 34:
+                    payWithWindcave('','');
+            break;
+
+            case 35:
+                payWithPaytech('','');
+            break;
+
+            case 37:
+                paymentViaStripeOXXO('', 19, '');
+            break;
         
         }
 
@@ -3897,8 +3921,8 @@ $(document).ready(function () {
             case '32':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
-                    //PayU
-                    payphoneButton(address_id, payment_option_id, order);
+                    //payphoneButton
+                    payphoneButton(order);
                 }
                 else{
                     return false;
@@ -3913,6 +3937,46 @@ $(document).ready(function () {
                         return false;
                     }
             break;
+
+            case '34':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //payWithWindcave
+                    payWithWindcave(order);
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '35':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    payWithPaytech(order);
+                }
+                else{
+                    return false;
+                }
+            break;
+
+            case '36':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaMyCash(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+
+            case '37':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    stripeOXXOInitialize();
+                    paymentViaStripeOXXO(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
         
         }
 
@@ -4056,11 +4120,33 @@ $(document).ready(function () {
                     payWithFlutterWave('', payment_option_id, '');
             break;
 
+            case 32:
+                    payphoneButton('', payment_option_id, '');
+            break;
+
             case 33:
                     paymentViaBraintree('', payment_option_id, ''); 
             break;
+
+            case 34:
+                    payWithWindcave('', payment_option_id, ''); 
+            break;
+
+            case 35:
+                    payWithPaytech('', payment_option_id, ''); 
+            break;
+
+            case 36:
+                    paymentViaMyCash('', payment_option_id, ''); 
+            break;
+
+            case 36:
+                    paymentViaStripeOXXO('', payment_option_id, ''); 
+            break;
+
         }
     }
+
 });
 
 function numberWithCommas(x) {

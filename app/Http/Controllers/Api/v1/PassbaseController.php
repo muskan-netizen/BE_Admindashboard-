@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{VerificationOption, UserVerfication, UserVerificationResource};  
 use Log, Auth; 
 
-class PassbaseController extends BaseController
+class PassbaseController extends BaseController 
 {
 	use \App\Http\Traits\PassbaseManager;
 	use \App\Http\Traits\ApiResponser;
@@ -20,12 +20,8 @@ class PassbaseController extends BaseController
 	{
 		$this->userVerificationObj = $userVerfication;
         $this->resourceObj = $resource;
-		$passbase_creds = VerificationOption::select('credentials','test_mode')->where('code','passbase')->where('status',1)->first();
-        $creds_arr = json_decode($passbase_creds->credentials);
-	    $this->publish_key = $creds_arr->publish_key ?? '';
-	    $this->secret_key = $creds_arr->secret_key ?? '';
 	}
-    public function storeAuthkey(Request $request)
+    public function storeAuthkey(Request $request) 
     {
     	$response = $this->getIdentity($request->identityAccessKey);
     	$add = $this->userVerificationObj->addVerification([
