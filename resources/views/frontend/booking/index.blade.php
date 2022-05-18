@@ -15,12 +15,8 @@
             <div class="loader-outer d-none">
                 <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
             </div>
-            <!-- <select name="is_for_friend" class="form-control">
-                    <option value="0">For Me</option>
-                    <option value="1">For Friend</option>
-                </select> -->
 
-                <div class="tip_radio_controls_book_friend text-center my-2">
+                <!--<div class="tip_radio_controls_book_friend text-center my-2">
                     <input type="radio" class="tip_radio" id="for_me" name="is_for_friend" value="0">
                     <label class="tip_label mb-0  my-2 active" for="for_me" id="label_for_me">
                         <h5 class="m-0" id="tip_5">Book</h5>
@@ -31,7 +27,7 @@
                         <h5 class="m-0" id="tip_5">Book</h5>
                         <p class="m-0">For A Friend</p>
                     </label>                      
-                </div>
+                </div> -->
             <div class="location-box check-pick-first">
                 <div class="where-to-go">
                     <div class="title title-36">{{__('Where can we pick you up?')}}</div>
@@ -553,8 +549,13 @@
 @endsection
 
 @section('script')
-@if(in_array('stripe',$client_payment_options))
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+@endif
+@if(in_array('stripe_oxxo',$client_payment_options))
+<script>
+var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
 @endif
 @if(in_array('payphone',$client_payment_options))
 <script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>

@@ -42,6 +42,7 @@ class PayphoneController extends FrontController
    {
      $time = '';
      $amt = $request->amt??$request->amount;
+     $amt =  $this->getDollarCompareAmount($request->amt);
     if(isset($request->auth_token) && !empty($request->auth_token)){
       $user = User::where('auth_token', $request->auth_token)->first();
       Auth::login($user);
@@ -75,13 +76,69 @@ class PayphoneController extends FrontController
      //Need to save entry in payment table
      $data = (object)array(
             "token"=> $this->token,
-            "amount"=> round($amt*100)??0,
+            "amount"=> $amt*100,
             "orderNo"=> $time,
             "returnUrl"=>route('payphone.success')
         );
       return json_encode($data);
    }  
 
+
+   public function createHashApp(Request $request)
+   {
+     $time = '';
+     $amt = $request->amt??$request->amount;
+     $amt =  $this->getDollarCompareAmount($amt);
+    if(isset($request->auth_token) && !empty($request->auth_token)){
+      $user = User::where('auth_token', $request->auth_token)->first();
+      Auth::login($user);
+    }else{
+      $user = auth()->user();
+    }
+
+     $name = explode(' ',$user->name);
+     $returnUrl = '';
+     if($request->from == 'cart')
+     {
+      $time = $request->order_number;
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'cart','date'=>date('Y-m-d')]);
+
+     }elseif($request->from == 'wallet')
+     {
+      $time = ($request->transaction_id)??'W_'.time();
+      //Save transaction before payment success for get information only
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'wallet','date'=>date('Y-m-d')]);
+
+     }elseif($request->from == 'tip')
+     {
+      $time = 'T_'.time().'_'.$request->order_number;
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'tip','date'=>date('Y-m-d')]);
+      
+     }elseif($request->from == 'subscription')
+     {
+      $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+      Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'subscription','date'=>date('Y-m-d')]);
+     }
+     //Need to save entry in payment table
+     $data = array(
+            "token"=> $this->token,
+            "amount"=> $amt*100,
+            "orderNo"=> $time,
+            "returnUrl"=>url($request->serverUrl.'payment/payphone/success'),
+            "from"=>$request->from,
+        );
+        $params = http_build_query ( $data );  
+      // return json_encode($data);
+      return $this->successResponse(url($request->serverUrl.'payment/payphone/api?'.$params)); 
+   }  
+
+
+
+   public function webViewPay(Request $request)
+   {
+    $request->request->add(['amt'=>$request->amount,'from'=>$request->from,'order_number'=>$request->orderNo??time(),'payid'=>$this->id,'payToken'=>$this->token]);
+    return view('frontend.payment_gatway.payphone_view', compact('request'));
+   }
 
 
 
