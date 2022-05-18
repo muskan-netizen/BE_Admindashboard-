@@ -2087,6 +2087,22 @@ $(document).ready(function() {
             success: function (resp) {
                 if (resp.status == 'Success') {
                     // window.location.href = resp.data;
+                    var res = resp.data;
+                    if (res.formData != '') {
+                        $("#temp_form").remove();
+                        var form = '';
+                        $.each(res.formData, function(key, value) {
+                            form += '<input type="hidden" name="' + key + '" value="' + value + '">';
+                        });
+                        var token = $('meta[name="_token"]').attr('content');
+                        form = $('<form id="temp_form" action="' + res.redirectUrl + '" method="post"><input type="hidden" name="_token" value="' + token + '">' + form + '</form>');
+                        if (cartElement.length > 0) {
+                            $('#proceed_to_pay_modal .modal-body').append(form);
+                        } else if (walletElement.length > 0) {
+                            $('#topup_wallet .modal-content').append(form);
+                        }
+                        form.submit();
+                    }
                 } else {
                     if (path.indexOf("cart") !== -1) {
                         success_error_alert('error', resp.message, ".payment_response");
