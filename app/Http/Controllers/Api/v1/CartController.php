@@ -69,6 +69,7 @@ class CartController extends BaseController
                             })->count();
                 $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                 $passbase['check'] = 0;
+                $passbase['status'] = "";
                 if($passbase_check && $age_restriction)
                 {
                     $passbase['check'] = 1;
