@@ -134,7 +134,8 @@ function convertDateTimeInTimeZone($date, $timezone, $format = 'Y-m-d H:i:s'){
     return $date->format($format);
 }
 function getClientPreferenceDetail()
-{
+{   
+    
     $client_preference_detail = ClientPreference::first();
     list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
     $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";

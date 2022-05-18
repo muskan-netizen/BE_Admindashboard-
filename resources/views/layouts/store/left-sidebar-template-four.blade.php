@@ -32,7 +32,7 @@ $pages = \App\Models\Page::with([
     @endphp
 @if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify'))
 <header id="al_four_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
-    @include('layouts.store/topbar-template-four')
+    
     <!-- Start Cab Booking Header From Here -->
     <div class="cab-booking-header">
         <div class="container">
@@ -306,9 +306,21 @@ $pages = \App\Models\Page::with([
                                     <div class="d-inline-flex al_searchType border align-items-center justify-content-start px-xl-2 px-lg-1 position-relative">
                                         <button class="btn px-lg-0"><i class="fa fa-search" aria-hidden="true"></i></button>
                                             @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
-                                        <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off">
+                                        <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off" >
                                         <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
                                     </div>
+                                    <script type="text/template" id="search_box_main_div_template">
+                                    <a class="text-right al_search_viewall d-block mr-2 mb-1" id="search_viewall" href="#">{{__("View All")}}</a>
+                                    <div class="row mx-0">
+                                        <% _.each(results, function(result, k){%>
+                                        <a class="col-12 text-center al_search_results list-items pt-2" href="<%=result.redirect_url %>">
+                                            <img class="blur-up lazyload" data-src="<%=result.image_url%>" alt="">
+                                            <div class="result-item-name">
+                                                <b><%=result.name %></b>
+                                            </div>
+                                        </a> <%}); %>
+                                    </div>
+                                    </script>
                                     <ul class="d-lg-flex align-items-center m-0 al_addCart daad d-md-block d-none">
                                         <li class="onhover-div pl-0 ml-xl-3 ml-lg-1 shake-effect">
                                             @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
@@ -433,27 +445,27 @@ $pages = \App\Models\Page::with([
 
                                 </div>
 
-                                <div class="col-sm-12 p-0 d-flex align-items-center">
+                                <div class="col-sm-12 p-0 d-flex align-items-center alOverflow">
                                     <div class="menu_navigation_al_four mt-lg-3">
                                         <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
                                             @foreach($navCategories as $cate)
                                             @if($cate['name'])
-                                            <li class=" @if(!empty($cate['children'])) has-children @endif ">
-                                                <a href="{{route('categoryDetail', $cate['slug'])}}">
+                                            <li class="alMainMenu @if(!empty($cate['children'])) has-children @endif ">
+                                                <a class="alMainLink" href="{{route('categoryDetail', $cate['slug'])}}">
 
                                                     {{$cate['name']}}
                                                 </a>
                                                 @if(!empty($cate['children']))
-                                                <ul class="">
+                                                <ul class="alInnerMenu">
                                                     @foreach($cate['children'] as $childs)
-                                                    <li >
-                                                    <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
+                                                    <li class="alInnerLink">
+                                                        <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
                                                         @if(!empty($childs['children']))
-                                                    <ul class="">
-                                                        @foreach($childs['children'] as $chld)
-                                                        <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
-                                                        @endforeach
-                                                    </ul>
+                                                        <ul class="alInnerSubMenu">
+                                                            @foreach($childs['children'] as $chld)
+                                                            <li class="alInnerSublink"><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
+                                                            @endforeach
+                                                        </ul>
                                                     @endif
                                                     </li>
                                                     @endforeach
@@ -494,21 +506,21 @@ $pages = \App\Models\Page::with([
         icon_two_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
       }
     %>
-    <li class="al_main_category  <% if(category.children){%> has-children <%}%> "  >
+    <li class="alMainMenu  <% if(category.children){%> has-children <%}%> "  >
         <a href="{{route('categoryDetail')}}/<%=category.slug %>">
             <%=category.name %>
         </a>
         <% if(category.children){%>
-        <ul class="al_main_category_list">
+        <ul class="alInnerMenu">
             <% _.each(category.children, function(childs, key1){%>
-            <li>
+            <li class="alInnerLink">
                 <a href="{{route('categoryDetail')}}/<%=childs.slug %>">
                     <span class="new-tag"><%=childs.name %></span>
                 </a>
                 <% if(childs.children){%>
-                <ul class="al_main_category_sub_list">
+                <ul class="alInnerSubMenu">
                     <% _.each(childs.children, function(chld, key2){%>
-                    <li>
+                    <li class="alInnerSublink">
                         <a href="{{route('categoryDetail')}}/<%=chld.slug %>">
                             <%=chld.name %>
                         </a>
