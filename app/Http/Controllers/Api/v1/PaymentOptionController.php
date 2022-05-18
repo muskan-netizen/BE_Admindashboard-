@@ -13,7 +13,10 @@ use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController};
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
+use App\Http\Controllers\Front\MpesaController;
+use App\Http\Controllers\Front\MvodafoneController;
 use App\Http\Controllers\Front\ToyyibPayController;
+use App\Http\Controllers\Front\WindcaveController;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, CartDeliveryFee, CartProductPrescription, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction, UserVendor};
@@ -24,13 +27,13 @@ class PaymentOptionController extends BaseController{
 
     public function getPaymentOptions(Request $request, $page = ''){
         if($page == 'wallet'){
-            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave');
+            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave');
         }
         elseif($page == 'pickup_delivery'){
             $code = array('cod', 'razorpay','stripe');
         }
         else{
-            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave');
+            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave');
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'title', 'off_site']);
         foreach($payment_options as $option){
@@ -84,75 +87,9 @@ class PaymentOptionController extends BaseController{
         return $gateway->kongapayPurchase($request);
     }
 
-    public function postPaymentVia_stripe(Request $request){
-        $gateway = new StripeGatewayController();
-        return $gateway->stripePurchase($request);
-    }
-
-    public function postPaymentVia_stripe_fpx(Request $request){
-        $gateway = new StripeGatewayController();
-        return $gateway->paymentWebViewStripeFPX($request);
-    }
-
-    public function postPaymentVia_paystack(Request $request){
-        $gateway = new PaystackGatewayController();
-        return $gateway->paystackPurchase($request);
-    }
-
-    public function postPaymentVia_payfast(Request $request){
-        $gateway = new PayfastGatewayController();
-        return $gateway->payfastPurchase($request);
-    }
-
-    public function postPaymentVia_mobbex(Request $request){
-        $gateway = new MobbexGatewayController();
-        return $gateway->mobbexPurchase($request);
-    }
-
-    public function postPaymentVia_yoco(Request $request){
-        $gateway = new YocoGatewayController();
-        return $gateway->yocoWebview($request);
-    }
-
-    public function postPaymentVia_paylink(Request $request){
-        $gateway = new PaylinkGatewayController();
-        return $gateway->paylinkPurchase($request);
-    }
-
-    public function postPaymentVia_razorpay(Request $request){
-        $gateway = new RazorpayGatewayController();
-        return $gateway->razorpayPurchase($request);
-    }
-
-    public function postPaymentVia_simplify(Request $request){
-        $gateway = new SimplifyGatewayController();
-        return $gateway->simplifyPurchase($request);
-    }
-    public function postPaymentVia_square(Request $request){
-        $gateway = new SquareGatewayController();
-        return $gateway->squarePurchase($request);
-    }
-    public function postPaymentVia_pagarme(Request $request){
-        $gateway = new PagarmeGatewayController();
-        return $gateway->pagarmePurchase($request);
-    }
-
-    public function postPaymentVia_checkout(Request $request){
-        $gateway = new CheckoutGatewayController();
-        return $gateway->checkoutPurchase($request);
-    }
-    public function postPaymentVia_authorize_net(Request $request){
-        $gateway = new AuthorizeGatewayController();
-        return $gateway->authorizePurchase($request); 
-    }
-
-    public function postPaymentVia_cashfree(Request $request){
-        $gateway = new CashfreeGatewayController();
-        return $gateway->createOrder($request);
-    }
-    public function postPaymentVia_easebuzz(Request $request){
-        $gateway = new EasebuzzController();
-        return $gateway->order($request);
+    public function postPaymentVia_windcave(Request $request){
+        $gateway = new WindcaveController();
+        return $gateway->createHashApp($request);
     }
 
     public function postPaymentVia_toyyibpay(Request $request){ 

@@ -886,10 +886,10 @@ class FrontController extends Controller
     }
     protected function sendSuccessSMS($request, $order, $vendor_id = '')
     {
-        Log::info('sendSuccessSMS FrontController');
+        //Log::info('sendSuccessSMS FrontController');
         try {
-            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
 
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
             // $currId = Session::get('customerCurrency');
             // $currSymbol = Session::get('currencySymbol');
             $customerCurrency = ClientCurrency::with('currency')->where('is_primary', '1')->first();
@@ -901,6 +901,7 @@ class FrontController extends Controller
                 } else {
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
+                
                 $provider = $prefer->sms_provider;
                 $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
                 $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
@@ -910,6 +911,8 @@ class FrontController extends Controller
                 }
             }
         } catch (\Exception $ex) {
+            
         }
+
     }
 }

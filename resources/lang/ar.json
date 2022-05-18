@@ -158,7 +158,7 @@
   "Contact Us": "اتصل بنا",
   "Content": "المحتوى",
   "Continue Shopping": "مواصلة التسوق",
-  "Continue": "يكمل",
+  "Continue": "استمر",
   "Control Panel": "لوحة التحكم",
   "Copied": "نسخ",
   "Country Origin": "بلد المنشأ",
@@ -180,7 +180,7 @@
   "Customers": "عملاء",
   "Customize": "يعدل أو يكيف",
   "Create a free account & join us!": "إنشاء حساب مجاني والانضمام إلينا!",
-  "Create a free account and join us!": "إنشاء حساب مجاني والانضمام إلينا!",
+  "Create a free account and join us!": "!إنشاء حساب مجاني وانضم إلينا",
   "Create new account": "انشاء حساب جديد",
   "Dark theme": "مظهر داكن",
   "Dark": "داكن",
@@ -973,5 +973,6 @@
   "Min" : " الدقائق",
   "Hours" : " ساعة",
   "Upload Banner" : "تحميل لافتة",
-  "Find Our App On Mobile" : "ابحث عن تطبيقنا على الهاتف المحمول"
+  "Find Our App On Mobile" : "ابحث عن تطبيقنا على الهاتف المحمول",
+  "Forgot": "نسيت",
 }
