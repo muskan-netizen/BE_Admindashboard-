@@ -31,7 +31,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo');
         //,'easebuzz' 
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
@@ -525,6 +525,17 @@ class PaymentOptionController extends BaseController
                                 'username' => $request->mycash_username,
                                 'password' => $request->mycash_password,
                                 'merchant_phone' => $request->mycash_merchant_phone,
+                            ));
+                            break;
+
+                        case 'stripe_oxxo':
+                            $validatedData = $request->validate([
+                                'stripe_oxxo_secret_key' => 'required',
+                                'stripe_oxxo_secret_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'secret_key' => $request->stripe_oxxo_secret_key,
+                                'publishable_key' => $request->stripe_oxxo_publishable_key
                             ));
                             break;
 

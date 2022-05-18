@@ -49,7 +49,7 @@ class AppServiceProvider extends ServiceProvider
         }
         $client_head = Client::where(['id' => 1])->first();
 
-        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone'];
+        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo'];
         $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = '';
         $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
         if($payment_options){
@@ -60,6 +60,9 @@ class AppServiceProvider extends ServiceProvider
                 }
                 if($option->code == 'stripe_fpx'){
                     $stripe_fpx_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
+                }
+                if($option->code == 'stripe_oxxo'){
+                    $stripe_oxxo_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
                 }
                 if($option->code == 'yoco'){
                     $yoco_public_key = (isset($creds->public_key) && (!empty($creds->public_key))) ? $creds->public_key : '';
@@ -99,6 +102,7 @@ class AppServiceProvider extends ServiceProvider
         view()->share('social_media_details', $social_media_details);
         view()->share('stripe_publishable_key', $stripe_publishable_key);
         view()->share('stripe_fpx_publishable_key', $stripe_fpx_publishable_key);
+        view()->share('stripe_oxxo_publishable_key', $stripe_oxxo_publishable_key);
         view()->share('yoco_public_key', $yoco_public_key);
         view()->share('checkout_public_key', $checkout_public_key);
         view()->share('client_preference_detail', $client_preference_detail);
