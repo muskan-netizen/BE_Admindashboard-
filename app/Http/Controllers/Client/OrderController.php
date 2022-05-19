@@ -1350,11 +1350,13 @@ class OrderController extends BaseController
                 });
             }
             $orders[$status] = $orders_list->paginate(20);
+            $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             return view(
                 'backend.order.return',
                 [
                     'orders' => $orders,
-                    'status' => $status
+                    'status' => $status,
+                    'clientCurrency' => $clientCurrency
                 ]
             );
         } catch (\Throwable $th) {
