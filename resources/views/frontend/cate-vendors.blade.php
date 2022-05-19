@@ -177,7 +177,7 @@
                                                     }
                                                     @endphp
                                                     <div class="col-xl-3 col-lg-4 col-6 col-grid-box mt-sm-3 mt-1" >
-                                                        <div class="product-card-box position-relative">
+                                                        <div class="product-card-box position-relative alInnerBox">
                                                             <div class="add-to-fav">
                                                                 <input id="fav_pro_one" type="checkbox">
                                                                 {{-- <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label> --}}
@@ -189,9 +189,9 @@
                                                                 <div class="supplier-rating">
                                                                     <h6 class="mb-0 ellips">{{$data->name}}</h6>
                                                                     @if($client_preference_detail && $client_preference_detail->rating_check == 1 && $data->vendorRating > 0)
-                                                                    <span class="rating-number">{{$data->vendorRating}}</span>
+                                                                    <span class="rating-number">{{$data->vendorRating}} <i class="fa fa-star"></i> </span>
+                                                                    <!-- <span class="Stars" style="--rating: {{$data->vendorRating}};" aria-label="Rating of this product is {{$data->vendorRating}} out of 5."></span> -->
                                                                     @endif
-
                                                                     <p title="{{$data->categoriesList}}" class="vendor-cate {{ (($client_preference_detail->rating_check ==1) || ($data->is_show_vendor_details == 1) ) ? 'border-bottom' : '' }} pb-0 mb-1 ellips">{{$data->categoriesList}}</p>
                                                                     <!-- <h6 class="mb-1">{{$data->name}}</h6> -->
                                                                     <div class="product-timing">

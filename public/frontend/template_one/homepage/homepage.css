@@ -178,6 +178,8 @@ body.dark span.org_price.ml-1.font-14{opacity: 1;}
 section.section-b-space_.p-0.ratio_asos{position: relative;z-index: 1;width: 100%;}
 .login-form #schedule_div input{display: block;}
 .fa-facebook-square:before, .fa-heart:before, .fa-twitter:before, .fa-user:before, .fa-whatsapp:before{font-family: FontAwesome;}
+body.dark .product-box,
+.dark .slick-slider.related-products .slick-slide a.common-product-box{background-color: #1b1b1b;}
 .slick-slider.related-products .slick-slide a.common-product-box{border-radius: 12px;overflow: hidden;background-color: #fff;box-shadow: 0 0 0 1px rgb(67 41 163 / 8%), 0 1px 5px 0 rgb(67 41 163 / 8%);display: block;}
 /* csss */
 .al_body_template_one ul.al_main_category_list{z-index: 9;}
