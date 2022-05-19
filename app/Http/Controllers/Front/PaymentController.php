@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\{Order, User, Cart, ClientCurrency, CartProduct};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController};
+use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController, MyCashGatewayController};
 
 class PaymentController extends FrontController{
 
@@ -110,6 +110,60 @@ class PaymentController extends FrontController{
     public function getGatewayReturnResponse(Request $request)
     {
         return view('frontend.account.gatewayReturnResponse');
+    }
+
+    public function verifyPaymentOtp(Request $request, $domain='', $gateway)
+    {
+        if($gateway == 'mycash'){
+            $data = $request->all();
+            return view('frontend.payment_gatway.mycash_otp_verify', compact('data'));
+        }
+    }
+
+    public function sendPaymentOtp(Request $request, $domain='', $gateway)
+    {
+        if(!empty($gateway)){
+            $function = 'sendPaymentOtpVia_'.$gateway;
+            if(method_exists($this, $function)) {
+                if(!empty($request->payment_form)){
+                    $response = $this->$function($request); // call related gateway for payment processing
+                    return $response;
+                }
+            }
+            else{
+                return $this->errorResponse("Invalid Gateway Request", 400);
+            }
+        }else{
+            return $this->errorResponse("Invalid Gateway Request", 400);
+        }
+    }
+
+    public function sendPaymentOtpVia_mycash(Request $request){
+        $gateway = new MyCashGatewayController();
+        return $gateway->sendOtp($request);
+    }
+
+    public function verifyPaymentOtpSubmit(Request $request, $domain='', $gateway)
+    {
+        if(!empty($gateway)){
+            $function = 'verifyPaymentOtpVia_'.$gateway;
+            if(method_exists($this, $function)) {
+                if(!empty($request->payment_form)){
+                    $response = $this->$function($request); // call related gateway for payment processing
+                    return $response;
+                }
+            }
+            else{
+                return $this->errorResponse("Invalid Gateway Request", 400);
+            }
+        }else{
+            return $this->errorResponse("Invalid Gateway Request", 400);
+        }
+    }
+
+    public function verifyPaymentOtpVia_mycash(Request $request){
+        $gateway = new MyCashGatewayController();
+        return $gateway->verifyOtp($request);
     }
 
     public function postPayment(Request $request, $domain='', $gateway = ''){

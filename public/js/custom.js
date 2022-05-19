@@ -389,6 +389,10 @@ $(document).ready(function () {
         card.mount('#stripe-card-element');
     }
 
+    function stripeOXXOInitialize() {
+        stripeOxxo = Stripe(stripe_oxxo_publishable_key);
+    }
+
     function stripeFPXInitialize() {
         stripe_fpx = Stripe(stripe_fpx_publishable_key);
         var elements = stripe_fpx.elements();
@@ -656,6 +660,62 @@ $(document).ready(function () {
         });
     });
 
+    $(document).on("change", ".pickup_schedule_datetime", function() {
+        var schedule_dt = $(this).val();
+        var vendor_id = $('#vendor_id').val();
+        $('#loaderforjs').show();    
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: check_pickup_schedule_slots,
+            data: { date: schedule_dt,vendor_id:vendor_id},
+            success: function(response) {
+                if (response.status == "Success") {
+                    $('#schedule_pickup_slot').html(response.data);
+                    $('#loaderforjs').hide();  
+                }else{
+                    success_error_alert('error', response.message, ".cart_response");
+                   $('#schedule_pickup_slot').html(response.data);
+                   $('#loaderforjs').hide();  
+                }
+            },
+            error: function(error) {
+                var response = $.parseJSON(error.responseText);
+                success_error_alert('error', response.message, ".cart_response");
+                $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                $('#loaderforjs').hide();  
+            }
+        });
+    });
+
+    $(document).on("change", ".dropoff_schedule_datetime", function() {
+        var schedule_dt = $(this).val();
+        var vendor_id = $('#vendor_id').val();
+        $('#loaderfordrop').show();    
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: check_dropoff_schedule_slots,
+            data: { date: schedule_dt,vendor_id:vendor_id},
+            success: function(response) {
+                if (response.status == "Success") {
+                    $('#schedule_dropoff_slot').html(response.data);
+                    $('#loaderfordrop').hide();  
+                }else{
+                    success_error_alert('error', response.message, ".cart_response");
+                   $('#schedule_dropoff_slot').html(response.data);
+                   $('#loaderfordrop').hide();  
+                }
+            },
+            error: function(error) {
+                var response = $.parseJSON(error.responseText);
+                success_error_alert('error', response.message, ".cart_response");
+                $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                $('#loaderfordrop').hide();  
+            }
+        });
+    });
+
     $(document).on('click', '#taskschedule', function () {
         $('#schedule_div').show();
         $('.taskschedulebtn').hide();
@@ -803,15 +863,37 @@ $(document).ready(function () {
                 return false;
             }
         }
-        var task_type = $("input[name='task_type']").val();
-        var schedule_dt = $("#schedule_datetime").val();
-        var slot = $("#slot").val();
-        var checkSlot = $('#checkSlot').val();
+        if(business_type == 'laundry' && scheduling_with_slots == 1 && off_scheduling_at_cart == 0){
+            var task_type = 'schedule';
+            var schedule_dt = $("#pickup_schedule_datetime").val();
+            var schedule_dt_dropoff = $("#dropoff_schedule_datetime").val();
+            var slot = $("#schedule_pickup_slot").val(); 
+            var slot_dropoff = $("#schedule_dropoff_slot").val(); 
+            var checkSlot  = $('#checkPickUpSlot').val();
+            var checkDropoffSlot  = $('#checkDropoffSlot').val();
+
+            // return false if  pickup_schedule_datetime and dropoff_schedule_datetime is same | By Ovi
+            if(schedule_dt == schedule_dt_dropoff){
+                success_error_alert('error', 'Pickup and dropoff date cannot be same.', ".cart_response");
+                return false;
+            }
+        }
+        else{
+            var task_type = $("input[name='task_type']").val();
+            var schedule_dt = $("#schedule_datetime").val();
+            var slot = $("#slot").val();
+            var checkSlot  = $('#checkSlot').val();
+        }
         var now = new Date().toISOString();
         if (task_type == 'schedule') {
-            if (slot) {
-                var stime = 'T' + slot.split(" - ", 1);
-                var schedule_dt = schedule_dt + stime;
+            if(slot){
+                var stime = 'T'+slot.split(" - ",1);
+                var schedule_dt = schedule_dt+stime;              
+            }
+            
+            if(business_type == 'laundry' && scheduling_with_slots == 1){
+                var schedule_dt_dropoff_time = 'T'+slot_dropoff.split(" - ",1);
+                var schedule_dt_dropoff = schedule_dt_dropoff+schedule_dt_dropoff_time;  
             }
 
             if (schedule_dt == '') {
@@ -829,14 +911,27 @@ $(document).ready(function () {
                 success_error_alert('error', error_Slot_is_required, ".cart_response");
                 return false;
             }
+
+            if(business_type == 'laundry' && scheduling_with_slots == 1){
+                if (!checkDropoffSlot) {
+                    success_error_alert('error', 'Dropoff Slot is required.', ".cart_response");
+                    return false;
+                }
+            }
         }
 
         let cartAmount = $("input[name='cart_total_payable_amount']").val();
         let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
         let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
         let comment_for_vendor = $("input[name='comment_for_vendor']").val(); //commnet for vendor
-        var schedule_pickup = $("#schedule_datetime_pickup_date").val()+" "+$("#schedule_datetime_pickup_time").val();
-        var schedule_dropoff = $("#schedule_datetime_dropoff_date").val()+" "+$("#schedule_datetime_dropoff_time").val();
+      
+        if(business_type == 'laundry' && scheduling_with_slots == 1){
+            var schedule_pickup = schedule_dt;
+            var schedule_dropoff = schedule_dt_dropoff;
+        }else{
+            var schedule_pickup = $("#schedule_datetime_pickup").val();
+            var schedule_dropoff = $("#schedule_datetime_dropoff").val();
+        }
         var specific_instructions = $("#specific_instructions").val();
         let tip = $("#cart_tip_amount").val();
 
@@ -934,11 +1029,11 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: update_cart_schedule,
-            data: { specific_instructions: param[0], task_type: param[1], schedule_dropoff: param[2], schedule_pickup: param[3], schedule_dt: param[4], comment_for_pickup_driver: param[5], comment_for_dropoff_driver: param[6], comment_for_vendor: param[7], delivery_type: param[8], slot: param[9], address: param[10] },
-            success: function (response) {
+            data: { specific_instructions:param[0],task_type:param[1],schedule_dropoff:param[2],schedule_pickup:param[3],schedule_dt:param[4],comment_for_pickup_driver: param[5] , comment_for_dropoff_driver: param[6] , comment_for_vendor: param[7] , delivery_type : param[8] ,slot:param[9],address : param[10]},
+            success: function(response) {
                 if (response.status == "Success") {
-                    return false;
-                } else {
+                    return true
+                }else{
                     return false;
                 }
             },
@@ -1300,6 +1395,11 @@ $(document).ready(function () {
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
+        if(business_type == 'laundry' && scheduling_with_slots == 1){
+            var schedule_dropoff_slot = $("#schedule_dropoff_slot").val(); 
+        }else{
+            var schedule_dropoff_slot = null;
+        }
         var is_gift = $('#is_gift:checked').val() ?? 0;
         var total_fixed_fee_amount = $("input[name='total_fixed_fee_amount']").val() ?? 0;
          if ((task_type == 'schedule') && (schedule_dt == '')) {
@@ -1312,7 +1412,8 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount,other_taxes_string:other_taxes_string },
+            data: { address_id: address_id, payment_option_id: payment_option_id, transaction_id: transaction_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, delivery_type: delivery_type, slot: slot,total_fixed_fee_amount:total_fixed_fee_amount , other_taxes_string:other_taxes_string, schedule_dropoff_slot:schedule_dropoff_slot },
+
             success: function (response) {
                 if (response.status == "Success") {
                     var ip_address = window.location.host;
@@ -3621,6 +3722,10 @@ $(document).ready(function () {
             case 35:
                 payWithPaytech('','');
             break;
+
+            case 37:
+                paymentViaStripeOXXO('', 19, '');
+            break;
         
         }
 
@@ -3959,6 +4064,16 @@ $(document).ready(function () {
                 else{
                     return false;
                 }
+
+            case '37':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    stripeOXXOInitialize();
+                    paymentViaStripeOXXO(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
         
         }
 
@@ -4121,6 +4236,11 @@ $(document).ready(function () {
             case 36:
                     paymentViaMyCash('', payment_option_id, ''); 
             break;
+
+            case 36:
+                    paymentViaStripeOXXO('', payment_option_id, ''); 
+            break;
+
         }
     }
 

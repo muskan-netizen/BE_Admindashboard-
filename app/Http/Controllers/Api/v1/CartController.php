@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
-use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc};
+use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption}; 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
 //use App\Http\Traits\MpesaStkpush;
@@ -56,7 +56,6 @@ class CartController extends BaseController
             //         }
             //     }
             // }
-
             $user = Auth::user();
             if (!$user->id) {
                 $cart = Cart::where('unique_identifier', $user->system_user);
@@ -65,9 +64,28 @@ class CartController extends BaseController
             }
             $cart = $cart->first();
             if ($cart) {
+                $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+                                $q->where('age_restriction',1);
+                            })->count();
+                $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+                $passbase['check'] = 0;
+                $passbase['status'] = "";
+                if($passbase_check && $age_restriction)
+                {
+                    $passbase['check'] = 1;
+                    if(is_null($user->passbase_verification)){
+                        $passbase['status'] = 'pending';
+                    }else{
+                        $passbase['status'] = $user->passbase_verification->status;
+                    }
+                }
+
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+                $cartData->passbase_check = $passbase['check'];
+                $cartData->passbase_status= $passbase['status'];
                 return $this->successResponse($cartData);
             }
+
             return $this->successResponse($cart);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -194,6 +212,12 @@ class CartController extends BaseController
                     if ($checkVendorId) {
                         return $this->errorResponse(['error' => __('Your cart has existing items from another vendor'), 'alert' => '1'], 404);
                     }
+                }
+            }
+
+            if ( (isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1) ) {
+                if ($checkVendorId) {
+                    return $this->errorResponse(['error' => __('Your cart has existing items from another vendor'), 'alert' => '1'], 400);
                 }
             }
 
@@ -1090,8 +1114,14 @@ class CartController extends BaseController
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
             $slotsDate = findSlot('',$vendorId,'','api');
-            $slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes);
+            $slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes, 1);
             $cart->slots = $slots;
+            if($preferences->business_type == 'laundry'){
+                $dropoff_slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                $cart->dropoff_slots = $dropoff_slots;
+            }else{
+                $cart->dropoff_slots = [];
+            }
             if(count($slots)>0){
                 $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled ?? 0;
              }else{
@@ -1100,6 +1130,7 @@ class CartController extends BaseController
         }else{
             $duration = (object)['closed_store_order_scheduled'=>'0'];
             $slots = [];
+            $dropoff_slots = [];
             $cart->slots = [];
             $cart->closed_store_order_scheduled = 0;
         }
@@ -1199,6 +1230,10 @@ class CartController extends BaseController
         $cart->delay_date =  $delay_date??0;
         $cart->pickup_delay_date =  $pickup_delay_date??0;
         $cart->dropoff_delay_date =  $dropoff_delay_date??0;
+        if($preferences->business_type == 'laundry'){
+            $cart->same_day_delivery_for_schedule =  $preferences->same_day_delivery_for_schedule;
+            $cart->off_scheduling_at_cart =  $preferences->off_scheduling_at_cart;
+        }
         return $cart;
     }
 
@@ -1210,7 +1245,28 @@ class CartController extends BaseController
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
        // $duration = $duration->slot_minutes??'';
-        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes);
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes, 1, 'pickup'); // Added 1 for pickup
+        if(count($slots)<=0){
+            $slot = [];
+        }else{
+            $slot = $slots;
+        }
+
+        return response()->json($slot);
+    }
+
+    /**
+    * GET Request
+    * To Get Drop Off Slots
+    * Added By Ovi
+    */
+    public function checkScheduleDropoffSlots(Request $request)
+    {
+        $slot = [];
+        $vendorId = $request->vendor_id??0;
+        $delivery = $request->delivery??'delivery';
+        $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes, 2, 'dropoff');
         if(count($slots)<=0){
             $slot = [];
         }else{

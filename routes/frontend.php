@@ -60,6 +60,9 @@ Route::group(['middleware' => ['domain']], function () {
 
 	// Initial route for all type of gateways
 	Route::post('post/payment/{gateway}', 'Front\PaymentController@postPayment')->name('payment.gateway.postPayment');
+	Route::post('send/payment/otp/{gateway}', 'Front\PaymentController@sendPaymentOtp')->name('send.payment.otp');
+	Route::post('verify/payment/otp/{gateway}', 'Front\PaymentController@verifyPaymentOtp')->name('verify.payment.otp');
+	Route::post('verify/payment/otp/submit/{gateway}', 'Front\PaymentController@verifyPaymentOtpSubmit')->name('verify.payment.otp.submit');
 
 	Route::get('payment/gateway/returnResponse', 'Front\PaymentController@getGatewayReturnResponse')->name('payment.gateway.return.response');
 
@@ -84,6 +87,15 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/webhook/stripe_fpx', 'Front\StripeGatewayController@stripeFPXWebhook')->name('payment.webhook.stripe_fpx');
 	Route::get('payment/webview/stripe_fpx', 'Front\StripeGatewayController@paymentWebViewStripeFPX')->name('payment.webview.stripe_fpx');
 	Route::get('payment/webview/response/stripe_fpx', 'Front\StripeGatewayController@webViewResponseStripeFPX')->name('payment.webview.response.stripe_fpx');
+
+
+		// Stripe OXXO
+		Route::post('payment/create/stripe_oxxo', 'Front\StripeGatewayController@createStripeOXXOPaymentIntent')->name('payment.create.stripe_oxxo');
+		 Route::get('payment/stripe_oxxo/clear', 'Front\StripeGatewayController@cartStripeOXXOClear')->name('payment.stripe_oxxo_clear');
+		Route::post('payment/webhook/stripe_oxxo', 'Front\StripeGatewayController@stripeOXXOWebhook')->name('payment.webhook.stripe_oxxo');
+		Route::get('payment/webview/stripe_oxxo', 'Front\StripeGatewayController@paymentWebViewStripeOXXO')->name('payment.webview.stripe_oxxo');
+		Route::get('payment/webview/response/stripe_oxxo', 'Front\StripeGatewayController@webViewResponseStripeOXXO')->name('payment.webview.response.stripe_oxxo');
+
 
 	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
@@ -213,7 +225,7 @@ Route::group(['middleware' => ['domain']], function () {
 	//payPhone routes
 	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
 	Route::get('payment/payphone/success', 'Front\PayphoneController@successPage')->name('payphone.success');
-
+	Route::any('payment/payphone/api', 'Front\PayphoneController@webViewPay')->name('payphone.webview');
 
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
@@ -322,6 +334,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('cart/schedule/update', 'Front\CartController@updateSchedule')->name('cart.updateSchedule');
 	Route::post('cart/productfaq/update', 'Front\CartController@updateCartProductFaq')->name('cart.productfaq');
 	Route::post('cart/schedule/slots', 'Front\CartController@checkScheduleSlots')->name('cart.check_schedule_slots');
+
+	Route::post('cart/pickup/schedule/slots', 'Front\CartController@checkPickupScheduleSlots')->name('cart.check_pickup_schedule_slots'); // Added by Ovi
+	Route::post('cart/dropoff/schedule/slots', 'Front\CartController@checkDropoffScheduleSlots')->name('cart.check_dropoff_schedule_slots'); // Added by Ovi
+
 	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cart.updateProductSchedule');
 	Route::get('cartProducts', 'Front\CartController@getCartData')->name('getCartProducts');
 	Route::get('cartDetails', 'Front\CartController@getCartProducts')->name('cartDetails');
@@ -382,6 +398,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('verifyAccountProcess', 'Front\UserController@sendToken')->name('email.send');
 	Route::post('sendToken/{id}', 'Front\UserController@sendToken')->name('verifyInformation');
 	Route::post('user/placeorder', 'Front\OrderController@placeOrder')->name('user.placeorder');
+	Route::post('user/rescheduleOrder', 'Front\OrderController@rescheduleOrder')->name('user.rescheduleOrder'); // Added by Ovi
 	Route::get('user/newsLetter', 'Front\ProfileController@newsLetter')->name('user.newsLetter');
 	Route::get('user/verify_account', 'Front\UserController@verifyAccount')->name('user.verify');
 	Route::post('wishlist/update', 'Front\WishlistController@updateWishlist')->name('addWishlist');
