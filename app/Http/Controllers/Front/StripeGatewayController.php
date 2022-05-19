@@ -18,6 +18,8 @@ use App\Http\Controllers\Front\UserSubscriptionController;
 use App\Http\Controllers\Front\PickupDeliveryController;
 use App\Models\{User, UserVendor, CaregoryKycDoc,Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress, Webhook};
 
+use function App\Notifications\via;
+
 class StripeGatewayController extends FrontController
 {
 
@@ -501,12 +503,15 @@ class StripeGatewayController extends FrontController
             //     $postdata['customer'] = $customer_id;
             // }
 
+            $user_address = '';
+            if($request->has('address_id')){
+                $address_id = $request->address_id;
+                $user_address = UserAddress::where('id', $address_id)->first();
+            }else{
+                $user_address = UserAddress::where(['user_id'=>auth()->id(),'is_primary'=>'1'])->first();
+            }
             if($payment_form == 'cart'){
-                $user_address = '';
-                if($request->has('address_id')){
-                    $address_id = $request->address_id;
-                    $user_address = UserAddress::where('id', $address_id)->first();
-                }
+               
                 $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
                 $order_number = $request->order_number;
 
@@ -515,28 +520,46 @@ class StripeGatewayController extends FrontController
                 $postdata['metadata']['order_number'] = $order_number;
                 $postdata['shipping']['name'] = $user->name;
                 $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
-                if(!empty($user_address)){
-                    $postdata['shipping']['address']['line1'] = $user_address->street;
-                    $postdata['shipping']['address']['city'] = $user_address->city;
-                    $postdata['shipping']['address']['state'] = $user_address->state;
-                    $postdata['shipping']['address']['country'] = $user_address->country;
-                    $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
-                }
+                
             }
+            
             elseif($payment_form == 'wallet'){
                 $postdata['description'] = 'Wallet Checkout';
+                $postdata['shipping']['name'] = $user->name;
             }
             if($payment_form == 'tip'){
                 $postdata['description'] = 'Tip Checkout';
                 $order_number = $request->order_number;
                 $postdata['metadata']['order_number'] = $order_number;
+                $postdata['shipping']['name'] = $user->name;
+
             }
             elseif($request->payment_form == 'subscription'){
                 $postdata['description'] = 'Subscription Checkout';
                 $postdata['metadata']['subscription_id'] = $request->subscription_id;
+                $postdata['shipping']['name'] = $user->name;
             }
-            
+
+            if(!empty($user_address)){
+                $postdata['shipping']['address']['line1'] = $user_address->street;
+                $postdata['shipping']['address']['city'] = $user_address->city;
+                $postdata['shipping']['address']['state'] = $user_address->state;
+                $postdata['shipping']['address']['country'] = $user_address->country;
+                $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
+            }
+
             $payment_intent = $stripe = $stripe->paymentIntents->create($postdata);
+
+            if($request->payment_form == 'cart'){
+                \Session::flash('success', 'Order updated soon.');
+            } elseif($request->payment_form == 'wallet'){
+                \Session::flash('success', 'Wallet amount updated soon.');
+            } elseif($request->payment_form == 'tip'){
+                \Session::flash('success', 'Tip amount updated soon.');
+            } elseif($request->payment_form == 'subscription'){
+                \Session::flash('success', 'Subscription updated soon.');
+            }
+
             return $this->successResponse($payment_intent);
         }
         catch (\Exception $ex) {
@@ -761,7 +784,6 @@ class StripeGatewayController extends FrontController
 
         $payload = @file_get_contents('php://input');
         $event = null;
-        \Log::info($payload);
         try {
             $event = \Stripe\Event::constructFrom(
                 json_decode($payload, true)
@@ -771,7 +793,6 @@ class StripeGatewayController extends FrontController
             http_response_code(400);
             exit();
         }
-        \Log::info(json_encode($event));
         Webhook::create(['tracking_order_id'=>'','response'=>$request->getContent()??json_encode($payload)]);
         // Handle the event
         switch ($event->type) {
