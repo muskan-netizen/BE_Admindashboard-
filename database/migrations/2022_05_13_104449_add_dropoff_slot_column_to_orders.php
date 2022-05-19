@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddInitialGatewayReferenceToOrders extends Migration
+class AddDropoffSlotColumnToOrders extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,9 @@ class AddInitialGatewayReferenceToOrders extends Migration
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->string('initial_gateway_reference', 255)->nullable();
-            $table->string('order_reference_for_gateway', 255)->nullable();
+            if (!Schema::hasColumn('orders', 'dropoff_scheduled_slot')) {
+                $table->string('dropoff_scheduled_slot')->nullable()->comment('dropoff slot for laundry');
+            }
         });
     }
 
@@ -27,8 +28,7 @@ class AddInitialGatewayReferenceToOrders extends Migration
     public function down()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('initial_gateway_reference');
-            $table->dropColumn('order_reference_for_gateway');
+            $table->dropColumn('dropoff_scheduled_slot');
         });
     }
 }

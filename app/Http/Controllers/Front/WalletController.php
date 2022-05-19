@@ -116,6 +116,10 @@ class WalletController extends FrontController
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
                 if($payment_option->code == 'stripe'){
                     $payment_option->title = 'Credit/Debit Card (Stripe)';
+                }elseif($payment_option->code == 'kongapay'){
+                    $payment_option->title = 'Pay Now';
+                }elseif($payment_option->code == 'mvodafone'){
+                    $payment_option->title = 'Vodafone M-PAiSA';
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);

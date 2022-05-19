@@ -365,13 +365,14 @@ function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
     return $ReturnArray;
 }
     
-function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
+function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60", $slot_type=0, $request_from='')
 {
     $slotDuration = Vendor::select('slot_minutes')->where('id',$vid)->first();
     $duration = ($slotDuration->slot_minutes) ?? $duration;
     $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
     //type must be a : delivery , takeaway,dine_in
     $client = ClientData::select('timezone')->first();
+    $preferences = ClientPreference::first();
     $viewSlot = array();
     if(!empty($myDate))
     {
@@ -381,11 +382,17 @@ function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
         $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
     }
     $mytime =$mytime->dayOfWeek+1;
-    $slots = VendorSlot::where('vendor_id',$vid)
-    ->whereHas('days',function($q)use($mytime,$type){
-        return $q->where('day',$mytime)->where($type,'1');
-    })
-    ->get();
+    if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
+        $slots = VendorSlot::where('vendor_id',$vid)->where('slot_type', $slot_type)->whereHas('days',function($q)use($mytime,$type){
+            return $q->where('day',$mytime)->where($type,'1');
+        })->get();
+    }else{
+        $slots = VendorSlot::where('vendor_id',$vid)
+        ->whereHas('days',function($q)use($mytime,$type){
+            return $q->where('day',$mytime)->where($type,'1');
+        })
+        ->get();
+    }
     $min[] = '';
     $cart = CartProduct::where('vendor_id',$vid)->get();
     if(isset($cart) && $cart->count()>0){
@@ -575,22 +582,22 @@ function findSlot($myDate = null,$vid,$type = 'delivery',$api = null)
         }
 }
 
-function findSlotNew($myDate,$vid)
+function findSlotNew($myDate,$vid,$type=0)
 {
-        $slots = showSlot($myDate,$vid,'delivery');
+        $slots = showSlot($myDate,$vid,'delivery', $type);
             if(count((array)$slots) == 0){
                 $myDate  = date('Y-m-d',strtotime('+1 day')); 
-                $slots = showSlot($myDate,$vid,'delivery');
+                $slots = showSlot($myDate,$vid,'delivery', $type);
             }
            
             if(count((array)$slots) == 0){
                 $myDate  = date('Y-m-d',strtotime('+2 day')); 
-                $slots = showSlot($myDate,$vid,'delivery');
+                $slots = showSlot($myDate,$vid,'delivery', $type);
             }
 
             if(count((array)$slots) == 0){
                 $myDate  = date('Y-m-d',strtotime('+3 day')); 
-                $slots = showSlot($myDate,$vid,'delivery');
+                $slots = showSlot($myDate,$vid,'delivery', $type);
             }
             if(isset($slots)){
                 $slots = $slots;
