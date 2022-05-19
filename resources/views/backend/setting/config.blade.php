@@ -992,13 +992,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      @endif
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
-                       <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->off_scheduling_at_cart == '1')) checked='checked' @endif>
-                     </span>
-                     </div>
-                  </div>
-                  <div class="col-md-4">
-                     <div class="form-group d-flex justify-content-between mb-3">
                         <label for="isolate_single_vendor_order" class="mr-2 mb-0">{{__('Isolate Single Vendor Order')}} <small class="d-block pr-5">Only allow customers to place order from one vendor at a time.Only allow customers to place order from one vendor at a time.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="isolate_single_vendor_order" id="isolate_single_vendor_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->isolate_single_vendor_order == '1')) checked='checked' @endif>
                      </span>
@@ -1041,13 +1034,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                        </span>
                     </div>
                  </div>
-                  <div class="col-md-4">
-                     <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.</small></label>
-                       <span> <input type="checkbox" data-plugin="switchery" name="delay_order" id="delay_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delay_order == '1')) checked='checked' @endif>
-                     </span>
-                     </div>
-                  </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
                         <label for="product_order_form" class="mr-2 mb-0">{{__('Product Order Form')}}<small class="d-block pr-5">{{__('Add a Product Order form. Create Dynamic questions per product.')}}</small></label>
