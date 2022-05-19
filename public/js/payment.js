@@ -1554,7 +1554,6 @@ $(document).ready(function() {
                 {name: 'order_number', value: order.order_number},
                 {name: 'payment_form', value: 'cart'}
             );
-            returnParams += 'order=' + order.order_number;
         } else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
             payment_form = 'wallet';
@@ -1571,10 +1570,8 @@ $(document).ready(function() {
                 {name: 'payment_form', value: 'tip'},
                 {name: 'order_number', value: $("#order_number").val()}
             );
-            returnParams += 'order=' + $("#order_number").val();
         }
         ajaxData.push({ name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
-        returnParams += '&amount=' + total_amount + '&payment_form=' + payment_form;
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1613,7 +1610,13 @@ $(document).ready(function() {
                                     $(".topup_wallet_confirm").removeAttr("disabled");
                                 }
                             }else{
-                                window.location.href=cart_clear_stripe_oxxo_url+'?no='+order.order_number;
+
+                                if(payment_form == 'cart'){
+                                    window.location.href=cart_clear_stripe_oxxo_url+'?no='+order.order_number;
+                                }else{
+                                    location.reload(); 
+                                }
+                            
                             }
                         });
 

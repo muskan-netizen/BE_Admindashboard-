@@ -83,20 +83,25 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                                     <% if(((vendor.delivery_fee > 0) || (order.scheduled_date_time))){ %>
                                                         <% if(vendor.order_status != 'Rejected'){%>
-                                                            <% if(order.scheduled_slot == null){ %>
-                                                            <% if(order.scheduled_date_time){ %>
-                                                                   <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %></span>
-                                                               <% } else { %>
-                                                                   <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
-                                                               <% } %>
-                                                               <% }else{ %>
-                                                                <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
-                                                               <% } %>
+                                                            @if($client_preferences->scheduling_with_slots == 1 && $client_preferences->business_type == 'laundry') 
+                                                            <span class="ml-2 text-right">Slots: Pickup:  <%= order.scheduled_slot %> | Dropoff: <%= order.dropoff_scheduled_slot %>
+                                                            </span>
+                                                        @else
+                                                                <% if(order.scheduled_slot == null){ %>
+                                                                <% if(order.scheduled_date_time){ %>
+                                                                    <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %></span>
+                                                                <% } else { %>
+                                                                    <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
+                                                                <% } %>
+                                                                <% }else{ %>
+                                                                    <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
+                                                                <% } %>
+                                                        @endif
                                                         <% } else if(vendor.order_status == 'Rejected' && vendor.cancelled_by != null){%>
                                                             <span class="ml-2 text-danger"><%= vendor.order_status %> by <%= vendor.cancelled_by.name %></span>
                                                         <% }%>
 
-                                                   <% } %>
+                                                    <% } %>
 
                                                 </div>
 
@@ -332,21 +337,27 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 </script>
 <div class="container-fluid order-page">
     <div class="row d-flex align-items-center justify-content-between">
-
-        <div class="page-title-box d-flex justify-content-between">
-            <h4 class="page-title mr-3">{{ __('Orders') }}</h4>
-            {{--<div class="d-flex align-items-center">
+        <div class="col-md-6">
+            <div class="page-title-box d-flex justify-content-between">
+                <h4 class="page-title mr-3">{{ __('Orders') }}</h4>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="page-title-box page-title-box text-right pt-2">
                 <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
                     <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
-                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                        <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
+                    </b>
+                </a> 
+                @if ($client_preferences->business_type == 'laundry')
+                | 
+                <a class="return-btn" href="{{route('rescheduled.orders')}}">
+                    <b>{{ __("Rescheduled Orders") }} <sup class="total-items">({{$rescheduleOrderCount}})</sup>
+                        <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
                     </b>
                 </a>
-                <a class="return-btn ml-3" href="{{route('cancel-order.requests')}}">
-                    <b>{{ __("Cancel Order Request") }} <sup class="total-items">({{$cancel_order_requests}})</sup>
-                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-                    </b>
-                </a>
-            </div>--}}
+                @endif
+            </div>
         </div>
         @if($client_preference_detail->third_party_accounting)
         @foreach($accounting as $accounting)

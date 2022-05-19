@@ -234,6 +234,18 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/table/delete/{id}', 'Client\TableBookingController@destroyTable')->name('vendor.table.delete');
         Route::post('vendor/parentStatus/{id}', 'Client\VendorController@checkParentStatus')->name('category.parent.status');
         Route::get('calender/data/{id}', 'Client\VendorSlotController@returnJson')->name('vendor.calender.data');
+
+        Route::get('calender/pickup/data/{id}', 'Client\Laundry\PickupSlotController@returnJson')->name('vendor.calender.pickup'); // Added by Ovi
+        Route::post('calender/pickup/slot/{id}', 'Client\Laundry\PickupSlotController@store')->name('vendor.pickup.saveSlot'); // Added by Ovi
+        Route::post('calender/pickup/updateSlot/{id}', 'Client\Laundry\PickupSlotController@update')->name('vendor.pickup.updateSlot'); // Added by Ovi
+        Route::post('calender/pickup/deleteSlot/{id}', 'Client\Laundry\PickupSlotController@destroy')->name('vendor.pickup.deleteSlot'); // Added by Ovi
+
+        Route::get('calender/dropoff/data/{id}', 'Client\Laundry\DropoffSlotController@returnJson')->name('vendor.calender.dropoff'); // Added by Ovi
+        Route::post('calender/dropoff/slot/{id}', 'Client\Laundry\DropoffSlotController@store')->name('vendor.dropoff.saveSlot'); // Added by Ovi
+        Route::post('calender/dropoff/updateSlot/{id}', 'Client\Laundry\DropoffSlotController@update')->name('vendor.dropoff.updateSlot'); // Added by Ovi
+        Route::post('calender/dropoff/deleteSlot/{id}', 'Client\Laundry\DropoffSlotController@destroy')->name('vendor.dropoff.deleteSlot'); // Added by Ovi
+
+
         Route::post('vendor/slot/{id}', 'Client\VendorSlotController@store')->name('vendor.saveSlot');
         Route::post('vendor/updateSlot/{id}', 'Client\VendorSlotController@update')->name('vendor.updateSlot');
         Route::post('vendor/deleteSlot/{id}', 'Client\VendorSlotController@destroy')->name('vendor.deleteSlot');
@@ -248,6 +260,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('orders/filter', 'Client\OrderController@postOrderFilter')->name('orders.filter');
         Route::get('orders/product_faq/{product_id}', 'Client\OrderController@viewProductForm')->name('orders.product_faq');
         Route::get('order/return/{status}', 'Client\OrderController@returnOrders')->name('backend.order.returns');
+        Route::get('rescheduled-orders', 'Client\OrderController@rescheduledOrders')->name('rescheduled.orders'); //Added By Ovi
         Route::get('order/return-modal/get-return-product-modal', 'Client\OrderController@getReturnProductModal')->name('get-return-product-modal');
         Route::post('order/update-product-return-client', 'Client\OrderController@updateProductReturn')->name('update.order.return.client');
         Route::get('order/{order_id}/{vendor_id}', 'Client\OrderController@getOrderDetail')->name('order.show.detail');
