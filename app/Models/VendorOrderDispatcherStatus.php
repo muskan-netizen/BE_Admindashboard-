@@ -12,88 +12,152 @@ class VendorOrderDispatcherStatus extends Model
         'dispatcher_id', 'order_id', 'dispatcher_status_option_id', 'vendor_id','type'
     ];
 
-
-
     protected $appends = ['status_data'];
     public function getStatusDataAttribute()
     {
        $dispatcher_status_option = $this->attributes['dispatcher_status_option_id'];
        $type = $this->attributes['type'];
-
-       $check = ClientPreference::orderBy('id','asc')->select('business_type')->first();
-       $business_type = $check->business_type ?? null;
+       $order_id = $this->attributes['order_id'];
+       $vendor_id = $this->attributes['vendor_id'];
+       
+       $order = Order::with(['vendors.products.product.category.categoryDetail.type:id,title'])
+       ->with('vendors', function ($query) use ($vendor_id) {
+            if (!empty($vendor_id)) {
+                $query->where('vendor_id', $vendor_id);
+            }
+       })->find($order_id);
+       $productcategorytype = $order->vendors[0]->products[0]->product->category->categoryDetail->type->title;
 
        $status_data = [];
 
        switch ($dispatcher_status_option) {
         case 1:
-            if($business_type == 'home_service'){
+            if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_1_1.png');
-                $status_data['driver_status'] = __('Service Accepted');
-            }else{
-                if ($type == '1') {
-                    $status_data['icon'] = asset('assets/icons/driver_1_1.png');
+                if($productcategorytype == "On Demand Service"):
+                    $status_data['driver_status'] = __('Service Accepted');
+                elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
                     $status_data['driver_status'] = __('Order Accepted');
-                } else {
-                }
+                elseif($productcategorytype == "Pickup/Parent" || $productcategorytype == "Pickup/Delivery"):
+                    $status_data['driver_status'] = __('Ride Accepted');
+                elseif($productcategorytype == "Laundry"):
+                    $status_data['driver_status'] = __('Order Accepted');
+                else:
+                    $status_data['driver_status'] = __('Order Accepted');
+                endif;
+            } else {
+                
             }
-            
         break;
         case 2:
-            if($business_type == 'home_service'){
+            
+            if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_2_1.png');
-                $status_data['driver_status'] = __('Driver assigned');
-            }else{
-                if ($type == '1') {
-                    $status_data['icon'] = asset('assets/icons/driver_2_1.png');
-                    $status_data['driver_status'] = __('Driver assigned');
-                } else {
-                }
+                if($productcategorytype == "On Demand Service"):
+                    $status_data['driver_status'] = __('Service Executive Assigned');
+                elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
+                    $status_data['driver_status'] = __('Delivery Executive Assigned');
+                elseif($productcategorytype == "Pickup/Parent" || $productcategorytype == "Pickup/Delivery"):
+                    $status_data['driver_status'] = __('Driver Assigned');
+                elseif($productcategorytype == "Laundry"):
+                    $status_data['driver_status'] = __('Service Executive Assigned');
+                else:
+                    $status_data['driver_status'] = __('Delivery Executive Assigned');
+                endif;
+            } else {
+                
             }
         
         break;
         case 3:
-            if($business_type == 'home_service'){
+            
+            if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_3_1.png');
-                $status_data['driver_status'] = __('Driver heading to  you');
-            }else{
-                if ($type == '1') {
-                    $status_data['icon'] = asset('assets/icons/driver_3_1.png');
-                    $status_data['driver_status'] = __('Driver heading to the store');
-                } else {
-                    $status_data['icon'] = asset('assets/icons/driver_3_2.png');
-                    $status_data['driver_status'] = __('Driver heading to you');
-                }
+                if($productcategorytype == "On Demand Service"):
+                    $status_data['driver_status'] = __('Service Executive heading to you');
+                elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
+                    $status_data['driver_status'] = __('Delivery Executive heading to the store');
+                elseif($productcategorytype == "Pickup/Parent" || $productcategorytype == "Pickup/Delivery"):
+                    $status_data['driver_status'] = __('Driver heading to the pickup location');
+                elseif($productcategorytype == "Laundry"):
+                    $status_data['driver_status'] = __('Service Executive heading to you');
+                else:
+                    $status_data['driver_status'] = __('Delivery Executive heading to the store');
+                endif;
+            } else {
+                $status_data['icon'] = asset('assets/icons/driver_3_2.png');
+                if($productcategorytype == "On Demand Service"):
+                    $status_data['driver_status'] = __('Service Executive heading to you');
+                elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
+                    $status_data['driver_status'] = __('Delivery Executive heading to you');
+                elseif($productcategorytype == "Pickup/Parent" || $productcategorytype == "Pickup/Delivery"):
+                    $status_data['driver_status'] = __('Driver heading to dropoff location');
+                elseif($productcategorytype == "Laundry"):
+                    $status_data['driver_status'] = __('Service Executive heading to the store');
+                else:
+                    $status_data['driver_status'] = __('Delivery Executive heading to you');                    
+                endif;
             }
             
         break;
         case 4:
-            if($business_type == 'home_service'){
-                $status_data['icon'] = asset('assets/icons/driver_4_2.png');
-                $status_data['driver_status'] = __('Driver arrived at your location');
+            if ($type == '1') {
+                $status_data['icon'] = asset('assets/icons/driver_4_1.png');
+                if($productcategorytype == "On Demand Service"):
+                    $status_data['driver_status'] = __('Service Executive arrived at your location');
+                elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
+                    $status_data['driver_status'] = __('Delivery Executive arrived at store');
+                elseif($productcategorytype == "Pickup/Parent" || $productcategorytype == "Pickup/Delivery"):
+                    $status_data['driver_status'] = __('Driver arrived at pickup location');
+                elseif($productcategorytype == "Laundry"):
+                    $status_data['driver_status'] = __('Service Executive arrived at your location');
+                else:
+                    $status_data['driver_status'] = __('Delivery Executive arrived at your location');
+                endif;
+
             }else{
-                if ($type == '1') {
-                    $status_data['icon'] = asset('assets/icons/driver_4_1.png');
-                    $status_data['driver_status'] = __('Driver waiting for your order');
-                } else {
-                    $status_data['icon'] = asset('assets/icons/driver_4_2.png');
-                    $status_data['driver_status'] = __('Driver arrived at your location');
-                }
+                $status_data['icon'] = asset('assets/icons/driver_4_2.png');
+                if($productcategorytype == "On Demand Service"):
+                    $status_data['driver_status'] = __('Service Executive arrived at your location');
+                elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
+                    $status_data['driver_status'] = __('Delivery Executive arrived at your location');
+                elseif($productcategorytype == "Pickup/Parent" || $productcategorytype == "Pickup/Delivery"):
+                    $status_data['driver_status'] = __('Driver arrived at dropoff location');
+                elseif($productcategorytype == "Laundry"):
+                    $status_data['driver_status'] = __('Service Executive arrived at the store');
+                else:
+                    $status_data['driver_status'] = __('Delivery Executive arrived at your location');
+                endif;
             }
             
         break;
         case 5:
-            if($business_type == 'home_service'){
+            if ($type == '1') {
                 $status_data['icon'] = asset('assets/icons/driver_5_1.png');
-                $status_data['driver_status'] = __('Service Completed');
+                if($productcategorytype == "On Demand Service"):
+                    $status_data['driver_status'] = __('Service Completed');
+                elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
+                    $status_data['driver_status'] = __('Order picked up');
+                elseif($productcategorytype == "Pickup/Parent" || $productcategorytype == "Pickup/Delivery"):
+                    $status_data['driver_status'] = __('Ride Started');
+                elseif($productcategorytype == "Laundry"):
+                    $status_data['driver_status'] = __('Order picked up');
+                else:
+                    $status_data['driver_status'] = __('Order picked up');
+                endif;
             }else{
-                if ($type == '1') {
-                    $status_data['icon'] = asset('assets/icons/driver_5_1.png');
-                    $status_data['driver_status'] = __('Order delivered');
-                } else {
-                    $status_data['icon'] = asset('assets/icons/driver_5_2.png');
-                    $status_data['driver_status'] = __('Order delivered');
-                }
+                $status_data['icon'] = asset('assets/icons/driver_5_2.png');
+                if($productcategorytype == "On Demand Service"):
+                    $status_data['driver_status'] = __('Service Completed');
+                elseif($productcategorytype == "Product" || $productcategorytype == "Vendor" || $productcategorytype == "Subcategory" || $productcategorytype == "Brand"):
+                    $status_data['driver_status'] = __('Order Delivered');
+                elseif($productcategorytype == "Pickup/Parent" || $productcategorytype == "Pickup/Delivery"):
+                    $status_data['driver_status'] = __('Ride Completed');
+                elseif($productcategorytype == "Laundry"):
+                    $status_data['driver_status'] = __('Service Completed');
+                else:
+                    $status_data['driver_status'] = __('Delivery Completed');
+                endif;
             }
             
         break;
