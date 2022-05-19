@@ -42,6 +42,8 @@ class PaymentOptionController extends BaseController{
                 $option->title = __('Credit/Debit Card (Stripe)');
             }elseif($option->code == 'kongapay'){
                 $option->title = 'Pay Now';
+            }elseif($option->code == 'mvodafone'){
+                $option->title = 'Vodafone M-PAiSA';
             }elseif($option->code == 'mobbex'){
                 $option->title = __('Mobbex');
             }

@@ -17,6 +17,9 @@ class CabBookingLayout extends Model
         return $langData;
     }
 
+    public function translation(){
+      return $this->belongsTo('App\Models\CabBookingLayoutTranslation', 'id', 'cab_booking_layout_id' );
+    }
 
     public function pickupCategories(){
         return $this->hasMany('App\Models\CabBookingLayoutCategory')->whereHas('categoryDetail',function($q){$q->where('deleted_at',null);});

@@ -13,7 +13,7 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController};
 use App\Models\Client as CP;
-use App\Models\{PaymentOption, Client, CaregoryKycDoc, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, SubscriptionPlansUser, UserDevice, UserVendor, Transaction};
+use App\Models\{PaymentOption, Client, CaregoryKycDoc, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, CartDeliveryFee, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, SubscriptionPlansUser, UserDevice, UserVendor, Transaction};
 
 class MyCashGatewayController extends FrontController
 {
@@ -41,10 +41,15 @@ class MyCashGatewayController extends FrontController
 
     public function purchase(Request $request, $domain = ''){
         try{
+            
             $rules = [
                 'amount'   => 'required',
                 'payment_form'   => 'required'
             ];
+
+            if($this->currency != 'FJD'){
+                return $this->errorResponse($this->currency. ' ' . __('currency not supported'), 400);
+            }
 
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -54,30 +59,29 @@ class MyCashGatewayController extends FrontController
                 $rules['phone_number'] = 'required';
             }
 
-            $returnUrl = route('order.return.success');
+            $verifyOtpUrl = route('verify.payment.otp', 'mycash');
+
             $data = array(
+                'method' => 'paymentRequest',
                 'api_key' => $this->api_key,
                 'username' => $this->username,
                 'password' => $this->password,
-                'method' => 'paymentRequest',
+                'customer_mobile' => '6797142243', //'6797016954',//$user->phone_number,
+                'merchant_mobile' => $this->merchant_phone,
                 'product_id' => 233,
-                'amount' => $amount,
-                //method:sendOTP
-                //mobile_number:6797016954
-                'customer_mobile' => '6797016954',//$user->phone_number,
-                'merchant_mobile' => $this->merchant_phone
+                'amount' => $amount
             );
-            // dd($data);
+            
             $meta = 'customer_name:'.$user->name.'|payment_form:'.$payment_form;
-            $description = '';
+            $order_number = $order_reference = $description = '';
 
             if($payment_form == 'cart'){
                 $description = 'Order Checkout';
+                $order_number = $request->order_number;
                 $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-                $request->request->add(['cart_id' => $cart->id]);
                 $meta = $meta.'|cart_id:' . $cart->id;
-                $meta = $meta.'|order_number:' . $request->order_number;
-                $data['order_id'] = $request->order_number;
+                $meta = $meta.'|order_number:' . $order_number;
+                $data['order_id'] = $order_number;
             }
             elseif($payment_form == 'wallet'){
                 $description = 'Wallet Checkout';
@@ -85,8 +89,9 @@ class MyCashGatewayController extends FrontController
             }
             if($payment_form == 'tip'){
                 $description = 'Tip Checkout';
-                $meta = $meta.'|order_number:' . $request->order_number;
-                $data['order_id'] = $request->order_number;
+                $order_number = $order_number;
+                $meta = $meta.'|order_number:' . $order_number;
+                $data['order_id'] = $order_number;
             }
             elseif($payment_form == 'subscription'){
                 $description = 'Subscription Checkout';
@@ -118,11 +123,7 @@ class MyCashGatewayController extends FrontController
                 CURLOPT_TIMEOUT => 30,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS => $data,
-                // CURLOPT_HTTPHEADER => [
-                //     "Accept: application/json",
-                //     "Content-Type: application/json"
-                // ],
+                CURLOPT_POSTFIELDS => $data
             ]);
 
             $response = curl_exec($curl);
@@ -131,227 +132,208 @@ class MyCashGatewayController extends FrontController
             curl_close($curl);
 
             if ($err) {
-                return $this->errorResponse($err->message, 400);
+                \Log::error('MyCash Gateway Error - '. $err->message);
+                return $this->errorResponse(__('Server Error'), 400);
             } else {
                 $response = json_decode($response);
-                dd($response);
-                if(isset($response->payment_link)){
-                    return $this->successResponse($response, 'Order has been created successfully');
-                }else{
-                    return $this->errorResponse($response->message, 400);
+                if(isset($response->request_id)){
+                    $request->request->add([
+                        'order_reference' => $data['order_id'],
+                        'request_id' => $response->request_id
+                    ]);
+
+                    $send_otp_resp = $this->sendOtp($request)->getData();
+                    if ($send_otp_resp->status == 'Success') {
+                        $data['formData'] = array(
+                            'amount' => $amount,
+                            'request_id' => $request->request_id,
+                            'order_reference' => $data['order_id'],
+                            'payment_form' => $request->payment_form
+                        );
+                        $data['redirectUrl'] = $verifyOtpUrl;
+                        // $verifyOtpUrl = $verifyOtpUrl.'?order_id='.$data['order_id'].'&request_id='.$request->request_id;
+                        return $this->successResponse($data, $send_otp_resp->message, 200);
+                    }else{
+                        \Log::error('MyCash Gateway Error - '. $send_otp_resp->message);
+                        return $this->errorResponse(__('Server Error'), 400);
+                    }
+                }
+                else{
+                    \Log::error('MyCash Gateway Error - '. $response->message);
+                    return $this->errorResponse(__($response->message), 400);
                 }
             }
         }
         catch(\Exception $ex){
+            Log::error($ex->getMessage());
+            return $this->errorResponse('Server Error', 400);
+        }
+    }
+
+    public function sendOtp($request, $domain = '')
+    {
+        $user = Auth::user();
+
+        $data = array(
+            'method' => 'sendOTP',
+            'api_key' => $this->api_key,
+            'username' => $this->username,
+            'password' => $this->password,
+            'mobile_number' => '6797142243', //'6797016954',//$user->phone_number
+        );
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $this->getPaymentURL(),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $data
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        $response = json_decode($response);
+
+        if(!$err && $response && ($response->response_code == 0)){
+            if(!$request->has('resend')){
+                $payment = new Payment();
+                $payment->date = date('Y-m-d');
+                $payment->user_id = $user->id;
+                $payment->payment_option_id = 36;
+                $payment->balance_transaction = $request->amount;
+                $request->gateway_reference = $request->request_id;
+                $payment->order_reference = $request->order_reference;
+                
+                if($request->payment_form == 'cart'){
+                    $order = Order::where('order_number', $request->order_reference)->first();
+                    if ($order) {
+                        $payment->order_id = $order->id;
+                    }
+                    $payment->type = 'cart';
+                } elseif($request->payment_form == 'wallet'){
+                    $payment->type = 'wallet';
+                }
+                elseif($request->payment_form == 'tip'){
+                    $order = Order::where('order_number', $request->order_reference)->first();
+                    if ($order) {
+                        $payment->order_id = $order->id;
+                    }
+                    $payment->type = 'tip';
+                }
+                elseif($request->payment_form == 'subscription'){
+                    $payment->type = 'subscription';
+                }
+                $payment->save();
+            }
+            return $this->successResponse('', __('OTP has been sent to your mobile number'), 200);
+        }
+        else{
             Log::info($ex->getMessage());
             return $this->errorResponse('Server Error', 400);
         }
     }
 
-    public function cashfreeReturn(Request $request, $domain = '')
+    public function verifyOtp(Request $request, $domain = '')
     {
-        $user = Auth::user();
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $this->getPaymentURL() . "/orders/" .$request->order_id,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            // CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_HTTPHEADER => [
-                "Accept: application/json",
-                "Content-Type: application/json",
-                "x-api-version: 2022-01-01",
-                "x-client-id: ". $this->APP_ID,
-                "x-client-secret: ". $this->SECRET_KEY
-            ],
-        ]);
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        $response = json_decode($response);
-        // dd($response);
-
-        if(!$err && $response){
-            $order_status = strtolower($response->order_status);
-            if($order_status == 'paid'){
-                if($request->payment_form == 'cart'){
-                    $order_number = $request->order_id;
-                    $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-                    if ($order) {
-                        $returnUrlParams = '';
-                        $returnUrl = route('order.success', $order->id);
-                        return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
-    
-                        // Send Email
-                        //   $this->successMail();
-                    }
-                } elseif($request->payment_form == 'wallet'){
-                    $returnUrl = route('user.wallet');
-                    return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
-                }
-                elseif($request->payment_form == 'tip'){
-                    $returnUrl = route('user.orders');
-                    return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
-                }
-                elseif($request->payment_form == 'subscription'){
-                    $returnUrl = route('user.subscription.plans');
-                    return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
-                }
-            }
-            else{
-                if($request->payment_form == 'cart'){
-                    $order = Order::where('order_number', $request->order_id)->first();
-                    if($order){
-                        $wallet_amount_used = $order->wallet_amount_used;
-                        if($wallet_amount_used > 0){
-                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                            if(!$transaction){
-                                $wallet = $user->wallet;
-                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
-                            }else{
-                                return Redirect::to(route('showCart'))->with('error', 'Your order has already been cancelled');
-                            }
-                        }
-                    }
-                    
-                    return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled');
-                } elseif($request->payment_form == 'wallet'){
-                    return Redirect::to(route('user.wallet'))->with('error', 'Transaction has been cancelled');
-                } elseif($request->payment_form == 'tip'){
-                    return Redirect::to(route('user.orders'))->with('error', 'Transaction has been cancelled');
-                } elseif($request->payment_form == 'subscription'){
-                    return Redirect::to(route('user.subscription.plans'))->with('error', 'Transaction has been cancelled');
-                }
-            }
-        }
-    }
-
-    public function cashfreeReturnApp(Request $request, $domain = '')
-    {
-        $user = Auth::user();
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $this->getPaymentURL() . "/orders/" .$request->order_id,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            // CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_HTTPHEADER => [
-                "Accept: application/json",
-                "Content-Type: application/json",
-                "x-api-version: 2022-01-01",
-                "x-client-id: ". $this->APP_ID,
-                "x-client-secret: ". $this->SECRET_KEY
-            ],
-        ]);
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        $response = json_decode($response);
-        // dd($response);
-
-        if(!$err && $response){
-            $order_status = strtolower($response->order_status);
-            $returnUrl = url('payment/gateway/returnResponse');
-            if($order_status == 'paid'){
-                $returnUrlParams = '?status=200&gateway=cashfree&action=' . $request->payment_form;
-                if($request->payment_form == 'cart'){
-                    $order_number = $request->order_id;
-                    $order = Order::where('order_number', $order_number)->first();
-                    if ($order) {
-                        $returnUrlParams = $returnUrlParams . '&order=' . $order_number;
-                    }
-                }
-
-                return Redirect::to(url($returnUrl . $returnUrlParams));
-            }
-            else{
-                $returnUrlParams = '?status=0&gateway=cashfree&action=' .$request->payment_form;
-                if($request->payment_form == 'cart'){
-                    $order = Order::where('order_number', $request->order_id)->first();
-                    if($order){
-                        $wallet_amount_used = $order->wallet_amount_used;
-                        if($wallet_amount_used > 0){
-                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                            if(!$transaction){
-                                $wallet = $user->wallet;
-                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
-                            }
-                        }
-                        $returnUrlParams = $returnUrlParams . '&order=' . $order->order_number;
-                    }
-                }
-
-                return Redirect::to(url($returnUrl . $returnUrlParams));
-            }
-        }
-    }
-
-    public function cashfreeNotify(Request $request, $domain = '')
-    {
-        // Notify cashfree that information has been received
-        //dd('sad');
-        
-        // \Log::info($request->all());
-
         try{
-            
-            // \Log::info($request->txStatus);
-            $response = $request->has('data') ? $request->data : [];
-            // \Log::info($response);
-            // \Log::info($response['payment']);
-            
-            if(!empty($response) && ($response['payment']['payment_status'] == 'SUCCESS')) {
-                $transactionId = $response['payment']['cf_payment_id'];
-                $user_id = $cart_id = $payment_form = $order_number = $subscription_id = '';
-                $amount = $response['order']['order_amount'];
-                if($response['order']['order_tags']){
-                    $tags = $response['order']['order_tags'];
-                    $subscription_id = $tags['subscription_id'] ?? '';
-                    $order_number = $tags['order_number'] ?? '';
-                    $payment_form = $tags['payment_form'];
-                    $user_id = intval($tags['user_id']);
-                }
+            $rules = [
+                'otp' => 'required',
+                'amount' => 'required',
+                'request_id' => 'required',
+                'payment_form' => 'required',
+                'order_reference' => 'required'
+            ];
+            $validator = Validator::make($request->all(), $rules, [
+                'otp.required' => __('Please enter the OTP'),
+                'amount.required' => __('Invalid Parameters'),
+                'request_id.required' => __('Invalid Parameters'),
+                'payment_form.required' => __('Invalid Parameters'),
+                'order_reference.required' => __('Invalid Parameters')
+            ]);
+            if ($validator->fails()) {
+                return $this->errorResponse(__($validator->errors()->first()), 422);
+            }
 
-                if($payment_form == 'cart'){
-                    $order_number = $response['order']['order_id'];
-                    $cart_id = intval($response['order']['order_tags']['cart_id']) ?? '';
-                    $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-                    if ($order) {
-                        $order->payment_status = 1;
-                        $order->save();
-                        $payment_exists = Payment::where('transaction_id', $transactionId)->first();
-                        if (!$payment_exists) {
-                            $payment = new Payment();
-                            $payment->date = date('Y-m-d');
-                            $payment->order_id = $order->id;
-                            $payment->transaction_id = $transactionId;
-                            $payment->balance_transaction = $amount;
-                            $payment->type = 'cart';
-                            $payment->save();
-    
+            $user = Auth::user();
+
+            $data = array(
+                'method' => 'approvePayment',
+                'api_key' => $this->api_key,
+                'username' => $this->username,
+                'password' => $this->password,
+                'request_id' => $request->request_id,
+                'customer_mobile' => '6797142243', //'6797016954',//$user->phone_number
+                'otp' => $request->otp
+            );
+
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+                CURLOPT_URL => $this->getPaymentURL(),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => $data
+            ]);
+
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            $response = json_decode($response);
+            // dd($response);
+
+            if($response && ($response->response_code == 0)){
+                $transactionId = $response->transaction_id;
+                $payment = Payment::where('gateway_reference', $request->request_id)->where('order_reference', $order_reference)->first();
+                if($payment){
+                    if($payment->otp_verified == 1){
+                        return $this->errorResponse('Invalid payment request', 400);
+                    }
+
+                    $payment->otp = $request->otp;
+                    $payment->otp_verified = 1;
+                    $payment->transaction_id = $transactionId;
+                    $payment->update();
+                    
+                    if($request->payment_form == 'cart'){
+                        $order_number = $request->order_id;
+                        $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                        if ($order) {
+                            $order->payment_status = 1;
+                            $order->save();
+
+                            // Deduct wallet amount if payable amount is successfully done on gateway
+                            if ( $order->wallet_amount_used > 0 ) {
+                                $wallet = $user->wallet;
+                                $wallet->withdrawFloat($order->wallet_amount_used, [
+                                    'description' => 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>',
+                                    'order_number' => $order->order_number,
+                                    'transaction_id' => $transactionId,
+                                    'payment_option' => 'MyCash'
+                                ]);
+                            }
+
                             // Auto accept order
                             $orderController = new OrderController();
                             $orderController->autoAcceptOrderIfOn($order->id);
-    
+
                             // Remove cart
-                            CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
-                            Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-                            CartAddon::where('cart_id', $cart_id)->delete();
-                            CartCoupon::where('cart_id', $cart_id)->delete();
-                            CartProduct::where('cart_id', $cart_id)->delete();
-                            CartProductPrescription::where('cart_id', $cart_id)->delete();
-                            // send sms 
-                            $this->sendSuccessSMS($request, $order);
+                            $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                            CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+                            Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                            CartAddon::where('cart_id', $cart->id)->delete();
+                            CartCoupon::where('cart_id', $cart->id)->delete();
+                            CartProduct::where('cart_id', $cart->id)->delete();
+                            CartProductPrescription::where('cart_id', $cart->id)->delete();
+                            CartDeliveryFee::where('cart_id', $cart->id)->delete();
+
                             // Send Notification
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {
@@ -363,84 +345,53 @@ class MyCashGatewayController extends FrontController
                             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
                             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-                        }
-    
-                        // Send Email
-                        //   $this->successMail();
-                    }
-                } elseif($payment_form == 'wallet'){
-                    $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
-                    $walletController = new WalletController();
-                    $walletController->creditWallet($request);
-                }
-                elseif($payment_form == 'tip'){
-                    $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
-                    $orderController = new OrderController();
-                    $orderController->tipAfterOrder($request);
-                }
-                elseif($payment_form == 'subscription'){
-                    $request->request->add(['user_id' => $user_id, 'payment_option_id' => 24, 'amount' => $amount, 'transaction_id' => $transactionId]);
-                    $subscriptionController = new UserSubscriptionController();
-                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription_id);
-                }
-            }
-            elseif($request->txStatus == 'FAILED'){
-                if(!empty($request->orderId)){
-                    $curl = curl_init();
-                    curl_setopt_array($curl, [
-                        CURLOPT_URL => $this->getPaymentURL() . "/orders/" .$request->orderId,
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_ENCODING => "",
-                        CURLOPT_MAXREDIRS => 10,
-                        CURLOPT_TIMEOUT => 30,
-                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                        CURLOPT_CUSTOMREQUEST => "GET",
-                        // CURLOPT_POSTFIELDS => json_encode($data),
-                        CURLOPT_HTTPHEADER => [
-                            "Accept: application/json",
-                            "Content-Type: application/json",
-                            "x-api-version: 2022-01-01",
-                            "x-client-id: ". $this->APP_ID,
-                            "x-client-secret: ". $this->SECRET_KEY
-                        ],
-                    ]);
 
-                    $response = curl_exec($curl);
-                    $err = curl_error($curl);
-                    curl_close($curl);
-                    $response = json_decode($response);
-                    // \Log::info($response);
-
-                    if(!$err && $response){
-                        $user_id = $payment_form = $order_number = '';
-                        if($response->order_tags){
-                            $tags = $response->order_tags;
-                            $payment_form = $tags->payment_form;
-                            $user_id = intval($tags->user_id);
-                        }
-                        $user = User::find($user_id);
-                        if($payment_form == 'cart'){
-                            $order_number = $request->orderId;
-                            $order = Order::where('order_number', $order_number)->first();
-                            if($order){
-                                $wallet_amount_used = $order->wallet_amount_used;
-                                if($wallet_amount_used > 0){
-                                    $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                                    if(!$transaction){
-                                        $wallet = $user->wallet;
-                                        $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
-                                    }
-                                }
+                            $request->request->add(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
+                            //Send Email to customer
+                            $orderController->sendSuccessEmail($request, $order);
+                            //Send Email to Vendor
+                            foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                                $orderController->sendSuccessEmail($request, $order, $vendor_id);
                             }
+                            //Send SMS to customer
+                            $orderController->sendSuccessSMS($request, $order);
+                            
+                            $returnUrl = route('order.success', $order->id);
                         }
+                    } elseif($request->payment_form == 'wallet'){
+                        $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $transactionId]);
+                        $walletController = new WalletController();
+                        $walletController->creditWallet($request);
+                        $returnUrl = route('user.wallet');
+                    }
+                    elseif($request->payment_form == 'tip'){
+                        $request->request->add(['order_number' => $request->order_id, 'tip_amount' => $request->amount, 'transaction_id' => $transactionId]);
+                        $orderController = new OrderController();
+                        $orderController->tipAfterOrder($request);
+                        $returnUrl = route('user.orders');
+                    }
+                    elseif($request->payment_form == 'subscription'){
+                        $request->request->add(['payment_option_id' => 9, 'transaction_id' => $transactionId]);
+                        $subscriptionController = new UserSubscriptionController();
+                        $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription);
+                        $returnUrl = route('user.subscription.plans');
                     }
                 }
+                else{
+                    return $this->errorResponse('Invalid payment request', 400);
+                }
+                
+                return $this->successResponse($returnUrl, __('Payment has been done successfully'), 200);
+            }
+            else{
+                Log::error($response->message);
+                return $this->errorResponse($response->message, 400);
             }
         }
         catch(Exception $ex){
-            \Log::info($ex->getMessage());
+            Log::error($ex->getMessage());
+            return $this->errorResponse('Server Error', 400);
         }
-        http_response_code(200);
     }
 
     public function getPaymentURL(){
