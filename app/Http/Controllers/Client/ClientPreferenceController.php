@@ -291,6 +291,7 @@ class ClientPreferenceController extends BaseController{
             $preference->hide_order_prepare_time = ($request->has('hide_order_prepare_time') && $request->hide_order_prepare_time == 'on') ? 1 : 0;
             $preference->is_cancel_order_user = ($request->has('is_cancel_order_user') && $request->is_cancel_order_user == 'on') ? 1 : 0;
             $preference->enable_inventory_service = ($request->has('enable_inventory_service') && $request->enable_inventory_service == 'on') ? 1 : 0;
+            $preference->book_for_friend = ($request->has('book_for_friend') && $request->book_for_friend == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
