@@ -133,7 +133,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                                     @endphp
                                     <tr>
                                         <td> {{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
-                                        <td  class="name_">{!!$reason[0]!!}</td>
+                                        <td  class="name_">{!! $reason->description ?? $reason[0]!!}</td>
                                         <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}{{decimal_format($amount)}}</b></td>
                                     </tr>
                                     @empty
