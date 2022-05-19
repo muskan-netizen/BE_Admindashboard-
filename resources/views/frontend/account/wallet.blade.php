@@ -12,7 +12,7 @@
 @php
 $user = Auth::user();
 $timezone = $user->timezone;
-$user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * (  $clientCurrency->doller_compare ?? 1) ) : 0;
+$user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurrency->doller_compare ?? 1) ) : 0;
 @endphp
 
 <style type="text/css">
