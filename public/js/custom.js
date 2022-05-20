@@ -1528,7 +1528,7 @@ $(document).ready(function () {
         let total_amount = $("input[name='cart_total_payable_amount']").val();
         // alert(total_amount);
         // return false;
-        if (payment_option_id == 1) {
+        if (payment_option_id == 1 || payment_option_id == 38) {
             placeOrder(address_id, payment_option_id, '', tip, delivery_type,other_taxes_string);
         } else{
             cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
