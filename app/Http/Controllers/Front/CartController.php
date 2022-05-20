@@ -759,7 +759,7 @@ class CartController extends FrontController
 
                     $prod->product_out_of_stock =  $product_out_of_stock;
                     $prod->faq_count = 0;
-                    if( $preferences->product_order_form ==1 ){
+                    if( $preferences->product_order_form ==1 && $user ){
                         $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
                     }
                     $prod->category_id = $prod->product->category_id;

@@ -146,7 +146,7 @@
 
                                             <div class="info-text mb-2">
                                                 <label class="m-0">{{ __('Phone Number') }}</label>
-                                                <p>{{$user->phone_number}}</p>
+                                                <p>{{ '+'.$user->dial_code.$user->phone_number}}</p>
                                             </div>
 
                                             <div class="info-text mb-2">

@@ -840,7 +840,7 @@ $(document).ready(function () {
         }
         //$("input[name='category_kyc_ids']").length > 0 || 
         if( ($("input[name='without_category_kyc']").val() !=1 ) ){
-            success_error_alert('error', 'Category KYC is required! kindly fill the details.', ".cart_response");
+            success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
             return false;
 
         }
@@ -1528,7 +1528,7 @@ $(document).ready(function () {
         let total_amount = $("input[name='cart_total_payable_amount']").val();
         // alert(total_amount);
         // return false;
-        if (payment_option_id == 1) {
+        if (payment_option_id == 1 || payment_option_id == 38) {
             placeOrder(address_id, payment_option_id, '', tip, delivery_type,other_taxes_string);
         } else{
             cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
@@ -3724,7 +3724,8 @@ $(document).ready(function () {
             break;
 
             case 37:
-                paymentViaStripeOXXO('', 19, '');
+                stripeOXXOInitialize();
+                paymentViaStripeOXXO('', 37, '');
             break;
         
         }
@@ -4237,7 +4238,8 @@ $(document).ready(function () {
                     paymentViaMyCash('', payment_option_id, ''); 
             break;
 
-            case 36:
+            case 37:
+                    stripeOXXOInitialize();
                     paymentViaStripeOXXO('', payment_option_id, ''); 
             break;
 

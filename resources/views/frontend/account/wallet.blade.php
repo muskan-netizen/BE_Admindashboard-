@@ -12,7 +12,7 @@
 @php
 $user = Auth::user();
 $timezone = $user->timezone;
-$user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurrency->doller_compare) : 0;
+$user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurrency->doller_compare ?? 1) ) : 0;
 @endphp
 
 <style type="text/css">
@@ -106,7 +106,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                                 <div class="row align-items-center">
                                     <div class="col-md-6 text-md-left text-center mb-md-0 mb-4">
                                         <h5 class="text-17 mb-2 mt-0">{{__('Available Balance')}}</h5>
-                                        <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format(Auth::user()->balanceFloat * $clientCurrency->doller_compare)}}</span></div>
+                                        <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format(Auth::user()->balanceFloat * ( $clientCurrency->doller_compare ?? 1))}}</span></div>
                                     </div>
                                     <div class="col-md-6 text-md-right text-center">
                                         <button type="button" class="btn btn-solid" id="topup_wallet_btn" data-toggle="modal" data-target="#topup_wallet">{{__('Topup Wallet')}}</button>
@@ -129,11 +129,11 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                                     @forelse($user_transactions as $ut)
                                     @php
                                     $reason = json_decode($ut->meta);
-                                    $amount = ($ut->amount / 100) * $clientCurrency->doller_compare;
+                                    $amount = ($ut->amount / 100) * ( $clientCurrency->doller_compare ?? 1);
                                     @endphp
                                     <tr>
                                         <td> {{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
-                                        <td  class="name_">{!!$reason[0]!!}</td>
+                                        <td  class="name_">{!! $reason->description ?? $reason[0]!!}</td>
                                         <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}{{decimal_format($amount)}}</b></td>
                                     </tr>
                                     @empty
@@ -202,7 +202,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
         @method('POST')
         <div class="modal-body pb-0">
             <div class="form-group">
-                <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format(Auth::user()->balanceFloat * $clientCurrency->doller_compare)}}</span></div>
+                <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format(Auth::user()->balanceFloat * ( $clientCurrency->doller_compare ?? 1))}}</span></div>
             </div>
             <div class="form-group">
                 <h5 class="text-17 mb-2">{{__('Topup Wallet')}}</h5>
@@ -416,6 +416,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
+    var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";

@@ -194,7 +194,7 @@ use Illuminate\Support\Arr;
                                                             <img src="{{$imagePath}}" alt="">
                                                         </div>
                                                     </div>
-                                                    <div class="col-12">
+                                                    <div class="col-12 ac-royo-btn">
                                                         <div class="d-flex align-items-center justify-content-between">
                                                                 <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
                                                                     {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}

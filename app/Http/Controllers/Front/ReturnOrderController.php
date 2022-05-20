@@ -20,10 +20,13 @@ use App\Models\Client as CP;
 use App\Models\Transaction;
 use App\Models\AutoRejectOrderCron;
 
+use App\Http\Traits\OrderTrait;
+use App\Models\{LoyaltyCard,ClientCurrency,VendorOrderCancelReturnPayment};
+
 class ReturnOrderController extends FrontController{
 
     use ApiResponser;
-
+    use OrderTrait;
     /**
      * order details in modal
     */
@@ -333,6 +336,15 @@ class ReturnOrderController extends FrontController{
             if ($currentOrderStatus->order_status_option_id >= 2 ) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order is accepted, you can not reject this order !!!')]);
             }
+            $vendor_id = $request->vendor_id;
+            $orderData = Order::with(array(
+                'vendors' => function ($query) use ($vendor_id) {
+                    $query->where('vendor_id', $vendor_id);
+                }
+            ))->find($request->order_id);
+            // get vendor return amount from order
+            $return_response =  $this->GetVendorReturnAmount($request,$orderData);
+
             if (!$vendor_order_status_check) {
                 $vendor_order_status = new VendorOrderStatus();
                 $vendor_order_status->order_id = $request->order_id;
@@ -348,21 +360,42 @@ class ReturnOrderController extends FrontController{
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id,
                     'reject_reason' => $request->reject_reason,  'cancelled_by' => Auth::id(),
                 ]);
-                $orderData = Order::find($request->order_id);
+             
 
                 if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
                     $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                     $response = Http::get($dispatch_traking_url);
                 }
 
-                if($currentOrderStatus->payment_option_id != 1){
+                // if($currentOrderStatus->payment_option_id != 1){
 
-                $user = User::find(Auth::id());
-                $wallet = $user->wallet;
-                $credit_amount = $currentOrderStatus->payable_amount;
-                $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
+                // $user = User::find(Auth::id());
+                // $wallet = $user->wallet;
+                // $credit_amount = $currentOrderStatus->payable_amount;
+                // $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
 
+                // }
+                if($return_response['vendor_return_amount'] > 0){
+                    $user = User::find(Auth::id());
+                    $wallet = $user->wallet;
+                    $credit_amount = $return_response['vendor_return_amount'] ; //$currentOrderStatus->payable_amount;
+                    $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
                 }
+                // diarise loyalty 
+                $orderData->loyalty_points_used    =  $orderData->loyalty_points_used - $return_response['vendor_loyalty_points'];
+                $orderData->loyalty_amount_saved   =  $orderData->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
+                $orderData->loyalty_points_earned  =  $orderData->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
+                $orderData->save();
+                $vendor_return_payment                          = new VendorOrderCancelReturnPayment();
+                $vendor_return_payment->order_id                = $orderData ->id;
+                $vendor_return_payment->order_vendor_id         = $currentOrderStatus->id;
+                $vendor_return_payment->wallet_amount           = $return_response['vendor_wallet_amount'] ;
+                $vendor_return_payment->online_payment_amount   = $return_response['vendor_online_payment_amount'];
+                $vendor_return_payment->loyalty_amount          = $return_response['vendor_loyalty_amount'];
+                $vendor_return_payment->loyalty_points          = $return_response['vendor_loyalty_points'];
+                $vendor_return_payment->loyalty_points_earned   = $return_response['vendor_loyalty_points_earned'];
+                $vendor_return_payment->total_return_amount     = $return_response['vendor_return_amount'];
+                $vendor_return_payment->save();
 
                 DB::commit();
             //  $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);

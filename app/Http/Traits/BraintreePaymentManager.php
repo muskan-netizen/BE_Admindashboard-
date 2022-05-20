@@ -13,9 +13,9 @@ trait BraintreePaymentManager{
     ]);
     return $gateway;
   }
-  public function createToken(){
+  public function createToken($user){
     $gateway = $this->init();
-    $customer = $this->createCustomer($gateway);
+    $customer = $this->createCustomer($gateway,$user);
     if($customer->success)
     {
       $aCustomerId = $customer->customer->id;
@@ -26,7 +26,7 @@ trait BraintreePaymentManager{
     }
     return null;
   }
-  public function createCustomer($gateway)
+  public function createCustomer($gateway,$user)
   {
     $result = $gateway->customer()->create([
       'firstName' => 'Mike',
