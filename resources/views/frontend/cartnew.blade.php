@@ -496,7 +496,7 @@ $client_preferences = \App\Models\ClientPreference::first();
             <div class=" col-3 <%= cart_details.category_kyc_count %>  " id="category_kyc_dev_<%= cart_details.category_rendem_id %>">
                 <input type="hidden" name="category_kyc_ids" value="<%= cart_details.category_rendem_id %>">
                 <div class="text-center my-3 btn-category_kyc-div">
-                    <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= cart_details.category_rendem_id %>" data-category_id="<%= cart_details.category_ids %>" >{{__('Category KYC')}}</button>
+                    <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= cart_details.category_rendem_id %>" data-category_id="<%= cart_details.category_ids %>" >{{__('Order Documents')}}</button>
                 </div>
             </div>
 
@@ -872,7 +872,9 @@ $client_preferences = \App\Models\ClientPreference::first();
                 <div class="row mb-md-3 alFourTemplateCartButtons">
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
+                        @if(!empty(Auth::user()))
                         <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> </a>
+                        @endif
                     </div>
 
 

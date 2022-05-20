@@ -949,6 +949,7 @@ class OrderController extends FrontController
                             //echo  "opt_quantity_price: ".$opt_quantity_price;
                             $payable_amount = $payable_amount + $opt_quantity_price;
                             $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
+                            $addon_amount += $opt_quantity_price;
                             // if(!in_array($vendor_cart_product->vendor_id, $addonArray)){
                             //     $vendor_payable_amount_for_service = $vendor_payable_amount;
                             // }
@@ -960,10 +961,11 @@ class OrderController extends FrontController
                             $orderAddon = new OrderProductAddon;
                             $orderAddon->addon_id = $cart_addon->addon_id;
                             $orderAddon->option_id = $cart_addon->option_id;
-                            $addon_amount=AddonOption::find($cart_addon->option_id)->first()->price;
+                            //$addon_amount=AddonOption::find($cart_addon->option_id)->first()->price;
                             $orderAddon->order_product_id = $order_product->id;
                             $orderAddon->save();
                         }
+                        
                      //   $addon_amount CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
                     }
                     // array_push($addonArray, $vendor_cart_product->vendor_id);
@@ -981,11 +983,13 @@ class OrderController extends FrontController
                     }
                    
                 }
-                $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
+             
+                //$total_taxable_amount+=($quantity_price) * $rate / 100;
+              
                 //echo  "    payable_amount==".$payable_amount;
                 }
                 $payable_amount+= $vendor_total_container_charges;
-                
+               // pr( $total_taxable_amount);
                 //echo "vendor_total_container_charges: ".$vendor_total_container_charges."payable_amount: ".$payable_amount."<br>";
                 
                 $coupon_id = null;
@@ -1032,7 +1036,8 @@ class OrderController extends FrontController
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
                 $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
-                //$total_taxable_amount+=$new_vendor_taxable_amount;
+                $total_taxable_amount+=$new_vendor_taxable_amount;
+               // pr( $total_taxable_amount);
                 // $OrderVendor->taxable_amount   = $vendor_taxable_amount;
                 $OrderVendor->taxable_amount = $new_vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;

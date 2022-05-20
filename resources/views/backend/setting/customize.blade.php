@@ -870,7 +870,7 @@
         <!-- Category Kyc Documents start -->
             <div class="card-box pb-2">
                 <div class="d-flex align-items-center justify-content-between">
-                <h4 class="header-title m-0">{{ __("Category Kyc Documents") }}</h4>
+                <h4 class="header-title m-0">{{ __("User Place Order Documents") }}</h4>
                 <a class="btn btn-info d-block" id="add_category_kyc_document_modal_btn">
                     <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
                 </a>
@@ -1305,7 +1305,7 @@
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom al">
-               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Category Kyc Document") }}</h4>
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add User Place Order Document") }}</h4>
                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
@@ -1616,7 +1616,7 @@ $(document).ready(function(){
                 }
             });
         $('#add_category_kyc_document_modal').modal('show');
-        $('#add_category_kyc_document_modal #standard-modalLabel').html('Add Category kyc Document');
+        $('#add_category_kyc_document_modal #standard-modalLabel').html('{{__("Add User Place Order Document")}}');
     });
 
      //category kyc form submit document
@@ -1690,7 +1690,7 @@ $(document).ready(function(){
 
                   $("#add_category_kyc_document_modal input[name=vendor_registration_document_id]").val(response.data.id);
                   $(document).find("#add_category_kyc_document_modal select[name=is_required]").val(response.data.is_required).change();
-                  $('#add_category_kyc_document_modal #standard-modalLabel').html('Update Category KYC Document ');
+                  $('#add_category_kyc_document_modal #standard-modalLabel').html('{{__("Update User Place Order Documents")}}');
                   $('#add_category_kyc_document_modal').modal('show');
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_category_kyc_document_modal #category_kyc_document_name_'+value.language_id).val(value.name);

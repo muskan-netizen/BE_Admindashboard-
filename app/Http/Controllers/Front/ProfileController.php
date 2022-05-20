@@ -80,7 +80,7 @@ class ProfileController extends FrontController
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-        $user = User::with('country', 'address')->select('id', 'name', 'email', 'description', 'phone_number', 'image', 'type', 'country_id', 'timezone')->where('id', Auth::user()->id)->first();
+        $user = User::with('country', 'address')->select('id', 'name', 'email', 'description', 'phone_number', 'dial_code', 'image', 'type', 'country_id', 'timezone')->where('id', Auth::user()->id)->first();
         $user_addresses = UserAddress::where('user_id', Auth::user()->id)->get();
         $refferal_code = UserRefferal::where('user_id', Auth::user()->id)->first();
         if(!$refferal_code){
