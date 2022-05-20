@@ -278,7 +278,23 @@ class OrderController extends FrontController
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
         $order = Order::with(['products.pvariant.vset', 'products.pvariant.translation_one', 'address'])->findOrfail($request->order_id);
-        // dd($order->toArray());
+       // set payment option dynamic name
+        if($order->paymentOption->code == 'stripe'){
+            $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
+        }elseif($order->paymentOption->code == 'kongapay'){
+            $order->paymentOption->code->title = 'Pay Now';
+        }elseif($order->paymentOption->code == 'mvodafone'){
+            $order->paymentOption->title = 'Vodafone M-PAiSA';
+        }
+        elseif($order->paymentOption->code == 'mobbex'){
+            $order->paymentOption->title = __('Mobbex');
+        }
+        elseif($order->paymentOption->code == 'offline_manual'){
+            $json = json_decode($order->paymentOption->credentials);
+            $order->paymentOption->title = $json->manule_payment_title;
+        }
+        $order->paymentOption->title = __($order->paymentOption->title);
+       // dd($order->paymentOption->toArray());
 
         $langId = Session::get('customerLanguage');
         $fixedFeeNomenclatures = $this->fixedFee($langId);
@@ -677,7 +693,7 @@ class OrderController extends FrontController
         $response = $order_response->getData();
         if ($response->status == 'Success') {
             # if payment type cash on delivery or payment status is 'Paid'
-            if (($response->data->payment_option_id == 1) || (($response->data->payment_option_id != 1) && ($response->data->payment_status == 1))) {
+            if (( ($response->data->payment_option_id == 1 ) || ($response->data->payment_option_id == 38 ) ) || (($response->data->payment_option_id != 1) && ($response->data->payment_status == 1))) {
                 # if vendor selected auto accept
                 $autoaccept = $this->autoAcceptOrderIfOn($response->data->id);
             }
