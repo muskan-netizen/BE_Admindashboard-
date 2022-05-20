@@ -1506,7 +1506,7 @@ $(document).ready(function () {
     $(document).on("click", ".proceed_to_pay", function () {   
         let payment_option_id = $("#cart_payment_form input[name='cart_payment_method']:checked").val();
         if(payment_option_id == undefined){
-            success_error_alert('error', 'Please select atleast one payment option', ".payment_response");
+            success_error_alert('error', 'Please select payment option', ".payment_response");
             return false;
         }
         
