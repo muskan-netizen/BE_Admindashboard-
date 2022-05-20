@@ -20,13 +20,11 @@
                 <div class="tip_radio_controls_book_friend text-center my-2">
                     <input type="radio" class="tip_radio" id="for_me" name="is_for_friend" value="0">
                     <label class="tip_label mb-0  my-2 active" for="for_me" id="label_for_me">
-                        <h5 class="m-0" id="tip_5">{{__('Book')}}</h5>
-                        <p class="m-0">{{__('For Me')}}</p>
+                        <h5 class="m-0" id="tip_5">{{__('Book')}} {{__('For Me')}}</h5>                        
                     </label>       
                     <input type="radio" class="tip_radio" id="for_friend" name="is_for_friend" value="1">
                     <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
-                        <h5 class="m-0" id="tip_5">{{__('Book')}}</h5>
-                        <p class="m-0">{{__('For A Friend')}}</p>
+                        <h5 class="m-0" id="tip_5">{{__('Book')}} {{__('For A Friend')}}</h5>
                     </label>                      
                 </div> 
                 @endif 
@@ -151,16 +149,16 @@
         <script type="text/template" id="products_template">
             <% if(results != ''){ %>
             <% _.each(results, function(result, key){%>
-                <a class="vehical-view-box row align-items-center no-gutters px-2 my-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
-                    <div class="col-3 vehicle-icon">
+                <a class="vehical-view-box d-flex align-items-center no-gutters px-2 my-1" href="javascript:void(0)" data-product_id="<%= result.id %>">
+                    <div class="col-2 vehicle-icon">
                         <img class='img-fluid' src='<%= result.image_url %>'>
                     </div>
-                    <div class="col-9">
+                    <div class="col-10">
                         <div class="row no-gutters">
-                            <div class="col-8 vehicle-details">
+                            <div class="col vehicle-details">
                                 <h4 class="m-0"><b><%= result.name %></b></h4>
                             </div>
-                            <div class="col-4 ride-price pl-2 text-right">
+                            <div class="col ride-price pl-2 text-right">
                                 <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
                             </div>
                         </div>
@@ -245,7 +243,8 @@
                     <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
-                <div class="for_friend_fields_div px-2 py-2">
+            </div>
+               <div class="for_friend_fields_div px-2 py-2">
                     <h4 class="pb-2">Friend's Details</h4>
                     <div class="form-group">
                         <label for="friendName">Friend's Name</label>
@@ -258,8 +257,6 @@
                         <input type="hidden" id="dialCode" name="dialCode" value="91">
                     </div>
                 </div>
-                
-            </div>
             <span id="show_error_of_booking" class="error"></span>
 
             <div class="payment-promo-container p-2">
