@@ -219,7 +219,7 @@ $(document).ready(function () {
         // alert(type);
         // return false;
         let friendName=$('input[name=friendName]').val();
-        let friendPhoneNumber=$('input[name=friendPhoneNumber]').val();
+        let friendPhoneNumber= '+'+ $('input[name=dialCode]').val() + $('input[name=friendPhoneNumber]').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -766,6 +766,13 @@ $(document).ready(function () {
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                         
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
+                        var input = document.querySelector("#phone");
+                        window.intlTelInput(input, {
+                            separateDialCode: true,
+                            hiddenInput: "friendPhoneNumber",
+                            utilsScript: utilsScript_path,
+                            initialCountry: initial_country_code, 
+                        });
                         getDistance();
                         if($('input[name=is_for_friend]:checked').val()==1){
                             $('.for_friend_fields_div').removeClass('d-none');

@@ -1,6 +1,7 @@
 @extends('layouts.store', ['title' => 'Product'])
 @section('css')
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
 
@@ -13,21 +14,22 @@
         <div class="address-form">
 
             <div class="loader-outer d-none">
-                <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+                <div class="spinner-border avatar-lg text-primary m-2" role="status"></div> 
             </div>
-
-                <!--<div class="tip_radio_controls_book_friend text-center my-2">
+                @if(isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
+                <div class="tip_radio_controls_book_friend text-center my-2">
                     <input type="radio" class="tip_radio" id="for_me" name="is_for_friend" value="0">
                     <label class="tip_label mb-0  my-2 active" for="for_me" id="label_for_me">
-                        <h5 class="m-0" id="tip_5">Book</h5>
-                        <p class="m-0">For Me</p>
+                        <h5 class="m-0" id="tip_5">{{__('Book')}}</h5>
+                        <p class="m-0">{{__('For Me')}}</p>
                     </label>       
                     <input type="radio" class="tip_radio" id="for_friend" name="is_for_friend" value="1">
                     <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
-                        <h5 class="m-0" id="tip_5">Book</h5>
-                        <p class="m-0">For A Friend</p>
+                        <h5 class="m-0" id="tip_5">{{__('Book')}}</h5>
+                        <p class="m-0">{{__('For A Friend')}}</p>
                     </label>                      
-                </div> -->
+                </div> 
+                @endif 
             <div class="location-box check-pick-first">
                 <div class="where-to-go">
                     <div class="title title-36">{{__('Where can we pick you up?')}}</div>
@@ -251,7 +253,9 @@
                     </div>
                     <div class="form-group">
                         <label for="friendPhoneNumber">Friend's Phone Number</label>
-                        <input type="number" class="form-control" name="friendPhoneNumber" placeholder="Phone Number">
+                        <input type="tel" class="form-control phone @error('friendPhoneNumber') is-invalid @enderror" id="phone" placeholder="Phone Number" name="friendPhoneNumber" value="{{old('friendPhoneNumber')}}" autofocus>
+                        <input type="hidden" id="countryData" name="countryData" value="us">
+                        <input type="hidden" id="dialCode" name="dialCode" value="91">
                     </div>
                 </div>
                 
@@ -549,6 +553,16 @@
 @endsection
 
 @section('script')
+<script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script type="text/javascript">
+    $('.iti__country').click(function() {
+        var code = $(this).attr('data-country-code');
+        $('#countryData').val(code);
+        var dial_code = $(this).attr('data-dial-code');
+        $('#dial_code').val(dial_code);
+    });
+</script>
+
 @if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 @endif
@@ -584,6 +598,8 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var amount_required_error_msg = "{{__('Please enter amount.') }}";
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
     var product_order_form_element_data = [];
+    var utilsScript_path = "{{asset('assets/js/utils.js')}}";
+    var initial_country_code = "{{ Session::get('default_country_code','US') }}";
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();
