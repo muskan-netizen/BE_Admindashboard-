@@ -30,6 +30,15 @@
             margin-bottom: 0;
         }
 
+        .errors {
+            color: #F00;
+            background-color: #FFF;
+        }
+        .al_body_template_one .iti__selected-flag{
+            height:auto;
+            padding: 10px 6px;
+        }
+
     </style>
 @endsection
 @section('content')
@@ -281,7 +290,44 @@
 @endsection
 @section('script')
     <script src="{{ asset('assets/js/intlTelInput.js') }}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
     <script>
+        $(document).ready(function() {
+            $("#register").validate({
+                errorClass: 'errors',
+                rules: {
+                    name : {
+                        required: true,
+                    },
+                    phone_number: {
+                        required: true,
+                        number: true
+                    },
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    password: {
+                        required: true
+                    }
+                },
+                onfocusout: function(element) {
+                    this.element(element); // triggers validation
+                },
+                onkeyup: function(element, event) {
+                    this.element(element); // triggers validation
+                },
+                messages : {
+                    name: 'Please enter your name',
+                    phone_number: {
+                        required: "Please enter your phone",
+                        number: "Please enter a numerical value"
+                    },
+                    email: "The email should be in the format: abc@domain.tld",
+                    password: 'Please enter your password',
+                }
+            });
+        });
         jQuery(window.document).ready(function () {
             jQuery("body").addClass("register_body");
         });
