@@ -32,7 +32,7 @@ $pages = \App\Models\Page::with([
     @endphp
 @if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify'))
 <header id="al_four_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
-    
+
     <!-- Start Cab Booking Header From Here -->
     <div class="cab-booking-header">
         <div class="container">
@@ -400,7 +400,7 @@ $pages = \App\Models\Page::with([
                                                    @endforeach
                                                 </select>
                                             </div>
-                                        </li> 
+                                        </li>
 
                                    <!--      @foreach ($languageList as $key => $listl)
                                     <li
@@ -507,7 +507,7 @@ $pages = \App\Models\Page::with([
       }
     %>
     <li class="alMainMenu  <% if(category.children){%> has-children <%}%> "  >
-        <a href="{{route('categoryDetail')}}/<%=category.slug %>">
+        <a class="alMainLink" href="{{route('categoryDetail')}}/<%=category.slug %>">
             <%=category.name %>
         </a>
         <% if(category.children){%>
