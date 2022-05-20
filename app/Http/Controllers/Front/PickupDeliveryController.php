@@ -25,7 +25,7 @@ class PickupDeliveryController extends FrontController{
     public function getPaymentOptions(Request $request, $domain = '')
     {
         $code = array('cod', 'razorpay','stripe');
-        $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'title', 'off_site']);
+        $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
                 $option->title = __('Credit/Debit Card (Stripe)');
@@ -37,9 +37,9 @@ class PickupDeliveryController extends FrontController{
             elseif($option->code == 'mobbex'){
                 $option->title = __('Mobbex');
             }
-            elseif($payment_option->code == 'offline_manual'){
-                $json = json_decode($payment_option->credentials);
-                $payment_option->title = $json->manule_payment_title;
+            elseif($option->code == 'offline_manual'){
+                $json = json_decode($option->credentials);
+                $option->title = $json->manule_payment_title;
             }
             $option->title = __($option->title);
         }
