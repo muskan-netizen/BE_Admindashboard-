@@ -1503,7 +1503,13 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-    $(document).on("click", ".proceed_to_pay", function () {       
+    $(document).on("click", ".proceed_to_pay", function () {   
+        let payment_option_id = $("#cart_payment_form input[name='cart_payment_method']:checked").val();
+        if(payment_option_id == undefined){
+            success_error_alert('error', 'Please select atleast one payment option', ".payment_response");
+            return false;
+        }
+        
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
          $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -1519,9 +1525,6 @@ $(document).ready(function () {
             success_error_alert('error', 'Please add a valid address to continue', ".payment_response");
             return false;
         }
-        //let payment_option_id = $('#proceed_to_pay_modal #v_pills_tab').find('.active').data('payment_option_id');
-        let payment_option_id = $("#cart_payment_form input[name='cart_payment_method']:checked").val();
-
 
         let tip = $("#cart_tip_amount").val();
         //let cartElement = $("input[name='cart_total_payable_amount']");
