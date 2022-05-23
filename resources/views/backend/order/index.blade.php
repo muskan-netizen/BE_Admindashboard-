@@ -75,7 +75,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                             <span class="align-middle">This is a gift.</span>
                                                         </div>
                                                     <% } %>
-                                                    <% if(order.scheduled_date_time) { %>
+                                                    <% if(order.scheduled_date_time || order.schedule_pickup || order.schedule_dropoff) { %>
                                                         <span class="badge badge-success ml-2">Scheduled</span>
                                                        <!-- <span class="ml-2"><%= order.scheduled_date_time %></span> -->
                                                     <% } %>

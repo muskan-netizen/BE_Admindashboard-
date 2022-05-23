@@ -1134,7 +1134,7 @@ class OrderController extends FrontController
 
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
             $order->scheduled_slot = (($cart->scheduled_slot)?$cart->scheduled_slot:null);
-            $order->dropoff_scheduled_slot = (($request->schedule_dropoff_slot)?$request->schedule_dropoff_slot:null);
+            $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
             $order->payable_amount = $payable_amount;
             $order->total_container_charges = $total_container_charges;

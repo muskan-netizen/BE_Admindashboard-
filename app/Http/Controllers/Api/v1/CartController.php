@@ -1380,11 +1380,17 @@ class CartController extends BaseController
                         $slot = null;
                     }
 
+                    if(isset($request->dropoff_scheduled_slot))
+                        {
+                            $dropSlot = $request->dropoff_scheduled_slot;
+                        }
+
                 Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null,
                 'schedule_type' => $request->task_type??null,
                 //'scheduled_date_time' => $request->schedule_dt??null,
                 'scheduled_date_time' => $time??null,
                 'scheduled_slot' => $slot??null,
+                'dropoff_scheduled_slot' => $dropSlot??null,
                 'comment_for_pickup_driver' => $request->comment_for_pickup_driver??null,
                 'comment_for_dropoff_driver' => $request->comment_for_dropoff_driver??null,
                 'comment_for_vendor' => $request->comment_for_vendor??null,
