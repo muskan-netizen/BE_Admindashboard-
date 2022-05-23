@@ -31,8 +31,12 @@ class BraintreeController extends FrontController
         if($request->isMethod('post'))
         {
             $data['come_from'] = 'web';
+        }else{
+            $user = User::where('auth_token', $request->auth_token)->first();
+            Auth::login($user);
         }
-        $data['token'] = $this->createToken();
+        $user = Auth::user();
+        $data['token'] = $this->createToken($user);
     	return view('frontend.payment_gatway.braintree')->with(['data' => $data]);
     }
     public function createPayment(Request $request)

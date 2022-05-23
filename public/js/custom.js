@@ -840,7 +840,7 @@ $(document).ready(function () {
         }
         //$("input[name='category_kyc_ids']").length > 0 || 
         if( ($("input[name='without_category_kyc']").val() !=1 ) ){
-            success_error_alert('error', 'Category KYC is required! kindly fill the details.', ".cart_response");
+            success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
             return false;
 
         }
@@ -1503,7 +1503,13 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-    $(document).on("click", ".proceed_to_pay", function () {       
+    $(document).on("click", ".proceed_to_pay", function () {   
+        let payment_option_id = $("#cart_payment_form input[name='cart_payment_method']:checked").val();
+        if(payment_option_id == undefined){
+            success_error_alert('error', 'Please select payment option', ".payment_response");
+            return false;
+        }
+        
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
          $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -1519,16 +1525,13 @@ $(document).ready(function () {
             success_error_alert('error', 'Please add a valid address to continue', ".payment_response");
             return false;
         }
-        //let payment_option_id = $('#proceed_to_pay_modal #v_pills_tab').find('.active').data('payment_option_id');
-        let payment_option_id = $("#cart_payment_form input[name='cart_payment_method']:checked").val();
-
 
         let tip = $("#cart_tip_amount").val();
         //let cartElement = $("input[name='cart_total_payable_amount']");
         let total_amount = $("input[name='cart_total_payable_amount']").val();
         // alert(total_amount);
         // return false;
-        if (payment_option_id == 1) {
+        if (payment_option_id == 1 || payment_option_id == 38) {
             placeOrder(address_id, payment_option_id, '', tip, delivery_type,other_taxes_string);
         } else{
             cartPaymentOptions(payment_option_id, address_id, tip, delivery_type);
