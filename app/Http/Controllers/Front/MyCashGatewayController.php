@@ -66,7 +66,7 @@ class MyCashGatewayController extends FrontController
                 'api_key' => $this->api_key,
                 'username' => $this->username,
                 'password' => $this->password,
-                'customer_mobile' => '6797016954',//'6797142243',//$user->phone_number,
+                'customer_mobile' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
                 'merchant_mobile' => $this->merchant_phone,
                 'product_id' => 233,
                 'amount' => $amount
@@ -185,7 +185,7 @@ class MyCashGatewayController extends FrontController
             'api_key' => $this->api_key,
             'username' => $this->username,
             'password' => $this->password,
-            'mobile_number' => '6797016954',//'6797142243',//$user->phone_number
+            'mobile_number' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
         );
 
         $curl = curl_init();
@@ -273,7 +273,7 @@ class MyCashGatewayController extends FrontController
                 'username' => $this->username,
                 'password' => $this->password,
                 'request_id' => $request->request_id,
-                'customer_mobile' => '6797016954',//'6797142243',//$user->phone_number
+                'customer_mobile' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
                 'otp' => $request->otp
             );
 
@@ -377,8 +377,8 @@ class MyCashGatewayController extends FrontController
                         $returnUrl = route('user.orders');
                     }
                     elseif($request->payment_form == 'subscription'){
-                        $subscription_plan = SubscriptionPlansUser::select('amount')->where('slug', $request->subscription_id)->where('status', '1')->first();
-                        $request->request->add(['amount' => $subscription_plan->amount, 'payment_option_id' => 36, 'transaction_id' => $transactionId]);
+                        $subscription_plan = SubscriptionPlansUser::select('price')->where('slug', $request->subscription_id)->where('status', '1')->first();
+                        $request->request->add(['amount' => $subscription_plan->price, 'payment_option_id' => 36, 'transaction_id' => $transactionId]);
                         $subscriptionController = new UserSubscriptionController();
                         $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
                         $returnUrl = route('user.subscription.plans');

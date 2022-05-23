@@ -2216,10 +2216,12 @@ $(document).ready(function() {
                         });
                         var token = $('meta[name="_token"]').attr('content');
                         form = $('<form id="temp_form" action="' + res.redirectUrl + '" method="post"><input type="hidden" name="_token" value="' + token + '">' + form + '</form>');
-                        if (cartElement.length > 0) {
+                        if (path.indexOf("cart") !== -1) {
                             $('#proceed_to_pay_modal .modal-body').append(form);
-                        } else if (walletElement.length > 0) {
+                        } else if ( (path.indexOf("wallet") !== -1) || ((typeof tip_for_past_order !== 'undefined') && (tip_for_past_order == 1)) ) {
                             $('#topup_wallet .modal-content').append(form);
+                        } else if(path.indexOf("subscription") !== -1){
+                            $('#subscription_payment .modal-content').append(form);
                         }
                         form.submit();
                     }

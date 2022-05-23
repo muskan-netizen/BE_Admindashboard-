@@ -1123,6 +1123,130 @@ $(document).ready(function () {
         paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount, order_number);
     }
 
+    function stripePaymentMethodHandler(result) {
+        let total_amount = 0;
+        let tip = 0;
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_form = '';
+        let payment_option_id = localStorage.getItem('payment_option');
+
+        if (path.indexOf("cart") !== -1) {
+            payment_form = 'cart';
+            total_amount = cartElement.val();
+            order_number = localStorage.getItem('order_number');
+        }
+
+        if (result.error) {
+            swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something Went Wrong',
+            }).then(function() {
+                window.location.reload();
+            });
+        } else {
+            fetch('payment/payment_init', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-Token": $('input[name="_token"]').val()
+                  },
+                  credentials: "same-origin",
+                body: JSON.stringify({
+                    payment_method_id : result.paymentMethod.id,
+                    total_amount      : total_amount,
+                    payment_option_id : payment_option_id,
+                    address_id        : 1,
+                    order_number      : localStorage.getItem('order_number'),
+                    payment_form      : payment_form,
+                })
+            }).then(function(result) {
+                // Handle server response (see Step 4)
+                result.json().then(function(json) {
+                    handleServerResponse(json);
+                })
+            });
+        }
+    }
+
+    function handleServerResponse(response) {
+        if (response.error) {
+            swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: response.error,
+            }).then(function() {
+                window.location.reload();
+            });
+            // Show error from server on payment form
+        } else if (response.requires_action) {
+            // Use Stripe.js to handle required card action
+            stripe.handleCardAction(
+                response.payment_intent_client_secret
+            ).then(handleStripeJsResult);
+        } else {
+            console.log(response);
+            // Show success message
+        }
+    }
+
+    function handleStripeJsResult(result) {
+        if (result.error) {
+            swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: result.error.message,
+            }).then(function() {
+                window.location.reload();
+            });
+            // Show error in payment form
+        } else {
+            let total_amount = 0;
+            let tip = 0;
+            let cartElement = $("input[name='cart_total_payable_amount']");
+            let walletElement = $("input[name='wallet_amount']");
+            let subscriptionElement = $("input[name='subscription_amount']");
+            let tipElement = $("#cart_tip_amount");
+            let payment_form = '';
+            let payment_option_id = localStorage.getItem('payment_option');
+    
+            if (path.indexOf("cart") !== -1) {
+                payment_form = 'cart';
+                total_amount = cartElement.val();
+                order_number = localStorage.getItem('order_number');
+            }
+            
+            // The card action has been handled
+            // The PaymentIntent can be confirmed again on the server
+            fetch('payment/payment_init', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-Token": $('input[name="_token"]').val()
+                  },
+                body: JSON.stringify({
+                    payment_intent_id: result.paymentIntent.id,
+                    total_amount      : total_amount,
+                    payment_option_id : payment_option_id,
+                    address_id        : 1,
+                    order_number      : localStorage.getItem('order_number'),
+                    payment_form      : payment_form,
+                })
+            }).then((response) => response.json())
+            .then((responseJSON) => {
+                $('#proceed_to_pay_loader').hide();
+                window.location.href = responseJSON.result;
+            });
+        }
+
+    }
 
     function paymentViaStripe(stripe_token, address_id, payment_option_id, delivery_type = 'D', order = '') {
         let total_amount = 0;
@@ -3726,6 +3850,10 @@ $(document).ready(function () {
                 payWithPaytech('','');
             break;
 
+            case 36:
+                    paymentViaMyCash('', payment_option_id, ''); 
+            break;
+
             case 37:
                 stripeOXXOInitialize();
                 paymentViaStripeOXXO('', 37, '');
@@ -3744,19 +3872,37 @@ $(document).ready(function () {
             break;
 
             case '4':
-                    stripe.createToken(card).then(function (result) {
-                        if (result.error) {
-                            $('#stripe_card_error').html(result.error.message);
-                            $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
-                        } else {
-                            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                            if (order != '') {
-                                paymentViaStripe(result.token.id, address_id, payment_option_id, delivery_type, order);
-                            } else {
-                                return false;
+                stripe.createSource(card).then(function(result) {
+                    if (result.error) {
+                        $('#stripe_card_error').html(result.error.message);
+                        $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+                    } else {
+                        var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                        if (order != '') {
+                            localStorage.setItem('order_number', order.order_number);
+                            localStorage.setItem('payment_option', payment_option_id);
+                            var three_d_secure = result.source.card.three_d_secure;
+                            if(three_d_secure == 'required'){
+                                stripe.createPaymentMethod({
+                                    type: 'card',
+                                    card: card,
+                                }).then(stripePaymentMethodHandler);
+                                // paymentViaStripeSource(result.source.id, address_id, payment_option_id,delivery_type, order);
+                            }else{
+                                stripe.createToken(card).then(function(result) {
+                                    if (result.error) {
+                                        $('#stripe_card_error').html(result.error.message);
+                                        $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+                                    } else {
+                                        paymentViaStripe(result.token.id, address_id, payment_option_id, delivery_type, order);
+                                    }
+                                });
                             }
+                        } else {
+                            return false;
                         }
-                    });
+                    }
+                });
 
             break;
 
@@ -4068,6 +4214,7 @@ $(document).ready(function () {
                 else{
                     return false;
                 }
+            break;
 
             case '37':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
@@ -4078,6 +4225,7 @@ $(document).ready(function () {
                 else{
                     return false;
                 }
+            break;
         
         }
 
@@ -4092,14 +4240,45 @@ $(document).ready(function () {
             break;
 
             case 4:
-                stripe.createToken(card).then(function (result) {
+                stripe.createSource(card).then(function(result) {
                     if (result.error) {
                         $('#stripe_card_error').html(result.error.message);
-                        $(".topup_wallet_confirm").attr("disabled", false);
+                        $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
                     } else {
-                        paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                        var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                        if (order != '') {
+                            // localStorage.setItem('order_number', order.order_number);
+                            localStorage.setItem('payment_option', payment_option_id);
+                            var three_d_secure = result.source.card.three_d_secure;
+                            if(three_d_secure == 'required'){
+                                stripe.createPaymentMethod({
+                                    type: 'card',
+                                    card: card,
+                                }).then(stripePaymentMethodHandler);
+                                // paymentViaStripeSource(result.source.id, address_id, payment_option_id,delivery_type, order);
+                            }else{
+                                stripe.createToken(card).then(function(result) {
+                                    if (result.error) {
+                                        $('#stripe_card_error').html(result.error.message);
+                                        $(".topup_wallet_confirm").attr("disabled", false);
+                                    } else {
+                                        paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                                    }
+                                });
+                            }
+                        } else {
+                            return false;
+                        }
                     }
                 });
+                // stripe.createToken(card).then(function (result) {
+                //     if (result.error) {
+                //         $('#stripe_card_error').html(result.error.message);
+                //         $(".topup_wallet_confirm").attr("disabled", false);
+                //     } else {
+                //         paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                //     }
+                // });
             break;
 
             case 5:
