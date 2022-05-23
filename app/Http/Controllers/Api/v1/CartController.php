@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
-use App\Models\{User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc};
+use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption}; 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
 //use App\Http\Traits\MpesaStkpush;
@@ -56,7 +56,6 @@ class CartController extends BaseController
             //         }
             //     }
             // }
-
             $user = Auth::user();
             if (!$user->id) {
                 $cart = Cart::where('unique_identifier', $user->system_user);
@@ -65,9 +64,28 @@ class CartController extends BaseController
             }
             $cart = $cart->first();
             if ($cart) {
+                $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+                                $q->where('age_restriction',1);
+                            })->count();
+                $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+                $passbase['check'] = 0;
+                $passbase['status'] = "";
+                if($passbase_check && $age_restriction)
+                {
+                    $passbase['check'] = 1;
+                    if(is_null($user->passbase_verification)){
+                        $passbase['status'] = 'pending';
+                    }else{
+                        $passbase['status'] = $user->passbase_verification->status;
+                    }
+                }
+
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+                $cartData->passbase_check = $passbase['check'];
+                $cartData->passbase_status= $passbase['status'];
                 return $this->successResponse($cartData);
             }
+
             return $this->successResponse($cart);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -194,6 +212,12 @@ class CartController extends BaseController
                     if ($checkVendorId) {
                         return $this->errorResponse(['error' => __('Your cart has existing items from another vendor'), 'alert' => '1'], 404);
                     }
+                }
+            }
+
+            if ( (isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1) ) {
+                if ($checkVendorId) {
+                    return $this->errorResponse(['error' => __('Your cart has existing items from another vendor'), 'alert' => '1'], 400);
                 }
             }
 
@@ -523,10 +547,12 @@ class CartController extends BaseController
                 $qry->where('language_id', $langId);
             },
             'vendorProducts.addon.option' => function ($qry) use ($langId) {
-                $qry->where('language_id', $langId);
+                $qry->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                $qry->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
+                $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
             }, 'vendorProducts.product.taxCategory.taxRate',
-        ])->select('vendor_id', 'vendor_dinein_table_id')->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        
+        ])->select('vendor_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        //return json_encode($cartData);
         $loyalty_amount_saved = 0;
         $subscription_features = array();
         $user_subscription = null;
@@ -567,6 +593,7 @@ class CartController extends BaseController
             $delay_date = 0;
             $pickup_delay_date = 0;
             $dropoff_delay_date = 0;
+            $total_addon_price = 0;
             $total_service_fee = 0;
             $product_out_of_stock = 0;
             $PromoFreeDeliver = 0;
@@ -732,7 +759,36 @@ class CartController extends BaseController
 
 
                             // }
-
+                            if (!empty($prod->addon)) {
+                                // return $prod->addon;
+                                foreach ($prod->addon as $ck => $addons) {
+                                    //return $addons->set;
+                                    $opt_quantity_price = 0;
+                                    $opt_price_in_currency = $addons->option ? $addons->option->price : 0;
+                                    $addon_option=AddonOption::where(['addon_id'=>$addons->addon_id,'id'=>$addons->option_id]);
+                                    $addon_title='';
+                                    $addon_price=0;
+                                    if($addon_option->exists()){
+                                        $addon_title=$addon_option->first()->title;
+                                        $addon_price=$addon_option->first()->price;
+                                    }
+                                    $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                                    $opt_quantity_price = $opt_price_in_doller_compare * $prod->quantity;
+                                    $vendorAddons[$ck]['quantity'] = $prod->quantity;
+                                    $vendorAddons[$ck]['addon_id'] = $addons->addon_id;
+                                    $vendorAddons[$ck]['option_id'] = $addons->option_id;
+                                    $vendorAddons[$ck]['price'] = $opt_price_in_currency;
+                                    $vendorAddons[$ck]['addon_title'] = $addons->option->title ?? '';
+                                    $vendorAddons[$ck]['quantity_price'] = $opt_quantity_price ;
+                                    $vendorAddons[$ck]['option_title'] = $addons->option ? $addons->option->title : $addon_title;
+                                    $total_addon_price+=$vendorAddons[$ck]['price_in_cart'] = $addons->option->price ?? $addon_price;
+                                    $vendorAddons[$ck]['cart_product_id'] = $addons->cart_product_id;
+                                    $vendorAddons[$ck]['multiplier'] = $clientCurrency->doller_compare;
+                                    $ttAddon = $ttAddon + $opt_quantity_price;
+                                    $payable_amount = $payable_amount + $opt_quantity_price;
+                                    $order_sub_total = $order_sub_total + $opt_quantity_price;
+                                }
+                            }
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
@@ -742,7 +798,7 @@ class CartController extends BaseController
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                     $rate = round($tax_value->tax_rate);
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                                    $product_tax = $quantity_price * $rate / 100;
+                                    $product_tax = ($quantity_price+$total_addon_price) * $rate / 100;
                                     $taxData[$tckey]['rate'] = $rate;
                                     $taxData[$tckey]['tax_amount'] = $tax_amount;
                                     $taxData[$tckey]['product_tax'] = $product_tax;
@@ -813,27 +869,7 @@ class CartController extends BaseController
                                 
                                 }
                             }
-                            if (!empty($prod->addon)) {
-                                foreach ($prod->addon as $ck => $addons) {
-                                    $opt_quantity_price = 0;
-                                    $opt_price_in_currency = $addons->option ? $addons->option->price : 0;
-                                    $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
-                                    $opt_quantity_price = $opt_price_in_doller_compare * $prod->quantity;
-                                    $vendorAddons[$ck]['quantity'] = $prod->quantity;
-                                    $vendorAddons[$ck]['addon_id'] = $addons->addon_id;
-                                    $vendorAddons[$ck]['option_id'] = $addons->option_id;
-                                    $vendorAddons[$ck]['price'] = $opt_price_in_currency;
-                                    $vendorAddons[$ck]['addon_title'] = $addons->set->title;
-                                    $vendorAddons[$ck]['quantity_price'] = $opt_quantity_price;
-                                    $vendorAddons[$ck]['option_title'] = $addons->option ? $addons->option->title : 0;
-                                    $vendorAddons[$ck]['price_in_cart'] = $addons->option->price;
-                                    $vendorAddons[$ck]['cart_product_id'] = $addons->cart_product_id;
-                                    $vendorAddons[$ck]['multiplier'] = $clientCurrency->doller_compare;
-                                    $ttAddon = $ttAddon + $opt_quantity_price;
-                                    $payable_amount = $payable_amount + $opt_quantity_price;
-                                    $order_sub_total = $order_sub_total + $opt_quantity_price;
-                                }
-                            }
+                            
                             unset($prod->addon);
                             unset($prod->pvariant);
                         }
@@ -988,7 +1024,7 @@ class CartController extends BaseController
                 }
                 $vendor_service_fee_percentage_amount = 0;
                 if($vendorData->vendor->service_fee_percent > 0){
-                    $vendor_service_fee_percentage_amount = ($vendor_products_total_amount * $vendorData->vendor->service_fee_percent) / 100 ;
+                    $vendor_service_fee_percentage_amount = (($vendor_products_total_amount+$total_addon_price) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
@@ -1090,8 +1126,14 @@ class CartController extends BaseController
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
             $slotsDate = findSlot('',$vendorId,'','api');
-            $slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes);
+            $slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes, 1);
             $cart->slots = $slots;
+            if($preferences->business_type == 'laundry'){
+                $dropoff_slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                $cart->dropoff_slots = $dropoff_slots;
+            }else{
+                $cart->dropoff_slots = [];
+            }
             if(count($slots)>0){
                 $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled ?? 0;
              }else{
@@ -1100,6 +1142,7 @@ class CartController extends BaseController
         }else{
             $duration = (object)['closed_store_order_scheduled'=>'0'];
             $slots = [];
+            $dropoff_slots = [];
             $cart->slots = [];
             $cart->closed_store_order_scheduled = 0;
         }
@@ -1147,6 +1190,7 @@ class CartController extends BaseController
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
+        $cart->total_addon_price = $total_addon_price;
         $cart->total_discount_amount = $total_disc_amount * $clientCurrency->doller_compare;
         $cart->products = $cartData;
         $cart->item_count = $item_count;
@@ -1199,6 +1243,10 @@ class CartController extends BaseController
         $cart->delay_date =  $delay_date??0;
         $cart->pickup_delay_date =  $pickup_delay_date??0;
         $cart->dropoff_delay_date =  $dropoff_delay_date??0;
+        if($preferences->business_type == 'laundry'){
+            $cart->same_day_delivery_for_schedule =  $preferences->same_day_delivery_for_schedule;
+            $cart->off_scheduling_at_cart =  $preferences->off_scheduling_at_cart;
+        }
         return $cart;
     }
 
@@ -1210,7 +1258,28 @@ class CartController extends BaseController
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
        // $duration = $duration->slot_minutes??'';
-        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes);
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes, 1, 'pickup'); // Added 1 for pickup
+        if(count($slots)<=0){
+            $slot = [];
+        }else{
+            $slot = $slots;
+        }
+
+        return response()->json($slot);
+    }
+
+    /**
+    * GET Request
+    * To Get Drop Off Slots
+    * Added By Ovi
+    */
+    public function checkScheduleDropoffSlots(Request $request)
+    {
+        $slot = [];
+        $vendorId = $request->vendor_id??0;
+        $delivery = $request->delivery??'delivery';
+        $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes, 2, 'dropoff');
         if(count($slots)<=0){
             $slot = [];
         }else{

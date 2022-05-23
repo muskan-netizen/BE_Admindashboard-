@@ -586,6 +586,8 @@ class CartController extends FrontController
         $user_allAddresses = collect();
         $upSell_products = collect();
         $crossSell_products = collect();
+
+        /*Getting User Address */
         if($user){
             $user_allAddresses = UserAddress::where('user_id', $user->id)->where('status',1)->get();
             if($address_id > 0){
@@ -595,14 +597,17 @@ class CartController extends FrontController
                 $address_id = ($address) ? $address->id : 0;
             }
         }
+
+        /* Getting User Lat Long */
         $latitude = ($address) ? $address->latitude : '';
         $longitude = ($address) ? $address->longitude : '';
 
+        /* Delete Cart product if dont exists*/
         $delifproductnotexist = CartProduct::where('cart_id', $cart_id)->doesntHave('product')->delete();
 
+        /* Getting All Cart Data */
         $cartData = CartProduct::with([
-            // 'vendor','vendor.slots','vendor.getTaxFixedFee','vendor.getTaxContainerCharges','vendor.getTaxServiceCharges','vendor.getTaxDeliveryCharges','vendor.slot.day', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
-            'vendor','vendor.slots','vendor.slot.day', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
+            'vendor','vendor.slots','vendor.slot.day', 'vendor.slotsForPickup', 'vendor.slotsForDropoff', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
                 $qry->where('cart_id', $cart_id);
             }, 'vendorProducts.pvariant.media.pimage.image', 'vendorProducts.product.media.image',
             'vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
@@ -628,19 +633,23 @@ class CartController extends FrontController
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
         ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        //dd($cartData[0]->vendor);
+        
+        /* Getting All Taxes available and making TaxRate array according to requirement */
         $taxes=TaxRate::all();
         $taxRates=array();
         foreach($taxes as $tax){
             $taxRates[$tax->id]=['tax_rate'=>$tax->tax_rate,'tax_amount'=>$tax->tax_amount];
         }
-        // dd($taxRates);
+        
+
         $loyalty_amount_saved = 0;
         $redeem_points_per_primary_currency = '';
         $loyalty_card = LoyaltyCard::where('status', '0')->first();
         if ($loyalty_card) {
             $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
         }
+        
+         /* Getting All User Subscription plans */
         $subscription_features = array();
         $user_subscription = null;
         if($user){
@@ -669,8 +678,9 @@ class CartController extends FrontController
             $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
         }
         $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = 0.00;
+        /* If cart have data then getting total and other variable set */
         if ($cartData) {
-
+            $addon_price=0;
             $cart_dinein_table_id = NULL;
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             $vendor_details = [];
@@ -688,7 +698,11 @@ class CartController extends FrontController
             $PromoDelete = 0;
             $d = 0;
             $total_container_charges = 0 ;
+
+            /* Getting in vendor loop */
             foreach ($cartData as $ven_key => $vendorData) {
+                $opt_quantity_price_new = 0.00;
+                $addon_price=0;
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = $delivery_fee_charges_static =  $deliver_charges_lalmove = 0.00;
                 $delivery_count = 0;
@@ -705,6 +719,7 @@ class CartController extends FrontController
                     $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
                 }
 
+                /* Getting vendor details */
                 if($action != 'delivery'){
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id','latitude','longitude','address')->where('id', $vendorData->vendor_id)->first();
                     if($action == 'dine_in'){
@@ -742,8 +757,10 @@ class CartController extends FrontController
                     }
                 }
                 $cart_product_ids = [];
+                /* Getting in Vendor product loop and setting product values*/
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
                     $cart_product_ids[] = $prod->product_id;
+                    /* Setting Out of Stock if requied quanitity is not available */
                     if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
                         $quantity_check = productvariantQuantity($prod->variant_id);
                         if($quantity_check < $prod->quantity ){
@@ -758,7 +775,7 @@ class CartController extends FrontController
 
                     $prod->product_out_of_stock =  $product_out_of_stock;
                     $prod->faq_count = 0;
-                    if( $preferences->product_order_form ==1 ){
+                    if( $preferences->product_order_form ==1 && $user ){
                         $prod->faq_count =  ProductFaq::where('product_id',$prod->product->id)->count();
                     }
                     $prod->category_id = $prod->product->category_id;
@@ -793,6 +810,8 @@ class CartController extends FrontController
                     $prod->pvariant->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
                     $prod->quantity_price = decimal_format($quantity_price);
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
+                    //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
+                    
                     $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
@@ -800,7 +819,7 @@ class CartController extends FrontController
                     {
                         $coupon_product_discount = $coupon_product_discount + $quantity_price + $quantity_container_charges;
                     }
-                    $opt_quantity_price_new = 0.00;
+                   /* Getting Add On info */
                     if($prod->addon->isNotEmpty()){
                         foreach ($prod->addon as $ck => $addons) {
                             if(isset($addons->option)){
@@ -812,6 +831,7 @@ class CartController extends FrontController
                                 }
                                 $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);
                                 $addons->option->price_in_cart = $addons->option->price;
+                                $addon_price=$addons->option->price;
                                 $addons->option->price = decimal_format($opt_price_in_currency);
                                 $addons->option->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
                                 $addons->option->quantity_price = $opt_quantity_price;
@@ -825,6 +845,8 @@ class CartController extends FrontController
                             }
                         }
                     }
+                    //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
+                    /* Getting taxes info */
                     $taxData = array();
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
@@ -1050,10 +1072,10 @@ class CartController extends FrontController
                 if($vendorData->vendor->service_fee_percent > 0){
                     $amount_for_service = $opt_quantity_price_new+$vendor_products_total_amount;
                     // dd($opt_quantity_price_new.' '.$vendor_products_total_amount.' '.$vendorData->vendor->service_fee_percent);
-                    $vendor_service_fee_percentage_amount = ($amount_for_service * $vendorData->vendor->service_fee_percent) / 100 ;
+                    //dd($opt_quantity_price_new." | ".$vendor_products_total_amount);
+                    $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
-
 
                 //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
@@ -1195,27 +1217,83 @@ class CartController extends FrontController
                 }else{
                     $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled;
                 }
-                $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
-                if(count((array)$slots) == 0){
-                    $myDate  = date('Y-m-d',strtotime('+1 day'));
-                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
+                if($preferences->scheduling_with_slots != 1 && $preferences->business_type != 'laundry'){
+                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
+                    if(count((array)$slots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+1 day'));
+                        $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
+                    }
+                    if(count((array)$slots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+2 day'));
+                        $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
+                    }
+    
+                    if(count((array)$slots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+3 day'));
+                        $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
+                    }
+                    $cart->slots = $slots;
+                    $cart->vendor_id =  $vendorId;
+                }else{
+                    $cart->slots = [];
+                    $cart->vendor_id =  $vendorId;
+                    $slots = [];
+                    $pickupSlots = [];
+                    $dropoffSlots = [];
                 }
-                if(count((array)$slots) == 0){
-                    $myDate  = date('Y-m-d',strtotime('+2 day'));
-                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
-                }
+                
 
-                if(count((array)$slots) == 0){
-                    $myDate  = date('Y-m-d',strtotime('+3 day'));
-                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
+                // get slots for laundry category
+                if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
+                    // For Pickup
+                    $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    if(count((array)$pickupSlots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+1 day'));
+                        $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    }
+                    if(count((array)$pickupSlots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+2 day'));
+                        $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    }
+                    if(count((array)$pickupSlots) == 0){
+                        $myDate  = date('Y-m-d',strtotime('+3 day'));
+                        $pickupSlots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    }
+
+                    // For Dropoff
+                    $myDropoffDate = date('Y-m-d');
+                    $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                    if(count((array)$dropoffSlots) == 0){
+                        $myDropoffDate  = date('Y-m-d',strtotime('+1 day'));
+                        $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                    }
+                    if(count((array)$dropoffSlots) == 0){
+                        $myDropoffDate  = date('Y-m-d',strtotime('+2 day'));
+                        $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                    }
+                    if(count((array)$dropoffSlots) == 0){
+                        $myDropoffDate  = date('Y-m-d',strtotime('+3 day'));
+                        $dropoffSlots = (object)showSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                    }
+
+                    $cart->slotsForPickup = $pickupSlots;
+                    $cart->slotsForDropoff  = $dropoffSlots;
+                    $cart->vendor_id = $vendorId;
+                }else{
+                    $cart->slotsForPickup = [];
+                    $slots = [];
+                    $pickupSlots = [];
+                    $dropoffSlots = [];
                 }
-                $cart->slots = $slots;
-                $cart->vendor_id =  $vendorId;
 
             }else{
                 $slots = [];
                 $cart->slots = [];
+                $cart->slotsForPickup = [];
+                $cart->slotsForDropoff = [];
                 $cart->vendor_id =  0;
+                $pickupSlots = [];
+                $dropoffSlots = [];
             }
             $cart->without_category_kyc = 0;
 
@@ -1258,7 +1336,11 @@ class CartController extends FrontController
             }else{
                 $cart->without_category_kyc = 1;
             }
+            // echo "Total_payable_amount: ".$total_payable_amount."total_discount_amount: ". $total_discount_amount."loyalty_amount_saved". $loyalty_amount_saved ."wallet_amount_used".$wallet_amount_used."total_taxable_amount".$total_taxable_amount;
+            // Total_payable_amount: 695.6total_discount_amount: 97.1loyalty_amount_saved83.4wallet_amount_used0total_taxable_amount102
             $cart->slotsCnt = count((array)$slots);
+            $cart->pickupSlotsCnt = count((array)$pickupSlots);
+            $cart->dropoffSlotsCnt = count((array)$dropoffSlots);
             $cart->total_service_fee = decimal_format($total_service_fee);
             $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
             $cart->gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
@@ -1278,13 +1360,41 @@ class CartController extends FrontController
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;
-            if($cart->slotsCnt==0){
-                $mdate = (object)findSlotNew('',$cart->vendor_id,'');
-                $cart->delay_date =  $mdate->mydate;
-             }else{
-                $cart->delay_date =  $myDate??0;
+
+            if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
+                if($cart->pickupSlotsCnt==0){
+                    $mdate = (object)findSlotNew('',$cart->vendor_id,1);
+                    $cart->delay_date =  $mdate->mydate;
+                 }else{
+                    $cart->delay_date =  $myDate??$delay_date;
+                }
+
+                if($cart->dropoffSlotsCnt==0){
+                    $mdate = (object)findSlotNew('',$cart->vendor_id,2);
+                    $cart->my_dropoff_delay_date =  $mdate->mydate;
+                 }else{
+                    $cart->my_dropoff_delay_date =  $myDropoffDate??$delay_date;
+                }
+
+            }else{
+                if($cart->slotsCnt==0){
+                    $mdate = (object)findSlotNew('',$cart->vendor_id,0);
+                    $cart->delay_date =  $mdate->mydate;
+                 }else{
+                    $cart->delay_date =  $myDate??$delay_date;
+                }
             }
 
+            if($preferences->same_day_delivery_for_schedule == 0){
+                if($cart->my_dropoff_delay_date == date('Y-m-d') ){
+                    $cart->my_dropoff_delay_date = date('Y-m-d',strtotime('+1 day')); 
+                }
+
+                if($cart->delay_date == date('Y-m-d') ){
+                    $cart->delay_date = date('Y-m-d',strtotime('+1 day')); 
+                }
+
+            }
 
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
@@ -1300,11 +1410,57 @@ class CartController extends FrontController
     {
         $message = '';
         $status = 'Success';
+        $vendorId = $request->vendor_id;
+        $option = "";
+        //type must be a : delivery , takeaway,dine_in
+        $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
+        $slots = (object)showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes, 0);
+        $option ="<option value=''>".__("Select Slot")."</option>";
+        if(count((array)$slots)<=0){
+            $message = 'Slot not found.';
+            $status = 'error';
+        }else{
+            foreach($slots as $opt)
+            {
+                $option .="<option value='".$opt['value']."'>".$opt['name']."</option>";
+            }
+        }
+        $data = array('status'=>$status,'data'=>$option,'message'=>$message);
+        return response()->json($data);
+    }
+
+    public function checkPickupScheduleSlots(Request $request)
+    {
+        $message = '';
+        $status = 'Success';
         $vendorId = $request->vendor_id??0;
         $option = "";
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
-        $slots = (object)showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes);
+        $slots = (object)showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes,1);
+        $option ="<option value=''>".__("Select Slot")."</option>";
+        if(count((array)$slots)<=0){
+            $message = 'Slot not found.';
+            $status = 'error';
+        }else{
+            foreach($slots as $opt)
+            {
+                $option .="<option value='".$opt['value']."'>".$opt['name']."</option>";
+            }
+        }
+        $data = array('status'=>$status,'data'=>$option,'message'=>$message);
+        return response()->json($data);
+    }
+
+    public function checkDropoffScheduleSlots(Request $request){
+        $message = '';
+        $status = 'Success';
+        $vendorId = $request->vendor_id??0;
+        $option = "";
+        //type must be a : delivery , takeaway,dine_in
+        $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
+
+        $slots = (object)showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes,2);
         $option ="<option value=''>".__("Select Slot")."</option>";
         if(count((array)$slots)<=0){
             $message = 'Slot not found.';
@@ -1912,7 +2068,7 @@ class CartController extends FrontController
                         $q->where('age_restriction',1);
                     })->count();
                     $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
-                    if($checkpreference->third_party_accounting == 1 && $passbase_check && $age_restriction)
+                    if($passbase_check && $age_restriction)
                     {
                         if(is_null($user->passbase_verification)){
                             return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alochol/Tobacco contents. It is mandatory to provide the verification documents to proceed']);

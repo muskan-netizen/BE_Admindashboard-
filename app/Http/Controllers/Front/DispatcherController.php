@@ -556,4 +556,53 @@ class DispatcherController extends FrontController
         }
     }
 
+    /******************    ---- share all details of customer for dispatcher -----   ******************/
+    public function dispatchCustomerDetails(Request $request, $domain = '', $web_hook_code)
+    {
+        DB::beginTransaction();
+        $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
+        if(!empty($checkiftokenExist)){
+            $devices = UserDevice::whereNotNull('device_token')->where('user_id', $checkiftokenExist->user_id)->pluck('device_token');
+            $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+            if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+                    $from  = $client_preferences->fcm_server_key;
+                    $title = $request->notificationTitle;
+                    $body  =  $request->notificationDiscription;
+                    $headers = [
+                        'Authorization : key=' . $from,
+                        'Content-Type  : application/json',
+                    ];
+                    $data = [
+                        "registration_ids" => $devices,
+                        "notification" => [
+                            'title'              => $title,
+                            'body'               => $body,
+                            'sound'              => "default",
+                            "icon"               => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                            'click_action'       => route('order.index'),
+                            "android_channel_id" => "sound-channel-id"
+                        ],
+                        "data" => [
+                            'title' => $title,
+                            'body'  => $body,
+                            'data'  => '',
+                            'type'  => ""
+                        ],
+                        "priority" => "high"
+                    ];
+                    $dataString = $data;
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
+                    $result = curl_exec($ch);
+                    curl_close($ch);
+                    \Log::info($result);
+            }
+        }
+    }
+
 }

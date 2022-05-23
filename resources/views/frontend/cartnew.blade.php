@@ -85,6 +85,7 @@ $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->fir
 $urlImg = $clientData ? $clientData->logo['original'] : ' ';
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
+$client_preferences = \App\Models\ClientPreference::first();
 @endphp
 
 <script type="text/template" id="address_template">
@@ -495,7 +496,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <div class=" col-3 <%= cart_details.category_kyc_count %>  " id="category_kyc_dev_<%= cart_details.category_rendem_id %>">
                 <input type="hidden" name="category_kyc_ids" value="<%= cart_details.category_rendem_id %>">
                 <div class="text-center my-3 btn-category_kyc-div">
-                    <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= cart_details.category_rendem_id %>" data-category_id="<%= cart_details.category_ids %>" >{{__('Category KYC')}}</button>
+                    <button class="cl_category_kyc_form btn btn-solid w-100" id="add__category_kyc_form" data-dev_remove_id="category_kyc_dev_<%= cart_details.category_rendem_id %>" data-category_id="<%= cart_details.category_ids %>" >{{__('Order Documents')}}</button>
                 </div>
             </div>
 
@@ -522,35 +523,53 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
 
             <hr class="my-2">
-            <% if( closed_store== 0 ) { %>
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="">{{__('Schedule Pickup ')}}</label>
-                    <% if(cart_details.pickup_delay_date != 0) { %>
-                        <!-- <input type="text" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_pickup != '') ? cart_details.schedule_pickup : '') %>" min="<%= ((cart_details.pickup_delay_date != '0') ? cart_details.pickup_delay_date : '') %>"> -->
-                        <input type="date" id="schedule_datetime_pickup_date" onchange="handler(event);"  name="schedule_pickup_date" required/>
-	                        <input class='time durationMinMaxPickup d-none form-control' type='text' id="schedule_datetime_pickup_time"  name="schedule_pickup_time" value="0:00" required/>
-                    <% } else { %>
-                            <!-- <input type="text" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_pickup??'' }}" min="{{ $now }}"> -->
-                            <input type="date" id="schedule_datetime_pickup_date" onchange="handler(event);"  name="schedule_pickup_date"required/>
-	                        <input class='time durationMinMaxPickup d-none form-control' type='text' id="schedule_datetime_pickup_time"  name="schedule_pickup_time" value="0:00" required/>
-                    <% } %>
-                </div>
-                <div class="col-md-6">
-                    <label for="">{{__('Schedule Dropoff ')}} </label>
-                    <% if(cart_details.dropoff_delay_date != 0) { %>
-                        <!-- <input type="text" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_dropoff != '') ? cart_details.schedule_dropoff : '') %>" min="<%= ((cart_details.dropoff_delay_date != '0') ? cart_details.dropoff_delay_date : '') %>"> -->
-                        <input type="date" id="schedule_datetime_dropoff_date" onchange="handler(event);"  name="schedule_dropoff_date"/>
-	                    <input class='time durationMinMaxDropoff d-none form-control' type='text' id="schedule_datetime_dropoff_time"  name="schedule_dropoff_time" value="0:00"/>
-                    <% } else { %>
-                            <!-- <input type="date" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_dropoff??'' }}" min="{{ $now }}"> -->
-                            <input type="date" id="schedule_datetime_dropoff_date" onchange="handler(event);"  name="schedule_dropoff_date"/>
-	                        <input class='time durationMinMaxDropoff d-none form-control' type='text' id="schedule_datetime_dropoff_time"  name="schedule_dropoff_time" value="0:00" />
-                    <% } %>
-
-                </div>
-            </div>
-            <% } %>
+                @if($client_preference_detail->scheduling_with_slots == 1 && $client_preference_detail->off_scheduling_at_cart == 0 )
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">{{__('Schedule Pickup ')}}</label> <span class="loaderforjs"><img class="img-fluid" style="display:none;" id="loaderforjs" src="{{asset('front-assets/images/loading.gif')}}" alt=""></span>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="hidden" class="custom-control-input check" id="vendor_id" name="vendor_id" value="<%= cart_details.vendor_id %>" >
+                                    @if($client_preference_detail->same_day_delivery_for_schedule == 0)
+                                        <input type="date" id="pickup_schedule_datetime" class="form-control pickup_schedule_datetime" placeholder="Inline calendar" min="<%= cart_details.delay_date %>" >
+                                    @else
+                                        <input type="date" id="pickup_schedule_datetime" class="form-control pickup_schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled_date_time != '')?cart_details.scheduled_date_time : cart_details.delay_date ) %>"  min="<%= cart_details.delay_date %>" >
+                                    @endif
+                                    <input type="hidden" id="checkPickUpSlot" value="1">
+                                </div>
+                                <div class="col-md-6 schedule_pickup_slot">
+                                    <select name="schedule_pickup_slot" id="schedule_pickup_slot" class="form-control"  @if($client_preference_detail->isolate_single_vendor_order == 0) onchange="checkSlotOrders();" @endif>
+                                        <option value="" selected>{{__("Select Slot")}} </option>
+                                        @if($client_preference_detail->same_day_delivery_for_schedule == 1)
+                                            <% _.each(cart_details.slotsForPickup, function(slot, sl){%>
+                                                <option value="<%= slot.value  %>" <%= slot.value == cart_details.scheduled.slot ? 'selected' : '' %> ><%= slot.name %></option>
+                                            <% }) %>
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>                    
+                        <div class="col-md-6">
+                            <label for="">{{__('Schedule Dropoff ')}} </label> <span class="loaderfordrop"><img class="img-fluid" style="display:none;" id="loaderfordrop" src="{{asset('front-assets/images/loading.gif')}}" alt=""></span>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="date" id="dropoff_schedule_datetime" class="form-control dropoff_schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.dropoff_scheduled_date_time != '')?cart_details.dropoff_scheduled_date_time : cart_details.my_dropoff_delay_date ) %>"  min="<%= cart_details.my_dropoff_delay_date %>" >
+                                    <input type="hidden" id="checkDropoffSlot" value="1">
+                                </div>
+                                <div class="col-md-6 schedule_dropoff_slot">
+                                    <select name="schedule_dropoff_slot" id="schedule_dropoff_slot" class="form-control">
+                                        <option value="" selected>{{__("Select Slot")}} </option>
+                                        @if($client_preference_detail->same_day_delivery_for_schedule == 1)
+                                            <% _.each(cart_details.slotsForDropoff, function(slot, sl){%>
+                                                <option value="<%= slot.value  %>" <%= slot.value == cart_details.scheduled.slot ? 'selected' : '' %> ><%= slot.name %></option>
+                                            <% }) %>
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             @else
             <div class="row">
 
@@ -602,17 +621,18 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             if(price_bifurcation!=1){  %>
             <div class="row">
                 <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="total_taxable_amount"><%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+other_taxes) %></span></b></div>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="total_taxable_amount"><%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+parseFloat(other_taxes)) %></span></b></div>
             </div>
             <% } if(price_bifurcation!=1){ %>
             <hr class="my-2">
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)+other_taxes) %></b></span>
+                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)) %></b></span>
                 <span id="other_taxes" style="display:none;"><%= other_taxes %></span></div>
             </div>
             <% } %>
             <hr class="my-2">
+            
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
@@ -702,19 +722,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
                             <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)) %></p>
                         <% } else { %>
-                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes) %></p>
+                            <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(other_taxes)) %></p>
                         <% } %>
                         <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
-                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(other_taxes) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                                 
                         <% }else{ %>
                             <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
-                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(other_taxes)) %></p>
                             <% } else { %>
-                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+other_taxes) %></p>
+                                <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(other_taxes)) %></p>
                             <% } %>
                             <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+other_taxes %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
+                                    <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(other_taxes) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                             <%
                         } %>
                         <div>
@@ -852,7 +872,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="row mb-md-3 alFourTemplateCartButtons">
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
+                        @if(!empty(Auth::user()))
                         <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit') }} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</span> </a>
+                        @endif
                     </div>
 
 
@@ -1544,7 +1566,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     //     });
     // }, 2500);
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
 </script>
 @if(in_array('payphone',$client_payment_options))
@@ -1553,8 +1575,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options))
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+@endif
+@if(in_array('stripe_oxxo',$client_payment_options))
+<script>
+var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
 @endif
 @if(in_array('yoco',$client_payment_options))
 <script type="text/javascript" src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
@@ -1575,6 +1602,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 <script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+<script type="text/javascript">
+    var business_type = "<?= $client_preferences->business_type; ?>";
+    var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";
+    var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
+</script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/apple_pay.js')}}"></script>
@@ -1598,6 +1630,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
+    var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var cart_clear_stripe_oxxo_url = "{{url('payment/stripe_oxxo/clear')}}";
     var user_store_address_url = "{{route('address.store')}}";
     var product_faq_update_url = "{{ route('cart.productfaq') }}";
     var promo_code_remove_url = "{{ route('remove.promocode') }}";
@@ -1620,6 +1654,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var update_cart_schedule = "{{route('cart.updateSchedule')}}";
     var verifyaccounturl = "{{route('user.verify')}}";
     var check_schedule_slots = "{{route('cart.check_schedule_slots')}}";
+    var check_pickup_schedule_slots = "{{route('cart.check_pickup_schedule_slots')}}";
+    var check_dropoff_schedule_slots = "{{route('cart.check_dropoff_schedule_slots')}}";
     var login_via_username_url = "{{route('customer.loginViaUsername')}}";
     var forgot_password_url = "{{route('customer.forgotPass')}}";
     var order_success_return_url = "{{route('order.return.success')}}";
@@ -2179,22 +2215,22 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     function checkSlotOrders()
     {
         var url = "{{route('checkSlotOrders')}}"
-        var schedule_datetime = $('#schedule_datetime').val();
-        var schedule_slot = $('#slot').val();
+        var schedule_pickup_datetime = $('#pickup_schedule_datetime').val();
+        var schedule_pickup_slot = $('#schedule_pickup_slot').val();
         var vendor_id = $('#vendor_id').val();
         $.ajax({
             type: "GET",
             data: {
-                "schedule_datetime": schedule_datetime,
-                "schedule_slot"    : schedule_slot,
-                "vendor_id"        : vendor_id,
+                "schedule_pickup_datetime": schedule_pickup_datetime,
+                "schedule_pickup_slot":     schedule_pickup_slot,
+                "vendor_id":                vendor_id,
             },
             url: url,
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
-                // Check if orderCount is greater equal to orders_per_slot
+                // Check if orderCount is greaten equal to orders_per_slot
                 if(output.orderCount >= output.orders_per_slot){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
                     // Disable the place order button

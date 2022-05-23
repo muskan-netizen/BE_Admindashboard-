@@ -106,7 +106,23 @@ class OrderController extends Controller{
                 return $vendor_orders->vendor ? __($vendor_orders->vendor->name) : '';
             })
             ->addColumn('payment_option_title',function($vendor_orders){
-                return __($vendor_orders->orderDetail->paymentOption->title);
+               
+                $title = __($vendor_orders->orderDetail->paymentOption->title);
+                if($vendor_orders->orderDetail->paymentOption->code == 'stripe'){
+                    $title = __('Credit/Debit Card (Stripe)');
+                }elseif($vendor_orders->orderDetail->paymentOption->code == 'kongapay'){
+                    $title  = __('Pay Now');
+                }elseif($vendor_orders->orderDetail->paymentOption->code == 'mvodafone'){
+                    $title = __('Vodafone M-PAiSA');
+                }
+                elseif($vendor_orders->orderDetail->paymentOption->code == 'mobbex'){
+                    $title = __('Mobbex');
+                }
+                elseif($vendor_orders->orderDetail->paymentOption->code == 'offline_manual'){
+                    $json = json_decode($vendor_orders->orderDetail->paymentOption->credentials);
+                    $title = $json->manule_payment_title;
+                }
+                return __($title);
             })
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {
