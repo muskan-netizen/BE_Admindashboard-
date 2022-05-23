@@ -95,8 +95,10 @@ a.product-box.scale-effect.mt-0{position: relative;display: block;}
 .offer-slider.al .inner_spacing h6{margin-top: 0;}
 .offer-slider.al .inner_spacing p{margin-bottom: 5px;}
 .offer-slider.al .inner_spacing{padding: 0;}
+.dark .offer-slider.al .inner_spacing p.pb-1{background-color: #232323;}
 .offer-slider.al .inner_spacing p.pb-1{background-color: #eee;padding: 2px 8px 0!important;font-size: 12px;border-radius: 3px;color: var(--theme-deafult);opacity: 1;display: inline-block;}
 .collection-filter .common-product-box.scale-effect{background-color: #ffff;padding: 10px;border-radius: 10px;}
+.dark .collection-filter .common-product-box.scale-effect{background-color: #1b1b1b;}
 .displayProducts .col-grid-box a.product-box{background-color: #fff;border-radius: 10px;}
 .displayProducts .col-grid-box a.product-box .inner_spacing p{font-size: 12px;line-height: 1.5;}
 .displayProducts .product-card-box{-webkit-transform: scale(1);transform: scale(1);}
@@ -176,6 +178,8 @@ body.dark span.org_price.ml-1.font-14{opacity: 1;}
 section.section-b-space_.p-0.ratio_asos{position: relative;z-index: 1;width: 100%;}
 .login-form #schedule_div input{display: block;}
 .fa-facebook-square:before, .fa-heart:before, .fa-twitter:before, .fa-user:before, .fa-whatsapp:before{font-family: FontAwesome;}
+body.dark .product-box,
+.dark .slick-slider.related-products .slick-slide a.common-product-box{background-color: #1b1b1b;}
 .slick-slider.related-products .slick-slide a.common-product-box{border-radius: 12px;overflow: hidden;background-color: #fff;box-shadow: 0 0 0 1px rgb(67 41 163 / 8%), 0 1px 5px 0 rgb(67 41 163 / 8%);display: block;}
 /* csss */
 .al_body_template_one ul.al_main_category_list{z-index: 9;}
@@ -268,6 +272,12 @@ body.al_body_template_one table.table.wishlist-table.border{background-color: #2
     .al_body_template_one .ratio_asos .top-banner-wrapper .top-banner-content{margin-bottom: 10px;}
 
 }
+
+
+.al_body_template_one .footer-card a span {width: 20%;}.al_body_template_one .ac-royo-btn a {width: 16%;}
+
+
+
 /* Order Placed css start */
 .alFourTemplateOrderSucces .card{border-radius: 30px;box-shadow: 0 0 10px rgb(0 0 0 / 10%);}
 .alFourTemplateOrderSucces .order_detail:before{display:none;}

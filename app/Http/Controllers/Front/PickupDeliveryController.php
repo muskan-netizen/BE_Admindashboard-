@@ -29,9 +29,17 @@ class PickupDeliveryController extends FrontController{
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
                 $option->title = __('Credit/Debit Card (Stripe)');
+            }elseif($option->code == 'kongapay'){
+                $option->title = 'Pay Now';
+            }elseif($option->code == 'mvodafone'){
+                $option->title = 'Vodafone M-PAiSA';
             }
-            if($option->code == 'mobbex'){
+            elseif($option->code == 'mobbex'){
                 $option->title = __('Mobbex');
+            }
+            elseif($payment_option->code == 'offline_manual'){
+                $json = json_decode($payment_option->credentials);
+                $payment_option->title = $json->manule_payment_title;
             }
             $option->title = __($option->title);
         }

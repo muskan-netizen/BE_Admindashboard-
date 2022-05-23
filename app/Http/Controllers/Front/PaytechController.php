@@ -89,10 +89,9 @@ class PaytechController extends FrontController
         $order_number =  $this->orderNumber($request);
         //['XOF', 'EUR', 'USD', 'CAD','GBP','MAD']
         //orderProductDetails($order_id)
-        $postFields = array ("item_name" => 'Test Item', "item_price" => $request->amt , "currency" => "USD" , "ref_command" =>   'testing'.$order_number , "command_name" =>   'Testing gateway' , "env" =>   $this->env , "success_url" =>   route('paytech.success') , "ipn_url" => 'https://royo-order.com/payment/windcave/success' , "cancel_url" =>  route('paytech.success') , "custom_field" =>'testing'.$order_number);
-        \Log::info(json_encode($postFields)); 
+        $amt = $this->getDollarCompareAmount($request->amt);
+        $postFields = array ("item_name" => 'Test Item', "item_price" => $amt , "currency" => "USD" , "ref_command" =>   'testing'.$order_number , "command_name" =>   'Testing gateway' , "env" =>   $this->env , "success_url" =>   route('paytech.success').'?oid='.$order_number , "ipn_url" => 'https://royo-order.com/payment/paytech/success' , "cancel_url" =>  route('paytech.fail').'?oid='.$order_number , "custom_field" =>'testing'.$order_number); 
         $jsonResponse = $this->post ($this->app_url.'/payment/request-payment',$postFields,["API_KEY: " . $this->api_key , "API_SECRET: " . $this->api_secret]); 
-        \Log::info(json_encode(["API_KEY: " . $this->api_key , "API_SECRET: " . $this->api_secret]));
         return $jsonResponse;
     }
 
@@ -171,7 +170,7 @@ class PaytechController extends FrontController
             CartProductPrescription::where('cart_id', $cartid)->delete();
             // send sms 
             $this->sendSuccessSMS($request, $order);
-            Payment::create(['amount' => 0, 'transaction_id' => $request->sessionId, 'balance_transaction' => $order->payable_amount, 'type' => 'cart', 'date' => date('Y-m-d'), 'order_id' => $order->id]);
+            Payment::create(['amount' => 0, 'transaction_id' => $order->order_number, 'balance_transaction' => $order->payable_amount, 'type' => 'cart', 'date' => date('Y-m-d'), 'order_id' => $order->id]);
 
             // Send Notification
             if (!empty($order->vendors)) {
@@ -219,7 +218,7 @@ class PaytechController extends FrontController
             $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->order_id . '</b>']);
 
             if (isset($request->auth) && $request->auth != '') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=200&transaction_id=' . $request->sessionId . '&action=wallet';
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=200&transaction_id=' . $request->oid. '&action=wallet';
                 return Redirect::to($returnUrl);
             } else {
                 return Redirect::to(route('user.wallet'))->with('success','Wallet updated successfully.');

@@ -1,6 +1,7 @@
 @extends('layouts.store', ['title' => 'Product'])
 @section('css')
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
 
@@ -13,21 +14,20 @@
         <div class="address-form">
 
             <div class="loader-outer d-none">
-                <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+                <div class="spinner-border avatar-lg text-primary m-2" role="status"></div> 
             </div>
-
-                <!--<div class="tip_radio_controls_book_friend text-center my-2">
+                @if(isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
+                <div class="tip_radio_controls_book_friend text-center my-2">
                     <input type="radio" class="tip_radio" id="for_me" name="is_for_friend" value="0">
                     <label class="tip_label mb-0  my-2 active" for="for_me" id="label_for_me">
-                        <h5 class="m-0" id="tip_5">Book</h5>
-                        <p class="m-0">For Me</p>
+                        <h5 class="m-0" id="tip_5">{{__('Book')}} {{__('For Me')}}</h5>                        
                     </label>       
                     <input type="radio" class="tip_radio" id="for_friend" name="is_for_friend" value="1">
                     <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
-                        <h5 class="m-0" id="tip_5">Book</h5>
-                        <p class="m-0">For A Friend</p>
+                        <h5 class="m-0" id="tip_5">{{__('Book')}} {{__('For A Friend')}}</h5>
                     </label>                      
-                </div> -->
+                </div> 
+                @endif 
             <div class="location-box check-pick-first">
                 <div class="where-to-go">
                     <div class="title title-36">{{__('Where can we pick you up?')}}</div>
@@ -149,16 +149,16 @@
         <script type="text/template" id="products_template">
             <% if(results != ''){ %>
             <% _.each(results, function(result, key){%>
-                <a class="vehical-view-box row align-items-center no-gutters px-2 my-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
-                    <div class="col-3 vehicle-icon">
+                <a class="vehical-view-box d-flex align-items-center no-gutters px-2 my-1" href="javascript:void(0)" data-product_id="<%= result.id %>">
+                    <div class="col-2 vehicle-icon">
                         <img class='img-fluid' src='<%= result.image_url %>'>
                     </div>
-                    <div class="col-9">
+                    <div class="col-10">
                         <div class="row no-gutters">
-                            <div class="col-8 vehicle-details">
+                            <div class="col vehicle-details">
                                 <h4 class="m-0"><b><%= result.name %></b></h4>
                             </div>
-                            <div class="col-4 ride-price pl-2 text-right">
+                            <div class="col ride-price pl-2 text-right">
                                 <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
                             </div>
                         </div>
@@ -243,7 +243,8 @@
                     <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
-                <div class="for_friend_fields_div px-2 py-2">
+            </div>
+               <div class="for_friend_fields_div px-2 py-2">
                     <h4 class="pb-2">Friend's Details</h4>
                     <div class="form-group">
                         <label for="friendName">Friend's Name</label>
@@ -251,11 +252,11 @@
                     </div>
                     <div class="form-group">
                         <label for="friendPhoneNumber">Friend's Phone Number</label>
-                        <input type="number" class="form-control" name="friendPhoneNumber" placeholder="Phone Number">
+                        <input type="tel" class="form-control phone @error('friendPhoneNumber') is-invalid @enderror" id="phone" placeholder="Phone Number" name="friendPhoneNumber" value="{{old('friendPhoneNumber')}}" autofocus>
+                        <input type="hidden" id="countryData" name="countryData" value="us">
+                        <input type="hidden" id="dialCode" name="dialCode" value="91">
                     </div>
                 </div>
-                
-            </div>
             <span id="show_error_of_booking" class="error"></span>
 
             <div class="payment-promo-container p-2">
@@ -549,6 +550,16 @@
 @endsection
 
 @section('script')
+<script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script type="text/javascript">
+    $('.iti__country').click(function() {
+        var code = $(this).attr('data-country-code');
+        $('#countryData').val(code);
+        var dial_code = $(this).attr('data-dial-code');
+        $('#dial_code').val(dial_code);
+    });
+</script>
+
 @if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 @endif
@@ -584,6 +595,8 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var amount_required_error_msg = "{{__('Please enter amount.') }}";
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
     var product_order_form_element_data = [];
+    var utilsScript_path = "{{asset('assets/js/utils.js')}}";
+    var initial_country_code = "{{ Session::get('default_country_code','US') }}";
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();

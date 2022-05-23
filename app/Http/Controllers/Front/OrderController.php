@@ -278,7 +278,23 @@ class OrderController extends FrontController
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
         $order = Order::with(['products.pvariant.vset', 'products.pvariant.translation_one', 'address'])->findOrfail($request->order_id);
-        // dd($order->toArray());
+       // set payment option dynamic name
+        if($order->paymentOption->code == 'stripe'){
+            $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
+        }elseif($order->paymentOption->code == 'kongapay'){
+            $order->paymentOption->code->title = 'Pay Now';
+        }elseif($order->paymentOption->code == 'mvodafone'){
+            $order->paymentOption->title = 'Vodafone M-PAiSA';
+        }
+        elseif($order->paymentOption->code == 'mobbex'){
+            $order->paymentOption->title = __('Mobbex');
+        }
+        elseif($order->paymentOption->code == 'offline_manual'){
+            $json = json_decode($order->paymentOption->credentials);
+            $order->paymentOption->title = $json->manule_payment_title;
+        }
+        $order->paymentOption->title = __($order->paymentOption->title);
+       // dd($order->paymentOption->toArray());
 
         $langId = Session::get('customerLanguage');
         $fixedFeeNomenclatures = $this->fixedFee($langId);
@@ -677,7 +693,7 @@ class OrderController extends FrontController
         $response = $order_response->getData();
         if ($response->status == 'Success') {
             # if payment type cash on delivery or payment status is 'Paid'
-            if (($response->data->payment_option_id == 1) || (($response->data->payment_option_id != 1) && ($response->data->payment_status == 1))) {
+            if (( ($response->data->payment_option_id == 1 ) || ($response->data->payment_option_id == 38 ) ) || (($response->data->payment_option_id != 1) && ($response->data->payment_status == 1))) {
                 # if vendor selected auto accept
                 $autoaccept = $this->autoAcceptOrderIfOn($response->data->id);
             }
@@ -949,6 +965,7 @@ class OrderController extends FrontController
                             //echo  "opt_quantity_price: ".$opt_quantity_price;
                             $payable_amount = $payable_amount + $opt_quantity_price;
                             $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
+                            $addon_amount += $opt_quantity_price;
                             // if(!in_array($vendor_cart_product->vendor_id, $addonArray)){
                             //     $vendor_payable_amount_for_service = $vendor_payable_amount;
                             // }
@@ -960,10 +977,11 @@ class OrderController extends FrontController
                             $orderAddon = new OrderProductAddon;
                             $orderAddon->addon_id = $cart_addon->addon_id;
                             $orderAddon->option_id = $cart_addon->option_id;
-                          //  $addon_amount=AddonOption::find($cart_addon->option_id)->first()->price;
+                            //$addon_amount=AddonOption::find($cart_addon->option_id)->first()->price;
                             $orderAddon->order_product_id = $order_product->id;
                             $orderAddon->save();
                         }
+                        
                      //   $addon_amount CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
                     }
                     // array_push($addonArray, $vendor_cart_product->vendor_id);
@@ -981,11 +999,13 @@ class OrderController extends FrontController
                     }
                    
                 }
-                //$total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
+             
+                //$total_taxable_amount+=($quantity_price) * $rate / 100;
+              
                 //echo  "    payable_amount==".$payable_amount;
                 }
                 $payable_amount+= $vendor_total_container_charges;
-                
+               // pr( $total_taxable_amount);
                 //echo "vendor_total_container_charges: ".$vendor_total_container_charges."payable_amount: ".$payable_amount."<br>";
                 
                 $coupon_id = null;
@@ -1032,8 +1052,8 @@ class OrderController extends FrontController
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
                 $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
-                
                 $total_taxable_amount+=$new_vendor_taxable_amount;
+               // pr( $total_taxable_amount);
                 // $OrderVendor->taxable_amount   = $vendor_taxable_amount;
                 $OrderVendor->taxable_amount = $new_vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;

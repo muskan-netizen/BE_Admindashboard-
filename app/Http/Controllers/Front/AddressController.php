@@ -20,7 +20,7 @@ class AddressController extends FrontController{
     public function index(Request $request, $domain = ''){
         $langId = Session::get('customerLanguage');
         $countries = Country::get();
-        $useraddress = UserAddress::where('user_id', Auth::user()->id)->where('status', 1)->with('country')->get();
+        $useraddress = UserAddress::where('user_id', Auth::user()->id)->where('status', 1)->orderBy('id','desc')->with('country')->get();
         $navCategories = $this->categoryNav($langId);
         return view('frontend/account/addressbook')->with(['useraddress' => $useraddress, 'navCategories' => $navCategories, 'countries'=>$countries]);
     }

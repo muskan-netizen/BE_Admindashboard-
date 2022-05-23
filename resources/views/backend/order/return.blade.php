@@ -79,7 +79,7 @@ $timezone = Auth::user()->timezone;
                                                 </b>
                                             </td>
                                             <td class="">
-                                                <b class="text-black">${{$order->product->price??''}}</b>
+                                                <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                             </td>
                                             <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
                                             <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
@@ -134,7 +134,7 @@ $timezone = Auth::user()->timezone;
                                                     </b>
                                                 </td>
                                                 <td class="">
-                                                    <b class="text-black">${{$order->product->price??''}}</b>
+                                                    <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                                 </td>
                                                 <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
                                                 <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
@@ -189,7 +189,7 @@ $timezone = Auth::user()->timezone;
                                                     </b>
                                                 </td>
                                                 <td class="">
-                                                    <b class="text-black">${{$order->product->price??''}}</b>
+                                                    <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                                 </td>
                                                 <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
                                                 <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>

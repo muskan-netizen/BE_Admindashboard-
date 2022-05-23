@@ -686,7 +686,7 @@ $timezone = Auth::user()->timezone;
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0">
                     <div class="card-body">
-                        <h4 class="header-title mb-3">{{ __('Category KYC Documents') }}</h4>
+                        <h4 class="header-title mb-3">{{ __('User Place Order Documents') }}</h4>
                         @foreach($category_KYC_document as $document)
                             @php
                            

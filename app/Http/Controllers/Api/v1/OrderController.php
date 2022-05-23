@@ -23,6 +23,7 @@ use App\Models\{Order, OrderProduct,UserDocs, UserRegistrationDocuments,OrderTax
 use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\OrderTrait;
 
+use App\Models\{VendorOrderCancelReturnPayment};
 class OrderController extends BaseController
 {
     use ApiResponser;
@@ -2325,6 +2326,67 @@ class OrderController extends BaseController
                     $vendor_order_status->order_vendor_id = $request->order_vendor_id;
                     $vendor_order_status->order_status_option_id = $request->order_status_option_id;
                     $vendor_order_status->save();
+                    
+                    
+                   
+                    if ($request->status_option_id == 3) {
+                        if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
+                            $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
+                            $response = Http::get($dispatch_traking_url);
+                        }elseif($orderData->shipping_delivery_type=='L'){
+                            //Cancel Shipping place order request for Lalamove
+                            $lala = new LalaMovesController();
+                            $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
+                        }elseif($orderData->shipping_delivery_type=='SR'){
+                            //Cancel Shipping place order request for Shiprocket
+                            $ship = new ShiprocketController();
+                            $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
+                        }elseif($orderData->shipping_delivery_type=='DU'){
+                            //Cancel Dunzo place order request for Dunzo
+                            $ship = new DunzoController();
+                            $order_ship = $ship->cancelOrderRequestDunzo($currentOrderStatus->web_hook_code);
+                        }elseif($orderData->shipping_delivery_type=='M'){
+                            //Create Shipping place order request for Ahoy
+                            $ship = new AhoyController();
+                            $order_ship = $ship->cancelOrderRequestAhoy($currentOrderStatus->web_hook_code);
+                        }
+
+                        $vendor_id = $request->vendor_id;
+
+                        $order = Order::with(array(
+                            'vendors' => function ($query) use ($vendor_id) {
+                                $query->where('vendor_id', $vendor_id);
+                            }
+                        ))->find($request->order_id);
+                        // get vendor return amount from order
+                        $return_response =  $this->GetVendorReturnAmount($request,$order);
+
+                        // return amount to user wallet 
+                        if($return_response['vendor_return_amount'] > 0){
+                            $user = User::find($currentOrderStatus->user_id);
+                            $wallet = $user->wallet;
+                            $credit_amount = $return_response['vendor_return_amount'] ; //$currentOrderStatus->payable_amount;
+                            $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
+                        }
+                        
+                        // diarise loyalty in order table 
+                        $order->loyalty_points_used    =  $order->loyalty_points_used - $return_response['vendor_loyalty_points'];
+                        $order->loyalty_amount_saved   =  $order->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
+                        $order->loyalty_points_earned  =  $order->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
+                        $order->save();
+                        // save payment in table
+                        $vendor_return_payment                          = new VendorOrderCancelReturnPayment();
+                        $vendor_return_payment->order_id                = $order ->id;
+                        $vendor_return_payment->order_vendor_id         = $currentOrderStatus->id;
+                        $vendor_return_payment->wallet_amount           = $return_response['vendor_wallet_amount'] ;
+                        $vendor_return_payment->online_payment_amount   = $return_response['vendor_online_payment_amount'];
+                        $vendor_return_payment->loyalty_amount          = $return_response['vendor_loyalty_amount'];
+                        $vendor_return_payment->loyalty_points          = $return_response['vendor_loyalty_points'];
+                        $vendor_return_payment->loyalty_points_earned   = $return_response['vendor_loyalty_points_earned'];
+                        $vendor_return_payment->total_return_amount     = $return_response['vendor_return_amount'];
+                        $vendor_return_payment->save();
+    
+                    }
 
                     OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->order_status_option_id, 'reject_reason' => $request->reject_reason ?? null, 'cancelled_by'=>$request->cancelled_by ?? null]);
                 }
@@ -2335,29 +2397,7 @@ class OrderController extends BaseController
                 //     $response = Http::get($dispatch_traking_url);
                 // }
 
-                if ($request->status_option_id == 3) {
-                    if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
-                        $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
-                        $response = Http::get($dispatch_traking_url);
-                    }elseif($orderData->shipping_delivery_type=='L'){
-                        //Cancel Shipping place order request for Lalamove
-                        $lala = new LalaMovesController();
-                        $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
-                    }elseif($orderData->shipping_delivery_type=='SR'){
-                        //Cancel Shipping place order request for Shiprocket
-                        $ship = new ShiprocketController();
-                        $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
-                    }elseif($orderData->shipping_delivery_type=='DU'){
-                        //Cancel Dunzo place order request for Dunzo
-                        $ship = new DunzoController();
-                        $order_ship = $ship->cancelOrderRequestDunzo($currentOrderStatus->web_hook_code);
-                    }elseif($orderData->shipping_delivery_type=='M'){
-                        //Create Shipping place order request for Ahoy
-                        $ship = new AhoyController();
-                        $order_ship = $ship->cancelOrderRequestAhoy($currentOrderStatus->web_hook_code);
-                    }
-
-                }
+                
 
                 $orderData = Order::find($order_id);
 
