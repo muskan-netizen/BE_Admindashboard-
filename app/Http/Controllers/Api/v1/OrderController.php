@@ -473,7 +473,7 @@ class OrderController extends BaseController
                     // exit();
                     // $ex_gateways = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25,28]; // if Stripe, paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz,vnpay
                     
-                    $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26];
+                    $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26,38];
                     //Delete cart if payment is done from these gateways
                     if (in_array($request->payment_option_id, $ex_gateways)) {
 
@@ -543,7 +543,7 @@ class OrderController extends BaseController
                     DB::commit();
 
                     # if payment type cash on delivery or payment status is 'Paid'
-                    if (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
+                    if (( ($order->payment_option_id == 1 || $order->payment_option_id == 38 )) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                         # if vendor selected auto accept
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
@@ -1388,9 +1388,9 @@ class OrderController extends BaseController
         }
         $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request'])
             ->whereHas('orderDetail', function ($q1) {
-                $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1]);
+                $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
                 $q1->orWhere(function ($q2) {
-                    $q2->where('orders.payment_option_id', 1);
+                    $q2->whereIn('orders.payment_option_id', [1,38]);
                 });
             })
             ->paginate($paginate);
@@ -1493,9 +1493,9 @@ class OrderController extends BaseController
                     }
                 ])
                     ->where(function ($q1) {
-                        $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+                        $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
                         $q1->orWhere(function ($q2) {
-                            $q2->where('payment_option_id', 1);
+                            $q2->whereIn('payment_option_id', [1,38]);
                         });
                     })
                     ->where('id', $order_id)->select('*', 'id as total_discount_calculate')->first();
@@ -1530,9 +1530,9 @@ class OrderController extends BaseController
                     ]
                 )
                     ->where(function ($q1) {
-                        $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+                        $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
                         $q1->orWhere(function ($q2) {
-                            $q2->where('payment_option_id', 1);
+                            $q2->whereIn('payment_option_id', [1,38]);
                         });
                     })
                     ->where('user_id', $user->id)->where('id', $order_id)->select('*', 'id as total_discount_calculate')
@@ -1540,6 +1540,23 @@ class OrderController extends BaseController
             }
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             if ($order) {
+                 // set payment option dynamic name
+                if($order->paymentOption->code == 'stripe'){
+                    $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
+                }elseif($order->paymentOption->code == 'kongapay'){
+                    $order->paymentOption->code->title = 'Pay Now';
+                }elseif($order->paymentOption->code == 'mvodafone'){
+                    $order->paymentOption->title = 'Vodafone M-PAiSA';
+                }
+                elseif($order->paymentOption->code == 'mobbex'){
+                    $order->paymentOption->title = __('Mobbex');
+                }
+                elseif($order->paymentOption->code == 'offline_manual'){
+                    $json = json_decode($order->paymentOption->credentials);
+                    $order->paymentOption->title = $json->manule_payment_title;
+                }
+                $order->paymentOption->title = __($order->paymentOption->title);
+                
                 $order->user_name = $order->user->name;
                 $order->user_image = $order->user->image;
                 $order->payment_option_title = __($order->paymentOption->title);
@@ -2043,8 +2060,8 @@ class OrderController extends BaseController
 
                         // If new amount is greater than previous amount then deduct from wallet
                         if($difference_to_be_paid > 0){
-                            // deduct if payment method is not cash on delivery
-                            if($request->payment_option_id != 1){
+                            // deduct if payment method is not cash on delivery and offline mathod method
+                            if($request->payment_option_id != 1 && $request->payment_option_id != 38){
                                 $wallet_amount_used = 0;
                                 if ($user->balanceFloat > 0) {
                                     $wallet = $user->wallet;
@@ -2104,7 +2121,7 @@ class OrderController extends BaseController
                         $res = $this->sendSuccessEmail($request, $order);
 
                         // $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
-                        $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26];
+                        $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26,38];
                         // if (!in_array($request->payment_option_id, $ex_gateways)) {
                         //     Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         //     CartCoupon::where('cart_id', $cart->id)->delete();

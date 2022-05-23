@@ -88,9 +88,9 @@ class OrderController extends BaseController
             });
         }
         $pending_order_count = $pending_order_count->where(function ($q1) {
-            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]); // 1 for cod ,38 for offline manual by harbans 
             $q1->orWhere(function ($q2) {
-                $q2->where('payment_option_id', 1);
+                $q2->whereIn('payment_option_id',[1,38]);// 1 for cod ,38 for offline manual by harbans
             });
         })->count();
 
@@ -109,9 +109,9 @@ class OrderController extends BaseController
             });
         }
         $past_order_count = $past_order_count->where(function ($q1) {
-            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]); // 1 for cod ,38 for offline manual by harbans
             $q1->orWhere(function ($q2) {
-                $q2->where('payment_option_id', 1);
+                $q2->whereIn('payment_option_id', [1,38]);
             });
         })->count();
 
@@ -130,9 +130,10 @@ class OrderController extends BaseController
             });
         }
         $active_order_count = $active_order_count->where(function ($q1) {
-            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+            // 1 for cod ,38 for offline manual by harbans
+            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
             $q1->orWhere(function ($q2) {
-                $q2->where('payment_option_id', 1);
+                $q2->whereIn('payment_option_id', [1,38]);
             });
         })->count();
 
@@ -174,9 +175,10 @@ class OrderController extends BaseController
 
 
         $order_count = Order::with('vendors')->where(function ($q1) {
-            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+            // 1 for cod ,38 for offline manual by harbans
+            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
             $q1->orWhere(function ($q2) {
-                $q2->where('payment_option_id', 1);
+                $q2->whereIn('payment_option_id', [1,38]);
             });
         })->orderBy('id', 'asc');
         if ($user->is_superadmin == 0) {
@@ -263,9 +265,10 @@ class OrderController extends BaseController
             }
         }
         $orders = $orders->whereHas('vendors')->where(function ($q1) {
-            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+            // 1 for cod ,38 for offline manual by harbans
+            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
             $q1->orWhere(function ($q2) {
-                $q2->where('payment_option_id', 1);
+                $q2->whereIn('payment_option_id', [1,38]);
             });
         })->select('*', 'id as total_discount_calculate')->paginate(30);
         
@@ -424,7 +427,23 @@ class OrderController extends BaseController
             'reports'
         ))->findOrFail($order_id);
             //    return $order;
-       
+       // set payment option dynamic name
+        if($order->paymentOption->code == 'stripe'){
+            $order->paymentOption->title = __('Credit/Debit Card (Stripe)');
+        }elseif($order->paymentOption->code == 'kongapay'){
+            $order->paymentOption->code->title = 'Pay Now';
+        }elseif($order->paymentOption->code == 'mvodafone'){
+            $order->paymentOption->title = 'Vodafone M-PAiSA';
+        }
+        elseif($order->paymentOption->code == 'mobbex'){
+            $order->paymentOption->title = __('Mobbex');
+        }
+        elseif($order->paymentOption->code == 'offline_manual'){
+            $json = json_decode($order->paymentOption->credentials);
+            $order->paymentOption->title = $json->manule_payment_title;
+        }
+        $order->paymentOption->title = __($order->paymentOption->title);
+
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';

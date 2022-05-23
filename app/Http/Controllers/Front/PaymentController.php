@@ -49,7 +49,7 @@ class PaymentController extends FrontController{
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
                             $opt_quantity_price = 0;
                             $opt_price_in_currency = $addon->option->price;
-                            $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                            $opt_price_in_doller_compare = $opt_price_in_currency * $dollar_compare;
                             $opt_quantity_price = $opt_price_in_doller_compare * $vendor_cart_product->quantity;
                             $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
                         }
@@ -83,6 +83,10 @@ class PaymentController extends FrontController{
                     $payment_option->title = 'Vodafone M-PAiSA';
                 }elseif($payment_option->code == 'mobbex'){
                     $payment_option->title = __('Mobbex');
+                }
+                elseif($payment_option->code == 'offline_manual'){
+                    $json = json_decode($payment_option->credentials);
+                    $payment_option->title = $json->manule_payment_title;
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);

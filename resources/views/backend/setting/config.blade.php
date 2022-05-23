@@ -158,7 +158,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div>
          @endif
 
-         @if($client_preference_detail->enable_inventory_service == 1 && 1 == 2)
+         @if($client_preference_detail->enable_inventory_service == 1)
          <div class="col-lg-3 col-md-6 mb-3">
             <!-- Order Panel section start -->
             <div class="card-box h-100">
@@ -197,15 +197,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         @endif
                      </div>
         
-                     <div class="form-group mt-3 mb-0 inventoryFields" style="{{((isset($preference) && $preference->need_inventory_service == '1')) ? '' : 'display:none;'}}">
-                        <label for="inventory_service_key">{{ __('inventory API key') }}</label>
-                        <input type="text" name="inventory_service_key" id="inventory_service_key" placeholder="" class="form-control" value="{{ old('inventory_service_key', $preference->inventory_service_key ?? '')}}">
-                        @if($errors->has('inventory_service_key'))
-                        <span class="text-danger" role="alert">
-                           <strong>{{ $errors->first('inventory_service_key') }}</strong>
-                        </span>
-                        @endif
-                     </div>
+                     
         
                   </div>
                </div>
@@ -1106,13 +1098,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                  </div>
                  <div class="col-md-4">
                     <div class="form-group d-flex justify-content-between mb-3">
-                       <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Category Kyc')}}<small class="d-block pr-5">{{__('Enable to show categories documents in cart.')}}</small></label>
+                       <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('User Place Order Documents')}}<small class="d-block pr-5">{{__('Enable to required documents at time of placing an order.')}}</small></label>
                       <span> <input type="checkbox" data-plugin="switchery" name="category_kyc_documents" id="category_kyc_documents" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->category_kyc_documents == '1')) checked='checked' @endif>
                        </span>
                     </div>
                  </div>
 
-                 <div class="col-md-4">
+                  <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
                         <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Return Request')}}<small class="d-block pr-5">{{__('Enable to show return request functionality for vendors.')}}</small></label>
                      <span> <input type="checkbox" data-plugin="switchery" name="vendor_return_request" id="vendor_return_request" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->vendor_return_request == '1')) checked='checked' @endif>
@@ -1151,6 +1143,15 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </span>
                   </div>
                </div>
+               @if(isset($preference) && $preference->business_type == "taxi")
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="book_for_friend" class="mr-2 mb-0">{{__('Book for a Friend')}}<small class="d-block pr-5">{{__('Enable to add book for a friend functionality for customers.')}}</small></label>
+                  <span> <input type="checkbox" data-plugin="switchery" name="book_for_friend" id="book_for_friend" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->book_for_friend == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+               @endif
 
                </div>
             </div>

@@ -66,7 +66,7 @@ class MyCashGatewayController extends FrontController
                 'api_key' => $this->api_key,
                 'username' => $this->username,
                 'password' => $this->password,
-                'customer_mobile' => '6797142243', //'6797016954',//$user->phone_number,
+                'customer_mobile' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
                 'merchant_mobile' => $this->merchant_phone,
                 'product_id' => 233,
                 'amount' => $amount
@@ -77,6 +77,7 @@ class MyCashGatewayController extends FrontController
 
             if($payment_form == 'cart'){
                 $description = 'Order Checkout';
+                $rules['order_number'] = 'required';
                 $order_number = $request->order_number;
                 $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
                 $meta = $meta.'|cart_id:' . $cart->id;
@@ -89,11 +90,13 @@ class MyCashGatewayController extends FrontController
             }
             if($payment_form == 'tip'){
                 $description = 'Tip Checkout';
-                $order_number = $order_number;
+                $rules['order_number'] = 'required';
+                $order_number = $request->order_number;
                 $meta = $meta.'|order_number:' . $order_number;
                 $data['order_id'] = $order_number;
             }
             elseif($payment_form == 'subscription'){
+                $rules['subscription_id'] = 'required';
                 $description = 'Subscription Checkout';
                 if($request->has('subscription_id')){
                     $meta = $meta.'|subscription_id:' . $request->subscription_id;
@@ -144,15 +147,18 @@ class MyCashGatewayController extends FrontController
 
                     $send_otp_resp = $this->sendOtp($request)->getData();
                     if ($send_otp_resp->status == 'Success') {
-                        $data['formData'] = array(
+                        $rdata['formData'] = array(
                             'amount' => $amount,
                             'request_id' => $request->request_id,
                             'order_reference' => $data['order_id'],
                             'payment_form' => $request->payment_form
                         );
-                        $data['redirectUrl'] = $verifyOtpUrl;
+                        if($payment_form == 'subscription'){
+                            $rdata['formData']['subscription_id'] = $request->subscription_id;
+                        }
+                        $rdata['redirectUrl'] = $verifyOtpUrl;
                         // $verifyOtpUrl = $verifyOtpUrl.'?order_id='.$data['order_id'].'&request_id='.$request->request_id;
-                        return $this->successResponse($data, $send_otp_resp->message, 200);
+                        return $this->successResponse($rdata, $send_otp_resp->message, 200);
                     }else{
                         \Log::error('MyCash Gateway Error - '. $send_otp_resp->message);
                         return $this->errorResponse(__('Server Error'), 400);
@@ -179,7 +185,7 @@ class MyCashGatewayController extends FrontController
             'api_key' => $this->api_key,
             'username' => $this->username,
             'password' => $this->password,
-            'mobile_number' => '6797142243', //'6797016954',//$user->phone_number
+            'mobile_number' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
         );
 
         $curl = curl_init();
@@ -206,7 +212,7 @@ class MyCashGatewayController extends FrontController
                 $payment->user_id = $user->id;
                 $payment->payment_option_id = 36;
                 $payment->balance_transaction = $request->amount;
-                $request->gateway_reference = $request->request_id;
+                $payment->gateway_reference = $request->request_id;
                 $payment->order_reference = $request->order_reference;
                 
                 if($request->payment_form == 'cart'){
@@ -267,7 +273,7 @@ class MyCashGatewayController extends FrontController
                 'username' => $this->username,
                 'password' => $this->password,
                 'request_id' => $request->request_id,
-                'customer_mobile' => '6797142243', //'6797016954',//$user->phone_number
+                'customer_mobile' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
                 'otp' => $request->otp
             );
 
@@ -287,10 +293,11 @@ class MyCashGatewayController extends FrontController
             $err = curl_error($curl);
             curl_close($curl);
             $response = json_decode($response);
-            // dd($response);
+            // dd($response->toArray());
 
             if($response && ($response->response_code == 0)){
                 $transactionId = $response->transaction_id;
+                $order_reference = $request->order_reference;
                 $payment = Payment::where('gateway_reference', $request->request_id)->where('order_reference', $order_reference)->first();
                 if($payment){
                     if($payment->otp_verified == 1){
@@ -303,8 +310,7 @@ class MyCashGatewayController extends FrontController
                     $payment->update();
                     
                     if($request->payment_form == 'cart'){
-                        $order_number = $request->order_id;
-                        $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                        $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_reference)->first();
                         if ($order) {
                             $order->payment_status = 1;
                             $order->save();
@@ -359,29 +365,29 @@ class MyCashGatewayController extends FrontController
                             $returnUrl = route('order.success', $order->id);
                         }
                     } elseif($request->payment_form == 'wallet'){
-                        $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $transactionId]);
+                        $request->request->add(['wallet_amount' => $payment->balance_transaction, 'transaction_id' => $transactionId]);
                         $walletController = new WalletController();
                         $walletController->creditWallet($request);
                         $returnUrl = route('user.wallet');
                     }
                     elseif($request->payment_form == 'tip'){
-                        $request->request->add(['order_number' => $request->order_id, 'tip_amount' => $request->amount, 'transaction_id' => $transactionId]);
+                        $request->request->add(['order_number' => $order_reference, 'tip_amount' => $payment->balance_transaction, 'transaction_id' => $transactionId]);
                         $orderController = new OrderController();
                         $orderController->tipAfterOrder($request);
                         $returnUrl = route('user.orders');
                     }
                     elseif($request->payment_form == 'subscription'){
-                        $request->request->add(['payment_option_id' => 9, 'transaction_id' => $transactionId]);
+                        $subscription_plan = SubscriptionPlansUser::select('price')->where('slug', $request->subscription_id)->where('status', '1')->first();
+                        $request->request->add(['amount' => $subscription_plan->price, 'payment_option_id' => 36, 'transaction_id' => $transactionId]);
                         $subscriptionController = new UserSubscriptionController();
-                        $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription);
+                        $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
                         $returnUrl = route('user.subscription.plans');
                     }
+                    return $this->successResponse($returnUrl, __('Payment has been done successfully'), 200);
                 }
                 else{
                     return $this->errorResponse('Invalid payment request', 400);
                 }
-                
-                return $this->successResponse($returnUrl, __('Payment has been done successfully'), 200);
             }
             else{
                 Log::error($response->message);
