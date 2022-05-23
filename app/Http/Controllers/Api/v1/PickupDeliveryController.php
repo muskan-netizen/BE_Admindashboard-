@@ -297,6 +297,11 @@ class PickupDeliveryController extends BaseController{
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
+                /*book for a friend*/
+                $order->type = $request->type;
+                $order->friend_name = $request->friendName;
+                $order->friend_phone_number = $request->friendPhoneNumber;
+
                 $order->scheduled_date_time = $request->schedule_time??NULL;
                 $order->save();
                 $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
@@ -548,6 +553,12 @@ class PickupDeliveryController extends BaseController{
                 $team_tag = $unique."_".$vendor;
                 $product = Product::find($request->product_id);
                 $order_agent_tag = $product->tags??'';
+                $type=$request->type??0;
+                $friendName=$request->friendName?? null;
+                $friendPhoneNumber=$request->friendPhoneNumber?? null;
+                if(empty($friendPhoneNumber)){
+                    $type=0;
+                }
 
                 
                 if ($customer->dial_code == "971") {
@@ -574,8 +585,11 @@ class PickupDeliveryController extends BaseController{
                             'order_agent_tag' => $order_agent_tag,
                             'task' => $request->tasks,
                             'order_time_zone' => $request->order_time_zone??null,
-                            'images_array' => $request->images_array??null
-                            ];
+                            'images_array' => $request->images_array??null,
+                            'type'=>$type,
+                            'friend_name'=>$friendName,
+                            'friend_phone_number'=>$friendPhoneNumber
+                        ];
 
 
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
