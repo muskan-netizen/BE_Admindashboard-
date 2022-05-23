@@ -93,9 +93,9 @@ class StoreController extends BaseController{
 						   $query->where('vendor_id', $is_selected_vendor_id);
 						})
 						->where(function ($q1) {
-							$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+							$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
 							$q1->orWhere(function ($q2) {
-								$q2->where('payment_option_id', 1);
+								$q2->whereIn('payment_option_id',[1,38]);
 							});
 						})
 						->orderBy('id', 'DESC')->paginate($paginate);
@@ -191,9 +191,9 @@ class StoreController extends BaseController{
 		try {
     		$user = Auth::user();
 			$orders = Order::where(function ($q1) {
-				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
 				$q1->orWhere(function ($q2) {
-					$q2->where('payment_option_id', 1);
+					$q2->whereIn('payment_option_id', [1,38]);
 				});
 			});
 			
@@ -249,9 +249,9 @@ class StoreController extends BaseController{
 				$query->where('vendor_id', $vendor_id)->whereIn('order_status_option_id', $status_ids);
 			})
 			->where(function ($q1) {
-				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
 				$q1->orWhere(function ($q2) {
-					$q2->where('payment_option_id', 1);
+					$q2->whereIn('payment_option_id',  [1,38]);
 				});
 			})
 			->orderBy('id', 'DESC')->paginate($limit, $page);
@@ -263,6 +263,23 @@ class StoreController extends BaseController{
 				$order->user_image = $order->user->image;
 				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
 				$order->date_time = date("d-M-Y h:i A", strtotime($order->date_time));
+				// set payment option dynamic name
+				if($order->paymentOption->code == 'stripe'){
+					$order->paymentOption->title = __('Credit/Debit Card (Stripe)');
+				}elseif($order->paymentOption->code == 'kongapay'){
+					$order->paymentOption->code->title = 'Pay Now';
+				}elseif($order->paymentOption->code == 'mvodafone'){
+					$order->paymentOption->title = 'Vodafone M-PAiSA';
+				}
+				elseif($order->paymentOption->code == 'mobbex'){
+					$order->paymentOption->title = __('Mobbex');
+				}
+				elseif($order->paymentOption->code == 'offline_manual'){
+					$json = json_decode($order->paymentOption->credentials);
+					$order->paymentOption->title = $json->manule_payment_title;
+				}
+				$order->paymentOption->title = __($order->paymentOption->title);
+				
 				$order->payment_option_title = __($order->paymentOption->title);
 				foreach ($order->vendors as $vendor) {
 					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $vendor_id)->orderBy('id', 'DESC')->first();
@@ -314,6 +331,8 @@ class StoreController extends BaseController{
 				$order->luxury_option_name = $luxury_option_name;
 				$order->product_details = $product_details;
 				$order->item_count = $order_item_count;
+
+				
 				unset($order->user);
 				unset($order->products);
 				unset($order->paymentOption);

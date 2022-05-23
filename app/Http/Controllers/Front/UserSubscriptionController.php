@@ -117,6 +117,9 @@ class UserSubscriptionController extends FrontController
                     $payment_option->title = 'Pay Now';
                 }elseif($payment_option->code == 'mvodafone'){
                     $payment_option->title = 'Vodafone M-PAiSA';
+                }elseif($payment_option->code == 'offline_manual'){
+                    $json = json_decode($payment_option->credentials);
+                    $payment_option->title = $json->manule_payment_title;
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
