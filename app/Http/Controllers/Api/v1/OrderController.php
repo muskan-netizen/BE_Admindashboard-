@@ -164,8 +164,8 @@ class OrderController extends BaseController
                     $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
                     $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver ?? null;
                     $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
-                    $order->schedule_pickup = $cart->schedule_pickup_date ?  $cart->schedule_pickup_date ." ".  $cart->schedule_pickup_time : null;
-                    $order->schedule_dropoff = $cart->schedule_dropoff_date ? $cart->schedule_dropoff_date ." ".$cart->schedule_dropoff_time : null;
+                    $order->schedule_pickup = $cart->schedule_pickup ?? null;
+                    $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
                     // $order->specific_instructions = $cart->specific_instructions ?? null;
                     $order->specific_instructions = $request->specific_instructions ?? null;
                     $order->is_gift = $request->is_gift ?? 0;
@@ -1401,6 +1401,10 @@ class OrderController extends BaseController
             $order->date_time = dateTimeInUserTimeZone($order->orderDetail->created_at, $user->timezone);
             $order->payment_option_title = __($order->orderDetail->paymentOption->title ?? '');
             $order->order_number = $order->orderDetail->order_number;
+            $order->schedule_pickup = date('d/m/Y',strtotime($order->orderDetail->schedule_pickup));
+            $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
+            $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
+            $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
             $product_details = [];
             $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->orderDetail->id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
             if ($vendor_order_status) {
@@ -2110,7 +2114,7 @@ class OrderController extends BaseController
                         $order->luxury_option_id = $luxury_option->id;
                         $order->payable_amount = $payable_amount;
                         $order->payment_status = 1;
-
+                        
                         // if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                         //     $order->payment_status = 1;
                         // }

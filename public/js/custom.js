@@ -871,14 +871,7 @@ $(document).ready(function () {
             var slot_dropoff = $("#schedule_dropoff_slot").val(); 
             var checkSlot  = $('#checkPickUpSlot').val();
             var checkDropoffSlot  = $('#checkDropoffSlot').val();
-
-            // return false if  pickup_schedule_datetime and dropoff_schedule_datetime is same | By Ovi
-            if(schedule_dt == schedule_dt_dropoff){
-                success_error_alert('error', 'Pickup and dropoff date cannot be same.', ".cart_response");
-                return false;
-            }
-        }
-        else{
+        }else{
             var task_type = $("input[name='task_type']").val();
             var schedule_dt = $("#schedule_datetime").val();
             var slot = $("#slot").val();
@@ -894,6 +887,12 @@ $(document).ready(function () {
             if(business_type == 'laundry' && scheduling_with_slots == 1){
                 var schedule_dt_dropoff_time = 'T'+slot_dropoff.split(" - ",1);
                 var schedule_dt_dropoff = schedule_dt_dropoff+schedule_dt_dropoff_time;  
+            }
+            
+            // return false if  pickup_schedule_datetime and dropoff_schedule_datetime is same | By Ovi
+            if(slot.split(" - ",1) <= slot_dropoff.split(" - ",1)){
+                success_error_alert('error', 'Pickup and dropoff date cannot be same.', ".cart_response");
+                return false;
             }
 
             if (schedule_dt == '') {
