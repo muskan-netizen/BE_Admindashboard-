@@ -680,7 +680,7 @@ class PickupDeliveryController extends FrontController{
                 $type=$request->type??0;
                 $friendName=$request->friendName?? null;
                 $friendPhoneNumber=$request->friendPhoneNumber?? null;
-                if(empty($friendName) || empty($friendPhoneNumber)){
+                if(empty($friendPhoneNumber)){
                     $type=0;
                 }
                 
