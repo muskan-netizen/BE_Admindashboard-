@@ -516,6 +516,7 @@ class ClientPreferenceController extends BaseController{
                 $preferenceset->need_inventory_service = ($request->has('need_inventory_service') && $request->need_inventory_service == 'on') ? 1 : 0;
             }
         }
+        
 
         $preferenceset->save();
 
