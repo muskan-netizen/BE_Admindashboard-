@@ -1365,39 +1365,57 @@ class CartController extends BaseController
         try {
             $user = Auth::user();
             if ($user) {
+
+                if(isset($request->slot)){
+                    $fslot = explode(' - ',$request->slot);
+                    $fslot = $fslot[0];
+                }
+                if(isset($request->dropoff_scheduled_slot)){
+                    $dslot = explode(' - ',$request->dropoff_scheduled_slot);
+                    $dslot = $dslot[0];
+                }
+
                 if ($request->task_type == 'now') {
                     $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');
                 } else {
-                    if(isset($request->schedule_dt) && !empty($request->schedule_dt))
+                    if(isset($request->schedule_dt) && !empty($request->schedule_dt)){
+                        $request->schedule_dt = $request->schedule_dt.'T'.$fslot;
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                    }
                 }
+               
 
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
-                $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                $request->schedule_pickup = Carbon::parse($request->schedule_pickup.'T'.$fslot, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
                 if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff))  # for pickup laundry
-                $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff.'T'.$dslot, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
-                if($request->task_type!='now'){
-                        if(isset($request->slot))
-                        {
-                        //$request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                            $time = $request->schedule_dt;
-                            $slot = $request->slot;
-                        }else{
-                            $time = $request->schedule_dt;
-                            $slot = null;
-                        }
-                    }else{
-                        $time = $request->schedule_dt;
-                        $slot = null;
-                    }
+                // if($request->task_type!='now'){
+                //         if(isset($request->slot))
+                //         {
+                //         //$request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                //             $time = $request->schedule_dt;
+                //             $slot = $request->slot;
+                //         }else{
+                //             $time = $request->schedule_dt;
+                //             $slot = null;
+                //         }
+                //     }else{
+                //         $time = $request->schedule_dt;
+                //         $slot = null;
+                //     }
+
+                    // if(isset($request->dropoff_scheduled_slot))
+                    //     {
+                    //         $dropSlot = $request->dropoff_scheduled_slot;
+                    //     }
 
                 Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null,
                 'schedule_type' => $request->task_type??null,
-                //'scheduled_date_time' => $request->schedule_dt??null,
-                'scheduled_date_time' => $time??null,
-                'scheduled_slot' => $slot??null,
+                'scheduled_date_time' => $request->schedule_dt??null,
+                'scheduled_slot' => $request->slot??null,
+                'dropoff_scheduled_slot' => $request->dropoff_scheduled_slot??null,
                 'comment_for_pickup_driver' => $request->comment_for_pickup_driver??null,
                 'comment_for_dropoff_driver' => $request->comment_for_dropoff_driver??null,
                 'comment_for_vendor' => $request->comment_for_vendor??null,
