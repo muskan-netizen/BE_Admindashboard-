@@ -284,7 +284,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                 <% if(payment_option.slug == 'stripe') { %>
                     <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper option-wrapper d-none">
                         <div class="form-control">
-                            <label class="d-flex flex-row pt-1 pb-1 mb-0">
+                            <label class="pb-1 mb-0">
                                 <div id="stripe-card-element"></div>
                             </label>
                         </div>
