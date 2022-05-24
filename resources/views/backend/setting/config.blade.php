@@ -158,7 +158,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div>
          @endif
 
-         @if($client_preference_detail->enable_inventory_service == 1 && 1 == 2)
+         @if($client_preference_detail->enable_inventory_service == 1)
          <div class="col-lg-3 col-md-6 mb-3">
             <!-- Order Panel section start -->
             <div class="card-box h-100">
@@ -197,15 +197,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         @endif
                      </div>
         
-                     <div class="form-group mt-3 mb-0 inventoryFields" style="{{((isset($preference) && $preference->need_inventory_service == '1')) ? '' : 'display:none;'}}">
-                        <label for="inventory_service_key">{{ __('inventory API key') }}</label>
-                        <input type="text" name="inventory_service_key" id="inventory_service_key" placeholder="" class="form-control" value="{{ old('inventory_service_key', $preference->inventory_service_key ?? '')}}">
-                        @if($errors->has('inventory_service_key'))
-                        <span class="text-danger" role="alert">
-                           <strong>{{ $errors->first('inventory_service_key') }}</strong>
-                        </span>
-                        @endif
-                     </div>
+                     
         
                   </div>
                </div>

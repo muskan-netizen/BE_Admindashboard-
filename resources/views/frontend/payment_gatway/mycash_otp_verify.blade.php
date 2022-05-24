@@ -160,9 +160,9 @@
             success: function(response) {
                 if(response.status == 'Success'){
                     $('.verifyPhone').removeClass('disabled').html(resend_text);
-                    
+                    $('.otp_inputs input').val('');
                     $('.verifyPhone').css('display','none');
-                    $('.phonecountdown').html('');
+                    $('.phonecountdown, .invalid_phone_otp_error').html('');
                     $('.phonecountdown').css('display','');
                     startPhoneTimer();
                     setTimeout( function() {
