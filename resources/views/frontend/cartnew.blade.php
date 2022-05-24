@@ -369,7 +369,6 @@ $client_preferences = \App\Models\ClientPreference::first();
                                             }
                                         }                         
                                     });
-                                    console.log("product_container_charges_tax_amount"+product_container_charges_tax_amount);
                                      %></div>
                                 </div>
                                 <div class="col-md-7 col-sm-4 text-right">
