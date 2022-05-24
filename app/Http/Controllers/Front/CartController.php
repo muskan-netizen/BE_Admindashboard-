@@ -586,7 +586,7 @@ class CartController extends FrontController
         $user_allAddresses = collect();
         $upSell_products = collect();
         $crossSell_products = collect();
-
+        $couponGetAmount=0;
         /*Getting User Address */
         if($user){
             $user_allAddresses = UserAddress::where('user_id', $user->id)->where('status',1)->get();
