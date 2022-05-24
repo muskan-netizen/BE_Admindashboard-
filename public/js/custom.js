@@ -881,18 +881,26 @@ $(document).ready(function () {
         if (task_type == 'schedule') {
             if(slot){
                 var stime = 'T'+slot.split(" - ",1);
+                var schedule_dtck = schedule_dt+' '+slot.split(" - ",1);              
                 var schedule_dt = schedule_dt+stime;              
             }
             
             if(business_type == 'laundry' && scheduling_with_slots == 1){
                 var schedule_dt_dropoff_time = 'T'+slot_dropoff.split(" - ",1);
+                var schedule_dt_dropoffck = schedule_dt_dropoff+' '+slot_dropoff.split(" - ",1);  
                 var schedule_dt_dropoff = schedule_dt_dropoff+schedule_dt_dropoff_time;  
             }
             
-            // return false if  pickup_schedule_datetime and dropoff_schedule_datetime is same | By Ovi
-            if(slot.split(" - ",1) <= slot_dropoff.split(" - ",1)){
-                success_error_alert('error', 'Pickup and dropoff date cannot be same.', ".cart_response");
-                return false;
+            if(schedule_dtck > schedule_dt_dropoffck)
+            {
+                // return false if  pickup_schedule_datetime and dropoff_schedule_datetime is same | By Ovi
+                success_error_alert('error', 'Dropoff date is not less than pickup date.', ".cart_response");
+                    return false;
+            }else if(schedule_dtck == schedule_dt_dropoffck){
+                if(slot.split(" - ",1) > slot_dropoff.split(" - ",1)){
+                    success_error_alert('error', 'Dropoff time is not less than pickup time.', ".cart_response");
+                    return false;
+                }
             }
 
             if (schedule_dt == '') {
