@@ -75,13 +75,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                             <span class="align-middle">This is a gift.</span>
                                                         </div>
                                                     <% } %>
-                                                    <% if(order.scheduled_date_time) { %>
+                                                    <% if(order.scheduled_date_time || order.schedule_pickup || order.schedule_dropoff) { %>
                                                         <span class="badge badge-success ml-2">Scheduled</span>
                                                        <!-- <span class="ml-2"><%= order.scheduled_date_time %></span> -->
                                                     <% } %>
 
 
-                                                    <% if(((vendor.delivery_fee > 0) || (order.scheduled_date_time))){ %>
+                                                    <% if(((vendor.delivery_fee > 0) || (order.scheduled_date_time) || order.schedule_pickup)){ %>
                                                         <% if(vendor.order_status != 'Rejected'){%>
                                                             @if($client_preferences->scheduling_with_slots == 1 && $client_preferences->business_type == 'laundry') 
                                                             <span class="ml-2 text-right">Slots: Pickup:  <%= order.scheduled_slot %> | Dropoff: <%= order.dropoff_scheduled_slot %>
