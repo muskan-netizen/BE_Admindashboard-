@@ -93,6 +93,77 @@ class PaymentOptionController extends BaseController{
         return $gateway->kongapayPurchase($request);
     }
 
+    public function postPaymentVia_stripe(Request $request){
+        $gateway = new StripeGatewayController();
+        return $gateway->stripePurchase($request);
+    }
+
+    public function postPaymentVia_stripe_fpx(Request $request){
+        $gateway = new StripeGatewayController();
+        return $gateway->paymentWebViewStripeFPX($request);
+    }
+
+    public function postPaymentVia_paystack(Request $request){
+        $gateway = new PaystackGatewayController();
+        return $gateway->paystackPurchase($request);
+    }
+
+    public function postPaymentVia_payfast(Request $request){
+        $gateway = new PayfastGatewayController();
+        return $gateway->payfastPurchase($request);
+    }
+
+    public function postPaymentVia_mobbex(Request $request){
+        $gateway = new MobbexGatewayController();
+        return $gateway->mobbexPurchase($request);
+    }
+
+    public function postPaymentVia_yoco(Request $request){
+        $gateway = new YocoGatewayController();
+        return $gateway->yocoWebview($request);
+    }
+
+    public function postPaymentVia_paylink(Request $request){
+        $gateway = new PaylinkGatewayController();
+        return $gateway->paylinkPurchase($request);
+    }
+
+    public function postPaymentVia_razorpay(Request $request){
+        $gateway = new RazorpayGatewayController();
+        return $gateway->razorpayPurchase($request);
+    }
+
+    public function postPaymentVia_simplify(Request $request){
+        $gateway = new SimplifyGatewayController();
+        return $gateway->simplifyPurchase($request);
+    }
+    public function postPaymentVia_square(Request $request){
+        $gateway = new SquareGatewayController();
+        return $gateway->squarePurchase($request);
+    }
+    public function postPaymentVia_pagarme(Request $request){
+        $gateway = new PagarmeGatewayController();
+        return $gateway->pagarmePurchase($request);
+    }
+
+    public function postPaymentVia_checkout(Request $request){
+        $gateway = new CheckoutGatewayController();
+        return $gateway->checkoutPurchase($request);
+    }
+    public function postPaymentVia_authorize_net(Request $request){
+        $gateway = new AuthorizeGatewayController();
+        return $gateway->authorizePurchase($request); 
+    }
+
+    public function postPaymentVia_cashfree(Request $request){
+        $gateway = new CashfreeGatewayController();
+        return $gateway->createOrder($request);
+    }
+    public function postPaymentVia_easebuzz(Request $request){
+        $gateway = new EasebuzzController();
+        return $gateway->order($request);
+    }
+
     public function postPaymentVia_windcave(Request $request){
         $gateway = new WindcaveController();
         return $gateway->createHashApp($request);
