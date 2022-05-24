@@ -8,6 +8,7 @@ use Config;
 use Log;
 use Validation;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use ConvertCurrency;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -19,6 +20,9 @@ use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption};
+use DateTime;
+use DateInterval;
+use DateTimeZone;
 
 class HomeController extends BaseController
 {
@@ -229,7 +233,7 @@ class HomeController extends BaseController
             //     if (empty($request->type)) {
             //         $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
             //     } else {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
             //     }
             // } else {
@@ -263,6 +267,12 @@ class HomeController extends BaseController
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
             $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
 
+            $timezone = $user->timezone ?? 'Asia/Kolkata';
+            $start_date = new DateTime("now", new  DateTimeZone($timezone) );
+            $start_date =  $start_date->format('Y-m-d');
+            $end_date = Date('Y-m-d', strtotime('+13 days'));
+            
+
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
 
@@ -281,11 +291,28 @@ class HomeController extends BaseController
                         }
                     }
                 }
+
                 $slotsDate = 0;
-                if($vendor->is_vendor_closed){
+                $vendor->date_with_slots = [];
+                if($vendor->closed_store_order_scheduled == 1){
                     $slotsDate = findSlot('',$vendor->id,'');
                     $vendor->delaySlot = $slotsDate;
                     $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
+
+                    if(!empty($slotsDate)){
+                        $period = CarbonPeriod::create($start_date, $end_date);
+                        $slotWithDate = [];
+                        foreach($period as $key => $date){
+                            $slotDate = trim(date('Y-m-d', strtotime($date)));
+                            $slots = showSlot($slotDate,$vendor->id,'delivery');
+                            if(!empty($slots)){
+                                $slotData['date']  =  $slotDate;
+                                $slotData['slots'] = $slots;
+                                $slotWithDate[] = $slotData;
+                            }
+                        }
+                        $vendor->date_with_slots = $slotWithDate;
+                    }
                 }else{
                     $vendor->delaySlot = 0;
                     $vendor->closed_store_order_scheduled = 0;

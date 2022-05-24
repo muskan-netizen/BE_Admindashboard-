@@ -243,8 +243,7 @@
                     <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
-            </div>
-               <div class="for_friend_fields_div px-2 py-2">
+                <div class="for_friend_fields_div px-2 py-2">
                     <h4 class="pb-2">Friend's Details</h4>
                     <div class="form-group">
                         <label for="friendName">Friend's Name</label>
@@ -256,7 +255,10 @@
                         <input type="hidden" id="countryData" name="countryData" value="us">
                         <input type="hidden" id="dialCode" name="dialCode" value="91">
                     </div>
+                
                 </div>
+                
+            </div>
             <span id="show_error_of_booking" class="error"></span>
 
             <div class="payment-promo-container p-2">

@@ -317,7 +317,11 @@
                             data: 'orders_count',
                             name: 'orders_count',
                             orderable: false,
-                            searchable: false
+                            searchable: false,
+                            "mRender": function(data, type, full) {
+                               
+                                return "<a href='javascript:void(0)' class='customer_order_link'  data-id='" + full.id + "'>" + data + "</a>";
+                            }
                         },
                          {
                             data: 'loyalty_name',
