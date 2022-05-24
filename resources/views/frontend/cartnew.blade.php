@@ -65,6 +65,9 @@
     background-repeat: no-repeat;
     color: #FFF !important;
 }
+
+.al_body_template_one .vendor_lot_cart input {display: inline-block;width: 52%;}
+.al_body_template_one .vendor_lot_cart select {display: inline-block;width: 45%;}
 </style>
 
 @endsection
@@ -459,6 +462,32 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                         </div>
                     <% } %>
+
+                    {{-- Home Service Schedual code Start at down --}}
+                    <% if((cart_details.closed_store_order_scheduled == 1 || client_preference_detail.off_scheduling_at_cart != 1) && cart_details.vendorCnt > 1) { %>
+                        @if($client_preference_detail->business_type != 'laundry')
+                        <div class="row mb-1 d-flex align-items-center" style="<%= ((product.schedule_type == 'schedule') ? '' : 'display:none!important') %>">
+                            <div class="col-5 text-lg-right">
+                                <label class="m-0 radio">
+                                    {{__('Scheduled Slot')}} :</label>
+                                </div>
+                            <div class="col-7 vendor_lot_cart">
+                                <% if(product.slotsCnt != 0) {%>
+                                    <input type="date" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" data-cart_product_id="<%=  product.cart_product_id %>" value="<%=  ((product.scheduled_date_time != '')?product.scheduled_date_time : product.delay_date ) %>"  min="<%= ((product.delay_date != '0') ? product.delay_date : '') %>" >
+                                    <select onchange="checkSlotOrders();" class="form-control vendor_schedule_slot" data-cart_product_id="<%=  product.cart_product_id %>" >
+                                        <option value="">{{__("Select Slot")}} </option>
+                                        <% _.each(product.slots, function(slot, sl){%>
+                                            <option value="<%= slot.value  %>" <%= slot.value == product.selected_slot ? 'selected' : '' %> ><%= slot.name %></option>
+                                        <% }) %>
+                                    </select>
+                                <% } %>
+                            </div>
+                        </div>
+                        @endif
+                    <% } %>
+                    
+                    {{-- Home Service Schedual code end at down --}}
+
                     <div class="row mb-1">
                         <div class="col-5 text-lg-right">
                             <% if(product.coupon_amount_used > 0) { %>

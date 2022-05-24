@@ -3374,6 +3374,26 @@ $(document).ready(function () {
 
     });
 
+    $(document).on('change', '.vendor_schedule_datetime, ', function () {
+        
+console.log('ok');
+        // $.ajax({
+        //     type: "POST",
+        //     dataType: 'json',
+        //     url: update_cart_product_schedule,
+        //     data: { task_type: task_type, schedule_dt: schedule_dt,schedule_time:selected_time,cart_product_id: cart_product_id },
+        //     success: function (response) {
+        //         if (response.status == "Success") {
+        //         }
+        //     },
+        //     error: function (error) {
+        //         var response = $.parseJSON(error.responseText);
+        //         success_error_alert('error', response.message, ".cart_response");
+
+        //     }
+        // });
+
+    });
     $(document).on('click', '.selected-time', function () {
 
         let selected_time   = $(this).html();
