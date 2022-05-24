@@ -50,18 +50,26 @@ $(document).ready(function() {
 
 
 
-    window.paymentViaPaystack = function paymentViaPaystack() {
+    window.paymentViaPaystack = function paymentViaPaystack(order = '') {
         let total_amount = 0;
         let tip = 0;
         let tipElement = $("#cart_tip_amount");
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
+        let cabElement = $("#pickup_now");
+
         let ajaxData = {};
+        
         if (cartElement.length > 0) {
             total_amount = cartElement.val();
             tip = tipElement.val();
             ajaxData.tip = tip;
-        } else if (walletElement.length > 0) {
+        } else if (cabElement.length > 0) {
+            total_amount = cabElement.data('amount');
+            ajaxData.payment_from = 'pickup_delivery';
+            ajaxData.order_number = order.order_number;
+        }
+         else if (walletElement.length > 0) {
             total_amount = walletElement.val();
         }
         ajaxData.amount = total_amount;
