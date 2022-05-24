@@ -137,8 +137,11 @@ function getClientPreferenceDetail()
 {   
     
     $client_preference_detail = ClientPreference::first();
-    list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
-    $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
+    if($client_preference_detail)
+    {
+        list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
+        $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
+    }
     return $client_preference_detail;
 }
 function getClientDetail()
@@ -284,7 +287,7 @@ function createSlug($str, $delimiter = '-'){
 
 function remove_special_chars($str, $delimiter = ''){
     // $result = strtolower(trim(preg_replace('/[^A-Za-z0-9\-]/', $delimiter, $str)));
-    $result = strtolower(trim(preg_replace('/[.*+?^${}()/|[\]\\]+/g', $delimiter, $str)));
+    $result = strtolower(trim(preg_replace('/[.*+?^${}()\/|[\]\\/]+/', $delimiter, $str))); 
     return $result;
 }
 
