@@ -1238,11 +1238,10 @@ class CartController extends FrontController
                     $cart->slots = [];
                     $cart->vendor_id =  $vendorId;
                     $slots = [];
-                    $pickupSlots = [];
-                    $dropoffSlots = [];
                 }
                 
-
+                $pickupSlots = [];
+                $dropoffSlots = [];
                 // get slots for laundry category
                 if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                     // For Pickup
@@ -1279,11 +1278,6 @@ class CartController extends FrontController
                     $cart->slotsForPickup = $pickupSlots;
                     $cart->slotsForDropoff  = $dropoffSlots;
                     $cart->vendor_id = $vendorId;
-                }else{
-                    $cart->slotsForPickup = [];
-                    $slots = [];
-                    $pickupSlots = [];
-                    $dropoffSlots = [];
                 }
 
             }else{
@@ -2037,7 +2031,10 @@ class CartController extends FrontController
                 if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff) &&  $request->schedule_dropoff != 'undefined undefined')  # for pickup laundry
                 $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
-
+                if(isset($request->dropoff_scheduled_slot))
+                {
+                    $dropSlot = $request->dropoff_scheduled_slot;
+                }
 
                 if ($user) {
                     $cart_detail = Cart::where('user_id', $user->id)->first();
@@ -2051,6 +2048,7 @@ class CartController extends FrontController
                 'address_id' => $request->address,
                 'scheduled_date_time' => $time??null,
                 'scheduled_slot' => $slot??null,
+                'dropoff_scheduled_slot' => $dropSlot??null,
                 'shipping_delivery_type' => $request->delivery_type??'D',
                 'comment_for_pickup_driver' => $request->comment_for_pickup_driver??null,
                 'comment_for_dropoff_driver' => $request->comment_for_dropoff_driver??null,
