@@ -74,7 +74,7 @@ class CartController extends BaseController
                 {
                     $passbase['check'] = 1;
                     if(is_null($user->passbase_verification)){
-                        $passbase['status'] = 'pending';
+                        $passbase['status'] = 'not_created';
                     }else{
                         $passbase['status'] = $user->passbase_verification->status;
                     }
