@@ -350,7 +350,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     </b>
                 </a> 
                 @if ($client_preferences->business_type == 'laundry')
-                | 
                 <a class="return-btn" href="{{route('rescheduled.orders')}}">
                     <b>{{ __("Rescheduled Orders") }} <sup class="total-items">({{$rescheduleOrderCount}})</sup>
                         <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>

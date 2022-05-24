@@ -333,7 +333,7 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-        // dd($request->all());
+         //pr($request->all());
         DB::beginTransaction();
         try {
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -377,7 +377,6 @@ class PickupDeliveryController extends FrontController{
     // order update for pickup delivery
     public function orderUpdateAfterPaymentPickupDelivery($request){
 
-       
         // try {
            
             $order = Order::where('order_number',$request->order_number)->first();
@@ -474,7 +473,8 @@ class PickupDeliveryController extends FrontController{
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
-                
+
+                $order->scheduled_date_time = $request->schedule_time;
                 /*book for a friend*/
                 $order->type = $request->type;
                 $order->friend_name = $request->friendName;
@@ -692,7 +692,7 @@ class PickupDeliveryController extends FrontController{
                 
                 $postdata =  [
                     'order_number' =>  $order->order_number,
-                    'order_type' =>  $order->type,
+                    //'order_type' =>  $order->type,
                     // 'order_friend_name' =>  $order->friend_name,
                     // 'order_number' =>  $order->friend_phone_number,
                     'barcode' => '',
