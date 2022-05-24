@@ -783,7 +783,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 </li>
                                 <% } %>
                         </ul>
-                        <div class=" col-sm-4 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="display:none !important">
+                        <div class=" col-sm-4 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="<%= ((cart_details.schedule_type == 'schedule') ? '' : 'display:none!important') %>">
                     <% if(cart_details.slotsCnt == 0) { %>
                     <% if(cart_details.delay_date != 0) { %>
                         <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
@@ -794,7 +794,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                             <% } %>
 
-                    <% } else { %>
+                    <% } else { console.log('cart_details.scheduled_date_time', cart_details.scheduled_date_time); %>
 
 
                             <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled_date_time != '')?cart_details.scheduled_date_time : cart_details.delay_date ) %>"  min="<%= cart_details.delay_date %>" >
