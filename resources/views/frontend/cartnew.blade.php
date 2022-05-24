@@ -752,7 +752,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 
     </div>
     {{-- Schedual code Start at down --}}
-            <% if(cart_details.closed_store_order_scheduled == 1 && cart_details.vendorCnt==1) { %>
+            <% if((cart_details.closed_store_order_scheduled == 1 || client_preference_detail.off_scheduling_at_cart != 1) && cart_details.vendorCnt==1) { %>
                 @if($client_preference_detail->business_type != 'laundry')
             <div class="row arabic-lng position-relative mb-2" id="dateredio">
                 <div class=" col-md-12 mb-2 mb-md-0 text-right">
@@ -794,7 +794,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                             <% } %>
 
-                    <% } else { console.log('cart_details.scheduled_date_time', cart_details.scheduled_date_time); %>
+                    <% } else { %>
 
 
                             <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled_date_time != '')?cart_details.scheduled_date_time : cart_details.delay_date ) %>"  min="<%= cart_details.delay_date %>" >
