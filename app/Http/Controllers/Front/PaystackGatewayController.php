@@ -36,7 +36,7 @@ class PaystackGatewayController extends FrontController
     }
 
     public function paystackPurchase(Request $request){
-       // pr($request->all());
+      // pr($request->all());
         try{
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -58,10 +58,13 @@ class PaystackGatewayController extends FrontController
             if ($request->has('reload_route')) {
                 $returnUrlParams = $returnUrlParams . '&reload_route=' . $request->reload_route;
             }
+            if ($request->has('subscription_id')) {
+                $returnUrlParams = $returnUrlParams . '&subscription_id=' . $request->subscription_id;
+            }
             
             $returnUrlParams = $returnUrlParams.'&gateway=paystack&user_id='.$user->id;
             $returnRoute = $returnRoute .   $returnUrlParams;
-           // pr($returnRoute);
+          
             $response = $this->gateway->purchase([
                 'amount' => $amount,
                 'currency' => $this->currency, //'ZAR'
@@ -169,6 +172,7 @@ class PaystackGatewayController extends FrontController
                     return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
                 }
                 elseif($payment_form == 'subscription'){
+                    $subscription_id = $request->subscription_id;
                     $request->request->add(['user_id' => $user_id, 'payment_option_id' => 5, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
                     $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription_id);

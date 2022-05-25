@@ -449,7 +449,9 @@ $(document).ready(function () {
                                 }
                                 $("#subscription_payment").modal("show");
                                 stripeInitialize();
-                                stripeFPXInitialize();
+                                if(stripe_fpx_publishable_key != ''){
+                                    stripeFPXInitialize();
+                                }
                             }
                         },
                         error: function (error) {
@@ -475,6 +477,7 @@ $(document).ready(function () {
         var selected_option = $("input[name='subscription_payment_method']:checked");
         // var subscription_id = $('#subscription_payment_form #subscription_id').val();
         var payment_option_id = selected_option.data("payment_option_id");
+        console.log(payment_option_id);
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
             // $('#subscription_payment').modal('hide');
@@ -492,6 +495,8 @@ $(document).ready(function () {
                 });
             } else if (payment_option_id == 3) {
                 paymentViaPaypal('', payment_option_id);
+            }else if (payment_option_id == 5) {
+                paymentViaPaystack();
             } else if (payment_option_id == 8) {
                 inline.createToken().then(function (result) {
                     if (result.error) {
@@ -1008,7 +1013,9 @@ $(document).ready(function () {
                                     $('#proceed_to_pay_modal').modal('show');
                                     $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
                                     stripeInitialize();
-                                    stripeFPXInitialize();
+                                    if(stripe_fpx_publishable_key != ''){
+                                        stripeFPXInitialize();
+                                    }
                                 }
                             },
                             error: function (error) {
@@ -1064,7 +1071,9 @@ $(document).ready(function () {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
-                        stripeFPXInitialize();
+                        if(stripe_fpx_publishable_key != ''){
+                            stripeFPXInitialize();
+                        }
                     }
                 }
             },
@@ -1102,7 +1111,10 @@ $(document).ready(function () {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
-                        stripeFPXInitialize();
+                        if(stripe_fpx_publishable_key != ''){
+                            stripeFPXInitialize();
+                        }
+                        
                     }
                 }
             },
