@@ -3906,7 +3906,13 @@ $(document).ready(function () {
             break;
 
             case '5':
-                paymentViaPaystack(address_id, payment_option_id);
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                  paymentViaPaystack(address_id, order);
+                } else {
+                    return false;
+                }
+               // paymentViaPaystack(address_id, payment_option_id);
             break;
 
             case '6':

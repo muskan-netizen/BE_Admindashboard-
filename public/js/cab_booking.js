@@ -269,8 +269,9 @@ $(document).ready(function () {
                        // paymentViaStripe(stripe_token,order_id, payment_option_id,vendor_id);
                     }
                     else if(payment_option_id == 5){
-                        $res = paymentViaPaystack(response.data);
-                        console.log($res);
+                        $res = paymentViaPaystack('',response.data);
+                        
+                      
                     }
                     else if(payment_option_id == 10){
                         paymentViaRazorpay('', response.data, 'pickup_delivery');
