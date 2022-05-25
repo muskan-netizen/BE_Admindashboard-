@@ -30,6 +30,10 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\UserAddress', 'id', 'address_id');
     }
+    public function orderLocation()
+    {
+        return $this->hasOne('App\Models\OrderLocations', 'order_id', 'id');
+    }
     public function paymentOption()
     {
         return $this->hasOne('App\Models\PaymentOption', 'id', 'payment_option_id');

@@ -20,11 +20,11 @@
                 <div class="tip_radio_controls_book_friend text-center my-2">
                     <input type="radio" class="tip_radio" id="for_me" name="is_for_friend" value="0">
                     <label class="tip_label mb-0  my-2 active" for="for_me" id="label_for_me">
-                        <h5 class="m-0" id="tip_5">{{__('Book')}} {{__('For Me')}}</h5>                        
+                        <h5 class="m-0" id="tip_5">{{__('For Me')}}</h5>                        
                     </label>       
                     <input type="radio" class="tip_radio" id="for_friend" name="is_for_friend" value="1">
                     <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
-                        <h5 class="m-0" id="tip_5">{{__('Book')}} {{__('For A Friend')}}</h5>
+                        <h5 class="m-0" id="tip_5">{{__('For Rider')}}</h5>
                     </label>                      
                 </div> 
                 @endif 
