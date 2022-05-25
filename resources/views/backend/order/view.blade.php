@@ -617,11 +617,11 @@ $timezone = Auth::user()->timezone;
                         @endif
 
                         @if($order->schedule_pickup)
-                          <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Pickup') }} :</span> {{dateTimeInUserTimeZone($order->schedule_pickup, $timezone)}} </p>
+                          <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Pickup') }} :</span> {{dateTimeInUserTimeZone($order->schedule_pickup, $timezone) .' '.(($order->scheduled_slot)?', Slot : '.$order->scheduled_slot:'')}} </p>
                         @endif
 
                         @if($order->schedule_dropoff)
-                          <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Dropoff') }} :</span> {{dateTimeInUserTimeZone($order->schedule_dropoff, $timezone)}} </p>
+                          <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Dropoff') }} :</span> {{dateTimeInUserTimeZone($order->schedule_dropoff, $timezone).' '.(($order->dropoff_scheduled_slot)?', Slot : '.$order->dropoff_scheduled_slot:'')}} </p>
                         @endif
 
                         @if($order->specific_instructions)
