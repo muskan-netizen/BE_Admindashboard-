@@ -117,7 +117,7 @@ svg {
 body { font-family: 'Montserrat', sans-serif;margin: 0; overflow: hidden;
 background-position: right !important;
 background-repeat: no-repeat !important;
-background-color: rgba({{getClientPreferenceDetail()->site_top_header_color}}, .1) !important;
+background-color: rgba({{getClientPreferenceDetail()->site_top_header_color ?? '#ffffff'}}, .1) !important;
  }
 
 
