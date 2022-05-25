@@ -311,3 +311,11 @@ ul#main-nav-list{display: flex;align-items: center;overflow: auto;width: max-con
 .al_body_template_three .product-order.py-3{position: relative;}
 .al_body_template_three .product-order.py-3:before{position: absolute;content: "";border-right:1px solid #eee;height:100%;right: -10px;}
 /* Order Placed css end */
+
+#yoco-card-frame .yc-card-form-container{
+    margin-top: -15px;
+    margin-left: -50px;
+}
+#yoco-card-frame .yc-expiry-cvv-holder{
+    flex: 10;
+}
