@@ -66,8 +66,8 @@
     color: #FFF !important;
 }
 
-.al_body_template_one .vendor_lot_cart input {display: inline-block;width: 52%;}
-.al_body_template_one .vendor_lot_cart select {display: inline-block;width: 45%;}
+.al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
+.al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
 </style>
 
 @endsection
@@ -471,10 +471,10 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <label class="m-0 radio">
                                     {{__('Scheduled Slot')}} :</label>
                                 </div>
-                            <div class="col-7 vendor_lot_cart">
+                            <div class="col-7 vendor_slot_cart">
                                 <% if(product.slotsCnt != 0) {%>
-                                    <input type="date" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" data-cart_product_id="<%=  product.cart_product_id %>" value="<%=  ((product.scheduled_date_time != '')?product.scheduled_date_time : product.delay_date ) %>"  min="<%= ((product.delay_date != '0') ? product.delay_date : '') %>" >
-                                    <select onchange="checkSlotOrders();" class="form-control vendor_schedule_slot" data-cart_product_id="<%=  product.cart_product_id %>" >
+                                    <input type="date" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" data-schedule_type="date" data-vendor_id="<%=  product.vendor_id %>" data-cart_product_id="<%=  product.cart_product_id %>" value="<%=  ((product.scheduled_date_time != '')?product.scheduled_date_time : product.delay_date ) %>"  min="<%= ((product.delay_date != '0') ? product.delay_date : '') %>" >
+                                    <select onchange="checkSlotAvailability(this);" class="form-control vendor_schedule_slot" id="vendor_schedule_slot_<%=  product.vendor_id %>" data-schedule_type="time" data-vendor_id="<%=  product.vendor_id %>" data-cart_product_id="<%=  product.cart_product_id %>" >
                                         <option value="">{{__("Select Slot")}} </option>
                                         <% _.each(product.slots, function(slot, sl){%>
                                             <option value="<%= slot.value  %>" <%= slot.value == product.selected_slot ? 'selected' : '' %> ><%= slot.name %></option>
@@ -1690,7 +1690,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var order_success_return_url = "{{route('order.return.success')}}";
     var my_orders_url = "{{route('user.orders')}}";
     var validate_promocode_coupon_url = "{{ route('verify.promocode.validate_code') }}";
-
+    var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
     var post_toyyibpay_via_gateway_url = "{{route('payment.toyyibpay.index')}}";
 
     var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
@@ -2301,6 +2301,41 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
             }
             reader.readAsDataURL(input.files[0]);
         }
+    }
+
+    // Check Slot Availability
+    function checkSlotAvailability(obj)
+    {
+        var url = "{{route('checkSlotOrders')}}"
+        var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
+        var schedule_slot = $(obj).val();
+        var vendor_id = $(obj).data('vendor_id');
+        $.ajax({
+            type: "GET",
+            data: {
+                "schedule_datetime": schedule_datetime,
+                "schedule_slot":     schedule_slot,
+                "vendor_id":                vendor_id,
+            },
+            url: url,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(output) {
+                // Check if orderCount is greaten equal to orders_per_slot
+                if(output.orderCount >= output.orders_per_slot){
+                    success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
+                    // Disable the place order button
+                    $('#order_placed_btn').attr("disabled", true);
+                }else{
+                    // Enable the place order button
+                    $('#order_placed_btn').attr("disabled", false);
+                }
+            },
+            error: function(output) {
+                // console.log(output);
+            },
+        });
     }
 
     $(document).on('change', '[id^=input_file_logo_]', function(event){

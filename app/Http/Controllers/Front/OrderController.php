@@ -860,6 +860,9 @@ class OrderController extends FrontController
                     //$vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     //$vendor_payable_amount = $vendor_payable_amount + $quantity_price;
                     
+                    $OrderVendor->schedule_slot = !empty($vendor_cart_product->schedule_slot)? $vendor_cart_product->schedule_slot : '';
+                    $OrderVendor->scheduled_date_time = !empty($vendor_cart_product->scheduled_date_time)? $vendor_cart_product->scheduled_date_time : '';
+
                     if ($action == 'delivery') {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
