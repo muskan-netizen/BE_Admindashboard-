@@ -38,7 +38,7 @@ class PayphoneController extends FrontController
       $this->token = $json->token;
    }
 
-   public function createHash(Request $request)
+   public function createHash(Request $request, $domain='')
    {
      $time = '';
      $amt = $request->amt??$request->amount;
