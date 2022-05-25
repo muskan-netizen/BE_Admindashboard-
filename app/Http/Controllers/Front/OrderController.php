@@ -1053,7 +1053,6 @@ class OrderController extends FrontController
                 $OrderVendor->discount_amount = $vendor_discount_amount;
                 $new_vendor_taxable_amount = ($actual_amount * $rate) / 100;
                 $total_taxable_amount+=$new_vendor_taxable_amount;
-               // pr( $total_taxable_amount);
                 // $OrderVendor->taxable_amount   = $vendor_taxable_amount;
                 $OrderVendor->taxable_amount = $new_vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
