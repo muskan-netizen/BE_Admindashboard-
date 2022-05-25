@@ -2273,7 +2273,12 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
             reader.readAsDataURL(input.files[0]);
         }
     }
-
+    $(document).delegate('#view_all_address', 'click', function() {
+       
+        $("#view_all_address").addClass("d-none");
+        $("#view_all_address_div").removeClass("d-none");
+      
+    });
     $(document).on('change', '[id^=input_file_logo_]', function(event){
         var rel = $(this).data('rel');
         // $('#plus_icon_'+rel).hide();
