@@ -1210,6 +1210,7 @@ $(document).ready(function () {
         } else {
             console.log(response);
             // Show success message
+            window.location.href = response.result;
         }
     }
 
@@ -3763,24 +3764,24 @@ $(document).ready(function () {
                     } else {
                         paymentAjaxData.payment_option_id = payment_option_id;
                         var three_d_secure = result.source.card.three_d_secure;
-                        if(three_d_secure == 'required'){
+                        // if(three_d_secure == 'required'){
                             stripe.createPaymentMethod({
                                 type: 'card',
                                 card: card,
                             }).then(stripePaymentMethodHandler);
-                        }else{
-                            stripe.createToken(card).then(function(result) {
-                                if (result.error) {
-                                    $('#stripe_card_error').html(result.error.message);
-                                    $(".subscription_confirm_btn").attr("disabled", false);
-                                } else {
-                                    $("#card_last_four_digit").val(result.token.card.last4);
-                                    $("#card_expiry_month").val(result.token.card.exp_month);
-                                    $("#card_expiry_year").val(result.token.card.exp_year);
-                                    paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                                }
-                            });
-                        }
+                        // }else{
+                        //     stripe.createToken(card).then(function(result) {
+                        //         if (result.error) {
+                        //             $('#stripe_card_error').html(result.error.message);
+                        //             $(".subscription_confirm_btn").attr("disabled", false);
+                        //         } else {
+                        //             $("#card_last_four_digit").val(result.token.card.last4);
+                        //             $("#card_expiry_month").val(result.token.card.exp_month);
+                        //             $("#card_expiry_year").val(result.token.card.exp_year);
+                        //             paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                        //         }
+                        //     });
+                        // }
                     }
                 });
 
@@ -3950,22 +3951,22 @@ $(document).ready(function () {
                             // localStorage.setItem('order_number', order.order_number);
                             // localStorage.setItem('payment_option', payment_option_id);
                             var three_d_secure = result.source.card.three_d_secure;
-                            if(three_d_secure == 'required'){
+                            // if(three_d_secure == 'required'){
                                 stripe.createPaymentMethod({
                                     type: 'card',
                                     card: card,
                                 }).then(stripePaymentMethodHandler);
                                 // paymentViaStripeSource(result.source.id, address_id, payment_option_id,delivery_type, order);
-                            }else{
-                                stripe.createToken(card).then(function(result) {
-                                    if (result.error) {
-                                        $('#stripe_card_error').html(result.error.message);
-                                        $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
-                                    } else {
-                                        paymentViaStripe(result.token.id, address_id, payment_option_id, delivery_type, order);
-                                    }
-                                });
-                            }
+                            // }else{
+                            //     stripe.createToken(card).then(function(result) {
+                            //         if (result.error) {
+                            //             $('#stripe_card_error').html(result.error.message);
+                            //             $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+                            //         } else {
+                            //             paymentViaStripe(result.token.id, address_id, payment_option_id, delivery_type, order);
+                            //         }
+                            //     });
+                            // }
                         } else {
                             return false;
                         }
@@ -4315,22 +4316,22 @@ $(document).ready(function () {
                     } else {
                         paymentAjaxData.payment_option_id = payment_option_id;
                         var three_d_secure = result.source.card.three_d_secure;
-                        if(three_d_secure == 'required'){
+                        // if(three_d_secure == 'required'){
                             stripe.createPaymentMethod({
                                 type: 'card',
                                 card: card,
                             }).then(stripePaymentMethodHandler);
                             // paymentViaStripeSource(result.source.id, address_id, payment_option_id,delivery_type, order);
-                        }else{
-                            stripe.createToken(card).then(function(result) {
-                                if (result.error) {
-                                    $('#stripe_card_error').html(result.error.message);
-                                    $(".topup_wallet_confirm").attr("disabled", false);
-                                } else {
-                                    paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                                }
-                            });
-                        }
+                        // }else{
+                        //     stripe.createToken(card).then(function(result) {
+                        //         if (result.error) {
+                        //             $('#stripe_card_error').html(result.error.message);
+                        //             $(".topup_wallet_confirm").attr("disabled", false);
+                        //         } else {
+                        //             paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                        //         }
+                        //     });
+                        // }
                     }
                 });
                 // stripe.createToken(card).then(function (result) {
