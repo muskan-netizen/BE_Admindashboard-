@@ -449,7 +449,9 @@ $(document).ready(function () {
                                 }
                                 $("#subscription_payment").modal("show");
                                 stripeInitialize();
-                                stripeFPXInitialize();
+                                if(stripe_fpx_publishable_key != ''){
+                                    stripeFPXInitialize();
+                                }
                             }
                         },
                         error: function (error) {
@@ -475,6 +477,7 @@ $(document).ready(function () {
         var selected_option = $("input[name='subscription_payment_method']:checked");
         // var subscription_id = $('#subscription_payment_form #subscription_id').val();
         var payment_option_id = selected_option.data("payment_option_id");
+        console.log(payment_option_id);
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
             // $('#subscription_payment').modal('hide');
@@ -827,6 +830,12 @@ $(document).ready(function () {
         });
 
     });
+
+    function toTimestamp(strDate){
+        var date = new Date(strDate);
+        return date.getTime();
+    }
+
     $(document).on("click", "#order_placed_btn", function () {
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
@@ -881,25 +890,21 @@ $(document).ready(function () {
         if (task_type == 'schedule') {
             if(slot){
                 var stime = 'T'+slot.split(" - ",1);
-                var schedule_dtck = schedule_dt+' '+slot.split(" - ",1);              
+                var schedule_dtck = toTimestamp(schedule_dt+' '+slot.split(" - ",1));              
                 var schedule_dt = schedule_dt+stime;              
             }
             
             if(business_type == 'laundry' && scheduling_with_slots == 1){
                 var schedule_dt_dropoff_time = 'T'+slot_dropoff.split(" - ",1);
-                var schedule_dt_dropoffck = schedule_dt_dropoff+' '+slot_dropoff.split(" - ",1);  
+                var schedule_dt_dropoffck = toTimestamp(schedule_dt_dropoff+' '+slot_dropoff.split(" - ",1));  
                 var schedule_dt_dropoff = schedule_dt_dropoff+schedule_dt_dropoff_time;  
-            }
-            
-            if(schedule_dtck > schedule_dt_dropoffck)
-            {
-                // return false if  pickup_schedule_datetime and dropoff_schedule_datetime is same | By Ovi
-                success_error_alert('error', 'Dropoff date is not less than pickup date.', ".cart_response");
-                    return false;
-            }else if(schedule_dtck == schedule_dt_dropoffck){
-                if(slot.split(" - ",1) > slot_dropoff.split(" - ",1)){
-                    success_error_alert('error', 'Dropoff time is not less than pickup time.', ".cart_response");
-                    return false;
+
+
+                if(schedule_dtck > schedule_dt_dropoffck)
+                {
+                    // return false if  pickup_schedule_datetime and dropoff_schedule_datetime is same | By Ovi
+                        success_error_alert('error', 'Dropoff datetime is not less than pickup datetime.', ".cart_response");
+                        return false;
                 }
             }
 
@@ -1008,7 +1013,9 @@ $(document).ready(function () {
                                     $('#proceed_to_pay_modal').modal('show');
                                     $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
                                     stripeInitialize();
-                                    stripeFPXInitialize();
+                                    if(stripe_fpx_publishable_key != ''){
+                                        stripeFPXInitialize();
+                                    }
                                 }
                             },
                             error: function (error) {
@@ -1064,7 +1071,9 @@ $(document).ready(function () {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
-                        stripeFPXInitialize();
+                        if(stripe_fpx_publishable_key != ''){
+                            stripeFPXInitialize();
+                        }
                     }
                 }
             },
@@ -1102,7 +1111,10 @@ $(document).ready(function () {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
-                        stripeFPXInitialize();
+                        if(stripe_fpx_publishable_key != ''){
+                            stripeFPXInitialize();
+                        }
+                        
                     }
                 }
             },
@@ -3976,7 +3988,13 @@ $(document).ready(function () {
             break;
 
             case '5':
-                paymentViaPaystack(address_id, payment_option_id);
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                  paymentViaPaystack(address_id, order);
+                } else {
+                    return false;
+                }
+               // paymentViaPaystack(address_id, payment_option_id);
             break;
 
             case '6':
