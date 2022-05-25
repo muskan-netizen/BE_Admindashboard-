@@ -5,7 +5,7 @@
 </head>
 
 <body>
-        <div style="display: block;margin:15% 45%" id="pp-button"></div>
+        <div id="pp-button"></div>
       
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>

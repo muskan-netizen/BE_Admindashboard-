@@ -1054,9 +1054,8 @@ class OrderController extends FrontController
                 $OrderVendor->delivery_fee = $delivery_fee;
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
-                $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
+                $new_vendor_taxable_amount = ($actual_amount * $rate) / 100;
                 $total_taxable_amount+=$new_vendor_taxable_amount;
-               // pr( $total_taxable_amount);
                 // $OrderVendor->taxable_amount   = $vendor_taxable_amount;
                 $OrderVendor->taxable_amount = $new_vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
@@ -1169,7 +1168,7 @@ class OrderController extends FrontController
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [4,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31,32,34,35,36,37]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash
+            $ex_gateways = [4,5,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31,32,34,35,36,37]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash
            
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 
