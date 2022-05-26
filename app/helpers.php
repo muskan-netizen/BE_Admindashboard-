@@ -135,19 +135,12 @@ function convertDateTimeInTimeZone($date, $timezone, $format = 'Y-m-d H:i:s'){
 }
 function getClientPreferenceDetail()
 {   
-<<<<<<< HEAD
-    
-    $client_preference_detail = ClientPreference::first();
-    list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
-    $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
-=======
     $client_preference_detail = ClientPreference::first();
     if($client_preference_detail){
         list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
        $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
     }
     
->>>>>>> 5a58c1e986c5006236152862190ee1649e47e021
     return $client_preference_detail;
 }
 function getClientDetail()
