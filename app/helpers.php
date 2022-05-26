@@ -21,15 +21,18 @@ if (!function_exists('changeDateFormate')) {
     }
 }
 
-function orderProductDetails($order_id)
-{
-    $order = Order::find($order_id);
-    $itemsDetails = 'Order No : '.$order->order_number;
-    foreach($order->products as $items){
-       $itemsDetails .=  ', Item Name : '.$items->product_name.', '.$items->product_variant_sets;
+if (! function_exists('orderProductDetails')) {
+    function orderProductDetails($order_id)
+    {
+        $order = Order::find($order_id);
+        $itemsDetails = 'Order No : '.$order->order_number;
+        foreach ($order->products as $items) {
+            $itemsDetails .=  ', Item Name : '.$items->product_name.', '.$items->product_variant_sets;
+        }
+        return $itemsDetails;
     }
-    return $itemsDetails;
 }
+
 function EasebuzzSubMerchent()
 {
     $access = 0;

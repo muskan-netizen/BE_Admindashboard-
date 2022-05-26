@@ -586,7 +586,7 @@ class CartController extends FrontController
         $user_allAddresses = collect();
         $upSell_products = collect();
         $crossSell_products = collect();
-
+        $couponGetAmount=0;
         /*Getting User Address */
         if($user){
             $user_allAddresses = UserAddress::where('user_id', $user->id)->where('status',1)->get();
@@ -693,6 +693,7 @@ class CartController extends FrontController
             $delay_date = 0;
             $pickup_delay_date = 0;
             $dropoff_delay_date = 0;
+            $sub_total = 0;
             $total_service_fee = 0;
             $product_out_of_stock = 0;
             $PromoFreeDeliver = 0;
@@ -713,6 +714,7 @@ class CartController extends FrontController
                 $delivery_count = 0;
                 $delivery_count_lm = 0;
                 $coupon_amount_used = 0;
+                $coupon_apply_price=0;
                 $slotsCnt = 0;
 
                 $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
@@ -805,6 +807,7 @@ class CartController extends FrontController
                     $price_in_currency = $prod->pvariant->price;
                     $price_in_doller_compare = $prod->pvariant->price;
                     $container_charges_in_currency = $prod->pvariant->container_charges;
+                    $coupon_apply_price+=$price_in_currency;
                     $container_charges_in_doller_compare = $prod->pvariant->container_charges;
                     if($customerCurrency){
                         $price_in_currency = $prod->pvariant->price / $divider;
@@ -814,6 +817,7 @@ class CartController extends FrontController
                         $container_charges_in_doller_compare = $container_charges_in_currency * $customerCurrency->doller_compare;
                     }
                     $quantity_price = $price_in_doller_compare * $prod->quantity;
+                    $sub_total+=$quantity_price+$container_charges_in_currency;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price;
                     $prod->pvariant->price = decimal_format($price_in_currency);
@@ -843,6 +847,9 @@ class CartController extends FrontController
                                     $opt_price_in_currency = $addons->option->price / $divider;
                                     $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
                                 }
+                                $sub_total+=$opt_price_in_currency;
+                                $coupon_apply_price+=$opt_price_in_currency;
+                                
                                 $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);
                                 $addons->option->price_in_cart = $addons->option->price;
                                 $addon_price=$addons->option->price;
@@ -861,6 +868,7 @@ class CartController extends FrontController
                     }
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     /* Getting taxes info */
+                   
                     $taxData = array();
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
@@ -876,6 +884,7 @@ class CartController extends FrontController
                         }
                         unset($prod->product->taxCategory);
                     }
+                   
                     $prod->taxdata = $taxData;
 
                     if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
@@ -975,8 +984,9 @@ class CartController extends FrontController
                         $crossSell_products->push($cross_prods);
                     }
                 }
-
-                $couponGetAmount = $payable_amount ;
+                
+                // $couponGetAmount = $payable_amount ;
+               
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
                     if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
                         if($vendorData->coupon->promo->restriction_on == 0)
@@ -1023,7 +1033,7 @@ class CartController extends FrontController
                                     $coupon_amount_used = $total_discount_percent;
                                 } else {
                                     $gross_amount = decimal_format($payable_amount - $taxable_amount);
-                                    $percentage_amount = ($couponGetAmount * $vendorData->coupon->promo->amount / 100);
+                                    $percentage_amount = ($coupon_apply_price * $vendorData->coupon->promo->amount / 100);
                                     $payable_amount -= $percentage_amount;
                                     $coupon_amount_used = $percentage_amount;
                                 }
@@ -1039,8 +1049,8 @@ class CartController extends FrontController
                         if ( $PromoDelete !=1) {
                             if($vendorData->coupon->promo->allow_free_delivery ==1   ){
                                 $PromoFreeDeliver = 1;
-                                $coupon_amount_used = $coupon_amount_used +  $deliveryCharges;
-                                $payable_amount = $payable_amount - $deliveryCharges;
+                                $coupon_amount_used = $coupon_amount_used ;
+                                //$payable_amount = $payable_amount - $deliveryCharges;
                             }
                         }
                     }
@@ -1078,19 +1088,17 @@ class CartController extends FrontController
                 //}
                 //$payable_amount = $payable_amount + $deliver_charge;
                 //Start applying service fee on vendor products total
-
+              
                 $slotsDate = findSlot('',$vendorData->vendor->id,'');
                 $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
                     
                 $vendor_service_fee_percentage_amount = 0;
                 if($vendorData->vendor->service_fee_percent > 0){
-                    $amount_for_service = $opt_quantity_price_new+$vendor_products_total_amount;
-                    // dd($opt_quantity_price_new.' '.$vendor_products_total_amount.' '.$vendorData->vendor->service_fee_percent);
-                    //dd($opt_quantity_price_new." | ".$vendor_products_total_amount);
+                     $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
-                }
-
+                 }
+                
                 //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
@@ -1142,8 +1150,8 @@ class CartController extends FrontController
 
 
 
-
-                $total_payable_amount = $total_payable_amount + $payable_amount+$vendorData->vendor->fixed_fee_amount;
+               
+                $total_payable_amount = $total_payable_amount + $payable_amount + $vendorData->vendor->fixed_fee_amount; 
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
@@ -1357,9 +1365,10 @@ class CartController extends FrontController
             $cart->delivery_charges = decimal_format($deliveryCharges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
             $cart->total_taxable_amount = decimal_format($total_taxable_amount);
-            $cart->tip_5_percent = decimal_format(0.05 * $total_payable_amount);
-            $cart->tip_10_percent = decimal_format(0.10 * $total_payable_amount);
-            $cart->tip_15_percent = decimal_format(0.15 * $total_payable_amount);
+            $total_payable_amount_calc_tip = $total_payable_amount - $total_taxable_amount;
+            $cart->tip_5_percent = decimal_format(0.05 * $total_payable_amount_calc_tip);
+            $cart->tip_10_percent = decimal_format(0.10 * $total_payable_amount_calc_tip);
+            $cart->tip_15_percent = decimal_format(0.15 * $total_payable_amount_calc_tip);
             $cart->total_container_charges = decimal_format($total_container_charges);
             $cart->wallet_amount_available = decimal_format($wallet_amount_available);
             $cart->taxRates=$taxRates;
@@ -1407,7 +1416,7 @@ class CartController extends FrontController
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
-
+            $cart->sub_total =  $sub_total??0;
             // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }

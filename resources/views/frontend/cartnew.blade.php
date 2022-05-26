@@ -372,7 +372,6 @@ $client_preferences = \App\Models\ClientPreference::first();
                                             }
                                         }                         
                                     });
-                                    console.log("product_container_charges_tax_amount"+product_container_charges_tax_amount);
                                      %></div>
                                 </div>
                                 <div class="col-md-7 col-sm-4 text-right">
@@ -611,7 +610,15 @@ $client_preferences = \App\Models\ClientPreference::first();
 
         </div>
         <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
-            <% if(cart_details.total_service_fee > 0 && price_bifurcation!=1) { %>
+
+            <% if(cart_details.sub_total > 0 ) { %>
+                <div class="row">
+                    <div class="col-6">{{__('Sub Total')}}</div>
+                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.sub_total) %></b></div>
+                </div>
+                <hr class="my-2">
+            <% } %>
+        <% if(cart_details.total_service_fee > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>
                     <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_service_fee) %></b></div>
@@ -625,16 +632,18 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(total_fixed_fee_amount) %></b></div>
                     <input type="hidden" name="total_fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="<%= total_fixed_fee_amount %>">
                 </div>
+                <% } %>
+                {{--
+                <% if(cart_details.total_container_charges > 0 && price_bifurcation!=1) { %>
                 <hr class="my-2">
-            <% } %>
-
-            <% if(cart_details.total_container_charges > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Total Container Charges')}}</div>
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_container_charges) %></b></div>
                 </div>
                 <hr class="my-2">
-            <% }
+            <% } %>
+            --}}
+            <%
             if(product_container_charges_tax_amount>0){
                 other_taxes=other_taxes+product_container_charges_tax_amount;
                 other_taxes_string=other_taxes_string+',tax_product_container_charges:'+product_container_charges_tax_amount;
@@ -646,23 +655,27 @@ $client_preferences = \App\Models\ClientPreference::first();
             }
             %>
             <input type="hidden" id="other_taxes_string" value="<%= other_taxes_string %>">
-            <%
-            if(price_bifurcation!=1){  %>
-            <div class="row">
-                <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="total_taxable_amount"><%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+parseFloat(other_taxes)) %></span></b></div>
-            </div>
-            <% } if(price_bifurcation!=1){ %>
+            
+
+            <% if(price_bifurcation!=1){ %>
             <hr class="my-2">
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
                 <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)) %></b></span>
                 <span id="other_taxes" style="display:none;"><%= other_taxes %></span></div>
             </div>
-            <% } %>
             <hr class="my-2">
+            <% } %>
             
+            <% if(price_bifurcation!=1){  %>
+                <div class="row">
+                    <div class="col-6">{{__('Tax')}}</div>
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="total_taxable_amount"><%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+parseFloat(other_taxes)) %></span></b></div>
+                </div>
+            <hr class="my-2">
+            <% } %>
             <% if(cart_details.total_subscription_discount != undefined) { %>
+                
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
                     <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="total_subscription_discount"><%= Helper.formatPrice(cart_details.total_subscription_discount) %><span></b></div>
@@ -670,6 +683,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                 <hr class="my-2">
             <% } %>
             <% if(cart_details.loyalty_amount > 0 && price_bifurcation!=1) { %>
+                
                 <div class="row">
                     <div class="col-6">{{__('Loyalty Amount')}}</div>
                     <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="loyalty_amount"><%= Helper.formatPrice(cart_details.loyalty_amount) %></span></b></div>
