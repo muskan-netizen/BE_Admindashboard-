@@ -11,8 +11,9 @@ use Yadahan\AuthenticationLog\AuthenticationLogable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements Wallet, WalletFloat, Auditable
+class User extends Authenticatable implements JWTSubject, Wallet, WalletFloat, Auditable
 {
     use Notifiable, AuthenticationLogable;
     use \OwenIt\Auditing\Auditable;
