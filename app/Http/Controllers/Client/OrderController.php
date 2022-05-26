@@ -511,10 +511,10 @@ class OrderController extends BaseController
         // $rr = OrderVendorReport::first();
          //return $vendor_order_statuses;
         
-
         //pr($order->KYC_document->toArray());`
         return view('backend.order.view')->with([
-            'vendor_id' => $vendor_id, 'order' => $order,
+            'vendor_id' => $vendor_id, 
+            'order' => $order,
             'vendor_order_statuses' => $vendor_order_statuses,
             'vendor_order_status_option_ids' => $vendor_order_status_option_ids,
             'order_status_options' => $order_status_options,
@@ -953,7 +953,7 @@ class OrderController extends BaseController
             $laundry = 0;
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-                if ($prod->product->category->categoryDetail->type_id == 9) {     ///////// if product from laundry
+                if ($prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
                     $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
                     if ($dispatch_domain_laundry && $dispatch_domain_laundry != false && $laundry == 0) {
 
@@ -1020,6 +1020,19 @@ class OrderController extends BaseController
                 } else {
                     $task_type = 'now';
                 }
+
+            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
+            if(!empty($orderVendorDetails->scheduled_date_time)){
+                $task_type = 'schedule';
+                $user = Auth::user();
+                $selectedDate = dateTimeInUserTimeZone($orderVendorDetails->scheduled_date_time, $user->timezone);
+                $slot = trim(explode("-",$orderVendorDetails->schedule_slot)[0]);
+
+                $slotTime = date('H:i:s', strtotime("$slot"));
+                $selectedDate = date('Y-m-d',strtotime($selectedDate));
+                $scheduleDateTime = $selectedDate.' '.$slotTime;
+                $schedule_time =  $scheduleDateTime?? null;
+            }
 
             $tasks[] = array(
                 'task_type_id' => 1,

@@ -21,15 +21,18 @@ if (!function_exists('changeDateFormate')) {
     }
 }
 
-function orderProductDetails($order_id)
-{
-    $order = Order::find($order_id);
-    $itemsDetails = 'Order No : '.$order->order_number;
-    foreach($order->products as $items){
-       $itemsDetails .=  ', Item Name : '.$items->product_name.', '.$items->product_variant_sets;
+if (! function_exists('orderProductDetails')) {
+    function orderProductDetails($order_id)
+    {
+        $order = Order::find($order_id);
+        $itemsDetails = 'Order No : '.$order->order_number;
+        foreach ($order->products as $items) {
+            $itemsDetails .=  ', Item Name : '.$items->product_name.', '.$items->product_variant_sets;
+        }
+        return $itemsDetails;
     }
-    return $itemsDetails;
 }
+
 function EasebuzzSubMerchent()
 {
     $access = 0;
@@ -136,11 +139,11 @@ function convertDateTimeInTimeZone($date, $timezone, $format = 'Y-m-d H:i:s'){
 function getClientPreferenceDetail()
 {   
     $client_preference_detail = ClientPreference::first();
-    if($client_preference_detail){
+    if($client_preference_detail)
+    {
         list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
-       $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
+        $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
     }
-    
     return $client_preference_detail;
 }
 function getClientDetail()

@@ -78,8 +78,12 @@ Route::group(['middleware' => ['domain']], function () {
 
 
 	// Stripe
+	Route::post('/check_stripe_security', 'Front\StripeGatewayController@checkStripeSecurity')->name('check_stripe_security');
 	Route::post('payment/stripe', 'Front\StripeGatewayController@postPaymentViaStripe')->name('payment.stripe');
 	Route::post('user/subscription/payment/stripe', 'Front\StripeGatewayController@subscriptionPaymentViaStripe')->name('user.subscription.payment.stripe');
+	Route::get('/check_stripe_return_data', 'Front\StripeGatewayController@checkStripeReturnDataFrom3DAuth')->name('check_stripe_return_data');
+	Route::post('/payment/payment_init', 'Front\StripeGatewayController@paymentInit')->name('payment_init');
+	Route::post('payment/webhook/stripe', 'Front\StripeGatewayController@stripeWebhook')->name('payment.webhook.stripe');
 
 	// Stripe FPX
 	Route::post('payment/create/stripe_fpx', 'Front\StripeGatewayController@createStripeFPXPaymentIntent')->name('payment.create.stripe_fpx');
@@ -106,7 +110,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	// Paystack
 	Route::post('payment/paystack', 'Front\PaystackGatewayController@paystackPurchase')->name('payment.paystackPurchase');
-	Route::post('payment/paystack/completePurchase', 'Front\PaystackGatewayController@paystackCompletePurchase')->name('payment.paystackCompletePurchase');
+	Route::get('payment/paystack/completePurchase', 'Front\PaystackGatewayController@paystackCompletePurchase')->name('payment.paystackCompletePurchase');
 	Route::get('payment/paystack/completePurchase/app', 'Front\PaystackGatewayController@paystackCompletePurchaseApp')->name('payment.paystackCompletePurchaseApp');
 	Route::get('payment/paystack/cancelPurchase/app', 'Front\PaystackGatewayController@paystackCancelPurchaseApp')->name('payment.paystackCancelPurchaseApp');
 

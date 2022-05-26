@@ -284,7 +284,7 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                 <% if(payment_option.slug == 'stripe') { %>
                     <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper option-wrapper d-none">
                         <div class="form-control">
-                            <label class="d-flex flex-row pt-1 pb-1 mb-0">
+                            <label class="pb-1 mb-0">
                                 <div id="stripe-card-element"></div>
                             </label>
                         </div>
@@ -379,6 +379,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";

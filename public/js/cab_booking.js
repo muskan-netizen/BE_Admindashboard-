@@ -268,6 +268,11 @@ $(document).ready(function () {
                         //var stripe_token = $('#stripe_token').val();
                        // paymentViaStripe(stripe_token,order_id, payment_option_id,vendor_id);
                     }
+                    else if(payment_option_id == 5){
+                        $res = paymentViaPaystack('',response.data);
+                        
+                      
+                    }
                     else if(payment_option_id == 10){
                         paymentViaRazorpay('', response.data, 'pickup_delivery');
                     }

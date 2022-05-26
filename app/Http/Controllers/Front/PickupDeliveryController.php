@@ -12,19 +12,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,UserAddress,Order,SubscriptionInvoicesUser,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage, Payment, PaymentOption};
+use App\Models\{Category,OrderLocations,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,UserAddress,Order,SubscriptionInvoicesUser,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage, Payment, PaymentOption};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Log,DateTime,DateTimeZone;
+
 class PickupDeliveryController extends FrontController{
 
     use ApiResponser;
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'razorpay','stripe');
+        $code = array('cod', 'razorpay','stripe','paystack');
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
@@ -333,7 +334,7 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-        // dd($request->all());
+         //pr($request->all());
         DB::beginTransaction();
         try {
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -343,10 +344,12 @@ class PickupDeliveryController extends FrontController{
                 $given->setTimezone(new DateTimeZone("UTC"));
                 $request->schedule_time = $given->format("Y-m-d H:i:s");
             }
-
+           
+          
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
-
+            
+            //pr($order_place);
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
@@ -377,18 +380,27 @@ class PickupDeliveryController extends FrontController{
     // order update for pickup delivery
     public function orderUpdateAfterPaymentPickupDelivery($request){
 
-       
-        // try {
+          try {
            
-            $order = Order::where('order_number',$request->order_number)->first();
-           
+            $order = Order::where('order_number',$request->order_number)->with('orderLocation')->first();
+         
+           if($order && $order->orderLocation){
+          
             if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                 $order->payment_status = 1;
             }
             $order->save();
+            $request->merge([
+                "product_id" => $order->orderLocation->product_id,
+                "vendor_id" => $order->orderLocation->vendor_id,
+                "phone_number" => $order->orderLocation->phone_number,
+                "email" => $order->orderLocation->email,
+                "tasks" => $order->orderLocation->tasks ? json_decode($order->orderLocation->tasks,true) : "",
+            ]);
           
-    
-            if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
+   
+            if (($request->payment_option_id != 1) && ($request->payment_option_id != 38) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
+               
                 $payment = new Payment();
                 $payment->date = date('Y-m-d');
                 $payment->order_id = $order->id;
@@ -398,6 +410,7 @@ class PickupDeliveryController extends FrontController{
                 $payment->save();
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
+            
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = Auth::user();
                 $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
@@ -407,14 +420,14 @@ class PickupDeliveryController extends FrontController{
             }else{
                 return $request_to_dispatch;
             }
-        // }catch(\Exception $e){
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => $e->getMessage()
-        //     ]);
-        // }
-        
-        
+          
+        }
+        }catch(\Exception $e){
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
     }
     // order place for pickup delivery
 
@@ -468,19 +481,31 @@ class PickupDeliveryController extends FrontController{
                 else{
                     $payment_option = $request->payment_option_id;
                 }
-
                 $order = new Order;
                 $order->user_id = $user->id;
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
-                
+
+                $order->scheduled_date_time = $request->schedule_time;
                 /*book for a friend*/
                 $order->type = $request->type;
                 $order->friend_name = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
                 
                 $order->save();
+  
+                // save pickup delivery task 
+                $order_location = new OrderLocations();
+                $order_location->order_id = $order->id;
+                $order_location->product_id = $request->product_id;
+                $order_location->vendor_id = $request->vendor_id;
+                $order_location->phone_number = $request->phone_number ?? null;
+                $order_location->email = $request->email ?? null;
+                $order_location->tasks = json_encode($request->tasks );
+                $order_location->save();
+
+
                 $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
                     $q->where('id', $request->product_id);
@@ -692,7 +717,7 @@ class PickupDeliveryController extends FrontController{
                 
                 $postdata =  [
                     'order_number' =>  $order->order_number,
-                    'order_type' =>  $order->type,
+                    //'order_type' =>  $order->type,
                     // 'order_friend_name' =>  $order->friend_name,
                     // 'order_number' =>  $order->friend_phone_number,
                     'barcode' => '',
