@@ -490,7 +490,7 @@ use Illuminate\Support\Arr;
                                 </div>
 
                                 <script type="text/template" id="header_cart_template_ondemand">
-                                        <% _.each(cart_details.products, function(product, key){ console.log(product);%>
+                                        <% _.each(cart_details.products, function(product, key){%>
                                             <li>
                                                 <h6 class="d-flex align-items-center justify-content-between"> <%= product.vendor.name %> </h6>
                                             </li>
