@@ -466,7 +466,11 @@
                 {{-- <img src="{{asset('assets/images/users/user-2.jpg')}}" class="rounded-circle" alt=""> --}}
             </div>
             <p class="inbox-item-author">{{ $users->user->name??'' }}  </p>
-            <p class="inbox-item-text"><label class="d-block"><i class="fa fa-envelope mr-1" aria-hidden="true"></i> {{ $users->user->email??'' }}  @if($users->user->phone_number)</label><label class="d-block">  <i class="fa fa-phone mr-1" aria-hidden="true"></i> {{ $users->user->phone_number??'' }}</label> </p> @endif</p>
+            <p class="inbox-item-text"><label class="d-block"><i class="fa fa-envelope mr-1" aria-hidden="true"></i> {{ $users->user->email??'' }}  
+                @if($users->user)
+                  </label><label class="d-block"><i class="fa fa-phone mr-1" aria-hidden="true"></i> {{ $users->user->phone_number??'' }}</label> </p> 
+                @endif
+            </p>
             @if($users->user->id != Auth::id())
             <form class="delete-user position-absolute" method="POST" action="{{route('user.vendor.permission.destroy', $users->id)}}">
                         @csrf
