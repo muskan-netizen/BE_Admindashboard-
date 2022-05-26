@@ -335,6 +335,7 @@ class StripeGatewayController extends FrontController
                 // $request = new Request(['wallet_amount' => $amount, 'transaction_id' => $transactionId]);
                 // $walletController = new WalletController();
                 // $walletController->creditWallet($request);
+                $message = 'Wallet has been credited successfully';
                 $returnUrl = route('user.wallet');
             }
             elseif($payment_form == 'tip'){
@@ -342,6 +343,7 @@ class StripeGatewayController extends FrontController
                 // $request = new Request(['order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                 // $orderController = new OrderController();
                 // $orderController->tipAfterOrder($request);
+                $message = 'Tip has been submitted successfully';
                 $returnUrl = route('user.orders');
             }
             elseif($payment_form == 'subscription'){
@@ -349,8 +351,10 @@ class StripeGatewayController extends FrontController
                 // $request = new Request(['payment_option_id' => 4, 'amount' => $amount, 'transaction_id' => $transactionId]);
                 // $subscriptionController = new UserSubscriptionController();
                 // $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
+                $message = __('Your subscription has been activated successfully.');
                 $returnUrl = route('user.subscription.plans');
             }
+            Session::put('success', $message);
             // return redirect($returnUrl);
             return $returnUrl;
          

@@ -68,6 +68,8 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                                 <div>
                                                     <h4>{{__('Price')}}</h4>
                                                     <h5>{{Session::get('currencySymbol')}}{{decimal_format($product->price * @$clientCurrency->doller_compare)}}</h5>
+                                                    <h4>{{__('Container Charges')}}</h4>
+                                                    <p>{{decimal_format($product->container_charges)}}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -105,14 +107,17 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                             <div class="total-sec row">
                                 <ul class="col-sm-6 offset-sm-6">
                                     @if($order->total_service_fee > 0)
+                                        <li>{{__('Sub Total')}} <span>{{Session::get('currencySymbol')}}{{decimal_format(($order->total_amount+$order->total_container_charges) * @$clientCurrency->doller_compare)}}</span></li>
+                                    @endif
+                                    @if($order->total_service_fee > 0)
                                         <li>{{__('Service Fee')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_service_fee * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                     @if(!empty($order->fixed_fee_amount) && $order->fixed_fee_amount > 0)
                                         <li>{{__($fixedFeeNomenclatures)}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->fixed_fee_amount)}}</span></li>
                                     @endif
-                                    @if($order->total_container_charges > 0)
+                                    {{-- @if($order->total_container_charges > 0)
                                         <li>{{__('Container Charges')}} <span>{{Session::get('currencySymbol')}}@money($order->total_container_charges * @$clientCurrency->doller_compare)</span></li>
-                                    @endif
+                                    @endif --}}
                                     @if($order->total_delivery_fee > 0)
                                         <li>{{__('Delivery Fee')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_delivery_fee * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
@@ -120,10 +125,10 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                    
                                     @if($order->taxable_amount > 0 || $order->total_other_taxes_amount> 0 )
                                     
-                                    <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount+$order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
-                                    <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
+                                    <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
+                                    <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->taxable_amount + $order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>
                                     @else
-                                    <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
+                                    <li>{{__('Total')}}<span>{{Session::get('currencySymbol')}}{{decimal_format(($total) * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
                                     @if($order->subscription_discount > 0)
                                         <li>{{__('Subscription Discount')}} <span> - {{Session::get('currencySymbol')}}{{decimal_format($order->subscription_discount * @$clientCurrency->doller_compare)}}</span></li>
