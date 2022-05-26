@@ -52,18 +52,28 @@
 @else
     <div class="row mb-sm-4" id="address_template_main_div">
         @forelse($addresses as $k => $address)
-        <div class="col-md-12">
-            <div class="delivery_box p-0 mb-sm-3 mb-1">
-                <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
-                    @if($address->is_primary)
-                    <input type="radio" name="address_id" value="{{$address->id}}" checked="checked">
-                    @else
-                    <input type="radio" name="address_id" value="{{$address->id}}" {{$k == 0? 'checked="checked""' : '' }}>
-                    @endif
-                    <span class="checkround"></span>
-                </label>
-            </div>
+        @if($k ==6)
+        <div class="d-flex justify-content-end">
+            <a class="view_all_address"  id="view_all_address"  href="javascript:void(0)">{{ __('View all address') }}</a>
         </div>
+        <div class="view_all_address d-none" id="view_all_address_div" >
+        @endif
+            <div class="col-md-12">
+                <div class="delivery_box p-0 mb-sm-3 mb-1">
+                    <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
+                        @if($address->is_primary)
+                        <input type="radio" name="address_id" value="{{$address->id}}" checked="checked">
+                        @else
+                        <input type="radio" name="address_id" value="{{$address->id}}" {{$k == 0? 'checked="checked""' : '' }}>
+                        @endif
+                        <span class="checkround"></span>
+                    </label>
+                </div>
+            </div>
+        @if(($k >6  ) && ($k ==count($addresses) -1 ))
+            </div>
+            
+        @endif
         @empty
         <div class="col-12 address-no-found">
             <p>{{($client_preference_detail->address_is_car == 1) ? __('Car not available.') : __('Address not available.')}}</p>

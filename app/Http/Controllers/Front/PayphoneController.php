@@ -32,13 +32,13 @@ class PayphoneController extends FrontController
 
    public function __construct()
    {
-      $payphone = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'payphone')->where('status', 1)->first();
+      $payphone = PaymentOption::select('credentials', 'status')->where('code', 'payphone')->where('status', 1)->first();
       $json = json_decode($payphone->credentials);
       $this->id = $json->id;
       $this->token = $json->token;
    }
 
-   public function createHash(Request $request)
+   public function createHash(Request $request, $domain='')
    {
      $time = '';
      $amt = $request->amt??$request->amount;

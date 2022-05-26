@@ -632,7 +632,8 @@ class CartController extends FrontController
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
-        ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        
         
         /* Getting All Taxes available and making TaxRate array according to requirement */
         $taxes=TaxRate::all();
@@ -700,6 +701,10 @@ class CartController extends FrontController
             $d = 0;
             $total_container_charges = 0 ;
 
+            $user = Auth::user();
+            $client_timezone = DB::table('clients')->first('timezone');
+            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            
             /* Getting in vendor loop */
             foreach ($cartData as $ven_key => $vendorData) {
                 $opt_quantity_price_new = 0.00;
@@ -710,7 +715,16 @@ class CartController extends FrontController
                 $delivery_count_lm = 0;
                 $coupon_amount_used = 0;
                 $coupon_apply_price=0;
+                $slotsCnt = 0;
 
+                $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
+                $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
+
+                $slots = (object)showSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+                $vendorData->selected_slot = $vendorData->schedule_slot;
+                $vendorData->slots = $slots;
+                $vendorData->slotsCnt = count((array)$slots);
+                $vendorData->delay_date = date('Y-m-d');
 
                 if(Session::has('vendorTable')){
                     if((Session::has('vendorTableVendorId')) && (Session::get('vendorTableVendorId') == $vendorData->vendor_id)){
@@ -1406,6 +1420,7 @@ class CartController extends FrontController
             // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
+        // pr($cart);
         return $cart;
     }
 
@@ -2130,6 +2145,10 @@ class CartController extends FrontController
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
                 CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
+
+                $cartProductDetails = CartProduct::where('id', $request->cart_product_id)->get()->first();
+                CartProduct::where('cart_id', $cartProductDetails->cart_id )->where('vendor_id', $cartProductDetails->vendor_id  )->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
+                
                 DB::commit();
                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
             }
