@@ -1089,11 +1089,11 @@ class StripeGatewayController extends FrontController
                     $order_number = $meta->order_number;
                     $order = Order::where('order_number', $order_number)->first();
                     if($order){
-                        $wallet_amount_used = $order->wallet_amount_used;
-                        if($wallet_amount_used > 0){
-                            $wallet = $user->wallet;
-                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
-                        }
+                        // $wallet_amount_used = $order->wallet_amount_used;
+                        // if($wallet_amount_used > 0){
+                        //     $wallet = $user->wallet;
+                        //     $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                        // }
 
                         // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
                         // foreach($order_products as $order_prod){
