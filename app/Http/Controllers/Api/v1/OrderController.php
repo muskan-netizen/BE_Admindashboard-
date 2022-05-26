@@ -224,7 +224,7 @@ class OrderController extends BaseController
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
                             $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
                             $product_payable_amount = 0;
-
+                            $opt_quantity_price = 0;
                             if (!empty($vendor_cart_product->addon)) {
                                 foreach ($vendor_cart_product->addon as $ck => $addon) {
                                     $opt_quantity_price = 0;
@@ -1585,6 +1585,7 @@ class OrderController extends BaseController
                     $payable_amount = 0;
                     $total_container_charges = 0;
                     $discount_amount = 0;
+                    $opt_quantity_price = 0;
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {

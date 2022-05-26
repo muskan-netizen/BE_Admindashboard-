@@ -138,7 +138,6 @@ function convertDateTimeInTimeZone($date, $timezone, $format = 'Y-m-d H:i:s'){
 }
 function getClientPreferenceDetail()
 {   
-    
     $client_preference_detail = ClientPreference::first();
     if($client_preference_detail)
     {
