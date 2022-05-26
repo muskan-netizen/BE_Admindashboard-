@@ -1699,7 +1699,10 @@ class OrderController extends BaseController
             ->whereHas('user_document', function($q) use($user_id){
                 $q->where('user_id', $user_id);
             })->get();
-             $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
+
+
+            $order_id = $order->id??0;
+            $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order_id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
 
             // $category_KYC_document = CategoryKycDocuments::with('category_doc','primary')
             // ->whereHas('category_doc', function($q) use($order){

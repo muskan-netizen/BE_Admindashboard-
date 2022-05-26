@@ -726,19 +726,19 @@ class CartController extends FrontController
                 $vendorData->slotsCnt = count((array)$slots);
                 $vendorData->delay_date = date('Y-m-d');
 
-                if(Session::has('vendorTable')){
+                if(Session::has('vendorTable')) {
                     if((Session::has('vendorTableVendorId')) && (Session::get('vendorTableVendorId') == $vendorData->vendor_id)){
                         $cart_dinein_table_id = Session::get('vendorTable');
                     }
                     Session::forget(['vendorTable', 'vendorTableVendorId']);
-                }else{
+                } else {
                     $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
                 }
 
                 /* Getting vendor details */
-                if($action != 'delivery'){
+                if($action != 'delivery') {
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id','latitude','longitude','address')->where('id', $vendorData->vendor_id)->first();
-                    if($action == 'dine_in'){
+                    if($action == 'dine_in') {
                         $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();
                         foreach ($vendor_tables as $vendor_table) {
                             $vendor_table->qr_url = url('/vendor/'.$vendorData->vendor->slug.'/?id='.$vendorData->vendor_id.'&name='.$vendorData->vendor->name.'&table='.$vendor_table->id);
@@ -746,7 +746,8 @@ class CartController extends FrontController
                         $vendor_details['vendor_tables'] = $vendor_tables;
                     }
                 }
-                else{
+                else {
+                    
                     if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
                         if($address_id > 0){
 
