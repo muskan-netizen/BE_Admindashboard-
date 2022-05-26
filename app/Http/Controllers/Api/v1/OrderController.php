@@ -2065,6 +2065,7 @@ class OrderController extends BaseController
                         $difference_to_be_paid = $payable_amount - $previous_order_total;
                         // dd($difference_to_be_paid);
 
+                        $ex_gateways_wallet = [4,36]; // stripe,mycash
                         // If new amount is greater than previous amount then deduct from wallet
                         if($difference_to_be_paid > 0){
                             // deduct if payment method is not cash on delivery and offline mathod method
@@ -2082,7 +2083,8 @@ class OrderController extends BaseController
                                         $wallet_amount_used = $payable_amount;
                                     }
                                     $order->wallet_amount_used = $wallet_amount_used;
-                                    if ($wallet_amount_used > 0) {
+                                    // Deduct wallet amount if payable amount is successfully done on gateway
+                                    if ( ($wallet_amount_used > 0) && (!in_array($request->payment_option_id, $ex_gateways_wallet)) ) {
                                         $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                                     }
                                 }
