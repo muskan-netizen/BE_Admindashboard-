@@ -37,6 +37,7 @@ $(document).ready(function() {
     if ((urlParams.has('gateway')) && (urlParams.get('gateway') == 'paystack')) {
         $('.spinner-overlay').show();
         let tipAmount = 0;
+        let paymentFrom = '';
         if (urlParams.has('tip')) {
             tipAmount = urlParams.get('tip');
         }
@@ -44,38 +45,65 @@ $(document).ready(function() {
         if (urlParams.has('ordernumber')) {
             order_number = urlParams.get('ordernumber');
 
+        }if (urlParams.has('payment_from')) {
+            paymentFrom = urlParams.get('payment_from');
+            if(paymentFrom == "pickup_delivery"){
+                path = "pickup_delivery";
+            }
+
         }
-        paymentSuccessViaPaystack(urlParams.get('amount'), urlParams.get('trxref'), path, tipAmount, order_number);
+       // paymentSuccessViaPaystack(urlParams.get('amount'), urlParams.get('trxref'), path, tipAmount, order_number);
     }
 
 
 
-    window.paymentViaPaystack = function paymentViaPaystack() {
+    window.paymentViaPaystack = function paymentViaPaystack(address_id ='',order = '') {
         let total_amount = 0;
         let tip = 0;
         let tipElement = $("#cart_tip_amount");
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
+        let cabElement = $("#pickup_now");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+
         let ajaxData = {};
-        if (cartElement.length > 0) {
+        
+        if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
             tip = tipElement.val();
             ajaxData.tip = tip;
-        } else if (walletElement.length > 0) {
+            ajaxData.address_id = address_id;
+            ajaxData.payment_form = 'cart';
+            ajaxData.order_number = order.order_number;
+
+        } else if (cabElement.length > 0) {
+            total_amount = cabElement.data('amount');
+            ajaxData.payment_form = 'pickup_delivery';
+            ajaxData.order_number = order.order_number;
+            ajaxData.reload_route = order.route;
+        }
+         else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
+            ajaxData.payment_form = 'wallet';
+        }  else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            ajaxData.subscription_id = subscription_id.val();
+            ajaxData.payment_form ='subscription';
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            ajaxData.payment_form = 'tip';
+            ajaxData.order_number = $("#order_number").val();
+          
+          
         }
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
 
-        if (typeof tip_for_past_order !== 'undefined') {
-            if (tip_for_past_order != undefined && tip_for_past_order == 1) {
-                let order_number = $("#order_number").val();
-                ajaxData.order_number = order_number;
-
-            }
-
-        }
+        // console.log(ajaxData);
+        // return false;
+       
 
         $.ajax({
             type: "POST",
@@ -109,16 +137,24 @@ $(document).ready(function() {
     }
 
     function paymentSuccessViaPaystack(amount, reference, path, tip = 0, order_number = 0) {
+        console.log(path);
         let address_id = 0;
+        let payment_form = '';
         if (path.indexOf("cart") !== -1) {
             // $('#order_placed_btn').trigger('click');
             // $('#v-pills-paystack-tab').trigger('click');
             $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
             address_id = $("input:radio[name='address_id']:checked").val();
+            payment_form = "cart"
         } else if (path.indexOf("wallet") !== -1) {
             // $('#topup_wallet_btn').trigger('click');
             // $('#wallet_topup_form #radio-paystack').prop("checked", true);
             $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
+            payment_form = "wallet"
+        }
+        else if (path.indexOf("wallet") !== -1) {
+           
+            payment_form = "wallet"
         }
         $.ajax({
             type: "POST",
@@ -126,6 +162,7 @@ $(document).ready(function() {
             url: payment_success_paystack_url,
             data: { 'amount': amount, 'reference': reference },
             success: function(response) {
+                console.log(response);
                 if (response.status == "Success") {
                     if (path.indexOf("cart") !== -1) {
                         placeOrder(address_id, 5, response.data, tip);
@@ -133,6 +170,9 @@ $(document).ready(function() {
                         creditWallet(amount, 5, response.data);
                     } else if (path.indexOf("orders") !== -1) {
                         creditTipAfterOrder(amount, 3, response.data, order_number);
+                    }
+                    else if (path == 'pickup_delivery') {
+                        creditTipAfterOrder(amount, 4, response.data, order_number);
                     }
                 } else {
                     $('.spinner-overlay').hide();

@@ -1246,11 +1246,10 @@ class CartController extends FrontController
                     $cart->slots = [];
                     $cart->vendor_id =  $vendorId;
                     $slots = [];
-                    $pickupSlots = [];
-                    $dropoffSlots = [];
                 }
                 
-
+                $pickupSlots = [];
+                $dropoffSlots = [];
                 // get slots for laundry category
                 if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                     // For Pickup
@@ -1287,11 +1286,6 @@ class CartController extends FrontController
                     $cart->slotsForPickup = $pickupSlots;
                     $cart->slotsForDropoff  = $dropoffSlots;
                     $cart->vendor_id = $vendorId;
-                }else{
-                    $cart->slotsForPickup = [];
-                    $slots = [];
-                    $pickupSlots = [];
-                    $dropoffSlots = [];
                 }
 
             }else{
