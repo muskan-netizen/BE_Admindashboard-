@@ -1585,6 +1585,7 @@ class OrderController extends BaseController
                     $payable_amount = 0;
                     $total_container_charges = 0;
                     $discount_amount = 0;
+                    $opt_quantity_price = 0;
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
