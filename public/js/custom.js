@@ -1235,7 +1235,7 @@ $(document).ready(function () {
             // Show success message
             setTimeout(() => {
                 window.location.href = response.result;
-            }, 500);
+            }, 1000);
         }
     }
 
