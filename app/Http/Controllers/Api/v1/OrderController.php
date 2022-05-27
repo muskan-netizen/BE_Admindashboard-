@@ -603,11 +603,36 @@ class OrderController extends BaseController
                 $vendor_order_status->order_vendor_id = $request->order_vendor_id;
                 $vendor_order_status->order_status_option_id = $request->status_option_id;
                 $vendor_order_status->save();
+
+                // if ($request->status_option_id == 2) {
+                //     $order_dispatch = $this->checkIfanyProductLastMileon($request);
+                //     if ($order_dispatch && $order_dispatch == 1)
+                //         $stats = $this->insertInVendorOrderDispatchStatus($request);
+                // }
+
                 if ($request->status_option_id == 2) {
+
+                    if ($request->shipping_delivery_type=='D') {
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
-                    if ($order_dispatch && $order_dispatch == 1)
+                    if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
+                    }
+                   }elseif($request->shipping_delivery_type=='L'){
+                        //Create Shipping place order request for Lalamove
+                        $order_lalamove = $this->placeOrderRequestlalamove($request);
+                    }elseif($request->shipping_delivery_type=='SR'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_ship = $this->placeOrderRequestShiprocket($request);
+                    }elseif($request->shipping_delivery_type=='DU'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_ship = $this->placeOrderRequestDunzo($request);
+                    }elseif($request->shipping_delivery_type=='M'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_ship = $this->placeOrderRequestAhoy($request);
+                    }
+
                 }
+
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
                 $this->ProductVariantStock($order_id);
                 DB::commit();
@@ -782,8 +807,6 @@ class OrderController extends BaseController
                                 $team_tag = $dispatch_domain_laundry->laundry_dropoff_team ?? null;
                                 $colm = $x;
                             }
-
-
 
                             $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
                         }
@@ -1164,7 +1187,7 @@ class OrderController extends BaseController
              ];
  
  
-             $client = new Client([
+             $client = new GCLIENT([
                  'headers' => [
                      'personaltoken' => $dispatch_domain->laundry_service_key,
                      'shortcode' => $dispatch_domain->laundry_service_key_code,
@@ -1175,8 +1198,7 @@ class OrderController extends BaseController
              $url = $dispatch_domain->laundry_service_key_url;
              $res = $client->post(
                  $url . '/api/task/create',
-                 ['form_params' => ($postdata
-                 )]
+                 ['form_params' => ($postdata)]
              );
              $response = json_decode($res->getBody(), true);
  

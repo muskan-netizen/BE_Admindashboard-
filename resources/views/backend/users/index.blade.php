@@ -11,6 +11,76 @@
 .iti.iti--allow-dropdown .phone,
 .flag-container .phone {padding: 17px 0 17px 100px !important;}
 .mdi-icons {color: #43bee1;font-size: 26px;vertical-align: middle;}
+ 
+.al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter {position: absolute;right: 0;top: -92px;}
+.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap {position: absolute;top: -92px !important;}
+
+.royo_customber_btn .position-absolute {top: 0;right: 32%;}
+.royo_customber_btn .card {background: none !important;box-shadow: none !important;}
+.royo_customber_btn .card-body {background: none !important;box-shadow: none !important;}
+
+
+@media  screen and (max-width:1800px){
+.royo_customber_btn .position-absolute {
+    left: 35%;
+}
+
+}
+
+
+@media screen and (max-width:1199px){
+.royo_customber_btn .position-absolute {
+    left: 5%;
+}
+    
+}
+
+
+@media screen and (max-width:991px) {
+.royo_customber_btn .position-absolute {
+    left: 0%;
+} 
+}
+
+@media screen and (max-width:767px) {
+.al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter label input {
+    width: 100px !important;
+    height: 30px;
+    font-size: 10px;
+}
+.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap{
+    left: 12%;
+}
+.royo_customber_btn .position-absolute .btn.btn-info{
+    font-size:10px;
+}
+.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap .btn-success.waves-effect.waves-light{  
+    height: 30px;
+    font-size: 10px;
+}
+.al_new_export_table .position-absolute.mb-2{
+    top: -4px;
+}
+}
+
+
+@media screen and (max-width:520px) {
+.al .sml_royo-responsive {
+    margin-top: 15% !important;
+}
+.al_new_export_table.royo_customber_btn .dt-buttons.btn-group.flex-wrap{
+    left:0px;
+    width:40%;
+    text-align:left;
+}
+.al_new_export_table.royo_customber_btn div.dataTables_wrapper div.dataTables_filter{
+    left:43%;
+}
+.dataTables_filter label{
+    float:left !important;
+}
+
+}
 </style>
 @endsection
 @section('content')
@@ -80,42 +150,123 @@
                         </div>
                     </div>
                 </div>
-                <div class="al_new_export_table">
-                    <div class=" position-absolute mb-2">
+                <div class="al_new_export_table royo_customber_btn">
+                    <div class="position-absolute mb-2">
                         <button class="btn btn-info waves-effect waves-light text-sm-right importUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                         </button>
                         <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                         </button>
                     </div>
-                    <div class="table-responsive">
 
-                        <table class="table table-centered table-nowrap table-striped" id="user_datatable" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>{{ __('Image')}}</th>
-                                    <th>{{ __('Name')}}</th>
-                                    <th>{{ __('Login Type') }}</th>
-                                    <th>{{ __('Signup Date')}}</th>
-                                    <th>{{ __('Last Login') }}</th>
-                                    <th>{{ __('Email/Auth-id')}}</th>
-                                    <th>{{ __('Phone')}}</th>
-                                    <th>{{ __("Email OTP") }}</th>
-                                    <th>{{ __("Phone OTP") }}</th>
-                                    <th>{{ __('Wallet')}}</th>
-                                    <th>{{ __('Orders')}}</th>
-                                    <th>{{ __('Loyalty Card')}}</th>
-                                    <th>{{ __('Active Orders') }}</th>
-                                    <th>{{ __('Total Order Value') }}</th>
-                                    <th>{{ __('Total Order Discount') }}</th>
-                                    <th>{{ __('Status')}}</th>
-                                    <th>{{ __('Action')}}</th>
-                                </tr>
-                            </thead>
-                            <tbody id="post_list">
+    
+                    <div class="row mt-1 sml_royo-responsive">
+                        <div class="col-sm-12 col-lg-12 tab-product  pt-0">
+                            <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="active-user" data-toggle="tab" href="#active_user" role="tab" aria-selected="false" data-rel="active_user_datatable" data-status="1">
+                                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Active') }}<sup class="total-items" id="active_user_count">({{$active_users}})</sup>
+                                    </a>
+                                    <div class="material-border"></div>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="inactive-user" data-toggle="tab" href="#inactive_user" role="tab" aria-selected="true" data-rel="inactive_user_datatble" data-status="0">
+                                        <i class="icofont icofont-ui-home"></i>{{ __('InActive') }}<sup class="inactive_user_count">({{$inactive_users}})</sup>
+                                    </a>
+                                    <div class="material-border"></div>
+                                </li>                       
+                            </ul>
+                            <div class="tab-content nav-material pt-0" id="top-tabContent">
+                                <div class="tab-pane fade past-order show active" id="active_user" role="tabpanel" aria-labelledby="active-user">
+                                    <div class="row">
+                                        <div class="col-12">
+                                    
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <form name="saveOrder" id="saveOrder"> @csrf</form>
 
-                            </tbody>
-                        </table>
+                                                        <table class="table table-centered table-nowrap table-striped" id="user_datatable" width="100%">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>#</th>
+                                                                    <th>{{ __('Image')}}</th>
+                                                                    <th>{{ __('Name')}}</th>
+                                                                    <th>{{ __('Login Type') }}</th>
+                                                                    <th>{{ __('Signup Date')}}</th>
+                                                                    <th>{{ __('Last Login') }}</th>
+                                                                    <th>{{ __('Email/Auth-id')}}</th>
+                                                                    <th>{{ __('Phone')}}</th>
+                                                                    <th>{{ __("Email OTP") }}</th>
+                                                                    <th>{{ __("Phone OTP") }}</th>
+                                                                    <th>{{ __('Wallet')}}</th>
+                                                                    <th>{{ __('Orders')}}</th>
+                                                                    <th>{{ __('Loyalty Card')}}</th>
+                                                                    <th>{{ __('Active Orders') }}</th>
+                                                                    <th>{{ __('Total Order Value') }}</th>
+                                                                    <th>{{ __('Total Order Discount') }}</th>
+                                                                    <th>{{ __('Status')}}</th>
+                                                                    <th>{{ __('Action')}}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="post_list">
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row address" id="def" style="display: none;">
+                                            <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="inactive_user" role="tabpanel" aria-labelledby="inactive-user">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <form name="saveOrder" id="saveOrder"> @csrf</form>
+                                                        <table class="table table-centered table-nowrap table-striped" id="inactive_user_datatable" width="100%">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>#</th>
+                                                                    <th>{{ __('Image')}}</th>
+                                                                    <th>{{ __('Name')}}</th>
+                                                                    <th>{{ __('Login Type') }}</th>
+                                                                    <th>{{ __('Signup Date')}}</th>
+                                                                    <th>{{ __('Last Login') }}</th>
+                                                                    <th>{{ __('Email/Auth-id')}}</th>
+                                                                    <th>{{ __('Phone')}}</th>
+                                                                    <th>{{ __("Email OTP") }}</th>
+                                                                    <th>{{ __("Phone OTP") }}</th>
+                                                                    <th>{{ __('Wallet')}}</th>
+                                                                    <th>{{ __('Orders')}}</th>
+                                                                    <th>{{ __('Loyalty Card')}}</th>
+                                                                    <th>{{ __('Active Orders') }}</th>
+                                                                    <th>{{ __('Total Order Value') }}</th>
+                                                                    <th>{{ __('Total Order Discount') }}</th>
+                                                                    <th>{{ __('Status')}}</th>
+                                                                    <th>{{ __('Action')}}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="post_list">
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row address" id="def" style="display: none;">
+                                            <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -131,7 +282,13 @@
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        initDataTable();
+        initDataTable('user_datatable','active');
+        $(document).on("click","#inactive-user",function() {
+            initDataTable('inactive_user_datatable','inactive');
+        });
+        $(document).on("click","#active-user",function() {
+            initDataTable('user_datatable','active');
+        });
         $(document).on("click", ".delete-vendor", function() {
             var destroy_url = $(this).data('destroy_url');
             var id = $(this).data('rel');
@@ -154,9 +311,9 @@
         });
 
 
-        function initDataTable() {
+        function initDataTable(table,type) {
             try {
-                $('#user_datatable').DataTable({
+                $('#'+table).DataTable({
                     "dom": '<"toolbar">Bfrtip',
                     "destroy": true,
                     "scrollX": true,
@@ -190,6 +347,7 @@
                             d.date_filter = $('#range-datepicker').val();
                             d.payment_option = $('#payment_option_select_box option:selected').val();
                             d.tax_type_filter = $('#tax_type_select_box option:selected').val();
+                            d.type = type;
                         }
                     },
                     "initComplete": function(settings, json) {
@@ -205,11 +363,15 @@
                             'right': '320px'
                         });
                     },
-                    columns: [{
+                    columns: [
+                        {
                             data: 'id',
                             name: 'id',
                             orderable: false,
-                            searchable: false
+                            searchable: false,
+                            "mRender": function(data, type, nRow, meta) {
+                                return meta.row + meta.settings._iDisplayStart + 1;
+                            }
                         },
                         {
                             data: 'image_url',
