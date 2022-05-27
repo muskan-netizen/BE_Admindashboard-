@@ -224,6 +224,19 @@ class OrderController extends BaseController
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
                             $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
                             $product_payable_amount = 0;
+                            $opt_quantity_price = 0;
+                            if (!empty($vendor_cart_product->addon)) {
+                                foreach ($vendor_cart_product->addon as $ck => $addon) {
+                                    $opt_quantity_price = 0;
+                                    $opt_price_in_currency = $addon->option->price;
+                                    $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                                    $opt_quantity_price = $opt_price_in_doller_compare *  $vendor_cart_product->quantity;
+                                    $total_amount = $total_amount + $opt_quantity_price;
+                                    $payable_amount = $payable_amount + $opt_quantity_price;
+                                    $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
+                                }
+                            }
+
                             $vendor_taxable_amount = 0;
                             if (isset($vendor_cart_product->product->taxCategory)) {
                                 foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
@@ -232,7 +245,7 @@ class OrderController extends BaseController
                                     }
                                     $rate = round($tax_rate_detail->tax_rate);
                                     $tax_amount = ($price_in_dollar_compare * $rate) / 100;
-                                    $product_tax = $quantity_price * $rate / 100;
+                                    $product_tax = ($quantity_price+$opt_quantity_price) * $rate / 100;
                                     // $taxable_amount = $taxable_amount + $product_tax;
                                     $product_taxable_amount += $product_tax;
                                     $payable_amount = $payable_amount + $product_tax;
@@ -264,7 +277,8 @@ class OrderController extends BaseController
                             }
                             $taxable_amount += $product_taxable_amount;
                             $vendor_taxable_amount += $taxable_amount;
-                            $total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);;
+                            //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
+                            $total_amount += ($vendor_cart_product->quantity * $variant->price);
                             $order_product = new OrderProduct;
                             $order_product->order_vendor_id = $order_vendor->id;
                             $order_product->order_id = $order->id;
@@ -312,17 +326,7 @@ class OrderController extends BaseController
                                 $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                             }
                             $order_product->save();
-                            if (!empty($vendor_cart_product->addon)) {
-                                foreach ($vendor_cart_product->addon as $ck => $addon) {
-                                    $opt_quantity_price = 0;
-                                    $opt_price_in_currency = $addon->option->price;
-                                    $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
-                                    $opt_quantity_price = $opt_price_in_doller_compare * $order_product->quantity;
-                                    $total_amount = $total_amount + $opt_quantity_price;
-                                    $payable_amount = $payable_amount + $opt_quantity_price;
-                                    $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
-                                }
-                            }
+                            
                             $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                             if ($cart_addons) {
                                 foreach ($cart_addons as $cart_addon) {
@@ -359,7 +363,7 @@ class OrderController extends BaseController
                         //Start applying service fee on vendor products total
                         $vendor_service_fee_percentage_amount = 0;
                         if ($vendor_cart_product->vendor->service_fee_percent > 0) {
-                            $vendor_service_fee_percentage_amount = ($vendor_products_total_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                            $vendor_service_fee_percentage_amount = (($vendor_products_total_amount+$opt_quantity_price-$total_container_charges) * $vendor_cart_product->vendor->service_fee_percent) / 100;
 
 
                             $vendor_payable_amount += $vendor_service_fee_percentage_amount;
@@ -378,7 +382,7 @@ class OrderController extends BaseController
                         $order_vendor->order_status_option_id = 1;
                         $order_vendor->delivery_fee = $delivery_fee;
                         $order_vendor->subtotal_amount = $actual_amount;
-                        $order_vendor->payable_amount = $vendor_payable_amount;
+                        $order_vendor->payable_amount = $vendor_payable_amount+$total_fixed_fee_amount;
                         $order_vendor->taxable_amount = $vendor_taxable_amount;
                         $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
@@ -419,7 +423,7 @@ class OrderController extends BaseController
                     //     $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
                     // }
                     $total_discount = $total_discount + $total_subscription_discount;
-                    $order->total_amount = $total_amount;
+                    $order->total_amount = $total_amount+$total_container_charges;
                     $order->total_discount = $total_discount;
                     $order->taxable_amount = $taxable_amount;
                     $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
@@ -430,6 +434,8 @@ class OrderController extends BaseController
                         }
                     }
                     $payable_amount = $payable_amount - $loyalty_amount_saved;
+
+                    $ex_gateways_wallet = [4,36]; // stripe,mycash
                     $wallet_amount_used = 0;
                     if ($user->balanceFloat > 0) {
                         $wallet = $user->wallet;
@@ -438,7 +444,8 @@ class OrderController extends BaseController
                             $wallet_amount_used = $payable_amount;
                         }
                         $order->wallet_amount_used = $wallet_amount_used;
-                        if ($wallet_amount_used > 0) {
+                        // Deduct wallet amount if payable amount is successfully done on gateway
+                        if ( ($wallet_amount_used > 0) && (!in_array($request->payment_option_id, $ex_gateways_wallet)) ) {
                             $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                         }
                     }
@@ -461,7 +468,7 @@ class OrderController extends BaseController
                     $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
-                    $order->payable_amount = $payable_amount;
+                    $order->payable_amount = $payable_amount+$total_fixed_fee_amount;
                     $order->fixed_fee_amount = $total_fixed_fee_amount;
                     $order->total_container_charges = $total_container_charges;
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
@@ -539,7 +546,6 @@ class OrderController extends BaseController
                         // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
                         $this->sendSuccessSMS($request, $order);
                     }
-
                     DB::commit();
 
                     # if payment type cash on delivery or payment status is 'Paid'
@@ -1585,6 +1591,7 @@ class OrderController extends BaseController
                     $payable_amount = 0;
                     $total_container_charges = 0;
                     $discount_amount = 0;
+                    $opt_quantity_price = 0;
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {

@@ -184,19 +184,31 @@
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
-                                                                            <span class="ellipsis" data-toggle="tooltip"
-                                                                                data-placement="top" title="">
-                                                                                @if ($order->address)
-                                                                                    {{ $order->address->address }},
-                                                                                    {{ $order->address->street }},
-                                                                                    {{ $order->address->city }},
-                                                                                    {{ $order->address->state }},
-                                                                                    {{ $order->address->country }}
-                                                                                    {{ $order->address->pincode }}
-                                                                                @else
-                                                                                    NA
-                                                                                @endif
-                                                                            </span>
+                                                                            @if($order->luxury_option_id == 3)
+                                                                          
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="" >
+                                                                                    @if ( count($order->vendors) > 0)
+                                                                                        {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                            @else
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="">
+                                                                                    @if ($order->address)
+                                                                                        {{ $order->address->address }},
+                                                                                        {{ $order->address->street }},
+                                                                                        {{ $order->address->city }},
+                                                                                        {{ $order->address->state }},
+                                                                                        {{ $order->address->country }}
+                                                                                        {{ $order->address->pincode }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                            @endif  
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -668,6 +680,7 @@
                                                 <div class="row">
                                                     @if ($pastOrders->isNotEmpty())
                                                         @foreach ($pastOrders as $key => $order)
+                                                       
                                                             <div class="col-12">
                                                                 <div class="row no-gutters order_head">
                                                                     <div class="col-md-3 alOrderStatus">
@@ -685,20 +698,32 @@
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
-                                                                            <span class="ellipsis" data-toggle="tooltip"
-                                                                                data-placement="top" title="">
-                                                                                @if ($order->address)
-                                                                                    {{ $order->address->house_number ?? false ? $order->address->house_number . ',' : '' }}
-                                                                                    {{ $order->address->address }},
-                                                                                    {{ $order->address->street }},
-                                                                                    {{ $order->address->city }},
-                                                                                    {{ $order->address->state }},
-                                                                                    {{ $order->address->country }}
-                                                                                    {{ $order->address->pincode }}
-                                                                                @else
-                                                                                    NA
-                                                                                @endif
-                                                                            </span>
+                                                                            @if($order->luxury_option_id == 3)
+                                                                          
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="" >
+                                                                                    @if ( count($order->vendors) > 0)
+                                                                                        {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                            @else
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="">
+                                                                                    @if ($order->address)
+                                                                                        {{ $order->address->house_number ?? false ? $order->address->house_number . ',' : '' }}
+                                                                                        {{ $order->address->address }},
+                                                                                        {{ $order->address->street }},
+                                                                                        {{ $order->address->city }},
+                                                                                        {{ $order->address->state }},
+                                                                                        {{ $order->address->country }}
+                                                                                        {{ $order->address->pincode }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                            @endif
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -712,13 +737,13 @@
                                                                         <a class="text-capitalize">{{ $order->user->name }}</a>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
-                                                                        <div class="col-md-3">
+                                                                        <div class="col-md-3" {{$order->luxury_option_id }}>
                                                                             
                                                                             @if($order->luxury_option_id == 3)
                                                                           
                                                                             <span class="ellipsis" data-toggle="tooltip"
-                                                                                data-placement="top" title="">
-                                                                                @if ( count($order->vendors) >0)
+                                                                                data-placement="top" title="" >
+                                                                                @if ( count($order->vendors) > 0)
                                                                                     {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
                                                                                 @else
                                                                                     NA
@@ -1174,20 +1199,32 @@
                                                                         @if ($client_preference_detail->business_type != 'taxi')
                                                                             <div class="col-md-3">
                                                                                 <h4>{{ __('Address') }}</h4>
-                                                                                <span class="ellipsis"
-                                                                                    data-toggle="tooltip" data-placement="top"
-                                                                                    title="">
-                                                                                    @if ($order->address)
-                                                                                        {{ $order->address->address }},
-                                                                                        {{ $order->address->street }},
-                                                                                        {{ $order->address->city }},
-                                                                                        {{ $order->address->state }},
-                                                                                        {{ $order->address->country }}
-                                                                                        {{ $order->address->pincode }}
-                                                                                    @else
-                                                                                        NA
-                                                                                    @endif
-                                                                                </span>
+                                                                                @if($order->luxury_option_id == 3)
+                                                                          
+                                                                                    <span class="ellipsis" data-toggle="tooltip"
+                                                                                        data-placement="top" title="" >
+                                                                                        @if ( count($order->vendors) > 0)
+                                                                                            {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                                        @else
+                                                                                            NA
+                                                                                        @endif
+                                                                                    </span>
+                                                                                @else
+                                                                                    <span class="ellipsis"
+                                                                                        data-toggle="tooltip" data-placement="top"
+                                                                                        title="">
+                                                                                        @if ($order->address)
+                                                                                            {{ $order->address->address }},
+                                                                                            {{ $order->address->street }},
+                                                                                            {{ $order->address->city }},
+                                                                                            {{ $order->address->state }},
+                                                                                            {{ $order->address->country }}
+                                                                                            {{ $order->address->pincode }}
+                                                                                        @else
+                                                                                            NA
+                                                                                        @endif
+                                                                                    </span>
+                                                                                @endif    
                                                                             </div>
                                                                         @endif
                                                                     </div>
@@ -1481,19 +1518,31 @@
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
-                                                                            <span class="ellipsis" data-toggle="tooltip"
-                                                                                data-placement="top" title="">
-                                                                                @if ($order->address)
-                                                                                    {{ $order->address->address }},
-                                                                                    {{ $order->address->street }},
-                                                                                    {{ $order->address->city }},
-                                                                                    {{ $order->address->state }},
-                                                                                    {{ $order->address->country }}
-                                                                                    {{ $order->address->pincode }}
-                                                                                @else
-                                                                                    NA
-                                                                                @endif
-                                                                            </span>
+                                                                            @if($order->luxury_option_id == 3)
+                                                                          
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="" >
+                                                                                    @if ( count($order->vendors) > 0)
+                                                                                        {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                            @else
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="">
+                                                                                    @if ($order->address)
+                                                                                        {{ $order->address->address }},
+                                                                                        {{ $order->address->street }},
+                                                                                        {{ $order->address->city }},
+                                                                                        {{ $order->address->state }},
+                                                                                        {{ $order->address->country }}
+                                                                                        {{ $order->address->pincode }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                                @endif    
                                                                         </div>
                                                                     @endif
                                                                 </div>

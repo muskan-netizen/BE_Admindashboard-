@@ -58,7 +58,7 @@ public function boot(Request $request)
 
 
 
-		if (isset($mail->id)){
+		if (isset($mail->id) && isset($mail->mail_driver)  && isset($mail->mail_host)  && isset($mail->mail_port)  && isset($mail->mail_encryption)  && isset($mail->mail_username) ){
 			$config = array(
 			'driver' => $mail->mail_driver,
 			'host' => $mail->mail_host,

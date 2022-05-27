@@ -1021,6 +1021,19 @@ class OrderController extends BaseController
                     $task_type = 'now';
                 }
 
+            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
+            if(!empty($orderVendorDetails->scheduled_date_time)){
+                $task_type = 'schedule';
+                $user = Auth::user();
+                $selectedDate = dateTimeInUserTimeZone($orderVendorDetails->scheduled_date_time, $user->timezone);
+                $slot = trim(explode("-",$orderVendorDetails->schedule_slot)[0]);
+
+                $slotTime = date('H:i:s', strtotime("$slot"));
+                $selectedDate = date('Y-m-d',strtotime($selectedDate));
+                $scheduleDateTime = $selectedDate.' '.$slotTime;
+                $schedule_time =  $scheduleDateTime?? null;
+            }
+
             $tasks[] = array(
                 'task_type_id' => 1,
                 'latitude' => $vendor_details->latitude ?? '',

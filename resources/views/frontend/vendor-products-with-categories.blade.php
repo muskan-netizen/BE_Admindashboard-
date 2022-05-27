@@ -752,7 +752,7 @@
                                                                     <input type="checkbox" id="inlineCheckbox_<%= key1 %>_<%= key2 %>" class="product_addon_option" name="addonData[<%= key1 %>][]" addonId="<%= addon.addon_id %>" addonOptId="<%= option.id %>" addonPrice="<%= option.price %>">
                                                                 </div>
                                                             </div>
-                                                            <% if(key2 == (_.size(addon.setoptions) - 1 ) ){ %>
+                                                            <% if((key > 5) && (key2 == (_.size(addon.setoptions) - 1 )) ){ %>
                                                             </div>
                                                             <% } %>
                                                         <% }); %>

@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
 use App\Http\Controllers\Front\PickupDeliveryController;
-use App\Models\{User, UserVendor, CaregoryKycDoc,Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress, Webhook};
+use App\Models\{User, UserVendor, CaregoryKycDoc,Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, Transaction, UserAddress, UserSavedPaymentMethods, Webhook};
 
 use function App\Notifications\via;
 
@@ -27,27 +27,349 @@ class StripeGatewayController extends FrontController
     public $gateway;
     public $API_KEY;
     public $currency;
+    public $api_key_new;
+    public $testmodenew;
 
     public function __construct()
     {
         $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
         $creds_arr = json_decode($stripe_creds->credentials);
         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+        $this->api_key_new = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
         $testmode = (isset($stripe_creds->test_mode) && ($stripe_creds->test_mode == '1')) ? true : false;
+        $this->testmodenew = (isset($stripe_creds->test_mode) && ($stripe_creds->test_mode == '1')) ? true : false;
         $this->gateway = Omnipay::create('Stripe');
         $this->gateway->setApiKey($api_key);
         $this->gateway->setTestMode($testmode); //set it to 'false' when go live
         $this->API_KEY = $api_key;
+    }
 
+    public function paymentInit(Request $request, $domain='')
+    {
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+
+        \Stripe\Stripe::setApiKey($this->api_key_new);
+        // header('Content-Type: application/json');
+        // $json_str = file_get_contents('php://input');
+        $json_obj = $request; //json_decode($json_str);
+
+        $intent = null;
+   
+        $total_amount = $this->getDollarCompareAmount($json_obj->total_amount);
+
+        $parameters = [
+            'total_amount'      => $total_amount,
+            'payment_option_id' => $json_obj->payment_option_id,
+            'payment_form'      => $json_obj->payment_form
+        ];
+        try {
+
+            $secret_key = stripePaymentCredentials()->secret_key;
+            $stripe = new \Stripe\StripeClient($secret_key);
+            
+            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe';
+            $webhook_exists = false;
+            $endpoints = $stripe->webhookEndpoints->all();
+            foreach($endpoints->data as $obj){
+                if($obj->url == $webhook_url){
+                    $webhook_exists = true;
+                    break;
+                }
+            }
+            if(!$webhook_exists){
+                $res = $stripe->webhookEndpoints->create([
+                    'url' => $webhook_url,
+                    'enabled_events' => [
+                        'payment_intent.succeeded',
+                        'payment_intent.payment_failed'
+                    ]
+                ]);
+            }
+            
+            $payment_form = $json_obj->payment_form;
+            if($payment_form == 'cart'){
+                $parameters['address_id'] = $json_obj->address_id;
+                $parameters['order_number'] = $json_obj->order_number;
+            }
+            elseif($payment_form == 'wallet'){
+                
+            }
+            if($payment_form == 'tip'){
+                $parameters['order_number'] = $json_obj->order_number;
+            }
+            elseif($payment_form == 'subscription'){
+                $parameters['subscription_id'] = $json_obj->subscription_id;
+            }
+            
+            if (isset($json_obj->payment_method_id) && !isset($json_obj->payment_intent_id)) {
+
+                #  Create the Customer
+                
+                // $saved_payment_method = UserSavedPaymentMethods::where('user_id', Auth::user()->id)->where('payment_option_id', $json_obj->payment_option_id)->first();
+                // if (!$saved_payment_method) {
+                    $user = Auth::user();
+                    $address = UserAddress::where('user_id', $user->id);
+                    $customerResponse = \Stripe\Customer::create(array(  
+                        'description' => 'Creating Customer',
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'metadata' => [
+                            'user_id' => $user->id,
+                            'phone_number' => $user->phone_number
+                        ]
+                    ));  
+                    $customer_id = $customerResponse['id'];
+                    if ($customer_id) {
+                        $payment_method = new UserSavedPaymentMethods;
+                        $payment_method->user_id = Auth::user()->id;
+                        $payment_method->payment_option_id = $json_obj->payment_option_id;
+                        $payment_method->customerReference = $customer_id;
+                        $payment_method->save();
+                    }
+                // }else {
+                //     $customer_id = $saved_payment_method->customerReference;
+                // }
+
+                # Create the PaymentIntent
+                // $intent = \Stripe\PaymentIntent::create([
+                //     'payment_method'       => $json_obj->payment_method_id,
+                //     'amount'               => $total_amount * 100,
+                //     'currency'             => $this->currency,
+                //     'confirmation_method'  => 'manual',
+                //     'confirm'              => true,
+                //     'customer'             => $customer_id
+                // ]);
+
+                $postdata = array(
+                    'payment_method'       => $json_obj->payment_method_id,
+                    'amount'               => $total_amount * 100,
+                    'currency'             => $this->currency,
+                    'confirmation_method'  => 'manual',
+                    'confirm'              => true,
+                    'customer'             => $customer_id,
+                    'metadata' => [
+                        'user_id' => $user->id,
+                        'payment_form' => $payment_form
+                    ]
+                );
+
+                $user_address = UserAddress::where('is_primary', 1)->first();
+        
+                if($payment_form == 'cart'){
+                    $address_id = $json_obj->address_id;
+                    $user_address = UserAddress::where('id', $address_id)->first();
+                    $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                    $order_number = $json_obj->order_number;
+        
+                    $postdata['description'] = 'Order Checkout';
+                    $postdata['metadata']['cart_id'] = ($cart) ? $cart->id : 'N/A';
+                    $postdata['metadata']['order_number'] = $order_number;
+                }
+                elseif($payment_form == 'wallet'){
+                    $postdata['description'] = 'Wallet Checkout';
+                }
+                if($payment_form == 'tip'){
+                    $postdata['description'] = 'Tip Checkout';
+                    $order_number = $json_obj->order_number;
+                    $postdata['metadata']['order_number'] = $order_number;
+                }
+                elseif($payment_form == 'subscription'){
+                    $postdata['description'] = 'Subscription Checkout';
+                    $postdata['metadata']['subscription_id'] = $json_obj->subscription_id;
+                }
+
+                // $postdata['shipping']['name'] = ($user->name) ? $user->name : 'N/A';
+                // $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
+                // $postdata['shipping']['address']['line1'] = ($user_address) ? ($user_address->street != "") ? $user_address->street : 'N/A' : 'N/A';
+                // $postdata['shipping']['address']['city'] = ($user_address) ? ($user_address->city != "") ? $user_address->city : 'N/A' : 'N/A';
+                // $postdata['shipping']['address']['state'] = ($user_address) ? ($user_address->state != "") ? $user_address->state : 'N/A' : 'N/A';
+                // $postdata['shipping']['address']['country'] = ($user_address) ? ($user_address->country != "") ? $user_address->country : 'N/A' : 'N/A';
+                // $postdata['shipping']['address']['postal_code'] = ($user_address) ? ($user_address->pincode != "") ? $user_address->pincode : 'N/A' : 'N/A';
+
+                $intent = \Stripe\PaymentIntent::create($postdata);
+            }
+            if (isset($json_obj->payment_intent_id)) {
+                $intent = \Stripe\PaymentIntent::retrieve(
+                    $json_obj->payment_intent_id
+                );
+                $intent->confirm();
+            }
+            $this->generateResponse($intent, $parameters);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            # Display error on client
+            echo json_encode([
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    function generateResponse($intent, $parameters)
+    {
+        if (($intent->status == 'requires_action') && isset($intent->next_action->type) && ($intent->next_action->type == 'use_stripe_sdk')) {
+            # Tell the client to handle the action
+            echo json_encode([
+                'requires_action' => true,
+                'payment_intent_client_secret' => $intent->client_secret,
+            ]);
+        } else if ($intent->status == 'succeeded') {
+            # The payment didn’t need any additional actions and completed!
+            # Handle post-payment fulfillment
+            $result = $this->checkStripeReturnDataFrom3DAuth($intent, $parameters);
+
+            echo json_encode([
+                "success" => true,
+                'result' => $result
+            ]);
+
+        } else {
+            # Invalid status
+            http_response_code(500);
+            echo json_encode(['error' => 'Invalid PaymentIntent status']);
+        }
+    }
+
+    public function checkStripeSecurity(Request $request)
+    {
+        $token        = $request->input('stripe_token');
+        $total_amount = $this->getDollarCompareAmount($request->input('total_amount'));
+        $address_id   = $request->input('address_id');
+        $order_number = $request->input('order_number');
+
+        $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
+        $creds_arr    = json_decode($stripe_creds->credentials);
+        $api_key      = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+        $testmode     = (isset($stripe_creds->test_mode) && ($stripe_creds->test_mode == '1')) ? true : false;
+
+        \Stripe\Stripe::setApiKey($api_key);
+        $source = \Stripe\Source::create([
+            'amount' => $total_amount * 100,
+            'currency' => $this->currency,
+            'type' => 'three_d_secure',
+            'three_d_secure' => [
+              'card' => $token,
+            ],
+            'redirect' => [
+              'return_url' => route('check_stripe_return_data').'?releezer_token='.$token.'&releezer_amount='.$total_amount.'&releezer_type=three_d_secure&releezer_payment_form=cart&releezer_address_id='.$address_id.'&releezer_order_number='.$order_number.'&releezer_subscription_id=1',
+            ],
+          ]);
+
+          return response()->json(['url'=> $source->redirect->url]);
+    }
+
+    public function checkStripeReturnDataFrom3DAuth($intent, $parameters)
+    {
+        try {
+            $user = Auth::user();
+            $address = UserAddress::where('user_id', $user->id);
+            $amount = $parameters['total_amount'];
+            $payment_form = $parameters['payment_form'];
+                
+            $transactionId = $intent->id;
+            $returnUrl = '';
+
+            if($payment_form == 'cart'){
+                // $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                $order_number = $parameters['order_number'];
+                // $cart_id = $cart ? $cart->id : 0 ;
+                $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                // if ($order) {
+                //     $order->payment_status = 1;
+                //     $order->save();
+                //     $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                //     if (!$payment_exists) {
+                    
+                //         $payment = new Payment();
+                //         $payment->date = date('Y-m-d');
+                //         $payment->user_id = $user->id;
+                //         $payment->order_id = $order->id;
+                //         $payment->transaction_id = $transactionId;
+                //         $payment->balance_transaction = $amount;
+                //         $payment->payment_option_id = 4;
+                //         $payment->type = 'cart';
+                //         $payment->save();
+
+
+                //         // Auto accept order
+                //         $orderController = new OrderController();
+                //         $orderController->autoAcceptOrderIfOn($order->id);
+                        
+                    
+                //         // Remove cart
+                //         Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                //         CartAddon::where('cart_id', $cart_id)->delete();
+                //         CartCoupon::where('cart_id', $cart_id)->delete();
+                //         CartProduct::where('cart_id', $cart_id)->delete();
+                //         CartProductPrescription::where('cart_id', $cart_id)->delete();
+                //         CartDeliveryFee::where('cart_id', $cart_id)->delete();
+
+                //         // Send Notification
+                //         if (!empty($order->vendors)) {
+                //             foreach ($order->vendors as $vendor_value) {
+                //                 $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                //                 $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                //                 $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                //             }
+                //         }
+                //         $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                //         $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                    
+                //         $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+                //         $request = new Request(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
+
+                //         //Send Email to customer
+                //         $orderController->sendSuccessEmail($request, $order);
+                //         //Send Email to Vendor
+                //         foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                //             $orderController->sendSuccessEmail($request, $order, $vendor_id);
+                //         }
+                //         // send sms 
+                //         $orderController->sendSuccessSMS($request, $order);
+                //     }
+
+                //     $returnUrl = route('order.success', $order->id);
+                // }
+                $returnUrl = route('order.success', $order->id);
+            } elseif($payment_form == 'wallet'){
+                // $request = new Request(['wallet_amount' => $amount, 'transaction_id' => $transactionId]);
+                // $walletController = new WalletController();
+                // $walletController->creditWallet($request);
+                $message = 'Wallet has been credited successfully';
+                $returnUrl = route('user.wallet');
+            }
+            elseif($payment_form == 'tip'){
+                // $order_number = $parameters['order_number'];
+                // $request = new Request(['order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
+                // $orderController = new OrderController();
+                // $orderController->tipAfterOrder($request);
+                $message = 'Tip has been submitted successfully';
+                $returnUrl = route('user.orders');
+            }
+            elseif($payment_form == 'subscription'){
+                // $subscription = $parameters['subscription_id'];
+                // $request = new Request(['payment_option_id' => 4, 'amount' => $amount, 'transaction_id' => $transactionId]);
+                // $subscriptionController = new UserSubscriptionController();
+                // $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
+                $message = __('Your subscription has been activated successfully.');
+                $returnUrl = route('user.subscription.plans');
+            }
+            Session::put('success', $message);
+            // return redirect($returnUrl);
+            return $returnUrl;
+         
+        } catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 400);
+        }
     }
 
     public function postPaymentViaStripe(request $request)
     {
      
         try {
-           
+            $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
             $amount = $this->getDollarCompareAmount($request->amount);
@@ -236,6 +558,8 @@ class StripeGatewayController extends FrontController
     public function subscriptionPaymentViaStripe(request $request)
     {
         try {
+            $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
             $token = $request->stripe_token;
@@ -300,6 +624,11 @@ class StripeGatewayController extends FrontController
     public function createStripeFPXPaymentIntent(Request $request, $domain='')
     {
         try{
+            $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+            if($this->currency != 'MYR'){
+                return $this->errorResponse($this->currency. ' ' . __('currency not supported'), 400);
+            }
             ////// Create webhook Endpoint ///////
             $secret_key = stripeFPXPaymentCredentials()->secret_key;
             $stripe = new \Stripe\StripeClient($secret_key);
@@ -376,7 +705,7 @@ class StripeGatewayController extends FrontController
             $postdata = [
                 'payment_method_types' => ['fpx'],
                 'amount' => $amount * 100,
-                'currency' => 'myr', //$this->currency
+                'currency' => $this->currency, //'myr'
                 // 'customer' => '',
                 'receipt_email' => $user->email ?? '',
                 'metadata' => [
@@ -611,6 +940,183 @@ class StripeGatewayController extends FrontController
         }
     }
 
+    public function stripeWebhook(Request $request)
+    {
+        $secret_key = stripePaymentCredentials()->secret_key;
+        \Stripe\Stripe::setApiKey($secret_key);
+
+        $payload = @file_get_contents('php://input');
+        $event = null;
+        // \Log::info($payload);
+        try {
+            $event = \Stripe\Event::constructFrom(
+                json_decode($payload, true)
+            );
+        } catch(\UnexpectedValueException $e) {
+            // Invalid payload
+            http_response_code(400);
+            exit();
+        }
+
+        Webhook::create(['tracking_order_id'=>'','response'=>$request->getContent() ?? json_encode($payload)]);
+        
+        // Handle the event
+        switch ($event->type) {
+            case 'payment_intent.succeeded':
+                $paymentIntent = $event->data->object;
+                // \Log::info($paymentIntent);
+
+                $payment_intent_id = $paymentIntent->id;
+                $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
+                $charges = $intent->charges->data;
+                $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
+                $amount = 0;
+                if(count($charges)){
+                    $transactionId = $charges[0]->balance_transaction;
+                    $payment_form = $charges[0]->metadata->payment_form;
+                    $amount = $charges[0]->amount / 100;
+                    $user_id = $charges[0]->metadata->user_id;
+                }
+
+                if($payment_form == 'cart'){
+                    $order_number = $charges[0]->metadata->order_number;
+                    $cart_id = $charges[0]->metadata->cart_id ?? '';
+                    $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                    if ($order) {
+                        $order->payment_status = 1;
+                        $order->save();
+                        $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                        if (!$payment_exists) {
+                            $payment = new Payment();
+                            $payment->date = date('Y-m-d');
+                            $payment->user_id = $user_id;
+                            $payment->order_id = $order->id;
+                            $payment->transaction_id = $transactionId;
+                            $payment->balance_transaction = $amount;
+                            $payment->payment_option_id = 4;
+                            $payment->type = 'cart';
+                            $payment->save();
+
+                            // Deduct wallet amount if payable amount is successfully done on gateway
+                            if ( $order->wallet_amount_used > 0 ) {
+                                $user = User::find($user_id);
+                                $wallet = $user->wallet;
+                                $transaction_exists = Transaction::where('type', 'withdraw')->where('meta', 'LIKE', '%order_number%')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                                if(!$transaction_exists){
+                                    $wallet->withdrawFloat($order->wallet_amount_used, [
+                                        'description' => 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>',
+                                        'order_number' => $order->order_number,
+                                        'transaction_id' => $transactionId,
+                                        'payment_option' => 'Stripe'
+                                    ]);
+                                }
+                            }
+    
+                            // Auto accept order
+                            $orderController = new OrderController();
+                            $orderController->autoAcceptOrderIfOn($order->id);
+    
+                            // Remove cart
+                            CaregoryKycDoc::where('cart_id',$cart_id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+                            Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                            CartAddon::where('cart_id', $cart_id)->delete();
+                            CartCoupon::where('cart_id', $cart_id)->delete();
+                            CartProduct::where('cart_id', $cart_id)->delete();
+                            CartProductPrescription::where('cart_id', $cart_id)->delete();
+                            CartDeliveryFee::where('cart_id', $cart_id)->delete();
+                  
+                            // Send Notification
+                            if (!empty($order->vendors)) {
+                                foreach ($order->vendors as $vendor_value) {
+                                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                                    $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                                    $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                                }
+                            }
+                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                            $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                            $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+                            $request = new Request(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
+
+                            //Send Email to customer
+                            $orderController->sendSuccessEmail($request, $order);
+                            //Send Email to Vendor
+                            foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                                $orderController->sendSuccessEmail($request, $order, $vendor_id);
+                            }
+                            // send sms 
+                            $this->sendSuccessSMS($request, $order);
+                        }
+    
+                        // Send Email
+                        //   $this->successMail();
+                    }
+                } elseif($payment_form == 'wallet'){
+                    $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
+                    $walletController = new WalletController();
+                    $walletController->creditWallet($request);
+                }
+                elseif($payment_form == 'tip'){
+                    $order_number = $charges[0]->metadata->order_number;
+                    $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
+                    $orderController = new OrderController();
+                    $orderController->tipAfterOrder($request);
+                }
+                elseif($payment_form == 'subscription'){
+                    $subscription = $charges[0]->metadata->subscription_id;
+                    $request->request->add(['user_id' => $user_id, 'payment_option_id' => 19, 'amount' => $amount, 'transaction_id' => $transactionId]);
+                    $subscriptionController = new UserSubscriptionController();
+                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
+                }
+                break;
+            
+            case 'payment_intent.payment_failed':
+                $paymentIntent = $event->data->object;
+                // \Log::info($paymentIntent);
+
+                $meta = $paymentIntent->metadata;
+                // \Log::info($meta);
+                $user_id = $payment_form = $order_number = '';
+                // $amount = $paymentIntent->amount / 100;
+                if($meta){
+                    $payment_form = $meta->payment_form;
+                    $user_id = $meta->user_id;
+                }
+                $user = User::find($user_id);
+
+                if($payment_form == 'cart'){
+                    $order_number = $meta->order_number;
+                    $order = Order::where('order_number', $order_number)->first();
+                    if($order){
+                        // $wallet_amount_used = $order->wallet_amount_used;
+                        // if($wallet_amount_used > 0){
+                        //     $wallet = $user->wallet;
+                        //     $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                        // }
+
+                        // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                        // foreach($order_products as $order_prod){
+                        //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                        // }
+                        // OrderProduct::where('order_id', $order->id)->delete();
+                        // OrderProductPrescription::where('order_id', $order->id)->delete();
+                        // VendorOrderStatus::where('order_id', $order->id)->delete();
+                        // OrderVendor::where('order_id', $order->id)->delete();
+                        // OrderTax::where('order_id', $order->id)->delete();
+                        // $order->delete();
+                    }
+                }
+                break;
+            
+            // ... handle other event types
+            default:
+                echo 'Received unknown event type ' . $event->type;
+        }
+        
+        http_response_code(200);
+    }
+
     public function stripeFPXWebhook(Request $request)
     {
         $secret_key = stripeFPXPaymentCredentials()->secret_key;
@@ -629,6 +1135,8 @@ class StripeGatewayController extends FrontController
             exit();
         }
 
+        Webhook::create(['tracking_order_id'=>'','response'=>$request->getContent() ?? json_encode($payload)]);
+        
         // Handle the event
         switch ($event->type) {
             case 'payment_intent.succeeded':
@@ -675,9 +1183,7 @@ class StripeGatewayController extends FrontController
                             CartCoupon::where('cart_id', $cart_id)->delete();
                             CartProduct::where('cart_id', $cart_id)->delete();
                             CartProductPrescription::where('cart_id', $cart_id)->delete();
-                  
-                            // send sms 
-                            $this->sendSuccessSMS($request, $order);
+                            CartDeliveryFee::where('cart_id', $cart_id)->delete();
                         
                             // Send Notification
                             if (!empty($order->vendors)) {
@@ -690,6 +1196,17 @@ class StripeGatewayController extends FrontController
                             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
                             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+                            $request = new Request(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
+
+                            //Send Email to customer
+                            $orderController->sendSuccessEmail($request, $order);
+                            //Send Email to Vendor
+                            foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                                $orderController->sendSuccessEmail($request, $order, $vendor_id);
+                            }
+                            // send sms 
+                            $this->sendSuccessSMS($request, $order);
                         }
     
                         // Send Email
