@@ -1231,9 +1231,11 @@ $(document).ready(function () {
                 response.payment_intent_client_secret
             ).then(handleStripeJsResult);
         } else {
-            console.log(response);
+            // console.log(response);
             // Show success message
-            window.location.href = response.result;
+            setTimeout(() => {
+                window.location.href = response.result;
+            }, 1500);
         }
     }
 
