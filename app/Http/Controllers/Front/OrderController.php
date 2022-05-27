@@ -1934,9 +1934,10 @@ class OrderController extends FrontController
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'phone_no', 'email', 'longitude', 'address')->first();
             $tasks = array();
             $meta_data = '';
-
+            $rtype = 'P';
             $unique = Auth::user()->code;
             if ($colm == 1) {     # 1 for pickup from customer drop to vendor
+                $rtype = 'P';
                 $desc = $order->comment_for_pickup_driver ?? null;
                 $tasks[] = array(
                     'task_type_id' => 1,
@@ -1974,6 +1975,7 @@ class OrderController extends FrontController
 
 
             if ($colm == 2) { # 1 for pickup from vendor drop to customer
+                $rtype = 'D';
                 $desc = $order->comment_for_dropoff_driver ?? null;
                 $tasks[] = array(
                     'task_type_id' => 1,
@@ -2033,7 +2035,8 @@ class OrderController extends FrontController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'request_type'=> $rtype
             ];
 
 
