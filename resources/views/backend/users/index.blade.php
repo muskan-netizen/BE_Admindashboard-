@@ -286,6 +286,9 @@
         $(document).on("click","#inactive-user",function() {
             initDataTable('inactive_user_datatable','inactive');
         });
+        $(document).on("click","#active-user",function() {
+            initDataTable('user_datatable','active');
+        });
         $(document).on("click", ".delete-vendor", function() {
             var destroy_url = $(this).data('destroy_url');
             var id = $(this).data('rel');
