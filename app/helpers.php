@@ -15,6 +15,8 @@ use App\Models\{VendorSlot, ClientCurrency, Order};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
+
+
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
         return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
@@ -33,15 +35,19 @@ if (! function_exists('orderProductDetails')) {
     }
 }
 
-function EasebuzzSubMerchent()
-{
-    $access = 0;
-    $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'easebuzz')->where('status', 1)->first();
-    if($payOpt){
-        $json = json_decode($payOpt->credentials);
-        $access = $json->easebuzz_Sub_merchant ;
+
+
+if (! function_exists('EasebuzzSubMerchent')) {
+    function EasebuzzSubMerchent()
+    {
+        $access = 0;
+        $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'easebuzz')->where('status', 1)->first();
+        if ($payOpt) {
+            $json = json_decode($payOpt->credentials);
+            $access = $json->easebuzz_Sub_merchant ;
+        }
+        return $access;
     }
-    return $access;
 }
 
 if (!function_exists('pr')) {
@@ -61,531 +67,593 @@ if (!function_exists('http_check')) {
         return $return;
     }
 }
-function getUserDetailViaApi($user){
-    $user_refferal = UserRefferal::where('user_id', $user->id)->first();
-    $client_preference = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format','time_format', 'map_key','sms_provider','verify_email','verify_phone', 'app_template_id', 'web_template_id')->first();
-    $data['name'] = $user->name;
-    $data['email'] = $user->email;
-    $data['source'] = $user->image;
-    $data['is_admin'] = $user->is_admin;
-    $data['dial_code'] = $user->dial_code;
-    $data['auth_token'] =  $user->auth_token;
-    $data['phone_number'] = $user->phone_number;
-    $data['client_preference'] = $client_preference;
-    $data['cca2'] = $user->country ? $user->country->code : '';
-    $data['callingCode'] = $user->country ? $user->country->phonecode : '';
-    $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code: '';
-    $data['verify_details'] = ['is_email_verified' => $user->is_email_verified, 'is_phone_verified' => $user->is_phone_verified];
-    return $data;
-}
-function getMonthNumber($month_name){
-    if($month_name == 'January'){
-        return 1;
-    }else if($month_name == 'February'){
-        return 2;
-    }else if($month_name=='March'){
-        return 3;
-    }else if($month_name=='April'){
-        return 4;
-    }else if($month_name=='May'){
-        return 5;
-    }else if($month_name=='June'){
-        return 6;
-    }else if($month_name=='July'){
-        return 7;
-    }else if($month_name=='August'){
-        return 8;
-    }else if($month_name=='September'){
-        return 9;
-    }else if($month_name=='October'){
-        return 10;
-    }else if($month_name=='November'){
-        return 11;
-    }else if($month_name=='December'){
-        return 12;
-    }
-}
-function generateOrderNo($length = 8){
-    $number = '';
-    do {
-        for ($i=$length; $i--; $i>0) {
-            $number .= mt_rand(0,9);
-        }
-    } while (!empty(\DB::table('orders')->where('order_number', $number)->first(['order_number'])) );
-    return $number;
-}
-function generateWalletTransactionReference($length = 8){
-    $number = '';
-    do {
-        $number = 'txn_' . md5(uniqid(rand(), true));
-    } 
-    while (!empty(\DB::table('transactions')->where('meta', 'Like', '%'. $number .'%')->first(['meta'])) );
-    return $number;
-}
-function getNomenclatureName($searchTerm, $plural = true){
-    $result = Nomenclature::with(['translations' => function($q) {
-                $q->where('language_id', session()->get('customerLanguage'));
-            }])->where('label', 'LIKE', "%{$searchTerm}%")->first();
-    if($result){
-        $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
-    }
-    return $plural ? $searchTerm : rtrim($searchTerm, 's');
-}
-function convertDateTimeInTimeZone($date, $timezone, $format = 'Y-m-d H:i:s'){
-    $date = Carbon::parse($date, 'UTC');
-    $date->setTimezone($timezone);
-    return $date->format($format);
-}
-function getClientPreferenceDetail()
-{   
-    
-    $client_preference_detail = ClientPreference::first();
-    if($client_preference_detail)
+
+if (!function_exists('getUserDetailViaApi')) {
+    function getUserDetailViaApi($user)
     {
-        list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
-        $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
+        $user_refferal = UserRefferal::where('user_id', $user->id)->first();
+        $client_preference = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
+        $data['name'] = $user->name;
+        $data['email'] = $user->email;
+        $data['source'] = $user->image;
+        $data['is_admin'] = $user->is_admin;
+        $data['dial_code'] = $user->dial_code;
+        $data['auth_token'] =  $user->auth_token;
+        $data['phone_number'] = $user->phone_number;
+        $data['client_preference'] = $client_preference;
+        $data['cca2'] = $user->country ? $user->country->code : '';
+        $data['callingCode'] = $user->country ? $user->country->phonecode : '';
+        $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code: '';
+        $data['verify_details'] = ['is_email_verified' => $user->is_email_verified, 'is_phone_verified' => $user->is_phone_verified];
+        return $data;
     }
-    return $client_preference_detail;
 }
-function getClientDetail()
-{
-    $clientData = ClientData::first();
-    $clientData->logo_image_url = $clientData ? $clientData->logo['original'] : ' ';
-    return $clientData;
-}
-function getRazorPayApiKey()
-{
-    $razorpay_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'razorpay')->where('status', 1)->first();
-    $api_key_razorpay = "";
-    if($razorpay_creds)
+
+
+if (!function_exists('getMonthNumber')) {
+    function getMonthNumber($month_name)
     {
-        $creds_arr_razorpay = json_decode($razorpay_creds->credentials);
-        $api_key_razorpay = (isset($creds_arr_razorpay->api_key)) ? $creds_arr_razorpay->api_key : '';
-    }
-    return $api_key_razorpay;
-}
-
-function dateTimeInUserTimeZone($date, $timezone, $showDate=true, $showTime=true, $showSeconds=false){
-    $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
-    $date_format = (!empty($preferences->date_format)) ? $preferences->date_format : 'YYYY-MM-DD';
-    if($date_format == 'DD/MM/YYYY'){
-        $date_format = 'DD-MM-YYYY';
-    }
-    $time_format = (!empty($preferences->time_format)) ? $preferences->time_format : '24';
-    $date = Carbon::parse($date, 'UTC');
-    $date->setTimezone($timezone);
-    $secondsKey = '';
-    $timeFormat = '';
-    $dateFormat = '';
-    if($showDate){
-        $dateFormat = $date_format;
-    }
-    if($showTime){
-        if($showSeconds){
-            $secondsKey = ':ss';
-        }
-        if($time_format == '12'){
-            $timeFormat = ' hh:mm'.$secondsKey.' A';
-        }else{
-            $timeFormat = ' HH:mm'.$secondsKey;
+        if ($month_name == 'January') {
+            return 1;
+        } elseif ($month_name == 'February') {
+            return 2;
+        } elseif ($month_name=='March') {
+            return 3;
+        } elseif ($month_name=='April') {
+            return 4;
+        } elseif ($month_name=='May') {
+            return 5;
+        } elseif ($month_name=='June') {
+            return 6;
+        } elseif ($month_name=='July') {
+            return 7;
+        } elseif ($month_name=='August') {
+            return 8;
+        } elseif ($month_name=='September') {
+            return 9;
+        } elseif ($month_name=='October') {
+            return 10;
+        } elseif ($month_name=='November') {
+            return 11;
+        } elseif ($month_name=='December') {
+            return 12;
         }
     }
-
-    $format = $dateFormat . $timeFormat;
-    return $date->isoFormat($format);
 }
 
-function dateTimeInUserTimeZone24($date, $timezone, $showDate=true, $showTime=true, $showSeconds=false){
-    $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
-    $date_format = (!empty($preferences->date_format)) ? $preferences->date_format : 'YYYY-MM-DD';
-    if($date_format == 'DD/MM/YYYY'){
-    $date_format = 'DD-MM-YYYY';
-    }
-    $time_format = (!empty($preferences->time_format)) ? $preferences->time_format : '24';
-    $date = Carbon::parse($date, 'UTC');
-    $date->setTimezone($timezone);
-    $secondsKey = '';
-    $timeFormat = '';
-    $dateFormat = '';
-    if($showDate){
-    $dateFormat = $date_format;
-    }
-    if($showTime){
-    $timeFormat = 'HH:mm:ss';
-    }
-    $format = $dateFormat . $timeFormat;
-    return $date->isoFormat($format);
-    }
 
-function productvariantQuantity($variantId ,$type=1){
-    if($type==1){
-        $ProductVariant =  ProductVariant::where('id',$variantId)
+if (!function_exists('generateOrderNo')) {
+    function generateOrderNo($length = 8)
+    {
+        $number = '';
+        do {
+            for ($i=$length; $i--; $i>0) {
+                $number .= mt_rand(0, 9);
+            }
+        } while (!empty(\DB::table('orders')->where('order_number', $number)->first(['order_number'])));
+        return $number;
+    }
+}
+
+if (!function_exists('generateWalletTransactionReference')) {
+    function generateWalletTransactionReference($length = 8)
+    {
+        $number = '';
+        do {
+            $number = 'txn_' . md5(uniqid(rand(), true));
+        } while (!empty(\DB::table('transactions')->where('meta', 'Like', '%'. $number .'%')->first(['meta'])));
+        return $number;
+    }
+}
+
+
+if (!function_exists('getNomenclatureName')) {
+    function getNomenclatureName($searchTerm, $plural = true)
+    {
+        $result = Nomenclature::with(['translations' => function ($q) {
+            $q->where('language_id', session()->get('customerLanguage'));
+        }])->where('label', 'LIKE', "%{$searchTerm}%")->first();
+        if ($result) {
+            $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
+        }
+        return $plural ? $searchTerm : rtrim($searchTerm, 's');
+    }
+}
+
+if (!function_exists('convertDateTimeInTimeZone')) {
+    function convertDateTimeInTimeZone($date, $timezone, $format = 'Y-m-d H:i:s')
+    {
+        $date = Carbon::parse($date, 'UTC');
+        $date->setTimezone($timezone);
+        return $date->format($format);
+    }
+}
+
+
+if (!function_exists('getClientPreferenceDetail')) {
+    function getClientPreferenceDetail()
+    {
+        $client_preference_detail = ClientPreference::first();
+        if ($client_preference_detail) {
+            list($r, $g, $b) = sscanf($client_preference_detail->web_color??'#fff', "#%02x%02x%02x");
+            $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
+        }
+        return $client_preference_detail;
+    }
+}
+
+if (!function_exists('getClientDetail')) {
+    function getClientDetail()
+    {
+        $clientData = ClientData::first();
+        $clientData->logo_image_url = $clientData ? $clientData->logo['original'] : ' ';
+        return $clientData;
+    }
+}
+
+if (!function_exists('getRazorPayApiKey')) {
+    function getRazorPayApiKey()
+    {
+        $razorpay_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'razorpay')->where('status', 1)->first();
+        $api_key_razorpay = "";
+        if ($razorpay_creds) {
+            $creds_arr_razorpay = json_decode($razorpay_creds->credentials);
+            $api_key_razorpay = (isset($creds_arr_razorpay->api_key)) ? $creds_arr_razorpay->api_key : '';
+        }
+        return $api_key_razorpay;
+    }
+}
+
+
+if (!function_exists('dateTimeInUserTimeZone')) {
+    function dateTimeInUserTimeZone($date, $timezone, $showDate=true, $showTime=true, $showSeconds=false)
+    {
+        $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
+        $date_format = (!empty($preferences->date_format)) ? $preferences->date_format : 'YYYY-MM-DD';
+        if ($date_format == 'DD/MM/YYYY') {
+            $date_format = 'DD-MM-YYYY';
+        }
+        $time_format = (!empty($preferences->time_format)) ? $preferences->time_format : '24';
+        $date = Carbon::parse($date, 'UTC');
+        $date->setTimezone($timezone);
+        $secondsKey = '';
+        $timeFormat = '';
+        $dateFormat = '';
+        if ($showDate) {
+            $dateFormat = $date_format;
+        }
+        if ($showTime) {
+            if ($showSeconds) {
+                $secondsKey = ':ss';
+            }
+            if ($time_format == '12') {
+                $timeFormat = ' hh:mm'.$secondsKey.' A';
+            } else {
+                $timeFormat = ' HH:mm'.$secondsKey;
+            }
+        }
+
+        $format = $dateFormat . $timeFormat;
+        return $date->isoFormat($format);
+    }
+}
+
+
+if (!function_exists('dateTimeInUserTimeZone24')) {
+    function dateTimeInUserTimeZone24($date, $timezone, $showDate=true, $showTime=true, $showSeconds=false)
+    {
+        $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
+        $date_format = (!empty($preferences->date_format)) ? $preferences->date_format : 'YYYY-MM-DD';
+        if ($date_format == 'DD/MM/YYYY') {
+            $date_format = 'DD-MM-YYYY';
+        }
+        $time_format = (!empty($preferences->time_format)) ? $preferences->time_format : '24';
+        $date = Carbon::parse($date, 'UTC');
+        $date->setTimezone($timezone);
+        $secondsKey = '';
+        $timeFormat = '';
+        $dateFormat = '';
+        if ($showDate) {
+            $dateFormat = $date_format;
+        }
+        if ($showTime) {
+            $timeFormat = 'HH:mm:ss';
+        }
+        $format = $dateFormat . $timeFormat;
+        return $date->isoFormat($format);
+    }
+}
+
+
+
+if (!function_exists('productvariantQuantity')) {
+    function productvariantQuantity($variantId, $type=1)
+    {
+        if ($type==1) {
+            $ProductVariant =  ProductVariant::where('id', $variantId)
         ->select('quantity')->first();
-    }else{
-        $ProductVariant =  ProductVariant::where('sku',$variantId)
+        } else {
+            $ProductVariant =  ProductVariant::where('sku', $variantId)
         ->select('quantity')->first();
+        }
+        if ($ProductVariant) {
+            return  $ProductVariant->quantity;
+        }
+        return "variant not found";
     }
-    if($ProductVariant){
-    return  $ProductVariant->quantity;
-    }
-    return "variant not found";
 }
-function checkImageExtension($image)
-{
-    $ch =  substr($image, strpos($image, ".") + 1);
-    $ex = "@webp";
-    if($ch == 'svg')
+
+
+if (!function_exists('checkImageExtension')) {
+    function checkImageExtension($image)
     {
-        $ex = "";
+        $ch =  substr($image, strpos($image, ".") + 1);
+        $ex = "@webp";
+        if ($ch == 'svg') {
+            $ex = "";
+        }
+        return $ex;
     }
-    return $ex;
 }
-function getDefaultImagePath()
-{
-    $values = array();
-    $img = 'default/default_image.png';
-    $values['proxy_url'] = \Config::get('app.IMG_URL1');
-    $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
-    $values['image_fit'] = \Config::get('app.FIT_URl');
-    return $values;
-}
-function getImageUrl($image,$dim)
-{
-    $server = env('APP_ENV', 'development');
-    if($server == 'local')
+
+
+if (!function_exists('getDefaultImagePath')) {
+    function getDefaultImagePath()
     {
-        return $image;
+        $values = array();
+        $img = 'default/default_image.png';
+        $values['proxy_url'] = \Config::get('app.IMG_URL1');
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
+        $values['image_fit'] = \Config::get('app.FIT_URl');
+        return $values;
     }
-    return \Config::get('app.FIT_URl').$dim.\Config::get('app.IMG_URL2').'/'.$image.'@webp';
 }
 
 
-function getUserIP() {
-    $ipaddress = '';
-    if (isset($_SERVER['HTTP_CLIENT_IP']))
-        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
-    else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
-        $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    else if(isset($_SERVER['HTTP_X_FORWARDED']))
-        $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
-    else if(isset($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']))
-        $ipaddress = $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
-    else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
-        $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
-    else if(isset($_SERVER['HTTP_FORWARDED']))
-        $ipaddress = $_SERVER['HTTP_FORWARDED'];
-    else if(isset($_SERVER['REMOTE_ADDR']))
-        $ipaddress = $_SERVER['REMOTE_ADDR'];
-    else
-        $ipaddress = 'UNKNOWN';
-    return $ipaddress;
-}
-
-function createSlug($str, $delimiter = '-'){
-
-    $slug = strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $str))))), $delimiter));
-    return $slug;
-
-}
-
-function remove_special_chars($str, $delimiter = ''){
-    // $result = strtolower(trim(preg_replace('/[^A-Za-z0-9\-]/', $delimiter, $str)));
-    $result = strtolower(trim(preg_replace('/[.*+?^${}()\/|[\]\\/]+/', $delimiter, $str))); 
-    return $result;
-}
-
-function getBaseprice($dist,$option = 'lalamove')
-{
-    $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code',$option)->where('status', 1)->first();
-    if($simp_creds && $simp_creds->credentials){
-        $creds_arr = json_decode($simp_creds->credentials);
-        $base_price = $creds_arr->base_price??'0';
-        if($base_price>0)
-        {
-            $distance = $creds_arr->distance??'0';
-            $amount_per_km = $creds_arr->amount_per_km??'0';
-
-        }
-        $lalamove_status = $simp_creds->status??'';
-    }
-        $distance = $dist;  
-    if($distance < 1 || $base_price < 1)
+if (!function_exists('getImageUrl')) {
+    function getImageUrl($image, $dim)
     {
-        return 0;    
+        $server = env('APP_ENV', 'development');
+        if ($server == 'local') {
+            return $image;
+        }
+        return \Config::get('app.FIT_URl').$dim.\Config::get('app.IMG_URL2').'/'.$image.'@webp';
     }
-    
-    $base_price = $base_price;
-    $amount_per_km = $amount_per_km;
-    $total = $base_price + ($distance * $amount_per_km);
-    return  $total;
-// + ($paid_duration * $pricingRule->duration_price);
 }
 
-
-function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
-{
-    $Duration = (($Duration==0)?'60':$Duration);
-
-    $user = Auth::user();
-    if(isset($user->timezone) && !empty($user->timezone)){
-        $timezoneset = $user->timezone;
-    }
-    else{   
-        $client = ClientData::orderBy('id','desc')->select('id','timezone')->first();
-
-        if(isset($client->timezone) && !empty($client->timezone))
-            $timezoneset = $client->timezone;
-        else
-            $timezoneset = 'Asia/Kolkata';
-    }
-    $cr = Carbon::now()->addMinutes($delayMin);
-    $now = dateTimeInUserTimeZone24($cr, $timezoneset);
-    $nowT = strtotime($now);
-    $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
-    $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
-    $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
-    if($nowT > $nowE){
-        return [];
-    }elseif($nowT>$nowS){
-        $StartTime = date('H:i',strtotime($now));
-    }else{
-        $StartTime = date('H:i',strtotime($nowA));
-    }
-    
-    $ReturnArray = array ();
-    $StartTime = strtotime ($StartTime); //Get Timestamp
-    $EndTime = strtotime ($EndTime); //Get Timestamp
-    $AddMins = $Duration * 60;
-    $endtm = 0;
-    
-    while ($StartTime <= $EndTime)
+if (!function_exists('getUserIP')) {
+    function getUserIP()
     {
-        $endtm = $StartTime + $AddMins;
-        if($endtm>$EndTime){
-            $endtm = $EndTime;
+        $ipaddress = '';
+        if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+            $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED'])) {
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+        } elseif (isset($_SERVER['HTTP_X_CLUSTER_CLIENT_IP'])) {
+            $ipaddress = $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
+        } elseif (isset($_SERVER['HTTP_FORWARDED_FOR'])) {
+            $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+        } elseif (isset($_SERVER['HTTP_FORWARDED'])) {
+            $ipaddress = $_SERVER['HTTP_FORWARDED'];
+        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+            $ipaddress = $_SERVER['REMOTE_ADDR'];
+        } else {
+            $ipaddress = 'UNKNOWN';
         }
-        $ReturnArray[] = date ("G:i", $StartTime).' - '.date ("G:i", $endtm);
-        $StartTime += $AddMins;
-        $endtm = 0;
+        return $ipaddress;
     }
-    return $ReturnArray;
 }
-    
-function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60", $slot_type=0, $request_from='')
-{
-    $slotDuration = Vendor::select('slot_minutes')->where('id',$vid)->first();
-    $duration = ($slotDuration->slot_minutes) ?? $duration;
-    $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
-    //type must be a : delivery , takeaway,dine_in
-    $client = ClientData::select('timezone')->first();
-    $preferences = ClientPreference::first();
-    $viewSlot = array();
-    if(!empty($myDate))
+
+
+if (!function_exists('createSlug')) {
+    function createSlug($str, $delimiter = '-')
     {
-        $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
-    }else{
-        $myDate = date('Y-m-d');
-        $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
+        $slug = strtolower(trim(preg_replace('/[\s-]+/', $delimiter, preg_replace('/[^A-Za-z0-9-]+/', $delimiter, preg_replace('/[&]/', 'and', preg_replace('/[\']/', '', iconv('UTF-8', 'ASCII//TRANSLIT', $str))))), $delimiter));
+        return $slug;
     }
-    $mytime =$mytime->dayOfWeek+1;
-    if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
-        $slots = VendorSlot::where('vendor_id',$vid)->where('slot_type', $slot_type)->whereHas('days',function($q)use($mytime,$type){
-            return $q->where('day',$mytime)->where($type,'1');
-        })->get();
-    }else{
-        $slots = VendorSlot::where('vendor_id',$vid)
-        ->whereHas('days',function($q)use($mytime,$type){
-            return $q->where('day',$mytime)->where($type,'1');
-        })
-        ->get();
-    }
-    $min[] = '';
-    $cart = CartProduct::where('vendor_id',$vid)->get();
-    if(isset($cart) && $cart->count()>0){
-        foreach($cart as $product)
-        {
-            $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
-            $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
-            $min[] = (($delayHr * 60) + $delayMin);
-        }
-    }
-
-    if(isset($slots) && count($slots)>0){
-        $slotss = [];
-        foreach($slots as $slott){
-            if(isset($slott->days->id))
-            {
-               $new_slot = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
-               if(!in_array($new_slot, $slotss))
-               {
-                   $slotss[] = $new_slot; 
-               }
-            }else{
-                $slotss[] = [];
-            }
-        }
-
-        $arr = array();
-        $count = count($slotss);
-        for($i=0;$i<$count;$i++){
-            $arr = array_merge($arr,$slotss[$i]);
-        }
-
-        if(isset($arr)){
-            foreach($arr as $k=> $slt)
-            {
-                $sl = explode(' - ',$slt);
-                $viewSlot[$k]['name'] = date('h:i:A',strtotime($sl[0])).' - '.date('h:i:A',strtotime($sl[1]));
-                $viewSlot[$k]['value'] = $slt;
-            }
-        }
-    }
-    
-    return $viewSlot;
 }
 
-function showSlotTemp($myDate = null, $vid, $user_id, $type = 'delivery',$duration="60")
-{
-    $slotDuration = Vendor::select('slot_minutes')->where('id',$vid)->first();
-    $duration = ($slotDuration->slot_minutes) ?? $duration;
-    
-    //type must be a : delivery , takeaway,dine_in
-    $client = ClientData::select('timezone')->first();
-    $viewSlot = array();
-    if(!empty($myDate))
+if (!function_exists('remove_special_chars')) {
+    function remove_special_chars($str, $delimiter = '')
     {
-        $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
-    }else{
-        $myDate = date('Y-m-d');
-        $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
+        // $result = strtolower(trim(preg_replace('/[^A-Za-z0-9\-]/', $delimiter, $str)));
+        $result = strtolower(trim(preg_replace('/[.*+?^${}()\/|[\]\\/]+/', $delimiter, $str)));
+        return $result;
     }
-    $mytime =$mytime->dayOfWeek+1;
-    $slots = VendorSlot::where('vendor_id',$vid)
-    ->whereHas('days',function($q)use($mytime,$type){
-        return $q->where('day',$mytime)->where($type,'1');
-    })
-    ->get();
-    $min[] = '';
-    $cart = TempCartProduct::where('vendor_id',$vid)->get();
-    if(isset($cart) && $cart->count()>0){
-        foreach($cart as $product)
-        {
-            $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
-            $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
-            $min[] = (($delayHr * 60) + $delayMin);
-        }
-    }
-
-    if(isset($slots) && count($slots)>0){
-        foreach($slots as $slott){
-            if(isset($slott->days->id))
-            {
-                $slotss[] = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
-            }else{
-                $slotss[] = [];
-            }
-        }
-
-        $arr = array();
-        $count = count($slotss);
-        for($i=0;$i<$count;$i++){
-            $arr = array_merge($arr,$slotss[$i]);
-        }
-
-        if(isset($arr)){
-            foreach($arr as $k=> $slt)
-            {
-                $sl = explode(' - ',$slt);
-                $viewSlot[$k]['name'] = date('h:i:A',strtotime($sl[0])).' - '.date('h:i:A',strtotime($sl[1]));
-                $viewSlot[$k]['value'] = $slt;
-            }
-        }
-    }
-
-    return $viewSlot;
 }
 
-function SplitTimeTemp($user_id, $myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
-{
-    $Duration = (($Duration==0)?'60':$Duration);
 
-    $user = Auth::user();
-    if(isset($user->timezone) && !empty($user->timezone)){
-        $timezoneset = $user->timezone;
-    }
-    else{   
-        $client = ClientData::orderBy('id','desc')->select('id','timezone')->first();
-
-        if(isset($client->timezone) && !empty($client->timezone))
-            $timezoneset = $client->timezone;
-        else
-            $timezoneset = 'Asia/Kolkata';
-    }
-
-    $cr = Carbon::now()->addMinutes($delayMin);
-    $now = dateTimeInUserTimeZone24($cr, $timezoneset);
-    $nowT = strtotime($now);
-    $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
-    $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
-    $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
-    if($nowT > $nowE){
-        return [];
-    }elseif($nowT>$nowS){
-        $StartTime = date('H:i',strtotime($now));
-    }else{
-        $StartTime = date('H:i',strtotime($nowA));
-    }
-    
-    $ReturnArray = array ();
-    $StartTime = strtotime ($StartTime); //Get Timestamp
-    $EndTime = strtotime ($EndTime); //Get Timestamp
-    $AddMins = $Duration * 60;
-    $endtm = 0;
-    
-    while ($StartTime <= $EndTime)
+if (!function_exists('getBaseprice')) {
+    function getBaseprice($dist, $option = 'lalamove')
     {
-        $endtm = $StartTime + $AddMins;
-        if($endtm>$EndTime){
-            $endtm = $EndTime;
+        $simp_creds = ShippingOption::select('credentials', 'test_mode', 'status')->where('code', $option)->where('status', 1)->first();
+        if ($simp_creds && $simp_creds->credentials) {
+            $creds_arr = json_decode($simp_creds->credentials);
+            $base_price = $creds_arr->base_price??'0';
+            if ($base_price>0) {
+                $distance = $creds_arr->distance??'0';
+                $amount_per_km = $creds_arr->amount_per_km??'0';
+            }
+            $lalamove_status = $simp_creds->status??'';
         }
-        $ReturnArray[] = date ("G:i", $StartTime).' - '.date ("G:i", $endtm);
-        $StartTime += $AddMins+60;
-        $endtm = 0;
-    }
-    return $ReturnArray;
-}
-
-function findSlot($myDate = null,$vid,$type = 'delivery',$api = null)
-{
-  $myDate  = date('Y-m-d'); 
-  $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
-        $slots = showSlot($myDate,$vid,'delivery');
-            if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+1 day')); 
-                $slots = showSlot($myDate,$vid,'delivery');
-            }
-           
-            if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+2 day')); 
-                $slots = showSlot($myDate,$vid,'delivery');
-            }
-
-            if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+3 day')); 
-                $slots = showSlot($myDate,$vid,'delivery');
-            }
-        if(isset($slots) && count((array)$slots)>0){
-            $time = explode(' - ',$slots[0]['value']);
-
-            if($api != 'api'){
-                return date('d M, Y h:i:A',strtotime($myDate.'T'.$time[0]));
-            }else{
-                return date('Y-m-d',strtotime($myDate.'T'.$time[0]));
-            }
-            
-        }else{
+        $distance = $dist;
+        if ($distance < 1 || $base_price < 1) {
             return 0;
         }
+    
+        $base_price = $base_price;
+        $amount_per_km = $amount_per_km;
+        $total = $base_price + ($distance * $amount_per_km);
+        return  $total;
+        // + ($paid_duration * $pricingRule->duration_price);
+    }
+}
+
+if (!function_exists('SplitTime')) {
+    function SplitTime($myDate, $StartTime, $EndTime, $Duration="60", $delayMin = 0)
+    {
+        $Duration = (($Duration==0)?'60':$Duration);
+
+        $user = Auth::user();
+        if (isset($user->timezone) && !empty($user->timezone)) {
+            $timezoneset = $user->timezone;
+        } else {
+            $client = ClientData::orderBy('id', 'desc')->select('id', 'timezone')->first();
+
+            if (isset($client->timezone) && !empty($client->timezone)) {
+                $timezoneset = $client->timezone;
+            } else {
+                $timezoneset = 'Asia/Kolkata';
+            }
+        }
+        $cr = Carbon::now()->addMinutes($delayMin);
+        $now = dateTimeInUserTimeZone24($cr, $timezoneset);
+        $nowT = strtotime($now);
+        $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
+        $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
+        $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
+        if ($nowT > $nowE) {
+            return [];
+        } elseif ($nowT>$nowS) {
+            $StartTime = date('H:i', strtotime($now));
+        } else {
+            $StartTime = date('H:i', strtotime($nowA));
+        }
+    
+        $ReturnArray = array();
+        $StartTime = strtotime($StartTime); //Get Timestamp
+    $EndTime = strtotime($EndTime); //Get Timestamp
+    $AddMins = $Duration * 60;
+        $endtm = 0;
+    
+        while ($StartTime <= $EndTime) {
+            $endtm = $StartTime + $AddMins;
+            if ($endtm>$EndTime) {
+                $endtm = $EndTime;
+            }
+            $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            $StartTime += $AddMins;
+            $endtm = 0;
+        }
+        return $ReturnArray;
+    }
+}
+    
+if (!function_exists('showSlot')) {
+    function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
+    {
+        $slotDuration = Vendor::select('slot_minutes')->where('id', $vid)->first();
+        $duration = ($slotDuration->slot_minutes) ?? $duration;
+        $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
+        //type must be a : delivery , takeaway,dine_in
+        $client = ClientData::select('timezone')->first();
+        $preferences = ClientPreference::first();
+        $viewSlot = array();
+        if (!empty($myDate)) {
+            $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
+        } else {
+            $myDate = date('Y-m-d');
+            $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
+        }
+        $mytime =$mytime->dayOfWeek+1;
+        if ($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry') {
+            $slots = VendorSlot::where('vendor_id', $vid)->where('slot_type', $slot_type)->whereHas('days', function ($q) use ($mytime, $type) {
+                return $q->where('day', $mytime)->where($type, '1');
+            })->get();
+        } else {
+            $slots = VendorSlot::where('vendor_id', $vid)
+        ->whereHas('days', function ($q) use ($mytime, $type) {
+            return $q->where('day', $mytime)->where($type, '1');
+        })
+        ->get();
+        }
+        $min[] = '';
+        $cart = CartProduct::where('vendor_id', $vid)->get();
+        if (isset($cart) && $cart->count()>0) {
+            foreach ($cart as $product) {
+                $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
+                $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
+                $min[] = (($delayHr * 60) + $delayMin);
+            }
+        }
+
+        if (isset($slots) && count($slots)>0) {
+            $slotss = [];
+            foreach ($slots as $slott) {
+                if (isset($slott->days->id)) {
+                    $new_slot = SplitTime($myDate, $slott->start_time, $slott->end_time, $duration, max($min));
+                    if (!in_array($new_slot, $slotss)) {
+                        $slotss[] = $new_slot;
+                    }
+                } else {
+                    $slotss[] = [];
+                }
+            }
+
+            $arr = array();
+            $count = count($slotss);
+            for ($i=0;$i<$count;$i++) {
+                $arr = array_merge($arr, $slotss[$i]);
+            }
+
+            if (isset($arr)) {
+                foreach ($arr as $k=> $slt) {
+                    $sl = explode(' - ', $slt);
+                    $viewSlot[$k]['name'] = date('h:i:A', strtotime($sl[0])).' - '.date('h:i:A', strtotime($sl[1]));
+                    $viewSlot[$k]['value'] = $slt;
+                }
+            }
+        }
+    
+        return $viewSlot;
+    }
+}
+if (!function_exists('showSlotTemp')) {
+    function showSlotTemp($myDate = null, $vid, $user_id, $type = 'delivery', $duration="60")
+    {
+        $slotDuration = Vendor::select('slot_minutes')->where('id', $vid)->first();
+        $duration = ($slotDuration->slot_minutes) ?? $duration;
+    
+        //type must be a : delivery , takeaway,dine_in
+        $client = ClientData::select('timezone')->first();
+        $viewSlot = array();
+        if (!empty($myDate)) {
+            $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
+        } else {
+            $myDate = date('Y-m-d');
+            $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
+        }
+        $mytime =$mytime->dayOfWeek+1;
+        $slots = VendorSlot::where('vendor_id', $vid)
+    ->whereHas('days', function ($q) use ($mytime, $type) {
+        return $q->where('day', $mytime)->where($type, '1');
+    })
+    ->get();
+        $min[] = '';
+        $cart = TempCartProduct::where('vendor_id', $vid)->get();
+        if (isset($cart) && $cart->count()>0) {
+            foreach ($cart as $product) {
+                $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
+                $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
+                $min[] = (($delayHr * 60) + $delayMin);
+            }
+        }
+
+        if (isset($slots) && count($slots)>0) {
+            foreach ($slots as $slott) {
+                if (isset($slott->days->id)) {
+                    $slotss[] = SplitTime($myDate, $slott->start_time, $slott->end_time, $duration, max($min));
+                } else {
+                    $slotss[] = [];
+                }
+            }
+
+            $arr = array();
+            $count = count($slotss);
+            for ($i=0;$i<$count;$i++) {
+                $arr = array_merge($arr, $slotss[$i]);
+            }
+
+            if (isset($arr)) {
+                foreach ($arr as $k=> $slt) {
+                    $sl = explode(' - ', $slt);
+                    $viewSlot[$k]['name'] = date('h:i:A', strtotime($sl[0])).' - '.date('h:i:A', strtotime($sl[1]));
+                    $viewSlot[$k]['value'] = $slt;
+                }
+            }
+        }
+
+        return $viewSlot;
+    }
+}
+
+
+if (!function_exists('SplitTimeTemp')) {
+    function SplitTimeTemp($user_id, $myDate, $StartTime, $EndTime, $Duration="60", $delayMin = 0)
+    {
+        $Duration = (($Duration==0)?'60':$Duration);
+
+        $user = Auth::user();
+        if (isset($user->timezone) && !empty($user->timezone)) {
+            $timezoneset = $user->timezone;
+        } else {
+            $client = ClientData::orderBy('id', 'desc')->select('id', 'timezone')->first();
+
+            if (isset($client->timezone) && !empty($client->timezone)) {
+                $timezoneset = $client->timezone;
+            } else {
+                $timezoneset = 'Asia/Kolkata';
+            }
+        }
+
+        $cr = Carbon::now()->addMinutes($delayMin);
+        $now = dateTimeInUserTimeZone24($cr, $timezoneset);
+        $nowT = strtotime($now);
+        $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
+        $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
+        $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
+        if ($nowT > $nowE) {
+            return [];
+        } elseif ($nowT>$nowS) {
+            $StartTime = date('H:i', strtotime($now));
+        } else {
+            $StartTime = date('H:i', strtotime($nowA));
+        }
+    
+        $ReturnArray = array();
+        $StartTime = strtotime($StartTime); //Get Timestamp
+    $EndTime = strtotime($EndTime); //Get Timestamp
+    $AddMins = $Duration * 60;
+        $endtm = 0;
+    
+        while ($StartTime <= $EndTime) {
+            $endtm = $StartTime + $AddMins;
+            if ($endtm>$EndTime) {
+                $endtm = $EndTime;
+            }
+            $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+            $StartTime += $AddMins+60;
+            $endtm = 0;
+        }
+        return $ReturnArray;
+    }
+}
+
+
+if (!function_exists('findSlot')) {
+    function findSlot($myDate = null, $vid, $type = 'delivery', $api = null)
+    {
+        $myDate  = date('Y-m-d');
+        $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
+        $slots = showSlot($myDate, $vid, 'delivery');
+        if (count((array)$slots) == 0) {
+            $myDate  = date('Y-m-d', strtotime('+1 day'));
+            $slots = showSlot($myDate, $vid, 'delivery');
+        }
+           
+        if (count((array)$slots) == 0) {
+            $myDate  = date('Y-m-d', strtotime('+2 day'));
+            $slots = showSlot($myDate, $vid, 'delivery');
+        }
+
+        if (count((array)$slots) == 0) {
+            $myDate  = date('Y-m-d', strtotime('+3 day'));
+            $slots = showSlot($myDate, $vid, 'delivery');
+        }
+        if (isset($slots) && count((array)$slots)>0) {
+            $time = explode(' - ', $slots[0]['value']);
+
+            if ($api != 'api') {
+                return date('d M, Y h:i:A', strtotime($myDate.'T'.$time[0]));
+            } else {
+                return date('Y-m-d', strtotime($myDate.'T'.$time[0]));
+            }
+        } else {
+            return 0;
+        }
+    }
 }
 
 function findSlotNew($myDate,$vid,$type=0)

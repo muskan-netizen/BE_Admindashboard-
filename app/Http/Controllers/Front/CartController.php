@@ -804,8 +804,8 @@ class CartController extends FrontController
 
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
-                    $price_in_currency = $prod->pvariant->price;
-                    $price_in_doller_compare = $prod->pvariant->price;
+                    $price_in_currency = $prod->pvariant->price??0;
+                    $price_in_doller_compare = $prod->pvariant->price??0; 
                     $container_charges_in_currency = $prod->pvariant->container_charges;
                     $coupon_apply_price+=$price_in_currency;
                     $container_charges_in_doller_compare = $prod->pvariant->container_charges;

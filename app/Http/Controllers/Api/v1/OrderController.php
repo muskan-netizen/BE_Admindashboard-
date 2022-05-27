@@ -187,7 +187,7 @@ class OrderController extends BaseController
                             $total_fixed_fee_amount += Vendor::find($row->vendor_id)->fixed_fee_amount;
                         }
                     }
-                    
+                    $opt_quantity_price = 0;
                     $total_container_charges = 0;
                     $vendor_total_container_charges = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
@@ -224,7 +224,7 @@ class OrderController extends BaseController
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
                             $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
                             $product_payable_amount = 0;
-
+                            $opt_quantity_price = 0;
                             if (!empty($vendor_cart_product->addon)) {
                                 foreach ($vendor_cart_product->addon as $ck => $addon) {
                                     $opt_quantity_price = 0;
@@ -1045,9 +1045,10 @@ class OrderController extends BaseController
              $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'phone_no', 'email', 'longitude', 'address')->first();
              $tasks = array();
              $meta_data = '';
- 
+             $rtype = 'P';
              $unique = Auth::user()->code;
-             if ($colm == 1) {     # 1 for pickup from customer drop to vendor
+             if ($colm == 1) { 
+                $rtype = 'P';    # 1 for pickup from customer drop to vendor
                  $desc = $order->comment_for_pickup_driver ?? null;
                  $tasks[] = array(
                      'task_type_id' => 1,
@@ -1085,6 +1086,7 @@ class OrderController extends BaseController
  
  
              if ($colm == 2) { # 1 for pickup from vendor drop to customer
+                 $rtype = 'D';
                  $desc = $order->comment_for_dropoff_driver ?? null;
                  $tasks[] = array(
                      'task_type_id' => 1,
@@ -1144,7 +1146,8 @@ class OrderController extends BaseController
                  'barcode' => '',
                  'order_team_tag' => $team_tag,
                  'call_back_url' => $call_back_url ?? null,
-                 'task' => $tasks
+                 'task' => $tasks,
+                 'request_type'=> $rtype
              ];
  
  
@@ -1588,6 +1591,7 @@ class OrderController extends BaseController
                     $payable_amount = 0;
                     $total_container_charges = 0;
                     $discount_amount = 0;
+                    $opt_quantity_price = 0;
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
