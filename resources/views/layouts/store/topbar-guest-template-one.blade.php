@@ -87,7 +87,9 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <ul class="onhover-show-div">
                             @foreach($languageList as $key => $listl)
                                 <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                                        ({{$listl->language->nativeName}})
+                                        @endif </a>
                                 </li>
                             @endforeach
                         </ul>
@@ -212,7 +214,9 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
             <ul>
                 @foreach($languageList as $key => $listl)
                     <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                            ({{$listl->language->nativeName}})
+                            @endif </a>
                     </li>
                 @endforeach
             </ul>

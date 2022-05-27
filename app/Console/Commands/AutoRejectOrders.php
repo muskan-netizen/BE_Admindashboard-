@@ -76,82 +76,89 @@ class AutoRejectOrders extends Command
                 ];
                 Config::set("database.connections.$database_name", $default);
                 // DB::setDefaultConnection($database_name);
-                Log::info($database_name);
+               
                 $client_preferences = ClientPreference::on($database_name)->first();
                 $notification_content = NotificationTemplate::on($database_name)->where(['id' => 6])->first();
                 $selected_database_orders = AutoRejectOrderCron::where('auto_reject_time', '<=', $intervalTime)->where(['database_name' => $client->database_name])->get();
                 foreach ($selected_database_orders as $order_key => $order_value) {
+
+
                     $orderVendorDetail = OrderVendor::on($database_name)->find($order_value->order_vendor_id);
-                    $orderVendorDetail->order_status_option_id = 3;
-                    $orderVendorDetail->save();
-                    $order_status_check = VendorOrderStatus::on($database_name)->where('order_id',$orderVendorDetail->order_id)->where('vendor_id', $orderVendorDetail->vendor_id)->where('order_status_option_id', 3)->first();
+
+                    if($orderVendorDetail)
+                    {
+                        $orderVendorDetail->order_status_option_id = 3;
+                        $orderVendorDetail->save();
+                        $order_status_check = VendorOrderStatus::on($database_name)->where('order_id',$orderVendorDetail->order_id)->where('vendor_id', $orderVendorDetail->vendor_id)->where('order_status_option_id', 3)->first();
+                        
+                        if(!$order_status_check){
+                            $dataStatus = [
+                                "order_id" => $orderVendorDetail->order_id,
+                                "vendor_id" => $orderVendorDetail->vendor_id,
+                                "order_vendor_id" => $order_value->order_vendor_id,
+                                "order_status_option_id" => 3,
+                                "created_at" => Carbon::now(),
+                                "updated_at" => Carbon::now(),
+                            ];
+                            VendorOrderStatus::on($database_name)->insert($dataStatus);
+                        }
+                        $orderDetail = Order::on($database_name)->find($orderVendorDetail->order_id);
+                        AutoRejectOrderCron::where(['order_vendor_id' => $order_value->order_vendor_id, 'database_name' => $client->database_name])->delete();
+                        if ($orderVendorDetail->payment_option_id != 1) {
+                            $user = User::on($database_name)->find($orderVendorDetail->user_id);
+                            $wallet = $user->wallet;
+                            $wallet_amount_used = $orderVendorDetail->payable_amount;
+                            if ($wallet_amount_used > 0) {
+                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>credited</b> for order number <b>' . $orderDetail->order_number . '</b>']);
+                            }
+                        }
+                        $devices = UserDevice::on($database_name)->whereNotNull('device_token')->where(['user_id' => $orderVendorDetail->user_id])->pluck('device_token')->toArray();
+                        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+                            $from = $client_preferences->fcm_server_key;
+                            $body_content = str_ireplace("{order_id}", "#" . $orderDetail->order_number, $notification_content->content);
+                            if ($body_content) {
+                                $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/user/orders";
+                                $headers = [
+                                    'Authorization: key=' . $from,
+                                    'Content-Type: application/json',
+                                ];
+                                $data = [
+                                    "registration_ids" => $devices,
+                                    "notification" => [
+                                        'title' => $notification_content->subject,
+                                        'body'  => $body_content,
+                                        'sound' => "default",
+                                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                                        'click_action' => $redirect_URL,
+                                        "android_channel_id" => "default-channel-id"
+                                    ],
+                                    "data" => [
+                                        'title' => $notification_content->subject,
+                                        'body'  => $body_content,
+                                        'type' => "order_status_change"
+                                    ],
+                                    "priority" => "high"
+                                ];
+                                $dataString = $data;
+                                $ch = curl_init();
+                                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                                curl_setopt($ch, CURLOPT_POST, true);
+                                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
+                                $result = curl_exec($ch);
+                                curl_close($ch);
+                            }
+                        }
                     
-                    if(!$order_status_check){
-                        $dataStatus = [
-                            "order_id" => $orderVendorDetail->order_id,
-                            "vendor_id" => $orderVendorDetail->vendor_id,
-                            "order_vendor_id" => $order_value->order_vendor_id,
-                            "order_status_option_id" => 3,
-                            "created_at" => Carbon::now(),
-                            "updated_at" => Carbon::now(),
-                        ];
-                        VendorOrderStatus::on($database_name)->insert($dataStatus);
                     }
-                    $orderDetail = Order::on($database_name)->find($orderVendorDetail->order_id);
-                    AutoRejectOrderCron::where(['order_vendor_id' => $order_value->order_vendor_id, 'database_name' => $client->database_name])->delete();
-                    if ($orderVendorDetail->payment_option_id != 1) {
-                        $user = User::on($database_name)->find($orderVendorDetail->user_id);
-                        $wallet = $user->wallet;
-                        $wallet_amount_used = $orderVendorDetail->payable_amount;
-                        if ($wallet_amount_used > 0) {
-                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>credited</b> for order number <b>' . $orderDetail->order_number . '</b>']);
-                        }
-                    }
-                    $devices = UserDevice::on($database_name)->whereNotNull('device_token')->where(['user_id' => $orderVendorDetail->user_id])->pluck('device_token')->toArray();
-                    if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-                        $from = $client_preferences->fcm_server_key;
-                        $body_content = str_ireplace("{order_id}", "#" . $orderDetail->order_number, $notification_content->content);
-                        if ($body_content) {
-                            $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/user/orders";
-                            $headers = [
-                                'Authorization: key=' . $from,
-                                'Content-Type: application/json',
-                            ];
-                            $data = [
-                                "registration_ids" => $devices,
-                                "notification" => [
-                                    'title' => $notification_content->subject,
-                                    'body'  => $body_content,
-                                    'sound' => "default",
-                                    "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                                    'click_action' => $redirect_URL,
-                                    "android_channel_id" => "default-channel-id"
-                                ],
-                                "data" => [
-                                    'title' => $notification_content->subject,
-                                    'body'  => $body_content,
-                                    'type' => "order_status_change"
-                                ],
-                                "priority" => "high"
-                            ];
-                            $dataString = $data;
-                            $ch = curl_init();
-                            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                            curl_setopt($ch, CURLOPT_POST, true);
-                            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                            $result = curl_exec($ch);
-                          //  Log::info($result);
-                            curl_close($ch);
-                        }
-                    }
+
                 }
-                // DB::disconnect($database_name);
+                 DB::disconnect($database_name);
                 // Log::info("checking cart end: {$database_name}!");
             } else {
-                // DB::disconnect($database_name);
+               //  DB::disconnect($database_name);
                 // Log::info("checking cart  end: {$database_name}!");
             }
         }
