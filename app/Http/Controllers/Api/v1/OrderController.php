@@ -187,7 +187,7 @@ class OrderController extends BaseController
                             $total_fixed_fee_amount += Vendor::find($row->vendor_id)->fixed_fee_amount;
                         }
                     }
-                    
+                    $opt_quantity_price = 0;
                     $total_container_charges = 0;
                     $vendor_total_container_charges = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
