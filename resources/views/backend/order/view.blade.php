@@ -312,6 +312,8 @@ $timezone = Auth::user()->timezone;
                                     @php
                                     $sub_total = 0;
                                     $taxable_amount = 0;
+                                    $adminRevenue = 0;
+                                    $storeRevenue = 0;
                                     $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     @foreach($vendor->products as $product)
