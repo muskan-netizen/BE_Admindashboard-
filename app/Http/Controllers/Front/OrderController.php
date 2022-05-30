@@ -1120,7 +1120,7 @@ class OrderController extends FrontController
             }
             $payable_amount = $payable_amount - $loyalty_amount_saved;
 
-            $ex_gateways_wallet = [36]; // mycash
+            $ex_gateways_wallet = [4,36]; // stripe,mycash
             $wallet_amount_used = 0;
             if ($user) {
                 if ($user->balanceFloat > 0) {
@@ -1485,7 +1485,6 @@ class OrderController extends FrontController
                 if ($request->status_option_id == 2) {
 
                     if ($request->shipping_delivery_type=='D') {
-                    //             Log::info($request->status_option_id);
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
@@ -1934,9 +1933,10 @@ class OrderController extends FrontController
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'phone_no', 'email', 'longitude', 'address')->first();
             $tasks = array();
             $meta_data = '';
-
+            $rtype = 'P';
             $unique = Auth::user()->code;
             if ($colm == 1) {     # 1 for pickup from customer drop to vendor
+                $rtype = 'P';
                 $desc = $order->comment_for_pickup_driver ?? null;
                 $tasks[] = array(
                     'task_type_id' => 1,
@@ -1974,6 +1974,7 @@ class OrderController extends FrontController
 
 
             if ($colm == 2) { # 1 for pickup from vendor drop to customer
+                $rtype = 'D';
                 $desc = $order->comment_for_dropoff_driver ?? null;
                 $tasks[] = array(
                     'task_type_id' => 1,
@@ -2033,7 +2034,8 @@ class OrderController extends FrontController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'request_type'=> $rtype
             ];
 
 

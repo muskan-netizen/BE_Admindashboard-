@@ -85,14 +85,24 @@ class OrderController extends BaseController
     public function postPlaceOrder(Request $request)
     {
         try {
-            $rules = [
-                'address_id'        => 'required:exists:user_addresses,id',
-                'payment_option_id' => 'required'
-            ];
-            $validator = Validator::make($request->all(), $rules, [
-                'address_id.required' => __('Address is required'),
-                'payment_option_id.required' => __('Payment Option is required')
-            ]);
+            if($request->has('type') && $request->type == 'takeaway'){
+                $rules = [
+                    'payment_option_id' => 'required'
+                ];
+                $validator = Validator::make($request->all(), $rules, [
+                    'payment_option_id.required' => __('Payment Option is required')
+                ]);
+            }else{
+                $rules = [
+                    'address_id'        => 'required:exists:user_addresses,id',
+                    'payment_option_id' => 'required'
+                ];
+                $validator = Validator::make($request->all(), $rules, [
+                    'address_id.required' => __('address is required'),
+                    'payment_option_id.required' => __('Payment Option is required')
+                ]);
+            }
+            
             if ($validator->fails()) {
                 foreach ($validator->errors()->toArray() as $error_key => $error_value) {
                     $errors['error'] = __($error_value[0]);
@@ -139,10 +149,13 @@ class OrderController extends BaseController
                         return response()->json(['error' => 'Your phone is not verified.'], 404);
                     }
                 }
-                $user_address = UserAddress::where('id', $request->address_id)->first();
-                if (!$user_address) {
-                    return response()->json(['error' => 'Invalid address id.'], 404);
+                if($request->has('type') && $request->type != 'takeaway'){
+                    $user_address = UserAddress::where('id', $request->address_id)->first();
+                    if (!$user_address) {
+                        return response()->json(['error' => 'Invalid address id.'], 404);
+                    }
                 }
+               
                 $action = ($request->has('type')) ? $request->type : 'delivery';
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
@@ -187,7 +200,7 @@ class OrderController extends BaseController
                             $total_fixed_fee_amount += Vendor::find($row->vendor_id)->fixed_fee_amount;
                         }
                     }
-                    
+                    $opt_quantity_price = 0;
                     $total_container_charges = 0;
                     $vendor_total_container_charges = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
@@ -434,6 +447,8 @@ class OrderController extends BaseController
                         }
                     }
                     $payable_amount = $payable_amount - $loyalty_amount_saved;
+
+                    $ex_gateways_wallet = [4,36]; // stripe,mycash
                     $wallet_amount_used = 0;
                     if ($user->balanceFloat > 0) {
                         $wallet = $user->wallet;
@@ -442,7 +457,8 @@ class OrderController extends BaseController
                             $wallet_amount_used = $payable_amount;
                         }
                         $order->wallet_amount_used = $wallet_amount_used;
-                        if ($wallet_amount_used > 0) {
+                        // Deduct wallet amount if payable amount is successfully done on gateway
+                        if ( ($wallet_amount_used > 0) && (!in_array($request->payment_option_id, $ex_gateways_wallet)) ) {
                             $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                         }
                     }
@@ -587,11 +603,36 @@ class OrderController extends BaseController
                 $vendor_order_status->order_vendor_id = $request->order_vendor_id;
                 $vendor_order_status->order_status_option_id = $request->status_option_id;
                 $vendor_order_status->save();
+
+                // if ($request->status_option_id == 2) {
+                //     $order_dispatch = $this->checkIfanyProductLastMileon($request);
+                //     if ($order_dispatch && $order_dispatch == 1)
+                //         $stats = $this->insertInVendorOrderDispatchStatus($request);
+                // }
+
                 if ($request->status_option_id == 2) {
+
+                    if ($request->shipping_delivery_type=='D') {
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
-                    if ($order_dispatch && $order_dispatch == 1)
+                    if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
+                    }
+                   }elseif($request->shipping_delivery_type=='L'){
+                        //Create Shipping place order request for Lalamove
+                        $order_lalamove = $this->placeOrderRequestlalamove($request);
+                    }elseif($request->shipping_delivery_type=='SR'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_ship = $this->placeOrderRequestShiprocket($request);
+                    }elseif($request->shipping_delivery_type=='DU'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_ship = $this->placeOrderRequestDunzo($request);
+                    }elseif($request->shipping_delivery_type=='M'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_ship = $this->placeOrderRequestAhoy($request);
+                    }
+
                 }
+
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
                 $this->ProductVariantStock($order_id);
                 DB::commit();
@@ -766,8 +807,6 @@ class OrderController extends BaseController
                                 $team_tag = $dispatch_domain_laundry->laundry_dropoff_team ?? null;
                                 $colm = $x;
                             }
-
-
 
                             $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
                         }
@@ -1042,9 +1081,10 @@ class OrderController extends BaseController
              $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'phone_no', 'email', 'longitude', 'address')->first();
              $tasks = array();
              $meta_data = '';
- 
+             $rtype = 'P';
              $unique = Auth::user()->code;
-             if ($colm == 1) {     # 1 for pickup from customer drop to vendor
+             if ($colm == 1) { 
+                $rtype = 'P';    # 1 for pickup from customer drop to vendor
                  $desc = $order->comment_for_pickup_driver ?? null;
                  $tasks[] = array(
                      'task_type_id' => 1,
@@ -1082,6 +1122,7 @@ class OrderController extends BaseController
  
  
              if ($colm == 2) { # 1 for pickup from vendor drop to customer
+                 $rtype = 'D';
                  $desc = $order->comment_for_dropoff_driver ?? null;
                  $tasks[] = array(
                      'task_type_id' => 1,
@@ -1141,11 +1182,12 @@ class OrderController extends BaseController
                  'barcode' => '',
                  'order_team_tag' => $team_tag,
                  'call_back_url' => $call_back_url ?? null,
-                 'task' => $tasks
+                 'task' => $tasks,
+                 'request_type'=> $rtype
              ];
  
  
-             $client = new Client([
+             $client = new GCLIENT([
                  'headers' => [
                      'personaltoken' => $dispatch_domain->laundry_service_key,
                      'shortcode' => $dispatch_domain->laundry_service_key_code,
@@ -1156,8 +1198,7 @@ class OrderController extends BaseController
              $url = $dispatch_domain->laundry_service_key_url;
              $res = $client->post(
                  $url . '/api/task/create',
-                 ['form_params' => ($postdata
-                 )]
+                 ['form_params' => ($postdata)]
              );
              $response = json_decode($res->getBody(), true);
  

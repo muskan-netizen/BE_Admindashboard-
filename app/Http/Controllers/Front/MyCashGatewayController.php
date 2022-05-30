@@ -318,12 +318,15 @@ class MyCashGatewayController extends FrontController
                             // Deduct wallet amount if payable amount is successfully done on gateway
                             if ( $order->wallet_amount_used > 0 ) {
                                 $wallet = $user->wallet;
-                                $wallet->withdrawFloat($order->wallet_amount_used, [
-                                    'description' => 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>',
-                                    'order_number' => $order->order_number,
-                                    'transaction_id' => $transactionId,
-                                    'payment_option' => 'MyCash'
-                                ]);
+                                $transaction_exists = Transaction::where('type', 'withdraw')->where('meta', 'LIKE', '%order_number%')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                                if(!$transaction_exists){
+                                    $wallet->withdrawFloat($order->wallet_amount_used, [
+                                        'description' => 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>',
+                                        'order_number' => $order->order_number,
+                                        'transaction_id' => $transactionId,
+                                        'payment_option' => 'MyCash'
+                                    ]);
+                                }
                             }
 
                             // Auto accept order

@@ -16,7 +16,7 @@ use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
 use App\Http\Controllers\Front\PickupDeliveryController;
-use App\Models\{User, UserVendor, CaregoryKycDoc,Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress, UserSavedPaymentMethods, Webhook};
+use App\Models\{User, UserVendor, CaregoryKycDoc,Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, Transaction, UserAddress, UserSavedPaymentMethods, Webhook};
 
 use function App\Notifications\via;
 
@@ -989,11 +989,28 @@ class StripeGatewayController extends FrontController
                         if (!$payment_exists) {
                             $payment = new Payment();
                             $payment->date = date('Y-m-d');
+                            $payment->user_id = $user_id;
                             $payment->order_id = $order->id;
                             $payment->transaction_id = $transactionId;
                             $payment->balance_transaction = $amount;
+                            $payment->payment_option_id = 4;
                             $payment->type = 'cart';
                             $payment->save();
+
+                            // Deduct wallet amount if payable amount is successfully done on gateway
+                            if ( $order->wallet_amount_used > 0 ) {
+                                $user = User::find($user_id);
+                                $wallet = $user->wallet;
+                                $transaction_exists = Transaction::where('type', 'withdraw')->where('meta', 'LIKE', '%order_number%')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                                if(!$transaction_exists){
+                                    $wallet->withdrawFloat($order->wallet_amount_used, [
+                                        'description' => 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>',
+                                        'order_number' => $order->order_number,
+                                        'transaction_id' => $transactionId,
+                                        'payment_option' => 'Stripe'
+                                    ]);
+                                }
+                            }
     
                             // Auto accept order
                             $orderController = new OrderController();
@@ -1072,11 +1089,11 @@ class StripeGatewayController extends FrontController
                     $order_number = $meta->order_number;
                     $order = Order::where('order_number', $order_number)->first();
                     if($order){
-                        $wallet_amount_used = $order->wallet_amount_used;
-                        if($wallet_amount_used > 0){
-                            $wallet = $user->wallet;
-                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
-                        }
+                        // $wallet_amount_used = $order->wallet_amount_used;
+                        // if($wallet_amount_used > 0){
+                        //     $wallet = $user->wallet;
+                        //     $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                        // }
 
                         // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
                         // foreach($order_products as $order_prod){
