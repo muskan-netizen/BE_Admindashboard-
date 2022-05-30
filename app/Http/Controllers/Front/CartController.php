@@ -16,7 +16,7 @@ use App\Http\Traits\{ApiResponser,CartManager};
 use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page};
 class CartController extends FrontController
 {
     use ApiResponser,CartManager;
@@ -124,9 +124,21 @@ class CartController extends FrontController
             $public_key_yoco= $public_key_yoco->public_key??'';
         }
 
+        $privacy = Page::with(['translations' => function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+        }])->whereHas('translations', function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+        })->first();
+
+        $terms = Page::with(['translations' => function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+        }])->whereHas('translations', function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+        })->first();
+
         $ageVerify= VerificationOption::where('code','yoti')->first();
 
-        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify'))->with($data,$client_preference_detail,$client_detail);
+        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy'))->with($data,$client_preference_detail,$client_detail);
        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
@@ -700,6 +712,7 @@ class CartController extends FrontController
             $PromoDelete = 0;
             $d = 0;
             $total_container_charges = 0 ;
+            $all_vendor_deliver_charges = 0 ;
 
             $user = Auth::user();
             $client_timezone = DB::table('clients')->first('timezone');
@@ -1083,6 +1096,11 @@ class CartController extends FrontController
                 }
 
                // pr($PromoFreeDeliver);
+                // add total delivery fee 
+                if($vendorData->vendor->delivery_charges_tax_id)
+                $all_vendor_deliver_charges +=  $deliveryCharges;
+
+
 
                 $subtotal_amount = $payable_amount;
                 // if($PromoFreeDeliver != 1){
@@ -1370,6 +1388,7 @@ class CartController extends FrontController
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
             $cart->total_payable_amount = decimal_format($total_payable_amount);
             $cart->delivery_charges = decimal_format($deliveryCharges);
+            $cart->all_vendor_deliver_charges = decimal_format($all_vendor_deliver_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
             $cart->total_taxable_amount = decimal_format($total_taxable_amount);
             $total_payable_amount_calc_tip = $total_payable_amount - $total_taxable_amount;
@@ -2029,6 +2048,11 @@ class CartController extends FrontController
         //pr($request->all());
         DB::beginTransaction();
         try{
+
+            if(empty($request->isTermAndConditionChecked) || $request->isTermAndConditionChecked == false){
+                return response()->json(['status'=>'term_and_condition_error', 'message'=>'The term and condition must be accepted.']);
+            }
+
             $user = Auth::user();
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
