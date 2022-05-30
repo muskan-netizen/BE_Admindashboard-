@@ -157,6 +157,14 @@
                     <div class="col-6 mb-2 text-right" id="distance">--</div>
                     <div class="col-6 mb-2">Order ID</div>
                     <div class="col-6 mb-2 text-right" id=""><%= result.order_number %></div>
+                    <% if(result.friend_name != null){%>
+                    <div class="col-6 mb-2">Rider's Name</div>
+                    <div class="col-6 mb-2 text-right" id=""><%= result.friend_name %></div>
+                    <%}%>
+                    <% if(result.friend_phone_number != null){%>
+                    <div class="col-6 mb-2">Rider's Contact No.</div>
+                    <div class="col-6 mb-2 text-right" id=""><%= result.friend_phone_number %></div>
+                    <%}%>
                     <div class="col-6 mb-2" >Amount Paid</div>
                     <div class="col-6 mb-2 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(result.payable_amount) %></div>
                     <div class="col-6 mb-2">Status</div>

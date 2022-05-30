@@ -380,6 +380,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
 	Route::get('firebase-messaging-sw.js', 'Front\FirebaseController@service_worker');
 	Route::post('category_kyc_submit', 'Front\CartController@updateCartCategoryKyc')->name('updateCartCategoryKyc');
+	//User Rider Routes
+	Route::post('rider/add','Front\RiderController@addRider')->name('rider.create');
+	Route::get('rider/delete','Front\RiderController@removeRider')->name('rider.remove');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 

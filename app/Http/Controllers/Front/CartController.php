@@ -2069,11 +2069,11 @@ class CartController extends FrontController
                     if($passbase_check && $age_restriction)
                     {
                         if(is_null($user->passbase_verification)){
-                            return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alochol/Tobacco contents. It is mandatory to provide the verification documents to proceed']);
+                            return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alcohol/Tobacco contents. It is mandatory to provide the verification documents to proceed']);
                         }elseif($user->passbase_verification->status == 'pending'){
-                            return response()->json(['status'=>'passbase_submitted', 'message'=>'We have recieved your request for verification. Check back soon and order OR remove Alcohol/Tobocco items']);
+                            return response()->json(['status'=>'passbase_submitted', 'message'=>'We have received your request for verification. Check back soon and order OR remove Alcohol/Tobacco items']);
                         }elseif($user->passbase_verification->status == 'approved'){
-                            return response()->json(['status'=>'passbase_rejected', 'message'=>'According to our terms and conditions and Company\'s Policies, your verification documents were not found upto the mark .Please upload them again and enjoy shoppping.' ]);
+                            return response()->json(['status'=>'passbase_rejected', 'message'=>'According to our Terms and Conditions and Company\'s Policies, your verification documents were not found upto the mark .Please upload them again OR remove Alcohol/Tobacco items.' ]);
                         }
                     }
 

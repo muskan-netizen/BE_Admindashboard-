@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
@@ -20,6 +20,11 @@ use Illuminate\Support\Facades\Http;
 class PickupDeliveryController extends BaseController{
 
     use ApiResponser;
+    private $riderObj;
+    public function __construct(Rider $rider)
+    {
+        $this->riderObj = $rider;
+    }
 
 
 
@@ -858,6 +863,16 @@ class PickupDeliveryController extends BaseController{
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+    public function getAllRiders(Request $request)
+    {
+        $data = $request->all();
+        $data['user_id'] = Auth::user()->id;
+        if($request->isMethod('post')){
+            $add = $this->riderObj->createRider($data);
+        }
+        $all_riders = $this->riderObj->getAllByUserId($data['user_id']);
+        return response()->json(['riders' => $all_riders],200);
     }
 
 }
