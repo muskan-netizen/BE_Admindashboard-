@@ -820,7 +820,7 @@ class CartController extends FrontController
                     $quantity_price = $price_in_doller_compare * $prod->quantity;
                     $sub_total+=$quantity_price+$container_charges_in_currency;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
-                    $prod->pvariant->price_in_cart = $prod->pvariant->price;
+                    $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
                     $prod->pvariant->price = decimal_format($price_in_currency);
                     $prod->pvariant->container_charges = decimal_format($container_charges_in_currency);
                     $prod->image_url = $this->loadDefaultImage();
