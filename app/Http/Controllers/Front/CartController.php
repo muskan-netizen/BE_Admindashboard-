@@ -810,7 +810,7 @@ class CartController extends FrontController
                     $container_charges_in_currency = $prod->pvariant->container_charges??0;
                     $coupon_apply_price+=$price_in_currency;
                     $container_charges_in_doller_compare = $prod->pvariant->container_charges??0;
-                    if($customerCurrency && $prod->pvariant->price > 0){
+                    if($customerCurrency && $prod->pvariant){
                         $price_in_currency = $prod->pvariant->price / $divider;
                         $price_in_doller_compare = $price_in_currency * $customerCurrency->doller_compare;
 
