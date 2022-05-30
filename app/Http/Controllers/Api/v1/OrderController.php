@@ -85,14 +85,24 @@ class OrderController extends BaseController
     public function postPlaceOrder(Request $request)
     {
         try {
-            $rules = [
-                'address_id'        => 'required:exists:user_addresses,id',
-                'payment_option_id' => 'required'
-            ];
-            $validator = Validator::make($request->all(), $rules, [
-                'address_id.required' => __('Address is required'),
-                'payment_option_id.required' => __('Payment Option is required')
-            ]);
+            if($request->has('type') && $request->type == 'takeaway'){
+                $rules = [
+                    'payment_option_id' => 'required'
+                ];
+                $validator = Validator::make($request->all(), $rules, [
+                    'payment_option_id.required' => __('Payment Option is required')
+                ]);
+            }else{
+                $rules = [
+                    'address_id'        => 'required:exists:user_addresses,id',
+                    'payment_option_id' => 'required'
+                ];
+                $validator = Validator::make($request->all(), $rules, [
+                    'address_id.required' => __('address is required'),
+                    'payment_option_id.required' => __('Payment Option is required')
+                ]);
+            }
+            
             if ($validator->fails()) {
                 foreach ($validator->errors()->toArray() as $error_key => $error_value) {
                     $errors['error'] = __($error_value[0]);
@@ -139,10 +149,13 @@ class OrderController extends BaseController
                         return response()->json(['error' => 'Your phone is not verified.'], 404);
                     }
                 }
-                $user_address = UserAddress::where('id', $request->address_id)->first();
-                if (!$user_address) {
-                    return response()->json(['error' => 'Invalid address id.'], 404);
+                if($request->has('type') && $request->type != 'takeaway'){
+                    $user_address = UserAddress::where('id', $request->address_id)->first();
+                    if (!$user_address) {
+                        return response()->json(['error' => 'Invalid address id.'], 404);
+                    }
                 }
+               
                 $action = ($request->has('type')) ? $request->type : 'delivery';
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
