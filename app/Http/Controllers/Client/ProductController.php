@@ -906,7 +906,7 @@ class ProductController extends BaseController
                 }
             }
             catch(\Exception $e){
-                Log::info($e->getMessage());
+                // Log::info($e->getMessage());
             }
     }
     # check if last mile delivery on

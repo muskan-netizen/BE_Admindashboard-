@@ -68,6 +68,8 @@
 
 .al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
+
+.vendor_cart-check label {display: inline-block;}
 </style>
 
 @endsection
@@ -837,10 +839,10 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                             <% } %>
 
-                    <% } else {  console.log('cart_details.scheduled.slot', cart_details.scheduled.slot ); %>
+                    <% } else { %>
 
 
-                            <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled.scheduled_date_time != '')? cart_details.scheduled.scheduled_date_time : cart_details.scheduled.scheduled_date_time ) %>"  min="<%= cart_details.delay_date %>" >
+                            <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled_date_time != '')?cart_details.scheduled_date_time : cart_details.delay_date ) %>"  min="<%= cart_details.delay_date %>" >
                             <input type="hidden" id="checkSlot" value="1">
                             <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
                                 <option value="">{{__("Select Slot")}} </option>
@@ -911,7 +913,21 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                     </div>
                 </div>
-
+                <div class="row form-group mb-0 text-sm-right">
+                    <div class="col-12 checkbox-input vendor_cart-check">
+                        <input type="checkbox" id="term-and-condition" name="term_and_condition"
+                            class="form-control"  value="1">
+                        <label for="term-and-condition">{{ __('I accept the') }}
+                            <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                                target="_blank">{{ __('Terms And Conditions') }} </a>
+                            {{ __('and have read the') }}
+                            <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
+                                target="_blank">
+                                {{ __('Privacy Policy') }}.
+                            </a>
+                        </label>
+                    </div>
+                </div>
                 <div class="row mb-md-3 alFourTemplateCartButtons">
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
