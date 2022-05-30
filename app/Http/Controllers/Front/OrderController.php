@@ -1485,7 +1485,6 @@ class OrderController extends FrontController
                 if ($request->status_option_id == 2) {
 
                     if ($request->shipping_delivery_type=='D') {
-                    //             Log::info($request->status_option_id);
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
