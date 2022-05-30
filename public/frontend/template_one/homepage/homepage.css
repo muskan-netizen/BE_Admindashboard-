@@ -57,6 +57,14 @@ ul.onhover-show-div.open{background-color:#fff;display:block!important;max-width
 .dark section.section-b-space.light-layout.pt-3.pb-0{background-color: #232323;}
 .dark .progress-order{background-color: #232323;}
 .dark .order_detail{background-color: #1b1b1b;}
+/*--- dark  mode 5/17/22-------*/
+.dark .menu-navigation.al{background-color: #404040;}
+.dark .menu-slider .slick-track li a {color: #fff;}
+.dark .breadcrumb-section .breadcrumb a{color: #adb5bd;}
+.dark .breadcrumb-item.active {color: #fff;}.dark .breadcrumb-section{background-color: #404040 !important;}
+.dark .offer-slider.al .inner_spacing p.pb-1{background-color: #404040;}
+
+
 /* dark css end */
 
 .al_body_template_one  ul.timing-box li{margin-right: 10px;border: 1px solid #eee;padding: 2px 5px;border-radius: 6px;}
