@@ -712,6 +712,7 @@ class CartController extends FrontController
             $PromoDelete = 0;
             $d = 0;
             $total_container_charges = 0 ;
+            $all_vendor_deliver_charges = 0 ;
 
             $user = Auth::user();
             $client_timezone = DB::table('clients')->first('timezone');
@@ -1095,6 +1096,11 @@ class CartController extends FrontController
                 }
 
                // pr($PromoFreeDeliver);
+                // add total delivery fee 
+                if($vendorData->vendor->delivery_charges_tax_id)
+                $all_vendor_deliver_charges +=  $deliveryCharges;
+
+
 
                 $subtotal_amount = $payable_amount;
                 // if($PromoFreeDeliver != 1){
@@ -1382,6 +1388,7 @@ class CartController extends FrontController
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
             $cart->total_payable_amount = decimal_format($total_payable_amount);
             $cart->delivery_charges = decimal_format($deliveryCharges);
+            $cart->all_vendor_deliver_charges = decimal_format($all_vendor_deliver_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
             $cart->total_taxable_amount = decimal_format($total_taxable_amount);
             $total_payable_amount_calc_tip = $total_payable_amount - $total_taxable_amount;
@@ -2117,11 +2124,11 @@ class CartController extends FrontController
                     if($passbase_check && $age_restriction)
                     {
                         if(is_null($user->passbase_verification)){
-                            return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alochol/Tobacco contents. It is mandatory to provide the verification documents to proceed']);
+                            return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alcohol/Tobacco contents. It is mandatory to provide the verification documents to proceed']);
                         }elseif($user->passbase_verification->status == 'pending'){
-                            return response()->json(['status'=>'passbase_submitted', 'message'=>'We have recieved your request for verification. Check back soon and order OR remove Alcohol/Tobocco items']);
+                            return response()->json(['status'=>'passbase_submitted', 'message'=>'We have received your request for verification. Check back soon and order OR remove Alcohol/Tobacco items']);
                         }elseif($user->passbase_verification->status == 'approved'){
-                            return response()->json(['status'=>'passbase_rejected', 'message'=>'According to our terms and conditions and Company\'s Policies, your verification documents were not found upto the mark .Please upload them again and enjoy shoppping.' ]);
+                            return response()->json(['status'=>'passbase_rejected', 'message'=>'According to our Terms and Conditions and Company\'s Policies, your verification documents were not found upto the mark .Please upload them again OR remove Alcohol/Tobacco items.' ]);
                         }
                     }
 
