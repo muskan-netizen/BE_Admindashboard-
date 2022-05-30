@@ -659,7 +659,7 @@
                                     }
                                     %>
                                     <% if(variant.check_if_in_cart != '') { %>
-                                        <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>
+                                        {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                         <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href<%= variant.check_if_in_cart.id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" href="javascript:void(0)">{{ __('Add') }}</a>
                                         <div class="number" id="show_plus_minus<%= variant.check_if_in_cart.id %>">
                                             <span class="minus qty-minus-product <% if(is_customizable){ %> remove-customize <% } %>"  data-parent_div_id="show_plus_minus<%= variant.check_if_in_cart.id %>" data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" data-cart="<%= variant.check_if_in_cart.cart_id %>">
@@ -671,7 +671,7 @@
                                             </span>
                                         </div>
                                     <% }else{ %>
-                                        <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>
+                                        {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                         <a class="add-cart-btn add_vendor_product" id="aadd_button_href<%= variant.product_id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.product.vendor_id %>" data-product_id="<%= variant.product_id %>" data-addon="<%= variant.isAddonExist %>" href="javascript:void(0)">{{ __('Add') }}</a>
                                         <div class="number" style="display:none;" id="ashow_plus_minus<%= variant.product_id %>">
                                             <span class="minus qty-minus-product"  data-parent_div_id="show_plus_minus<%= variant.product_id %>" readonly data-id="<%= variant.product_id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
@@ -998,6 +998,7 @@
                 },
                 success: function(response) {
                     if (response.status == 'Success') {
+                        response = response.data;
                         $(that).parents('.product_row').find(".variant_response span").html('');
                         if (response.variant != '') {
 
