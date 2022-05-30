@@ -776,7 +776,10 @@ class CartController extends FrontController
                 $cart_product_ids = [];
                 /* Getting in Vendor product loop and setting product values*/
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
-                    $cart_product_ids[] = $prod->product_id;
+
+                 if($prod->pvariant)   {
+
+                    $cart_product_ids[] = $prod->product_id;    
                     /* Setting Out of Stock if requied quanitity is not available */
                     if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
                         $quantity_check = productvariantQuantity($prod->variant_id);
@@ -910,58 +913,52 @@ class CartController extends FrontController
 
                     $select = '';
 
-                    if($action == 'delivery'){
+                    if ($action == 'delivery') {
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;
-                         $code = (($code)?$code:$cart->shipping_delivery_type);
+                        $code = (($code)?$code:$cart->shipping_delivery_type);
                         if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
-                            $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address);
-                           if(isset($deliveries[0]))
-                           {
-                            $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
-                            if(count($deliveries)>1){
-                            foreach($deliveries as $k=> $opt)
-                                {
-                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
-                                    //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                            $deliveries = $this->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address);
+                            if (isset($deliveries[0])) {
+                                $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
+                                if (count($deliveries)>1) {
+                                    foreach ($deliveries as $k=> $opt) {
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                        //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                                    }
+                                } else {
+                                    foreach ($deliveries as $k=> $opt) {
+                                        //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                                    }
                                 }
-                            }else{
-                                foreach($deliveries as $k=> $opt)
-                                {
-                                    //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
-                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
-                                }
-                            }
-                            $select .= '</select>';
-                                if($code){
+                                $select .= '</select>';
+                                if ($code) {
                                     $new = array_filter($deliveries, function ($var) use ($code) {
                                         return ($var['code'] == $code);
                                     });
-                                    foreach($new as $rate){
+                                    foreach ($new as $rate) {
                                         $deliveryCharges = $rate['rate'];
                                     }
-                                    if($deliveryCharges)
-                                    {
+                                    if ($deliveryCharges) {
                                         $deliveryCharges = $rate['rate'];
-                                    }else{
+                                    } else {
                                         $deliveryCharges = $deliveries[0]['rate'];
                                         $code = $deliveries[0]['code'];
                                     }
-
-                                }else{
+                                } else {
                                     $deliveryCharges = $deliveries[0]['rate'];
                                     $code = $deliveries[0]['code'];
                                 }
                             }
 
-                    if(isset($deliveryCharges) && !empty($deliveryCharges)){
-                            $dtype = explode('_',$code);
-                            CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                            if (isset($deliveryCharges) && !empty($deliveryCharges)) {
+                                $dtype = explode('_', $code);
+                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id], ['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                            }
+                        }//End Check last time stone
                     }
-
-                    }//End Check last time stone
-
                 }
 
                     $product = Product::with([
