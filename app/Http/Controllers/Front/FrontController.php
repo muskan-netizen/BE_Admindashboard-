@@ -617,6 +617,7 @@ class FrontController extends Controller
     {
         $cartData = [];
         $user = Auth::user();
+        $client_data = Client::first();
         $countries = Country::get();
         $langId = Session::get('customerLanguage');
         $guest_user = true;
@@ -649,6 +650,7 @@ class FrontController extends Controller
         }
 
         foreach($cartData as $key => $data){
+            $user->timezone = $user->timezone ?? $client_data->timezone;
             $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($user->timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
             $slots = showSlot($selectedDate,$data->vendor_id,'delivery');

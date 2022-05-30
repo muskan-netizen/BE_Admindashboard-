@@ -80,7 +80,9 @@ if(session()->has('applocale')){
                             <ul class="onhover-show-div">
                                 @foreach($languageList as $key => $listl)
                                     <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                                            ({{$listl->language->nativeName}})
+                                            @endif </a>
                                     </li>
                                 @endforeach
                             </ul>
@@ -312,7 +314,9 @@ if(session()->has('applocale')){
                             <ul class="onhover-show-div">
                                 @foreach($languageList as $key => $listl)
                                     <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}@if($listl->language->id != 1)    
+                                            ({{$listl->language->nativeName}})
+                                            @endif </a>
                                     </li>
                                 @endforeach
                             </ul>

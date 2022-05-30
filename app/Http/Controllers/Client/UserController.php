@@ -71,8 +71,12 @@ class UserController extends BaseController
     public function getFilterData(Request $request)
     {
         $current_user = Auth::user();
-        $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
-
+        $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
+        if($request->type == 'active'){
+            $users->where('status', 1);
+        }else if($request->type == 'inactive'){
+            $users->where('status', 3);
+        }
         return Datatables::of($users)
             ->addColumn('edit_url', function($users) {
                 return route('customer.new.edit', $users->id);

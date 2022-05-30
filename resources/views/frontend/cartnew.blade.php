@@ -65,6 +65,9 @@
     background-repeat: no-repeat;
     color: #FFF !important;
 }
+
+.al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
+.al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
 </style>
 
 @endsection
@@ -369,7 +372,6 @@ $client_preferences = \App\Models\ClientPreference::first();
                                             }
                                         }                         
                                     });
-                                    console.log("product_container_charges_tax_amount"+product_container_charges_tax_amount);
                                      %></div>
                                 </div>
                                 <div class="col-md-7 col-sm-4 text-right">
@@ -459,6 +461,32 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                         </div>
                     <% } %>
+
+                    {{-- Home Service Schedual code Start at down --}}
+                    <% if((cart_details.closed_store_order_scheduled == 1 || client_preference_detail.off_scheduling_at_cart != 1) && cart_details.vendorCnt > 1) { %>
+                        @if($client_preference_detail->business_type != 'laundry')
+                        <div class="row mb-1 d-flex align-items-center" style="<%= ((product.schedule_type == 'schedule') ? '' : 'display:none!important') %>">
+                            <div class="col-5 text-lg-right">
+                                <label class="m-0 radio">
+                                    {{__('Scheduled Slot')}} :</label>
+                                </div>
+                            <div class="col-7 vendor_slot_cart">
+                                <% if(product.slotsCnt != 0) {%>
+                                    <input type="date" class="form-control vendor_schedule_datetime" placeholder="Inline calendar" data-schedule_type="date" data-vendor_id="<%=  product.vendor_id %>" data-cart_product_id="<%=  product.cart_product_id %>" value="<%=  ((product.scheduled_date_time != '')?product.scheduled_date_time : product.delay_date ) %>"  min="<%= ((product.delay_date != '0') ? product.delay_date : '') %>" >
+                                    <select onchange="checkSlotAvailability(this);" class="form-control vendor_schedule_slot" id="vendor_schedule_slot_<%=  product.vendor_id %>" data-schedule_type="time" data-vendor_id="<%=  product.vendor_id %>" data-cart_product_id="<%=  product.cart_product_id %>" >
+                                        <option value="">{{__("Select Slot")}} </option>
+                                        <% _.each(product.slots, function(slot, sl){%>
+                                            <option value="<%= slot.value  %>" <%= slot.value == product.selected_slot ? 'selected' : '' %> ><%= slot.name %></option>
+                                        <% }) %>
+                                    </select>
+                                <% } %>
+                            </div>
+                        </div>
+                        @endif
+                    <% } %>
+                    
+                    {{-- Home Service Schedual code end at down --}}
+
                     <div class="row mb-1">
                         <div class="col-5 text-lg-right">
                             <% if(product.coupon_amount_used > 0) { %>
@@ -582,7 +610,15 @@ $client_preferences = \App\Models\ClientPreference::first();
 
         </div>
         <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
-            <% if(cart_details.total_service_fee > 0 && price_bifurcation!=1) { %>
+
+            <% if(cart_details.sub_total > 0 ) { %>
+                <div class="row">
+                    <div class="col-6">{{__('Sub Total')}}</div>
+                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.sub_total) %></b></div>
+                </div>
+                <hr class="my-2">
+            <% } %>
+        <% if(cart_details.total_service_fee > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Service Fee')}}</div>
                     <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_service_fee) %></b></div>
@@ -596,16 +632,18 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(total_fixed_fee_amount) %></b></div>
                     <input type="hidden" name="total_fixed_fee_amount" data-curr="{{Session::get('currencySymbol')}}" value="<%= total_fixed_fee_amount %>">
                 </div>
+                <% } %>
+                {{--
+                <% if(cart_details.total_container_charges > 0 && price_bifurcation!=1) { %>
                 <hr class="my-2">
-            <% } %>
-
-            <% if(cart_details.total_container_charges > 0 && price_bifurcation!=1) { %>
                 <div class="row">
                     <div class="col-6">{{__('Total Container Charges')}}</div>
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_container_charges) %></b></div>
                 </div>
                 <hr class="my-2">
-            <% }
+            <% } %>
+            --}}
+            <%
             if(product_container_charges_tax_amount>0){
                 other_taxes=other_taxes+product_container_charges_tax_amount;
                 other_taxes_string=other_taxes_string+',tax_product_container_charges:'+product_container_charges_tax_amount;
@@ -617,23 +655,27 @@ $client_preferences = \App\Models\ClientPreference::first();
             }
             %>
             <input type="hidden" id="other_taxes_string" value="<%= other_taxes_string %>">
-            <%
-            if(price_bifurcation!=1){  %>
-            <div class="row">
-                <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="total_taxable_amount"><%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+parseFloat(other_taxes)) %></span></b></div>
-            </div>
-            <% } if(price_bifurcation!=1){ %>
+            
+
+            <% if(price_bifurcation!=1){ %>
             <hr class="my-2">
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
                 <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)) %></b></span>
                 <span id="other_taxes" style="display:none;"><%= other_taxes %></span></div>
             </div>
-            <% } %>
             <hr class="my-2">
+            <% } %>
             
+            <% if(price_bifurcation!=1){  %>
+                <div class="row">
+                    <div class="col-6">{{__('Tax')}}</div>
+                    <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="total_taxable_amount"><%= Helper.formatPrice(parseFloat(cart_details.total_taxable_amount)+parseFloat(other_taxes)) %></span></b></div>
+                </div>
+            <hr class="my-2">
+            <% } %>
             <% if(cart_details.total_subscription_discount != undefined) { %>
+                
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
                     <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="total_subscription_discount"><%= Helper.formatPrice(cart_details.total_subscription_discount) %><span></b></div>
@@ -641,6 +683,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                 <hr class="my-2">
             <% } %>
             <% if(cart_details.loyalty_amount > 0 && price_bifurcation!=1) { %>
+                
                 <div class="row">
                     <div class="col-6">{{__('Loyalty Amount')}}</div>
                     <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="loyalty_amount"><%= Helper.formatPrice(cart_details.loyalty_amount) %></span></b></div>
@@ -794,10 +837,10 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                             <% } %>
 
-                    <% } else { %>
+                    <% } else {  console.log('cart_details.scheduled.slot', cart_details.scheduled.slot ); %>
 
 
-                            <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled_date_time != '')?cart_details.scheduled_date_time : cart_details.delay_date ) %>"  min="<%= cart_details.delay_date %>" >
+                            <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled.scheduled_date_time != '')? cart_details.scheduled.scheduled_date_time : cart_details.scheduled.scheduled_date_time ) %>"  min="<%= cart_details.delay_date %>" >
                             <input type="hidden" id="checkSlot" value="1">
                             <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
                                 <option value="">{{__("Select Slot")}} </option>
@@ -1638,7 +1681,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var payment_success_paypal_url = "{{ route('payment.paypalCompletePurchase') }}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
-    var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
+   // var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
     var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
     var payment_mobbex_url = "{{route('payment.mobbexPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
@@ -1661,7 +1704,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var order_success_return_url = "{{route('order.return.success')}}";
     var my_orders_url = "{{route('user.orders')}}";
     var validate_promocode_coupon_url = "{{ route('verify.promocode.validate_code') }}";
-
+    var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
     var post_toyyibpay_via_gateway_url = "{{route('payment.toyyibpay.index')}}";
 
     var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
@@ -2274,6 +2317,48 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
         }
     }
 
+    // Check Slot Availability
+    function checkSlotAvailability(obj)
+    {
+        var url = "{{route('checkSlotOrders')}}"
+        var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
+        var schedule_slot = $(obj).val();
+        var vendor_id = $(obj).data('vendor_id');
+        $.ajax({
+            type: "GET",
+            data: {
+                "schedule_datetime": schedule_datetime,
+                "schedule_slot":     schedule_slot,
+                "vendor_id":                vendor_id,
+            },
+            url: url,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(output) {
+                // Check if orderCount is greaten equal to orders_per_slot
+                if(output.orderCount >= output.orders_per_slot){
+                    success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
+                    // Disable the place order button
+                    $('#order_placed_btn').attr("disabled", true);
+                }else{
+                    // Enable the place order button
+                    $('#order_placed_btn').attr("disabled", false);
+                }
+            },
+            error: function(output) {
+                // console.log(output);
+            },
+        });
+    }
+
+    $(document).delegate('#view_all_address', 'click', function() {
+       
+        $("#view_all_address").addClass("d-none");
+        $("#view_all_address_div").removeClass("d-none");
+      
+    });
+    
     $(document).on('change', '[id^=input_file_logo_]', function(event){
         var rel = $(this).data('rel');
         // $('#plus_icon_'+rel).hide();

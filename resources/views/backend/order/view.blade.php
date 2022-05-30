@@ -312,6 +312,7 @@ $timezone = Auth::user()->timezone;
                                     @php
                                     $sub_total = 0;
                                     $taxable_amount = 0;
+                                    $adminRevenue = 0;
                                     $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     @foreach($vendor->products as $product)
@@ -393,13 +394,14 @@ $timezone = Auth::user()->timezone;
                                     <tr>
                                         <?php
                                             $checkOffer = \App\Models\Promocode::where('name', $vendor->coupon_code )->first();
+                                            $vendorDiscount = 0;
                                             if($checkOffer){
                                                 if($checkOffer->paid_by_vendor_admin == 1){
                                                     $couponFrom = 'From Admin';
                                                     $adminDiscount = $vendor->discount_amount;
                                                 }else{
                                                     $couponFrom = 'From Vendor';
-                                                    $vendorDiscount = $vendor->discount_amount;
+                                                    $vendorDiscount = $vendor->discount_amount??0;
                                                 }
                                             }else{
                                                 $couponFrom = '';

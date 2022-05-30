@@ -1021,6 +1021,19 @@ class OrderController extends BaseController
                     $task_type = 'now';
                 }
 
+            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
+            if(!empty($orderVendorDetails->scheduled_date_time)){
+                $task_type = 'schedule';
+                $user = Auth::user();
+                $selectedDate = dateTimeInUserTimeZone($orderVendorDetails->scheduled_date_time, $user->timezone);
+                $slot = trim(explode("-",$orderVendorDetails->schedule_slot)[0]);
+
+                $slotTime = date('H:i:s', strtotime("$slot"));
+                $selectedDate = date('Y-m-d',strtotime($selectedDate));
+                $scheduleDateTime = $selectedDate.' '.$slotTime;
+                $schedule_time =  $scheduleDateTime?? null;
+            }
+
             $tasks[] = array(
                 'task_type_id' => 1,
                 'latitude' => $vendor_details->latitude ?? '',
@@ -1240,9 +1253,9 @@ class OrderController extends BaseController
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
             $tasks = array();
             $meta_data = '';
-
+            $rtype = 'P';
             $unique = Auth::user()->code;
-            if ($colm == 1) {     # 1 for pickup from customer drop to vendor
+            if ($colm == 1) {     # 1 for pickup from customer drop to vendor --- Pickup Request
                 $desc = $order->comment_for_pickup_driver ?? null;
                 $tasks[] = array(
                     'task_type_id' => 1,
@@ -1272,7 +1285,8 @@ class OrderController extends BaseController
             }
 
 
-            if ($colm == 2) { # 1 for pickup from vendor drop to customer
+            if ($colm == 2) { # 1 for pickup from vendor drop to customer --- Delivery Request
+                $rtype = 'D';
                 $desc = $order->comment_for_dropoff_driver ?? null;
                 $tasks[] = array(
                     'task_type_id' => 1,
@@ -1331,7 +1345,8 @@ class OrderController extends BaseController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'request_type'=>$rtype??'P'
             ];
 
 

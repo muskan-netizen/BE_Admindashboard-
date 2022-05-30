@@ -69,7 +69,7 @@ $(document).ready(function() {
 
         let ajaxData = {};
         
-        if (cartElement.length > 0) {
+        if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
             tip = tipElement.val();
             ajaxData.tip = tip;
@@ -83,26 +83,27 @@ $(document).ready(function() {
             ajaxData.order_number = order.order_number;
             ajaxData.reload_route = order.route;
         }
-         else if (walletElement.length > 0) {
+         else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
             ajaxData.payment_form = 'wallet';
         }  else if (path.indexOf("subscription") !== -1) {
             total_amount = subscriptionElement.val();
-            data.subscription_id = subscription_id.val();
-            data.payment_from ='subscription';
-        } 
+            ajaxData.subscription_id = subscription_id.val();
+            ajaxData.payment_form ='subscription';
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            ajaxData.payment_form = 'tip';
+            ajaxData.order_number = $("#order_number").val();
+          
+          
+        }
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
 
-        if (typeof tip_for_past_order !== 'undefined') {
-            if (tip_for_past_order != undefined && tip_for_past_order == 1) {
-                let order_number = $("#order_number").val();
-                ajaxData.order_number = order_number;
-
-            }
-
-        }
+        // console.log(ajaxData);
+        // return false;
+       
 
         $.ajax({
             type: "POST",
