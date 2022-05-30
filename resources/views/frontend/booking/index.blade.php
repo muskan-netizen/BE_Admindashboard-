@@ -4,8 +4,11 @@
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
+<style type="text/css">
+.option{background:#fff;height:100%;width:100%;text-align:center;cursor:pointer;-webkit-transition:all .3s ease;transition:all .3s ease}input.alCheckMark[type=radio]{display:none}.alRiderImg{display:inline-block;height:50px;width:50px;border-radius:50%;line-height:45px;color:#fff;border:3px solid transparent;font-size:24px;text-transform:capitalize}.alRiderName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}.alCheckMark:checked:checked~.option .alRiderImg{border:4px solid #fff;box-shadow:0 2px 10px rgb(0 0 0 / 30%);text-transform:capitalize}.alCheckMark:checked:checked~.option span.alCloseBtn{display:none}.alAddRiderSecOuter{max-height:220px;overflow-y:auto;overflow-x:hidden}#alTaxiBookingWrapper .vehical-container{max-height:200px}#alTaxiBookingWrapper .location-box{padding:10px 24px}#alTaxiBookingWrapper .location-inputs .title-24{font-size:16px;line-height:24px;font-weight:500}#alTaxiBookingWrapper .scheduled-ride{padding:10px}.alAddRiderSecOuter button.btn.rounded{border:1px solid}span.alCloseBtn{position:absolute;background-color:#fff;height:15px;width:15px;font-size:10px;font-weight:600;line-height:15px;color:#000;border-radius:30px;right:28px;margin:0 auto;top:-3px;box-shadow:0 0 5px rgb(0 0 0 / 30%);z-index:99;cursor:pointer;display:none;-webkit-transition:all .3s ease;transition:all .3s ease}.alHoverRiderBox:hover span.alCloseBtn{display:block}.input-hidden{position:absolute;left:-9999px}::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{box-shadow:inset 0 0 2px grey;border-radius:10px}::-webkit-scrollbar-thumb{background:var(--theme-deafult);border-radius:10px}::-webkit-scrollbar-thumb:hover{background:#b30000}.alRiderRadioBox label{border:2px solid transparent;position:relative}.alRiderRadioBox label:before{position:absolute;top:0;left:0;content:"";background-color:var(--theme-deafult);height:25px;width:25px;z-index:1;border-radius:0 0 50px 0;display:none}.alRiderRadioBox label:after{position:absolute;content:"";left:7px;top:4px;width:6px;height:10px;border:solid #fff;border-width:0 2px 2px 0;-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);transform:rotate(45deg);z-index:2;display:none}.alRiderRadioBox input[type=radio]:checked+label{border:2px solid var(--theme-deafult);box-shadow:0 3px 3px rgba(0,0,0,.2)}.alRiderRadioBox input[type=radio]:checked+label:after,.alRiderRadioBox input[type=radio]:checked+label:before{display:block}
 
-<section class="cab-booking pt-0">
+</style>
+<section id="alTaxiBookingWrapper" class="cab-booking pt-0">
     <div id="booking-map" style="width: 100%; height: 100%;"></div>
     <input id="booking-latitude" type="hidden" value="-34">
     <input id="booking-longitude"  type="hidden" value="151">
@@ -17,14 +20,14 @@
                 <div class="spinner-border avatar-lg text-primary m-2" role="status"></div> 
             </div>
                 @if(isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
-                <div class="tip_radio_controls_book_friend text-center my-2">
-                    <input type="radio" class="tip_radio" id="for_me" name="is_for_friend" value="0">
-                    <label class="tip_label mb-0  my-2 active" for="for_me" id="label_for_me">
+                <div class="tip_radio_controls_book_friend text-center mt-2">
+                    <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend" value="0">
+                    <label class="tip_label mb-0  my-2 active " for="for_me" id="label_for_me">
                         <h5 class="m-0" id="tip_5">{{__('For Me')}}</h5>                        
                     </label>       
-                    <input type="radio" class="tip_radio" id="for_friend" name="is_for_friend" value="1">
+                    <input type="radio" class="tip_radio is_for_friend" id="for_friend" name="is_for_friend" value="1">
                     <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
-                        <h5 class="m-0" id="tip_5">{{__('For Rider')}}</h5>
+                        <h5 class="m-0" id="tip_5">{{__('For Others')}}</h5>
                     </label>                      
                 </div> 
                 @endif 
@@ -139,17 +142,108 @@
                     <div class="cab-button d-flex flex-nowrap align-items-center py-2 pl-2" id="vendor_main_div"></div>
                 </div>
                 <div class="vehical-container style-4" id="search_product_main_div"></div>
+                <div class="vehical-container style-4" id="search_product_rider_main_div" style="display:none;"></div>
+
+                <!-- Riders Code -->
+                <div class="alAddRiderSecOuter" id="rider_section" style="display:none;">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        @if(count($riders) > 0)
+                        <p class="m-0">Riders : <span id="rider_count">{{count($riders)}}</span></p>
+                        @endif
+                        <button class="btn rounded {{count($riders) == 0 ? 'w-100' : ''}}  add_rider_button" data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i> {{__('Add Rider')}}</button>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <div class="row alRiderImgBox"> 
+                            @foreach($riders as $key=>$rider)
+                            <div class="col-3 text-center alHoverRiderBox">
+                                
+                                <input class="alCheckMark" type="radio" name="rider_id" id="option-{{$key}}" {{$key == 0 ? 'checked' : ''}} value="{{$rider->id}}">
+                                <label for="option-{{$key}}" class="option option-{{$key}}">
+                                    
+                                    <div class="alRiderImg mb-1" style="background-color:<?php printf( "#%06X\n", mt_rand( 0, 0xFFFFFF )); ?>">{{substr($rider->first_name, 0, 1)}}</div>
+                                    <div class="dalRiderInfo">
+                                        <p class="alRiderName mb-0">{{$rider->first_name}}</p>
+                                    </div>
+                                    
+                                </label>
+                                <span class="alCloseBtn deleteRider" data-id="{{$rider->id}}">X</span>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div> 
+                </div>
+                <div class="col-md-12" id="product_rider_div" style="display:none;">
+                    <button class="btn btn-solid w-100" id="submit_product_rider_button">Next</button> 
+                </div>
+
+
             </div>
         </div>
+        <script type="text/template" id="rider_template">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <% if(riders.length > 0){%>
+                    <p class="m-0">Riders : <%= riders.length %></p>
+                <% } %>
+                <button class="btn rounded <% if(riders.length > 0){'w-100'} %> add_rider_button" data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i> {{__('Add Rider')}}</button>
+            </div>
+            <div class="col-12 mt-2">
+                <div class="row alRiderImgBox">
+                    <% _.each(riders, function(rider, key){%> 
+                        <%
+                        var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
+                        %>
+                        <div class="col-3 text-center alHoverRiderBox">
+                            <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" <% if(key == 0){'checked'} %> >
+                            <label for="option-<%= key %>" class="option option-<%= key %>">    
+                                <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
+                                <div class="dalRiderInfo">
+                                    <p class="alRiderName mb-0"><%=rider.first_name%></p>
+                                </div>
+                            </label>
+                            <span class="alCloseBtn deleteRider" data-id="<%=rider.id%>">X</span>
+                        </div>
+                    <% }); %>
+                </div>   
+            </div> 
+        </script>
         <script type="text/template" id="vendors_template">
             <% _.each(results, function(result, key){%>
                 <a class="btn btn-solid ml-2 vendor-list" href="javascript:void(0);" data-vendor="<%= result.id %>"><%= result.name %></a>
             <% }); %>
         </script>
+        <script type="text/template" id="products_rider_template">
+            <% if(results != ''){ %>
+            <% _.each(results, function(result, key){%>
+                <div class="vehical-view-box-1 alRiderRadioBox" data-product_id="<%= result.id %>">
+                    <input type="radio" name="rider_product_id" value="<%= result.id %>" <% if(key == 0){'checked'} %>  id="alRiderRadio_<%= key %>" class="input-hidden" />
+                    <label for="alRiderRadio_<%= key %>" class="d-flex align-items-center no-gutters px-2">
+                        <div class="col-3 vehicle-icon">
+                            <img class='img-fluid' src='<%= result.image_url %>'>
+                        </div>
+                        <div class="col-9">
+                            <div class="row no-gutters">
+                                <div class="col vehicle-details">
+                                    <h4 class="m-0"><b><%= result.name %></b></h4>
+                                </div>
+                                <div class="col ride-price pl-2 text-right">
+                                    <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+                <hr class="m-0">
+            <% }); %>
+            <% }else{ %>
+                <div class="col-12 vehicle-details">
+                    {{ __('No result found. Please try a new search') }}
+                </div>
+            <% } %>
+        </script>
         <script type="text/template" id="products_template">
             <% if(results != ''){ %>
             <% _.each(results, function(result, key){%>
-                <a class="vehical-view-box d-flex align-items-center no-gutters px-2 my-1" href="javascript:void(0)" data-product_id="<%= result.id %>">
+                <a class="vehical-view-box d-flex align-items-center no-gutters px-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
                     <div class="col-2 vehicle-icon">
                         <img class='img-fluid' src='<%= result.image_url %>'>
                     </div>
@@ -244,18 +338,8 @@
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
                 <div class="for_friend_fields_div px-2 py-2">
-                    <h4 class="pb-2">Friend's Details</h4>
-                    <div class="form-group">
-                        <label for="friendName">Friend's Name</label>
-                        <input type="text" class="form-control" name="friendName" placeholder="Name">
-                    </div>
-                    <div class="form-group">
-                        <label for="friendPhoneNumber">Friend's Phone Number</label>
-                        <input type="tel" class="form-control phone @error('friendPhoneNumber') is-invalid @enderror" id="phone" placeholder="Phone Number" name="friendPhoneNumber" value="{{old('friendPhoneNumber')}}" autofocus>
-                        <input type="hidden" id="countryData" name="countryData" value="us">
-                        <input type="hidden" id="dialCode" name="dialCode" value="91">
-                    </div>
-                
+                    <input type="hidden" name="friendName" value="<%= result.friend_name %>">
+                    <input type="hidden" name="friendPhoneNumber" value="<%= result.friend_phone_name %>">
                 </div>
                 
             </div>
@@ -547,6 +631,42 @@
     </div>
   </div>
 <!-- end modal for product order form -->
+<!--Start Add Rider Modal -->
+<div class="modal fade" id="alAddRiderSecModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header pb-0">
+        <h5 class="modal-title" id="exampleModalLabel">{{__('Add Rider')}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="add_rider_form" method="post">
+            @csrf
+          <div class="form-group">
+            <label for="firstname" class="col-form-label">{{__('First Name')}}:</label>
+            <input type="text" class="form-control" name="first_name">
+          </div>
+          <div class="form-group">
+            <label for="lastname" class="col-form-label">{{__('Last Name')}}:</label>
+            <input type="text" class="form-control" name="last_name">
+          </div>
+          <div class="form-group">
+            <label for="phonenumber" class="col-form-label">{{__('Phone Number')}}:</label>
+            <input type="tel" class="form-control phone @error('phone_number') is-invalid @enderror" id="phone" placeholder="Phone Number" name="phone_number" value="{{old('phone_number')}}" autofocus>
+            <input type="hidden" id="countryData" name="countryData" value="{{ strtolower(Session::get('default_country_code','US')) }}">
+            <input type="hidden" id="dialCode" name="dial_code" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode','1') }}">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-solid add_rider_submit_button">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End add rider modal -->
 
 
 @endsection
@@ -599,6 +719,8 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var product_order_form_element_data = [];
     var utilsScript_path = "{{asset('assets/js/utils.js')}}";
     var initial_country_code = "{{ Session::get('default_country_code','US') }}";
+    var add_rider_url = "{{route('rider.create')}}";
+    var remove_rider_url = "{{route('rider.remove')}}";
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();

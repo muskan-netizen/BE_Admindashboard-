@@ -68,6 +68,8 @@
 
 .al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
+
+.vendor_cart-check label {display: inline-block;}
 </style>
 
 @endsection
@@ -225,8 +227,8 @@ $client_preferences = \App\Models\ClientPreference::first();
             total_wallet_amount_used=parseFloat(total_wallet_amount_used)+parseFloat(cart_details.wallet_amount_used);
         }
 
-        other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.delivery_charges)*tax_delivery_charges_percentage/100);
-        other_taxes_string='tax_fixed_fee:'+(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+',tax_service_charges:'+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+',tax_delivery_charges:'+(parseFloat(cart_details.delivery_charges)*tax_delivery_charges_percentage/100);
+        other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.all_vendor_deliver_charges)*tax_delivery_charges_percentage/100);
+        other_taxes_string='tax_fixed_fee:'+(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+',tax_service_charges:'+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+',tax_delivery_charges:'+(parseFloat(cart_details.all_vendor_deliver_charges)*tax_delivery_charges_percentage/100);
            
         %>
         <div id="thead_<%= product.vendor.id %>">
@@ -911,7 +913,21 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                     </div>
                 </div>
-
+                <div class="row form-group mb-0 text-sm-right">
+                    <div class="col-12 checkbox-input vendor_cart-check">
+                        <input type="checkbox" id="term-and-condition" name="term_and_condition"
+                            class="form-control"  value="1">
+                        <label for="term-and-condition">{{ __('I accept the') }}
+                            <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                                target="_blank">{{ __('Terms And Conditions') }} </a>
+                            {{ __('and have read the') }}
+                            <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
+                                target="_blank">
+                                {{ __('Privacy Policy') }}.
+                            </a>
+                        </label>
+                    </div>
+                </div>
                 <div class="row mb-md-3 alFourTemplateCartButtons">
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
