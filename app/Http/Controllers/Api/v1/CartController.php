@@ -589,7 +589,7 @@ class CartController extends BaseController
                             $vendor_table->qr_url = url('/vendor/' . $vendorData->vendor->slug . '/?id=' . $vendorData->vendor_id . '&name=' . $vendorData->vendor->name . '&table=' . $vendor_table->id);
                         }
                         $vendor_details['vendor_tables'] = $vendor_tables;
-                    //    return $vendor_details['vendor_tables'];
+                    //    return $vendor_details['vendor_tables']; 
                     }
                 } else {
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
