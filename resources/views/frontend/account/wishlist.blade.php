@@ -76,7 +76,7 @@ $timezone = Auth::user()->timezone;
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            <h2>{{ getNomenclatureName('Wishlist', true) }}</h2>
+                            <h2>{{__(getNomenclatureName('Wishlist', true)) }}</h2>
                         </div>
                         <div class="box-account box-info mt-md-3 mt-2">
                             <div class="row">
