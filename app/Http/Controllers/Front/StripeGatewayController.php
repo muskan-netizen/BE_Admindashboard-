@@ -30,7 +30,7 @@ class StripeGatewayController extends FrontController
     public $api_key_new;
     public $testmodenew;
 
-    public function __construct()
+    public function config()
     {
         $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
         $creds_arr = json_decode($stripe_creds->credentials);
@@ -46,6 +46,7 @@ class StripeGatewayController extends FrontController
 
     public function paymentInit(Request $request, $domain='')
     {
+        $this->config();
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
 
@@ -206,6 +207,7 @@ class StripeGatewayController extends FrontController
 
     function generateResponse($intent, $parameters)
     {
+        $this->config();
         if (($intent->status == 'requires_action') && isset($intent->next_action->type) && ($intent->next_action->type == 'use_stripe_sdk')) {
             # Tell the client to handle the action
             echo json_encode([
@@ -231,6 +233,7 @@ class StripeGatewayController extends FrontController
 
     public function checkStripeSecurity(Request $request)
     {
+        $this->config();
         $token        = $request->input('stripe_token');
         $total_amount = $this->getDollarCompareAmount($request->input('total_amount'));
         $address_id   = $request->input('address_id');
@@ -260,6 +263,7 @@ class StripeGatewayController extends FrontController
     public function checkStripeReturnDataFrom3DAuth($intent, $parameters)
     {
         try {
+            $this->config();
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
             $amount = $parameters['total_amount'];
@@ -364,9 +368,9 @@ class StripeGatewayController extends FrontController
     }
 
     public function postPaymentViaStripe(request $request)
-    {
-     
+    { 
         try {
+            $this->config();
             $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
             $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
 
@@ -558,6 +562,7 @@ class StripeGatewayController extends FrontController
     public function subscriptionPaymentViaStripe(request $request)
     {
         try {
+            $this->config();
             $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
             $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
             $user = Auth::user();
