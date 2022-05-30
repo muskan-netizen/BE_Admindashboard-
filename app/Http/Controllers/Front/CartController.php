@@ -700,6 +700,7 @@ class CartController extends FrontController
             $PromoDelete = 0;
             $d = 0;
             $total_container_charges = 0 ;
+            $all_vendor_deliver_charges = 0 ;
 
             $user = Auth::user();
             $client_timezone = DB::table('clients')->first('timezone');
@@ -1081,6 +1082,11 @@ class CartController extends FrontController
                 }
 
                // pr($PromoFreeDeliver);
+                // add total delivery fee 
+                if($vendorData->vendor->delivery_charges_tax_id)
+                $all_vendor_deliver_charges +=  $deliveryCharges;
+
+
 
                 $subtotal_amount = $payable_amount;
                 // if($PromoFreeDeliver != 1){
@@ -1363,6 +1369,7 @@ class CartController extends FrontController
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
             $cart->total_payable_amount = decimal_format($total_payable_amount);
             $cart->delivery_charges = decimal_format($deliveryCharges);
+            $cart->all_vendor_deliver_charges = decimal_format($all_vendor_deliver_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
             $cart->total_taxable_amount = decimal_format($total_taxable_amount);
             $total_payable_amount_calc_tip = $total_payable_amount - $total_taxable_amount;
