@@ -837,10 +837,10 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                             <% } %>
 
-                    <% } else { %>
+                    <% } else {  console.log('cart_details.scheduled.slot', cart_details.scheduled.slot ); %>
 
 
-                            <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled_date_time != '')?cart_details.scheduled_date_time : cart_details.delay_date ) %>"  min="<%= cart_details.delay_date %>" >
+                            <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled.scheduled_date_time != '')? cart_details.scheduled.scheduled_date_time : cart_details.scheduled.scheduled_date_time ) %>"  min="<%= cart_details.delay_date %>" >
                             <input type="hidden" id="checkSlot" value="1">
                             <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
                                 <option value="">{{__("Select Slot")}} </option>

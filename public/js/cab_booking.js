@@ -219,7 +219,7 @@ $(document).ready(function () {
         // alert(type);
         // return false;
         let friendName=$('input[name=friendName]').val();
-        let friendPhoneNumber= '+'+ $('input[name=dialCode]').val() + $('input[name=friendPhoneNumber]').val();
+        let friendPhoneNumber= $('input[name=friendPhoneNumber]').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -579,6 +579,107 @@ $(document).ready(function () {
             });
         }
     }
+
+    // Start Rider SOurce COde
+    $(document).on("change",".is_for_friend",function() {
+        if($(this).val() == 1)
+        {
+            $('#search_product_main_div').hide();
+            $('#search_product_rider_main_div').show();
+            $(".alAddRiderSecOuter").show();
+            $('#product_rider_div').show();
+        }else{
+            $('#search_product_rider_main_div').hide();
+            $('#search_product_main_div').show();
+            $(".alAddRiderSecOuter").hide();
+            $('#product_rider_div').hide();
+        }
+    });
+    $(document).on("click","#submit_product_rider_button",function(){
+        let product_id = $('input[name="rider_product_id"]:checked').val();
+        let rider_id = 0;
+        let rider_type = $('input[name="is_for_friend"]:checked').val();
+        if(rider_type == 1 || rider_type == "1")
+        {
+            rider_id = $('input[name="rider_id"]:checked').val();
+        }
+        getVehicleDetail(product_id,rider_id);
+
+    });
+    $(document).on('click','.add_rider_button',function(){
+        var input = document.querySelector("#phone");
+        window.intlTelInput(input, {
+            separateDialCode: true,
+            utilsScript: utilsScript_path,
+            initialCountry: initial_country_code, 
+        });
+    })
+    $(document).delegate('.iti__country','click', function() {
+        var code = $(this).attr('data-country-code');
+        $('#countryData').val(code);
+        var dial_code = $(this).attr('data-dial-code');
+        $('#dialCode').val(dial_code);
+    });
+    $(document).on('click','.add_rider_submit_button',function(){
+        var form = document.getElementById('add_rider_form');
+        var formData = new FormData(form);
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: add_rider_url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                let rider_template = _.template($('#rider_template').html());
+                $("#rider_section").html(rider_template({riders: response.riders})).show();
+                $('#alAddRiderSecModal').modal('hide');
+                form.reset();
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            }
+        });
+    })
+    $(document).on('click','.deleteRider',function(){
+        var parent = $(this).parent()[0];
+        var rider_id = $(this).data('id');
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: "get",
+            headers: {
+                Accept: "application/json"
+            },
+            url: remove_rider_url+'?rider_id='+rider_id,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                parent.remove();
+                $('#rider_count').html(response.rider_count);
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            }
+        });
+    });
+    // End Rider SOurce COde
     $(document).on("click",".vendor-list",function() {
         var locations = [];
         $('.cab-booking-main-loader').show();
@@ -608,16 +709,27 @@ $(document).ready(function () {
                 if(response.status == 'Success'){
                     $('.cab-booking-main-loader').hide();
                     $('#search_product_main_div').html('');
+                    $('#search_product_rider_main_div').html('');
                     if(response.data.length != 0){
                         // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
                         //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                         //      } };
-                             var productData = _.extend({ Helper: NumberFormatHelper }, {results: response.data.products});
+                            var productData = _.extend({ Helper: NumberFormatHelper }, {results: response.data.products});
 
                         let products_template = _.template($('#products_template').html());
-                        $("#search_product_main_div").append(products_template(productData)).show();
+                        let products_rider_template = _.template($('#products_rider_template').html());
+                        $("#search_product_main_div").append(products_template(productData));
+                        $("#search_product_rider_main_div").append(products_rider_template(productData));
+                        let is_friend = $('input[name="is_for_friend"]:checked').val();
+                        if(is_friend == undefined || is_friend == '0')
+                        {
+                            $("#search_product_main_div").show();
+                        }else{
+                            $("#search_product_rider_main_div").show();
+                        }
                     }else{
                         $("#search_product_main_div ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
+                        $("#search_product_rider_main_div ").html('<p class="text-center my-3">'+ no_result_message +'</p>');
                     }
                 }
             },
@@ -729,9 +841,13 @@ $(document).ready(function () {
         $('.scheduled-ride-list').attr("style", "display: none !important");
     });
     $(document).on("click",".vehical-view-box",function() {
+        let product_id = $(this).data('product_id');
+        getVehicleDetail(product_id);
+    });
+    function getVehicleDetail(product_id,rider_id=0)
+    {
         $('.cab-booking-main-loader').show();
         var locations = [];
-        let product_id = $(this).data('product_id');
         var pickup_location_latitude = $('input[name="pickup_location_latitude[]"]').map(function(){return this.value;}).get();
         var pickup_location_longitude = $('input[name="pickup_location_longitude[]"]').map(function(){return this.value;}).get();
         var destination_location_latitudes = $('input[name="destination_location_latitude[]"]').map(function(){return this.value;}).get();
@@ -751,7 +867,7 @@ $(document).ready(function () {
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations},
+            data: {locations:locations,rider_id:rider_id},
             url: get_product_detail+'/'+product_id,
             success: function(response) {
                 if(response.status == 'Success'){
@@ -771,13 +887,6 @@ $(document).ready(function () {
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                         
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
-                        var input = document.querySelector("#phone");
-                        window.intlTelInput(input, {
-                            separateDialCode: true,
-                            hiddenInput: "friendPhoneNumber",
-                            utilsScript: utilsScript_path,
-                            initialCountry: initial_country_code, 
-                        });
                         getDistance();
                         if($('input[name=is_for_friend]:checked').val()==1){
                             $('.for_friend_fields_div').removeClass('d-none');
@@ -793,7 +902,7 @@ $(document).ready(function () {
                 }
             }
         });
-    });
+    }
 
     $(document).on("click",".edit-pickup",function() {
         $(".check-pick-first").css("display", "block");

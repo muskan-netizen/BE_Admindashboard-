@@ -917,7 +917,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-6">
                      <div class="form-group mb-2">
-                        <label for="mail_port">{{ __("Mail Port") }}</label>
+                        <label for="mail_port">{{ __("Mail Port") }}</label> 
                         <input type="text" name="mail_port" id="mail_port" placeholder="" class="form-control" value="{{ old('mail_port', $preference->mail_port ?? '')}}">
                         @if($errors->has('mail_port'))
                         <span class="text-danger" role="alert">
@@ -1340,6 +1340,15 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                </div>
 
+               @if(isset($preference) && $preference->business_type == "taxi")
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="book_for_friend" class="mr-2 mb-0">{{__('Book for a Friend')}}<small class="d-block pr-5">{{__('Enable to add book for a friend functionality for customers.')}}</small></label>
+                  <span> <input type="checkbox" data-plugin="switchery" name="book_for_friend" id="book_for_friend" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->book_for_friend == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+               @endif
                </div>
             </div>
          </form>
