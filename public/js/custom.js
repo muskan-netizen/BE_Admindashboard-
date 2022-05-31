@@ -448,7 +448,9 @@ $(document).ready(function () {
                                     $("#subscription_payment .subscription_confirm_btn").hide();
                                 }
                                 $("#subscription_payment").modal("show");
-                                stripeInitialize();
+                                if(stripe_publishable_key != ''){
+                                    stripeInitialize();
+                                }
                                 if(stripe_fpx_publishable_key != ''){
                                     stripeFPXInitialize();
                                 }
@@ -1039,7 +1041,9 @@ $(document).ready(function () {
                                     $("#v_pills_tabContent").append(payment_method_tab_pane_template({ payment_options: response.data }));
                                     $('#proceed_to_pay_modal').modal('show');
                                     $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
-                                    stripeInitialize();
+                                    if(stripe_publishable_key != ''){
+                                        stripeInitialize();
+                                    }
                                     if(stripe_fpx_publishable_key != ''){
                                         stripeFPXInitialize();
                                     }
@@ -1097,7 +1101,9 @@ $(document).ready(function () {
                     if (response.data == '') {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
-                        stripeInitialize();
+                        if(stripe_publishable_key != ''){
+                            stripeInitialize();
+                        }
                         if(stripe_fpx_publishable_key != ''){
                             stripeFPXInitialize();
                         }
@@ -1137,7 +1143,9 @@ $(document).ready(function () {
                     if (response.data == '') {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
-                        stripeInitialize();
+                        if(stripe_publishable_key != ''){
+                            stripeInitialize();
+                        }
                         if(stripe_fpx_publishable_key != ''){
                             stripeFPXInitialize();
                         }
