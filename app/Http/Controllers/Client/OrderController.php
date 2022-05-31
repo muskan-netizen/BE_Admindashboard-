@@ -313,6 +313,13 @@ class OrderController extends BaseController
             // $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, h:i A');
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
             $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
+
+            $total_other_taxes=0.00;
+            foreach(explode(":",$order->total_other_taxes) as $row){
+                $total_other_taxes+=(float)$row;
+            }
+            $order->total_other_taxes_amount = $total_other_taxes;
+
             foreach ($order->vendors as $vendor) {
                 if(isset($vendor) && !empty($vendor->vendor_id))
                 $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);

@@ -30,7 +30,7 @@ class StripeGatewayController extends FrontController
     public $api_key_new;
     public $testmodenew;
 
-    public function __construct()
+    public function config()
     {
         $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
         $creds_arr = json_decode($stripe_creds->credentials);
@@ -46,6 +46,7 @@ class StripeGatewayController extends FrontController
 
     public function paymentInit(Request $request, $domain='')
     {
+        $this->config();
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
 
@@ -206,6 +207,7 @@ class StripeGatewayController extends FrontController
 
     function generateResponse($intent, $parameters)
     {
+        $this->config();
         if (($intent->status == 'requires_action') && isset($intent->next_action->type) && ($intent->next_action->type == 'use_stripe_sdk')) {
             # Tell the client to handle the action
             echo json_encode([
@@ -231,6 +233,7 @@ class StripeGatewayController extends FrontController
 
     public function checkStripeSecurity(Request $request)
     {
+        $this->config();
         $token        = $request->input('stripe_token');
         $total_amount = $this->getDollarCompareAmount($request->input('total_amount'));
         $address_id   = $request->input('address_id');
@@ -260,6 +263,7 @@ class StripeGatewayController extends FrontController
     public function checkStripeReturnDataFrom3DAuth($intent, $parameters)
     {
         try {
+            $this->config();
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
             $amount = $parameters['total_amount'];
@@ -367,6 +371,7 @@ class StripeGatewayController extends FrontController
     {
      
         try {
+            $this->config();
             $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
             $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
 
@@ -558,6 +563,7 @@ class StripeGatewayController extends FrontController
     public function subscriptionPaymentViaStripe(request $request)
     {
         try {
+            $this->config();
             $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
             $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
             $user = Auth::user();
@@ -1279,18 +1285,39 @@ class StripeGatewayController extends FrontController
 
     public function cartStripeOXXOClear(Request $request)
     {
-        $cart = Cart::where('user_id',auth()->id())->select('id')->first();
-        $cart_id = $cart->id;
-        $order = Order::where('order_number',$request->no)->first();
-        
-        // Remove cart
-        CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
-        Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-        CartAddon::where('cart_id', $cart_id)->delete();
-        CartCoupon::where('cart_id', $cart_id)->delete();
-        CartProduct::where('cart_id', $cart_id)->delete();
-        CartProductPrescription::where('cart_id', $cart_id)->delete();
-        return Redirect::to(route('order.success',[$order->id]));
+
+            $order = Order::where('order_number',$request->no)->first();
+            if(isset($request->payment_from) && $request->payment_from == 'cart')
+            {
+                $cart = Cart::where('user_id',auth()->id())->select('id')->first();
+                $cart_id = $cart->id;
+                $order = Order::where('order_number',$request->no)->first();
+                
+                // Remove cart
+                CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
+                Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                CartAddon::where('cart_id', $cart_id)->delete();
+                CartCoupon::where('cart_id', $cart_id)->delete();
+                CartProduct::where('cart_id', $cart_id)->delete();
+                CartProductPrescription::where('cart_id', $cart_id)->delete();
+
+                if(isset($request->come_from) && $request->come_from == 'app')
+                {
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=stripe_oxxo'.'&status=200&order='.$request->no;  
+                    return Redirect::to($returnUrl); 
+                }  
+                
+            }else
+            {
+                if(isset($request->come_from) && $request->come_from == 'app')
+                {
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=stripe_oxxo'.'&status=200&transaction_id='.time().'&action='.$request->payment_from;
+                    return Redirect::to($returnUrl); 
+                }
+            }
+
+            return Redirect::to(route('order.success',[$order->id]));
+            
     }
 
 
@@ -1473,6 +1500,46 @@ class StripeGatewayController extends FrontController
             $url = 'payment/gateway/returnResponse?status=0&gateway=stripe_fpx&action='.$request->payment_form;
             if($request->has('redirect_status') && ($request->redirect_status == 'succeeded')){
                 $url = 'payment/gateway/returnResponse?status=200&gateway=stripe_fpx&action='.$request->payment_form;
+                if($request->payment_form == 'cart'){
+                    $url = $url.'&order='.$request->order;
+                }
+            }
+            return Redirect::to($url);
+        }
+    }
+
+    public function paymentWebViewStripeOXXO(Request $request, $domain='')
+    {
+        // try{
+            $secret_key = stripeOXXOPaymentCredentials()->secret_key;
+            $auth_token = $request->auth_token;
+            $user = User::where('auth_token', $auth_token)->first();
+            Auth::login($user);
+            $payment_form = $request->payment_form;
+            $returnParams = 'amount='. $request->amount . '&payment_form=' . $payment_form;
+            if($payment_form == 'cart'){
+                $returnParams .= '&order='.$request->order_number;
+            }
+            elseif($payment_form == 'tip'){
+                $returnParams .= '&order='.$request->order_number;
+            }
+            $payment_retrive_stripe_oxxo_url = url('payment/webview/response/stripe_oxxo' .'/?'. $returnParams);
+            
+            $request->request->add(['come_from' => 'app', 'payment_form' => $payment_form]);
+            $data = $request->all();
+            return view('frontend.payment_gatway.stripe_oxxo_view')->with(['data' => $data, 'payment_retrive_stripe_oxxo_url'=>$payment_retrive_stripe_oxxo_url]);
+        // }
+        // catch(\Exception $ex){
+        //     return redirect()->back()->with('errors', $ex->getMessage());
+        // }
+    }
+
+    public function webViewResponseStripeOXXO(Request $request)
+    {
+        if($request->has('payment_intent')){
+            $url = 'payment/gateway/returnResponse?status=0&gateway=stripe_oxxo&action='.$request->payment_form;
+            if($request->has('redirect_status') && ($request->redirect_status == 'succeeded')){
+                $url = 'payment/gateway/returnResponse?status=200&gateway=stripe_oxxo&action='.$request->payment_form;
                 if($request->payment_form == 'cart'){
                     $url = $url.'&order='.$request->order;
                 }

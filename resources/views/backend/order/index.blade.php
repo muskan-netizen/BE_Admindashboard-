@@ -250,12 +250,23 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{ __('Total') }}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_amount) %></span>
                                     </li>
+
+                                    <% if(order.total_other_taxes_amount > 0 || order.total_other_taxes_amount < 0) { %>
+                                       <li class="d-flex align-items-center justify-content-between">
+                                                <label class="m-0">{{ __('Tax') }}</label>
+                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_other_taxes_amount) %></span>
+                                        </li>
+                                     <% }else { %>
+
                                     <% if(order.taxable_amount > 0 || order.taxable_amount < 0) { %>
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Tax') }}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.taxable_amount) %></span>
                                     </li>
-                                    <% } %>
+                                    <% } } %>
+
+
+
                                     <% if(order.total_service_fee > 0 || order.total_service_fee < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{ __('Service Fee') }}</label>
@@ -313,7 +324,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{ __('Payable') }} </label>
                                         {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount)+parseFloat(order.fixed_fee_amount))%></span> --}}
 
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(order.total_amount) - parseFloat(order.total_discount_calculate) ) + parseFloat(order.total_container_charges) + parseFloat(order.taxable_amount) + parseFloat(order.total_service_fee) + parseFloat(order.fixed_fee_amount) + parseFloat(order.total_delivery_fee )) %></span>
+                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(order.total_amount) - parseFloat(order.total_discount_calculate) ) + parseFloat(order.total_container_charges) + parseFloat(order.taxable_amount) + parseFloat(order.total_service_fee) + parseFloat(order.fixed_fee_amount) + parseFloat(order.total_delivery_fee )) %></span> --}}
+
+                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount))%></span>  
                                     </li>
                                 </ul>
                             </div>

@@ -21,7 +21,7 @@ class StripeGatewayController extends BaseController
     public $gateway;
     public $currency;
 
-    public function __construct()
+    public function config()
     {
         $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
         $creds_arr = json_decode($stripe_creds->credentials);
@@ -37,6 +37,7 @@ class StripeGatewayController extends BaseController
 
     public function stripePurchase(request $request)
     {
+        $this->config();
         // try {
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
@@ -204,6 +205,7 @@ class StripeGatewayController extends BaseController
     public function subscriptionPaymentViaStripe(request $request)
     {
         try {
+            $this->config();
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
             $token = $request->stripe_token;
@@ -409,5 +411,25 @@ class StripeGatewayController extends BaseController
             $returnParams .= '&subscription_id='.$request->subscription_id;
         }
         return $this->successResponse(url($request->serverUrl.'payment/webview/stripe_fpx'.$returnParams)); 
+    }
+
+    public function paymentWebViewStripeOXXO(Request $request, $domain='')
+    {
+        $user = Auth::user();
+        $payment_form = $request->action;
+        $returnParams = '?amount='. $request->amount .'&auth_token='.$user->auth_token. '&payment_form=' . $payment_form;
+        if($payment_form == 'cart'){
+            $returnParams .= '&order_number='.$request->order_number;
+            if($request->has('address_id')){
+                $returnParams .= '&address_id='.$request->address_id;
+            }
+        }
+        elseif($payment_form == 'tip'){
+            $returnParams .= '&order_number='.$request->order_number;
+        }
+        elseif($payment_form == 'subscription'){
+            $returnParams .= '&subscription_id='.$request->subscription_id;
+        }
+        return $this->successResponse(url($request->serverUrl.'payment/webview/stripe_oxxo'.$returnParams)); 
     }
 }
