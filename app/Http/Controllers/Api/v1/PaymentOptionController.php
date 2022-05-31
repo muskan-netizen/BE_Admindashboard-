@@ -66,8 +66,8 @@ class PaymentOptionController extends BaseController{
             }else{
                 $domain = $client->sub_domain.env('SUBMAINDOMAIN');
             }
-            $server_url = "http://192.168.97.160:9091/";
-            //$server_url = "https://".$domain."/";
+            //$server_url = "http://192.168.97.160:9091/";
+            $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
             $function = 'postPaymentVia_'.$gateway;
