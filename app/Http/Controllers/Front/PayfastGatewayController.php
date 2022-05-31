@@ -12,7 +12,7 @@ use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController};
+use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController, PickupDeliveryController};
 use App\Models\Client as CP;
 use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, Transaction};
 
@@ -278,6 +278,13 @@ class PayfastGatewayController extends FrontController
                 $subscriptionController = new UserSubscriptionController();
                 $res = $subscriptionController->purchaseSubscriptionPlan($pfData, '', $pfData->custom_str2);
                 $response = $res->getData();
+            }
+            elseif($pfData->custom_str1 == 'pickup_delivery'){
+                $order_number = $pfData->custom_str2;
+                $pfData->request->add(['payment_option_id' => 6, 'amount' => $pfData->amount_gross, 'order_number' => $order_number]);
+                $pickupDeliveryController = new PickupDeliveryController();
+                $res = $pickupDeliveryController->orderUpdateAfterPaymentPickupDelivery($pfData);
+                \Log::info($res);
             }
 
             if($response->status == 'Success'){
