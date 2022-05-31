@@ -1206,7 +1206,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="gifting" class="mr-2 mb-0">{{__('Minumum Order/Increment')}}<small class="d-block pr-5">Set minimum Order and minimum increment on per product level.</small></label>
+                        <label for="gifting" class="mr-2 mb-0">{{__('Minumum Order/Increment')}}<small class="d-block pr-5"> Set the minimum order and minimum increment per product.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="minimum_order_batch" id="minimum_order_batch" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->minimum_order_batch == '1')) checked='checked' @endif>
                      </span>
                      </div>
