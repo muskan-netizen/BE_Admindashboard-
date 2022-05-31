@@ -838,7 +838,7 @@ $(document).ready(function () {
 
     $(document).on("click", "#order_placed_btn", function () {
 
-        var isTermAndConditionChecked = $('#is_gift:checked').val() ?? '';
+        var isTermAndConditionChecked = $('#term-and-condition:checked').val() ?? '';
         if(isTermAndConditionChecked == ''){
             success_error_alert('error', 'The term and condition must be accepted.', ".cart_response");
             return false;
