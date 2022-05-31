@@ -21,7 +21,7 @@ class StripeGatewayController extends BaseController
     public $gateway;
     public $currency;
 
-    public function __construct()
+    public function config()
     {
         $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
         $creds_arr = json_decode($stripe_creds->credentials);
@@ -37,6 +37,7 @@ class StripeGatewayController extends BaseController
 
     public function stripePurchase(request $request)
     {
+        $this->config();
         // try {
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
@@ -204,6 +205,7 @@ class StripeGatewayController extends BaseController
     public function subscriptionPaymentViaStripe(request $request)
     {
         try {
+            $this->config();
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
             $token = $request->stripe_token;
