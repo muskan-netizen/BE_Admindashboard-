@@ -218,14 +218,14 @@ class PickupDeliveryController extends BaseController{
                 $data = [];
                 $order = $order_place['data'];
                 $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
-                    if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
-                        DB::commit();
-                        $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
-                        return  $order_place;
-                    }else{
-                        DB::rollback();
-                        return $request_to_dispatch;
-                    }
+                if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
+                    DB::commit();
+                    $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+                    return  $order_place;
+                }else{
+                    DB::rollback();
+                    return $request_to_dispatch;
+                }
             }else{
                 DB::commit();
                 return $order_place;
