@@ -410,9 +410,11 @@ class PickupDeliveryController extends FrontController{
                 $payment = new Payment();
                 $payment->date = date('Y-m-d');
                 $payment->order_id = $order->id;
+                $payment->user_id = $request->user_id;
                 $payment->transaction_id = $request->transaction_id;
                 $payment->balance_transaction = $order->payable_amount;
-                $payment->type = 'pickup/delivery';
+                $payment->payment_option_id = $request->payment_option_id;
+                $payment->type = 'pickup_delivery';
                 $payment->save();
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);

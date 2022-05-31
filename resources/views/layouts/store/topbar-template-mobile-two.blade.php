@@ -63,7 +63,7 @@ if(session()->has('applocale')){
                                     @if($client_preference_detail->show_wishlist == 1)
                                     <li class="onhover-dropdown_al mobile-wishlist_al">
                                         <a href="{{route('user.wishlists')}}">
-                                            Wishlists
+                                        {{__('Wishlists')}}
                                         </a>
                                     </li>
                                     @endif
@@ -71,7 +71,7 @@ if(session()->has('applocale')){
                                     @if($client_preference_detail->cart_enable == 1)
                                     <li class="onhover-dropdown_al onhover-div mobile-cart">
                                         <a href="{{route('showCart')}}" style="position: relative">
-                                            Viewcart
+                                        {{__('Viewcart')}}
                                             <span class="cart_qty_cls" style="display:none"></span>
                                         </a>
                                         <ul class="show-div shopping-cart"></ul>

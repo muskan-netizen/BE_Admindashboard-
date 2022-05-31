@@ -1658,7 +1658,6 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
 
 <script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript">
     var business_type = "<?= $client_preferences->business_type; ?>";
     var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";
