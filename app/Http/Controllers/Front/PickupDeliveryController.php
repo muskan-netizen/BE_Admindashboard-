@@ -357,11 +357,9 @@ class PickupDeliveryController extends FrontController{
             // $orderrequest = new Request($order_place['data']->toArray());
             // return $this->orderUpdateAfterPaymentPickupDelivery($orderrequest);
             //pr($order_place);
-            \Log::info($request->all());
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
-                \Log::info($order);
                 $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
                 if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                     DB::commit();
@@ -697,7 +695,7 @@ class PickupDeliveryController extends FrontController{
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = User::find($order->user_id);
             $wallet = $customer->wallet;
-            \Log::info('dispatch order create request');
+
             if ($dispatch_domain && $dispatch_domain != false) {
                 if ($request->payment_option_id == 1) {
                     $cash_to_be_collected = 'Yes';
@@ -721,7 +719,7 @@ class PickupDeliveryController extends FrontController{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
                 $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
-                \Log::info('callback - '. $call_back_url);
+
                 $type=$request->type??0;
                 $friendName=$request->friendName?? null;
                 $friendPhoneNumber=$request->friendPhoneNumber?? null;
@@ -762,12 +760,10 @@ class PickupDeliveryController extends FrontController{
                     'friend_phone_number'=>$friendPhoneNumber
                 ];
                 // dd($postdata);
-                \Log::info($postdata);
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);
                 $response = json_decode($res->getBody(), true);
-                \Log::info($response);
                 if ($response && isset($response['task_id']) && $response['task_id'] > 0) {
                     $dispatch_traking_url = $response['dispatch_traking_url']??'';
                     $up_web_hook_code = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
@@ -309,6 +309,17 @@ class PickupDeliveryController extends BaseController{
 
                 $order->scheduled_date_time = $request->schedule_time??NULL;
                 $order->save();
+
+                // save pickup delivery task 
+                $order_location = new OrderLocations();
+                $order_location->order_id = $order->id;
+                $order_location->product_id = $request->product_id;
+                $order_location->vendor_id = $request->vendor_id;
+                $order_location->phone_number = $request->phone_number ?? null;
+                $order_location->email = $request->email ?? null;
+                $order_location->tasks = json_encode($request->tasks );
+                $order_location->save();
+
                 $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
                     $q->where('id', $request->product_id);
