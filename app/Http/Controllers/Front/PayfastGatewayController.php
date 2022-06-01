@@ -24,20 +24,7 @@ class PayfastGatewayController extends FrontController
 
     public function __construct()
     {
-        $payfast_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'payfast')->where('status', 1)->first();
-        $creds_arr = json_decode($payfast_creds->credentials);
-        $merchant_id = (isset($creds_arr->merchant_id)) ? $creds_arr->merchant_id : '';
-        $merchant_key = (isset($creds_arr->merchant_key)) ? $creds_arr->merchant_key : '';
-        $passphrase = (isset($creds_arr->passphrase)) ? $creds_arr->passphrase : '';
-        $testmode = (isset($payfast_creds->test_mode) && ($payfast_creds->test_mode == '1')) ? true : false;
-        $this->gateway = Omnipay::create('PayFast');
-        $this->gateway->setMerchantId($merchant_id);
-        $this->gateway->setMerchantKey($merchant_key);
-        $this->gateway->setPassphrase($passphrase);
-        $this->gateway->setTestMode($testmode); //set it to 'false' when go live
         
-        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
     }
 
     function generateSignature($data, $passPhrase = null) {
@@ -59,6 +46,21 @@ class PayfastGatewayController extends FrontController
 
     public function payfastPurchase(Request $request, $domain = ''){
         try{
+            $payfast_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'payfast')->where('status', 1)->first();
+            $creds_arr = json_decode($payfast_creds->credentials);
+            $merchant_id = (isset($creds_arr->merchant_id)) ? $creds_arr->merchant_id : '';
+            $merchant_key = (isset($creds_arr->merchant_key)) ? $creds_arr->merchant_key : '';
+            $passphrase = (isset($creds_arr->passphrase)) ? $creds_arr->passphrase : '';
+            $testmode = (isset($payfast_creds->test_mode) && ($payfast_creds->test_mode == '1')) ? true : false;
+            $this->gateway = Omnipay::create('PayFast');
+            $this->gateway->setMerchantId($merchant_id);
+            $this->gateway->setMerchantKey($merchant_key);
+            $this->gateway->setPassphrase($passphrase);
+            $this->gateway->setTestMode($testmode); //set it to 'false' when go live
+            
+            $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+
             $rules = [
                 'amount'   => 'required',
                 'payment_form'   => 'required'
