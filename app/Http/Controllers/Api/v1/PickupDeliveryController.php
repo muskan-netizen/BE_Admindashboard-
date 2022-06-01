@@ -785,6 +785,7 @@ class PickupDeliveryController extends BaseController{
         ->select('*','dispatcher_status_option_id as dispatcher_status')->first();
 
         $dispatch_traking_url = ($request->has('new_dispatch_traking_url') && !empty($request->new_dispatch_traking_url)) ? $request->new_dispatch_traking_url : $order->dispatch_traking_url;
+        $dispatch_traking_url = str_replace('/order/', '/order-details/', $dispatch_traking_url);
         $response = Http::get($dispatch_traking_url);
         if($response->status() == 200){
             $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
@@ -792,6 +793,8 @@ class PickupDeliveryController extends BaseController{
            $response = $response->json();
            $response['order_details'] = $order->toArray();
            return $this->successResponse($response);
+        }else{
+            return $this->errorResponse('', 400, $response);
         }
     }
 
