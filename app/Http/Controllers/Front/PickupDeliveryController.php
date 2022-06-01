@@ -695,7 +695,7 @@ class PickupDeliveryController extends FrontController{
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = User::find($order->user_id);
             $wallet = $customer->wallet;
-
+            \Log::info('dispatch order create request');
             if ($dispatch_domain && $dispatch_domain != false) {
                 if ($request->payment_option_id == 1) {
                     $cash_to_be_collected = 'Yes';
@@ -719,7 +719,7 @@ class PickupDeliveryController extends FrontController{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
                 $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
-
+                \Log::info('callback - '. $call_back_url);
                 $type=$request->type??0;
                 $friendName=$request->friendName?? null;
                 $friendPhoneNumber=$request->friendPhoneNumber?? null;
@@ -760,6 +760,7 @@ class PickupDeliveryController extends FrontController{
                     'friend_phone_number'=>$friendPhoneNumber
                 ];
                 // dd($postdata);
+                \Log::info($postdata);
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);
