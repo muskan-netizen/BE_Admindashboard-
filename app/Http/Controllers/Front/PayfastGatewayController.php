@@ -269,7 +269,7 @@ class PayfastGatewayController extends FrontController
                 $order_number = $pfData->custom_str2;
                 $pfData->request->add(['payment_option_id' => 6, 'amount' => $pfData->amount_gross, 'order_number' => $order_number]);
                 $pickupDeliveryController = new PickupDeliveryController();
-                $res = $pickupDeliveryController->orderUpdateAfterPaymentPickupDelivery($pfData);
+                $response = $pickupDeliveryController->orderUpdateAfterPaymentPickupDelivery($pfData);
                 \Log::info($res);
             }
 
