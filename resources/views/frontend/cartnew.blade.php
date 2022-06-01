@@ -68,6 +68,8 @@
 
 .al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
+
+.vendor_cart-check label {display: inline-block;}
 </style>
 
 @endsection
@@ -225,8 +227,8 @@ $client_preferences = \App\Models\ClientPreference::first();
             total_wallet_amount_used=parseFloat(total_wallet_amount_used)+parseFloat(cart_details.wallet_amount_used);
         }
 
-        other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.delivery_charges)*tax_delivery_charges_percentage/100);
-        other_taxes_string='tax_fixed_fee:'+(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+',tax_service_charges:'+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+',tax_delivery_charges:'+(parseFloat(cart_details.delivery_charges)*tax_delivery_charges_percentage/100);
+        other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.all_vendor_deliver_charges)*tax_delivery_charges_percentage/100);
+        other_taxes_string='tax_fixed_fee:'+(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+',tax_service_charges:'+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+',tax_delivery_charges:'+(parseFloat(cart_details.all_vendor_deliver_charges)*tax_delivery_charges_percentage/100);
            
         %>
         <div id="thead_<%= product.vendor.id %>">
@@ -837,10 +839,10 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                             <% } %>
 
-                    <% } else {  console.log('cart_details.scheduled.slot', cart_details.scheduled.slot ); %>
+                    <% } else { %>
 
 
-                            <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled.scheduled_date_time != '')? cart_details.scheduled.scheduled_date_time : cart_details.scheduled.scheduled_date_time ) %>"  min="<%= cart_details.delay_date %>" >
+                            <input type="date" id="schedule_datetime" class="form-control schedule_datetime" placeholder="Inline calendar" value="<%=  ((cart_details.scheduled_date_time != '')?cart_details.scheduled_date_time : cart_details.delay_date ) %>"  min="<%= cart_details.delay_date %>" >
                             <input type="hidden" id="checkSlot" value="1">
                             <select name="slots" id="slot" onchange="checkSlotOrders();" class="form-control">
                                 <option value="">{{__("Select Slot")}} </option>
@@ -911,7 +913,6 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                     </div>
                 </div>
-
                 <div class="row mb-md-3 alFourTemplateCartButtons">
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
@@ -1206,6 +1207,19 @@ $client_preferences = \App\Models\ClientPreference::first();
             </form>
         </div>
         <div class="modal-footer d-block text-center">
+            <div class="row">
+                <div class="col-12">
+                    <label>{{ __('I accept the') }}
+                        <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                            target="_blank">{{ __('Terms And Conditions') }} </a>
+                        {{ __('and have read the') }}
+                        <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
+                            target="_blank">
+                            {{ __('Privacy Policy') }}.
+                        </a>
+                    </label>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-sm-12 p-0 d-flex flex-fill">
                     <button type="button" style="width:100%;" class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}
@@ -1644,7 +1658,6 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
 
 <script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript">
     var business_type = "<?= $client_preferences->business_type; ?>";
     var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";

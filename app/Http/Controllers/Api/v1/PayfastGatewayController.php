@@ -149,6 +149,20 @@ class PayfastGatewayController extends BaseController
                 $request_arr['custom_str1'] = $request->action; // action
                 $request_arr['custom_str2'] = $slug; // subscription plan slug
             }
+            elseif($request->payment_form == 'pickup_delivery'){
+                $description = 'Pickup Delivery Checkout';
+                $rules['order_number'] = 'required';
+
+                $request_arr['return_url'] = url($returnUrl . '&order='.$request->order_number.'&action='.$request->action);
+                $request_arr['cancel_url'] = url($cancelUrl . '&order='.$request->order_number.'&action='.$request->action);
+                $request_arr['notify_url'] = url($notifyUrl);
+                $request_arr['amount'] = $amount;
+                $request_arr['item_name'] = 'Cart';
+                $request_arr['custom_int1'] = $user->id; // user id
+                $request_arr['custom_int2'] = 6; //payment option id
+                $request_arr['custom_str1'] = $request->action; // action
+                $request_arr['custom_str2'] = $request->order_number;
+            }
 
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {

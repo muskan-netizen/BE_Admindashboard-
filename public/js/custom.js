@@ -448,7 +448,9 @@ $(document).ready(function () {
                                     $("#subscription_payment .subscription_confirm_btn").hide();
                                 }
                                 $("#subscription_payment").modal("show");
-                                stripeInitialize();
+                                if(stripe_publishable_key != ''){
+                                    stripeInitialize();
+                                }
                                 if(stripe_fpx_publishable_key != ''){
                                     stripeFPXInitialize();
                                 }
@@ -837,6 +839,7 @@ $(document).ready(function () {
     }
 
     $(document).on("click", "#order_placed_btn", function () {
+
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
@@ -985,8 +988,10 @@ $(document).ready(function () {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address },
+                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address},
                 success: function (response) {
+                    
+
                     if(response.status == "passbase_submitted"){
                         Swal.fire({
                             text: response.message,
@@ -1023,7 +1028,9 @@ $(document).ready(function () {
                                     $("#v_pills_tabContent").append(payment_method_tab_pane_template({ payment_options: response.data }));
                                     $('#proceed_to_pay_modal').modal('show');
                                     $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
-                                    stripeInitialize();
+                                    if(stripe_publishable_key != ''){
+                                        stripeInitialize();
+                                    }
                                     if(stripe_fpx_publishable_key != ''){
                                         stripeFPXInitialize();
                                     }
@@ -1081,7 +1088,9 @@ $(document).ready(function () {
                     if (response.data == '') {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
-                        stripeInitialize();
+                        if(stripe_publishable_key != ''){
+                            stripeInitialize();
+                        }
                         if(stripe_fpx_publishable_key != ''){
                             stripeFPXInitialize();
                         }
@@ -1121,7 +1130,9 @@ $(document).ready(function () {
                     if (response.data == '') {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
-                        stripeInitialize();
+                        if(stripe_publishable_key != ''){
+                            stripeInitialize();
+                        }
                         if(stripe_fpx_publishable_key != ''){
                             stripeFPXInitialize();
                         }
