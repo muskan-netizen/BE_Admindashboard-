@@ -340,7 +340,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
          @endif
 
 
-
       </div>
    </form>
 
