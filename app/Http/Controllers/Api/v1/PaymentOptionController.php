@@ -32,7 +32,7 @@ class PaymentOptionController extends BaseController{
             $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','viva_wallet');
         }
         elseif($page == 'pickup_delivery'){
-            $code = array('cod', 'razorpay','stripe',"offline_manual");
+            $code = array('cod', 'razorpay','stripe','payfast','offline_manual');
         }
         else{
             $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','viva_wallet');
