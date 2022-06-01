@@ -272,7 +272,7 @@ class PayfastGatewayController extends FrontController
                 $pickupDeliveryResponse = $pickupDeliveryController->orderUpdateAfterPaymentPickupDelivery($pfData);
                 $response = $this->successResponse($pickupDeliveryResponse, '', 200);
                 $response = $response->getData();
-                \Log::info(json_decode($response, true));
+                \Log::info(json_decode($response));
             }
 
             if($response->status == 'Success'){
