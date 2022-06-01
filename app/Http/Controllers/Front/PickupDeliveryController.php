@@ -692,7 +692,7 @@ class PickupDeliveryController extends FrontController{
             $meta_data = '';
             $tasks = array();
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
-            $customer = Auth::user();
+            $customer = User::find($order->user_id);
             $wallet = $customer->wallet;
 
             if ($dispatch_domain && $dispatch_domain != false) {
@@ -705,7 +705,7 @@ class PickupDeliveryController extends FrontController{
 
                 }
             //    Log::info($cash_to_be_collected);
-                $unique = Auth::user()->code;
+                $unique = $customer->code;
                 $team_tag = $unique."_".$vendor;
                 $dynamic = uniqid($order->id.$vendor);
                 $product = Product::find($request->product_id);
