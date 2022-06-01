@@ -759,6 +759,7 @@ class CartController extends BaseController
 
 
                             // }
+                            $addon_price = 0;
                             if (!empty($prod->addon)) {
                                 // return $prod->addon;
                                 foreach ($prod->addon as $ck => $addons) {
