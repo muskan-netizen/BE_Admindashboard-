@@ -913,21 +913,6 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                     </div>
                 </div>
-                <div class="row form-group mb-0 text-sm-right">
-                    <div class="col-12 checkbox-input vendor_cart-check">
-                        <input type="checkbox" id="term-and-condition" name="term_and_condition"
-                            class="form-control"  value="1">
-                        <label for="term-and-condition">{{ __('I accept the') }}
-                            <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
-                                target="_blank">{{ __('Terms And Conditions') }} </a>
-                            {{ __('and have read the') }}
-                            <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
-                                target="_blank">
-                                {{ __('Privacy Policy') }}.
-                            </a>
-                        </label>
-                    </div>
-                </div>
                 <div class="row mb-md-3 alFourTemplateCartButtons">
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
@@ -1222,6 +1207,19 @@ $client_preferences = \App\Models\ClientPreference::first();
             </form>
         </div>
         <div class="modal-footer d-block text-center">
+            <div class="row">
+                <div class="col-12">
+                    <label>{{ __('I accept the') }}
+                        <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                            target="_blank">{{ __('Terms And Conditions') }} </a>
+                        {{ __('and have read the') }}
+                        <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
+                            target="_blank">
+                            {{ __('Privacy Policy') }}.
+                        </a>
+                    </label>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-sm-12 p-0 d-flex flex-fill">
                     <button type="button" style="width:100%;" class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}

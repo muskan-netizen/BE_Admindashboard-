@@ -270,12 +270,11 @@ $(document).ready(function () {
                     }
                     else if(payment_option_id == 5){
                         $res = paymentViaPaystack('',response.data);
-                        
-                      
                     }
                     else if(payment_option_id == 10){
                         paymentViaRazorpay('', response.data, 'pickup_delivery');
                     }
+                    cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{
                     $('#show_error_of_booking').html(response.message);
                 }
@@ -1546,6 +1545,135 @@ $(document).ready(function () {
     }
 
 
+    function cabBookingPaymentOptions(payment_option_id, order='')
+    {
+        var action =  payment_option_id;
+        switch (action) {
+
+            case '6':
+                paymentViaPayfast('', order);
+            break;
+        
+        }
+
+    }
+
+    function stripePaymentMethodHandler(result) {
+        let total_amount = 0;
+        let tip = 0;
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_form = '';
+        // let payment_option_id = paymentAjaxData.payment_option_id;
+        
+        paymentAjaxData.payment_method_id = result.paymentMethod.id;
+        // paymentAjaxData.payment_option_id = payment_option_id;
+        
+        if (path.indexOf("cart") !== -1) {
+            payment_form = 'cart';
+            total_amount = cartElement.val();
+        } else if ((path.indexOf("wallet") !== -1) || ((typeof cabbookingwallet !== 'undefined') && (cabbookingwallet == 1))) {
+            payment_form = 'wallet';
+            total_amount = walletElement.val();
+        } else if (path.indexOf("subscription") !== -1) {
+            payment_form = 'subscription';
+            total_amount = subscriptionElement.val();
+            // paymentAjaxData = $("#subscription_payment_form").serializeArray();
+            paymentAjaxData.subscription_id = $("#subscription_payment_form #subscription_id").val();
+        } else if ((typeof tip_for_past_order !== 'undefined') && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            payment_form = 'tip';
+            paymentAjaxData.order_number = $("#order_number").val();
+        }
+        paymentAjaxData.payment_form = payment_form;
+        paymentAjaxData.total_amount = total_amount;
+
+        if (result.error) {
+            swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something Went Wrong',
+            }).then(function() {
+                window.location.reload();
+            });
+        } else {
+            fetch('/payment/payment_init', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-Token": $('input[name="_token"]').val()
+                  },
+                  credentials: "same-origin",
+                body: JSON.stringify(paymentAjaxData)
+            }).then(function(result) {
+                // Handle server response (see Step 4)
+                result.json().then(function(json) {
+                    handleServerResponse(json);
+                })
+            });
+        }
+    }
+
+    function handleServerResponse(response) {
+        if (response.error) {
+            swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: response.error,
+            }).then(function() {
+                window.location.reload();
+            });
+            // Show error from server on payment form
+        } else if (response.requires_action) {
+            // Use Stripe.js to handle required card action
+            stripe.handleCardAction(
+                response.payment_intent_client_secret
+            ).then(handleStripeJsResult);
+        } else {
+            // console.log(response);
+            // Show success message
+            setTimeout(() => {
+                window.location.href = response.result;
+            }, 1500);
+        }
+    }
+
+    function handleStripeJsResult(result) {
+        if (result.error) {
+            swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: result.error.message,
+            }).then(function() {
+                window.location.reload();
+            });
+            // Show error in payment form
+        } else {
+            paymentAjaxData.payment_intent_id = result.paymentIntent.id;
+            
+            // The card action has been handled
+            // The PaymentIntent can be confirmed again on the server
+            fetch('/payment/payment_init', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-Token": $('input[name="_token"]').val()
+                  },
+                body: JSON.stringify(paymentAjaxData)
+            }).then((response) => response.json())
+            .then((responseJSON) => {
+                $('#proceed_to_pay_loader').hide();
+                window.location.href = responseJSON.result;
+            });
+        }
+
+    }
 
 
 });

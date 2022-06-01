@@ -2049,10 +2049,6 @@ class CartController extends FrontController
         DB::beginTransaction();
         try{
 
-            if(empty($request->isTermAndConditionChecked) || $request->isTermAndConditionChecked == false){
-                return response()->json(['status'=>'term_and_condition_error', 'message'=>'The term and condition must be accepted.']);
-            }
-
             $user = Auth::user();
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;

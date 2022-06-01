@@ -840,12 +840,6 @@ $(document).ready(function () {
 
     $(document).on("click", "#order_placed_btn", function () {
 
-        var isTermAndConditionChecked = $('#term-and-condition:checked').val() ?? '';
-        if(isTermAndConditionChecked == ''){
-            success_error_alert('error', 'The term and condition must be accepted.', ".cart_response");
-            return false;
-        }
-
         var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if (selected) {
@@ -994,18 +988,11 @@ $(document).ready(function () {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address, isTermAndConditionChecked:isTermAndConditionChecked },
+                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address},
                 success: function (response) {
                     
 
-                    if(response.status == "term_and_condition_error"){
-                        Swal.fire({
-                            text: response.message,
-                            icon: "error",
-                            button: "OK",
-                        });
-                        return false;
-                    }else if(response.status == "passbase_submitted"){
+                    if(response.status == "passbase_submitted"){
                         Swal.fire({
                             text: response.message,
                             icon: "error",
