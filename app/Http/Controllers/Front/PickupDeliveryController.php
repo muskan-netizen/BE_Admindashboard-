@@ -357,9 +357,11 @@ class PickupDeliveryController extends FrontController{
             // $orderrequest = new Request($order_place['data']->toArray());
             // return $this->orderUpdateAfterPaymentPickupDelivery($orderrequest);
             //pr($order_place);
+            \Log::info($request->all());
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
+                \Log::info($order);
                 $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
                 if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                     DB::commit();
