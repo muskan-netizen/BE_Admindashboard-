@@ -772,7 +772,9 @@ class PickupDeliveryController extends BaseController{
             $q->where('category_translations.language_id', $langId);
         }])
         ->select('*','dispatcher_status_option_id as dispatcher_status')->first();
-        $response = Http::get($request->new_dispatch_traking_url);
+
+        $dispatch_traking_url = ($request->has('new_dispatch_traking_url') && !empty($request->new_dispatch_traking_url)) ? $request->new_dispatch_traking_url : $order->dispatch_traking_url;
+        $response = Http::get($dispatch_traking_url);
         if($response->status() == 200){
             $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
             $order->dispatcher_status_type=  $type ?  $type->type :1;
