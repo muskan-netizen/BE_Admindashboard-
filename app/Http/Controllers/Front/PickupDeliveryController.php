@@ -354,7 +354,8 @@ class PickupDeliveryController extends FrontController{
           
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
-            
+            // $orderrequest = new Request($order_place['data']->toArray());
+            // return $this->orderUpdateAfterPaymentPickupDelivery($orderrequest);
             //pr($order_place);
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
@@ -711,7 +712,13 @@ class PickupDeliveryController extends FrontController{
                 $product = Product::find($request->product_id);
                 $order_agent_tag = $product->tags??'';
                 $client_do = Client::where('code',$unique)->first();
-                $call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
+                $domain = '';
+                if(!empty($client_do->custom_domain)){
+                    $domain = $client_do->custom_domain;
+                }else{
+                    $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
+                }
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
 
                 $type=$request->type??0;
                 $friendName=$request->friendName?? null;
