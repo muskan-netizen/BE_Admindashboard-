@@ -123,7 +123,8 @@ class PickupDeliveryController extends FrontController{
         {
             $rider = Rider::where('id',$request->rider_id)->first();
             $product->friend_name = $rider->first_name.(!is_null($rider->last_name) ? " ".$rider->last_name : "");
-            $product->friend_phone_name = "+".$rider->dial_code.$rider->phone_number;
+            // $product->friend_phone_name = "+".$rider->dial_code.$rider->phone_number;
+            $product->friend_phone_name = $rider->phone_number;
         }
         foreach ($product->variant as $k => $v) {
             $product->variant[$k]->price = $product->tags_price;
