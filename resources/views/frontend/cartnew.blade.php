@@ -69,6 +69,9 @@
 .al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
 
+
+.grn_popop-total_amt label{  font-size: 12px !important;}
+
 .vendor_cart-check label {display: inline-block;}
 </style>
 
@@ -1206,10 +1209,10 @@ $client_preferences = \App\Models\ClientPreference::first();
                 </div>
             </form>
         </div>
-        <div class="modal-footer d-block text-center">
+        <div class="modal-footer d-block text-center pt-0">
             <div class="row">
-                <div class="col-12">
-                    <label>{{ __('I accept the') }}
+                <div class="col-12 grn_popop-total_amt">
+                    <label>{{ __('By placing this order I accept the') }}
                         <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
                             target="_blank">{{ __('Terms And Conditions') }} </a>
                         {{ __('and have read the') }}

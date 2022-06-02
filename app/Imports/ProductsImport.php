@@ -624,6 +624,14 @@ class ProductsImport implements ToCollection{
                                     $proVariantSet->variant_option_id = $variant_optionn->id;
                                     $proVariantSet->save();
                                 }
+                            }else{
+                                $proVariant = ProductVariant::where('sku',$da[0])->first();
+                                if( $proVariant){
+                                    $proVariant->sku = $da[0];
+                                    $proVariant->price = $da[21]??"";
+                                    $proVariant->compare_at_price = $da[22]??"";
+                                    $proVariant->save();
+                                }
                             }
                         }
                     }

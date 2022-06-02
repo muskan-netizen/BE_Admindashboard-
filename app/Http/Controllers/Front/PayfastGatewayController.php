@@ -24,20 +24,7 @@ class PayfastGatewayController extends FrontController
 
     public function __construct()
     {
-        $payfast_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'payfast')->where('status', 1)->first();
-        $creds_arr = json_decode($payfast_creds->credentials);
-        $merchant_id = (isset($creds_arr->merchant_id)) ? $creds_arr->merchant_id : '';
-        $merchant_key = (isset($creds_arr->merchant_key)) ? $creds_arr->merchant_key : '';
-        $passphrase = (isset($creds_arr->passphrase)) ? $creds_arr->passphrase : '';
-        $testmode = (isset($payfast_creds->test_mode) && ($payfast_creds->test_mode == '1')) ? true : false;
-        $this->gateway = Omnipay::create('PayFast');
-        $this->gateway->setMerchantId($merchant_id);
-        $this->gateway->setMerchantKey($merchant_key);
-        $this->gateway->setPassphrase($passphrase);
-        $this->gateway->setTestMode($testmode); //set it to 'false' when go live
         
-        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
     }
 
     function generateSignature($data, $passPhrase = null) {
@@ -59,43 +46,160 @@ class PayfastGatewayController extends FrontController
 
     public function payfastPurchase(Request $request, $domain = ''){
         try{
+            $payfast_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'payfast')->where('status', 1)->first();
+            $creds_arr = json_decode($payfast_creds->credentials);
+            $merchant_id = (isset($creds_arr->merchant_id)) ? $creds_arr->merchant_id : '';
+            $merchant_key = (isset($creds_arr->merchant_key)) ? $creds_arr->merchant_key : '';
+            $passphrase = (isset($creds_arr->passphrase)) ? $creds_arr->passphrase : '';
+            $testmode = (isset($payfast_creds->test_mode) && ($payfast_creds->test_mode == '1')) ? true : false;
+            $this->gateway = Omnipay::create('PayFast');
+            $this->gateway->setMerchantId($merchant_id);
+            $this->gateway->setMerchantKey($merchant_key);
+            $this->gateway->setPassphrase($passphrase);
+            $this->gateway->setTestMode($testmode); //set it to 'false' when go live
+            
+            $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+
+            $rules = [
+                'amount'   => 'required',
+                'payment_form'   => 'required'
+            ];
+
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
-            $returnUrlParams = '?amount='.$amount;
-            $address_id = 0;
-            $tip = 0;
-            if($request->has('tip')){
-                $tip = $request->tip;
-                $returnUrlParams = $returnUrlParams.'&tip='.$tip;
-            }
-            if( ($request->has('address_id')) && ($request->address_id > 0) ){
-                $address_id = $request->address_id;
-                $returnUrlParams = $returnUrlParams.'&address_id='.$address_id;
-            }
-            $returnUrlParams = $returnUrlParams.'&gateway=payfast';
 
-            $returnUrl = route('order.return.success');
-            if($request->payment_form == 'wallet'){
-                $returnUrl = route('user.wallet');
-            }
+            $returnUrlParams = '?amount='.$amount;
+            // $address_id = 0;
+            // $tip = 0;
+            $meta_data = array();
+            $reference_number = $description = '';
+
+            // if($request->has('tip')){
+            //     $tip = $request->tip;
+            // }
+
+            // $returnUrl = route('order.return.success');
+            // if($request->payment_form == 'wallet'){
+            //     $returnUrl = route('user.wallet');
+            // }
 
             $request_arr = array(
                 'merchant_id' => $this->gateway->getMerchantId(),
-                'merchant_key' => $this->gateway->getMerchantKey(),
-                'return_url' => $returnUrl,
-                'cancel_url' => url($request->cancelUrl),
-                'notify_url' => url("payment/payfast/notify"),
-                'amount' => $amount,
-                'item_name' => 'test item',
-                'custom_int1' => $user->id, // user id
-                'custom_int2' => $address_id, // address id
-                'custom_int3' => 6, //payment option id
-                'custom_str1' => $tip, // tip amount
-                'custom_str2' => $request->payment_form,
-                'currency' => $this->currency, //'ZAR',
-                'description' => 'This is a test purchase transaction',
-                // 'metadata' => ['user_id' => $user->id],
+                'merchant_key' => $this->gateway->getMerchantKey()
             );
+
+            if($request->payment_form == 'cart'){
+                $description = 'Order Checkout';
+                // $rules['order_number'] = 'required';
+                $returnUrl = route('order.return.success');
+                $tip = 0;
+                if($request->has('tip')){
+                    $tip = $request->tip;
+                }
+                if( ($request->has('address_id')) && ($request->address_id > 0) ){
+                    $address_id = $request->address_id;
+                }
+
+                $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+
+                $request_arr['return_url'] = $returnUrl;
+                $request_arr['cancel_url'] = url($request->cancelUrl);
+                $request_arr['notify_url'] = url("payment/payfast/notify");
+                $request_arr['amount'] = $amount;
+                $request_arr['item_name'] = 'Cart';
+                $request_arr['custom_int1'] = $user->id; // user id
+                $request_arr['custom_int2'] = 6; //payment option id
+                $request_arr['custom_int3'] = $address_id; // address id
+                $request_arr['custom_str1'] = $request->payment_form; // action
+                $request_arr['custom_str2'] = $tip; // tip amount
+                // $request_arr['custom_str3'] = $request->order_number;
+            }
+            elseif($request->payment_form == 'wallet'){
+                $description = 'Wallet Checkout';
+                $returnUrl = route('user.wallet');
+
+                $request_arr['return_url'] = $returnUrl;
+                $request_arr['cancel_url'] = url($request->cancelUrl);
+                $request_arr['notify_url'] = url("payment/payfast/notify");
+                $request_arr['amount'] = $amount;
+                $request_arr['item_name'] = 'Wallet';
+                $request_arr['custom_int1'] = $user->id; // user id
+                $request_arr['custom_int2'] = 6; //payment option id
+                $request_arr['custom_str1'] = $request->payment_form; // action
+            }
+            elseif($request->payment_form == 'tip'){
+                $description = 'Tip Checkout';
+                $rules['order_number'] = 'required';
+                $returnUrl = route('user.orders');
+
+                $request_arr['return_url'] = $returnUrl;
+                $request_arr['cancel_url'] = url($request->cancelUrl);
+                $request_arr['notify_url'] = url("payment/payfast/notify");
+                $request_arr['amount'] = $amount;
+                $request_arr['item_name'] = 'Tip';
+                $request_arr['custom_int1'] = $user->id; // user id
+                $request_arr['custom_int2'] = 6; //payment option id
+                $request_arr['custom_str1'] = $request->payment_form; // action
+                $request_arr['custom_str2'] = $request->order_number;
+            }
+            elseif($request->payment_form == 'subscription'){
+                $description = 'Subscription Checkout';
+                $slug = $request->subscription_id;
+                $returnUrl = route('user.subscription.plans');
+                $subscription_plan = SubscriptionPlansUser::where('slug', $slug)->where('status', '1')->first();
+                $rules['subscription_id'] = 'required';
+
+                $request_arr['return_url'] = $returnUrl;
+                $request_arr['cancel_url'] = url($request->cancelUrl);
+                $request_arr['notify_url'] = url("payment/payfast/notify");
+                $request_arr['amount'] = $amount;
+                $request_arr['item_name'] = 'Subscription';
+                $request_arr['custom_int1'] = $user->id; // user id
+                $request_arr['custom_int2'] = 6; //payment option id
+                $request_arr['custom_str1'] = $request->payment_form; // action
+                $request_arr['custom_str2'] = $slug; // subscription plan slug
+            }
+            elseif($request->payment_form == 'pickup_delivery'){
+                $description = 'Pickup Delivery Checkout';
+                $rules['order_number'] = 'required';
+
+                $request_arr['return_url'] = route('front.booking.details', $request->order_number);
+                $request_arr['cancel_url'] = url($request->cancelUrl);
+                $request_arr['notify_url'] = url("payment/payfast/notify");
+                $request_arr['amount'] = $amount;
+                $request_arr['item_name'] = 'Pickup Delivery';
+                $request_arr['custom_int1'] = $user->id; // user id
+                $request_arr['custom_int2'] = 6; //payment option id
+                $request_arr['custom_str1'] = $request->payment_form; // action
+                $request_arr['custom_str2'] = $request->order_number;
+            }
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return $this->errorResponse(__($validator->errors()->first()), 422);
+            }
+
+            $request_arr['currency'] = $this->currency; //'ZAR';
+            $request_arr['description'] = $description;
+
+            // $request_arr = array(
+            //     'merchant_id' => $this->gateway->getMerchantId(),
+            //     'merchant_key' => $this->gateway->getMerchantKey(),
+            //     'return_url' => $returnUrl,
+            //     'cancel_url' => url($request->cancelUrl),
+            //     'notify_url' => url("payment/payfast/notify"),
+            //     'amount' => $amount,
+            //     'item_name' => 'test item',
+            //     'custom_int1' => $user->id, // user id
+            //     'custom_int2' => 6, //payment option id
+            //     'custom_int3' => $address_id, // address id
+            //     'custom_str1' => $tip, // tip amount
+            //     'custom_str2' => $request->payment_form,
+            //     'currency' => $this->currency, //'ZAR',
+            //     'description' => 'This is a test purchase transaction',
+            //     // 'metadata' => ['user_id' => $user->id],
+            // );
 
             $response = $this->gateway->purchase($request_arr)->send();
             unset($request_arr['description']);
@@ -141,25 +245,34 @@ class PayfastGatewayController extends FrontController
             // If complete, update your application, email the buyer and process the transaction as paid
             $pfData->request->add([
                 'user_id' => $pfData->custom_int1,
-                'payment_option_id' => $pfData->custom_int3,
+                'payment_option_id' => $pfData->custom_int2,
                 'transaction_id' => $pfData->pf_payment_id
             ]);
-            if($pfData->custom_str2 == 'cart'){
+            if($pfData->custom_str1 == 'cart'){
                 $pfData->request->add([
-                    'address_id' => $pfData->custom_int2,
-                    'tip' => $pfData->custom_str1,
+                    'address_id' => $pfData->custom_int3,
+                    'tip' => $pfData->custom_str2,
                 ]);
                 $order = new OrderController();
                 $placeOrder = $order->placeOrder($pfData);
                 $response = $placeOrder->getData();
             }
-            elseif($pfData->custom_str2 == 'wallet'){
+            elseif($pfData->custom_str1 == 'wallet'){
                 $pfData->request->add([
                     'wallet_amount' => $pfData->amount_gross
                 ]);
                 $wallet = new WalletController();
                 $creditWallet = $wallet->creditWallet($pfData);
                 $response = $creditWallet->getData();
+            }
+            elseif($pfData->custom_str1 == 'pickup_delivery'){
+                $order_number = $pfData->custom_str2;
+                $pfData->request->add(['payment_option_id' => 6, 'amount' => $pfData->amount_gross, 'order_number' => $order_number]);
+                $pickupDeliveryController = new PickupDeliveryController();
+                $pickupDeliveryResponse = $pickupDeliveryController->orderUpdateAfterPaymentPickupDelivery($pfData);
+                $response = $this->successResponse($pickupDeliveryResponse, '', 200)->getData();
+                // $response = response()->json(['status'=>'Success', 'message' => '', 'data'=> $pickupDeliveryResponse]);
+                \Log::info(json_encode($response));
             }
 
             if($response->status == 'Success'){
@@ -200,10 +313,10 @@ class PayfastGatewayController extends FrontController
             // If complete, update your application, email the buyer and process the transaction as paid
             $pfData->request->add([
                 'user_id' => $pfData->custom_int1,
-                'payment_option_id' => $pfData->custom_int3,
+                'payment_option_id' => $pfData->custom_int2,
                 'transaction_id' => $pfData->pf_payment_id
             ]);
-            if($pfData->custom_str2 == 'cart'){
+            if($pfData->custom_str1 == 'cart'){
                 $transactionId = $pfData->pf_payment_id;
                 $order_number = $pfData->custom_str3;
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
@@ -227,7 +340,7 @@ class PayfastGatewayController extends FrontController
 
                             // Remove cart
                             $user_id = $pfData->custom_int1;
-                            $cart_id = $pfData->custom_int2;
+                            $cart_id = $pfData->custom_int3;
                             Cart::where('id', $cart_id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                             CartAddon::where('cart_id', $cart_id)->delete();
                             CartCoupon::where('cart_id', $cart_id)->delete();
@@ -283,8 +396,10 @@ class PayfastGatewayController extends FrontController
                 $order_number = $pfData->custom_str2;
                 $pfData->request->add(['payment_option_id' => 6, 'amount' => $pfData->amount_gross, 'order_number' => $order_number]);
                 $pickupDeliveryController = new PickupDeliveryController();
-                $res = $pickupDeliveryController->orderUpdateAfterPaymentPickupDelivery($pfData);
-                \Log::info($res);
+                $pickupDeliveryResponse = $pickupDeliveryController->orderUpdateAfterPaymentPickupDelivery($pfData);
+                $response = $this->successResponse($pickupDeliveryResponse, '', 200)->getData();
+                // $response = response()->json(['status'=>'Success', 'message' => '', 'data'=> $pickupDeliveryResponse]);
+                \Log::info(json_encode($response));
             }
 
             if($response->status == 'Success'){
@@ -297,7 +412,7 @@ class PayfastGatewayController extends FrontController
         break;
         case 'FAILED':
 
-            if($pfData->custom_str2 == 'cart'){
+            if($pfData->custom_str1 == 'cart'){
                 $order_number = $pfData->custom_str3;
                 $user_id = $pfData->custom_int1;
                 $order = Order::where('order_number', $order_number)->first();
