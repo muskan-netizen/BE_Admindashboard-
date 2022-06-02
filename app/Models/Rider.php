@@ -13,9 +13,9 @@ class Rider extends Model
     public function createRider($data)
     {
     	return self::updateOrCreate([
-    		'dial_code' => $data['dial_code'],
     		'phone_number' => $data['phone_number']
     	],[
+            'dial_code' => $data['dial_code']??'',
     		'user_id' => $data['user_id'],
     		'first_name' => $data['first_name'],
     		'last_name' => $data['last_name']
