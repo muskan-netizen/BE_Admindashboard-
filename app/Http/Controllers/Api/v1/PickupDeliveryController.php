@@ -782,6 +782,8 @@ class PickupDeliveryController extends BaseController{
            $response = $response->json();
            $response['order_details'] = $order->toArray();
            return $this->successResponse($response);
+        }else{
+            return $this->errorResponse('', 400, $response);
         }
     }
 
