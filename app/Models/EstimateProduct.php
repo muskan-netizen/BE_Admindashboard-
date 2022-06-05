@@ -41,4 +41,17 @@ class EstimateProduct extends Model
     }
 
 
+    public function estimate_product_addons(){
+      return $this->hasMany('App\Models\EstimateProductAddon', 'estimate_product_id' );
+    }
+
+    public function category(){
+      return $this->belongsTo('App\Models\Category', 'category_id' );
+    }
+
+    public function estimate_product_translation(){
+        return $this->belongsTo('App\Models\EstimateProductTranslation', 'id', 'estimate_product_id' );
+    }
+
+
 }

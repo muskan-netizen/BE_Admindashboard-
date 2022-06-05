@@ -9,14 +9,18 @@ use Session;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\EstimatedProduct;
 use GuzzleHttp\Client as GCLIENT;
+use App\Models\EstimatedProductCart;
+use App\Models\EstimatedProductAddons;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager};
-use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
+use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate};
+
 class CartController extends FrontController
 {
     use ApiResponser,CartManager;
@@ -129,6 +133,64 @@ class CartController extends FrontController
         return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify'))->with($data,$client_preference_detail,$client_detail);
        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
+    }
+
+    public function postCartRequestFromEstimation(Request $request)
+    {
+        $product_ids = explode(',', $request->product_id);
+        $vendor_id = $request->vendor_id;
+        $variant_id = array();
+        $minimum_order_count = array();
+        $addon_id = array();
+        $option_id = array();
+        foreach($product_ids as $product_id ){
+            $product = Product::find($product_id);
+
+            $request->merge([
+                "product_id" => $product->id,
+                "variant_id" => $product->variant[0]->id,
+                "quantity" => $request->quantity,
+                "minimum_order_count" => $product->minimum_order_count,
+                "from_estimation" => true
+            ]);
+    
+            $addon_price = 0; 
+
+            foreach($product->sets as $set){
+                array_push($addon_id, strval($set->addon_id));
+                $addon_price = $set->setoptions->sum('price');
+    
+                foreach($set->setoptions as $key => $option){
+                    array_push($option_id, strval($option->id) );
+                }
+            } 
+
+            $request->merge([
+                "addonID" => $addon_id
+            ]);
+
+            $request->merge([
+                "addonoptID" => array_unique($option_id)
+            ]);
+
+            // dd($addon_id);
+
+            $result = $this->postAddToCart($request);
+            // echo $result;
+        }
+
+    
+        // Remove Estimation Cart
+        $estimatedProductCart = EstimatedProductCart::where('user_id', Auth::user()->id)->first();
+        $estimatedProduct = EstimatedProduct::where('estimated_cart_id', $estimatedProductCart->id )->first();
+        $estimatedProductAddons = EstimatedProductAddons::where('estimated_product_id', $estimatedProduct->id )->delete();
+        $estimatedProduct->delete();
+        $estimatedProductCart->delete();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Product Added Successfully!'
+        ]);
     }
 
 
@@ -361,6 +423,10 @@ class CartController extends FrontController
                 //     }
                 // }
                 // CartAddon::insert($create_cart_addons);
+            // }
+
+            // if($request->has('from_estimation')){
+            //     return 'Request From Estimation';
             // }
             return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id]);
         } catch (Exception $e) {

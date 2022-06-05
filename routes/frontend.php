@@ -324,6 +324,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('cart/product/lastAdded', 'Front\CartController@getLastAddedProductVariant')->name('getLastAddedProductVariant');
 	Route::post('cart/product/variant/different-addons', 'Front\CartController@getProductVariantWithDifferentAddons')->name('getProductVariantWithDifferentAddons');
 	Route::post('add/product/cart', 'Front\CartController@postAddToCart')->name('addToCart');
+	Route::post('post/estimate/cart/request', 'Front\CartController@postCartRequestFromEstimation')->name('postCartRequestFromEstimation');
+	Route::post('add/estimate/product/cart', 'Front\EstimationController@addToEstimateCart')->name('addToEstimateCart');
+	Route::post('remove/estimate/product/cart', 'Front\EstimationController@destroy')->name('removeEstimateCartProduct');
 	Route::post('add/product/cart-addons', 'Front\CartController@postAddToCartAddons')->name('addToCartAddons');
 	Route::post('add/wishlist/cart', 'Front\CartController@addWishlistToCart')->name('addWishlistToCart');
 	Route::post('add/vendorTable/cart', 'Front\CartController@addVendorTableToCart')->name('addVendorTableToCart');
@@ -352,7 +355,11 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('vendor/{slug1}/{slug2}', 'Front\VendorController@vendorCategoryProducts')->name('vendorCategoryProducts');
 	Route::post('vendor/filters/{id}', 'Front\VendorController@vendorFilters')->name('vendorProductFilters');
 	Route::post('vendor/products/searchResults', 'Front\VendorController@vendorProductsSearchResults')->name('vendorProductsSearchResults');
+	Route::post('search/estimated/products', 'Front\EstimationController@searchEstimatedProducts')->name('searchEstimatedProducts'); // Added By Ovi
 	Route::post('vendor/product/addons', 'Front\VendorController@vendorProductAddons')->name('vendorProductAddons');
+	Route::post('estimate/product/addons', 'Front\EstimationController@estimateProductAddons')->name('estimateProductAddons');
+	Route::get('get-estimation', 'Front\EstimationController@index'); // Added by Ovi
+	Route::get('estimation-list', 'Front\EstimationController@estimationList')->name('estimationList'); // Added by Ovi
 	Route::get('brand/{id?}', 'Front\BrandController@brandProducts')->name('brandDetail');
 	Route::post('brand/filters/{id}', 'Front\BrandController@brandFilters')->name('brandProductFilters');
 	Route::get('celebrity/{slug?}', 'Front\CelebrityController@celebrityProducts')->name('celebrityProducts');

@@ -36,4 +36,12 @@ class EstimateAddonSet extends Model
 			'title' => $addOn->title
 		])->first();
 	}
+
+	public function estimate_product_addons(){
+        return $this->hasMany('App\Models\EstimateProductAddon', 'estimate_addon_id' );
+    }
+
+	public function estimated_product_addons(){
+        return $this->hasMany('App\Models\EstimatedProductAddons', 'estimated_addon_id' );
+    }
 }
