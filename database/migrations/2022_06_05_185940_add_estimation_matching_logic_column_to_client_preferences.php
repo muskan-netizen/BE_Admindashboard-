@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEstimateProductAddonsTable extends Migration
+class AddEstimationMatchingLogicColumnToClientPreferences extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreateEstimateProductAddonsTable extends Migration
      */
     public function up()
     {
-        Schema::create('estimate_product_addons', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('client_preferences', function (Blueprint $table) {
+            $table->string('estimation_matching_logic')->nullable();
         });
     }
 
@@ -26,6 +25,8 @@ class CreateEstimateProductAddonsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('estimate_product_addons');
+        Schema::table('client_preferences', function (Blueprint $table) {
+            $table->dropColumn('estimation_matching_logic');
+        });
     }
 }

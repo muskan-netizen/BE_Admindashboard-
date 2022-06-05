@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEstimatedProductsTable extends Migration
+class CreateEstimateProductAddons extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class CreateEstimatedProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('estimated_products', function (Blueprint $table) {
+        Schema::create('estimate_product_addons', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('estimate_product_id')->references('id')->on('estimate_products')->onDelete('cascade');
+            $table->foreignId('estimate_addon_id')->references('id')->on('estimate_addon_sets')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ class CreateEstimatedProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('estimated_products');
+        Schema::dropIfExists('estimate_product_addons');
     }
 }
