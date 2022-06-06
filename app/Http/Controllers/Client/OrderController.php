@@ -505,7 +505,6 @@ class OrderController extends BaseController
 
         $user_docs = UserDocs::where('user_id', $order->user_id)->get();
         $user_registration_documents = UserRegistrationDocuments::get();
-        //pr($user_docs->toArray() );
         $vendor_data = Vendor::where('id',$vendor_id)->first();
         
         $driver_data = '';
@@ -1027,9 +1026,10 @@ class OrderController extends BaseController
                 } else {
                     $task_type = 'now';
                 }
-
+               
             $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
-            if(!empty($orderVendorDetails->scheduled_date_time)){
+
+            if(!empty($orderVendorDetails->scheduled_date_time) && $orderVendorDetails->scheduled_date_time > 0){
                 $task_type = 'schedule';
                 $user = Auth::user();
                 $selectedDate = dateTimeInUserTimeZone($orderVendorDetails->scheduled_date_time, $user->timezone);
