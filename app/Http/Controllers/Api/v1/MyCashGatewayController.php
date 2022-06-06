@@ -43,6 +43,7 @@ class MyCashGatewayController extends BaseController
             
             $rules = [
                 'amount'   => 'required',
+                'action'   => 'required',
                 'payment_form'   => 'required'
             ];
 
@@ -52,6 +53,7 @@ class MyCashGatewayController extends BaseController
 
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
+            $request->request->add(['payment_form' => $request->action]);
             $payment_form = $request->payment_form;
 
             if(empty($user->phone_number)){
