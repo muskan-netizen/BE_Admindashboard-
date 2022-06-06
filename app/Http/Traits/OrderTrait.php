@@ -78,14 +78,14 @@ trait OrderTrait{
 
         $vendor_return_amount = $vendor_wallet_amount + $vendor_online_payment_amount;
 
-        // get what time order placed according to current time
-        $orderPlacedTime = (strtotime(now()) - strtotime($order->created_at)) / 60; // in minutes
+        // // get what time order placed according to current time
+        // $orderPlacedTime = (strtotime(now()) - strtotime($order->created_at)) / 60; // in minutes
 
-        // check admin cancellation chargies
-        $client_preference_detail = ClientPreference::first();
-        if(($client_preference_detail->order_cancellation_time > 0) && ($orderPlacedTime >= $client_preference_detail->order_cancellation_time)){
-            $vendor_return_amount = $vendor_return_amount - ($client_preference_detail->cancellation_percentage * $vendor_return_amount / 100);
-        }
+        // // check admin cancellation chargies
+        // $client_preference_detail = ClientPreference::first();
+        // if(($client_preference_detail->order_cancellation_time > 0) && ($orderPlacedTime >= $client_preference_detail->order_cancellation_time)){
+        //     $vendor_return_amount = $vendor_return_amount - ($client_preference_detail->cancellation_percentage * $vendor_return_amount / 100);
+        // }
 
         $data['vendor_return_amount']           = $vendor_return_amount;
         $data['vendor_loyalty_amount']          = $vendor_loyalty_amount;
