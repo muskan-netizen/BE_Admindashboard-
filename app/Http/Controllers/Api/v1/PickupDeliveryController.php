@@ -214,32 +214,32 @@ class PickupDeliveryController extends BaseController{
         DB::beginTransaction();
         try {
             $order_place = $this->orderPlaceForPickupDelivery($request);
-            if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
-                $data = [];
-                $order = $order_place['data'];
-                $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
-                if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
-                    DB::commit();
-                    $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
-                    return  $order_place;
-                }else{
-                    DB::rollback();
-                    return $request_to_dispatch;
+            if($order_place && $order_place['status'] == 200){
+                if (($request->payment_option_id == 1) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
+                    $data = [];
+                    $order = $order_place['data'];
+                    $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
+                    if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
+                        $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+                    }else{
+                        DB::rollback();
+                        return $request_to_dispatch;
+                    }
                 }
-            }else{
                 DB::commit();
                 return $order_place;
             }
-
-
+            else{
+                DB::rollback();
+                return $order_place;
             }
-            catch(\Exception $e){
+        }
+        catch(\Exception $e){
             DB::rollback();
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
             ]);
-
         }
 
     }
