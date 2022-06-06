@@ -14,7 +14,7 @@ use App\Http\Controllers\Api\v1\{BaseController, OrderController, WalletControll
 use App\Models\Client as CP;
 use App\Models\{PaymentOption, Client, CaregoryKycDoc, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, CartDeliveryFee, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, SubscriptionPlansUser, UserDevice, UserVendor, Transaction};
 
-class MyCashGatewayController extends FrontController
+class MyCashGatewayController extends BaseController
 {
     use ApiResponser;
     public $api_key;
@@ -43,6 +43,7 @@ class MyCashGatewayController extends FrontController
             
             $rules = [
                 'amount'   => 'required',
+                'action'   => 'required',
                 'payment_form'   => 'required'
             ];
 
@@ -52,6 +53,7 @@ class MyCashGatewayController extends FrontController
 
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
+            $request->request->add(['payment_form' => $request->action]);
             $payment_form = $request->payment_form;
 
             if(empty($user->phone_number)){
@@ -150,7 +152,8 @@ class MyCashGatewayController extends FrontController
                             'amount' => $amount,
                             'request_id' => $request->request_id,
                             'order_reference' => $data['order_id'],
-                            'payment_form' => $request->payment_form
+                            'payment_form' => $request->payment_form,
+                            'come_from' => 'app'
                         );
                         if($payment_form == 'subscription'){
                             $rdata['formData']['subscription_id'] = $request->subscription_id;
@@ -239,165 +242,6 @@ class MyCashGatewayController extends FrontController
         }
         else{
             Log::info($ex->getMessage());
-            return $this->errorResponse('Server Error', 400);
-        }
-    }
-
-    public function verifyOtp(Request $request, $domain = '')
-    {
-        try{
-            $rules = [
-                'otp' => 'required',
-                'amount' => 'required',
-                'request_id' => 'required',
-                'payment_form' => 'required',
-                'order_reference' => 'required'
-            ];
-            $validator = Validator::make($request->all(), $rules, [
-                'otp.required' => __('Please enter the OTP'),
-                'amount.required' => __('Invalid Parameters'),
-                'request_id.required' => __('Invalid Parameters'),
-                'payment_form.required' => __('Invalid Parameters'),
-                'order_reference.required' => __('Invalid Parameters')
-            ]);
-            if ($validator->fails()) {
-                return $this->errorResponse(__($validator->errors()->first()), 422);
-            }
-
-            $user = Auth::user();
-
-            $data = array(
-                'method' => 'approvePayment',
-                'api_key' => $this->api_key,
-                'username' => $this->username,
-                'password' => $this->password,
-                'request_id' => $request->request_id,
-                'customer_mobile' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
-                'otp' => $request->otp
-            );
-
-            $curl = curl_init();
-            curl_setopt_array($curl, [
-                CURLOPT_URL => $this->getPaymentURL(),
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS => $data
-            ]);
-
-            $response = curl_exec($curl);
-            $err = curl_error($curl);
-            curl_close($curl);
-            $response = json_decode($response);
-            // dd($response->toArray());
-
-            if($response && ($response->response_code == 0)){
-                $transactionId = $response->transaction_id;
-                $order_reference = $request->order_reference;
-                $payment = Payment::where('gateway_reference', $request->request_id)->where('order_reference', $order_reference)->first();
-                if($payment){
-                    if($payment->otp_verified == 1){
-                        return $this->errorResponse('Invalid payment request', 400);
-                    }
-
-                    $payment->otp = $request->otp;
-                    $payment->otp_verified = 1;
-                    $payment->transaction_id = $transactionId;
-                    $payment->update();
-                    
-                    if($request->payment_form == 'cart'){
-                        $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_reference)->first();
-                        if ($order) {
-                            $order->payment_status = 1;
-                            $order->save();
-
-                            // Deduct wallet amount if payable amount is successfully done on gateway
-                            if ( $order->wallet_amount_used > 0 ) {
-                                $wallet = $user->wallet;
-                                $transaction_exists = Transaction::where('type', 'withdraw')->where('meta', 'LIKE', '%order_number%')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
-                                if(!$transaction_exists){
-                                    $wallet->withdrawFloat($order->wallet_amount_used, [
-                                        'description' => 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>',
-                                        'order_number' => $order->order_number,
-                                        'transaction_id' => $transactionId,
-                                        'payment_option' => 'MyCash'
-                                    ]);
-                                }
-                            }
-
-                            // Auto accept order
-                            $orderController = new OrderController();
-                            $orderController->autoAcceptOrderIfOn($order->id);
-
-                            // Remove cart
-                            $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-                            CaregoryKycDoc::where('cart_id',$cart->id)->update(['ordre_id'=> $order->id,'cart_id'=>'' ]);
-                            Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-                            CartAddon::where('cart_id', $cart->id)->delete();
-                            CartCoupon::where('cart_id', $cart->id)->delete();
-                            CartProduct::where('cart_id', $cart->id)->delete();
-                            CartProductPrescription::where('cart_id', $cart->id)->delete();
-                            CartDeliveryFee::where('cart_id', $cart->id)->delete();
-
-                            // Send Notification
-                            if (!empty($order->vendors)) {
-                                foreach ($order->vendors as $vendor_value) {
-                                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
-                                    $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
-                                    $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
-                                }
-                            }
-                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
-                            $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                            $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-
-                            $request->request->add(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
-                            //Send Email to customer
-                            $orderController->sendSuccessEmail($request, $order);
-                            //Send Email to Vendor
-                            foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
-                                $orderController->sendSuccessEmail($request, $order, $vendor_id);
-                            }
-                            //Send SMS to customer
-                            $orderController->sendSuccessSMS($request, $order);
-                            
-                            $returnUrl = route('order.success', $order->id);
-                        }
-                    } elseif($request->payment_form == 'wallet'){
-                        $request->request->add(['wallet_amount' => $payment->balance_transaction, 'transaction_id' => $transactionId]);
-                        $walletController = new WalletController();
-                        $walletController->creditWallet($request);
-                        $returnUrl = route('user.wallet');
-                    }
-                    elseif($request->payment_form == 'tip'){
-                        $request->request->add(['order_number' => $order_reference, 'tip_amount' => $payment->balance_transaction, 'transaction_id' => $transactionId]);
-                        $orderController = new OrderController();
-                        $orderController->tipAfterOrder($request);
-                        $returnUrl = route('user.orders');
-                    }
-                    elseif($request->payment_form == 'subscription'){
-                        $subscription_plan = SubscriptionPlansUser::select('price')->where('slug', $request->subscription_id)->where('status', '1')->first();
-                        $request->request->add(['amount' => $subscription_plan->price, 'payment_option_id' => 36, 'transaction_id' => $transactionId]);
-                        $subscriptionController = new UserSubscriptionController();
-                        $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
-                        $returnUrl = route('user.subscription.plans');
-                    }
-                    return $this->successResponse($returnUrl, __('Payment has been done successfully'), 200);
-                }
-                else{
-                    return $this->errorResponse('Invalid payment request', 400);
-                }
-            }
-            else{
-                Log::error($response->message);
-                return $this->errorResponse($response->message, 400);
-            }
-        }
-        catch(Exception $ex){
-            Log::error($ex->getMessage());
             return $this->errorResponse('Server Error', 400);
         }
     }
