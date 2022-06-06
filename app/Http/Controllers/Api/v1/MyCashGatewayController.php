@@ -153,7 +153,8 @@ class MyCashGatewayController extends BaseController
                             'request_id' => $request->request_id,
                             'order_reference' => $data['order_id'],
                             'payment_form' => $request->payment_form,
-                            'come_from' => 'app'
+                            'come_from' => 'app',
+                            '_token' => csrf_token()
                         );
                         if($payment_form == 'subscription'){
                             $rdata['formData']['subscription_id'] = $request->subscription_id;
