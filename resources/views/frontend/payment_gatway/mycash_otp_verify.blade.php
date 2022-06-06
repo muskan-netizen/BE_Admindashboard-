@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-  <title>{{__('Stripe FPX Payment')}}</title>
+  <title>{{__('MyCash Payment')}}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- link to the Square web payment SDK library -->
   <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
