@@ -386,6 +386,9 @@ class MyCashGatewayController extends FrontController
                         $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
                         $returnUrl = route('user.subscription.plans');
                     }
+                    if(isset($request->come_from) && ($request->come_from == 'app')){
+                        $returnUrl = route('payment.gateway.return.response').'/?gateway=mycash'.'&status=200&transaction_id='.$transactionId.'&action='.$request->payment_form;
+                    }
                     return $this->successResponse($returnUrl, __('Payment has been done successfully'), 200);
                 }
                 else{

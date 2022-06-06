@@ -714,9 +714,10 @@ class CartController extends FrontController
             $total_container_charges = 0 ;
             $all_vendor_deliver_charges = 0 ;
 
-            $user = Auth::user();
-            $client_timezone = DB::table('clients')->first('timezone');
-            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            if(!empty($user)){
+                $client_timezone = DB::table('clients')->first('timezone');
+                $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            }
             
             /* Getting in vendor loop */
             foreach ($cartData as $ven_key => $vendorData) {
@@ -730,8 +731,11 @@ class CartController extends FrontController
                 $coupon_apply_price=0;
                 $slotsCnt = 0;
 
-                $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
-                $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
+                if(!empty($user)){
+                    $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
+                    $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
+                }
+                
 
                 $slots = (object)showSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
                 if($cartData->count() > 1){
