@@ -14,7 +14,7 @@ use App\Http\Controllers\Api\v1\{BaseController, OrderController, WalletControll
 use App\Models\Client as CP;
 use App\Models\{PaymentOption, Client, CaregoryKycDoc, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, CartDeliveryFee, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, SubscriptionPlansUser, UserDevice, UserVendor, Transaction};
 
-class MyCashGatewayController extends FrontController
+class MyCashGatewayController extends BaseController
 {
     use ApiResponser;
     public $api_key;
