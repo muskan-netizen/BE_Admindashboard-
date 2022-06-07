@@ -178,7 +178,11 @@ class MyCashGatewayController extends FrontController
 
     public function sendOtp($request, $domain = '')
     {
-        $user = Auth::user();
+        if($request->has('auth_token')){
+            $user = User::where('auth_token', $request->auth_token)->first();
+        }else{
+            $user = Auth::user();
+        }
 
         $data = array(
             'method' => 'sendOTP',
