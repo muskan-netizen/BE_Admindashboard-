@@ -243,7 +243,7 @@ class MyCashGatewayController extends FrontController
             return $this->successResponse('', __('OTP has been sent to your mobile number'), 200);
         }
         else{
-            Log::info($ex->getMessage());
+            // Log::info($err->getMessage());
             return $this->errorResponse('Server Error', 400);
         }
     }
