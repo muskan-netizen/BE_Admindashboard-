@@ -191,6 +191,7 @@ class MyCashGatewayController extends FrontController
             'password' => $this->password,
             'mobile_number' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
         );
+        \Log::info($data);
 
         $curl = curl_init();
         curl_setopt_array($curl, [
