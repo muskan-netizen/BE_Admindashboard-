@@ -17,10 +17,18 @@ trait OrderTrait{
             foreach ($order->vendors as $vendor) {
                 foreach ($vendor->products as $product) {
                     $ProductVariant = ProductVariant::find($product->variant_id);
+                   
                     if ($ProductVariant) {
-                        $ProductVariant->quantity  = $ProductVariant->quantity - $product->quantity;
-                        $ProductVariant->save();
+                            
+                            $update_quantity  = $ProductVariant->quantity - $product->quantity;
+                            if($update_quantity < 0)
+                            $update_quantity  = 0;
+                            
+                            $ProductVariant->quantity  = $update_quantity;
+                            $ProductVariant->save();
+                        
                     }
+                    
                 }
             }
         }
