@@ -265,7 +265,11 @@ class MyCashGatewayController extends FrontController
                 return $this->errorResponse(__($validator->errors()->first()), 422);
             }
 
-            $user = Auth::user();
+            if($request->has('auth_token')){
+                $user = User::where('auth_token', $request->auth_token)->first();
+            }else{
+                $user = Auth::user();
+            }
 
             $data = array(
                 'method' => 'approvePayment',
