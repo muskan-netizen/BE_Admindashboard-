@@ -37,6 +37,7 @@
                 <h3 class="mb-2">{{__('Verify OTP')}}</h3>
                 <p>{{__('Enter the code we just sent you on your phone number')}}</p>
                 <form id="otp_verification_form">
+                    @csrf
                     <div class="row mt-3">
                         <div class="offset-xl-2 col-xl-8 text-left">
                             <div>
