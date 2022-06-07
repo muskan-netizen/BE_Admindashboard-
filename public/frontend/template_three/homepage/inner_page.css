@@ -157,6 +157,13 @@ body .modal-content #address-map-container{overflow:hidden;border-radius: 10px 1
 .booking-experience{height: calc(100vh - 150px);position: absolute;width: 400px;top: 50px;}
 }
 
+
+@media (max-width:767px){
+    body.al_body_template_three.dark .sm-horizontal{
+        background-color: transparent;
+    }
+}
+
 .code-outer label{
     border: 2px dashed var(--theme-deafult);
     padding: 5px 12px;
@@ -396,4 +403,21 @@ border-right: 1px solid var(--theme-deafult) !important;}
 }
 footer#footer{
     position: absolute;bottom: 0;width: 100%;
+}
+
+
+
+/*----arbic language ----*/
+body[dir="rtl"] #login-section .border-right {
+    border-left: 1px solid#e5e8eb;
+    border-right: 0px !important;
+}
+body[dir="rtl"] #login-section .border-right h3 {
+    text-align: right;
+}
+body[dir="rtl"] #login-section .border-right .toggle-password {
+    left: 18%;
+}
+body[dir="rtl"] #login-section .border-right a {
+    left: 15px;
 }
