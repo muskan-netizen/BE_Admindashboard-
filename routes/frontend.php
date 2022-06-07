@@ -62,6 +62,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('post/payment/{gateway}', 'Front\PaymentController@postPayment')->name('payment.gateway.postPayment');
 	Route::post('send/payment/otp/{gateway}', 'Front\PaymentController@sendPaymentOtp')->name('send.payment.otp');
 	Route::post('verify/payment/otp/{gateway}', 'Front\PaymentController@verifyPaymentOtp')->name('verify.payment.otp');
+	Route::post('verify/payment/otp/app/{gateway}', 'Front\PaymentController@verifyPaymentOtpApp')->name('verify.payment.otp.app');
 	Route::post('verify/payment/otp/submit/{gateway}', 'Front\PaymentController@verifyPaymentOtpSubmit')->name('verify.payment.otp.submit');
 
 	Route::get('payment/gateway/returnResponse', 'Front\PaymentController@getGatewayReturnResponse')->name('payment.gateway.return.response');

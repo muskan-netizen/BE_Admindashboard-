@@ -126,6 +126,14 @@ class PaymentController extends FrontController{
         }
     }
 
+    public function verifyPaymentOtpApp(Request $request, $domain='', $gateway)
+    {
+        if($gateway == 'mycash'){
+            $data = $request->all();
+            return view('frontend.payment_gatway.mycash_otp_verify', compact('data'));
+        }
+    }
+
     public function sendPaymentOtp(Request $request, $domain='', $gateway)
     {
         if(!empty($gateway)){
