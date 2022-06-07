@@ -759,6 +759,7 @@ class CartController extends BaseController
 
 
                             // }
+                            $addon_price = 0;
                             if (!empty($prod->addon)) {
                                 // return $prod->addon;
                                 foreach ($prod->addon as $ck => $addons) {
@@ -799,10 +800,10 @@ class CartController extends BaseController
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                     $rate = round($tax_value->tax_rate);
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                                //    $product_tax = ($quantity_price+$total_addon_price) * $rate / 100;
+                                    //    $product_tax = ($quantity_price+$total_addon_price) * $rate / 100;
 
                                     $product_tax = ($quantity_price+$addon_price) * $rate / 100;
-
+                                    
                                     $taxData[$tckey]['rate'] = $rate;
                                     $taxData[$tckey]['tax_amount'] = $tax_amount;
                                     $taxData[$tckey]['product_tax'] = $product_tax;
