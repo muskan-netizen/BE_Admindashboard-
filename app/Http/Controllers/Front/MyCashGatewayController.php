@@ -178,7 +178,11 @@ class MyCashGatewayController extends FrontController
 
     public function sendOtp($request, $domain = '')
     {
-        $user = Auth::user();
+        if($request->has('auth_token')){
+            $user = User::where('auth_token', $request->auth_token)->first();
+        }else{
+            $user = Auth::user();
+        }
 
         $data = array(
             'method' => 'sendOTP',
@@ -187,6 +191,8 @@ class MyCashGatewayController extends FrontController
             'password' => $this->password,
             'mobile_number' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
         );
+        \Log::info($request->all());
+        \Log::info($data);
 
         $curl = curl_init();
         curl_setopt_array($curl, [
@@ -239,7 +245,7 @@ class MyCashGatewayController extends FrontController
             return $this->successResponse('', __('OTP has been sent to your mobile number'), 200);
         }
         else{
-            Log::info($ex->getMessage());
+            Log::info($err);
             return $this->errorResponse('Server Error', 400);
         }
     }
@@ -265,7 +271,11 @@ class MyCashGatewayController extends FrontController
                 return $this->errorResponse(__($validator->errors()->first()), 422);
             }
 
-            $user = Auth::user();
+            if($request->has('auth_token')){
+                $user = User::where('auth_token', $request->auth_token)->first();
+            }else{
+                $user = Auth::user();
+            }
 
             $data = array(
                 'method' => 'approvePayment',
