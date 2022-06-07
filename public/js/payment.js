@@ -199,22 +199,37 @@ $(document).ready(function() {
         });
     }
 
-    window.paymentViaPayfast = function paymentViaPayfast() {
+    window.paymentViaPayfast = function paymentViaPayfast(address_id='', order='') {
         let total_amount = 0;
         let tip = 0;
         let tipElement = $("#cart_tip_amount");
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        let cabElement = $("#pickup_now");
         let ajaxData = {};
-        if (cartElement.length > 0) {
+        if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
             tip = tipElement.val();
             ajaxData.tip = tip;
             ajaxData.address_id = $("input:radio[name='address_id']:checked").val();
             ajaxData.payment_form = 'cart';
-        } else if (walletElement.length > 0) {
+        } else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
             ajaxData.payment_form = 'wallet';
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            ajaxData.subscription_id = subscription_id.val();
+            ajaxData.payment_form ='subscription';
+        } else if ((typeof tip_for_past_order !== 'undefined') && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            ajaxData.payment_form = 'tip';
+            ajaxData.order_number = $("#order_number").val();
+        } else if (cabElement.length > 0) {
+            total_amount = cabElement.attr('data-amount');
+            ajaxData.payment_form = 'pickup_delivery';
+            ajaxData.order_number = order.order_number;
         }
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
@@ -1459,7 +1474,7 @@ $(document).ready(function() {
           },
           error: function(error) {
               console.log(error);
-              alert(error);
+              alert('Tray Again.');
           }
         
         });

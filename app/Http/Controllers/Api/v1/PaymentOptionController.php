@@ -10,13 +10,14 @@ use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController};
+use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController, MyCashGatewayController};
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
 use App\Http\Controllers\Front\MpesaController;
 use App\Http\Controllers\Front\MvodafoneController;
 use App\Http\Controllers\Front\PayphoneController;
 use App\Http\Controllers\Front\ToyyibPayController;
+use App\Http\Controllers\Front\VivawalletController;
 use App\Http\Controllers\Front\WindcaveController;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
@@ -28,13 +29,13 @@ class PaymentOptionController extends BaseController{
 
     public function getPaymentOptions(Request $request, $page = ''){
         if($page == 'wallet'){
-            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone');
+            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','viva_wallet', 'mycash');
         }
         elseif($page == 'pickup_delivery'){
-            $code = array('cod', 'razorpay','stripe',"offline_manual");
+            $code = array('cod', 'razorpay','stripe','payfast','offline_manual');
         }
         else{
-            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual');
+            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','viva_wallet', 'mycash');
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
         foreach($payment_options as $option){
@@ -65,6 +66,7 @@ class PaymentOptionController extends BaseController{
             }else{
                 $domain = $client->sub_domain.env('SUBMAINDOMAIN');
             }
+            //$server_url = "http://192.168.97.160:9091/";
             $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
@@ -81,6 +83,11 @@ class PaymentOptionController extends BaseController{
         }else{
             return $this->errorResponse("Invalid Gateway Request", 400);
         }
+    }
+
+    public function postPaymentVia_mycash(Request $request){
+        $gateway = new MyCashGatewayController();
+        return $gateway->purchase($request);
     }
 
     public function postPaymentVia_ccavenue(Request $request){
@@ -101,6 +108,11 @@ class PaymentOptionController extends BaseController{
     public function postPaymentVia_stripe_fpx(Request $request){
         $gateway = new StripeGatewayController();
         return $gateway->paymentWebViewStripeFPX($request);
+    }
+    
+    public function postPaymentVia_stripe_oxxo(Request $request){
+        $gateway = new StripeGatewayController();
+        return $gateway->paymentWebViewStripeOXXO($request);
     }
 
     public function postPaymentVia_paystack(Request $request){
@@ -167,6 +179,11 @@ class PaymentOptionController extends BaseController{
     public function postPaymentVia_windcave(Request $request){
         $gateway = new WindcaveController();
         return $gateway->createHashApp($request);
+    }
+
+    public function postPaymentVia_viva_wallet(Request $request){
+        $gateway = new VivawalletController();
+        return $gateway->createPayLinkApp($request);
     }
 
     public function postPaymentVia_payphone(Request $request){

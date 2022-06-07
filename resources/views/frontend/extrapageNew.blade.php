@@ -237,7 +237,7 @@
                                         $Dine_In = getNomenclatureName('Dine-In', true);
                                         $Dine_In = ($Dine_In === 'Dine-In') ? __('Dine-In') : $Dine_In;
                                     @endphp
-                                            <div class="col-md-2 mb-3">
+                                            <div class="col-md-2 col-4 mb-3">
                                                 <label for="">{{$Dine_In}}</label>
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" data-color="#43bee1" id="dine-in" name="dine_in">
@@ -249,7 +249,7 @@
                                         $Takeaway = getNomenclatureName('Takeaway', true);
                                         $Takeaway = ($Takeaway === 'Takeaway') ? __('Takeaway') : $Takeaway;
                                         @endphp
-                                            <div class="col-md-2 mb-3">
+                                            <div class="col-md-2 col-4 mb-3">
                                                 <label for="">{{$Takeaway}}</label>
                                                 <div class="mt-md-1">
                                                 <input type="checkbox" data-plugin="switchery" data-color="#43bee1" id="takeaway" name="takeaway">
@@ -261,7 +261,7 @@
                                         $Delivery = getNomenclatureName('Delivery', true);
                                         $Delivery = ($Delivery === 'Delivery') ? __('Delivery') : $Delivery;
                                         @endphp
-                                            <div class="col-md-2 mb-3">
+                                            <div class="col-md-2 col-4 mb-3">
                                                 <label for="">{{$Delivery}}</label>
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" data-color="#43bee1" id="delivery" name="delivery">

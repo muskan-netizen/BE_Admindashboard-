@@ -16,7 +16,7 @@ use App\Http\Traits\{ApiResponser,CartManager};
 use App\Http\Controllers\Front\{FrontController,PromoCodeController,LalaMovesController,VivawalletController};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page};
 class CartController extends FrontController
 {
     use ApiResponser,CartManager;
@@ -124,9 +124,21 @@ class CartController extends FrontController
             $public_key_yoco= $public_key_yoco->public_key??'';
         }
 
+        $privacy = Page::with(['translations' => function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+        }])->whereHas('translations', function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+        })->first();
+
+        $terms = Page::with(['translations' => function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+        }])->whereHas('translations', function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+        })->first();
+
         $ageVerify= VerificationOption::where('code','yoti')->first();
 
-        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify'))->with($data,$client_preference_detail,$client_detail);
+        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy'))->with($data,$client_preference_detail,$client_detail);
        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
@@ -702,9 +714,10 @@ class CartController extends FrontController
             $total_container_charges = 0 ;
             $all_vendor_deliver_charges = 0 ;
 
-            $user = Auth::user();
-            $client_timezone = DB::table('clients')->first('timezone');
-            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            if(!empty($user)){
+                $client_timezone = DB::table('clients')->first('timezone');
+                $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            }
             
             /* Getting in vendor loop */
             foreach ($cartData as $ven_key => $vendorData) {
@@ -718,8 +731,11 @@ class CartController extends FrontController
                 $coupon_apply_price=0;
                 $slotsCnt = 0;
 
-                $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
-                $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
+                if(!empty($user)){
+                    $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
+                    $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
+                }
+                
 
                 $slots = (object)showSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
                 if($cartData->count() > 1){
@@ -2036,6 +2052,7 @@ class CartController extends FrontController
         //pr($request->all());
         DB::beginTransaction();
         try{
+
             $user = Auth::user();
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;

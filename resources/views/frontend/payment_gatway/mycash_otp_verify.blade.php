@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-  <title>{{__('Stripe FPX Payment')}}</title>
+  <title>{{__('MyCash Payment')}}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- link to the Square web payment SDK library -->
   <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
@@ -37,6 +37,7 @@
                 <h3 class="mb-2">{{__('Verify OTP')}}</h3>
                 <p>{{__('Enter the code we just sent you on your phone number')}}</p>
                 <form id="otp_verification_form">
+                    @csrf
                     <div class="row mt-3">
                         <div class="offset-xl-2 col-xl-8 text-left">
                             <div>
