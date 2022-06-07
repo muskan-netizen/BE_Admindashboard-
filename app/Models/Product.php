@@ -270,11 +270,21 @@ class Product extends Model implements Auditable{
 
     }
     
+    public function UserWishlist(){
+      return $this->hasMany('App\Models\UserWishlist')->where(function($q){
+          $q->groupBy('product_id');
+      });
 
+    }
 
 
     public function productTranslation(){
       return $this->hasMany('App\Models\ProductTranslation');
+    }
+
+    public function OrderReturnRequest()
+    {
+        return $this->hasManyThrough('App\Models\OrderReturnRequest', 'App\Models\OrderProduct', 'product_id', 'order_vendor_product_id', 'id', 'id');
     }
 
 
