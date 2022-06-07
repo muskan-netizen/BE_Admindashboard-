@@ -60,7 +60,7 @@ class MyCashGatewayController extends BaseController
                 $rules['phone_number'] = 'required';
             }
 
-            $verifyOtpUrl = url($request->serverUrl . 'verify/payment/otp/mycash');
+            $verifyOtpUrl = url($request->serverUrl . 'verify/payment/otp/app/mycash');
 
             $data = array(
                 'method' => 'paymentRequest',
