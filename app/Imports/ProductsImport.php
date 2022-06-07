@@ -191,24 +191,53 @@ class ProductsImport implements ToCollection{
                                 }
                             }
                         }
-
+                        
                         if ($variant_exist == 1) {
                             if ($row[11] == "") {
                                 $error[] = "Row " . $i . " : Variant Sku is empty";
                                 $checker = 1;
                             } else {
-                                $proVariant = ProductVariant::where('sku', $row[11])->first();
+                                /* $proVariant = ProductVariant::where('sku', $row[11])->first();
+                                if ($proVariant) {
+                                    $error[] = "Row " . $i . " : Variant Sku already exist";
+                                    $checker = 1;
+                                } */
+                                if(!Product::where('sku', $row[0])->exists())
+                                {
+                                    $proVariant = ProductVariant::where('sku', $row[11])->first();
+                                    if ($proVariant) {
+                                        $error[] = "Row " . $i . " : Variant Sku already exist";
+                                        $checker = 1;
+                                    }
+                                }else{
+                                    $productdata = Product::where('sku', $row[0])->first();
+                                    $proVariant = ProductVariant::where('sku', $row[11])->where('product_id', '!=', $productdata->id)->first();
+                                    if($proVariant) {
+                                        $error[] = "Row " . $i . " : Variant Sku already exist";
+                                        $checker = 1;
+                                    }
+                                }
+                            }
+                        }else{
+                            if($row[11] != "") {
+                                $provariant_sku = $row[11];
+                            }else{
+                                $provariant_sku = $row[0];
+                            }
+                            if(!Product::where('sku', $row[0])->exists())
+                            {
+                                $proVariant = ProductVariant::where('sku', $provariant_sku)->first();
                                 if ($proVariant) {
                                     $error[] = "Row " . $i . " : Variant Sku already exist";
                                     $checker = 1;
                                 }
-                            }
-                        }
-                        if ($row[11] != "") {
-                            $proVariant = ProductVariant::where('sku', $row[11])->first();
-                            if ($proVariant) {
-                                $error[] = "Row " . $i . " : Variant Sku already exist";
-                                $checker = 1;
+                            }else{
+                                $productdata = Product::where('sku', $row[0])->first();
+                                $proVariant = ProductVariant::where('sku', $provariant_sku)->where('product_id', '!=', $productdata->id)->first();
+                                if($proVariant) {
+                                    $error[] = "Row " . $i . " : Variant Sku already exist";
+                                    $checker = 1;
+                                }
                             }
                         }
 
@@ -455,13 +484,20 @@ class ProductsImport implements ToCollection{
                                 }
                             }
                             else{
+                                if($da[11] != "") {
+                                    $provariant_sku = $da[11];
+                                }else{
+                                    $provariant_sku = $da[0];
+                                }
                                 $proVariant = new ProductVariant();
-                                $proVariant->sku = $da[0];
+                                $proVariant->sku = $provariant_sku;
+                                $proVariant->title = $provariant_sku;
                                 $proVariant->product_id = $product;
                                 $proVariant->barcode = $this->generateBarcodeNumber();
-                                $proVariant->quantity = $da[20]??0;
-                                $proVariant->price = $da[21]??"";
-                                $proVariant->compare_at_price = $da[22]??"";
+                                $proVariant->quantity = (!empty($da[13]))?$da[13]:0;
+                                $proVariant->price = $da[12]??"";
+                                $proVariant->compare_at_price = $da[14]??"";
+                                $proVariant->cost_price = $da[17]??"";
                                 $proVariant->save();
                             }
                             //images
@@ -567,21 +603,38 @@ class ProductsImport implements ToCollection{
                                      }
                                  }
                              }
+                            
                             if ($da[5] != "" || $da[7] != "" || $da[9] != "") {
                                 $product_hasvariant = Product::where('id', $product_id->id)->first();
                                 $product_hasvariant->has_variant = 1;
                                 $product_hasvariant->save();
-                                //inserting product variant
-                                $proVariant = ProductVariant::insertGetId([
-                                    'sku' => $da[11],
-                                    'title' => $da[11],
-                                    'product_id' => $product_id->id,
-                                    'quantity' => (!empty($da[13]))?$da[13]:0,
-                                    'price' => $da[12],
-                                    'compare_at_price' => $da[14],
-                                    'cost_price' => $da[17],
-                                    'barcode' => $this->generateBarcodeNumber(),
-                                ]);
+
+                                //inserting/updating product variant
+                                $proVariantdata = ProductVariant::where('sku', $da[11])->where('product_id', $product_id->id)->first();
+                                if(empty($proVariantdata)):
+                                    $proVariant = ProductVariant::insertGetId([
+                                        'sku' => $da[11],
+                                        'title' => $da[11],
+                                        'product_id' => $product_id->id,
+                                        'quantity' => (!empty($da[13]))?$da[13]:0,
+                                        'price' => $da[12],
+                                        'compare_at_price' => $da[14],
+                                        'cost_price' => $da[17],
+                                        'barcode' => $this->generateBarcodeNumber(),
+                                    ]);
+                                else:
+                                    $proVariant = $proVariantdata->id;
+                                    ProductVariant::where('id', $proVariant)->update([
+                                        'sku' => $da[11],
+                                        'title' => $da[11],
+                                        'product_id' => $product_id->id,
+                                        'quantity' => (!empty($da[13]))?$da[13]:0,
+                                        'price' => $da[12],
+                                        'compare_at_price' => $da[14],
+                                        'cost_price' => $da[17],
+                                        'barcode' => $proVariantdata->barcode,
+                                    ]);
+                                endif;
 
                                 if ($da[5] != "") {
                                     $variant = Variant::whereHas('category.translation_one' , function($query) use ($da){
@@ -624,6 +677,39 @@ class ProductsImport implements ToCollection{
                                     $proVariantSet->variant_option_id = $variant_optionn->id;
                                     $proVariantSet->save();
                                 }
+                            }else{
+                                if($da[11] != "") {
+                                    $provariant_sku = $da[11];
+                                }else{
+                                    $provariant_sku = $da[0];
+                                }
+                                
+                                $proVariantdata = ProductVariant::where('sku', $provariant_sku)->where('product_id', $product_id->id)->first();
+                                if(empty($proVariantdata)):
+                                    $proVariant = new ProductVariant();
+                                    $proVariant->barcode = $this->generateBarcodeNumber();
+                                    $proVariant->sku = $provariant_sku;
+                                    $proVariant->title = $provariant_sku;
+                                    $proVariant->product_id = $product_id->id;
+                                    $proVariant->quantity = (!empty($da[13]))?$da[13]:0;
+                                    $proVariant->price = $da[12]??"";
+                                    $proVariant->compare_at_price = $da[14]??"";
+                                    $proVariant->cost_price = $da[17]??"";
+                                    $proVariant->save();
+                                else:
+                                    $proVariant = $proVariantdata->id;
+                                    ProductVariant::where('id', $proVariantdata->id)->update([
+                                        'sku' => $provariant_sku,
+                                        'title' => $provariant_sku,
+                                        'product_id' => $product_id->id,
+                                        'quantity' => (!empty($da[13]))?$da[13]:0,
+                                        'price' => $da[12],
+                                        'compare_at_price' => $da[14],
+                                        'cost_price' => $da[17],
+                                        'barcode' => $proVariantdata->barcode,
+                                    ]);
+                                endif;
+
                             }
                         }
                     }

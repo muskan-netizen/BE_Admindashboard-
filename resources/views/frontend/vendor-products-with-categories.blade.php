@@ -31,7 +31,7 @@
                                         <div class="vendor-stories">
                                             <div class="circle-wrapper"></div>
                                             <a href="" data-toggle="modal" data-target="#vendorStories_">
-                                                <img id="vendorStoriesImg" src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-sm" alt="profile-image">
+                                                <img id="vendorStoriesImg" src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-sm avatar-lg" alt="profile-image">
                                             </a>
                                         </div>
                                         <div class="vendor-reviwes">
