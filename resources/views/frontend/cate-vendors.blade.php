@@ -269,14 +269,14 @@
                                 </svg></span> {{$data->timeofLineOfSightDistance}}</small>
                                                                                 </li>
                                                                             </ul>
-                                                                            @if($client_preference_detail->max_safety_mod == 1)
-                     <div class="mt-2">
-                        <ul class="timing-box_al">
-                          <li><img height="30px" src="{{asset('images/max-safety.png')}}" alt=""></li>
-                          <li>Follows all Max Safety measures to ensure your food is safe</li>
-                        </ul>
-                     </div>
-                     @endif
+                                    @if($client_preference_detail->max_safety_mod == 1)
+                                    <div class="mt-2">
+                                        <ul class="timing-box_al">
+                                        <li><img height="30px" src="{{asset('images/max-safety.png')}}" alt=""></li>
+                                        <li>Follows all Max Safety measures to ensure your food is safe</li>
+                                        </ul>
+                                    </div>
+                                    @endif
                                                                         @endif
                                                                     </div>
                                                                    {{-- @if($client_preference_detail)

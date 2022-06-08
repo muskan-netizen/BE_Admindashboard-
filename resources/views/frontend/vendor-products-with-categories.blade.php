@@ -146,7 +146,7 @@
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
-                                                    <li><a data-slug="{{ $data->category->slug }}" style="cursor: pointer;">{{ $data->category->translation_one->name }}({{ $data->products_count }})</a>
+                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation_one->name??'' }}({{ $data->products_count }})</a>
                                                     </li>
                                                 @empty
                                                 @endforelse
@@ -204,7 +204,7 @@
                                             <section class="scrolling_section " id="{{ $data->category->slug }}">
                                                 @if (!empty($data->products))
                                                     <h2 class="category-head mt-0 mb-3">
-                                                        {{ $data->category->translation_one->name }}
+                                                        {{ $data->category->translation_one->name??'' }}
                                                         ({{ $data->products_count }})
                                                     </h2>
                                                     @forelse($data->products as $prod)
