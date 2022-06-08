@@ -566,7 +566,7 @@ class ProductsImport implements ToCollection{
                                          ProductTag::insert($tagSetArray);
                                      }
                                  }
-                             }
+                            }
                             if ($da[5] != "" || $da[7] != "" || $da[9] != "") {
                                 $product_hasvariant = Product::where('id', $product_id->id)->first();
                                 $product_hasvariant->has_variant = 1;
@@ -633,6 +633,7 @@ class ProductsImport implements ToCollection{
                                     $proVariant->save();
                                 }
                             }
+                            
                         }
                     }
                 }
