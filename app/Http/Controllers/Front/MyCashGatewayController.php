@@ -276,7 +276,7 @@ class MyCashGatewayController extends FrontController
             }else{
                 $user = Auth::user();
             }
-
+            $request->request->add(['user_id' => $user->id]);
             $data = array(
                 'method' => 'approvePayment',
                 'api_key' => $this->api_key,
