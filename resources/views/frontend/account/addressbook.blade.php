@@ -1,5 +1,6 @@
 @extends('layouts.store', ['title' => ($client_preference_detail->address_is_car == 1 ? __('Car') : __('Address Book') )  ])
 @section('css')
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .main-menu .brand-logo {
         display: inline-block;
@@ -130,12 +131,17 @@
                                                     <p class="mb-1">{{$add->city}}, {{$add->state}} {{$add->pincode}}</p>
                                                     <p class="mb-1">{{$add->country  ? $add->country : ''}}</p>
                                                 </div>
+                                                @if($add->latitude=='' || $add->longitude=='')
+                                                   <span class="badge badge-warning ml-2">Incomplete</span>
+                                                @endif
                                             </div>
                                             <div class="address-btn d-flex align-items-center justify-content-end w-100 mt-sm-4 px-2">
                                                 @if($add->is_primary == 1)
                                                     <a class="btn btn-solid disabled" href="#">{{ __('Primary') }}</a>
                                                 @else
+                                                    @if($add->latitude!='' || $add->longitude!='')
                                                     <a class="btn btn-solid" href="{{ route('setPrimaryAddress', $add->id) }}" class="mr-2">{{ __('Set As Primary') }}</a>
+                                                    @endif
                                                 @endif
                                                 <a class="btn btn-solid add_edit_address_btn" href="javascript:void(0)" data-toggle="modal" data-target="#add_edit_address" data-id="{{$add->id}}">{{ __('Edit') }}</a>
                                                 <a class="btn btn-solid delete_address_btn" href="javascript:void(0)" data-toggle="modal" data-target="#removeAddressConfirmation" data-id="{{$add->id}}">{{ __('Delete') }}</a>
@@ -302,7 +308,7 @@
                                 <span class="text-danger" id="extra_instruction_error"></span>
                             </div>
                             <div class="col-md-12 mt-2">
-                                <button type="submit" class="btn btn-solid" id="<%= ((typeof address !== 'undefined') && (address !== false)) ? 'updateAddress' : 'saveAddress' %>">{{(@$client_preference_detail->address_is_car == 1) ? __('Save Car') : __('Save Address') }}</button>
+                                <button type="button" class="btn btn-solid" id="<%= ((typeof address !== 'undefined') && (address !== false)) ? 'updateAddress' : 'saveAddress' %>">{{(@$client_preference_detail->address_is_car == 1) ? __('Save Car') : __('Save Address') }}</button>
                                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
                             </div>
                         </div>
@@ -348,14 +354,14 @@
 </div>
 @endsection
 @section('script')
+<script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript">
     var user_store_address_url = "{{ route('address.store') }}";
     var user_address_url = "{{ route('user.address', ':id') }}";
     var update_address_url = "{{ route('address.update', ':id') }}";
     var delete_address_url = "{{ route('deleteAddress', ':id') }}";
     var verify_information_url = "{{ route('verifyInformation', Auth::user()->id) }}";
-
-
+   
 
     var ajaxCall = 'ToCancelPrevReq';
     $('.verifyEmail').click(function(){
@@ -401,7 +407,27 @@
                 initialize();
             }
         });
+
     });
+
+    $(document).on("click", "#updateAddress,#saveAddress", function () {
+    
+        var latitude = $('#add_edit_address_form #latitude').val();
+        var longitude = $('#add_edit_address_form #longitude').val();
+        if(latitude!='' && longitude!='')
+        {
+            $("#add_edit_address_form").submit();
+        }else{
+            Swal.fire({
+                title: "Warning!",
+                text: "Please select address from suggessions or from map.",
+                icon: "warning",
+                button: "OK",
+            });
+            $(".showMapHeader").click();
+        }
+    });
+
     function verifyUser($type = 'email'){
         ajaxCall = $.ajax({
             type: "post",
@@ -473,10 +499,10 @@
         var lats = document.getElementById('latitude').value;
         var lngs = document.getElementById('longitude').value;
         if(lats==''){
-            lats=latitude;
+            lats="{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
         }
         if(lngs==''){
-            lngs=longitude;
+            lngs="{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
         }
 
         var myLatlng = new google.maps.LatLng(lats, lngs);

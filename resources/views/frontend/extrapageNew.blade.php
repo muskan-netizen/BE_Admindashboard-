@@ -105,7 +105,7 @@
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">
                                         <label for="fullname">{{__('Title')}}</label>
-                                        <input type="text" class="form-control" name="title" value="{{$user ? $user->title : ''}}">
+                                        <input type="text" class="form-control" name="title" value="{{$user ? $user->title : ''}}" placeholder="{{__('Mr./Miss/Mrs.')}}">
                                         <span class="invalid-feedback" id="title_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="emailInput">

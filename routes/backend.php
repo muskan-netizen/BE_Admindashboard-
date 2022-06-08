@@ -362,8 +362,11 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::post('updateCreateVendorInDispatchLaundry', 'Client\VendorController@updateCreateVendorInDispatchLaundry')->name('update.Create.Vendor.In.Dispatch.Laundry');
         });
 
-        Route::resource('review', 'Client\ReviewController');
-
+        
+        Route::get('reports/productperformance', 'Client\ReportController@productPerformance')->name('report.productperformance');
+        Route::post('reports/searchproduct', 'Client\ReportController@getOrdersListAjax')->name('report.searchproduct');
+        Route::post('reports/productreport', 'Client\ReportController@getProductReportAjax')->name('report.loadproductreport');
+        
         Route::resource('campaign', 'Client\CampaignController');
         Route::get('campaign-push-option', 'Client\CampaignController@GetPushOptions')->name('campaign.pushoptions');
         //Route::get('test-notification', 'Client\CampaignController@testnotification');
@@ -373,7 +376,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('notification', 'Client\UserController@customNotification')->name('customer.notification');
         Route::post('sendnotification', 'Client\UserController@sendNotification')->name('send.notification');
         Route::get('/review/delect/{id}', 'Client\ReviewController@destroy')->name('review.delete');
-
+        Route::resource('review', 'Client\ReviewController');
         // Cancel order requests routes
         Route::get('cancel-order/requests', 'Client\OrderCancelRequestsController@index')->name('cancel-order.requests');
         Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');
