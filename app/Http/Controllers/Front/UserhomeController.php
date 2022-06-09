@@ -366,7 +366,7 @@ class UserhomeController extends FrontController
         $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
         $p_dim = '260/100';
         if (isset($set_template)  && $set_template->template_id == 3){
-            $p_dim = '328/248';
+            $p_dim = '300/350';
         }elseif(isset($set_template)  && $set_template->template_id == 2){
             $p_dim = '260/180';
         }
@@ -958,7 +958,7 @@ class UserhomeController extends FrontController
         $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
         $p_dim = '260/100';
         if (isset($set_template)  && $set_template->template_id == 3){
-            $p_dim = '328/248';
+            $p_dim = '300/350';
         }elseif(isset($set_template)  && $set_template->template_id == 2){
             $p_dim = '260/180';
         }

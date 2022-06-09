@@ -356,12 +356,13 @@ class VendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $domain = '', $id)
-    {
+    {   
+      
         $rules = array(
             'address' => 'required',
         //    'name' => 'required|string|max:150|unique:vendors,name,' . $id,
             'name' => 'required|string|max:150',
-            'phone_no' => 'nullable|digits_between:7,12',
+            'phone_no' => 'nullable|min:7|max:14',
             'email' => 'nullable|email',
         );
         //dd($request->all());
