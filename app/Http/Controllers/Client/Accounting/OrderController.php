@@ -151,7 +151,7 @@ class OrderController extends Controller{
             $refunds[$c]['order_id']=$row->order_id;
             $refunds[$c]['orderNumber']= isset($row->order) ? $row->order->order_number : '';
             $refunds[$c]['transactionId']=$row->transaction_id;
-            $refunds[$c]['vendor_id']=OrderVendor::where('order_id',$row->order_id)->first()->vendor_id;
+            $refunds[$c]['vendor_id']= OrderVendor::where('order_id',$row->order_id)->first()->vendor_id??'';
             $c++;
         }
         return Datatables::of($refunds)
