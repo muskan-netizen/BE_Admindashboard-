@@ -745,19 +745,19 @@ class CartController extends FrontController
                 $vendorData->slotsCnt = count((array)$slots);
                 $vendorData->delay_date = date('Y-m-d');
 
-                if(Session::has('vendorTable')){
+                if(Session::has('vendorTable')) {
                     if((Session::has('vendorTableVendorId')) && (Session::get('vendorTableVendorId') == $vendorData->vendor_id)){
                         $cart_dinein_table_id = Session::get('vendorTable');
                     }
                     Session::forget(['vendorTable', 'vendorTableVendorId']);
-                }else{
+                } else {
                     $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
                 }
 
                 /* Getting vendor details */
-                if($action != 'delivery'){
+                if($action != 'delivery') {
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id','latitude','longitude','address')->where('id', $vendorData->vendor_id)->first();
-                    if($action == 'dine_in'){
+                    if($action == 'dine_in') {
                         $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();
                         foreach ($vendor_tables as $vendor_table) {
                             $vendor_table->qr_url = url('/vendor/'.$vendorData->vendor->slug.'/?id='.$vendorData->vendor_id.'&name='.$vendorData->vendor->name.'&table='.$vendor_table->id);
@@ -765,7 +765,8 @@ class CartController extends FrontController
                         $vendor_details['vendor_tables'] = $vendor_tables;
                     }
                 }
-                else{
+                else {
+                    
                     if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
                         if($address_id > 0){
 
@@ -794,7 +795,10 @@ class CartController extends FrontController
                 $cart_product_ids = [];
                 /* Getting in Vendor product loop and setting product values*/
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
-                    $cart_product_ids[] = $prod->product_id;
+
+                 if($prod->pvariant)   {
+
+                    $cart_product_ids[] = $prod->product_id;    
                     /* Setting Out of Stock if requied quanitity is not available */
                     if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
                         $quantity_check = productvariantQuantity($prod->variant_id);
@@ -825,10 +829,10 @@ class CartController extends FrontController
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price??0;
                     $price_in_doller_compare = $prod->pvariant->price??0; 
-                    $container_charges_in_currency = $prod->pvariant->container_charges;
+                    $container_charges_in_currency = $prod->pvariant->container_charges??0;
                     $coupon_apply_price+=$price_in_currency;
-                    $container_charges_in_doller_compare = $prod->pvariant->container_charges;
-                    if($customerCurrency){
+                    $container_charges_in_doller_compare = $prod->pvariant->container_charges??0;
+                    if($customerCurrency && $prod->pvariant){
                         $price_in_currency = $prod->pvariant->price / $divider;
                         $price_in_doller_compare = $price_in_currency * $customerCurrency->doller_compare;
 
@@ -838,7 +842,7 @@ class CartController extends FrontController
                     $quantity_price = $price_in_doller_compare * $prod->quantity;
                     $sub_total+=$quantity_price+$container_charges_in_currency;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
-                    $prod->pvariant->price_in_cart = $prod->pvariant->price;
+                    $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
                     $prod->pvariant->price = decimal_format($price_in_currency);
                     $prod->pvariant->container_charges = decimal_format($container_charges_in_currency);
                     $prod->image_url = $this->loadDefaultImage();
@@ -928,58 +932,52 @@ class CartController extends FrontController
 
                     $select = '';
 
-                    if($action == 'delivery'){
+                    if ($action == 'delivery') {
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;
-                         $code = (($code)?$code:$cart->shipping_delivery_type);
+                        $code = (($code)?$code:$cart->shipping_delivery_type);
                         if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
-                            $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address);
-                           if(isset($deliveries[0]))
-                           {
-                            $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
-                            if(count($deliveries)>1){
-                            foreach($deliveries as $k=> $opt)
-                                {
-                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
-                                    //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                            $deliveries = $this->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address);
+                            if (isset($deliveries[0])) {
+                                $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
+                                if (count($deliveries)>1) {
+                                    foreach ($deliveries as $k=> $opt) {
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                        //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                                    }
+                                } else {
+                                    foreach ($deliveries as $k=> $opt) {
+                                        //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                                    }
                                 }
-                            }else{
-                                foreach($deliveries as $k=> $opt)
-                                {
-                                    //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
-                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
-                                }
-                            }
-                            $select .= '</select>';
-                                if($code){
+                                $select .= '</select>';
+                                if ($code) {
                                     $new = array_filter($deliveries, function ($var) use ($code) {
                                         return ($var['code'] == $code);
                                     });
-                                    foreach($new as $rate){
+                                    foreach ($new as $rate) {
                                         $deliveryCharges = $rate['rate'];
                                     }
-                                    if($deliveryCharges)
-                                    {
+                                    if ($deliveryCharges) {
                                         $deliveryCharges = $rate['rate'];
-                                    }else{
+                                    } else {
                                         $deliveryCharges = $deliveries[0]['rate'];
                                         $code = $deliveries[0]['code'];
                                     }
-
-                                }else{
+                                } else {
                                     $deliveryCharges = $deliveries[0]['rate'];
                                     $code = $deliveries[0]['code'];
                                 }
                             }
 
-                    if(isset($deliveryCharges) && !empty($deliveryCharges)){
-                            $dtype = explode('_',$code);
-                            CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                            if (isset($deliveryCharges) && !empty($deliveryCharges)) {
+                                $dtype = explode('_', $code);
+                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id], ['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                            }
+                        }//End Check last time stone
                     }
-
-                    }//End Check last time stone
-
                 }
 
                     $product = Product::with([

@@ -1028,7 +1028,6 @@ class OrderController extends BaseController
                 }
                
             $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
-
             if(!empty($orderVendorDetails->scheduled_date_time) && $orderVendorDetails->scheduled_date_time > 0){
                 $task_type = 'schedule';
                 $user = Auth::user();

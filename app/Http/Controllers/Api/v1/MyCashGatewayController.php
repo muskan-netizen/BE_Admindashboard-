@@ -60,7 +60,7 @@ class MyCashGatewayController extends BaseController
                 $rules['phone_number'] = 'required';
             }
 
-            $verifyOtpUrl = url($request->serverUrl . 'verify/payment/otp/mycash');
+            $verifyOtpUrl = url($request->serverUrl . 'verify/payment/otp/app/mycash');
 
             $data = array(
                 'method' => 'paymentRequest',
@@ -153,6 +153,7 @@ class MyCashGatewayController extends BaseController
                             'request_id' => $request->request_id,
                             'order_reference' => $data['order_id'],
                             'payment_form' => $request->payment_form,
+                            'auth_token' => $user->auth_token,
                             'come_from' => 'app'
                         );
                         if($payment_form == 'subscription'){

@@ -2540,56 +2540,67 @@ $(document).ready(function () {
         let longitude = $('#add_new_address_form #longitude').val();
         let house_number = $('#add_new_address_form #house_number').val();
         let extra_instruction = $('#add_new_address_form #extra_instruction').val();
-        $.ajax({
-            type: "post",
-            dataType: "json",
-            url: user_store_address_url,
-            data: {
-                "city": city,
-                "type": type,
-                "state": state,
-                "street": street,
-                "address": address,
-                "country": country,
-                "pincode": pincode,
-                "latitude": latitude,
-                "longitude": longitude,
-                "house_number": house_number,
-                "extra_instruction": extra_instruction
-            },
-            beforeSend: function () {
-                if ($("#cart_table").length > 0) {
-                    $(".spinner-box").show();
-                    $("#cart_table").hide();
-                }
-            },
-            success: function (response) {
-                if ($("#add_edit_address").length > 0) {
-                    $("#add_edit_address").modal('hide');
-                    location.reload();
-                } else {
-                    $('#add_new_address_form').hide();
-                    // let address_template = _.template($('#address_template').html());
-                    if (address.length > 0) {
-                        //   $('#order_placed_btn').attr('disabled', false);
-                        //   $("#address_template_main_div").append(address_template({address:response.address}));
-                        cartHeader(response.address.id);
+        if(latitude!='' && longitude!='')
+        {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: user_store_address_url,
+                data: {
+                    "city": city,
+                    "type": type,
+                    "state": state,
+                    "street": street,
+                    "address": address,
+                    "country": country,
+                    "pincode": pincode,
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "house_number": house_number,
+                    "extra_instruction": extra_instruction
+                },
+                beforeSend: function () {
+                    if ($("#cart_table").length > 0) {
+                        $(".spinner-box").show();
+                        $("#cart_table").hide();
+                    }
+                },
+                success: function (response) {
+                    if ($("#add_edit_address").length > 0) {
+                        $("#add_edit_address").modal('hide');
+                        location.reload();
+                    } else {
+                        $('#add_new_address_form').hide();
+                        // let address_template = _.template($('#address_template').html());
+                        if (address.length > 0) {
+                            //   $('#order_placed_btn').attr('disabled', false);
+                            //   $("#address_template_main_div").append(address_template({address:response.address}));
+                            cartHeader(response.address.id);
+                        }
+                    }
+                },
+                error: function (reject) {
+                    if ($("#cart_table").length > 0) {
+                        $(".spinner-box").hide();
+                        $("#cart_table").show();
+                    }
+                    if (reject.status === 422) {
+                        var message = $.parseJSON(reject.responseText);
+                        $.each(message.errors, function (key, val) {
+                            $("#" + key + "_error").text(val[0]);
+                        });
                     }
                 }
-            },
-            error: function (reject) {
-                if ($("#cart_table").length > 0) {
-                    $(".spinner-box").hide();
-                    $("#cart_table").show();
-                }
-                if (reject.status === 422) {
-                    var message = $.parseJSON(reject.responseText);
-                    $.each(message.errors, function (key, val) {
-                        $("#" + key + "_error").text(val[0]);
-                    });
-                }
-            }
-        });
+            });
+        }else{
+            Swal.fire({
+                title: "Warning!",
+                text: "Please select address from suggessions or from map.",
+                icon: "warning",
+                button: "OK",
+            });
+            $(".showMapHeader").click();
+        }
     });
 
     $(document).on("click", ".addToCart", function () {

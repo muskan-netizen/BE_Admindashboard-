@@ -37,6 +37,7 @@
                 <h3 class="mb-2">{{__('Verify OTP')}}</h3>
                 <p>{{__('Enter the code we just sent you on your phone number')}}</p>
                 <form id="otp_verification_form">
+                    @csrf
                     <div class="row mt-3">
                         <div class="offset-xl-2 col-xl-8 text-left">
                             <div>
@@ -150,13 +151,13 @@
     });
     function resendOtp($type = 'email') {
         $('.verifyPhone').addClass('disabled').html(sending_text);
-        var token = $('input[name="_token"]').val();
-        var payment_form = $('input[name="payment_form"]').val()
+        var formData = $("#otp_verification_form").serializeArray();
+        formData.push({name: 'resend', value: true});
         ajaxCall = $.ajax({
             type: "post",
             dataType: "json",
             url: "{{ route('send.payment.otp', 'mycash') }}",
-            data: {'_token': token, 'payment_form': payment_form, 'resend': true},
+            data: formData,
             success: function(response) {
                 if(response.status == 'Success'){
                     $('.verifyPhone').removeClass('disabled').html(resend_text);

@@ -649,9 +649,17 @@ class FrontController extends Controller
             }
         }
 
+            if($user && $user->timezone)
+            $timezone = $user->timezone ?? $client_data->timezone;
+            elseif($client_data && $client_data->timezone)
+            $timezone = $client_data->timezone;
+            else
+            $timezone = 'Asia/Kolkata';
+
         foreach($cartData as $key => $data){
-            $user->timezone = $user->timezone ?? $client_data->timezone;
-            $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($user->timezone)->format('Y-m-d');
+           
+
+            $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
             $slots = showSlot($selectedDate,$data->vendor_id,'delivery');
             $time_slots = [];
@@ -663,8 +671,7 @@ class FrontController extends Controller
             $cartData[$key]->timeSlots = $time_slots;
         }
 
-        $user = Auth::user();
-        $timezone = $user->timezone ?? 'Asia/Kolkata';
+        
 
         $start_date = new DateTime("now", new  DateTimeZone($timezone) );
         $start_date =  $start_date->format('Y-m-d');

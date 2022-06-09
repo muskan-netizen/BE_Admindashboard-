@@ -760,6 +760,7 @@ class CartController extends BaseController
 
 
                             // }
+                            $addon_price = 0;
                             if (!empty($prod->addon)) {
                                 // return $prod->addon;
                                 foreach ($prod->addon as $ck => $addons) {
@@ -782,7 +783,7 @@ class CartController extends BaseController
                                     $vendorAddons[$ck]['addon_title'] = $addons->option->title ?? '';
                                     $vendorAddons[$ck]['quantity_price'] = $opt_quantity_price ;
                                     $vendorAddons[$ck]['option_title'] = $addons->option ? $addons->option->title : $addon_title;
-                                    $total_addon_price+=$vendorAddons[$ck]['price_in_cart'] = $addons->option->price ?? $addon_price;
+                                    $total_addon_price+=$vendorAddons[$ck]['price_in_cart'] = $addons->option->price ?? $addon_price;   
                                     $vendorAddons[$ck]['cart_product_id'] = $addons->cart_product_id;
                                     $vendorAddons[$ck]['multiplier'] = $clientCurrency->doller_compare;
                                     $ttAddon = $ttAddon + $opt_quantity_price;
@@ -790,6 +791,7 @@ class CartController extends BaseController
                                     $order_sub_total = $order_sub_total + $opt_quantity_price;
                                 }
                             }
+                            Log::info($addon_price);
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
@@ -799,7 +801,10 @@ class CartController extends BaseController
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                     $rate = round($tax_value->tax_rate);
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                                    $product_tax = ($quantity_price+$total_addon_price) * $rate / 100;
+                                    //    $product_tax = ($quantity_price+$total_addon_price) * $rate / 100;
+
+                                    $product_tax = ($quantity_price+$addon_price) * $rate / 100;
+                                    
                                     $taxData[$tckey]['rate'] = $rate;
                                     $taxData[$tckey]['tax_amount'] = $tax_amount;
                                     $taxData[$tckey]['product_tax'] = $product_tax;

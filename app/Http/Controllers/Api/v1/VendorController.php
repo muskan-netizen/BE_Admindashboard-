@@ -1497,7 +1497,7 @@ class VendorController extends BaseController{
             ];
             try{
                 dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
-                dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
+              //  dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
             }catch(Exception $e) {
 
             }
