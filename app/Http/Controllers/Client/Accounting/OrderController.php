@@ -140,7 +140,7 @@ class OrderController extends Controller{
 
     public function backendOrderRefundFilter(Request $request){
       
-        $orderRefund = OrderRefund::get();
+        $orderRefund = OrderRefund::whereHas('order')->get();
         $refunds=array();
         $c=1;
         foreach($orderRefund as $row){
