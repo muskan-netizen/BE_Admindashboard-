@@ -121,7 +121,9 @@ $total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+
                                     @if($order->total_delivery_fee > 0)
                                         <li>{{__('Delivery Fee')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_delivery_fee * @$clientCurrency->doller_compare)}}</span></li>
                                     @endif
-                                    
+                                    @if($order->total_discount > 0)
+                                        <li>{{__('Total Discount')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_discount * @$clientCurrency->doller_compare)}}</span></li>
+                                    @endif
                                    
                                     @if($order->taxable_amount > 0 || $order->total_other_taxes_amount> 0 )
                                     

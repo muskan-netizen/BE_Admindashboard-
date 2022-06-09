@@ -75,7 +75,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             {!! Form::label('title', __('Description'),['class' => 'control-label']) !!} 
-                            {!! Form::textarea('description', $plan->Description, ['class' => 'form-control', 'rows' => '3']) !!}
+                            {!! Form::textarea('description', $plan->description, ['class' => 'form-control', 'rows' => '3']) !!}
                         </div>
                     </div>
                 </div>
