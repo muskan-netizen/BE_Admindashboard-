@@ -55,10 +55,12 @@
 <script type="text/javascript" src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 
+
+--}}
+
 <!-- Waitme loader script -->
 <script type="text/javascript" src="{{asset('js/waitMe.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
---}}
 
 <script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 @if(isset($set_template)  && $set_template->template_id == 1)
