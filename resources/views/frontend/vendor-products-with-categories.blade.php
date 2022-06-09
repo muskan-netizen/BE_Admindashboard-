@@ -419,8 +419,8 @@
                                                                         <p class="mb-1 product_price">   {{__('Batch') }} : {{ $prod->batch_count }} </p> --}}
                                                                     @endif
 
-                                                                    <p class="mb-1 product_price">
-                                                                        {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
+                                                                    <p class="mb-1 product_price ">
+                                                                        {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
                                                                         @if ($prod->variant[0]->compare_at_price > 0)
                                                                             <span
                                                                                 class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>

@@ -444,7 +444,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                 @endif
                 <div class="col-lg-6">
                     <% if(product.delOptions) { %>
-                        <div class="row mb-1 d-flex align-items-center">
+                        <div class="row mb-1 d-flex align-items-center   <% if( product.promo_free_deliver == 1  ) { %> <%= product.promo_free_deliver %> org_price <%}%> ">
                             <div class="col-5 text-lg-right">
                                 <label class="m-0 radio">
                                     {{__('Delivery Fee')}} :</label>
@@ -2290,7 +2290,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
             },
             success: function(output) {
                 // Check if orderCount is greaten equal to orders_per_slot
-                if(output.orderCount >= output.orders_per_slot){
+                if( (output.orderCount >= output.orders_per_slot) && (output.orders_per_slot != 0) ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
                     // Disable the place order button
                     $('#order_placed_btn').attr("disabled", true);

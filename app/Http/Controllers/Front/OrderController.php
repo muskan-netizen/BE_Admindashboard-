@@ -1036,11 +1036,17 @@ class OrderController extends FrontController
                         $vendor_payable_amount -= $amount;
                         $vendor_discount_amount += $amount;
                     } else {
-                        
+
                         $percentage_amount = ($vendor_payable_amount * $vendor_cart_product->coupon->promo->amount / 100);
                         $total_discount += $percentage_amount;
                         $vendor_payable_amount -= $percentage_amount;
                         $vendor_discount_amount += $percentage_amount;
+                    }
+                    // add delivery fee in coupon if coupon has free delicery
+                    if($vendor_cart_product->coupon->promo->allow_free_delivery == 1){
+                        $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
+                        $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
+                        $total_discount += $delivery_fee;
                     }
                 }
 

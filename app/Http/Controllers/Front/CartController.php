@@ -708,7 +708,6 @@ class CartController extends FrontController
             $sub_total = 0;
             $total_service_fee = 0;
             $product_out_of_stock = 0;
-            $PromoFreeDeliver = 0;
             $PromoDelete = 0;
             $d = 0;
             $total_container_charges = 0 ;
@@ -730,6 +729,7 @@ class CartController extends FrontController
                 $coupon_amount_used = 0;
                 $coupon_apply_price=0;
                 $slotsCnt = 0;
+                $PromoFreeDeliver = 0;
 
                 if(!empty($user)){
                     $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user->timezone);
@@ -1068,8 +1068,9 @@ class CartController extends FrontController
                         if ( $PromoDelete !=1) {
                             if($vendorData->coupon->promo->allow_free_delivery ==1   ){
                                 $PromoFreeDeliver = 1;
-                                $coupon_amount_used = $coupon_amount_used ;
-                                //$payable_amount = $payable_amount - $deliveryCharges;
+                               // $coupon_amount_used = $coupon_amount_used ;
+                                $coupon_amount_used = $coupon_amount_used +  $deliveryCharges;
+                                $payable_amount = $payable_amount - $deliveryCharges;
                             }
                         }
                     }

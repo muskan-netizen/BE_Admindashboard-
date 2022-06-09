@@ -601,6 +601,7 @@ class CartController extends BaseController
             $couponApplied = 0;
             $total_container_charges = 0 ;
             foreach ($cartData as $ven_key => $vendorData) {
+                $PromoFreeDeliver = 0;
                 $total_fixed_fee_amount =$total_fixed_fee_amount+ $vendorData->vendor->fixed_fee_amount;
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
@@ -846,15 +847,13 @@ class CartController extends BaseController
                                 $selType = CartDeliveryFee::where(['cart_id'=>$cartID,'vendor_id'=>$vendorData->vendor_id])->first();
                                 $vendorData->delivery_types = $deliveries;
                                 $vendorData->sel_types = (($selType)?$selType->shipping_delivery_type.'_'.$selType->courier_id:$code);
-                            
-
-                             }
+                            }
  
-                     if(isset($deliveryCharges) && !empty($deliveryCharges)){
-                             $dtype = explode('_',$code);
-                             CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
-                     }
-
+                        if(isset($deliveryCharges) && !empty($deliveryCharges)){
+                                $dtype = explode('_',$code);
+                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                        }
+                        
                      
 
                                     // $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
@@ -983,12 +982,11 @@ class CartController extends BaseController
                                 $PromoFreeDeliver = 1;
 
                                 $discount_amount = $discount_amount +  $deliveryCharges;
-                               // $payable_amount = $payable_amount - $delivery_fee_charges;
-                            // pr($payable_amount);
                             }
                         }
                     }
                 }
+                
                  //pr($payable_amount);
 
 
@@ -1013,6 +1011,7 @@ class CartController extends BaseController
                 $deliver_charge = $deliveryCharges * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;
+                $vendorData->promo_free_delivery = $PromoFreeDeliver;
                 $vendorData->deliver_charge = $deliver_charge;
                 $total_delivery_amount += $deliver_charge;
                 $vendorData->coupon_apply_on_vendor = $couponApplied;
