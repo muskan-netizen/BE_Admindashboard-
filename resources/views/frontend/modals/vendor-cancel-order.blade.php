@@ -1,11 +1,11 @@
-<form id="addRejectForm" method="post" enctype="multipart/form-data">
+<form id="addRejectForm" method="post" class="text-center" enctype="multipart/form-data">
     @csrf
          <p id="error-case" style="color:red;"></p>
         <label style="font-size:medium;">Enter reason for cancel the order. <small>(Optional)</small> </label>
-        <textarea class="reject_reason" data-name="reject_reason" name="reject_reason" id="reject_reason" cols="50" rows="5"></textarea>
-
-   
-   
+        <textarea class="reject_reason w-100" data-name="reject_reason" name="reject_reason" id="reject_reason" cols="50" rows="5"></textarea>
+        @if($orderCancellationPercentage > 0)
+        <p id="order-cancelletion-message" class="text-danger"><i class="fa fa-info-circle" aria-hidden="true"></i> By cancelling this order, <span id="order-cancelletion-percentages">{{$orderCancellationPercentage}}%</span> amount will be deducted as a refund for the order.</p>
+        @endif
         <button type="button" class="btn btn-info waves-effect waves-light addrejectSubmit">{{ __("Submit") }}</button>
    
 </form>

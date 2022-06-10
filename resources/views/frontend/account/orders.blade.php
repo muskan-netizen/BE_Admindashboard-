@@ -71,6 +71,33 @@
         .invalid-feedback {
             display: block;
         }
+        .al_body_template_one .order_popop .modal-body {
+            padding: 5px 15px 15px 15px;
+            background: #89898905;
+            box-shadow: 4px 10px 6px #838282;
+        }
+        .al_body_template_one .order_popop p {
+            font-size: 13px;
+            line-height: 19px;
+        }
+        .al_body_template_one .order_popop .modal-body textarea {
+            border: 1px solid#d9d3d3;
+        }
+        .al_body_template_one .order_popop .modal-body textarea::placeholder{
+            padding:5px 10px;
+        }
+        .al_body_template_one .order_popop .modal-body button.close {
+            position: absolute;
+            right: 5px;
+            top: 0px;
+            padding: 0px;
+            margin: 0px;
+        }
+        .al_body_template_one .order_popop .modal-body label {
+            display: inline-block;
+            font-size: 18px !important;
+            font-weight: 400;
+        }
 
     </style>
     <section class="section-b-space order-page">
@@ -1873,7 +1900,7 @@
     </div>
 
 <!-- start cancel order -->
-<div class="modal fade vendor-order-cancel" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+<div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-body">
