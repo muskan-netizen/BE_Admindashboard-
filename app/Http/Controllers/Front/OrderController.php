@@ -42,7 +42,7 @@ use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
-use App\Models\VendorOrderDispatcherStatus;
+use App\Models\{VendorOrderDispatcherStatus, VerificationOption};
 
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -819,6 +819,7 @@ class OrderController extends FrontController
                 }
             }
 
+
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
@@ -830,6 +831,8 @@ class OrderController extends FrontController
                 $product_taxable_amount = 0;
                 $vendor_products_total_amount = 0;
                 $vendor_taxable_amount = 0;
+                $is_restricted = 0;
+                $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
 
                 /* Update details related to order vendor */
                 $OrderVendor = new OrderVendor();
@@ -845,6 +848,10 @@ class OrderController extends FrontController
                 $vendorProductIds = array();
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
+                    if($is_restricted == 0 && $passbase_check && isset($vendor_cart_product->product) && $vendor_cart_product->product->age_restriction == 1)
+                    {
+                        $is_restricted = 1;
+                    }
                     $rate=0;
                     $variant = $vendor_cart_product->product->variants->where('id', $vendor_cart_product->variant_id)->first();
                     $quantity_price = 0;
@@ -1014,9 +1021,9 @@ class OrderController extends FrontController
                         //         $product_tax = $quantity_price * $rate / 100;
                         //         $product_taxable_amount += $product_tax;
                         //         $payable_amount = $payable_amount + $product_tax;
-                    }
-                   
-                }
+                        }
+                
+                   }
                 $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
                 //echo  "    payable_amount==".$payable_amount;
                 }
@@ -1073,6 +1080,7 @@ class OrderController extends FrontController
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
+                $OrderVendor->is_restricted = $is_restricted;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $actual_amount > 0) {
