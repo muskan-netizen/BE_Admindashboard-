@@ -27,6 +27,7 @@ use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
 use Math;
 use SimpleXMLElement;
+use Log;
 class CustomerAuthController extends FrontController
 {
     use ApiResponser;
@@ -949,7 +950,7 @@ class CustomerAuthController extends FrontController
             ];
             try{
                 dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
-                dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
+            //    dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
             }catch(Exception $e) {
 
             }
