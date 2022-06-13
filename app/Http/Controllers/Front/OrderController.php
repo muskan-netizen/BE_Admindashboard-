@@ -1238,8 +1238,22 @@ class OrderController extends FrontController
                     }
                 }
                 $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
+
+                $getAllVendorAdmin = Order::join('order_vendors as ov', 'ov.order_id', 'orders.id')
+                                    ->leftjoin('user_vendors as uv', 'uv.vendor_id', 'ov.vendor_id')
+                                    ->where('order_number', $order->order_number)
+                                    ->pluck('uv.user_id');
+    
                 $super_admin = User::where('is_superadmin', 1)->pluck('id');
+
+                if(!empty($getAllVendorAdmin)){
+                    $admins = $super_admin->merge($getAllVendorAdmin);
+                    $super_admin = $admins->all();
+                }
+
                 $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+
                 // $user_admins = User::where(function ($query) {
                 //     $query->where(['is_superadmin' => 1]);
                 // })->pluck('id')->toArray();
@@ -1250,6 +1264,7 @@ class OrderController extends FrontController
                 // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
                 // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id]);
             }
+            
             DB::commit();
             //$this->sendSuccessSMS($request, $order);
 
@@ -1307,46 +1322,60 @@ class OrderController extends FrontController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-        //    Log::info($devices);
-        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        Log::info($devices);
+
+        $from = '';
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
-            $notification_content = NotificationTemplate::where('id', 4)->first();
-            if ($notification_content) {
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
-                $data = [
-                    "registration_ids" => $devices,
-                    "notification" => [
-                        'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
-                        'sound' => "notification.wav",
-                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => route('order.index'),
-                        "android_channel_id" => "sound-channel-id"
-                    ],
-                    "data" => [
-                        'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
-                        'data' => $orderData,
-                        'type' => "order_created"
-                    ],
-                    "priority" => "high"
-                ];
-                //    Log::info(json_encode($data));
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-                curl_close($ch);
+        }
+
+        $notification_content = NotificationTemplate::where('id', 4)->first();
+        if ($notification_content) {
+            $data = [
+                "registration_ids" => $devices,
+                "notification" => [
+                    'title' => $notification_content->subject,
+                    'body'  => $notification_content->content,
+                    'sound' => "notification.wav",
+                    "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                    'click_action' => route('order.index'),
+                    "android_channel_id" => "sound-channel-id"
+                ],
+                "data" => [
+                    'title' => $notification_content->subject,
+                    'body'  => $notification_content->content,
+                    'data' => $orderData,
+                    'type' => "order_created"
+                ],
+                "priority" => "high"
+            ];
+           
+            if(!empty($from)){
+                // helper function
+                curlRequest($from, $data);
+            }
+
+            // Individual Vendor App User Token
+            $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+            
+            Log::info($user_ids);
+            Log::info($vendorAppUserDevices);
+            Log::info($client_preferences->vendor_fcm_server_key);
+
+            if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
+                
+                $from = $client_preferences->vendor_fcm_server_key;
+                $data['registration_ids'] = $vendorAppUserDevices;
+                // pr($data);
+                Log::info('data');
+                Log::info(json_encode($data));
+                Log::info('data');
+                // helper function
+                $result = curlJsonRequest($from, $data);
+                Log::info($result);codebrew
+                
             }
         }
     }
