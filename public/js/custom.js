@@ -393,6 +393,31 @@ $(document).ready(function () {
         stripeOxxo = Stripe(stripe_oxxo_publishable_key);
     }
 
+    function stripeIdealInitialize() {
+        stripe_ideal = Stripe(stripe_ideal_publishable_key);
+        var elements = stripe_ideal.elements();
+        var options = {
+            // Custom styling can be passed to options when creating an Element
+            style: {
+              base: {
+                padding: '10px 12px',
+                color: '#32325d',
+                fontSize: '16px',
+                '::placeholder': {
+                  color: '#aab7c4'
+                },
+              },
+            },
+          };
+          
+          // Create an instance of the idealBank Element
+          var idealBank = elements.create('idealBank', options);
+          console.log(idealBank);
+          // Add an instance of the idealBank Element into
+          // the `ideal-bank-element` <div>
+          idealBank.mount('#ideal-bank-element'); 
+    }
+
     function stripeFPXInitialize() {
         stripe_fpx = Stripe(stripe_fpx_publishable_key);
         var elements = stripe_fpx.elements();
@@ -420,6 +445,11 @@ $(document).ready(function () {
     if ($("#fpx-bank-element").length > 0) {
         stripeFPXInitialize();
     }
+ 
+    if ($("#ideal-bank-element").length > 0) {
+        stripeIdealInitialize();
+    }
+
 
     $(document).delegate(".subscribe_btn", "click", function () {
         var sub_id = $(this).attr('data-id');
@@ -1033,6 +1063,9 @@ $(document).ready(function () {
                                     }
                                     if(stripe_fpx_publishable_key != ''){
                                         stripeFPXInitialize();
+                                    }
+                                    if(stripe_ideal_publishable_key != ''){
+                                        stripeIdealInitialize();
                                     }
                                 }
                             },
@@ -4024,7 +4057,11 @@ $(document).ready(function () {
 
             case 37:
                 stripeOXXOInitialize();
-                paymentViaStripeOXXO('', 37, '');
+                paymentViaStripeOXXO('', payment_option_id, '');
+            break;
+
+            case 39:
+                paymentViaStripeIdeal('', payment_option_id, ''); 
             break;
         
         }
@@ -4404,6 +4441,16 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '39':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaStripeIdeal(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
         
         }
 
@@ -4595,6 +4642,10 @@ $(document).ready(function () {
             case 37:
                     stripeOXXOInitialize();
                     paymentViaStripeOXXO('', payment_option_id, ''); 
+            break;
+
+            case 39:
+                paymentViaStripeIdeal('', payment_option_id, ''); 
             break;
 
         }

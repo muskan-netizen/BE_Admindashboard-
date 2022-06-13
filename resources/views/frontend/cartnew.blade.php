@@ -1167,6 +1167,21 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <span class="error text-danger" id="stripe_fpx_error"></span>
                             </div>
                         <% } %>
+
+                        <% if(payment_option.slug == 'stripe_ideal' ) { %>
+                            <div class="col-md-12 mt-3 mb-3 stripe_ideal_element_wrapper option-wrapper d-none">
+                                <label for="ideal-bank-element">
+                                    iDEAL Bank
+                                </label>
+                                <div class="form-control">
+                                    <div id="ideal-bank-element">
+                                      <!-- A Stripe Element will be inserted here. -->
+                                    </div>
+                                </div>
+                               
+                                <span class="error text-danger"id="error-message"></span>
+                            </div>
+                        <% } %>
                         <% if(payment_option.slug == 'yoco') { %>
                             <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                                 <div class="form-control">
@@ -1635,12 +1650,17 @@ $client_preferences = \App\Models\ClientPreference::first();
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options) || in_array('stripe_ideal',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 @endif
 @if(in_array('stripe_oxxo',$client_payment_options))
 <script>
 var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
+@endif
+@if(in_array('stripe_ideal',$client_payment_options))
+<script>
+var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 </script>
 @endif
 @if(in_array('yoco',$client_payment_options))
@@ -1673,6 +1693,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
+    var idealBank = '';
     var guest_cart = {{ $guest_user ? 1 : 0 }};
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
@@ -1690,6 +1711,8 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
+    var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
     var cart_clear_stripe_oxxo_url = "{{url('payment/stripe_oxxo/clear')}}";
     var user_store_address_url = "{{route('address.store')}}";
     var product_faq_update_url = "{{ route('cart.productfaq') }}";
@@ -2380,6 +2403,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
+
 </script>
 @if(in_array('kongapay',$client_payment_options))
 <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>

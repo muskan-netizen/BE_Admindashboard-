@@ -336,12 +336,17 @@ ul li {margin: 0 0 10px;color: #6c757d;}
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options)  || in_array('stripe_ideal',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 @endif
 @if(in_array('stripe_oxxo',$client_payment_options))
 <script>
 var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
+@endif
+@if(in_array('stripe_ideal',$client_payment_options))
+<script>
+var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 </script>
 @endif
 @if(in_array('yoco',$client_payment_options))
@@ -379,6 +384,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
