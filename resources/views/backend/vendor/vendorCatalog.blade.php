@@ -241,12 +241,12 @@
                                                 {{ __('Action') }}
                                             </a>
 
-                                            <a class="btn btn-info waves-effect waves-light text-sm-right importProductBtn mx-2 {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                            <a class="btn btn-info waves-effect waves-light text-sm-right @if($vendor->status == 1) importProductBtn @endif mx-2 {{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                                             </a>
-                                            <a class="btn btn-info waves-effect waves-light text-sm-right addProductBtn {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                            <a class="btn btn-info waves-effect waves-light text-sm-right @if($vendor->status == 1) addProductBtn @endif{{ $vendor->status == 1 ? '' : 'disabled' }}"
                                                 dataid="0" href="javascript:void(0);"><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Product') }}
                                             </a>
@@ -556,7 +556,7 @@
                                                     <td></td>
                                                 @else
                                                     <td>{{ __('Errors') }}</td>
-                                                    <td class="position-relative text-center">
+                                                    <td class="position-relative text-center alTooltipHover">
                                                         <i class="mdi mdi-exclamation-thick"></i>
                                                         <ul class="tooltip_error">
                                                             <?php $error_csv = json_decode($csv->error); ?>

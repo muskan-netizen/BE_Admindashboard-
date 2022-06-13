@@ -1046,7 +1046,50 @@
 <!-- End New Customize page -->
 
 </div>
-
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+        <h4 class="page-title text-uppercase">{{ __("Policy") }}</h4>
+        </div>
+    </div>
+</div>
+<div class="row col-spacing">
+        <!-- Order Email Notification start -->
+        <div class="col-lg-3 col-lg-3 mb-3">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box pb-1 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title ">{{ __('Cancellation Policy') }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-xl-12 my-2 p-0" id="addCur-160">
+                        <label class="primaryCurText">{{ __('Free Cancellation Upto') }}</label>
+                        <select class="form-control al_box_height" id="order_cancellation_time" name="order_cancellation_time">
+                            <option value="0"  {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 0)? 'selected' : '' }}>{{__('No Cancellation')}}</option>
+                            <option value="10" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 10)? 'selected' : '' }}>{{__('10 Minutes')}}</option>
+                            <option value="20" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 20)? 'selected' : '' }}>{{__('20 Minutes')}}</option>
+                            <option value="30" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 30)? 'selected' : '' }}>{{__('30 Minutes')}}</option>
+                            <option value="40" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 40)? 'selected' : '' }}>{{__('40 Minutes')}}</option>
+                            <option value="50" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 50)? 'selected' : '' }}>{{__('50 Minutes')}}</option>
+                            <option value="60" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 60)? 'selected' : '' }}>{{__('60 Minutes')}}</option>
+                            <option value="70" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 70)? 'selected' : '' }}>{{__('70 Minutes')}}</option>
+                            <option value="80" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 80)? 'selected' : '' }}>{{__('80 Minutes')}}</option>
+                            <option value="90" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 90)? 'selected' : '' }}>{{__('90 Minutes')}}</option>
+                            <option value="100" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 100)? 'selected' : '' }}>{{__('100 Minutes')}}</option>
+                            <option value="120" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 120)? 'selected' : '' }}>{{__('120 Minutes')}}</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-12 my-2 p-0" id="late-cancellation" style="{{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time > 0)? 'display:block;' : 'display:none;'}}">
+                        <label class="primaryCurText">{{ __('Late Cancellation Fee').'(%)' }}</label>
+                        <input class="form-control" type="number" min="0" id="cancellation_percentage" name="cancellation_percentage" value="{{ !empty($preference->cancellation_percentage)? $preference->cancellation_percentage : 20}}">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div id="add_or_edit_social_media_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -1536,6 +1579,12 @@ $(document).ready(function(){
     $(document).on("click", ".edit_user_registration_document_btn", function() {
         let user_registration_document_id = $(this).data('user_registration_document_id');
         editUserRegistrationForm(user_registration_document_id);
+    });
+    $(document).on("change", "#order_cancellation_time", function() {
+        $("#late-cancellation").css("display", "none");
+        if($(this).val() > 0){
+            $("#late-cancellation").css("display", "block");
+        }
     });
     function editUserRegistrationForm(user_registration_document_id){
         let language_id = $('#option_client_language').val();

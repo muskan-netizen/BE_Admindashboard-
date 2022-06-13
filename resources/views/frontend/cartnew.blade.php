@@ -69,6 +69,9 @@
 .al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
 
+
+.grn_popop-total_amt label{  font-size: 12px !important;}
+
 .vendor_cart-check label {display: inline-block;}
 </style>
 
@@ -441,7 +444,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                 @endif
                 <div class="col-lg-6">
                     <% if(product.delOptions) { %>
-                        <div class="row mb-1 d-flex align-items-center">
+                        <div class="row mb-1 d-flex align-items-center   <% if( product.promo_free_deliver == 1  ) { %> <%= product.promo_free_deliver %> org_price <%}%> ">
                             <div class="col-5 text-lg-right">
                                 <label class="m-0 radio">
                                     {{__('Delivery Fee')}} :</label>
@@ -913,21 +916,6 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                     </div>
                 </div>
-                <div class="row form-group mb-0 text-sm-right">
-                    <div class="col-12 checkbox-input vendor_cart-check">
-                        <input type="checkbox" id="term-and-condition" name="term_and_condition"
-                            class="form-control"  value="1">
-                        <label for="term-and-condition">{{ __('I accept the') }}
-                            <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
-                                target="_blank">{{ __('Terms And Conditions') }} </a>
-                            {{ __('and have read the') }}
-                            <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
-                                target="_blank">
-                                {{ __('Privacy Policy') }}.
-                            </a>
-                        </label>
-                    </div>
-                </div>
                 <div class="row mb-md-3 alFourTemplateCartButtons">
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
@@ -1221,7 +1209,20 @@ $client_preferences = \App\Models\ClientPreference::first();
                 </div>
             </form>
         </div>
-        <div class="modal-footer d-block text-center">
+        <div class="modal-footer d-block text-center pt-0">
+            <div class="row">
+                <div class="col-12 grn_popop-total_amt">
+                    <label>{{ __('By placing this order I accept the') }}
+                        <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                            target="_blank">{{ __('Terms And Conditions') }} </a>
+                        {{ __('and have read the') }}
+                        <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
+                            target="_blank">
+                            {{ __('Privacy Policy') }}.
+                        </a>
+                    </label>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-sm-12 p-0 d-flex flex-fill">
                     <button type="button" style="width:100%;" class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}
@@ -1660,7 +1661,6 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
 
 <script type="text/javascript" src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript">
     var business_type = "<?= $client_preferences->business_type; ?>";
     var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";
@@ -2290,7 +2290,7 @@ var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
             },
             success: function(output) {
                 // Check if orderCount is greaten equal to orders_per_slot
-                if(output.orderCount >= output.orders_per_slot){
+                if( (output.orderCount >= output.orders_per_slot) && (output.orders_per_slot != 0) ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
                     // Disable the place order button
                     $('#order_placed_btn').attr("disabled", true);

@@ -31,6 +31,7 @@ class VerifyCsrfToken extends Middleware
         'payment/vnpay/notify', 
         
         'payment/cashfree/notify',
+        'verify/payment/otp/app/*',
 
         /** routes for edit order **/
         'edit-order/*',

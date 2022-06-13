@@ -601,6 +601,7 @@ class CartController extends BaseController
             $couponApplied = 0;
             $total_container_charges = 0 ;
             foreach ($cartData as $ven_key => $vendorData) {
+                $PromoFreeDeliver = 0;
                 $total_fixed_fee_amount =$total_fixed_fee_amount+ $vendorData->vendor->fixed_fee_amount;
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
@@ -616,7 +617,7 @@ class CartController extends BaseController
                             $vendor_table->qr_url = url('/vendor/' . $vendorData->vendor->slug . '/?id=' . $vendorData->vendor_id . '&name=' . $vendorData->vendor->name . '&table=' . $vendor_table->id);
                         }
                         $vendor_details['vendor_tables'] = $vendor_tables;
-                     //   return $vendor_details['vendor_tables'];
+                    //    return $vendor_details['vendor_tables']; 
                     }
                 } else {
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
@@ -759,6 +760,7 @@ class CartController extends BaseController
 
 
                             // }
+                            $addon_price = 0;
                             if (!empty($prod->addon)) {
                                 // return $prod->addon;
                                 foreach ($prod->addon as $ck => $addons) {
@@ -781,7 +783,7 @@ class CartController extends BaseController
                                     $vendorAddons[$ck]['addon_title'] = $addons->option->title ?? '';
                                     $vendorAddons[$ck]['quantity_price'] = $opt_quantity_price ;
                                     $vendorAddons[$ck]['option_title'] = $addons->option ? $addons->option->title : $addon_title;
-                                    $total_addon_price+=$vendorAddons[$ck]['price_in_cart'] = $addons->option->price ?? $addon_price;
+                                    $total_addon_price+=$vendorAddons[$ck]['price_in_cart'] = $addons->option->price ?? $addon_price;   
                                     $vendorAddons[$ck]['cart_product_id'] = $addons->cart_product_id;
                                     $vendorAddons[$ck]['multiplier'] = $clientCurrency->doller_compare;
                                     $ttAddon = $ttAddon + $opt_quantity_price;
@@ -789,6 +791,7 @@ class CartController extends BaseController
                                     $order_sub_total = $order_sub_total + $opt_quantity_price;
                                 }
                             }
+                            Log::info($addon_price);
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
@@ -798,7 +801,10 @@ class CartController extends BaseController
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                     $rate = round($tax_value->tax_rate);
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
-                                    $product_tax = ($quantity_price+$total_addon_price) * $rate / 100;
+                                    //    $product_tax = ($quantity_price+$total_addon_price) * $rate / 100;
+
+                                    $product_tax = ($quantity_price+$addon_price) * $rate / 100;
+                                    
                                     $taxData[$tckey]['rate'] = $rate;
                                     $taxData[$tckey]['tax_amount'] = $tax_amount;
                                     $taxData[$tckey]['product_tax'] = $product_tax;
@@ -846,15 +852,13 @@ class CartController extends BaseController
                                 $selType = CartDeliveryFee::where(['cart_id'=>$cartID,'vendor_id'=>$vendorData->vendor_id])->first();
                                 $vendorData->delivery_types = $deliveries;
                                 $vendorData->sel_types = (($selType)?$selType->shipping_delivery_type.'_'.$selType->courier_id:$code);
-                            
-
-                             }
+                            }
  
-                     if(isset($deliveryCharges) && !empty($deliveryCharges)){
-                             $dtype = explode('_',$code);
-                             CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
-                     }
-
+                        if(isset($deliveryCharges) && !empty($deliveryCharges)){
+                                $dtype = explode('_',$code);
+                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                        }
+                        
                      
 
                                     // $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
@@ -983,12 +987,11 @@ class CartController extends BaseController
                                 $PromoFreeDeliver = 1;
 
                                 $discount_amount = $discount_amount +  $deliveryCharges;
-                               // $payable_amount = $payable_amount - $delivery_fee_charges;
-                            // pr($payable_amount);
                             }
                         }
                     }
                 }
+                
                  //pr($payable_amount);
 
 
@@ -1013,6 +1016,7 @@ class CartController extends BaseController
                 $deliver_charge = $deliveryCharges * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;
+                $vendorData->promo_free_delivery = $PromoFreeDeliver;
                 $vendorData->deliver_charge = $deliver_charge;
                 $total_delivery_amount += $deliver_charge;
                 $vendorData->coupon_apply_on_vendor = $couponApplied;

@@ -105,7 +105,7 @@
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">
                                         <label for="fullname">{{__('Title')}}</label>
-                                        <input type="text" class="form-control" name="title" value="{{$user ? $user->title : ''}}">
+                                        <input type="text" class="form-control" name="title" value="{{$user ? $user->title : ''}}" placeholder="{{__('Mr./Miss/Mrs.')}}">
                                         <span class="invalid-feedback" id="title_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="emailInput">
@@ -391,7 +391,8 @@
                                                                 </div>
 
                                                                     <div class="form-group" id="order_min_amountInput">
-                                                                        {!! Form::label('title', 'Absolute Min Order Value [AMOV]',['class' => 'control-label']) !!}
+                                                                        <label for="title" class="control-label">{{__('Absolute Min Order Value [AMOV]')}}  @include('backend.primary_currency')
+                                                                        </label>
                                                                         <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{@$vendor->order_min_amount}}" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}}>
                                                                     </div>
 

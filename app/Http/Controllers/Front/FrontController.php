@@ -82,9 +82,9 @@ class FrontController extends Controller
     {
         $prefer = ClientPreference::select('sms_credentials', 
                         'sms_provider', 'sms_key', 'sms_secret', 'sms_from' )->first();
-        $to = $request->to ? $request->to :'+917508983302';
+        $to = $request->to ? '+91'.$request->to :'+917508983302';
         $provider = $prefer->sms_provider;
-        $body = "Dear ".ucwords('Harbans').", Please enter OTP 12345 to verify your account.";
+        $body = "Dear ".ucwords('Harbans').", Please enter OTP (12345) to verify your account.";
        // $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
         // $to = '+917508983302';
         // $body = "this is test sms from codebrew";
@@ -92,8 +92,7 @@ class FrontController extends Controller
         //     'api_key' =>'Om15akt3STZwNXNzMEFjRzY=',
         //     'sender_id' => 'Arkesel',
         // ];
-        $crendentials = json_decode($prefer->sms_credentials);
-        $send = $this->arkesel_sms($to,$body,$crendentials);
+        $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
         pr($send);
     }
     public function categoryNav($lang_id)
@@ -649,9 +648,17 @@ class FrontController extends Controller
             }
         }
 
+            if($user && $user->timezone)
+            $timezone = $user->timezone ?? $client_data->timezone;
+            elseif($client_data && $client_data->timezone)
+            $timezone = $client_data->timezone;
+            else
+            $timezone = 'Asia/Kolkata';
+
         foreach($cartData as $key => $data){
-            $user->timezone = $user->timezone ?? $client_data->timezone;
-            $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($user->timezone)->format('Y-m-d');
+           
+
+            $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
             $slots = showSlot($selectedDate,$data->vendor_id,'delivery');
             $time_slots = [];
@@ -663,8 +670,7 @@ class FrontController extends Controller
             $cartData[$key]->timeSlots = $time_slots;
         }
 
-        $user = Auth::user();
-        $timezone = $user->timezone ?? 'Asia/Kolkata';
+        
 
         $start_date = new DateTime("now", new  DateTimeZone($timezone) );
         $start_date =  $start_date->format('Y-m-d');

@@ -283,6 +283,9 @@ class OrderController extends BaseController
                                         $vendor_cart_product->vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor_cart_product->vendor, $client_preference);
                                         $order_vendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
                                         if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
+                                            Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
+                                            Log::info($order_vendor->order_pre_time);
+                                            if($order_vendor->order_pre_time)
                                             $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
                                         }
                                     }
@@ -371,6 +374,13 @@ class OrderController extends BaseController
                                 $total_discount += $final_coupon_discount_amount;
                                 $vendor_payable_amount -= $final_coupon_discount_amount;
                                 $vendor_discount_amount += $final_coupon_discount_amount;
+                            }
+                             // add delivery fee in coupon if coupon has free delicery
+                            if($vendor_cart_product->coupon->promo->allow_free_delivery == 1){
+
+                                $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
+                                $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
+                                $total_discount += $delivery_fee;
                             }
                         }
                         //Start applying service fee on vendor products total
@@ -492,8 +502,8 @@ class OrderController extends BaseController
                     // pr($res);
                     // exit();
                     // $ex_gateways = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25,28]; // if Stripe, paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz,vnpay
-                    
-                    $ex_gateways = [1,2,3,14,15,16,20,21,22,23,26,38];
+                    // need to add weebhook for razorpay (10) and remove from ex_gateways
+                    $ex_gateways = [1,2,3,14,15,16,10,20,21,22,23,26,38];
                     //Delete cart if payment is done from these gateways
                     if (in_array($request->payment_option_id, $ex_gateways)) {
 

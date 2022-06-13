@@ -37,7 +37,7 @@
 <script defer type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
-
+<script defer type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/location.js')}}"></script>
 
@@ -55,10 +55,12 @@
 <script type="text/javascript" src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 
+
+--}}
+
 <!-- Waitme loader script -->
 <script type="text/javascript" src="{{asset('js/waitMe.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
---}}
 
 <script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 @if(isset($set_template)  && $set_template->template_id == 1)

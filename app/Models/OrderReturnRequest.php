@@ -26,4 +26,8 @@ class OrderReturnRequest extends Model
     public function returnBy(){
 	    return $this->belongsTo(User::class, 'return_by', 'id'); 
 	  }
+
+    public function getProductIdAttriubte(){
+        return $this->orderproduct->product->id;
+    }
 }

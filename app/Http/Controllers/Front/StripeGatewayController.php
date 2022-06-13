@@ -273,6 +273,7 @@ class StripeGatewayController extends FrontController
             $returnUrl = '';
 
             if($payment_form == 'cart'){
+                $message = 'successfully';
                 // $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
                 $order_number = $parameters['order_number'];
                 // $cart_id = $cart ? $cart->id : 0 ;

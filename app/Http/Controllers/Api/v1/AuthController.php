@@ -1195,7 +1195,7 @@ class AuthController extends BaseController
                 return $this->errorResponse(__('Invalid email or phone number'), 404);
             }
         } catch (\Exception $ex) {
-            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+            return $this->errorResponse($ex->getMessage(), 400);
         }
     }
 
