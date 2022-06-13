@@ -718,7 +718,7 @@ class CartController extends FrontController
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
             }
-            
+            $sub_total+=$opt_price_in_currency;
             /* Getting in vendor loop */
             foreach ($cartData as $ven_key => $vendorData) {
                 $opt_quantity_price_new = 0.00;
@@ -870,7 +870,7 @@ class CartController extends FrontController
                                     $opt_price_in_currency = $addons->option->price / $divider;
                                     $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
                                 }
-                                $sub_total+=$opt_price_in_currency;
+                                $sub_total+=($opt_price_in_currency * $prod->quantity);
                                 $coupon_apply_price+=$opt_price_in_currency;
                                 
                                 $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);
