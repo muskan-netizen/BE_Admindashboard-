@@ -76,7 +76,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         </div>
                                                     <% } %>
                                                     <% if(order.scheduled_date_time || order.schedule_pickup || order.schedule_dropoff) { %>
-                                                        <span class="badge badge-success ml-2">Scheduled</span>
+                                                        <span class="badge badge-success ml-2">{{__('Scheduled')}}</span>
                                                        <!-- <span class="ml-2"><%= order.scheduled_date_time %></span> -->
                                                     <% } %>
 
@@ -88,13 +88,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                             </span>
                                                         @else
                                                                 <% if(order.scheduled_slot == null){ %>
-                                                                <% if(order.scheduled_date_time){ %>
-                                                                    <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %></span>
-                                                                <% } else { %>
-                                                                    <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
-                                                                <% } %>
+                                                                    <% if(order.scheduled_date_time){ %>
+                                                                        <span class="ml-2">{{__('Order scheduled for')}} <%= order.scheduled_date_time %></span>
+                                                                    <% } else { %>
+                                                                        <span class="ml-2">{{__('Expected Delivery by')}} <%= vendor.ETA %></span>
+                                                                    <% } %>
                                                                 <% }else{ %>
-                                                                    <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
+                                                                    <span class="ml-2">{{__('Order scheduled for')}} <%= order.scheduled_date_time %>, {{__('Slot')}} : <%= order.scheduled_slot %></span>
                                                                 <% } %>
                                                         @endif
                                                         <% } else if(vendor.order_status == 'Rejected' && vendor.cancelled_by != null){%>

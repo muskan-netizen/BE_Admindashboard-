@@ -886,9 +886,14 @@
         jQuery(window).scroll(function() {
 
             var scroll = jQuery(window).scrollTop();
+            var categories_list_height = $('.vendor-products-wrapper').height() +400;
+            
             if (scroll >= 400) {
                 jQuery(".categories-product-list").addClass("fixed-bar");
             } else {
+                jQuery(".categories-product-list").removeClass("fixed-bar");
+            }
+            if(scroll >= categories_list_height){
                 jQuery(".categories-product-list").removeClass("fixed-bar");
             }
         });
