@@ -870,7 +870,7 @@ class CartController extends FrontController
                                     $opt_price_in_currency = $addons->option->price / $divider;
                                     $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
                                 }
-                                $sub_total+=$opt_price_in_currency;
+                                $sub_total+=($opt_price_in_currency * $prod->quantity);
                                 $coupon_apply_price+=$opt_price_in_currency;
                                 
                                 $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);

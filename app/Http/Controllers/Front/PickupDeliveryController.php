@@ -772,15 +772,19 @@ class PickupDeliveryController extends FrontController{
                     $response['dispatch_traking_url'] = $dispatch_traking_url;
 
 
-                    $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
+                    $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
+                    
+                    if($or_ids->vendor->auto_accept_order==1):
+                        $update_vendor = VendorOrderStatus::updateOrCreate([
+                            'order_id' =>  $order->id,
+                            'order_status_option_id' => 2,
+                            'vendor_id' =>  $vendor,
+                            'order_vendor_id' =>  $or_ids->id]);
 
-                    $update_vendor = VendorOrderStatus::updateOrCreate([
-                        'order_id' =>  $order->id,
-                        'order_status_option_id' => 2,
-                        'vendor_id' =>  $vendor,
-                        'order_vendor_id' =>  $or_ids->id]);
-
-                    OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
+                        OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
+                    else:
+                        OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
+                    endif;
 
                     $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $order->id,

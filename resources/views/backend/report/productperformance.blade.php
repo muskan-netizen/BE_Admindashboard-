@@ -304,7 +304,7 @@ $(document).ready(function() {
                             }
                             series.push(order_count);
                             labels.push(product_name);
-                            $('#'+tableid).append('<tr><td>'+i+'</td><td>'+product_name+'</td><td>'+value.vendor.name+'</td><td><span class="badge bg-success" style="color:#fff;">'+order_count+'</span></td></tr>');
+                            $('#'+tableid).append('<tr><td>'+i+'</td><td><a href="{{url("/client/product")}}/'+value.id+'/edit" target="_blank">'+product_name+'</a></td><td><a href="{{url("/client/vendor/catalogs")}}/'+value.vendor.id+'" target="_blank">'+value.vendor.name+'</a></td><td><span class="badge bg-success" style="color:#fff;font-size:14px;">'+order_count+'</span></td></tr>');
                         });
                         $('#'+chartparent).html('<div id="'+chartdivid+'" ></div>');
                         var xhartdivwidth = $('#'+chartparent).width();
