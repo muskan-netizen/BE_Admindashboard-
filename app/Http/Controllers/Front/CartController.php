@@ -2097,7 +2097,7 @@ class CartController extends FrontController
                 }
 
               //  pr($time);
-                $cart_detail = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,
+                $cart_update = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,
                 'schedule_type' => $request->task_type,
                 'address_id' => $request->address,
                 'scheduled_date_time' => $time??null,
@@ -2116,7 +2116,7 @@ class CartController extends FrontController
                 DB::commit();
                 if ($user) {
                     $checkpreference = ClientPreference::select('verify_email','verify_phone','third_party_accounting')->first();
-                    $age_restriction = CartProduct::whereHas('product',function($q){
+                    $age_restriction = CartProduct::where('cart_id', $cart_detail->id)->whereHas('product',function($q){
                         $q->where('age_restriction',1);
                     })->count();
                     $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
@@ -2124,7 +2124,7 @@ class CartController extends FrontController
                     {
                         if(is_null($user->passbase_verification)){
                             return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alcohol/Tobacco contents. It is mandatory to provide the verification documents to proceed']);
-                        }elseif($user->passbase_verification->status == 'pending'){
+                        }elseif($user->passbase_verification->status == 'pending' || $user->passbase_verification->status == 'processing'){
                             return response()->json(['status'=>'passbase_submitted', 'message'=>'We have received your request for verification. Check back soon and order OR remove Alcohol/Tobacco items']);
                         }elseif($user->passbase_verification->status == 'approved'){
                             return response()->json(['status'=>'passbase_rejected', 'message'=>'According to our Terms and Conditions and Company\'s Policies, your verification documents were not found upto the mark .Please upload them again OR remove Alcohol/Tobacco items.' ]);
