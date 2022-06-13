@@ -1,3 +1,12 @@
+#addressInput .input-group-append button.btn {
+    padding: 8px 14px;
+    color: #fff;
+}
+#addressInput .input-group-append {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
 #destination_location_add_temp,.address-input-group{position:relative}
 .address-input-group .pac-container{top:35px!important;left:0!important}
 #destination_location_add_temp .pac-container{top:75px!important;left:15px!important}img.al_img_opacity{opacity:.4}
