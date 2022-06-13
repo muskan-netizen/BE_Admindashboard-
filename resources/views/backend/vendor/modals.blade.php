@@ -86,7 +86,7 @@
                                             <input type="text" name="address" id="add-address" onkeyup="checkAddressString(this,'add')" placeholder="" class="form-control">
                                             <div class="input-group-append">
                                                 <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="add"> <i class="mdi mdi-map-marker-radius"></i></button>
-                                            </div>
+                                            </div> 
                                         </div>
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
