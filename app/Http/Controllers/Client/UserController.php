@@ -103,8 +103,8 @@ class UserController extends BaseController
             ->addColumn('is_superadmin', function($users) use($current_user) {
                 return $current_user->is_superadmin;
             })
-            ->addColumn('wallet', function($users) {
-                return $users->wallet;
+            ->addColumn('wallet_id', function($users) {
+                return $users->wallet->id ?? '';
             })
             ->addColumn('signup_date', function($users) {
                 $date = dateTimeInUserTimeZone($users->created_at, $users->timezone);
@@ -540,14 +540,16 @@ class UserController extends BaseController
     {
         $pagiNate = 10;
         $user_transactions = Transaction::where('wallet_id', $request->walletId)->orderBy('id', 'desc')->get();
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         // dd($user_transactions->toArray());
         foreach ($user_transactions as $key => $trans) {
             // $user = User::find($trans->payable_id);
             $trans->serial = $key + 1;
             $trans->date = Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
             // $trans->date = convertDateTimeInTimeZone($trans->created_at, $user->timezone, 'l, F d, Y, H:i A');
-            $trans->description = json_decode($trans->meta)[0];
-            $trans->amount = '$' . sprintf("%.2f", ($trans->amount / 100));
+            $reason = json_decode($trans->meta, true);
+            $trans->description = $reason['description'] ?? $reason[0];
+            $trans->amount = $clientCurrency->currency->symbol . sprintf("%.2f", ($trans->amount / 100));
             $trans->type = $trans->type;
         }
         return Datatables::of($user_transactions)
