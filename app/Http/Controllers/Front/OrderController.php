@@ -1260,8 +1260,7 @@ class OrderController extends FrontController
                 // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
                 // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id]);
             }
-            Log::info($request->toArray());
-            dd($request->toArray());
+           
             DB::commit();
             //$this->sendSuccessSMS($request, $order);
 
