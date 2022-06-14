@@ -1152,9 +1152,9 @@ class OrderController extends FrontController
             }
             $payable_amount = $payable_amount - $wallet_amount_used;
             $tip_amount = 0;
-            if (isset($request->tip)) { 
+            if (isset($request->tip)) {
                 $request->tip = str_replace(',', '', $request->tip);
-                $tip_amount = floatval($request->tip); 
+                $tip_amount = floatval($request->tip);
                 if( ($tip_amount != '') && ($tip_amount > 0) ){
                     $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                     $order->tip_amount = $tip_amount;
@@ -1190,7 +1190,7 @@ class OrderController extends FrontController
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [4,5,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31,32,34,35,36,37]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash
+            $ex_gateways = [4,5,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31,32,34,35,36,37,39]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal
            
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 
