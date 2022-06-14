@@ -82,7 +82,8 @@ class VivawalletController extends FrontController
 
         }elseif($request->from == 'subscription')
         {
-            $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+          $subtime = ($request->subscription_id)??time();
+          $time = 'S_'.$subtime.'_'.$request->subsid;
             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
             
         }
