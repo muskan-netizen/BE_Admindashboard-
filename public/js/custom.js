@@ -2838,6 +2838,30 @@ $(document).ready(function () {
         });
     }
 
+      window.getEstimateProductAddons = function getEstimateProductAddons(slug, variantId = 0) {
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: get_estimate_product_addon_url,
+            data: { "slug": slug, "variant": variantId },
+            success: function(response) {
+                if (response.status == 'Success') {
+                    $("#estimate_product_addon_modal .modal-content").html('');
+                    let estimate_addon_template = _.template($('#estimate_addon_template').html());
+                    $("#estimate_product_addon_modal .modal-content").append(estimate_addon_template({ estimateAddOnData: response.data }));
+                    $("#estimate_product_addon_modal").modal('show');                  
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function(error) {
+                var response = $.parseJSON(error.responseText);
+                let error_messages = response.message;
+                alert(error_messages);
+            },
+        });
+    }
+
     function getLastAddedProductVariant(_this, cart_id, product_id, addon) {
         $('#repeat_item_modal').find(".last_cart_product_id").val('');
         $('#repeat_item_modal').find(".curr_product_id").val('');
@@ -3086,6 +3110,11 @@ $(document).ready(function () {
         initAddVendorProduct(that);
     });
 
+    $(document).on("click", ".add_vendor_product_btn", function() {
+        let that = $(this);
+        initAddEstimateProduct(that);
+    });
+
     $(document).delegate("#repeat_item_with_new_addon_btn", "click", function () {
         let that = $(this).closest('.modal');
         let curr_product_id = that.find('.curr_product_id').val();
@@ -3114,6 +3143,28 @@ $(document).ready(function () {
         if (!$.hasAjaxRunning()) {
             addToCartProductsAddons(that, minimum_order_count);
         }
+    }
+
+    function initAddEstimateProduct(that){
+        let check_addon = that.attr('data-addon');
+        if (check_addon > 0) {
+            var variant_id = that.data("variant_id");
+            let slug = that.parents('.product_row').attr('data-slug');
+            getEstimateProductAddons(slug, variant_id);
+            return false;
+        }
+
+        var minimum_order_count = $(that).data("minimum_order_count");
+        if(minimum_order_count > 0)
+        minimum_order_count = minimum_order_count;
+        else
+        minimum_order_count = 1;
+
+
+        // end addons data
+        // if (!$.hasAjaxRunning()) {
+        //     addToCartProductsAddons(that,minimum_order_count);
+        // }
     }
 
     // add to cart on new page
