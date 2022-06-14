@@ -64,9 +64,9 @@
                  <tr>
                     <td>
                         <div style="height: 300px;center;position: relative;">
-                           <img src="{{$mailData['banner']['image_fit'].'600/400'.$mailData['banner']['image_path']}}" style="height: 100%;width: 100%;object-fit: cover;">
+                           <img src="{{$mailData['banner']['image_s3_url']}}" style="height: 100%;width: 100%;object-fit: cover;">
                            <div style="border-radius: 50%;width: 120px;height: 120px;padding: 20px; margin-top:-150px; display: block; position: absolute; bottom: -10px; right: -10px;margin: auto;">
-                              <img style="object-fit: contain; width: 100%;height: 100%;" src="{{$mailData['vendor_logo']['proxy_url'].'100/100'.$mailData['vendor_logo']['image_path']}}">
+                              <img style="object-fit: contain; width: 100%;height: 100%;" src="{{$mailData['vendor_logo']['image_s3_url']}}">
                            </div>
                         </div>
                     </td>

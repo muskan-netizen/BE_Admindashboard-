@@ -42,7 +42,7 @@ use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
-use App\Models\VendorOrderDispatcherStatus;
+use App\Models\{VendorOrderDispatcherStatus, VerificationOption};
 
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -524,7 +524,7 @@ class OrderController extends FrontController
             foreach ($cartData as $ven_key => $vendorData) {
                 $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
-                foreach ($vendorData->vendorProducts as $ven_key => $prod) {
+                foreach ($vendorData->vendorProducts as $ven_key => $prod) { 
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price / $divider;
@@ -603,7 +603,7 @@ class OrderController extends FrontController
                 $vendorData->payable_amount = number_format($payable_amount, 2);
                 $vendorData->discount_amount = number_format($discount_amount, 2);
                 $vendorData->discount_percent = number_format($discount_percent, 2);
-                $vendorData->taxable_amount = number_format($taxable_amount, 2);
+                $vendorData->taxable_amount = number_format($taxable_amount, 2); 
                 $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount), 2);
                 if (!empty($subscription_features)) {
                     $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount - $subscription_discount), 2);
@@ -819,6 +819,7 @@ class OrderController extends FrontController
                 }
             }
 
+
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
@@ -830,6 +831,8 @@ class OrderController extends FrontController
                 $product_taxable_amount = 0;
                 $vendor_products_total_amount = 0;
                 $vendor_taxable_amount = 0;
+                $is_restricted = 0;
+                $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
 
                 /* Update details related to order vendor */
                 $OrderVendor = new OrderVendor();
@@ -845,6 +848,10 @@ class OrderController extends FrontController
                 $vendorProductIds = array();
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
+                    if($is_restricted == 0 && $passbase_check && isset($vendor_cart_product->product) && $vendor_cart_product->product->age_restriction == 1)
+                    {
+                        $is_restricted = 1;
+                    }
                     $rate=0;
                     $variant = $vendor_cart_product->product->variants->where('id', $vendor_cart_product->variant_id)->first();
                     $quantity_price = 0;
@@ -1014,9 +1021,9 @@ class OrderController extends FrontController
                         //         $product_tax = $quantity_price * $rate / 100;
                         //         $product_taxable_amount += $product_tax;
                         //         $payable_amount = $payable_amount + $product_tax;
-                    }
-                   
-                }
+                        }
+                
+                   }
                 $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
                 //echo  "    payable_amount==".$payable_amount;
                 }
@@ -1073,6 +1080,7 @@ class OrderController extends FrontController
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
+                $OrderVendor->is_restricted = $is_restricted;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
                     if (($vendor_info->commission_percent) != null && $actual_amount > 0) {
@@ -1144,12 +1152,14 @@ class OrderController extends FrontController
             }
             $payable_amount = $payable_amount - $wallet_amount_used;
             $tip_amount = 0;
-            if (isset($request->tip)) {
-                $tip_amount = floatval($request->tip);
+            if (isset($request->tip)) { 
+                $request->tip = str_replace(',', '', $request->tip);
+                $tip_amount = floatval($request->tip); 
                 if( ($tip_amount != '') && ($tip_amount > 0) ){
                     $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                     $order->tip_amount = $tip_amount;
                 }
+                
             }
             //echo  " Total payable_amount1=".$payable_amount."; <br>";
             //echo  " tip_amount=".$tip_amount." fixed_fee_amount=".$fixed_fee_amount." total_taxable_amount=".$total_taxable_amount."; <br>";
@@ -1236,20 +1246,36 @@ class OrderController extends FrontController
                         $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
                         $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                     }
+                }else{
+                    $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
+
+                    $getAllVendorAdmin = Order::join('order_vendors as ov', 'ov.order_id', 'orders.id')
+                                        ->leftjoin('user_vendors as uv', 'uv.vendor_id', 'ov.vendor_id')
+                                        ->where('order_number', $order->order_number)
+                                        ->pluck('uv.user_id');
+        
+                    $super_admin = User::where('is_superadmin', 1)->pluck('id');
+
+                    if(!empty($getAllVendorAdmin)){
+                        $admins = $super_admin->merge($getAllVendorAdmin);
+                        $super_admin = $admins->all();
+                    }
+
+                    $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+
+                    // $user_admins = User::where(function ($query) {
+                    //     $query->where(['is_superadmin' => 1]);
+                    // })->pluck('id')->toArray();
+                    // $user_vendors = [];
+                    // if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
+                    //     $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
+                    // }
+                    // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
+                    // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id]);
                 }
-                $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
-                $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-                // $user_admins = User::where(function ($query) {
-                //     $query->where(['is_superadmin' => 1]);
-                // })->pluck('id')->toArray();
-                // $user_vendors = [];
-                // if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
-                //     $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
-                // }
-                // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
-                // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id]);
             }
+           
             DB::commit();
             //$this->sendSuccessSMS($request, $order);
 
@@ -1307,46 +1333,59 @@ class OrderController extends FrontController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-        //    Log::info($devices);
-        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        Log::info($devices);
+
+        $from = '';
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
-            $notification_content = NotificationTemplate::where('id', 4)->first();
-            if ($notification_content) {
-                $headers = [
-                    'Authorization: key=' . $from,
-                    'Content-Type: application/json',
-                ];
-                $data = [
-                    "registration_ids" => $devices,
-                    "notification" => [
-                        'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
-                        'sound' => "notification.wav",
-                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => route('order.index'),
-                        "android_channel_id" => "sound-channel-id"
-                    ],
-                    "data" => [
-                        'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
-                        'data' => $orderData,
-                        'type' => "order_created"
-                    ],
-                    "priority" => "high"
-                ];
-                //    Log::info(json_encode($data));
-                $dataString = $data;
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
-                $result = curl_exec($ch);
-                curl_close($ch);
+        }
+
+        $notification_content = NotificationTemplate::where('id', 4)->first();
+        if ($notification_content) {
+            $data = [
+                "registration_ids" => $devices,
+                "notification" => [
+                    'title' => $notification_content->subject,
+                    'body'  => $notification_content->content,
+                    'sound' => "notification.wav",
+                    "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                    'click_action' => route('order.index'),
+                    "android_channel_id" => "sound-channel-id"
+                ],
+                "data" => [
+                    'title' => $notification_content->subject,
+                    'body'  => $notification_content->content,
+                    'data' => $orderData,
+                    'type' => "order_created"
+                ],
+                "priority" => "high"
+            ];
+           
+            if(!empty($from)){
+                // helper function
+                curlRequest($from, $data);
+            }
+
+            // Individual Vendor App User Token
+            $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+            
+            Log::info($user_ids);
+            Log::info($vendorAppUserDevices);
+            Log::info($client_preferences->vendor_fcm_server_key);
+
+            if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
+                
+                $from = $client_preferences->vendor_fcm_server_key;
+                $data['registration_ids'] = $vendorAppUserDevices;
+                // pr($data);
+                Log::info('data');
+                Log::info(json_encode($data));
+                Log::info('data');
+                // helper function
+                $result = curlJsonRequest($from, $data);
+                Log::info($result);
             }
         }
     }

@@ -472,7 +472,7 @@
                             orderable: false,
                             searchable: false,
                             "mRender": function(data, type, full) {
-                                return "<a href='javascript:void(0)' class='customer_wallet_link' data-id='" + full.wallet.id + "'>" + data + "</a>";
+                                return "<a href='javascript:void(0)' class='customer_wallet_link' data-id='" + full.wallet_id + "'>" + data + "</a>";
                             }
                         },
                         {

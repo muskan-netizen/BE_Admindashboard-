@@ -228,54 +228,7 @@
                 </div>
             </form>
           
-            <!--Payment Method Icons start -->
-        <div class="col-md-6 mb-3">
-            <div class="card-box pb-2 h-100">
-                <div class="d-flex align-items-center justify-content-between">
-                   <h4 class="header-title m-0">{{ __("Payment Method Icons") }}</h4>
-                   
-                      <!-- <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }} -->
-                      <form id="show_payment_icons_form" action="{{route('styling.updatePaymentIcons')}}" method="post" enctype="multipart/form-data">
-                        @csrf
-                      <input type="checkbox" id="show_payment_icons_id" data-plugin="switchery" name="show_payment_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
-                      </form>
-                </div>
-                @if($client_preferences->show_payment_icons == 1)
-                <div class="table-responsive mt-3 mb-1">
-                   <table class="table table-centered table-nowrap table-striped" id="payment-datatable">
-                      <thead>
-                         <tr>
-                            <th>{{ __("Name") }}</th>
-                            <th>{{ __("Image") }}</th>
-                            <th>{{ __("Is show") }}</th>
-                            <!-- <th>{{ __("Action") }}</th> -->
-                         </tr>
-                      </thead>
-                      <tbody id="post_list">
-                         @forelse($payment_methods as $payment_method)
-                         <tr>
-                            <td>
-                               <a class="edit_payment_method_btn" data-payment_method_id="{{$payment_method->id}}" href="javascript:void(0)">
-                                  {{$payment_method->name }}
-                               </a>
-                            </td>
-                            <td><img src="{{$payment_method->image_url}}" class="" alt="170"></td>
-                            <td>
-                                <input type="checkbox"  data-plugin="switchery" name="{{$payment_method->slug}}" data-id='{{$payment_method->id}}' class="chk_box2 payment_method_show" data-color="#43bee1" {{$payment_method->is_show == 1 ? 'checked' : ''}}>
-                            <td>
-                         </tr>
-                         @empty
-                         <tr align="center">
-                            <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-                         </tr>
-                         @endforelse
-                      </tbody>
-                   </table>
-                </div>
-                @endif
-            </div>
-        </div>
-        <!-- Payment Method Icons end -->
+       
 
               
            
@@ -354,6 +307,56 @@
             </div>
             @endif
         </div>
+    </div>
+    <div class="row">
+             <!--Payment Method Icons start -->
+             <div class="col-md-6 mb-3">
+            <div class="card-box pb-2 h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                   <h4 class="header-title m-0">{{ __("Payment Method Icons") }}</h4>
+                   
+                      <!-- <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }} -->
+                      <form id="show_payment_icons_form" action="{{route('styling.updatePaymentIcons')}}" method="post" enctype="multipart/form-data">
+                        @csrf
+                      <input type="checkbox" id="show_payment_icons_id" data-plugin="switchery" name="show_payment_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
+                      </form>
+                </div>
+                @if($client_preferences->show_payment_icons == 1)
+                <div class="table-responsive mt-3 mb-1">
+                   <table class="table table-centered table-nowrap table-striped" id="payment-datatable">
+                      <thead>
+                         <tr>
+                            <th>{{ __("Name") }}</th>
+                            <th>{{ __("Image") }}</th>
+                            <th>{{ __("Is show") }}</th>
+                            <!-- <th>{{ __("Action") }}</th> -->
+                         </tr>
+                      </thead>
+                      <tbody id="post_list">
+                         @forelse($payment_methods as $payment_method)
+                         <tr>
+                            <td>
+                               <a class="edit_payment_method_btn" data-payment_method_id="{{$payment_method->id}}" href="javascript:void(0)">
+                                  {{$payment_method->name }}
+                               </a>
+                            </td>
+                            <td><img src="{{$payment_method->image_url}}" class="" alt="170"></td>
+                            <td>
+                                <input type="checkbox"  data-plugin="switchery" name="{{$payment_method->slug}}" data-id='{{$payment_method->id}}' class="chk_box2 payment_method_show" data-color="#43bee1" {{$payment_method->is_show == 1 ? 'checked' : ''}}>
+                            <td>
+                         </tr>
+                         @empty
+                         <tr align="center">
+                            <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                         </tr>
+                         @endforelse
+                      </tbody>
+                   </table>
+                </div>
+                @endif
+            </div>
+        </div>
+        <!-- Payment Method Icons end -->
     </div>
 
 
