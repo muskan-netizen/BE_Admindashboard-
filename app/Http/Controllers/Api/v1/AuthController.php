@@ -91,13 +91,20 @@ class AuthController extends BaseController
         // $device->access_token = $token;
         // $device->save();
 
+        //check login from individual vendor app
+        $fromVendorAppLogin = 0;
+        if(!empty($loginReq->is_vendor_app)){
+            $fromVendorAppLogin = 1;
+        }
+        
         if (!empty($loginReq->fcm_token)) {
             $device = UserDevice::updateOrCreate(
                 ['device_token' => $loginReq->fcm_token],
                 [
                     'user_id' => $user->id,
                     'device_type' => $loginReq->device_type,
-                    'access_token' => $token
+                    'access_token' => $token,
+                    'is_vendor_app' => $fromVendorAppLogin
                 ]
             );
         } else {
@@ -106,7 +113,8 @@ class AuthController extends BaseController
                 [
                     'user_id' => $user->id,
                     'device_type' => $loginReq->device_type,
-                    'access_token' => $token
+                    'access_token' => $token,
+                    'is_vendor_app' => $fromVendorAppLogin
                 ]
             );
         }
@@ -506,13 +514,20 @@ class AuthController extends BaseController
             // ];
             // UserDevice::insert($user_device);
 
+            //check login from individual vendor app
+            $fromVendorAppLogin = 0;
+            if(!empty($signReq->is_vendor_app)){
+                $fromVendorAppLogin = 1;
+            }
+
             if (!empty($signReq->fcm_token)) {
                 $user_device = UserDevice::updateOrCreate(
                     ['device_token' => $signReq->fcm_token],
                     [
                         'user_id' => $user->id,
                         'device_type' => $signReq->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             } else {
@@ -521,7 +536,8 @@ class AuthController extends BaseController
                     [
                         'user_id' => $user->id,
                         'device_type' => $signReq->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             }
@@ -910,13 +926,20 @@ class AuthController extends BaseController
             }
             $user_refferal = UserRefferal::where('user_id', $user->id)->first();
 
+            //check login from individual vendor app
+            $fromVendorAppLogin = 0;
+            if(!empty($req->is_vendor_app)){
+                $fromVendorAppLogin = 1;
+            }
+
             if (!empty($req->fcm_token)) {
                 $device = UserDevice::updateOrCreate(
                     ['device_token' => $req->fcm_token],
                     [
                         'user_id' => $user->id,
                         'device_type' => $req->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             } else {
@@ -925,7 +948,8 @@ class AuthController extends BaseController
                     [
                         'user_id' => $user->id,
                         'device_type' => $req->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             }
@@ -1129,13 +1153,21 @@ class AuthController extends BaseController
                 } catch (\Exception $e) {
                 }
                 $user_refferal = UserRefferal::where('user_id', $user->id)->first();
+
+                //check login from individual vendor app
+                $fromVendorAppLogin = 0;
+                if(!empty($request->is_vendor_app)){
+                    $fromVendorAppLogin = 1;
+                }
+                
                 if (!empty($request->fcm_token)) {
                     $device = UserDevice::updateOrCreate(
                         ['device_token' => $request->fcm_token],
                         [
                             'user_id' => $user->id,
                             'device_type' => $request->device_type,
-                            'access_token' => $token
+                            'access_token' => $token,
+                            'is_vendor_app' => $fromVendorAppLogin
                         ]
                     );
                 } else {
@@ -1144,7 +1176,8 @@ class AuthController extends BaseController
                         [
                             'user_id' => $user->id,
                             'device_type' => $request->device_type,
-                            'access_token' => $token
+                            'access_token' => $token,
+                            'is_vendor_app' => $fromVendorAppLogin
                         ]
                     );
                 }

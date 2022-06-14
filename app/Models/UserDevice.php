@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 class UserDevice extends Model
 {
     use Notifiable;
-    protected $fillable = ['user_id','device_type','device_token','access_token'];
+    protected $fillable = ['user_id','device_type','device_token','access_token', 'is_vendor_app'];
 
     public function routeNotificationForFcm()
     {

@@ -163,7 +163,7 @@ class HomeController extends BaseController
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
-            $payment_codes = ['stripe', 'stripe_fpx', 'stripe_oxxo', 'razorpay', 'checkout', 'paytab','flutterwave'];
+            $payment_codes = ['stripe', 'stripe_fpx', 'stripe_oxxo','stripe_ideal','razorpay', 'checkout', 'paytab','flutterwave'];
             $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
                 foreach ($payment_creds as $creds) {
@@ -176,6 +176,9 @@ class HomeController extends BaseController
                     }
                     if ($creds->code == 'stripe_oxxo') {
                         $homeData['profile']->preferences->stripe_oxxo_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
+                    }
+                    if ($creds->code == 'stripe_ideal') {
+                        $homeData['profile']->preferences->stripe_ideal_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
                     }
                     if ($creds->code == 'razorpay') {
                         $homeData['profile']->preferences->razorpay_api_key = (isset($creds_arr->api_key) && (!empty($creds_arr->api_key))) ? $creds_arr->api_key : '';

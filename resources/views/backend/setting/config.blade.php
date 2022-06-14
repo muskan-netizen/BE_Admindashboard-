@@ -988,6 +988,17 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-6">
                      <div class="form-group mb-2">
+                        <label for="vendor_fcm_server_key">{{__('Individual Vendor Server Key')}}</label>
+                        <input type="text" name="vendor_fcm_server_key" id="vendor_fcm_server_key" placeholder="" class="form-control" value="{{ old('vendor_fcm_server_key', $preference->vendor_fcm_server_key ?? '')}}" required>
+                        @if($errors->has('vendor_fcm_server_key'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('vendor_fcm_server_key') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group mb-2">
                         <label for="fcm_api_key">{{__('API Key')}}</label>
                         <input type="text" name="fcm_api_key" id="fcm_api_key" placeholder="" class="form-control" value="{{ old('fcm_api_key', $preference->fcm_api_key ?? '')}}" required>
                         @if($errors->has('fcm_api_key'))

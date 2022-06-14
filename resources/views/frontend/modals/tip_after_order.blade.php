@@ -78,6 +78,20 @@
                         <span class="error text-danger" id="stripe_fpx_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'stripe_ideal' ) { %>
+                    <div class="col-md-12 mt-3 mb-3 stripe_ideal_element_wrapper option-wrapper d-none">
+                        <label for="ideal-bank-element">
+                            iDEAL Bank
+                        </label>
+                        <div class="form-control">
+                            <div id="ideal-bank-element">
+                              <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                        </div>
+                       
+                        <span class="error text-danger"id="error-message"></span>
+                    </div>
+                <% } %>
                   <% if(payment_option.slug == 'yoco') { %>
                     <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                         <div class="form-control">

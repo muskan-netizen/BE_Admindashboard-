@@ -23,6 +23,25 @@ if (!function_exists('changeDateFormate')) {
     }
 }
 
+if (!function_exists('curlJsonRequest')) {
+    function curlJsonRequest($from, $data){
+        $headers = [
+            'Authorization: key=' . $from,
+            'Content-Type: application/json',
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
+}
+
 if (! function_exists('orderProductDetails')) {
     function orderProductDetails($order_id)
     {
@@ -781,6 +800,15 @@ function stripeFPXPaymentCredentials(){
 
 function stripeOXXOPaymentCredentials(){
     $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_oxxo')->where('status', 1)->first();
+    $creds_arr = json_decode($stripe_creds->credentials);
+    $response = collect();
+    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+    return $response;
+}
+
+function stripeDynamicPaymentCredentials($name){
+    $stripe_creds = PaymentOption::select('credentials')->where('code', $name)->where('status', 1)->first();
     $creds_arr = json_decode($stripe_creds->credentials);
     $response = collect();
     $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
