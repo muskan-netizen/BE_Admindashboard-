@@ -546,7 +546,7 @@ class WebStylingController extends BaseController{
     }
     public function updateContactUs(Request $request){
         $rules = array(
-            'contact_phone_number' => 'required|min:8|max:15'
+            'contact_phone_number' => 'required|min:7|max:15'
         );
         $validation  = Validator::make($request->all(), $rules);
         if ($validation->fails()) {
