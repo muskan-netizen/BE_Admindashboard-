@@ -1152,9 +1152,9 @@ class OrderController extends FrontController
             }
             $payable_amount = $payable_amount - $wallet_amount_used;
             $tip_amount = 0;
-            if (isset($request->tip)) { 
+            if (isset($request->tip)) {
                 $request->tip = str_replace(',', '', $request->tip);
-                $tip_amount = floatval($request->tip); 
+                $tip_amount = floatval($request->tip);
                 if( ($tip_amount != '') && ($tip_amount > 0) ){
                     $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                     $order->tip_amount = $tip_amount;
