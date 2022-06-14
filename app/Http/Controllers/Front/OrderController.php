@@ -1365,7 +1365,7 @@ class OrderController extends FrontController
            
             if(!empty($from)){
                 // helper function
-                curlRequest($from, $data);
+                curlJsonRequest($from, $data);
             }
 
             // Individual Vendor App User Token
