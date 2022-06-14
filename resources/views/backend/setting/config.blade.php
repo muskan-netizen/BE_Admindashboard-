@@ -159,7 +159,52 @@ $sms_crendential = json_decode($preference->sms_credentials);
          @endif
 
 
+         @if($client_preference_detail->enable_inventory_service == 1)
+         <div class="col-lg-3 col-md-6 mb-3">
+            <!-- Order Panel section start -->
+            <div class="card-box h-100">
+               <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h4 class="header-title mb-0">{{ __('Inventory Service') }}</h4>
+                  <button class="btn btn-info d-block" type="submit"  name="need_inventory_service_submit_btn" value ="1"> {{ __("Save") }} </button>
+               </div>
+               <p class="sub-header">{{ __('Offer Inventory Services with Order.') }}</p>
+               <div class="row">
+                  <div class="col-12">
 
+                     <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                           <label for="need_inventory_service" class="mr-3">{{ __('Enable') }}</label>
+                           <input type="checkbox" data-plugin="switchery" name="need_inventory_service" id="need_inventory_service" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_inventory_service == '1')) checked='checked' @endif>
+                        </div>
+                     </div>
+        
+                     <div class="form-group mt-3 mb-0 inventoryFields" style="{{((isset($preference) && $preference->need_inventory_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="inventory_service_key_url">{{ __('Inventory URL') }} *(https://www.abc.com)</label>
+                        <input type="text" name="inventory_service_key_url" id="inventory_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('inventory_service_key_url', $preference->inventory_service_key_url ?? '')}}">
+                        @if($errors->has('inventory_service_key_url'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('inventory_service_key_url') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+        
+                     <div class="form-group mt-3 mb-0 inventoryFields" style="{{((isset($preference) && $preference->need_inventory_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="inventory_service_key_code">{{ __('Inventory Short code') }}</label>
+                        <input type="text" name="inventory_service_key_code" id="inventory_service_key_code" placeholder="" class="form-control" value="{{ old('inventory_service_key_code', $preference->inventory_service_key_code ?? '')}}">
+                        @if($errors->has('inventory_service_key_code'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('inventory_service_key_code') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+        
+                     
+        
+                  </div>
+               </div>
+            </div><!-- On Demand Services section end -->
+         </div>
+         @endif
 
          @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' )
          <div class="col-lg-3 col-md-6 mb-3">
@@ -1285,6 +1330,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                </div>
 
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Need Inventory?')}}<small class="d-block pr-5">{{__('Enable to give permission to panel for inventory.')}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="enable_inventory_service" id="enable_inventory_service" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enable_inventory_service == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
                @if(isset($preference) && $preference->business_type == "taxi")
                <div class="col-md-4">
                   <div class="form-group d-flex justify-content-between mb-3">
@@ -1983,6 +2036,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
       var laundry_service = $('#need_laundry_service');
       var xero_enable_switch = $('#xero_enable_switch');
+      var need_inventory_service = $('#need_inventory_service');
 
       if(laundry_service.length > 0){
          laundry_service[0].onchange = function() {
@@ -2024,6 +2078,17 @@ $sms_crendential = json_decode($preference->sms_credentials);
             $('.xeroFields').hide();
          } else {
             $('.xeroFields').show();
+         }
+         }
+      }
+
+      if(need_inventory_service.length > 0){
+         need_inventory_service[0].onchange = function() {
+
+         if ($('#need_inventory_service:checked').length != 1) {
+            $('.inventoryFields').hide();
+         } else {
+            $('.inventoryFields').show();
          }
          }
       }

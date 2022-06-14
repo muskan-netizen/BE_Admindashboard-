@@ -524,7 +524,7 @@ class OrderController extends FrontController
             foreach ($cartData as $ven_key => $vendorData) {
                 $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
-                foreach ($vendorData->vendorProducts as $ven_key => $prod) {
+                foreach ($vendorData->vendorProducts as $ven_key => $prod) { 
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price / $divider;
@@ -603,7 +603,7 @@ class OrderController extends FrontController
                 $vendorData->payable_amount = number_format($payable_amount, 2);
                 $vendorData->discount_amount = number_format($discount_amount, 2);
                 $vendorData->discount_percent = number_format($discount_percent, 2);
-                $vendorData->taxable_amount = number_format($taxable_amount, 2);
+                $vendorData->taxable_amount = number_format($taxable_amount, 2); 
                 $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount), 2);
                 if (!empty($subscription_features)) {
                     $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount - $subscription_discount), 2);
@@ -1152,12 +1152,14 @@ class OrderController extends FrontController
             }
             $payable_amount = $payable_amount - $wallet_amount_used;
             $tip_amount = 0;
-            if (isset($request->tip)) {
-                $tip_amount = floatval($request->tip);
+            if (isset($request->tip)) { 
+                $request->tip = str_replace(',', '', $request->tip);
+                $tip_amount = floatval($request->tip); 
                 if( ($tip_amount != '') && ($tip_amount > 0) ){
                     $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                     $order->tip_amount = $tip_amount;
                 }
+                
             }
             //echo  " Total payable_amount1=".$payable_amount."; <br>";
             //echo  " tip_amount=".$tip_amount." fixed_fee_amount=".$fixed_fee_amount." total_taxable_amount=".$total_taxable_amount."; <br>";
@@ -1258,6 +1260,8 @@ class OrderController extends FrontController
                 // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
                 // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id]);
             }
+            Log::info($request->toArray());
+            dd($request->toArray());
             DB::commit();
             //$this->sendSuccessSMS($request, $order);
 
