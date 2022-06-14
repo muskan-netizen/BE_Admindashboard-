@@ -1275,8 +1275,7 @@ class OrderController extends FrontController
                     // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id]);
                 }
             }
-            Log::info($request->toArray());
-            dd($request->toArray());
+           
             DB::commit();
             //$this->sendSuccessSMS($request, $order);
 
