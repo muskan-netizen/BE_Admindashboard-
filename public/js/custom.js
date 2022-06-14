@@ -484,6 +484,9 @@ $(document).ready(function () {
                                 if(stripe_fpx_publishable_key != ''){
                                     stripeFPXInitialize();
                                 }
+                                if(stripe_ideal_publishable_key != ''){
+                                    stripeIdealInitialize();
+                                }
                             }
                         },
                         error: function (error) {
@@ -1127,6 +1130,9 @@ $(document).ready(function () {
                         if(stripe_fpx_publishable_key != ''){
                             stripeFPXInitialize();
                         }
+                        if(stripe_ideal_publishable_key != ''){
+                            stripeIdealInitialize();
+                        }
                     }
                 }
             },
@@ -1168,6 +1174,9 @@ $(document).ready(function () {
                         }
                         if(stripe_fpx_publishable_key != ''){
                             stripeFPXInitialize();
+                        }
+                        if(stripe_ideal_publishable_key != ''){
+                            stripeIdealInitialize();
                         }
                         
                     }

@@ -1480,6 +1480,7 @@ $(document).ready(function() {
         });
     }
 
+
     ///////////////////////////Stripe FPX payment Gateway //////////////////////////////
     window.paymentViaStripeFPX = function paymentViaStripeFPX(address_id='', payment_option_id='', order='') {
         let total_amount = 0;
@@ -1590,6 +1591,7 @@ $(document).ready(function() {
         });
     }
 
+
     window.paymentViaStripeIdeal = function paymentViaStripeIdeal(address_id='', payment_option_id='', order='') {
         let total_amount = 0;
         let tip = 0;
@@ -1639,7 +1641,7 @@ $(document).ready(function() {
                 if (resp.status == 'Success') {
                     const clientSecret = resp.data.client_secret;
                      // Redirects away from the client
-                        const result = stripe_ideal.confirmIdealPayment('{{clientSecret}}',
+                        const result = stripe_ideal.confirmIdealPayment(clientSecret,
                         {
                         payment_method: {
                             ideal: idealBank,
@@ -1647,7 +1649,7 @@ $(document).ready(function() {
                                 name: resp.data.shipping.name,
                             },
                         },
-                        return_url: payment_retrive_stripe_fpx_url + '?' + returnParams,
+                        return_url: payment_retrive_stripe_ideal_url + '?' + returnParams,
                         }
                     );
 
@@ -1704,6 +1706,7 @@ $(document).ready(function() {
             }
         });
     }
+
 
     window.paymentViaStripeOXXO = function paymentViaStripeOXXO(address_id='', payment_option_id='', order='') {
         let total_amount = 0;

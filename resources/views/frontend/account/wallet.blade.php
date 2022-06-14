@@ -346,6 +346,20 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                         <span class="error text-danger" id="stripe_fpx_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'stripe_ideal' ) { %>
+                    <div class="col-md-12 mt-3 mb-3 stripe_ideal_element_wrapper option-wrapper d-none">
+                        <label for="ideal-bank-element">
+                            iDEAL Bank
+                        </label>
+                        <div class="form-control">
+                            <div id="ideal-bank-element">
+                              <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                        </div>
+                       
+                        <span class="error text-danger"id="error-message"></span>
+                    </div>
+                <% } %>
                 <% if(payment_option.slug == 'yoco') { %>
                     <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                         <div class="form-control">
@@ -406,6 +420,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
+    var idealBank = {};
     var ajaxCall = 'ToCancelPrevReq';
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
@@ -423,6 +438,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
     var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
+    var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";

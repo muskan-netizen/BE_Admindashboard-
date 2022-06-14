@@ -915,7 +915,7 @@ class StripeGatewayController extends FrontController
             $secret_key = stripeDynamicPaymentCredentials('stripe_ideal')->secret_key;
             $stripe = new \Stripe\StripeClient($secret_key);
             
-            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_fpx';
+            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_ideal';
             $webhook_exists = false;
 
             // $stripe->webhookEndpoints->delete(
@@ -968,7 +968,7 @@ class StripeGatewayController extends FrontController
                 // Find the card ID
                 $customer_id = $customerResponse->id;
                 if ($customer_id) {
-                    $request->request->add(['customerReference' => $customer_id, 'payment_option_id' => 19]);
+                    $request->request->add(['customerReference' => $customer_id, 'payment_option_id' => 39]);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
             // }else {
@@ -988,120 +988,7 @@ class StripeGatewayController extends FrontController
                 'payment_method_types' => ['ideal'],
                 'amount' => $amount * 100,
                 'currency' => $this->currency, //'eur'
-                // 'customer' => '',
-                'receipt_email' => $user->email ?? '',
-                'metadata' => [
-                    'user_id' => $user->id,
-                    'payment_form' => $payment_form
-                ]
-            ];
-
-            if(isset($customer_id) && !empty($customer_id)){
-                $postdata['customer'] = $customer_id;
-            }
-
-            if($payment_form == 'cart'){
-                $user_address = '';
-                if($request->has('address_id')){
-                    $address_id = $request->address_id;
-                    $user_address = UserAddress::where('id', $address_id)->first();
-                }
-                $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-                $order_number = $request->order_number;
-
-                $postdata['description'] = 'Order Checkout';
-                $postdata['metadata']['cart_id'] = $cart->id;
-                $postdata['metadata']['order_number'] = $order_number;
-                $postdata['shipping']['name'] = $user->name;
-                $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
-                if(!empty($user_address)){
-                    $postdata['shipping']['address']['line1'] = $user_address->street;
-                    $postdata['shipping']['address']['city'] = $user_address->city;
-                    $postdata['shipping']['address']['state'] = $user_address->state;
-                    $postdata['shipping']['address']['country'] = $user_address->country;
-                    $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
-                }
-            }
-            elseif($payment_form == 'wallet'){
-                $postdata['description'] = 'Wallet Checkout';
-            }
-            if($payment_form == 'tip'){
-                $postdata['description'] = 'Tip Checkout';
-                $order_number = $request->order_number;
-                $postdata['metadata']['order_number'] = $order_number;
-            }
-            elseif($request->payment_form == 'subscription'){
-                $postdata['description'] = 'Subscription Checkout';
-                $postdata['metadata']['subscription_id'] = $request->subscription_id;
-            }
-            
-            $payment_intent = $stripe = $stripe->paymentIntents->create($postdata);
-            
-            return $this->successResponse($payment_intent);
-        }
-        catch (\Exception $ex) {
-            Log::info($ex->getMessage());
-            return $this->errorResponse('Server Error', $ex->getCode());
-        }
-    }
-
-    public function createStripeIdealPaymentIntent1(Request $request, $domain='')
-    {
-        try{
-            ////// Create webhook Endpoint ///////
-            $secret_key = stripeDynamicPaymentCredentials('stripe_ideal')->secret_key;
-            $stripe = new \Stripe\StripeClient($secret_key);
-            
-            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_oxxo';
-            $webhook_exists = false;
-
-            $endpoints = $stripe->webhookEndpoints->all();
-
-            foreach($endpoints->data as $obj){
-                if($obj->url == $webhook_url){
-                    $webhook_exists = true;
-                    break;
-                }
-            }
-            
-            if(!$webhook_exists){
-                $res = $stripe->webhookEndpoints->create([
-                    'url' => $webhook_url,
-                    'enabled_events' => [
-                        'payment_intent.succeeded',
-                        'payment_intent.payment_failed'
-                    ]
-                ]);
-            }
-
-            $user = Auth::user();
-
-                // $customerResponse = $stripe->customers->create([
-                //     'name' => $user->name,
-                //     'email' => $user->email,
-                //     'phone' => $user->phone_number,
-                //     'description' => 'Creating Customer',
-                //     'metadata' => [
-                //         'user_id' => $user->id
-                //     ]
-                // ]);
-
-                // // Find the card ID
-                // $customer_id = $customerResponse->id;
-                // if ($customer_id) {
-                //     $request->request->add(['customerReference' => $customer_id, 'payment_option_id' => 19]);
-                //     $save_payment_method_response = $this->saveUserPaymentMethod($request);
-                // }
-           
-
-            $description = '';
-            $payment_form = $request->payment_form;
-            $amount = $this->getDollarCompareAmount($request->amount);
-
-            $postdata = [
-                'payment_method_types' => ['ideal'],
-                'amount' => $amount * 100,
-                'currency' => 'eur', //$this->currency
+                // // 'customer' => '',
                 // 'receipt_email' => $user->email ?? '',
                 // 'metadata' => [
                 //     'user_id' => $user->id,
@@ -1120,34 +1007,37 @@ class StripeGatewayController extends FrontController
             }else{
                 $user_address = UserAddress::where(['user_id'=>auth()->id(),'is_primary'=>'1'])->first();
             }
+            
+            $postdata['shipping']['name'] = $user->name;
             if($payment_form == 'cart'){
-               
+                
                 $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
                 $order_number = $request->order_number;
 
                 $postdata['description'] = 'Order Checkout';
                 $postdata['metadata']['cart_id'] = $cart->id;
                 $postdata['metadata']['order_number'] = $order_number;
-                $postdata['shipping']['name'] = $user->name;
                 $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
-                
+                if(!empty($user_address)){
+                    $postdata['shipping']['address']['line1'] = $user_address->street;
+                    $postdata['shipping']['address']['city'] = $user_address->city;
+                    $postdata['shipping']['address']['state'] = $user_address->state;
+                    $postdata['shipping']['address']['country'] = $user_address->country;
+                    $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
+                }
             }
-            
             elseif($payment_form == 'wallet'){
                 $postdata['description'] = 'Wallet Checkout';
-                $postdata['shipping']['name'] = $user->name;
             }
             if($payment_form == 'tip'){
                 $postdata['description'] = 'Tip Checkout';
                 $order_number = $request->order_number;
                 $postdata['metadata']['order_number'] = $order_number;
-                $postdata['shipping']['name'] = $user->name;
 
             }
             elseif($request->payment_form == 'subscription'){
                 $postdata['description'] = 'Subscription Checkout';
                 $postdata['metadata']['subscription_id'] = $request->subscription_id;
-                $postdata['shipping']['name'] = $user->name;
             }
 
             if(!empty($user_address)){
@@ -1157,19 +1047,9 @@ class StripeGatewayController extends FrontController
                 $postdata['shipping']['address']['country'] = $user_address->country;
                 $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
             }
-
+            
             $payment_intent = $stripe = $stripe->paymentIntents->create($postdata);
-
-            if($request->payment_form == 'cart'){
-                \Session::flash('success', 'Order updated soon.');
-            } elseif($request->payment_form == 'wallet'){
-                \Session::flash('success', 'Wallet amount updated soon.');
-            } elseif($request->payment_form == 'tip'){
-                \Session::flash('success', 'Tip amount updated soon.');
-            } elseif($request->payment_form == 'subscription'){
-                \Session::flash('success', 'Subscription updated soon.');
-            }
-
+            
             return $this->successResponse($payment_intent);
         }
         catch (\Exception $ex) {
@@ -1794,6 +1674,9 @@ class StripeGatewayController extends FrontController
         \Stripe\Stripe::setApiKey($secret_key);
 
         $payload = @file_get_contents('php://input');
+
+        \Log::info('in webhook');
+        \Log::info(json_encode($payload));
         $event = null;
         try {
             $event = \Stripe\Event::constructFrom(

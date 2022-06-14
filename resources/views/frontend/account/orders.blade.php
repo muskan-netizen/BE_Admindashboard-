@@ -2032,6 +2032,7 @@
         var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
         var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
         var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
+        var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
         var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";
         var payment_yoco_url = "{{ route('payment.yocoPurchase') }}";
         var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";

@@ -304,6 +304,20 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                         <span class="error text-danger" id="stripe_fpx_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'stripe_ideal' ) { %>
+                    <div class="col-md-12 mt-3 mb-3 stripe_ideal_element_wrapper option-wrapper d-none">
+                        <label for="ideal-bank-element">
+                            iDEAL Bank
+                        </label>
+                        <div class="form-control">
+                            <div id="ideal-bank-element">
+                              <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                        </div>
+                       
+                        <span class="error text-danger"id="error-message"></span>
+                    </div>
+                <% } %>
                 <% if(payment_option.slug == 'yoco') { %>
                     <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                         <div class="form-control">
@@ -367,6 +381,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
+    var idealBank = {};
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
@@ -384,6 +399,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
     var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
