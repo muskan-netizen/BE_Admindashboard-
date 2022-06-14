@@ -393,7 +393,7 @@ class StripeGatewayController extends BaseController
         }
     }
 
-    public function paymentWebViewStripe(Request $request, $domain='')
+    public function paymentWebViewStripeFPX(Request $request, $domain='')
     {
         $user = Auth::user();
         $payment_form = $request->action;

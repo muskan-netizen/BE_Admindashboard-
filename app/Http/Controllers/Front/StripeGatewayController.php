@@ -1862,6 +1862,7 @@ class StripeGatewayController extends FrontController
     public function paymentWebViewStripeIdeal(Request $request, $domain='')
     {
         // try{
+            //\Log::info(json_encode($request->all()));
             $auth_token = $request->auth_token;
             $user = User::where('auth_token', $auth_token)->first();
             Auth::login($user);
@@ -1872,6 +1873,8 @@ class StripeGatewayController extends FrontController
             }
             elseif($payment_form == 'tip'){
                 $returnParams .= '&order='.$request->order_number;
+            }elseif($payment_form == 'subscription'){
+                $returnParams .= '&subscription_id='.$request->subscription_id;
             }
             $payment_retrive_stripe_ideal_url = url('payment/webview/response/stripe_ideal' .'/?'. $returnParams);
             
@@ -1886,12 +1889,15 @@ class StripeGatewayController extends FrontController
 
     public function webViewResponseStripeIdeal(Request $request)
     {
+            \Log::info(json_encode($request->all()));
         if($request->has('payment_intent')){
             $url = 'payment/gateway/returnResponse?status=0&gateway=stripe_ideal&action='.$request->payment_form;
             if($request->has('redirect_status') && ($request->redirect_status == 'succeeded')){
                 $url = 'payment/gateway/returnResponse?status=200&gateway=stripe_ideal&action='.$request->payment_form;
                 if($request->payment_form == 'cart'){
                     $url = $url.'&order='.$request->order;
+                }elseif($request->payment_form == 'subscription'){
+                    $url = $url.'&transaction_id='.$request->subscription_id;
                 }
             }
             return Redirect::to($url);
