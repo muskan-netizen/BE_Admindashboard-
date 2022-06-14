@@ -1125,6 +1125,57 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div>
       </div>
       <!-- Customer Support end -->
+
+
+       <!-- sos Support -->
+       <div class="col-lg-3 col-md-6 mb-3">
+          <div class="card-box h-100">
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
+               @csrf
+               <input type="hidden" name="sos_enable" value="1">
+               <div class="row">
+                  <div class="col-12">
+                     <div class="form-group mb-0 switchery-demo">
+                        <label for="sos" class="d-flex align-items-center justify-content-between">
+                           <h5 class="social_head"> <span>SOS</span></h5>
+                           <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
+                        </label>
+                        <label for="" class="mr-3">{{ __("Enable") }}</label>
+                        <input type="checkbox" data-plugin="switchery" name="sos" id="sos" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->sos == '1')) checked='checked' @endif>
+                     </div>
+                  </div>
+               </div>
+               <div class="row  sos_row" style="{{((isset($preference) && $preference->sos == '1')) ? '' : 'display:none;'}}">
+                  <div class="col-12">
+                     <div class="form-group mb-2 mt-2">
+                        <label for="sos_police_contact"></label>{{ __("SOS Police Mumber") }}</label>
+                        <label for="" class="mr-3">{{ __("Enable") }}</label>
+                        <input type="text" name="sos_police_contact" id="sos_police_contact" placeholder="" class="form-control" value="{{ old('twitter_client_id', $preference->sos_police_contact ?? '')}}">
+                        @if($errors->has('sos_police_contact'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('sos_police_contact') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                  </div>
+                  <div class="col-12">
+                     <div class="form-group mb-2">
+                        <label for="sos_ambulance_contact">{{ __("SOS Ambulance Number") }}</label>
+                        <input type="text" name="sos_ambulance_contact" id="sos_ambulance_contact" placeholder="" class="form-control" value="{{ old('sos_ambulance_contact', $preference->sos_ambulance_contact ?? '')}}">
+                        @if($errors->has('sos_ambulance_contact'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('sos_ambulance_contact') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                  </div>
+               </div>
+            </form>
+            </div><!-- Twitter card end -->
+      </div>
+      <!-- Customer Support end -->
+
+
    </div>
 
    <div class="row">
@@ -2132,6 +2183,16 @@ $sms_crendential = json_decode($preference->sms_credentials);
             $('.apple_row').hide();
          } else {
             $('.apple_row').show();
+         }
+      }
+      var sos = $('#sos');
+
+      sos[0].onchange = function() {
+
+         if ($('#sos:checked').length != 1) {
+            $('.sos_row').hide();
+         } else {
+            $('.sos_row').show();
          }
       }
 
