@@ -237,7 +237,7 @@
                                                     <div class="product-box scale-effect">
                                                         <div class="img-wrapper">
                                                             <div class="front">
-                                                                <a href="{{route('productDetail', [$data->vendor->slug,$data->sku])}}"><img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt=""></a>
+                                                                <a href="{{route('productDetail', [$data->vendor->slug,$data->sku])}}" target="_blank"><img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt=""></a>
                                                             </div>
                                                             <div class="cart-info cart-wrap">
                                                                 <button data-toggle="modal" data-target="#addtocart" title="Add to cart"><i class="ti-shopping-cart"></i></button>
