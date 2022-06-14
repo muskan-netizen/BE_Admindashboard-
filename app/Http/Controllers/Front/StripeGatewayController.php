@@ -1858,6 +1858,46 @@ class StripeGatewayController extends FrontController
         }
     }
 
+
+    public function paymentWebViewStripeIdeal(Request $request, $domain='')
+    {
+        // try{
+            $auth_token = $request->auth_token;
+            $user = User::where('auth_token', $auth_token)->first();
+            Auth::login($user);
+            $payment_form = $request->payment_form;
+            $returnParams = 'amount='. $request->amount . '&payment_form=' . $payment_form;
+            if($payment_form == 'cart'){
+                $returnParams .= '&order='.$request->order_number;
+            }
+            elseif($payment_form == 'tip'){
+                $returnParams .= '&order='.$request->order_number;
+            }
+            $payment_retrive_stripe_ideal_url = url('payment/webview/response/stripe_ideal' .'/?'. $returnParams);
+            
+            $request->request->add(['come_from' => 'app', 'payment_form' => $payment_form]);
+            $data = $request->all();
+            return view('frontend.payment_gatway.stripe_ideal_view')->with(['data' => $data, 'payment_retrive_stripe_ideal_url'=>$payment_retrive_stripe_ideal_url]);
+        // }
+        // catch(\Exception $ex){
+        //     return redirect()->back()->with('errors', $ex->getMessage());
+        // }
+    }
+
+    public function webViewResponseStripeIdeal(Request $request)
+    {
+        if($request->has('payment_intent')){
+            $url = 'payment/gateway/returnResponse?status=0&gateway=stripe_ideal&action='.$request->payment_form;
+            if($request->has('redirect_status') && ($request->redirect_status == 'succeeded')){
+                $url = 'payment/gateway/returnResponse?status=200&gateway=stripe_ideal&action='.$request->payment_form;
+                if($request->payment_form == 'cart'){
+                    $url = $url.'&order='.$request->order;
+                }
+            }
+            return Redirect::to($url);
+        }
+    }
+
     public function paymentWebViewStripeOXXO(Request $request, $domain='')
     {
         // try{

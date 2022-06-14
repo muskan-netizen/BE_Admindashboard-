@@ -412,7 +412,6 @@ $(document).ready(function () {
           
           // Create an instance of the idealBank Element
           var idealBank = elements.create('idealBank', options);
-          console.log(idealBank);
           // Add an instance of the idealBank Element into
           // the `ideal-bank-element` <div>
           idealBank.mount('#ideal-bank-element'); 
