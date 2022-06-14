@@ -1007,7 +1007,7 @@ class StripeGatewayController extends FrontController
             }else{
                 $user_address = UserAddress::where(['user_id'=>auth()->id(),'is_primary'=>'1'])->first();
             }
-            
+
             $postdata['shipping']['name'] = $user->name;
             if($payment_form == 'cart'){
                 
@@ -1675,8 +1675,8 @@ class StripeGatewayController extends FrontController
 
         $payload = @file_get_contents('php://input');
 
-        \Log::info('in webhook');
-        \Log::info(json_encode($payload));
+        // \Log::info('in webhook');
+        // \Log::info(json_encode($payload));
         $event = null;
         try {
             $event = \Stripe\Event::constructFrom(

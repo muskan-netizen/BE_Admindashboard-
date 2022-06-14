@@ -203,6 +203,12 @@ class VivawalletController extends FrontController
    public function successPage(Request $request)
    {
     $payment = Payment::where('viva_order_id',$request->s)->first();
+
+    if(empty(auth()->id())){
+      $user = User::where('id', $payment->user_id)->first();
+      Auth::login($user);
+    }
+
         if($payment->type=='cart'){
           return $this->completeOrderCart($request,$payment);
         }elseif($payment->type=='wallet'){
