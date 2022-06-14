@@ -91,7 +91,8 @@ class KongapayController extends FrontController
       
      }elseif($request->from == 'subscription')
      {
-      $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+      $subtime = ($request->subscription_id)??time();
+      $time = 'S_'.$subtime.'_'.$request->subsid;
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'subscription','date'=>date('Y-m-d')]);
 
       $request->amt = $amt*100;
