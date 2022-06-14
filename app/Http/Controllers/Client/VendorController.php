@@ -1604,4 +1604,43 @@ class VendorController extends BaseController
             'message' => __('Vendor action Submitted successfully!')
         ]);
     }
+
+    # get listing of inventory vendor 
+    public function getInventoryImport($domain = '', $slug){
+        
+        $store_list_data = [];
+        $client_preferences = [];
+        $store_list = $this->getAllStoreListFromInventory();
+        if($store_list['status'] == 200){
+            $store_list_data = $store_list['data'];
+            $client_preferences = $store_list['client_preferences'];
+        }
+      
+
+        $vendor = Vendor::where('slug',$slug)->first();
+        
+        
+        return view('backend.vendor.inventory-import')->with([
+            'store_list_data' => $store_list_data,'vendor' => $vendor,'client_preferences' => $client_preferences]);
+    }
+
+    
+    # get Inventory Store Products
+    public function getInventoryStoreProducts(Request $request){
+        
+        $store_product = [];
+        
+        $store_product_list = $this->getAllProductListFromInventory($request);
+        if($store_product_list['status'] == 200){
+           $store_product = $store_product_list['data'];
+           
+        }
+       
+        $returnHTML = view('backend.vendor.inventory-product-list')->with(['store_product' => $store_product])->render();
+        return response()->json(array('success' => true, 'html' => $returnHTML));
+    }
+
+
+
+    
 }
