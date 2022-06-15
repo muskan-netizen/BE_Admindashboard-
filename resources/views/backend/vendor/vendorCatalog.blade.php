@@ -231,9 +231,9 @@
                                     </div>
                                     <div class="col-6 d-flex align-items-center justify-content-end mb-3">
 
-                                            <!-- <div class="vendor-search">
-                                                <input class="form-control" type="search" placeholder="Product Search">
-                                            </div> -->
+                                            <div class="vendor-search">
+                                                <input class="form-control" id="vendor_search" type="search" placeholder="Product Search" aria-controls="vendor_product_table">
+                                            </div>
 
                                             <a class="btn btn-info  waves-effect waves-light text-sm-right action_product_button" dataid="0"
                                                 id="action_product_button" href="javascript:void(0);"
@@ -1067,38 +1067,45 @@
                 }
             });
         });
-        
-       $(document).ready(function() {
-        $('#vendor_product_table').DataTable({
-            "responsive": true,
-            "scrollX": true,
-            "destroy": true,
-            "processing": true,
-            "serverSide": true,
-            "iDisplayLength": 10,
-            "lengthChange" : false,
-            "searching": false,
-            language: {
-                        search: "",
-                        paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
-                        searchPlaceholder: "{{__('Search Product')}}",
-                        // 'loadingRecords': '&nbsp;',
-                        'processing': '<div class="spinner"></div>'
-            },
-            drawCallback: function () {
-                $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
-            },
-           
-            ajax: {
-                url: "{{url('client/vendor/product/list').'/'.$vendor->id}}",
-                data: function (d) {
-                    d.search = $('input[type="search"]').val();
-                }
-            },
-            columns: dataTableColumn(),
-           
+        $(document).on("input","#vendor_search",function() {
+           let search = $('#vendor_search').val();
+           datatable_intent(search);
         });
-    });
+        function datatable_intent(search =''){
+            $('#vendor_product_table').DataTable({
+                "responsive": true,
+                "scrollX": true,
+                "destroy": true,
+                "processing": true,
+                "serverSide": true,
+                "iDisplayLength": 10,
+                "lengthChange" : false,
+                "searching": false,
+                language: {
+                            search: "",
+                            info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
+                            paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
+                            searchPlaceholder: "{{__('Search Product')}}",
+                            // 'loadingRecords': '&nbsp;',
+                            'processing': '<div class="spinner"></div>'
+                },
+                drawCallback: function () {
+                    $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+                },
+            
+                ajax: {
+                    url: "{{url('client/vendor/product/list').'/'.$vendor->id}}",
+                    data: function (d) {
+                        d.search = $('input[type="search"]').val();
+                    }
+                },
+                columns: dataTableColumn(),
+            
+            });
+        }
+        $(document).ready(function() {
+            datatable_intent();
+        });
 
     function dataTableColumn(){
        var business_type =  "{{$client_preference_detail->business_type}}";
