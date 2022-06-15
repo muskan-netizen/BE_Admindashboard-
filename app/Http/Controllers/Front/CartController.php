@@ -717,7 +717,7 @@ class CartController extends FrontController
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
             }
-            
+           // $sub_total+=$opt_price_in_currency;
             /* Getting in vendor loop */
             foreach ($cartData as $ven_key => $vendorData) {
                 $opt_quantity_price_new = 0.00;
@@ -1393,7 +1393,7 @@ class CartController extends FrontController
             $cart->delivery_charges = decimal_format($deliveryCharges);
             $cart->all_vendor_deliver_charges = decimal_format($all_vendor_deliver_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
-            $cart->total_taxable_amount = decimal_format($total_taxable_amount);
+            $cart->total_taxable_amount = decimal_format($total_taxable_amount); 
             $total_payable_amount_calc_tip = $total_payable_amount - $total_taxable_amount;
             $cart->tip_5_percent = decimal_format(0.05 * $total_payable_amount_calc_tip);
             $cart->tip_10_percent = decimal_format(0.10 * $total_payable_amount_calc_tip);

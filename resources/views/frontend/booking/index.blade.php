@@ -682,12 +682,17 @@
     });
 </script>
 
-@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options) || in_array('stripe_ideal',$client_payment_options))
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 @endif
 @if(in_array('stripe_oxxo',$client_payment_options))
 <script>
 var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
+@endif
+@if(in_array('stripe_ideal',$client_payment_options))
+<script>
+var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 </script>
 @endif
 @if(in_array('payphone',$client_payment_options))

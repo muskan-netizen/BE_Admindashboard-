@@ -85,7 +85,7 @@ class OrderController extends BaseController
     public function postPlaceOrder(Request $request)
     {
         try {
-            if($request->has('type') && $request->type == 'takeaway'){
+            if($request->has('type') && ($request->type == 'takeaway' || $request->type == 'dine_in' )){
                 $rules = [
                     'payment_option_id' => 'required'
                 ];
@@ -149,7 +149,7 @@ class OrderController extends BaseController
                         return response()->json(['error' => 'Your phone is not verified.'], 404);
                     }
                 }
-                if($request->has('type') && $request->type != 'takeaway'){
+                if($request->has('type') && ($request->type != 'takeaway' || $request->type != 'dine_in' )){
                     $user_address = UserAddress::where('id', $request->address_id)->first();
                     if (!$user_address) {
                         return response()->json(['error' => 'Invalid address id.'], 404);
@@ -2529,7 +2529,9 @@ class OrderController extends BaseController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData, $header_code='')
     {
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+
+        $vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
@@ -2580,8 +2582,9 @@ class OrderController extends BaseController
 
     public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id, $header_code)
     {
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-
+        $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        $vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;

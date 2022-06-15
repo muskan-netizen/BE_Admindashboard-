@@ -73,6 +73,8 @@ class Vendor extends Model implements Auditable{
         $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       }
       $values['image_fit'] = \Config::get('app.FIT_URl');
+
+      $values['image_s3_url'] = \Storage::disk('s3')->url($img);
       return $values;
     }
 
@@ -90,6 +92,8 @@ class Vendor extends Model implements Auditable{
         $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       }
       $values['image_fit'] = \Config::get('app.FIT_URl');
+
+      $values['image_s3_url'] = \Storage::disk('s3')->url($img);
       return $values;
     }
     public static function getNameById($vendor_id){

@@ -335,11 +335,11 @@
         @empty
         @endforelse
     @else
-        <h4 class="mt-3 mb-3 text-center">No product found</h4>
+        <h4 class="mt-3 mb-3 text-center">{{__('No product found')}}</h4>
     @endif
 </section>
 @empty
-    <h4 class="mt-3 mb-3 text-center">No product found</h4>
+    <h4 class="mt-3 mb-3 text-center">{{__('No product found')}}</h4>
 @endforelse
 
 

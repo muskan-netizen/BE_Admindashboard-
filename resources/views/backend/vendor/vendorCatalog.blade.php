@@ -254,7 +254,7 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="table-responsive">
-                                            <table class="table table-centered table-nowrap table-striped" id="">
+                                            <table class="table table-centered dataTable table-nowrap table-striped w-100" id="vendor_product_table">
                                                 <thead>
                                                     <tr>
                                                         <th><input type="checkbox" class="all-product_check"
@@ -278,7 +278,7 @@
                                                         <th>{{ __('Action') }}</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="post_list">
+                                                <!-- <tbody id="post_list">
                                                     @foreach ($products as $product)
                                                         <tr data-row-id="{{ $product->id }}">
 
@@ -343,7 +343,7 @@
                                                             </td>
                                                         </tr>
                                                     @endforeach
-                                                </tbody>
+                                                </tbody> -->
                                             </table>
                                         </div>
                                     </div>
@@ -464,6 +464,13 @@
                                     <button class="btn btn-info button" id="csv_button"
                                         type="button">{{ __('Import form Woocommerce') }}</button>
                                 </div>
+                                <a href="{{route('get.inventory.import',$vendor->slug)}}">
+                                <div class="col-12 text-right mb-2">
+                                    <button class="btn btn-info button" 
+                                        type="button">{{ __('Import form Inventory') }}</button>
+                                </div>
+                                </a>
+
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
                                         @csrf
@@ -1061,5 +1068,65 @@
             });
         });
         
+       $(document).ready(function() {
+        $('#vendor_product_table').DataTable({
+            "responsive": true,
+            "scrollX": true,
+            "destroy": true,
+            "processing": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            "lengthChange" : false,
+            "searching": false,
+            language: {
+                        search: "",
+                        paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
+                        searchPlaceholder: "{{__('Search Product')}}",
+                        // 'loadingRecords': '&nbsp;',
+                        'processing': '<div class="spinner"></div>'
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+            },
+           
+            ajax: {
+                url: "{{url('client/vendor/product/list').'/'.$vendor->id}}",
+                data: function (d) {
+                    d.search = $('input[type="search"]').val();
+                }
+            },
+            columns: dataTableColumn(),
+           
+        });
+    });
+
+    function dataTableColumn(){
+       var business_type =  "{{$client_preference_detail->business_type}}";
+            if(business_type == 'taxi'){
+                return [
+                    {data: 'single_product_check', name: 'single_product_check', orderable: false, searchable: false},
+                    {data: 'product_image', name: 'product_image', orderable: false, searchable: false},
+                    {data: 'product_name', name: 'product_name', orderable: true, searchable: false},
+                    {data: 'product_category', name: 'phone_number', orderable: false, searchable: false},
+                    {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
+                    {data: 'action', name: 'action', orderable: false, searchable: false}
+                ];
+            }else{
+                return [
+                    {data: 'single_product_check', name: 'single_product_check', orderable: false, searchable: false},
+                    {data: 'product_image', name: 'product_image', orderable: false, searchable: false},
+                    {data: 'product_name', name: 'product_name', orderable: true, searchable: false},
+                    {data: 'product_category', name: 'phone_number', orderable: false, searchable: false},
+                    {data: 'product_brand', name: 'product_brand', orderable: false, searchable: false},
+                    {data: 'product_quantity', name: 'product_quantity', orderable: false, searchable: false},
+                    {data: 'product_price', name: 'product_price', orderable: false, searchable: false},
+                    {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
+                    {data: 'product_is_new', name: 'product_is_new', orderable: false, searchable: false},
+                    {data: 'product_is_featured', name: 'product_is_featured', orderable: false, searchable: false},
+                    {data: 'product_last_mile', name: 'product_last_mile', orderable: false, searchable: false},
+                    {data: 'action', name: 'action', orderable: false, searchable: false}
+                ]
+            }
+        }
     </script>
 @endsection

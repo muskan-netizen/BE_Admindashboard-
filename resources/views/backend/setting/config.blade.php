@@ -159,7 +159,52 @@ $sms_crendential = json_decode($preference->sms_credentials);
          @endif
 
 
+         @if($client_preference_detail->enable_inventory_service == 1)
+         <div class="col-lg-3 col-md-6 mb-3">
+            <!-- Order Panel section start -->
+            <div class="card-box h-100">
+               <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h4 class="header-title mb-0">{{ __('Inventory Service') }}</h4>
+                  <button class="btn btn-info d-block" type="submit"  name="need_inventory_service_submit_btn" value ="1"> {{ __("Save") }} </button>
+               </div>
+               <p class="sub-header">{{ __('Offer Inventory Services with Order.') }}</p>
+               <div class="row">
+                  <div class="col-12">
 
+                     <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                           <label for="need_inventory_service" class="mr-3">{{ __('Enable') }}</label>
+                           <input type="checkbox" data-plugin="switchery" name="need_inventory_service" id="need_inventory_service" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_inventory_service == '1')) checked='checked' @endif>
+                        </div>
+                     </div>
+        
+                     <div class="form-group mt-3 mb-0 inventoryFields" style="{{((isset($preference) && $preference->need_inventory_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="inventory_service_key_url">{{ __('Inventory URL') }} *(https://www.abc.com)</label>
+                        <input type="text" name="inventory_service_key_url" id="inventory_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('inventory_service_key_url', $preference->inventory_service_key_url ?? '')}}">
+                        @if($errors->has('inventory_service_key_url'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('inventory_service_key_url') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+        
+                     <div class="form-group mt-3 mb-0 inventoryFields" style="{{((isset($preference) && $preference->need_inventory_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="inventory_service_key_code">{{ __('Inventory Short code') }}</label>
+                        <input type="text" name="inventory_service_key_code" id="inventory_service_key_code" placeholder="" class="form-control" value="{{ old('inventory_service_key_code', $preference->inventory_service_key_code ?? '')}}">
+                        @if($errors->has('inventory_service_key_code'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('inventory_service_key_code') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+        
+                     
+        
+                  </div>
+               </div>
+            </div><!-- On Demand Services section end -->
+         </div>
+         @endif
 
          @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' )
          <div class="col-lg-3 col-md-6 mb-3">
@@ -943,6 +988,17 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-6">
                      <div class="form-group mb-2">
+                        <label for="vendor_fcm_server_key">{{__('Individual Vendor Server Key')}}</label>
+                        <input type="text" name="vendor_fcm_server_key" id="vendor_fcm_server_key" placeholder="" class="form-control" value="{{ old('vendor_fcm_server_key', $preference->vendor_fcm_server_key ?? '')}}" required>
+                        @if($errors->has('vendor_fcm_server_key'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('vendor_fcm_server_key') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group mb-2">
                         <label for="fcm_api_key">{{__('API Key')}}</label>
                         <input type="text" name="fcm_api_key" id="fcm_api_key" placeholder="" class="form-control" value="{{ old('fcm_api_key', $preference->fcm_api_key ?? '')}}" required>
                         @if($errors->has('fcm_api_key'))
@@ -1080,6 +1136,56 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div>
       </div>
       <!-- Customer Support end -->
+
+
+       <!-- sos Support -->
+       <div class="col-lg-3 col-md-6 mb-3">
+          <div class="card-box h-100">
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
+               @csrf
+               <input type="hidden" name="sos_enable" value="1">
+               <div class="row">
+                  <div class="col-12">
+                     <div class="form-group mb-0 switchery-demo">
+                        <label for="sos" class="d-flex align-items-center justify-content-between">
+                           <h5 class="social_head"> <span>SOS</span></h5>
+                           <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
+                        </label>
+                        <label for="" class="mr-3">{{ __("Enable") }}</label>
+                        <input type="checkbox" data-plugin="switchery" name="sos" id="sos" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->sos == '1')) checked='checked' @endif>
+                     </div>
+                  </div>
+               </div>
+               <div class="row  sos_row" style="{{((isset($preference) && $preference->sos == '1')) ? '' : 'display:none;'}}">
+                  <div class="col-12">
+                     <div class="form-group mb-2 mt-2">
+                        <label for="sos_police_contact"></label>{{ __("Police Number") }}</label>
+                        <input type="text" name="sos_police_contact" id="sos_police_contact" placeholder="" class="form-control" value="{{ old('twitter_client_id', $preference->sos_police_contact ?? '')}}">
+                        @if($errors->has('sos_police_contact'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('sos_police_contact') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                  </div>
+                  <div class="col-12">
+                     <div class="form-group mb-2">
+                        <label for="sos_ambulance_contact">{{ __("Ambulance Number") }}</label>
+                        <input type="text" name="sos_ambulance_contact" id="sos_ambulance_contact" placeholder="" class="form-control" value="{{ old('sos_ambulance_contact', $preference->sos_ambulance_contact ?? '')}}">
+                        @if($errors->has('sos_ambulance_contact'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('sos_ambulance_contact') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                  </div>
+               </div>
+            </form>
+            </div><!-- Twitter card end -->
+      </div>
+      <!-- Customer Support end -->
+
+
    </div>
 
    <div class="row">
@@ -1281,6 +1387,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="form-group d-flex justify-content-between mb-3">
                      <label for="db_audit_logs" class="mr-2 mb-0">{{__('Order Cancellation By User')}}<small class="d-block pr-5">{{__('Enable to give permission to user for cancelling order.')}}</small></label>
                     <span> <input type="checkbox" data-plugin="switchery" name="is_cancel_order_user" id="is_cancel_order_user" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_cancel_order_user == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Need Inventory?')}}<small class="d-block pr-5">{{__('Enable to give permission to panel for inventory.')}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="enable_inventory_service" id="enable_inventory_service" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enable_inventory_service == '1')) checked='checked' @endif>
                      </span>
                   </div>
                </div>
@@ -1983,6 +2097,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
       var laundry_service = $('#need_laundry_service');
       var xero_enable_switch = $('#xero_enable_switch');
+      var need_inventory_service = $('#need_inventory_service');
 
       if(laundry_service.length > 0){
          laundry_service[0].onchange = function() {
@@ -2028,6 +2143,17 @@ $sms_crendential = json_decode($preference->sms_credentials);
          }
       }
 
+      if(need_inventory_service.length > 0){
+         need_inventory_service[0].onchange = function() {
+
+         if ($('#need_inventory_service:checked').length != 1) {
+            $('.inventoryFields').hide();
+         } else {
+            $('.inventoryFields').show();
+         }
+         }
+      }
+
 
       var fb_login = $('#fb_login');
 
@@ -2067,6 +2193,16 @@ $sms_crendential = json_decode($preference->sms_credentials);
             $('.apple_row').hide();
          } else {
             $('.apple_row').show();
+         }
+      }
+      var sos = $('#sos');
+
+      sos[0].onchange = function() {
+
+         if ($('#sos:checked').length != 1) {
+            $('.sos_row').hide();
+         } else {
+            $('.sos_row').show();
          }
       }
 

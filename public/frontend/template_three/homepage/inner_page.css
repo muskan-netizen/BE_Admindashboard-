@@ -36,7 +36,7 @@ body[dir=rtl] .vendors .slick-slider{direction:ltr}body[dir=rtl] .onhover-show-d
 .dark.al_body_template_three .address-input-field{ background-color: #2b2b2b;}
 .al_body_template_three .vendors .slick-slide{padding:10px 0 0px;height:auto}
 .al_body_template_three .img-outer-box.position-relative{border-radius:12px;}
-.al_body_template_three .slick-slider .img-outer-box.position-relative{border-radius:12px;height:200px}
+.al_body_template_three .slick-slider .img-outer-box.position-relative{border-radius:12px;height:250px}
 .al_body_template_three .img-outer-box.position-relative img{width:100%;margin:0 auto;height:100%;object-fit:cover;transform:none;opacity:1;
     will-change:transform,opacity;border-radius:inherit;
     filter:unset;padding:0;transition:opacity .25s ease 0s,transform .25s ease 0s}

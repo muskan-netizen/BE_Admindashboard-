@@ -31,8 +31,8 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash');
-        //,'easebuzz' 
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal');
+        //,'userede'
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -538,12 +538,34 @@ class PaymentOptionController extends BaseController
                                 'publishable_key' => $request->stripe_oxxo_publishable_key
                             ));
                             break;
+
+                        case 'stripe_ideal':
+                            $validatedData = $request->validate([
+                                'stripe_ideal_secret_key' => 'required',
+                                'stripe_ideal_secret_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'secret_key' => $request->stripe_ideal_secret_key,
+                                'publishable_key' => $request->stripe_ideal_publishable_key
+                            ));
+                            break;
+
                         case 'offline_manual':
                             $validatedData = $request->validate([
                                 'manule_payment_title' => 'required',
                             ]);
                             $json_creds = json_encode(array(
                                 'manule_payment_title' => $request->manule_payment_title
+                            ));
+                            break; 
+                        case 'userede':
+                            $validatedData = $request->validate([
+                                'userede_Rede_PV' => 'required',
+                                'userede_Rede_token' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'userede_Rede_PV' => $request->userede_Rede_PV,
+                                'userede_Rede_token' => $request->userede_Rede_token
                             ));
                             break;    
 

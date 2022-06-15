@@ -141,13 +141,21 @@ class SocialController extends BaseController{
             // $user_device->device_type = $request->device_type;
             // $user_device->device_token = $request->device_token;
             // $user_device->save();
+
+            //check login from individual vendor app
+            $fromVendorAppLogin = 0;
+            if(!empty($request->is_vendor_app)){
+                $fromVendorAppLogin = 1;
+            }
+            
             if (!empty($request->fcm_token)) {
                 $user_device = UserDevice::updateOrCreate(
                     ['device_token' => $request->fcm_token],
                     [
                         'user_id' => $customer->id,
                         'device_type' => $request->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             } else {
@@ -156,7 +164,8 @@ class SocialController extends BaseController{
                     [
                         'user_id' => $customer->id,
                         'device_type' => $request->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             }
