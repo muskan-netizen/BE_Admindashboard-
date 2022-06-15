@@ -105,6 +105,8 @@
                 $vnpay_server_key = (isset($creds->vnpay_server_key)) ? $creds->vnpay_server_key : '';
                 $merchant_phone = (isset($creds->merchant_phone)) ? $creds->merchant_phone : '';
                 $manule_payment_title = (isset($creds->manule_payment_title)) ? $creds->manule_payment_title : '';
+                $userede_Rede_PV = (isset($creds->userede_Rede_PV)) ? $creds->userede_Rede_PV : '';
+                $userede_Rede_token = (isset($creds->userede_Rede_token)) ? $creds->userede_Rede_token : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -923,6 +925,25 @@
                                 <div class="form-group mb-2">
                                     <label for="manule_payment_title" class="mr-3">{{ __("Manual payment title") }}</label>
                                     <input type="text" name="manule_payment_title" id="manule_payment_title" class="form-control" value="{{$manule_payment_title}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'userede') )
+                    <div class="mt-2" id="userede_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="userede_Rede_PV" class="mr-3">{{ __("Rede PV") }}</label>
+                                    <input type="text" name="userede_Rede_PV" id="userede_Rede_PV" class="form-control" value="{{$userede_Rede_PV}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="userede_Rede_token" class="mr-3">{{ __("Rede token") }}</label>
+                                    <input type="text" name="userede_Rede_token" id="userede_Rede_token" class="form-control" value="{{$userede_Rede_token}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

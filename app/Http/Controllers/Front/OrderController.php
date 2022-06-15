@@ -1021,10 +1021,10 @@ class OrderController extends FrontController
                         //         $product_tax = $quantity_price * $rate / 100;
                         //         $product_taxable_amount += $product_tax;
                         //         $payable_amount = $payable_amount + $product_tax;
-                        }
-                
-                   }
-                $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
+                    }
+                   
+                }
+        //        $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
                 //echo  "    payable_amount==".$payable_amount;
                 }
                 $payable_amount+= $vendor_total_container_charges;
@@ -1074,9 +1074,14 @@ class OrderController extends FrontController
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
                 $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
-                //$total_taxable_amount+=$new_vendor_taxable_amount;
+                $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
+                $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
+                $total_taxable_amount+=$new_vendor_taxable_amount;
                 // $OrderVendor->taxable_amount   = $vendor_taxable_amount;
-                $OrderVendor->taxable_amount = $new_vendor_taxable_amount;
+
+              
+
+                $OrderVendor->taxable_amount = $new_vendor_taxable_amount; 
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->payable_amount = $vendor_payable_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
@@ -1124,7 +1129,7 @@ class OrderController extends FrontController
             $order->total_discount = $total_discount;
              // $order->taxable_amount = $taxable_amount;
             //$new_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
-            $order->taxable_amount = $total_taxable_amount;
+            $order->taxable_amount = $total_taxable_amount; 
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
             if ($loyalty_amount_saved > 0) {
                 if ($loyalty_amount_saved > $payable_amount) {
@@ -1334,8 +1339,7 @@ class OrderController extends FrontController
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-        Log::info($devices);
-
+      
         $from = '';
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
@@ -1365,25 +1369,18 @@ class OrderController extends FrontController
            
             if(!empty($from)){
                 // helper function
-                curlRequest($from, $data);
+                curlJsonRequest($from, $data);
             }
 
             // Individual Vendor App User Token
             $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
             
-            Log::info($user_ids);
-            Log::info($vendorAppUserDevices);
-            Log::info($client_preferences->vendor_fcm_server_key);
-
+           
             if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
                 
                 $from = $client_preferences->vendor_fcm_server_key;
                 $data['registration_ids'] = $vendorAppUserDevices;
-                // pr($data);
-                Log::info('data');
-                Log::info(json_encode($data));
-                Log::info('data');
-                // helper function
+               
                 $result = curlJsonRequest($from, $data);
                 Log::info($result);
             }
@@ -1748,6 +1745,7 @@ class OrderController extends FrontController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name',  'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1810,8 +1808,14 @@ class OrderController extends FrontController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'is_restricted' => $order_vendor->is_restricted
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
 
             $client = new GCLIENT([
@@ -1867,6 +1871,7 @@ class OrderController extends FrontController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1920,8 +1925,14 @@ class OrderController extends FrontController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'is_restricted' => $order_vendor->is_restricted
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
 
             $client = new GCLIENT([
@@ -1976,6 +1987,7 @@ class OrderController extends FrontController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'phone_no', 'email', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
             $rtype = 'P';
@@ -2080,8 +2092,14 @@ class OrderController extends FrontController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'request_type'=> $rtype
+                'request_type'=> $rtype,
+                'is_restricted' => $order_vendor->is_restricted
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
 
             $client = new Client([

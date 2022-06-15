@@ -1159,8 +1159,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                <div class="row  sos_row" style="{{((isset($preference) && $preference->sos == '1')) ? '' : 'display:none;'}}">
                   <div class="col-12">
                      <div class="form-group mb-2 mt-2">
-                        <label for="sos_police_contact"></label>{{ __("SOS Police Mumber") }}</label>
-                        <label for="" class="mr-3">{{ __("Enable") }}</label>
+                        <label for="sos_police_contact"></label>{{ __("Police Number") }}</label>
                         <input type="text" name="sos_police_contact" id="sos_police_contact" placeholder="" class="form-control" value="{{ old('twitter_client_id', $preference->sos_police_contact ?? '')}}">
                         @if($errors->has('sos_police_contact'))
                         <span class="text-danger" role="alert">
@@ -1171,7 +1170,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-12">
                      <div class="form-group mb-2">
-                        <label for="sos_ambulance_contact">{{ __("SOS Ambulance Number") }}</label>
+                        <label for="sos_ambulance_contact">{{ __("Ambulance Number") }}</label>
                         <input type="text" name="sos_ambulance_contact" id="sos_ambulance_contact" placeholder="" class="form-control" value="{{ old('sos_ambulance_contact', $preference->sos_ambulance_contact ?? '')}}">
                         @if($errors->has('sos_ambulance_contact'))
                         <span class="text-danger" role="alert">

@@ -85,7 +85,7 @@ class OrderController extends BaseController
     public function postPlaceOrder(Request $request)
     {
         try {
-            if($request->has('type') && $request->type == 'takeaway'){
+            if($request->has('type') && ($request->type == 'takeaway' || $request->type == 'dine_in' )){
                 $rules = [
                     'payment_option_id' => 'required'
                 ];
@@ -149,7 +149,7 @@ class OrderController extends BaseController
                         return response()->json(['error' => 'Your phone is not verified.'], 404);
                     }
                 }
-                if($request->has('type') && $request->type != 'takeaway'){
+                if($request->has('type') && ($request->type != 'takeaway' || $request->type != 'dine_in' )){
                     $user_address = UserAddress::where('id', $request->address_id)->first();
                     if (!$user_address) {
                         return response()->json(['error' => 'Invalid address id.'], 404);
@@ -211,6 +211,8 @@ class OrderController extends BaseController
                         $vendor_products_total_amount = 0;
                         $vendor_payable_amount = 0;
                         $vendor_discount_amount = 0;
+                        $is_restricted = 0;
+                        $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
                         $order_vendor = new OrderVendor;
                         $order_vendor->status = 0;
                         $order_vendor->user_id = $user->id;
@@ -219,6 +221,10 @@ class OrderController extends BaseController
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                         $order_vendor->save();
                         foreach ($vendor_cart_products as $vendor_cart_product) {
+                            if($is_restricted == 0 && $passbase_check && isset($vendor_cart_product->product) && $vendor_cart_product->product->age_restriction == 1)
+                            {
+                                $is_restricted = 1;
+                            }
                             $variant = $vendor_cart_product->product->variants->where('id', $vendor_cart_product->variant_id)->first();
                             $quantity_price = 0;
                             $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
@@ -410,6 +416,7 @@ class OrderController extends BaseController
                         $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
+                        $OrderVendor->is_restricted = $is_restricted;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
                             if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
@@ -859,6 +866,7 @@ class OrderController extends BaseController
                 $call_back_url = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/dispatch-order-status-update/" . $dynamic;
             //   $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -919,8 +927,14 @@ class OrderController extends BaseController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'is_restricted' => $order_vendor->is_restricted
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
            // Log::info($postdata);
             $client = new GCLIENT([
@@ -981,6 +995,7 @@ class OrderController extends BaseController
             // $call_back_url = route('dispatch-order-update', $dynamic);
 
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1033,8 +1048,14 @@ class OrderController extends BaseController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'is_restricted' => $order_vendor->is_restricted
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
 
             $client = new GClient([
@@ -1089,6 +1110,7 @@ class OrderController extends BaseController
              $dynamic = uniqid($order->id . $vendor);
              $call_back_url = route('dispatch-order-update', $dynamic);
              $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'phone_no', 'email', 'longitude', 'address')->first();
+             $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
              $tasks = array();
              $meta_data = '';
              $rtype = 'P';
@@ -1193,8 +1215,14 @@ class OrderController extends BaseController
                  'order_team_tag' => $team_tag,
                  'call_back_url' => $call_back_url ?? null,
                  'task' => $tasks,
-                 'request_type'=> $rtype
+                 'request_type'=> $rtype,
+                 'is_restricted' => $order_vendor->is_restricted
              ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
  
  
              $client = new GCLIENT([
