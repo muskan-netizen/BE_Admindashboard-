@@ -85,7 +85,7 @@ class OrderController extends BaseController
     public function postPlaceOrder(Request $request)
     {
         try {
-            if($request->has('type') && $request->type == 'takeaway'){
+            if($request->has('type') && ($request->type == 'takeaway' || $request->type == 'dine_in' )){
                 $rules = [
                     'payment_option_id' => 'required'
                 ];
