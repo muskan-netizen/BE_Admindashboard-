@@ -85,7 +85,7 @@ class OrderController extends BaseController
     public function postPlaceOrder(Request $request)
     {
         try {
-            if($request->has('type') && ($request->type == 'takeaway' || $request->type == 'dine_in' )){
+            if($request->has('type') && $request->type != 'delivery'){
                 $rules = [
                     'payment_option_id' => 'required'
                 ];
@@ -148,14 +148,13 @@ class OrderController extends BaseController
                     if ($user->is_phone_verified == 0) {
                         return response()->json(['error' => 'Your phone is not verified.'], 404);
                     }
-                }
-                if($request->has('type') && ($request->type != 'takeaway' || $request->type != 'dine_in' )){
+                }           
+                if($request->has('type') && $request->type == 'delivery' ){
                     $user_address = UserAddress::where('id', $request->address_id)->first();
                     if (!$user_address) {
                         return response()->json(['error' => 'Invalid address id.'], 404);
                     }
-                }
-               
+                }            
                 $action = ($request->has('type')) ? $request->type : 'delivery';
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
