@@ -899,6 +899,25 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'stripe_ideal') )
+                    <div class="mt-2" id="stripe_ideal_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_ideal_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="stripe_ideal_secret_key" id="stripe_ideal_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_ideal_publishable_key" class="mr-3">{{ __("Publishable Key") }}</label>
+                                    <input type="password" name="stripe_ideal_publishable_key" id="stripe_ideal_publishable_key" class="form-control" value="{{$publishable_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     @if ( (strtolower($opt->code) == 'offline_manual') )
                     <div class="mt-2" id="offline_manual_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">

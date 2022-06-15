@@ -94,14 +94,22 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/webview/response/stripe_fpx', 'Front\StripeGatewayController@webViewResponseStripeFPX')->name('payment.webview.response.stripe_fpx');
 
 
-		// Stripe OXXO
-		Route::post('payment/create/stripe_oxxo', 'Front\StripeGatewayController@createStripeOXXOPaymentIntent')->name('payment.create.stripe_oxxo');
-		 Route::get('payment/stripe_oxxo/clear', 'Front\StripeGatewayController@cartStripeOXXOClear')->name('payment.stripe_oxxo_clear');
-		Route::post('payment/webhook/stripe_oxxo', 'Front\StripeGatewayController@stripeOXXOWebhook')->name('payment.webhook.stripe_oxxo');
-		Route::get('payment/webview/stripe_oxxo', 'Front\StripeGatewayController@paymentWebViewStripeOXXO')->name('payment.webview.stripe_oxxo');
-		Route::get('payment/webview/response/stripe_oxxo', 'Front\StripeGatewayController@webViewResponseStripeOXXO')->name('payment.webview.response.stripe_oxxo');
+	// Stripe OXXO
+	Route::post('payment/create/stripe_oxxo', 'Front\StripeGatewayController@createStripeOXXOPaymentIntent')->name('payment.create.stripe_oxxo');
+	Route::get('payment/stripe_oxxo/clear', 'Front\StripeGatewayController@cartStripeOXXOClear')->name('payment.stripe_oxxo_clear');
+	Route::post('payment/webhook/stripe_oxxo', 'Front\StripeGatewayController@stripeOXXOWebhook')->name('payment.webhook.stripe_oxxo');
+	Route::get('payment/webview/stripe_oxxo', 'Front\StripeGatewayController@paymentWebViewStripeOXXO')->name('payment.webview.stripe_oxxo');
+	Route::get('payment/webview/response/stripe_oxxo', 'Front\StripeGatewayController@webViewResponseStripeOXXO')->name('payment.webview.response.stripe_oxxo');
 
 
+	// Stripe OXXO
+	Route::post('payment/create/stripe_ideal', 'Front\StripeGatewayController@createStripeIdealPaymentIntent')->name('payment.create.stripe_ideal');
+	Route::get('payment/retrieve/stripe_ideal', 'Front\StripeGatewayController@retrieveStripeIdealPaymentIntent')->name('payment.retrieve.stripe_ideal');
+	Route::post('payment/webhook/stripe_ideal', 'Front\StripeGatewayController@stripeIdealWebhook')->name('payment.webhook.stripe_ideal');
+	Route::get('payment/webview/stripe_ideal', 'Front\StripeGatewayController@paymentWebViewStripeIdeal')->name('payment.webview.stripe_ideal');
+	Route::get('payment/webview/response/stripe_ideal', 'Front\StripeGatewayController@webViewResponseStripeIdeal')->name('payment.webview.response.stripe_ideal');
+
+		   
 	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
 	Route::get('payment/paypal/CompletePurchase', 'Front\PaypalGatewayController@paypalCompletePurchase')->name('payment.paypalCompletePurchase');
