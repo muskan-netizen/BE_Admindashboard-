@@ -271,6 +271,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('payment/easebuzz/notify', 'Front\EasebuzzController@easybuzzNotify')->name('payment.easebuzz.easybuzzNotify');
 	Route::any('payment/easebuzz/api', 'Front\EasebuzzController@easebuzz_respontAPP')->name('easebuzz.webview');
 
+	// UseRedePaymentController payment test
+	Route::get('/payment/userede/payment_init', 'Front\UseRedePaymentController@paymentInit')->name('payment.userede.payment_init');
+
 	// test VNPAY payment gateway
 	Route::get('/vnpay-gateway', 'Front\VnpayController@VnPay_gateway')->name('vnpay-gateway');
 	Route::post('payment/vnpay/request', 'Front\VnpayController@order')->name('vnpay.order');

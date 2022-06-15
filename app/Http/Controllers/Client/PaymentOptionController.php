@@ -32,7 +32,7 @@ class PaymentOptionController extends BaseController
     {
         
         $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash');
-        //,'easebuzz' 
+        //,'userede'
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -544,6 +544,16 @@ class PaymentOptionController extends BaseController
                             ]);
                             $json_creds = json_encode(array(
                                 'manule_payment_title' => $request->manule_payment_title
+                            ));
+                            break; 
+                        case 'userede':
+                            $validatedData = $request->validate([
+                                'userede_Rede_PV' => 'required',
+                                'userede_Rede_token' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'userede_Rede_PV' => $request->userede_Rede_PV,
+                                'userede_Rede_token' => $request->userede_Rede_token
                             ));
                             break;    
 
