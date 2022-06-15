@@ -9,6 +9,11 @@ class UserVerificationResource extends Model
 {
     use HasFactory;
     protected $fillable = ['user_verification_id', 'type', 'datapoints'];
+    protected $appends = ['resources'];
+
+    public function getResourcesAttribute($value){
+        return json_decode($this->datapoints);
+    }
 
     public function addResource($data)
     {
