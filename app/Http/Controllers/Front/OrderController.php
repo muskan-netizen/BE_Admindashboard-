@@ -1021,10 +1021,10 @@ class OrderController extends FrontController
                         //         $product_tax = $quantity_price * $rate / 100;
                         //         $product_taxable_amount += $product_tax;
                         //         $payable_amount = $payable_amount + $product_tax;
-                        }
-                
-                   }
-            //    $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
+                    }
+                   
+                }
+        //        $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
                 //echo  "    payable_amount==".$payable_amount;
                 }
                 $payable_amount+= $vendor_total_container_charges;

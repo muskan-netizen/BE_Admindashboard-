@@ -149,7 +149,7 @@ class OrderController extends BaseController
                         return response()->json(['error' => 'Your phone is not verified.'], 404);
                     }
                 }
-                if($request->has('type') && $request->type != 'takeaway'){
+                if($request->has('type') && ($request->type != 'takeaway' || $request->type != 'dine_in' )){
                     $user_address = UserAddress::where('id', $request->address_id)->first();
                     if (!$user_address) {
                         return response()->json(['error' => 'Invalid address id.'], 404);
