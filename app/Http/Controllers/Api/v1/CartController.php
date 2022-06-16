@@ -790,7 +790,6 @@ class CartController extends BaseController
                                     $order_sub_total = $order_sub_total + $opt_quantity_price;
                                 }
                             }
-                            
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
@@ -1232,9 +1231,6 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
-        
-
-       
         $cal_tip_value_total = ($cart->total_payable_amount - $cart->total_tax) + $cart->total_fixed_fee_amount;  
         $cart->tip = array(
             ['label' => '5%', 'value' => decimal_format(0.05 * $cal_tip_value_total)],
