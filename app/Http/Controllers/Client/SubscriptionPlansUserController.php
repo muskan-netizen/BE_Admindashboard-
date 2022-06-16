@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, SmsProvider, Currency, Language, Country, User, SubscriptionPlansUser, SubscriptionPlanFeaturesUser,  SubscriptionFeaturesListUser, SubscriptionInvoicesUser};
+use App\Models\{Client, ClientPreference, SmsProvider, Currency, Language, Country, User, SubscriptionPlansUser, SubscriptionPlanFeaturesUser, ShowSubscriptionPlanOnSignup, SubscriptionFeaturesListUser, SubscriptionInvoicesUser};
 use Carbon\Carbon;
 
 class SubscriptionPlansUserController extends BaseController
