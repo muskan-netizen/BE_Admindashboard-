@@ -771,7 +771,7 @@ class CartController extends BaseController
                                     $addon_price=0;
                                     if($addon_option->exists()){
                                         $addon_title=$addon_option->first()->title;
-                                        $addon_price=$addon_option->first()->price;
+                                        $addon_price=$addon_option->first()->price * $prod->quantity;
                                     }
                                     $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                                     $opt_quantity_price = $opt_price_in_doller_compare * $prod->quantity;
@@ -790,7 +790,6 @@ class CartController extends BaseController
                                     $order_sub_total = $order_sub_total + $opt_quantity_price;
                                 }
                             }
-                            Log::info($addon_price);
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
@@ -1234,10 +1233,11 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
+        $cal_tip_value_total = ($cart->total_payable_amount - $cart->total_tax) + $cart->total_fixed_fee_amount;  
         $cart->tip = array(
-            ['label' => '5%', 'value' => decimal_format(0.05 * $cart->total_payable_amount)],
-            ['label' => '10%', 'value' => decimal_format(0.1 * $cart->total_payable_amount)],
-            ['label' => '15%', 'value' => decimal_format(0.15 * $cart->total_payable_amount)]
+            ['label' => '5%', 'value' => decimal_format(0.05 * $cal_tip_value_total)],
+            ['label' => '10%', 'value' => decimal_format(0.1 * $cal_tip_value_total)],
+            ['label' => '15%', 'value' => decimal_format(0.15 * $cal_tip_value_total)]
         );
 
         $cart->total_payable_amount= number_format((float)$cart->total_payable_amount +=$cart->total_fixed_fee_amount, 2, '.', '');
