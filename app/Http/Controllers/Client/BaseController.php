@@ -443,5 +443,44 @@ class BaseController extends Controller
     }
     
 
+    # get All Product List From Inventory with product ids
+    public function getAllProductListFromInventoryByIds($productids){
+        try {
+
+                $preference_data = $this->checkIfInventoryOn();
+                if($preference_data != false) {
+                    $postdata =  ['productids' => $productids];
+                    $preference = new GClient(['headers' => ['shortcode' => $preference_data->inventory_service_key_code,
+                    'content-type' => 'application/json']
+                        ]);
+
+                    $url = $preference_data->inventory_service_key_url;
+                    $res = $preference->POST(
+                    $url.'/api/v1/product-list-by-productids',['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 200) { 
+                        $data = $response;
+                        $data['status'] = 200;
+                        $data['message'] =  'Success';
+                        return $data;
+                    }else{
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  'Error';
+                        return $data;
+                    }
+                }
+                }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
+    }
+
 
     }

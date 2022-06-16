@@ -25,7 +25,7 @@ use App\Http\Controllers\AhoyController;
 use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
-use DB;
+use DB,Log;
 use App\Models\VendorRegistrationDocument;
 
 class VendorController extends BaseController
@@ -1764,9 +1764,36 @@ class VendorController extends BaseController
            
         }
        
-        $returnHTML = view('backend.vendor.inventory-product-list')->with(['store_product' => $store_product])->render();
+        $returnHTML = view('backend.vendor.inventory-product-list')->with(['store_product' => $store_product,'vendor_id' => $request->vendor_id])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
+
+
+    # get Inventory Store Products
+    public function postInventoryStoreProducts(Request $request){   
+        
+        $store_product = [];
+        $productids = $request->productids;
+        $store_product_list = $this->getAllProductListFromInventoryByIds($productids);
+        if($store_product_list['status'] == 200){
+
+           $store_product = $store_product_list['data'];
+        }
+
+       
+       foreach($store_product as $key => $product)
+       {    
+           unset($product['category']);
+           unset($product['primary']);
+           $product['vendor_id'] = $request->vendor_id;
+
+           
+           $product = Product::updateOrCreate(['sku' => $product['sku']],$product);
+       }
+        
+           
+    }
+    
 
 
 
