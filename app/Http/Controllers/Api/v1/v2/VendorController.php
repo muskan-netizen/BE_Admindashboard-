@@ -2082,7 +2082,7 @@ class VendorController extends BaseController{
     }
 
 
-    # optimize product by vendpr
+    # optimize product by vendor
 
     public function productsByVendorOptimize(Request $request, $vid = 0){
         try {
@@ -2093,7 +2093,7 @@ class VendorController extends BaseController{
             $userid = $user->id;
             $latitude = $user->latitude;
             $longitude = $user->longitude;
-            $limit = $request->has('limit') ? $request->limit : 12;
+            $limit = $request->has('limit') ? $request->limit : 15;
             $page = $request->has('page') ? $request->page : 1;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
@@ -2200,7 +2200,7 @@ class VendorController extends BaseController{
                  
                     
                     $vendor_categories = $vendor_categories->get()->map(function ($query) {
-                        $query->setRelation('data', $query->data->take(20));
+                        $query->setRelation('data', $query->data->take(15));
                          return $query;
                     });  
                     
@@ -2301,6 +2301,7 @@ class VendorController extends BaseController{
                             ->join('variant_translations as vt','vt.variant_id','vr.id')
                             ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
                             ->where('vt.language_id', $langId)
+                            ->where('vr.status', 1)
                             ->whereIn('product_id', function($qry) use($vid){
                             $qry->select('id')->from('products')
                                 ->where('vendor_id', $vid);
@@ -2324,7 +2325,7 @@ class VendorController extends BaseController{
             if(!$vendor_id){
                 return response()->json(['error' => 'No record found.'], 404);
             }
-            $paginate = $request->has('limit') ? $request->limit : 12;
+            $paginate = $request->has('limit') ? $request->limit : 15;
             // $preferences = Session::get('preferences');
             $user = Auth::user();
             $latitude = $user->latitude;
@@ -2519,7 +2520,7 @@ class VendorController extends BaseController{
                     
 
                     $vendor_categories = $vendor_categories->get()->map(function ($query) {
-                        $query->setRelation('data', $query->data->take(20));
+                        $query->setRelation('data', $query->data->take(15));
                          return $query;
                     }); 
                  
@@ -2693,7 +2694,7 @@ class VendorController extends BaseController{
             $userid = $user->id;
             $latitude = $user->latitude;
             $longitude = $user->longitude;
-            $limit = $request->has('limit') ? $request->limit : 20;
+            $limit = $request->has('limit') ? $request->limit : 15;
             $page = $request->has('page') ? $request->page : 2;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             $langId = $user->language;
