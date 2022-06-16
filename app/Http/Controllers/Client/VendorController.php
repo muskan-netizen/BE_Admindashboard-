@@ -640,7 +640,7 @@ class VendorController extends BaseController
                 $p_categories->push($pc->category);
             }
             $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
+            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy_new($product_categories_build);
             foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
@@ -1490,7 +1490,7 @@ class VendorController extends BaseController
                 $p_categories->push($pc->category);
             }
             $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
+            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy_new($product_categories_build);
             foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
