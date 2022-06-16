@@ -1021,10 +1021,10 @@ class OrderController extends FrontController
                         //         $product_tax = $quantity_price * $rate / 100;
                         //         $product_taxable_amount += $product_tax;
                         //         $payable_amount = $payable_amount + $product_tax;
-                        }
-                
-                   }
-            //    $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
+                    }
+                   
+                }
+        //        $total_taxable_amount+=($quantity_price+$addon_amount) * $rate / 100;
                 //echo  "    payable_amount==".$payable_amount;
                 }
                 $payable_amount+= $vendor_total_container_charges;
@@ -1745,6 +1745,7 @@ class OrderController extends FrontController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name',  'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1807,8 +1808,14 @@ class OrderController extends FrontController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'is_restricted' => $order_vendor->is_restricted
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
 
             $client = new GCLIENT([
@@ -1864,6 +1871,7 @@ class OrderController extends FrontController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
 
@@ -1917,8 +1925,14 @@ class OrderController extends FrontController
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
-                'task' => $tasks
+                'task' => $tasks,
+                'is_restricted' => $order_vendor->is_restricted
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
 
             $client = new GCLIENT([
@@ -1973,6 +1987,7 @@ class OrderController extends FrontController
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'phone_no', 'email', 'longitude', 'address')->first();
+            $order_vendor = OrderVendor::where(['order_id' => $order, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
             $rtype = 'P';
@@ -2077,8 +2092,14 @@ class OrderController extends FrontController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'request_type'=> $rtype
+                'request_type'=> $rtype,
+                'is_restricted' => $order_vendor->is_restricted
             ];
+            if($order_vendor->is_restricted == 1)
+            {
+                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            }
 
 
             $client = new Client([

@@ -2126,7 +2126,7 @@ class CartController extends FrontController
                             return response()->json(['status'=>'passbase_pending', 'message'=>'The cart contains Alcohol/Tobacco contents. It is mandatory to provide the verification documents to proceed']);
                         }elseif($user->passbase_verification->status == 'pending' || $user->passbase_verification->status == 'processing'){
                             return response()->json(['status'=>'passbase_submitted', 'message'=>'We have received your request for verification. Check back soon and order OR remove Alcohol/Tobacco items']);
-                        }elseif($user->passbase_verification->status == 'approved'){
+                        }elseif($user->passbase_verification->status == 'declined'){
                             return response()->json(['status'=>'passbase_rejected', 'message'=>'According to our Terms and Conditions and Company\'s Policies, your verification documents were not found upto the mark .Please upload them again OR remove Alcohol/Tobacco items.' ]);
                         }
                     }
