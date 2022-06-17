@@ -60,8 +60,8 @@ class EstimationController extends FrontController
 
     public function estimateProductAddons(Request $request)
     {
-
-        $langId = Session::get('customerLanguage');
+        // dd(getClientPreferenceDetail());
+        $langId = Session::get('customerLanguage')??'1';
         $product_id = $request->slug;
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $variant_id = ($request->has('variant')) ? $request->variant : 0;
@@ -127,8 +127,11 @@ class EstimationController extends FrontController
              // Make Array from (estimate_option_id) string
             // $estimate_option_ids = explode(',',$request->get('estimate_option_id'));
             
+            //Delete previous added addons
+            EstimatedProductAddons::where('estimated_product_id', $estimatedProduct->id)->delete();
             // Loop through the (estimate_option_ids)
             foreach($request->estimate_option_id as $estimate_option_id){
+               
                 $checkAddonExists = EstimatedProductAddons::where('estimated_product_id', $estimatedProduct->id)->where('estimated_addon_option_id', $estimate_option_id)->first();
                 if(!$checkAddonExists){
                     $estimatedProductAddon = new EstimatedProductAddons();
@@ -155,7 +158,7 @@ class EstimationController extends FrontController
     public function estimationList(Request $request)
     {
         // Get language ID from Request Header - By Ovi
-        $langId  = Session::get('customerLanguage');
+        $langId  = Session::get('customerLanguage')??'1';
         $user_id = Auth::user()->id;
         // Get Cart from Estimated Product Cart based on user_id - By Ovi
         $userCart = EstimatedProductCart::where('user_id', $user_id)->first();
@@ -171,7 +174,6 @@ class EstimationController extends FrontController
         $searchResult = $this->searchProducts($userProducts, $langId);
         $navCategories = $this->categoryNav($langId);
 
-        // dd($searchResult);
         foreach($searchResult as $vendor){
           foreach($vendor->products as $product){
             

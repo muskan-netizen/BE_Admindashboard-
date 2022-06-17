@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEstimatedProductCarts extends Migration
+class CreateEstimatedProducts extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateEstimatedProductCarts extends Migration
      */
     public function up()
     {
-        Schema::create('estimated_product_carts', function (Blueprint $table) {
+        Schema::create('estimated_products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('estimated_cart_id')->references('id')->on('estimated_product_carts')->onDelete('cascade');
             $table->foreignId('product_id')->references('id')->on('estimate_products')->onDelete('cascade');
@@ -29,6 +29,6 @@ class CreateEstimatedProductCarts extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('estimated_product_carts');
+        Schema::dropIfExists('estimated_products');
     }
 }

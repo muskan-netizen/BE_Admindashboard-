@@ -375,6 +375,20 @@ class ClientPreferenceController extends BaseController{
             $preference->admin_email = $request->admin_email ;
         }
 
+
+        //Adding Code by inder bcz ididn't found this code here
+        if(isset($request->hyperlocals) && !empty($request->hyperlocals))
+        {
+            if(isset($request->is_hyperlocal) && !empty($request->is_hyperlocal)){
+                $preference->is_hyperlocal = ($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on') ? 1 : 0; 
+                $preference->Default_location_name = $request->Default_location_name;
+                $preference->Default_latitude = $request->Default_latitude;
+                $preference->Default_longitude = $request->Default_longitude;
+            }else{
+                $preference->is_hyperlocal = ($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on') ? 1 : 0; 
+            }
+        }
+
         // Check if the request is coming from customize page
         if($request->has('send_to') && $request->send_to == 'customize'){
             $preference->delay_order = ($request->has('delay_order') && $request->delay_order == 'on') ? 1 : 0; // Moved by ovi

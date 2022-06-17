@@ -663,6 +663,7 @@
                             <% _.each(estimateAddOnData.estimate_product_addons, function(estimate_product_addon, key1){ %>
                                 <div class="border-product border-top">
                                     <div class="addon-product" style="padding: 16px;">
+                                        
                                         <% _.each(estimate_product_addon, function(estimate_addon_set, key2){ %>
                                             <h4 addon_id="<%= estimate_addon_set.id %>" class="header-title productAddonSet mb-0"><%= estimate_addon_set.title %></h4>
                                                 <div class="addonSetMinMax mb-2">
@@ -683,8 +684,12 @@
                                                         <small><%=min_select + max_select %> Selections allowed</small>
                                                     <% } %>
                                                 </div>
+                                              
+                                                <div class="estimateProductAddonSetOptions" data-min="<%= estimate_addon_set.min_select %>" data-max="<%= estimate_addon_set.max_select %>" data-addonset-title="<%= estimate_addon_set.title %>" >
 
-                                                <div class="estimateProductAddonSetOptions" data-min="<%= estimate_addon_set.min_select %>" data-max="<%= estimate_addon_set.max_select %>" data-addonset-title="<%= estimate_addon_set.title %>">
+                                            <% count = _.size(estimate_addon_set.option); %>
+                                            <% if(count <= 4){ %>
+    
                                                     <% _.each(estimate_addon_set.option, function(option, key2){ %>
                                                         <div class="checkbox-success d-flex mb-1">
                                                             <label class="pr-2 mb-0 flex-fill font-14" for="inlineCheckbox_<%= key1 %>_<%= key2 %>">
@@ -697,7 +702,22 @@
                                                             </div>
                                                         </div>
                                                     <% }); %>
-                                                </div>
+                                                
+                                                <% }else{ %>
+
+                                                    <div class="checkbox-success d-flex mb-1">
+                                                        <input type="hidden" id="fake_product_id" name="fake_product_id" value="<%= estimateAddOnData.id %>">
+                                                        <select class="pr-2 mb-0 flex-fill font-14 estimate_product_addon_option" name="addonOptionData[<%= key1 %>][]" required>
+                                                            <option value="">--Please Select--</option>
+                                                            <% _.each(estimate_addon_set.option, function(option, key2){ %>
+                                                            <option value="<%= option.id %>"><%= option.title %></option>
+                                                            <% }); %>
+                                                        </select>
+                                                        <div>
+                                                            
+
+                                                <% } %>
+                                            </div>
                                         <% }); %>
                                     </div>
                                 </div>
@@ -827,33 +847,52 @@
         });
                          
         $(document).on('click', '.add_estimate_addon_product', function() {
-           
             var check = false;
+
             $(".estimateProductAddonSetOptions").each(function(index) {
-                var min_select = $(this).attr("data-min");
-                var max_select = $(this).attr("data-max");
-                var addon_set_title = $(this).attr("data-addonset-title");
+                if($(this).find(".estimate_product_addon_option").length){
+                    var min_select = $(this).attr("data-min");
+                    var max_select = $(this).attr("data-max");
+                    var addon_set_title = $(this).attr("data-addonset-title");
+                    var addon_set_id = $(this).attr("data-addonset-id");
+                    
+                    var elementType = $($(this).find(".estimate_product_addon_option"))[0].tagName.toLowerCase();
+                    // console.log(($(this).find(".estimate_product_addon_option option:selected").length < min_select), 'condition');
+                    // console.log($(this).find(".estimate_product_addon_option option:selected").length, 'length');
+                    // console.log(elementType);
+                    // return false;
+                    
+                    if ((min_select > 0) && 
+                    (((elementType=='input') && ($(this).find(".estimate_product_addon_option:checked").length < min_select)) || 
+                    ((elementType=='select') && ($(this).find(".estimate_product_addon_option option:not(:first-child):selected").length < min_select))) ) {
+                                success_error_alert('error', "Minimum " + min_select + " " + addon_set_title + " required", ".estimate_addon_response");
+                                check = true;
+                                return false;
+                    }
+            
+                    if ((max_select > 0) &&
+                    (((elementType=='input') && ($(this).find(".estimate_product_addon_option:checked").length > max_select)) || 
+                    ((elementType=='select') && ($(this).find(".estimate_product_addon_option option:not(:first-child):selected").length > max_select))) ) {
+                            success_error_alert('error', "You can select maximum " + max_select + " " + addon_set_title, ".estimate_addon_response");
+                            check = true;
+                            return false;
+                    }
+                }
                 
-                if ((min_select > 0) && ($(this).find(".estimate_product_addon_option:checked").length < min_select)) {
-                    success_error_alert('error', "Minimum " + min_select + " " + addon_set_title + " required", ".estimate_addon_response");
-                    check = true;
-                    return false;
-                }
-                if ((max_select > 0) && ($(this).find(".estimate_product_addon_option:checked").length > max_select)) {
-                    success_error_alert('error', "You can select maximum " + max_select + " " + addon_set_title, ".estimate_addon_response");
-                    check = true;
-                    return false;
-                }
-            });
+             });
 
             if(check === false){
                 var url = "{{ route('addToEstimateCart') }}";
                 var estimate_product_id = $('#fake_product_id').val();
                 var quantity = $('.addon-input-number').val();
                 var options = [];
-                $('input[type="checkbox"]:checked').each(function() {
+                $('input.estimate_product_addon_option:checked').each(function() {
                     options.push($(this).val());
-                })
+                });
+                $('select.estimate_product_addon_option option:selected').each(function() {
+                    options.push($(this).val());
+                });
+
                 var estimate_option_id = options;
                 $.ajax({
                     type: "POST",
@@ -938,11 +977,12 @@
         });
 
         $(document).on('click', '.add_real_cart', function(){
+            
                 $('.add_to_real_cart_loader').show();
                 var url        = "{{ route('postCartRequestFromEstimation') }}";
                 var vendor_id  = $(this).attr("data-vendor_id");
                 var product_id = $(this).attr("data-product_id");
-                var addon_id   = $(this).attr("data-addon");
+                var addon_id   = $(this).attr("data-addonId");
                 var option_id  = $(this).attr("data-option_id");
                 var quantity   = 1;
             
@@ -953,7 +993,7 @@
                             "vendor_id":       vendor_id,
                             "product_id":      product_id,
                             "quantity":        quantity,
-                            "addonID":         addon_id,
+                            "addon_id":         addon_id,
                             "addonoptID":      option_id,
                             "from_estimation": true,
                         },

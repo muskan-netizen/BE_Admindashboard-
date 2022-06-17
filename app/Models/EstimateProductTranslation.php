@@ -9,6 +9,7 @@ class EstimateProductTranslation extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name','slug','language_id','estimate_product_id'];
 
     public function language()
     {

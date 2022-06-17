@@ -95,12 +95,13 @@ class EstimationAddonController extends Controller
     {
         $addon = EstimateAddonSet::with('translation', 'option.translation')->where('id', $request->id)->firstOrFail();
         
+
         $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')
                     ->where('is_active', 1)
                     ->orderBy('is_primary', 'desc')->get();
 
         $submitUrl = route('estimationsAddon.update', $request->id);
-
+       
 
         $returnHTML = view('backend.vendor.edit-estimations-addon')->with(['languages' => $langs, 'addon' => $addon])->render();
         return response()->json(array('success' => true, 'min_select'=>$addon->min_select, 'max_select'=>$addon->max_select, 'html'=>$returnHTML, 'submitUrl' => $submitUrl));

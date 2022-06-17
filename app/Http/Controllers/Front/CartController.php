@@ -244,8 +244,6 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-
-
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -253,7 +251,7 @@ class CartController extends FrontController
             $user = Auth::user();
             // $addon_ids = $request->addonID;
             // $addon_options_ids = $request->addonoptID;
-            $langId = Session::get('customerLanguage');
+            $langId = Session::get('customerLanguage')??'1';
             $new_session_token = session()->get('_token');
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $user_id = $user ? $user->id : '';
@@ -300,18 +298,24 @@ class CartController extends FrontController
                      $request->quantity = $productDetail->variant[0]->quantity;
                 }
             }
-
+            //\Log::info($request->addon_id);
 
             $addonSets = $addon_ids = $addon_options = array();
-            if($request->has('addonID')){
-                $addon_ids = $request->addonID;
+
+            if($request->has('addon_id')){
+                $addon_ids = $request->addon_id;
             }
+           
             if($request->has('addonoptID')){
                 $addon_options = $request->addonoptID;
             }
+
             foreach($addon_options as $key => $opt){
-                $addonSets[$addon_ids[$key]][] = $opt;
+                if(isset($addon_ids[$key])){
+                    $addonSets[$addon_ids[$key]][] = $opt;
+                }
             }
+            
             foreach($addonSets as $key => $value){
                 $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
                             ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
@@ -398,12 +402,14 @@ class CartController extends FrontController
                 if(!empty($addon_ids) && !empty($addon_options)){
                     $saveAddons = array();
                     foreach ($addon_options as $key => $opts) {
-                        $saveAddons[] = [
-                            'option_id' => $opts,
-                            'cart_id' => $cart_detail->id,
-                            'addon_id' => $addon_ids[$key],
-                            'cart_product_id' => $cartProduct->id,
-                        ];
+                        if(isset($addon_ids[$key])){
+                            $saveAddons[] = [
+                                'option_id' => $opts,
+                                'cart_id' => $cart_detail->id,
+                                'addon_id' => $addon_ids[$key],
+                                'cart_product_id' => $cartProduct->id,
+                            ];
+                        }
                     }
                     if(!empty($saveAddons)){
                         CartAddon::insert($saveAddons);
@@ -450,7 +456,7 @@ class CartController extends FrontController
      */
     public function addToCart(Request $request, $domain = '')
     {
-        $langId = Session::get('customerLanguage');
+        $langId = Session::get('customerLanguage')??'1';
         if ($request->has('addonID') && $request->has('addonoptID')) {
             $addon_ids = $request->addonID;
             $addon_options = $request->addonoptID;

@@ -151,6 +151,7 @@ class EstimationController extends BaseController{
             }
 
             $tag->save();
+            \Log::info($tag);
             $language_id = $request->language_id;
             EstimateProductTranslation::where('estimate_product_id', $estimate_product_id)->delete();
             foreach ($request->name as $k => $name) {

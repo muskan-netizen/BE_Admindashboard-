@@ -78,7 +78,7 @@
                                                                 data-add_to_cart_url="{{ route('addToCart') }}"
                                                                 data-vendor_id="{{ $vendor_id }}"
                                                                 data-product_id="{{ $prod_ids_new}}"
-                                                                data-addon="{{ $addon_id_new }}"
+                                                                data-addonId="{{ $addon_id_new }}"
                                                                 data-option_id="{{ $option_id_new }}" href="javascript:void(0)">{{ __('Add') }}
                                                                 </a>
                                                             </a>
