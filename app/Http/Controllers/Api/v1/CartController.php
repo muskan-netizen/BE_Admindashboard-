@@ -546,13 +546,17 @@ class CartController extends BaseController
             'vendorProducts.addon.set' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
+            'vendorProducts.product.categoryName' => function ($q) use ($langId) {
+                $q->select('category_id', 'name');
+                $q->where('language_id', $langId);
+            },
             'vendorProducts.addon.option' => function ($qry) use ($langId) {
                 $qry->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
                 $qry->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
             }, 'vendorProducts.product.taxCategory.taxRate',
         ])->select('vendor_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        //return json_encode($cartData);
+        
         $loyalty_amount_saved = 0;
         $subscription_features = array();
         $user_subscription = null;
@@ -769,10 +773,9 @@ class CartController extends BaseController
                                     $opt_price_in_currency = $addons->option ? $addons->option->price : 0;
                                     $addon_option=AddonOption::where(['addon_id'=>$addons->addon_id,'id'=>$addons->option_id]);
                                     $addon_title='';
-                                    $addon_price=0;
                                     if($addon_option->exists()){
                                         $addon_title=$addon_option->first()->title;
-                                        $addon_price=$addon_option->first()->price;
+                                        $addon_price=$addon_option->first()->price * $prod->quantity;
                                     }
                                     $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                                     $opt_quantity_price = $opt_price_in_doller_compare * $prod->quantity;
@@ -791,7 +794,6 @@ class CartController extends BaseController
                                     $order_sub_total = $order_sub_total + $opt_quantity_price;
                                 }
                             }
-                            Log::info($addon_price);
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
@@ -803,7 +805,7 @@ class CartController extends BaseController
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
                                     //    $product_tax = ($quantity_price+$total_addon_price) * $rate / 100;
 
-                                    $product_tax = ($quantity_price+$addon_price) * $rate / 100;
+                                    $product_tax = ($quantity_price+$addon_price) * $rate / 100;  
                                     
                                     $taxData[$tckey]['rate'] = $rate;
                                     $taxData[$tckey]['tax_amount'] = $tax_amount;
@@ -1036,7 +1038,7 @@ class CartController extends BaseController
                 $vendorData->vendor_gross_total = $payable_amount;
                 $vendorData->discount_amount = $discount_amount;
                 $vendorData->discount_percent = $discount_percent;
-                $vendorData->taxable_amount = $taxable_amount;
+                $vendorData->taxable_amount = $taxable_amount; 
                 $vendorData->payable_amount = $payable_amount - $discount_amount;
                 $vendorData->isDeliverable = 1;
                 $total_paying = $total_paying + $payable_amount ; 
@@ -1206,11 +1208,11 @@ class CartController extends BaseController
             // }
             // $cart->wallet = $this->getWallet($cart->user_id, $clientCurrency->doller_compare, $currency);
         }
-        if ($loyalty_amount_saved  >= $temp_total_paying) {
+        if ($loyalty_amount_saved  >= $temp_total_paying) { 
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = ($total_paying  + $total_tax) - ($total_disc_amount + $loyalty_amount_saved);
+            $cart->total_payable_amount = ($total_paying  + $total_tax) - ($total_disc_amount + $loyalty_amount_saved); 
         }
         $wallet_amount_used = 0;
         if (isset($user)) {
@@ -1222,7 +1224,7 @@ class CartController extends BaseController
                 if ($wallet_amount_used > $cart->total_payable_amount) {
                     $wallet_amount_used = $cart->total_payable_amount;
                 }
-                $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used;
+                $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used; 
                 $cart->wallet_amount_used = $wallet_amount_used;
             }
         }
@@ -1233,10 +1235,11 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
+        $cal_tip_value_total = ($cart->total_payable_amount - $cart->total_tax) + $cart->total_fixed_fee_amount;  
         $cart->tip = array(
-            ['label' => '5%', 'value' => decimal_format(0.05 * $cart->total_payable_amount)],
-            ['label' => '10%', 'value' => decimal_format(0.1 * $cart->total_payable_amount)],
-            ['label' => '15%', 'value' => decimal_format(0.15 * $cart->total_payable_amount)]
+            ['label' => '5%', 'value' => decimal_format(0.05 * $cal_tip_value_total)],
+            ['label' => '10%', 'value' => decimal_format(0.1 * $cal_tip_value_total)],
+            ['label' => '15%', 'value' => decimal_format(0.15 * $cal_tip_value_total)]
         );
 
         $cart->total_payable_amount= number_format((float)$cart->total_payable_amount +=$cart->total_fixed_fee_amount, 2, '.', '');
