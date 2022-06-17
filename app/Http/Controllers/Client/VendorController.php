@@ -25,7 +25,7 @@ use App\Http\Controllers\AhoyController;
 use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
-use DB;
+use DB,Log;
 use App\Models\VendorRegistrationDocument;
 
 class VendorController extends BaseController
@@ -640,7 +640,7 @@ class VendorController extends BaseController
                 $p_categories->push($pc->category);
             }
             $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
+            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy_new($product_categories_build);
             foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
@@ -679,12 +679,17 @@ class VendorController extends BaseController
     // vendor product datatable
     public function VendorProductFilter(Request $request,$domain='',$vendor_id)
     {
-        //pr($vendor_id);
+        $ordring = 'asc';
+        if(!empty($request->order)){
+            $ordring = $request->order[0]['dir'] ?? 'asc';
+        }
         $client_preference_detail =ClientPreference::select('id','business_type')->first();
         $product = Product::with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
             $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
-        }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title')
-            ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
+        }])->select('products.id', 'products.sku', 'products.vendor_id', 'products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title')
+        ->join('product_translations', 'product_translations.product_id', '=', 'products.id') 
+        ->orderBy('product_translations.title', $ordring)  
+        ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
 
             //pr($products->get()->toArray());
         $datatable = Datatables::of($product)
@@ -779,10 +784,21 @@ class VendorController extends BaseController
                     $instance->where(function($query) use($search) {
                         $query->whereHas('primary', function($q) use($search){
                             $q->join('client_languages as cl', 'cl.language_id', 'product_translations.language_id')->select('product_translations.product_id', 'product_translations.title', 'product_translations.language_id', 'product_translations.body_html', 'product_translations.meta_title', 'product_translations.meta_keyword', 'product_translations.meta_description')->where('cl.is_primary', 1)->where('title', 'LIKE', '%'.$search.'%');
+                        })
+                        ->orWhereHas('category.cat', function($q) use($search){
+                            $q->where('name', 'LIKE', '%'.$search.'%');
                         });
                        
                     });
                 }
+                $instance->where(function($query) use($request) {
+                    $ordring = 'asc';
+                    if(!empty($request->order)){
+                        $ordring = $request->order[0]['dir'];
+                    }
+                    $query->orderBy('title',$ordring);
+                });
+                
             });
             
             
@@ -1602,7 +1618,7 @@ class VendorController extends BaseController
                 $p_categories->push($pc->category);
             }
             $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
+            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy_new($product_categories_build);
             foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
@@ -1748,9 +1764,36 @@ class VendorController extends BaseController
            
         }
        
-        $returnHTML = view('backend.vendor.inventory-product-list')->with(['store_product' => $store_product])->render();
+        $returnHTML = view('backend.vendor.inventory-product-list')->with(['store_product' => $store_product,'vendor_id' => $request->vendor_id])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
+
+
+    # get Inventory Store Products
+    public function postInventoryStoreProducts(Request $request){   
+        
+        $store_product = [];
+        $productids = $request->productids;
+        $store_product_list = $this->getAllProductListFromInventoryByIds($productids);
+        if($store_product_list['status'] == 200){
+
+           $store_product = $store_product_list['data'];
+        }
+
+       
+       foreach($store_product as $key => $product)
+       {    
+           unset($product['category']);
+           unset($product['primary']);
+           $product['vendor_id'] = $request->vendor_id;
+
+           
+           $product = Product::updateOrCreate(['sku' => $product['sku']],$product);
+       }
+        
+           
+    }
+    
 
 
 

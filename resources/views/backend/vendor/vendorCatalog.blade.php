@@ -1078,9 +1078,11 @@
                 "destroy": true,
                 "processing": true,
                 "serverSide": true,
-                "iDisplayLength": 10,
+                "iDisplayLength": 25,
                 "lengthChange" : false,
                 "searching": false,
+                "ordering": true,
+               
                 language: {
                             search: "",
                             info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',

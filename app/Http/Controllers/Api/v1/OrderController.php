@@ -415,7 +415,7 @@ class OrderController extends BaseController
                         $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
-                        $OrderVendor->is_restricted = $is_restricted;
+                        $order_vendor->is_restricted = $is_restricted;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
                             if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {

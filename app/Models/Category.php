@@ -66,7 +66,7 @@ class Category extends Model
 
     public function childs()
     {
-        return $this->hasMany(Category::class, 'parent_id', 'id')->select('id', 'slug', 'parent_id', 'icon', 'icon_two','image','type_id');
+        return $this->hasMany(Category::class, 'parent_id', 'id')->select('id', 'slug', 'parent_id', 'icon', 'icon_two','image','type_id')->orderBy('position', 'ASC');
     }
     public function products()
     {
