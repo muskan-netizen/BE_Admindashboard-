@@ -367,6 +367,14 @@ class PickupDeliveryController extends FrontController{
                     $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                     $order_place['data']['user_name'] = $user->email;
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
+
+                     //Send message if ride is booked for friend
+                    if($request->type == 1 && isset($request->friendPhoneNumber))
+                    {
+                        $msg = "Hi ".$request->friendName??'User'.", ".$user->name." has booked a ride for you.";
+                        $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
+                    }
+
                     return  $order_place;
                 }else{
                     DB::rollback();
