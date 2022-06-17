@@ -1791,6 +1791,7 @@ class VendorController extends BaseController
            $product = Product::updateOrCreate(['sku' => $product['sku']],$product);
        }
         
+       return redirect()->back();
            
     }
     
