@@ -109,6 +109,11 @@ class PaymentOptionController extends BaseController{
         $gateway = new StripeGatewayController();
         return $gateway->paymentWebViewStripeFPX($request);
     }
+
+    public function postPaymentVia_stripe_ideal(Request $request){
+        $gateway = new StripeGatewayController();
+        return $gateway->paymentWebViewStripeIdeal($request);
+    }
     
     public function postPaymentVia_stripe_oxxo(Request $request){
         $gateway = new StripeGatewayController();
