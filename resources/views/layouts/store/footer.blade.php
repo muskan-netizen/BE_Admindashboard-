@@ -25,6 +25,21 @@
     \Session::forget('success');
 @endphp
 
+<div class="modal age-restriction fade show-subscription-mdl" id="dsfdsage_restriction" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content p-2">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            <div class="modal-body pb-0 text-center">
+                <p class="mb-0">Avail some more offers !</p>
+            </div>
+            <div class="modal-footer">
+                <a href="{{route('user.subscription.plans')}}" class="btn btn-solid w-100">{{__('Subscribe Now')}}</a>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.cookie.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
@@ -141,6 +156,9 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-5LPF1QP3Y3');
+$(document).ready(function() {
+    $("#dsfdsage_restriction").modal('show');
+});
 </script>
 <!-- End googletagmanager -->
 

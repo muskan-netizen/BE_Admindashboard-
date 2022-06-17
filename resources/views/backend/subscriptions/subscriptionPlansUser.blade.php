@@ -149,19 +149,19 @@
                                 <label for="isolate_single_vendor_order" >
                                     <small class="d-block">{{ __("Show Subscription plan to customer.") }}</small>
                                 </label>
-                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="show_plan_customer" class="chk_box status_check" data-color="#43bee1" >
+                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="show_plan_customer" class="chk_box status_check" data-color="#43bee1" {{($showSubscriptionPlan->show_plan_customer == 1) ? 'checked' : ''}}>
                             </div>
                             <div class="form-group d-flex justify-content-between mb-2">
                                 <label for="isolate_single_vendor_order" >
                                     <small class="d-block">{{ __("On every sign-up(Website).") }}</small>
                                 </label>
-                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="every_sign_up" class="chk_box status_check" data-color="#43bee1" >
+                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="every_sign_up" class="chk_box status_check" data-color="#43bee1" {{($showSubscriptionPlan->every_sign_up == 1) ? 'checked' : ''}}>
                             </div>
                             <div class="form-group d-flex justify-content-between mb-2">
                                 <label for="isolate_single_vendor_order" >
                                     <small class="d-block">{{ __("On every app open.") }}</small>
                                 </label>
-                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="every_app_open" class="chk_box status_check" data-color="#43bee1" >
+                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="every_app_open" class="chk_box status_check" data-color="#43bee1" {{($showSubscriptionPlan->every_app_open == 1) ? 'checked' : ''}}>
                             </div>
                         </div>
                     </div>
@@ -336,6 +336,7 @@
 <script>
     var edit_sub_plan_url = "{{ route('subscription.plan.edit.user', ':id') }}";
     var update_sub_plan_status_url = "{{route('subscription.plan.updateStatus.user', ':id')}}";
+    var show_subscription_plan = "{{route('show.subscription.plan.customer')}}";
 
     $(document).delegate(".editSubscriptionPlanBtn", "click", function(){
         let slug = $(this).attr("data-id");
@@ -376,27 +377,27 @@
     });
 
     $(".show-subscription-plan").on("change", function() {
-        var name = $(this).attr('name');
+        var showSubscriptionType = $(this).attr('name');
         var status = 0;
         if($(this).is(":checked")){
             status = 1;
         }
-        console.log('name', name);
+        console.log('showSubscriptionType', showSubscriptionType);
         console.log('status', status);
-        // $.ajaxSetup({
-        //     headers: {
-        //         'X-CSRF-TOKEN': $('input[name="_token"]').val()
-        //     }
-        // });
-        // $.ajax({
-        //     type: "post",
-        //     dataType: "json",
-        //     url: update_sub_plan_status_url.replace(":id", slug),
-        //     data: {status: status},
-        //     success: function(response) {
-        //         return response;
-        //     }
-        // });
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: show_subscription_plan,
+            data: {showSubscriptionType:showSubscriptionType, status:status},
+            success: function(response) {
+                return response;
+            }
+        });
     });
 
     $(document).on("input", ".subscription_features", function(e){

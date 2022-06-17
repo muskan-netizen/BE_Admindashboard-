@@ -49,6 +49,7 @@ class SubscriptionPlansUserController extends BaseController
         $sub_plans = SubscriptionPlansUser::with(['features.feature'])->orderBy('id', 'asc')->get();
         $featuresList = SubscriptionFeaturesListUser::where('status', 1)->get();
         $user_subscriptions = SubscriptionInvoicesUser::groupBy('user_id')->get();
+        $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::find(1);
         $subscribed_users_count = $user_subscriptions->count();
         $active_users = User::where('status', 1)->count();
         $subscribed_users_percentage = ($subscribed_users_count / $active_users) * 100;
@@ -71,7 +72,7 @@ class SubscriptionPlansUserController extends BaseController
                 $plan->features = $features;
             }
         }
-        return view('backend/subscriptions/subscriptionPlansUser')->with(['features'=>$featuresList, 'subscription_plans'=>$sub_plans, 'subscribed_users_count'=>$subscribed_users_count, 'subscribed_users_percentage'=>$subscribed_users_percentage]);
+        return view('backend/subscriptions/subscriptionPlansUser')->with(['features'=>$featuresList, 'showSubscriptionPlan'=>$showSubscriptionPlan, 'subscription_plans'=>$sub_plans, 'subscribed_users_count'=>$subscribed_users_count, 'subscribed_users_percentage'=>$subscribed_users_percentage]);
     }
 
     /**
@@ -165,6 +166,22 @@ class SubscriptionPlansUserController extends BaseController
         }
         $returnHTML = view('backend.subscriptions.edit-subscriptionPlanUser')->with(['features'=>$featuresList, 'plan' => $plan, 'planFeatures' => $planFeatures, 'subPlanFeaturesIds'=>$subPlanFeaturesIds])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
+    }
+
+    public function showSubscriptionPlanCustomer(Request $request){
+        
+        $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::find(1);
+        if($request->showSubscriptionType == 'show_plan_customer'){
+            $showSubscriptionPlan->show_plan_customer = $request->status;
+        }
+        if($request->showSubscriptionType == 'every_sign_up'){
+            $showSubscriptionPlan->every_sign_up = $request->status;
+        }
+        if($request->showSubscriptionType == 'every_app_open'){
+            $showSubscriptionPlan->every_app_open = $request->status;
+        }
+        $showSubscriptionPlan->save();
+        return response()->json(array('success' => true, 'message'=>'Show subscription status has been updated.'));
     }
 
     /**
