@@ -268,6 +268,7 @@ class ClientPreferenceController extends BaseController{
             $preference->minimum_order_batch = ($request->has('minimum_order_batch') && $request->minimum_order_batch == 'on') ? 1 : 0;
             $preference->static_delivey_fee = ($request->has('static_delivey_fee') && $request->static_delivey_fee == 'on') ? 1 : 0;
             $preference->get_estimations = ($request->has('get_estimations') && $request->get_estimations == 'on') ? 1 : 0;
+            $preference->view_get_estimation_in_category = ($request->has('view_get_estimation_in_category') && $request->view_get_estimation_in_category == 'on') ? 1 : 0; //Added by ovi
             $preference->max_safety_mod = ($request->has('max_safety_mod') && $request->max_safety_mod == 'on') ? 1 : 0;
 
             $preference->address_is_car = ($request->has('address_is_car') && $request->address_is_car == 'on') ? 1 : 0;
@@ -372,6 +373,20 @@ class ClientPreferenceController extends BaseController{
 
         if($request->has('admin_email')){
             $preference->admin_email = $request->admin_email ;
+        }
+
+
+        //Adding Code by inder bcz ididn't found this code here
+        if(isset($request->hyperlocals) && !empty($request->hyperlocals))
+        {
+            if(isset($request->is_hyperlocal) && !empty($request->is_hyperlocal)){
+                $preference->is_hyperlocal = ($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on') ? 1 : 0; 
+                $preference->Default_location_name = $request->Default_location_name;
+                $preference->Default_latitude = $request->Default_latitude;
+                $preference->Default_longitude = $request->Default_longitude;
+            }else{
+                $preference->is_hyperlocal = ($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on') ? 1 : 0; 
+            }
         }
 
         // Check if the request is coming from customize page
