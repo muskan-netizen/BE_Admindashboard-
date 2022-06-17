@@ -244,7 +244,7 @@ class ReturnOrderController extends BaseController{
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
             //check dispatcher status
             $checkdispatcherstatus = VendorOrderDispatcherStatus::where(['order_id'=>$request->order_id])->orderBy('id', 'desc')->first();
-            
+            // do not cancel order if order is accepted and product category is not Taxi (Type = 7)
             if ($currentOrderStatus->order_status_option_id >= 2 && $currentOrderStatus->products[0]->product->category->categoryDetail->type_id!=7) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order is accepted, you can not reject this order !!!')]);
             }
