@@ -149,7 +149,7 @@
                     {data: 'order_value', name: 'order_amt', orderable: false, searchable: false},
                     {data: 'delivery_fee', name: 'delivery_fee', orderable: false, searchable: false},
                     {data: 'admin_commission_amount', name: 'admin_commission_amount', orderable: false, searchable: false},
-                    {data: 'promo_vendor_amount', name: 'promo_admin_amount', orderable: false, searchable: false},
+                    {data: 'promo_vendor_amount', name: 'promo_vendor_amount', orderable: false, searchable: false},
                     {data: 'promo_admin_amount', name: 'promo_admin_amount', orderable: false, searchable: false},
                     {data: 'service_fee', name: 'service_fee', orderable: false, searchable: false},
                     {data: 'cash_collected_amount', name: 'cash_collected_amount', orderable: false, searchable: false},

@@ -367,6 +367,11 @@ class OrderController extends BaseController
                         $actual_amount = $vendor_payable_amount;
                         if ($vendor_cart_product->coupon && !empty($vendor_cart_product->coupon->promo)) {
                             $coupon_id = $vendor_cart_product->coupon->promo->id;
+
+                            if($vendor_cart_product->coupon->promo->paid_by_vendor_admin == 0){
+                                $coupon_paid_by = 0;
+                            }
+        
                             $coupon_name = $vendor_cart_product->coupon->promo->name;
                             if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                                 $coupon_discount_amount = $vendor_cart_product->coupon->promo->amount;
@@ -406,6 +411,7 @@ class OrderController extends BaseController
                         $vendor_payable_amount += $vendor_taxable_amount;
 
                         $order_vendor->coupon_id = $coupon_id;
+                        $OrderVendor->coupon_paid_by = $coupon_paid_by??1;
                         $order_vendor->coupon_code = $coupon_name;
                         $order_vendor->order_status_option_id = 1;
                         $order_vendor->delivery_fee = $delivery_fee;
@@ -2070,6 +2076,11 @@ class OrderController extends BaseController
                             $actual_amount = $vendor_payable_amount;
                             if ($vendor_cart_product->coupon && !empty($vendor_cart_product->coupon->promo)) {
                                 $coupon_id = $vendor_cart_product->coupon->promo->id;
+
+                                if($vendor_cart_product->coupon->promo->paid_by_vendor_admin == 0){
+                                    $coupon_paid_by = 0;
+                                }
+
                                 $coupon_name = $vendor_cart_product->coupon->promo->name;
                                 if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                                     $coupon_discount_amount = $vendor_cart_product->coupon->promo->amount;
@@ -2100,6 +2111,7 @@ class OrderController extends BaseController
                             $vendor_payable_amount += $vendor_taxable_amount;
 
                             $order_vendor->coupon_id = $coupon_id;
+                            $OrderVendor->coupon_paid_by = $coupon_paid_by??1;
                             $order_vendor->coupon_code = $coupon_name;
                             $order_vendor->order_status_option_id = 1;
                             $order_vendor->delivery_fee = $delivery_fee;
