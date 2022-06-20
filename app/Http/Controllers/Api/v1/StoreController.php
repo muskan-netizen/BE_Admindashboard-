@@ -316,7 +316,7 @@ class StoreController extends BaseController{
 							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
 							'product_id' => $product->product_id,
 							'title' => $product->product_name,
-							'category_name' => $product->product->categoryName->name,
+							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:'',
 	    				);
     				}
 				}
