@@ -910,7 +910,7 @@ $(document).ready(function() {
             data.order_number = $("#order_number").val();
         }else if (cabElement.length > 0) {
             total_amount = cabElement.attr('data-amount');
-            data.payment_form = 'pickup_delivery';
+            data.payment_from = 'pickup_delivery';
             data.order_number = order.order_number;
             data.reload_route = order.route;
         }
