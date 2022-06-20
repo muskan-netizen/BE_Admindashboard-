@@ -394,11 +394,11 @@ $timezone = Auth::user()->timezone;
                                     </tr>
                                     <tr>
                                         <?php
-                                            $checkOffer = \App\Models\Promocode::where('name', $vendor->coupon_code )->first();
+                                        //    $checkOffer = \App\Models\Promocode::where('name', $vendor->coupon_code )->first();
                                             $vendorDiscount = 0;
                                             $adminDiscount = 0;
-                                            if($checkOffer){
-                                                if($checkOffer->paid_by_vendor_admin == 1){
+                                            if($vendor->coupon_code){
+                                                if($vendor->paid_by_vendor_admin == 1){
                                                     $couponFrom = 'From Admin';
                                                     $adminDiscount = $vendor->discount_amount;
                                                 }else{
