@@ -228,6 +228,7 @@ class StoreController extends BaseController{
 	public function getMyStoreVendorOrders(Request $request, $vendor_id){
     	try {
     		$user = Auth::user();
+			$langId = $user->language;
             $limit = $request->has('limit') ? $request->limit : 12;
 			$page = $request->has('page') ? $request->page : 1;
 			$type = $request->has('type') ? $request->type : '';
@@ -244,7 +245,11 @@ class StoreController extends BaseController{
 			}elseif($type == 'completed'){
 				$status_ids = [6];
 			}
-			$order_list = Order::select('*')->with(['vendors', 'user', 'orderStatusVendor', 'products'])
+			$order_list = Order::select('*')->with(['vendors', 'user', 'orderStatusVendor', 'products',
+            'products.product.categoryName' => function ($q) use ($langId) {
+                $q->select('category_id', 'name');
+                $q->where('language_id', $langId);
+            }])
 			->whereHas('vendors', function($query) use ($vendor_id, $status_ids){
 				$query->where('vendor_id', $vendor_id)->whereIn('order_status_option_id', $status_ids);
 			})
@@ -311,6 +316,7 @@ class StoreController extends BaseController{
 							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
 							'product_id' => $product->product_id,
 							'title' => $product->product_name,
+							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:'',
 	    				);
     				}
 				}
