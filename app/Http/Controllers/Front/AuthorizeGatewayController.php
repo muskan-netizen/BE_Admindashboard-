@@ -221,7 +221,7 @@ class AuthorizeGatewayController extends FrontController
                 $returnUrl = route('user.subscription.plans');
             }
             return $returnUrl;
-        }elseif($request->payment_from == 'subscription'){
+        }elseif($request->payment_from == 'pickup_delivery'){
             $returnUrl = $request->reload_route;
             if($request->come_from == 'app')
             {
