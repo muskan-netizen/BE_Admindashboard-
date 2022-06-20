@@ -168,8 +168,11 @@ class AuthorizeGatewayController extends FrontController
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net'.'&status=200&transaction_id='.$transactionId; 
             }
+            Log::info("Return Url");
+            Log::info($returnUrl);
             return $returnUrl;
         }
+        Log::info("Ending");
         return Redirect::to(route('order.return.success'));
     }
     public function failedPayment($request, $pamyent)
