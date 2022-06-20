@@ -883,6 +883,7 @@ $(document).ready(function() {
         let subscriptionElement = $("input[name='subscription_amount']");
         let subscription_id = $("input[name='subscription_id']");
         let walletElement = $("input[name='wallet_amount']");
+        let cabElement = $("#pickup_now");
         let ajaxData = [];
         let data = [];
         
@@ -903,10 +904,15 @@ $(document).ready(function() {
             // ajaxData = $("#subscription_payment_form").serializeArray();
             data.subscription_id = subscription_id.val();
             data.payment_from ='subscription';
-        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+        } else if ((typeof tip_for_past_order !== 'undefined') && (tip_for_past_order == 1)) {
             total_amount = walletElement.val();
             data.payment_from ='tip';
             data.order_number = $("#order_number").val();
+        }else if (cabElement.length > 0) {
+            total_amount = cabElement.attr('data-amount');
+            data.payment_form = 'pickup_delivery';
+            data.order_number = order.order_number;
+            data.reload_route = order.route;
         }
         data.amount = total_amount;
         data.payment_option_id =18;
