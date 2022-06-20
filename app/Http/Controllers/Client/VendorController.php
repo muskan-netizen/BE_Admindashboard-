@@ -22,11 +22,12 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate};
+use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet,ProductTranslation, Client, ClientPreference, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductCategory, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use DB,Log;
 use App\Models\VendorRegistrationDocument;
+use Exception;
 
 class VendorController extends BaseController
 {
@@ -804,6 +805,7 @@ class VendorController extends BaseController
             
             return $datatable->rawColumns(['single_product_check', 'product_image', 'product_name', 'action' ])->make(true);
     }
+
 
     /**   show vendor page - payout tab      */
     public function vendorPayout($domain = '', $id){
@@ -1794,6 +1796,137 @@ class VendorController extends BaseController
        return redirect()->back();
            
     }
+
+
+    public function VendorGlobalProductFilter(Request $request,$domain='')
+    {
+        $ordring = 'asc';
+        if(!empty($request->order)){
+            $ordring = $request->order[0]['dir'] ?? 'asc';
+        }
+        $product = EstimateProduct::with(['primary' => function ($q)use($ordring){
+            $q->orderBy('name', $ordring);
+        }])->orderBy('id',$ordring);
+        $client_preference_detail =ClientPreference::select('id','business_type')->first();
+        $datatable = Datatables::of($product)
+            ->addIndexColumn()
+            ->addColumn('global_product_check', function ($product) use ($request) {
+                $action = '<input type="checkbox" class="global_product_check"
+                                name="product_id[]" id="global_product"
+                                value="'.$product->id.'">';
+                return $action;
+            })
+            ->addColumn('product_image', function ($product) use ($request) {
+                $image = '';
+                if($product->icon){
+                    $image_path = $product->icon['proxy_url'] . '100/100' . $product->icon['image_path'];
+                    $image = '<img  class="rounded-circle" src="'. $image_path.'">';
+                }
+                return $image;
+            });
+            $datatable->addColumn('product_name', function ($product) use ($request) {
+                $action =  Str::limit(isset($product->primary) && !empty($product->primary) ? $product->primary->name : '', 30);
+                return $action;
+            })
+            ->addColumn('product_category', function ($product) use ($request) {
+                return $product->category->translation ? $product->category->translation[0]->name : 'N/A';
+            });
+            
+            return $datatable->rawColumns(['global_product_check','product_image', 'product_name','product_category'])->make(true);
+    }
+
+
+     # import get estimation Global Products
+     public function importGlobalProducts(Request $request){   
+        
+       if(!isset($request->product_id)){
+        return response()->json(array('success' => true,'message'=>'Try again somthing went wrong.'));
+       }
+
+       try{
+        
+         $estimate_products = EstimateProduct::with(['primary','category','estimate_product_addons'])->whereIn('id',$request->product_id)->get();
+
+            foreach($estimate_products as $k => $product)
+            {
+                //Product added
+                $productId = Product::updateOrCreate(
+                    [
+                        'title'=>$product->primary->name,
+                        'global_product_id'=>$product->id,
+                        'vendor_id'=>$request->vid
+                    ],
+                    [
+                        'title'=>$product->primary->name,
+                        'global_product_id'=>$product->id,
+                        'sku'=>str_replace(' ','.',$product->primary->name).'.'.time().'.'.str_replace(' ','.',$product->category->slug),
+                        'url_slug'=>str_replace(' ','.',$product->primary->name).'.'.rand(9,100),
+                        'vendor_id'=>$request->vid,
+                        'category_id'=>$product->category_id,
+                        'type_id'=>'1'
+                    ]);
+
+
+                    //Product Translation added
+                $productTrans = ProductTranslation::updateOrCreate(
+                    [
+                        'title'=>$product->primary->name,
+                        'product_id'=>$productId->id,
+                    ],
+                    [
+                        'title'=>$product->primary->name,
+                        'product_id'=>$productId->id,
+                        'language_id'=>'1'
+                    ]);
+
+
+                    //Product Category added
+                    ProductCategory::updateOrCreate([
+                        'product_id'=>$productId->id,
+                        'category_id'=>$product->category_id
+                    ],
+                    [
+                        'product_id'=>$product->id,
+                        'category_id'=>$product->category_id
+                    ]);
+
+
+                    foreach($product->estimate_product_addons as $addon)
+                    {
+                        $set = $addon->estimate_addon_set;
+
+                        //ProductAddon set added
+                        AddonSet::updateOrCreate([
+                            'title'=>$set->title,
+                            'vendor_id'=>$request->vid
+                        ],
+                        [
+                            'title'=>$set->title,
+                            'vendor_id'=>$request->vid,
+                            'min_select'=>$set->min_select,
+                            'max_select'=>$set->max_select,
+                            'position'=>$set->position,
+                            'status'=>$set->status
+                        ]);
+
+                    }
+
+                    
+            }
+
+
+
+
+            return response()->json(array('success' => true,'message'=>'Global Product import successfuly.'));
+
+        }catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+           
+    }
+
+
+  
     
 
 
