@@ -70,4 +70,23 @@ body .iti--separate-dial-code .iti__selected-flag {
 #vendorStories  .close{position: absolute;top: 15px;right: 35px;color: #f1f1f1;font-size: 40px;font-weight: bold;-webkit-transition: 0.3s;transition: 0.3s;}
 #vendorStories  .close:hover, #vendorStories  .close:focus {color: #bbb;text-decoration: none;cursor: pointer;}
 @media only screen and (max-width: 700px){ #vendorStories .modal-content{width: 100%;}} */
+
+
 /* vendorStories page css end */
+
+
+.show-subscription-mdl button.close {
+    position: absolute;
+    right: 6px;
+    top: 10px;
+    background: transparent;
+    line-height: 0pc;
+    padding: 0px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 999;
+}
+.show-subscription-mdl .modal-content {
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 0.3rem;
+}

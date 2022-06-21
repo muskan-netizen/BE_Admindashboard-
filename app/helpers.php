@@ -11,6 +11,7 @@ use App\Models\ClientPreference;
 use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
+use App\Models\ShowSubscriptionPlanOnSignup;
 use App\Models\{VendorSlot, ClientCurrency, Order};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,18 @@ use Illuminate\Support\Facades\Auth;
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
         return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
+    }
+}
+
+if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
+    function checkShowSubscriptionPlanOnSignup(){
+        $showSubscriptionPlanPopUp = 0;
+        $user = Auth::user();
+        $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::find(1);
+        if($showSubscriptionPlan->show_plan_customer == 1 && $showSubscriptionPlan->every_sign_up == 1 && !empty($user)){
+            $showSubscriptionPlanPopUp = 1;
+        }
+        return $showSubscriptionPlanPopUp;
     }
 }
 
