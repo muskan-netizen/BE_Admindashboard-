@@ -170,7 +170,12 @@ class SubscriptionPlansUserController extends BaseController
 
     public function showSubscriptionPlanCustomer(Request $request){
         
-        $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::find(1);
+        // $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::find(1);
+        // if(empty($showSubscriptionPlan)){
+        //     $showSubscriptionPlan =  new ShowSubscriptionPlanOnSignup();
+        // }
+        $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::firstOrNew(array('id' => 1));
+        $showSubscriptionPlan->id = 1;
         if($request->showSubscriptionType == 'show_plan_customer'){
             $showSubscriptionPlan->show_plan_customer = $request->status;
         }
