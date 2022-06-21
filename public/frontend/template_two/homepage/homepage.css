@@ -71,12 +71,12 @@ body.al_body_template_two .mobile-menu.main-menu{
     padding: 0 10px;
     width: 97%;
 }
-body.al_body_template_two #content-wrap .site-header .navbar-brand{
+/* body.al_body_template_two #content-wrap .site-header .navbar-brand{
     padding: 0;
     margin: auto;
     width: 100%;
     height: auto !important;
-}
+} */
 body.al_body_template_two header{
     padding: 0;
 }

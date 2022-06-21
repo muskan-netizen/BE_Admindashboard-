@@ -79,9 +79,6 @@ body section.cab-banner-area {
 
 
 /*arbic language css start here---*/
-body[dir=rtl] .slick-track {
-    transform: translate3d(0px, 0px, 0px) !important;
-}
 body[dir=rtl] .slick-next{left: auto !important; right: -30px !important;}
 body[dir=rtl] .slick-prev{left: -30px !important;}
 body[dir="rtl"] .icon-nav ul li a i {margin-right: 5px !important;}
