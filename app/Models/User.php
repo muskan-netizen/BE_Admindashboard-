@@ -12,6 +12,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+
 class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 {
     use Notifiable, AuthenticationLogable;
@@ -102,7 +103,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
             'name'          => 'required|string|min:3|max:50',
             'email'         => 'required|email|max:50||unique:users',
             'password'      => 'required|string|min:6|max:50',
-            'phone_number'  => 'required|string|min:8|max:15|unique:users',
+            'phone_number'  => 'required|string|min:7|max:15|unique:users',
         );
         $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
         foreach ($user_registration_documents as $user_registration_document) {

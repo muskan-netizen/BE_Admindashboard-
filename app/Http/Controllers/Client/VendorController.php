@@ -25,7 +25,7 @@ use App\Http\Controllers\AhoyController;
 use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
-use DB;
+use DB,Log;
 use App\Models\VendorRegistrationDocument;
 
 class VendorController extends BaseController
@@ -356,12 +356,13 @@ class VendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $domain = '', $id)
-    {
+    {   
+      
         $rules = array(
             'address' => 'required',
         //    'name' => 'required|string|max:150|unique:vendors,name,' . $id,
             'name' => 'required|string|max:150',
-            'phone_no' => 'nullable|digits_between:7,12',
+            'phone_no' => 'nullable|min:7|max:14',
             'email' => 'nullable|email',
         );
         //dd($request->all());
@@ -598,8 +599,8 @@ class VendorController extends BaseController
                         ->orderBy('parent_id', 'asc')->get();
         $products = Product::with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
             $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
-        }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count')
-            ->where('vendor_id', $id)->get();
+        }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title')
+            ->where('vendor_id', $id)->get()->sortBy('primary.title', SORT_REGULAR, false);
         $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             // ->where('is_core', 1)
@@ -639,7 +640,7 @@ class VendorController extends BaseController
                 $p_categories->push($pc->category);
             }
             $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
+            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy_new($product_categories_build);
             foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
@@ -674,6 +675,134 @@ class VendorController extends BaseController
         $checkAhoyShip = ($ahoys->status) ?? 0;
         $taxRates=TaxRate::all();
         return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates]);
+    }
+    // vendor product datatable
+    public function VendorProductFilter(Request $request,$domain='',$vendor_id)
+    {
+        $ordring = 'asc';
+        if(!empty($request->order)){
+            $ordring = $request->order[0]['dir'] ?? 'asc';
+        }
+        $client_preference_detail =ClientPreference::select('id','business_type')->first();
+        $product = Product::with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
+            $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
+        }])->select('products.id', 'products.sku', 'products.vendor_id', 'products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title')
+        ->join('product_translations', 'product_translations.product_id', '=', 'products.id') 
+        ->orderBy('product_translations.title', $ordring)  
+        ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
+
+            //pr($products->get()->toArray());
+        $datatable = Datatables::of($product)
+            ->addIndexColumn()
+            ->addColumn('single_product_check', function ($product) use ($request) {
+                $action = '<input type="checkbox" class="single_product_check"
+                                name="product_id[]" id="single_product"
+                                value="'.$product->id.'">';
+                return $action;
+            })
+            ->addColumn('product_image', function ($product) use ($request) {
+                $image = '';
+                if($product->media->first() && !empty($product->media->first()->image) ){
+                    $image_path = $product->media->first()->image->path['proxy_url'] . '30/30' . $product->media[0]->image->path['image_path'];
+                    $image = '<img  class="rounded-circle" src="'. $image_path.'">';
+                }
+                
+                return $image;
+            })->addColumn('product_is_live', function ($product) use ($request) {
+                if($product->is_live == 0 ){
+                    $live_status = __('Draft');
+                }elseif($product->is_live == 1 ){
+                    $live_status = __('Published');
+                }else{
+                    $live_status = __('Blocked');  
+                }
+                return $live_status;
+            })
+            ->addColumn('action', function ($product) use ($request) {
+                $edit_url = route('product.edit', $product->id);
+                $delete_url = route('product.destroy', $product->id);
+                $action = '<div class="form-ul" style="width: 60px;">
+                <div class="inner-div" style="float: left;">
+                    <a class="action-icon"
+                        href="'.$edit_url.'"
+                        userId="'.$product->id.'"><i
+                            class="mdi mdi-square-edit-outline"></i></a>
+                </div>
+                <div class="inner-div">
+                    <form id="deleteproduct_'.$product->id.'" method="POST"
+                        action="'. $delete_url.'">
+                        <input type="hidden" name="_token" value="' . csrf_token() . '" />
+                        <input type="hidden" name="_method" value="DELETE">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary-outline action-icon delete-product" data-destroy_url="'. $delete_url.'" data-rel="'.$product->id.'"><i class="mdi mdi-delete"></i></button>
+                            
+                        </div>
+                    </form>
+                </div>
+            </div>';
+                
+                
+                return $action;
+            });
+
+
+            $datatable->addColumn('product_name', function ($product) use ($request) {
+                $edit_url = route('product.edit', $product->id);
+                $action =  '<a href="'.$edit_url .'"
+                target="_blank">'.Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30);
+                
+                return $action;
+            })
+            ->addColumn('product_category', function ($product) use ($request) {
+                return $product->category ? $product->category->cat->name : 'N/A';
+            });
+
+            if ($client_preference_detail->business_type != 'taxi'){
+
+                $datatable->addColumn('product_brand', function ($product) use ($request) {
+                    return !empty($product->brand) ? $product->brand->title : 'N/A';
+                })
+                ->addColumn('product_quantity', function ($product) use ($request) {
+                    return $product->variant->first() ? $product->variant->first()->quantity : 0;
+                })
+                ->addColumn('product_price', function ($product) use ($request) {
+                    return $product->variant->first() ? decimal_format($product->variant->first()->price) : 0;
+                })->addColumn('product_is_new', function ($product) use ($request) {
+                
+                    return $product->is_new == 0 ? __('No') : __('Yes');
+                })
+                ->addColumn('product_is_featured', function ($product) use ($request) {
+                    return $product->is_featured == 0 ? __('No')  : __('Yes');
+                })
+                ->addColumn('product_last_mile', function ($product) use ($request) {
+                    return $product->Requires_last_mile == 0 ? __('No')  : __('Yes');
+                });
+            }
+            $datatable->filter(function ($instance) use ($request) {
+                if (!empty($request->get('search'))) {
+                    $search = $request->get('search');
+                    $instance->where(function($query) use($search) {
+                        $query->whereHas('primary', function($q) use($search){
+                            $q->join('client_languages as cl', 'cl.language_id', 'product_translations.language_id')->select('product_translations.product_id', 'product_translations.title', 'product_translations.language_id', 'product_translations.body_html', 'product_translations.meta_title', 'product_translations.meta_keyword', 'product_translations.meta_description')->where('cl.is_primary', 1)->where('title', 'LIKE', '%'.$search.'%');
+                        })
+                        ->orWhereHas('category.cat', function($q) use($search){
+                            $q->where('name', 'LIKE', '%'.$search.'%');
+                        });
+                       
+                    });
+                }
+                $instance->where(function($query) use($request) {
+                    $ordring = 'asc';
+                    if(!empty($request->order)){
+                        $ordring = $request->order[0]['dir'];
+                    }
+                    $query->orderBy('title',$ordring);
+                });
+                
+            });
+            
+            
+            return $datatable->rawColumns(['single_product_check', 'product_image', 'product_name', 'action' ])->make(true);
     }
 
     /**   show vendor page - payout tab      */
@@ -937,7 +1066,9 @@ class VendorController extends BaseController
         $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
         $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
         $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
-        $vendor->slot_minutes = ($request->slot_minutes>0)?$request->slot_minutes:0;
+        if($request->has('slot_minutes')){
+            $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;
+        }
         $vendor->closed_store_order_scheduled = (($request->has('show_slot')) ? 0 : ($request->closed_store_order_scheduled == 'on')) ? 1 : 0;
         $vendor->fixed_fee = ($request->has('fixed_fee') && $request->fixed_fee == 'on') ? 1 : 0;
         $vendor->price_bifurcation = ($request->has('price_bifurcation') && $request->price_bifurcation == 'on') ? 1 : 0;
@@ -994,6 +1125,12 @@ class VendorController extends BaseController
             //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
             $vendor->show_slot         = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
             $msg = 'commission configuration';
+        }
+        if($request->has('rescheduling_charges')){
+            $vendor->rescheduling_charges   = $request->rescheduling_charges;
+        }
+        if($request->has('pickup_cancelling_charges')){
+            $vendor->pickup_cancelling_charges   = $request->pickup_cancelling_charges;
         }
         // if ($request->has('service_fee_percent')) {
         //     $vendor->service_fee_percent         = $request->service_fee_percent;
@@ -1481,7 +1618,7 @@ class VendorController extends BaseController
                 $p_categories->push($pc->category);
             }
             $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
+            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy_new($product_categories_build);
             foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
@@ -1595,4 +1732,71 @@ class VendorController extends BaseController
             'message' => __('Vendor action Submitted successfully!')
         ]);
     }
+
+    # get listing of inventory vendor 
+    public function getInventoryImport($domain = '', $slug){
+        
+        $store_list_data = [];
+        $client_preferences = [];
+        $store_list = $this->getAllStoreListFromInventory();
+        if($store_list['status'] == 200){
+            $store_list_data = $store_list['data'];
+            $client_preferences = $store_list['client_preferences'];
+        }
+      
+
+        $vendor = Vendor::where('slug',$slug)->first();
+        
+        
+        return view('backend.vendor.inventory-import')->with([
+            'store_list_data' => $store_list_data,'vendor' => $vendor,'client_preferences' => $client_preferences]);
+    }
+
+    
+    # get Inventory Store Products
+    public function getInventoryStoreProducts(Request $request){
+        
+        $store_product = [];
+        
+        $store_product_list = $this->getAllProductListFromInventory($request);
+        if($store_product_list['status'] == 200){
+           $store_product = $store_product_list['data'];
+           
+        }
+       
+        $returnHTML = view('backend.vendor.inventory-product-list')->with(['store_product' => $store_product,'vendor_id' => $request->vendor_id])->render();
+        return response()->json(array('success' => true, 'html' => $returnHTML));
+    }
+
+
+    # get Inventory Store Products
+    public function postInventoryStoreProducts(Request $request){   
+        
+        $store_product = [];
+        $productids = $request->productids;
+        $store_product_list = $this->getAllProductListFromInventoryByIds($productids);
+        if($store_product_list['status'] == 200){
+
+           $store_product = $store_product_list['data'];
+        }
+
+       
+       foreach($store_product as $key => $product)
+       {    
+           unset($product['category']);
+           unset($product['primary']);
+           $product['vendor_id'] = $request->vendor_id;
+
+           
+           $product = Product::updateOrCreate(['sku' => $product['sku']],$product);
+       }
+        
+       return redirect()->back();
+           
+    }
+    
+
+
+
+    
 }

@@ -45,6 +45,7 @@ class Product extends Model implements Auditable{
        return $this->hasMany('App\Models\ProductCrossSell')->select('product_id', 'cross_product_id');
     }
 
+   
     public function variant(){
       return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id','container_charges')->where('status', 1);
     }
@@ -269,11 +270,21 @@ class Product extends Model implements Auditable{
 
     }
     
+    public function UserWishlist(){
+      return $this->hasMany('App\Models\UserWishlist')->where(function($q){
+          $q->groupBy('product_id');
+      });
 
+    }
 
 
     public function productTranslation(){
       return $this->hasMany('App\Models\ProductTranslation');
+    }
+
+    public function OrderReturnRequest()
+    {
+        return $this->hasManyThrough('App\Models\OrderReturnRequest', 'App\Models\OrderProduct', 'product_id', 'order_vendor_product_id', 'id', 'id');
     }
 
 

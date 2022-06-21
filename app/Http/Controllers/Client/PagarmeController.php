@@ -23,8 +23,8 @@ class PagarmeController extends BaseController
   	{
 		$pagarme_creds = PayoutOption::getCredentials('pagarme');
 	    $creds_arr = json_decode($pagarme_creds->credentials);
-	    $this->api_key = $creds_arr->api_key??'';
-	    $this->secret_key = $creds_arr->secret_key??'';
+	    $this->api_key = $creds_arr->api_key ?? '';
+	    $this->secret_key = $creds_arr->secret_key ?? '';
 
         $this->pagarme = new \PagarMe\Client($this->api_key);
 

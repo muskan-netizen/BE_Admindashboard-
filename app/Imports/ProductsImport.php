@@ -566,7 +566,7 @@ class ProductsImport implements ToCollection{
                                          ProductTag::insert($tagSetArray);
                                      }
                                  }
-                             }
+                            }
                             if ($da[5] != "" || $da[7] != "" || $da[9] != "") {
                                 $product_hasvariant = Product::where('id', $product_id->id)->first();
                                 $product_hasvariant->has_variant = 1;
@@ -624,7 +624,16 @@ class ProductsImport implements ToCollection{
                                     $proVariantSet->variant_option_id = $variant_optionn->id;
                                     $proVariantSet->save();
                                 }
+                            }else{
+                                $proVariant = ProductVariant::where('sku',$da[0])->first();
+                                if( $proVariant){
+                                    $proVariant->sku = $da[0];
+                                    $proVariant->price = $da[21]??"";
+                                    $proVariant->compare_at_price = $da[22]??"";
+                                    $proVariant->save();
+                                }
                             }
+                            
                         }
                     }
                 }

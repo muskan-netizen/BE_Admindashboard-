@@ -312,6 +312,8 @@ $timezone = Auth::user()->timezone;
                                     @php
                                     $sub_total = 0;
                                     $taxable_amount = 0;
+                                    $adminRevenue = 0;
+                                    $storeRevenue = 0;
                                     $revenue = ($vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     @foreach($vendor->products as $product)
@@ -391,7 +393,25 @@ $timezone = Auth::user()->timezone;
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th scope="row" colspan="4" class="text-end">{{__('Total Discount')}} :</th>
+                                        <?php
+                                        //    $checkOffer = \App\Models\Promocode::where('name', $vendor->coupon_code )->first();
+                                            $vendorDiscount = 0;
+                                            $adminDiscount = 0;
+                                            if($vendor->coupon_code){
+                                                if($vendor->paid_by_vendor_admin == 1){
+                                                    $couponFrom = 'From Admin';
+                                                    $adminDiscount = $vendor->discount_amount;
+                                                }else{
+                                                    $couponFrom = 'From Vendor';
+                                                    $vendorDiscount = $vendor->discount_amount??0;
+                                                }
+                                            }else{
+                                                $couponFrom = '';
+                                                $adminDiscount = 0;
+                                                $vendorDiscount = 0;
+                                            }
+                                        ?>
+                                        <th scope="row" colspan="4" class="text-end">{{__('Total Discount')}} {{$couponFrom}}:</th>
                                         <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->discount_amount)}}</td>
                                     </tr>
 
@@ -405,6 +425,12 @@ $timezone = Auth::user()->timezone;
                                             <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor_service_fee)}}</td>
                                         </tr>
                                     @endif
+                                    @if($order->fixed_fee_amount > 0)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Fixed Fee") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($order->fixed_fee_amount)}}</td>
+                                    </tr>
+                                @endif
 
                                     @if($container_charges > 0)
                                         <tr>
@@ -416,11 +442,18 @@ $timezone = Auth::user()->timezone;
                                     @if(Auth::user()->is_superadmin)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($revenue)}}</td>
+                                        @php
+                                            $adminRevenue = ($revenue+$taxable_amount+$container_charges+$vendor_service_fee+$vendor->delivery_fee)-$adminDiscount;
+                                        @endphp
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue)}}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)}}</td>
+                                        @php
+                                            $storeRevenue = $sub_total - $revenue - $vendorDiscount;
+                                        @endphp
+                                        {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)}}</td> --}}
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($storeRevenue)}}</td>
                                     </tr>
                                     @endif
                                     @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
@@ -438,7 +471,8 @@ $timezone = Auth::user()->timezone;
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div>
+                                            {{-- <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div> --}}
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($adminRevenue+$storeRevenue)}}</div> 
                                         </td>
                                     </tr>
                                 </tbody>
@@ -587,11 +621,11 @@ $timezone = Auth::user()->timezone;
                         @endif
 
                         @if($order->schedule_pickup)
-                          <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Pickup') }} :</span> {{dateTimeInUserTimeZone($order->schedule_pickup, $timezone)}} </p>
+                          <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Pickup') }} :</span> {{dateTimeInUserTimeZone($order->schedule_pickup, $timezone) .' '.(($order->scheduled_slot)?', Slot : '.$order->scheduled_slot:'')}} </p>
                         @endif
 
                         @if($order->schedule_dropoff)
-                          <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Dropoff') }} :</span> {{dateTimeInUserTimeZone($order->schedule_dropoff, $timezone)}} </p>
+                          <p class="mb-2 text-danger"><span class="fw-semibold me-2">{{ __('Schedule Dropoff') }} :</span> {{dateTimeInUserTimeZone($order->schedule_dropoff, $timezone).' '.(($order->dropoff_scheduled_slot)?', Slot : '.$order->dropoff_scheduled_slot:'')}} </p>
                         @endif
 
                         @if($order->specific_instructions)
@@ -655,7 +689,7 @@ $timezone = Auth::user()->timezone;
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0">
                     <div class="card-body">
-                        <h4 class="header-title mb-3">{{ __('Category KYC Documents') }}</h4>
+                        <h4 class="header-title mb-3">{{ __('User Place Order Documents') }}</h4>
                         @foreach($category_KYC_document as $document)
                             @php
                            

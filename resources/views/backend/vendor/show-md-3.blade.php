@@ -97,19 +97,19 @@
 
                     
 
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                    <div class="form-group w-100">
-                     {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
-                        <select class="form-control" name="slot_minutes">
-                            <option value="">{{__('Slot Duration')}}</option>
-                            <option value="15" {{$vendor->slot_minutes == '15'? 'selected':''}}>15 {{__(' Minutes')}}</option>
-                            <option value="30" {{$vendor->slot_minutes == '30'? 'selected':''}}>30 {{__(' Minutes')}}</option>
-                            <option value="45" {{$vendor->slot_minutes == '45'? 'selected':''}}>45 {{__(' Minutes')}}</option>
-                            @for($i=1;$i<=8;$i++)
-                                <option value="{{$i*60}}" {{$vendor->slot_minutes == ($i*60)? 'selected':''}}>{{ $i. __(' Hour')}}</option>
-                            @endfor
-                        </select>
-                    </div>
+                    <div class="col-md-12 d-flex align-items-center justify-content-between">
+                        <div class="form-group w-100">
+                        {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
+                            <select class="form-control" name="slot_minutes">
+                                <option value="">{{__('Slot Duration')}}</option>
+                                <option value="15" {{$vendor->slot_minutes == '15'? 'selected':''}}>15 {{__(' Minutes')}}</option>
+                                <option value="30" {{$vendor->slot_minutes == '30'? 'selected':''}}>30 {{__(' Minutes')}}</option>
+                                <option value="45" {{$vendor->slot_minutes == '45'? 'selected':''}}>45 {{__(' Minutes')}}</option>
+                                @for($i=1;$i<=8;$i++)
+                                    <option value="{{$i*60}}" {{$vendor->slot_minutes == ($i*60)? 'selected':''}}>{{ $i. __(' Hour')}}</option>
+                                @endfor
+                            </select>
+                        </div>
                     </div>
 
                     <div class="col-md-12 mb-2">
@@ -138,10 +138,12 @@
                         </label>
                         <input type="checkbox" data-plugin="switchery" name="price_bifurcation" class="form-control" data-color="#43bee1" @if($vendor->price_bifurcation == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    @endif
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="need_container_charges" class="form-control" data-color="#43bee1" @if($vendor->need_container_charges == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
@@ -447,6 +449,62 @@
         </div>
     </div>
 </div>
+
+@if($client_preference_detail->business_type == 'laundry')
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Rescheduling Order Charges") }} ({{ __("Visible For Admin") }})</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="form-group" id="rescheduling_chargesInput">
+                            {!! Form::label('title', __('Rescheduling Charges'),['class' => 'control-label']) !!} 
+                            <input class="form-control" name="rescheduling_charges" type="text" min="0" maxlength="5" value="{{$vendor->rescheduling_charges}}" onkeypress="return isNumberKey(event)">
+                            <small>(When rescheduling is done on the day of delivery.)</small>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Pickup Cancelling/Rescheduling Charges") }} ({{ __("Visible For Admin") }})</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="form-group" id="rescheduling_chargesInput">
+                            {!! Form::label('title', __('Pickup Cancelling & Rescheduling Charges'),['class' => 'control-label']) !!} 
+                            <input class="form-control" name="pickup_cancelling_charges" type="text" min="0" maxlength="5" value="{{$vendor->pickup_cancelling_charges}}" onkeypress="return isNumberKey(event)">
+                            <small>(When cancelling or rescheduling is done on the day of pickup.)</small>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 <style type="text/css">
     #nestable_list_1 ol,
     #nestable_list_1 ul {
@@ -534,24 +592,27 @@
 
     <div class="inbox-widget mt-3" data-simplebar style="max-height: 350px;">
         @foreach($vendor->permissionToUser as $users)
-        <div class="inbox-item pb-0">
-            <div class="inbox-item-img">
-                <img src="{{$users->user ? $users->user->image['proxy_url'].'40/40'.$users->user->image['image_path'] : asset('assets/images/users/user-2.jpg')}}" class="rounded-circle" alt="">
+            @if($users->user)
+                <div class="inbox-item pb-0">
+                    <div class="inbox-item-img">
+                        <img src="{{$users->user ? $users->user->image['proxy_url'].'40/40'.$users->user->image['image_path'] : asset('assets/images/users/user-2.jpg')}}" class="rounded-circle" alt="">
+                    </div>
+                    <p class="inbox-item-author">{{ $users->user->name??'' }}  </p>
+                    <p class="inbox-item-text"><label class="d-block"><i class="fa fa-envelope mr-1" aria-hidden="true"></i> {{ $users->user->email??'' }}  
+                        @if($users->user)
+                        </label><label class="d-block"><i class="fa fa-phone mr-1" aria-hidden="true"></i> {{ $users->user->phone_number??'' }}</label> </p> 
+                        @endif
+                    </p>
+                    @if($users->user && $users->user->id != Auth::id())
+                    <form class="delete-user position-absolute" method="POST" action="{{route('user.vendor.permission.destroy', $users->id)}}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
 
-                {{-- <img src="{{asset('assets/images/users/user-2.jpg')}}" class="rounded-circle" alt=""> --}}
-            </div>
-            <p class="inbox-item-author">{{ $users->user->name??'' }}  </p>
-            <p class="inbox-item-text"><label class="d-block"><i class="fa fa-envelope mr-1" aria-hidden="true"></i> {{ $users->user->email??'' }}  @if($users->user->phone_number)</label><label class="d-block">  <i class="fa fa-phone mr-1" aria-hidden="true"></i> {{ $users->user->phone_number??'' }}</label> </p> @endif</p>
-            @if($users->user->id != Auth::id())
-            <form class="delete-user position-absolute" method="POST" action="{{route('user.vendor.permission.destroy', $users->id)}}">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
-
-                    </form>
-            @endif
-        </div>
-
+                            </form>
+                    @endif
+                </div>
+            @endif    
         @endforeach
     </div>
 </div>

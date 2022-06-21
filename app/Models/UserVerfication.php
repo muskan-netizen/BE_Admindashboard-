@@ -13,7 +13,7 @@ class UserVerfication extends Model
 
     public function resources()
     {
-        return $this->hasMany('App\Models\UserVerificationResource');
+        return $this->hasOne('App\Models\UserVerificationResource','user_verification_id','id'); 
     }
 
     public function addVerification($data)

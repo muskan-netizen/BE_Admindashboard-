@@ -8,6 +8,7 @@ use Config;
 use Log;
 use Validation;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use ConvertCurrency;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -19,6 +20,9 @@ use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption};
+use DateTime;
+use DateInterval;
+use DateTimeZone;
 
 class HomeController extends BaseController
 {
@@ -35,7 +39,7 @@ class HomeController extends BaseController
             $client_language = ClientLanguage::select('language_id')->where(['is_primary' => 1, 'is_active' => 1])->first();
             
             $langId = ($request->hasHeader('language') && !empty($request->header('language'))) ? $request->header('language') : (($client_language) ? $client_language->language_id : 1);
-            $homeData['profile'] = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email','custom_domain')->first();
+            $homeData['profile'] = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number')->first();
             //dd(Client::with('getPreference')->first()->getPreference->auto_implement_5_percent_tip);
             $app_styling_detail = AppStyling::getSelectedData();
             foreach ($app_styling_detail as $app_styling) {
@@ -159,7 +163,7 @@ class HomeController extends BaseController
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
-            $payment_codes = ['stripe', 'stripe_fpx', 'razorpay', 'checkout', 'paytab'];
+            $payment_codes = ['stripe', 'stripe_fpx', 'stripe_oxxo','stripe_ideal','razorpay', 'checkout', 'paytab','flutterwave'];
             $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
                 foreach ($payment_creds as $creds) {
@@ -169,6 +173,12 @@ class HomeController extends BaseController
                     }
                     if ($creds->code == 'stripe_fpx') {
                         $homeData['profile']->preferences->stripe_fpx_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
+                    }
+                    if ($creds->code == 'stripe_oxxo') {
+                        $homeData['profile']->preferences->stripe_oxxo_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
+                    }
+                    if ($creds->code == 'stripe_ideal') {
+                        $homeData['profile']->preferences->stripe_ideal_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
                     }
                     if ($creds->code == 'razorpay') {
                         $homeData['profile']->preferences->razorpay_api_key = (isset($creds_arr->api_key) && (!empty($creds_arr->api_key))) ? $creds_arr->api_key : '';
@@ -180,6 +190,9 @@ class HomeController extends BaseController
                         $homeData['profile']->preferences->paytab_profile_id = (isset($creds_arr->profile_id) && (!empty($creds_arr->profile_id))) ? $creds_arr->profile_id : '';
                         $homeData['profile']->preferences->paytab_server_key = (isset($creds_arr->mobile_server_key) && (!empty($creds_arr->mobile_server_key))) ? $creds_arr->mobile_server_key : '';
                         $homeData['profile']->preferences->paytab_client_key = (isset($creds_arr->mobile_client_key) && (!empty($creds_arr->mobile_client_key))) ? $creds_arr->mobile_client_key : '';
+                    }
+                    if ($creds->code == 'flutterwave') {
+                        $homeData['profile']->preferences->flutterwave_public_key = (isset($creds_arr->client_id) && (!empty($creds_arr->client_id))) ? $creds_arr->client_id : '';
                     }
                 }
             }
@@ -226,7 +239,7 @@ class HomeController extends BaseController
             //     if (empty($request->type)) {
             //         $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
             //     } else {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
             //     }
             // } else {
@@ -260,6 +273,12 @@ class HomeController extends BaseController
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
             $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
 
+            $timezone = $user->timezone ?? 'Asia/Kolkata';
+            $start_date = new DateTime("now", new  DateTimeZone($timezone) );
+            $start_date =  $start_date->format('Y-m-d');
+            $end_date = Date('Y-m-d', strtotime('+13 days'));
+            
+
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
 
@@ -278,11 +297,28 @@ class HomeController extends BaseController
                         }
                     }
                 }
+
                 $slotsDate = 0;
-                if($vendor->is_vendor_closed){
+                $vendor->date_with_slots = [];
+                if($vendor->closed_store_order_scheduled == 1){
                     $slotsDate = findSlot('',$vendor->id,'');
                     $vendor->delaySlot = $slotsDate;
                     $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
+
+                    if(!empty($slotsDate)){
+                        $period = CarbonPeriod::create($start_date, $end_date);
+                        $slotWithDate = [];
+                        foreach($period as $key => $date){
+                            $slotDate = trim(date('Y-m-d', strtotime($date)));
+                            $slots = showSlot($slotDate,$vendor->id,'delivery');
+                            if(!empty($slots)){
+                                $slotData['date']  =  $slotDate;
+                                $slotData['slots'] = $slots;
+                                $slotWithDate[] = $slotData;
+                            }
+                        }
+                        $vendor->date_with_slots = $slotWithDate;
+                    }
                 }else{
                     $vendor->delaySlot = 0;
                     $vendor->closed_store_order_scheduled = 0;
@@ -422,14 +458,18 @@ class HomeController extends BaseController
     public function getEditedOrders(Request $request){
         // Get user Edited Orders from Temp Cart
         $user = Auth::user();
-        $temp_order_vendors = TempCart::where('status', '0')->where('user_id', $user->id)->where('is_submitted', 1)->where('is_approved', 0)->pluck('order_vendor_id');
-        $temp_orders = Order::with(['vendors'=> function($q){
-            $q->select('order_id','vendor_id', 'dispatch_traking_url');
-        }])->whereHas('vendors', function($q) use($temp_order_vendors){
-            $q->whereIn('id', $temp_order_vendors);
-        })
-        ->select('id','order_number')
-        ->get();
+        $temp_orders = array();
+        if($user){
+            $temp_order_vendors = TempCart::where('status', '0')->where('user_id', $user->id)->where('is_submitted', 1)->where('is_approved', 0)->pluck('order_vendor_id');
+            $temp_orders = Order::with(['vendors'=> function($q){
+                $q->select('order_id','vendor_id', 'dispatch_traking_url');
+            }])->whereHas('vendors', function($q) use($temp_order_vendors){
+                $q->whereIn('id', $temp_order_vendors);
+            })
+            ->select('id','order_number')
+            ->get();
+        }
+        
 
         return $this->successResponse($temp_orders, '', 200);
     }

@@ -82,7 +82,8 @@ class VivawalletController extends FrontController
 
         }elseif($request->from == 'subscription')
         {
-            $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+          $subtime = ($request->subscription_id)??time();
+          $time = 'S_'.$subtime.'_'.$request->subsid;
             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d'),'user_id'=>auth()->id()]);
             
         }
@@ -97,7 +98,6 @@ class VivawalletController extends FrontController
 
    public function createPayLink(Request $request)
    {
-    // \Log::info($request->all());
     $number =  $this->orderNumber($request);
     $user = auth()->user();
     $this->credentials();
@@ -124,21 +124,13 @@ class VivawalletController extends FrontController
               'merchantTrns'        => $number
           ];
       $response = $this->createOrderPaymentLink($data);
+          \Log::info(json_encode($response));
       if($response->orderCode){
-          // if($request->from != ''){
-          // //   $payId = Payment::where('transaction_id',$number)->first();
-          // //   $payId->viva_order_id = $response->orderCode;
-          // //   $payId->save();
-          // // }else{
-          // //   $orderId = Order::where('order_number',$number)->first();
-          // //   $orderId->viva_order_id = $response->orderCode;
-          // //   $orderId->save();
-
             $payId = Payment::where('transaction_id',$number)->first();
             $payId->viva_order_id = $response->orderCode;
+            $payId->payment_from = 'web';
             $payId->user_id = auth()->id();
             $payId->save();
-          // }
       }
 
       return $this->sendResponse($response);
@@ -148,7 +140,7 @@ class VivawalletController extends FrontController
    {
     $this->credentials();
         if($this->test_mode=='1'){
-          $this->api_url = 'https://demo.vivapayments.com/web/checkout?ref='.$response->orderCode;            
+          $this->api_url = 'https://demo.vivapayments.com/web/checkout?ref='.$response->orderCode;
           }else{
           $this->api_url = 'https://vivapayments.com/web/checkout?ref='.$response->orderCode;
           }
@@ -165,55 +157,59 @@ class VivawalletController extends FrontController
    }
 
 
-   public function webViewPay(Request $request)
+   public function createPayLinkApp(Request $request , $domain ="")
    {
-    // $data = $request->all();
-    $request['from']=$request->from;
-    $request['amt']=$request->amount??'100';
-    $request['order_number']=$request->order_no??time(); // order no
-    $data = json_decode($this->createHash($request));
-    $inputs = '
-    <input type="text" value="'.$data->hash.'" name="hash"/>
-    <input type="number" value="'.$data->amount.'" name="amount"/>
-    <input type="text" value="mobile payment" name="description">
-    <input type="email" value="'.$data->email.'" name="email">
-    <input type="text" value="Kongadel" name="merchant_id">
-    <input type="text" value="'.$data->reference.'" name="reference">
-    <input type="text" value="'.$data->firstname.'" name="firstname">
-    <input type="text" value="'.$data->lastname.'" name="lastname">
-    <input type="text" value="'.$data->phone.'" name="phone">
-    <input type="text" value="'.$data->callback.'" name="callback">
-    <input type="text" value="'.$data->customerId.'" name="customerId">
-    ';
-    return view('frontend.payment_gatway.kongapay_view', compact('inputs'));
-   }
+    $request->request->add(['from'=>$request->action,'amt'=>number_format($request->amount,2),'subsid'=>$request->subscription_id??'']);
 
-   public function kongapayPurchase(Request $request)
-   {
-       $amount = $request->amount;
-       $user = auth()->user();
-       $action = isset($request->action) ? $request->action : ''; 
-       $params = '?amount=' . $amount.'&auth_token='.$user->auth_token.'&from='.$action;
-       if($action == 'cart'){
-           $params = $params . '&order_no=' . $request->order_number.'&app=1';
-       }elseif($action == 'wallet'){
-         //app = 2 is for wallet
-        $params = $params .'&app=2&transaction_id=W_'.time();
-       }elseif($action == 'subscription'){
-        //app = 2 is for wallet
-       $params = $params .'&app=3&subscription_id='.'S_'.time().'_'.$request->subscription_id;
-      }elseif($action == 'tip'){
-        //app = 2 is for wallet
-       $params = $params .'&app=3&order_no='.$request->order_number;
+    $number =  $this->orderNumber($request);
+    $user = auth()->user();
+    $this->credentials();
+            $data  = [
+              'amount'              => intval($request->amt),
+              'customerTrns'        => $number,
+              'customer'            => [
+                  'email'         => $user->email,
+                  'fullName'      => $user->name,
+                  'phone'         => $user->phone_number,
+                  'countryCode'   => 'EN',
+                  'requestLang'   => 'el-EN'
+              ],
+              'paymentTimeout'      => 0,
+              'preauth'             => false,
+              'allowRecurring'      => false,
+              'maxInstallments'     => 0,
+              'paymentNotification' => true,
+              'tipAmount'           => 0,
+              'disableExactAmount'  => false,
+              'disableCash'         => false,
+              'disableWallet'       => false,
+              'sourceCode'          => 'Default',
+              'merchantTrns'        => $number
+          ];
+      $response = $this->createOrderPaymentLink($data);
+
+      if($response->orderCode){
+            $payId = Payment::where('transaction_id',$number)->first();
+            $payId->viva_order_id = $response->orderCode;
+            $payId->payment_from = 'app';
+            $payId->user_id = auth()->id();
+            $payId->save();
       }
 
-       return $this->successResponse(url($request->serverUrl.'payment/kongapay/api/'.$params)); 
+      $link =  $this->sendResponse($response);
+      return $this->successResponse($link);
    }
 
 
    public function successPage(Request $request)
    {
     $payment = Payment::where('viva_order_id',$request->s)->first();
+
+    if(empty(auth()->id())){
+      $user = User::where('id', $payment->user_id)->first();
+      Auth::login($user);
+    }
+
         if($payment->type=='cart'){
           return $this->completeOrderCart($request,$payment);
         }elseif($payment->type=='wallet'){
@@ -275,7 +271,7 @@ class VivawalletController extends FrontController
           $super_admin = User::where('is_superadmin', 1)->pluck('id');
           $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
-          if(isset($request->auth_token) && !empty($request->auth_token))
+          if(isset($payment->payment_from) && $payment->payment_from=='app')
           {
             $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&order='.$order->order_number;
             return Redirect::to($returnUrl); 
@@ -289,7 +285,7 @@ class VivawalletController extends FrontController
             if(isset($order->wallet_amount_used)){
               $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
             }
-            if(isset($request->auth_token) && !empty($request->auth_token))
+            if(isset($payment->payment_from) && $payment->payment_from=='app')
             {
               $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=00&order='.$order->order_number;
               return Redirect::to($returnUrl);  
@@ -313,7 +309,7 @@ class VivawalletController extends FrontController
             $wallet = $user->wallet;
             $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->s . '</b>']);
 
-            if(isset($request->transaction_id) && !empty($request->transaction_id))
+            if(isset($payment->payment_from) && $payment->payment_from=='app')
             {
               $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&transaction_id='.$request->s.'&action=wallet';
               return Redirect::to($returnUrl); 
@@ -326,7 +322,7 @@ class VivawalletController extends FrontController
             $data = Payment::where('viva_order_id',$request->s)->first();
             $data->delete();
 
-            if(isset($request->transaction_id) && !empty($request->transaction_id))
+            if(isset($payment->payment_from) && $payment->payment_from=='app')
             {
               $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=00&transaction_id='.$request->merchant_reference.'&action=wallet';
               return Redirect::to($returnUrl); 
@@ -352,7 +348,7 @@ class VivawalletController extends FrontController
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription[2]);
 
-            if(isset($request->subscription_id) && !empty($request->subscription_id))
+            if(isset($payment->payment_from) && $payment->payment_from=='app')
             {
               $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&transaction_id='.$request->s.'&action=subscription';
               return Redirect::to($returnUrl); 
@@ -362,7 +358,7 @@ class VivawalletController extends FrontController
           }else{
             $data->delete();
 
-            if(isset($request->subscription_id) && !empty($request->subscription_id))
+            if(isset($payment->payment_from) && $payment->payment_from=='app')
             {
               $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=00&transaction_id='.$request->s.'&action=subscription';
               return Redirect::to($returnUrl); 
@@ -385,7 +381,7 @@ class VivawalletController extends FrontController
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
 
-            if(isset($request->order_no) && !empty($request->order_no))
+            if(isset($payment->payment_from) && $payment->payment_from=='app')
               {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=200&order='.$order_number[2].'&action=tip';
                 return Redirect::to($returnUrl); 
@@ -396,7 +392,7 @@ class VivawalletController extends FrontController
           }else{
             $data->delete();
 
-              if(isset($request->order_no) && !empty($request->order_no))
+            if(isset($payment->payment_from) && $payment->payment_from=='app')
               {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=viva_wallet'.'&status=00&transaction_id='.$data->transaction_id.'&action=tip';
                 return Redirect::to($returnUrl); 

@@ -87,8 +87,9 @@ class MvodafoneController extends FrontController
     $number =  $this->orderNumber($request);
     $user = auth()->user();
     $this->credentials();
+
       $data  = [
-              'amount'              => $request->amt,
+              'amount'              => $this->getDollarCompareAmount($request->amt),
               'order_no'            => $number,
               'returnUrl'           => route('mvodafone.success'),
           ];
@@ -108,34 +109,47 @@ class MvodafoneController extends FrontController
       }else{
         return false;
       }
-   }  
+   } 
 
-
-   public function kongapayPurchase(Request $request)
+   public function createPayLinkApp(Request $request)
    {
-       $amount = $request->amount;
-       $user = auth()->user();
-       $action = isset($request->action) ? $request->action : ''; 
-       $params = '?amount=' . $amount.'&auth_token='.$user->auth_token.'&from='.$action;
-       if($action == 'cart'){
-           $params = $params . '&order_no=' . $request->order_number.'&app=1';
-       }elseif($action == 'wallet'){
-         //app = 2 is for wallet
-        $params = $params .'&app=2&transaction_id=W_'.time();
-       }elseif($action == 'subscription'){
-        //app = 2 is for wallet
-       $params = $params .'&app=3&subscription_id='.'S_'.time().'_'.$request->subscription_id;
-      }elseif($action == 'tip'){
-        //app = 2 is for wallet
-       $params = $params .'&app=3&order_no='.$request->order_number;
-      }
+    $request->request->add(['from'=>$request->action,'amt'=>$request->amount,'subsid'=>$request->subscription_id??'']);
+    $number =  $this->orderNumber($request);
+    $user = auth()->user();
+    $this->credentials();
 
-       return $this->successResponse(url($request->serverUrl.'payment/kongapay/api/'.$params)); 
+      $data  = [
+              'amount'              => $this->getDollarCompareAmount($request->amt),
+              'order_no'            => $number,
+              'returnUrl'           => url($request->serverUrl.'payment/mvsuccess?auth_token='.$user->id.'&')
+          ];
+      $response = $this->createPaymentLinkVodafone($data);
+      if(isset($response) && $response->url){
+
+        if($request->from == 'cart'){
+           Payment::where('transaction_id',$number)->update(['viva_order_id'=>$response->reqId]);
+          }elseif($request->from == 'wallet'){
+          Payment::where('transaction_id',$number)->update(['viva_order_id'=>$response->reqId]);
+         }elseif($request->from == 'tip'){
+         Payment::where('transaction_id',$request->order_number.'_'.$number)->update(['viva_order_id'=>$response->reqId]);
+        }elseif($request->from == 'subscription'){
+        Payment::where('transaction_id',$request->subsid.'_'.$number)->update(['viva_order_id'=>$response->reqId]);
+       }
+       return $this->successResponse($response->url);
+      }else{
+        return false;
+      }
    }
 
 
    public function successPage(Request $request)
    {
+    // dd($request);
+    if(isset($request->auth_token))
+    {
+      $user = User::find($request->auth_token);
+      auth()->login($user);
+    }
     $payment = Payment::where('viva_order_id',$request->rID)->first();
         if($payment->type=='cart'){
           return $this->completeOrderCart($request,$payment);
@@ -150,12 +164,9 @@ class MvodafoneController extends FrontController
 
    public function completeOrderCart($request,$payment)
     {
-
       $order = Order::where('order_number',$payment->transaction_id)->first();
-      //dd($order);
-          if(isset($request->rID) && $request->rID != '')
+          if(isset($request->rCode) && $request->rCode == '101')
           {
-           
             $order->payment_status = '1';
             $order->viva_order_id = $request->rID;
             $order->save();
@@ -175,8 +186,10 @@ class MvodafoneController extends FrontController
             CartCoupon::where('cart_id', $cartid)->delete();
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
+            
             // send sms 
             $this->sendSuccessSMS($request, $order);
+            
              // Send Notification
              if (!empty($order->vendors)) {
               foreach ($order->vendors as $vendor_value) {
@@ -185,6 +198,7 @@ class MvodafoneController extends FrontController
                   $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
               }
           }
+
           $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
           $super_admin = User::where('is_superadmin', 1)->pluck('id');
           $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
@@ -220,14 +234,14 @@ class MvodafoneController extends FrontController
 
     public function completeOrderWallet(Request $request,$payment)
     {
-       if(isset($request->rID) && $request->rID != '')
+      if(isset($request->rCode) && $request->rCode == '101')
           {
             $data = Payment::where('viva_order_id',$request->rID)->first();
             $user = auth()->user();
             $wallet = $user->wallet;
             $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->rID . '</b>']);
 
-            if(isset($request->transaction_id) && !empty($request->transaction_id))
+            if(isset($request->auth_token) && !empty($request->auth_token))
             {
               $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=200&transaction_id='.$request->rID.'&action=wallet';
               return Redirect::to($returnUrl); 
@@ -240,7 +254,7 @@ class MvodafoneController extends FrontController
             $data = Payment::where('viva_order_id',$request->rID)->first();
             $data->delete();
 
-            if(isset($request->transaction_id) && !empty($request->transaction_id))
+            if(isset($request->auth_token) && !empty($request->auth_token))
             {
               $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=00&transaction_id='.$request->rID.'&action=wallet';
               return Redirect::to($returnUrl); 
@@ -259,7 +273,7 @@ class MvodafoneController extends FrontController
     {
       $user = auth()->user();
       $data = Payment::where('viva_order_id',$request->rID)->first();
-      if(isset($request->rID) && $request->rID != '')
+      if(isset($request->rCode) && $request->rCode == '101')
           {
             $subscription =explode('_',$data->transaction_id);
             $subscription =$subscription[0];
@@ -267,7 +281,7 @@ class MvodafoneController extends FrontController
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
 
-            if(isset($request->subscription_id) && !empty($request->subscription_id))
+            if(isset($request->auth_token) && !empty($request->auth_token))
             {
               $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=200&transaction_id='.$request->rID.'&action=subscription';
               return Redirect::to($returnUrl); 
@@ -277,7 +291,7 @@ class MvodafoneController extends FrontController
           }else{
             $data->delete();
 
-            if(isset($request->subscription_id) && !empty($request->subscription_id))
+            if(isset($request->auth_token) && !empty($request->auth_token))
             {
               $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=00&transaction_id='.$request->rID.'&action=subscription';
               return Redirect::to($returnUrl); 
@@ -293,14 +307,14 @@ class MvodafoneController extends FrontController
     public function completeOrderTip(Request $request,$payment)
     {
       $data = Payment::where('viva_order_id',$request->rID)->first();
-      if(isset($request->rID) && $request->rID != '')
+      if(isset($request->rCode) && $request->rCode == '101')
           {
             $order_number = explode('_',$data->transaction_id);
             $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[0], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $data->transaction_id]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
 
-            if(isset($request->order_no) && !empty($request->order_no))
+            if(isset($request->auth_token) && !empty($request->auth_token))
               {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=200&order='.$order_number[0].'&action=tip';
                 return Redirect::to($returnUrl); 
@@ -311,7 +325,7 @@ class MvodafoneController extends FrontController
           }else{
             $data->delete();
 
-              if(isset($request->order_no) && !empty($request->order_no))
+              if(isset($request->auth_token) && !empty($request->auth_token))
               {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=mvodafone'.'&status=00&transaction_id='.$data->transaction_id.'&action=tip';
                 return Redirect::to($returnUrl); 

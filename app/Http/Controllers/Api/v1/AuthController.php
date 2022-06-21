@@ -91,13 +91,20 @@ class AuthController extends BaseController
         // $device->access_token = $token;
         // $device->save();
 
+        //check login from individual vendor app
+        $fromVendorAppLogin = 0;
+        if(!empty($loginReq->is_vendor_app)){
+            $fromVendorAppLogin = 1;
+        }
+        
         if (!empty($loginReq->fcm_token)) {
             $device = UserDevice::updateOrCreate(
                 ['device_token' => $loginReq->fcm_token],
                 [
                     'user_id' => $user->id,
                     'device_type' => $loginReq->device_type,
-                    'access_token' => $token
+                    'access_token' => $token,
+                    'is_vendor_app' => $fromVendorAppLogin
                 ]
             );
         } else {
@@ -106,7 +113,8 @@ class AuthController extends BaseController
                 [
                     'user_id' => $user->id,
                     'device_type' => $loginReq->device_type,
-                    'access_token' => $token
+                    'access_token' => $token,
+                    'is_vendor_app' => $fromVendorAppLogin
                 ]
             );
         }
@@ -282,7 +290,7 @@ class AuthController extends BaseController
             $rules['email'] = 'required|email|unique:users';
         }
         if($preferences->verify_phone == 1){
-            $rules['phone_number'] = 'required|string|min:8|max:15|unique:users';
+            $rules['phone_number'] = 'required|string|min:7|max:15|unique:users';
         }
         foreach ($user_registration_documents as $user_registration_document) {
             if($user_registration_document->is_required == 1){
@@ -311,7 +319,7 @@ class AuthController extends BaseController
             if(!empty($signReq->phone_number) && ($preferences->verify_phone == 0)){
 
                 $validator = Validator::make($signReq->all(), [
-                    'phone_number' => 'string|min:8|max:15|unique:users'
+                    'phone_number' => 'string|min:7|max:15|unique:users'
                 ]);
             }
         }
@@ -385,6 +393,7 @@ class AuthController extends BaseController
             $q->where('user_id', $user_id);
         },'primary'])->get();
         $response['user_document'] = $user_registration_documents;
+        $response['app_hash_key'] = (!empty($signReq->app_hash_key))?$signReq->app_hash_key:'';
       
         //end user upload document
         $wallet = $user->wallet;
@@ -505,13 +514,20 @@ class AuthController extends BaseController
             // ];
             // UserDevice::insert($user_device);
 
+            //check login from individual vendor app
+            $fromVendorAppLogin = 0;
+            if(!empty($signReq->is_vendor_app)){
+                $fromVendorAppLogin = 1;
+            }
+
             if (!empty($signReq->fcm_token)) {
                 $user_device = UserDevice::updateOrCreate(
                     ['device_token' => $signReq->fcm_token],
                     [
                         'user_id' => $user->id,
                         'device_type' => $signReq->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             } else {
@@ -520,7 +536,8 @@ class AuthController extends BaseController
                     [
                         'user_id' => $user->id,
                         'device_type' => $signReq->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             }
@@ -533,7 +550,7 @@ class AuthController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.";
+                $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $phoneCode . " to verify your account.".((!empty($signReq->app_hash_key))?" ".$signReq->app_hash_key:'');
                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             }
             if (!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)) {
@@ -617,7 +634,7 @@ class AuthController extends BaseController
                     $user->save();
                     $provider = $data->sms_provider;
                     $to = '+' . $request->dial_code . $request->phone_number;
-                    $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+                    $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.".((!empty($request->app_hash_key))?" ".$request->app_hash_key:'');
                     if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
                         $send = $this->sendSms($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                         if ($send ==1) {
@@ -909,13 +926,20 @@ class AuthController extends BaseController
             }
             $user_refferal = UserRefferal::where('user_id', $user->id)->first();
 
+            //check login from individual vendor app
+            $fromVendorAppLogin = 0;
+            if(!empty($req->is_vendor_app)){
+                $fromVendorAppLogin = 1;
+            }
+
             if (!empty($req->fcm_token)) {
                 $device = UserDevice::updateOrCreate(
                     ['device_token' => $req->fcm_token],
                     [
                         'user_id' => $user->id,
                         'device_type' => $req->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             } else {
@@ -924,7 +948,8 @@ class AuthController extends BaseController
                     [
                         'user_id' => $user->id,
                         'device_type' => $req->device_type,
-                        'access_token' => $token
+                        'access_token' => $token,
+                        'is_vendor_app' => $fromVendorAppLogin
                     ]
                 );
             }
@@ -1061,7 +1086,7 @@ class AuthController extends BaseController
                     $to = '+' . $dialCode . $phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = "Please enter OTP " . $phoneCode . " to verify your account.";
+                $body = "Please enter OTP " . $phoneCode . " to verify your account.".((!empty($request->app_hash_key))?" ".$request->app_hash_key:'');
                 if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                     if ($send) {
@@ -1128,13 +1153,21 @@ class AuthController extends BaseController
                 } catch (\Exception $e) {
                 }
                 $user_refferal = UserRefferal::where('user_id', $user->id)->first();
+
+                //check login from individual vendor app
+                $fromVendorAppLogin = 0;
+                if(!empty($request->is_vendor_app)){
+                    $fromVendorAppLogin = 1;
+                }
+                
                 if (!empty($request->fcm_token)) {
                     $device = UserDevice::updateOrCreate(
                         ['device_token' => $request->fcm_token],
                         [
                             'user_id' => $user->id,
                             'device_type' => $request->device_type,
-                            'access_token' => $token
+                            'access_token' => $token,
+                            'is_vendor_app' => $fromVendorAppLogin
                         ]
                     );
                 } else {
@@ -1143,7 +1176,8 @@ class AuthController extends BaseController
                         [
                             'user_id' => $user->id,
                             'device_type' => $request->device_type,
-                            'access_token' => $token
+                            'access_token' => $token,
+                            'is_vendor_app' => $fromVendorAppLogin
                         ]
                     );
                 }
@@ -1194,7 +1228,7 @@ class AuthController extends BaseController
                 return $this->errorResponse(__('Invalid email or phone number'), 404);
             }
         } catch (\Exception $ex) {
-            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+            return $this->errorResponse($ex->getMessage(), 400);
         }
     }
 

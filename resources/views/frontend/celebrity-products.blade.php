@@ -110,7 +110,7 @@
                                         }*/ ?>
                                         <div class="common-product-box scale-effect mb-2">
                                             <a class=" row  w-100" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                                <div class="col-sm-4">
+                                                <div class="col-4">
                                                     <div class="img-outer-box position-relative">
                                                         <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
                                                         <div class="pref-timing">
@@ -119,7 +119,7 @@
                                                         <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-8">
+                                                <div class="col-8">
                                                     <div class="media-body align-self-center">
                                                         <div class="inner_spacing px-0">
                                                             <div class="product-description">
@@ -252,7 +252,7 @@
                                                     <div class="product-box scale-effect">
                                                         <div class="img-wrapper">
                                                             <div class="front">
-                                                                <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}"><img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt=""></a>
+                                                                <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank"><img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt=""></a>
                                                             </div>
                                                             <div class="cart-info cart-wrap">
                                                                 <button data-toggle="modal" data-target="#addtocart" title="Add to cart"><i class="ti-shopping-cart"></i></button>

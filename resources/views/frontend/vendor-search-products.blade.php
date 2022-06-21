@@ -13,7 +13,7 @@
     <div class="row my-2 d-flex align-items-center">
         <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
             <div class="radius-bar w-100">
-                <div class="search_form d-flex align-items-center justify-content-between border">
+                <div class="search_form d-flex align-items-center border">
                     <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                     <input class="form-control border-0 typeahead" type="search"
                         placeholder="{{ __('Search') }}" id="vendor_search_box" value="{{$input['keyword']??''}}">
@@ -22,7 +22,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-5 text-right pl-0"><span > {{ __('Sort By') }} :</span>
+        <div class="col-5 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
             <select name="order_type" id='order_type' class="product_tag_filter p-1">
                 <option value="">{{__('Please Select')}}</option>
                 <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
@@ -335,11 +335,11 @@
         @empty
         @endforelse
     @else
-        <h4 class="mt-3 mb-3 text-center">No product found</h4>
+        <h4 class="mt-3 mb-3 text-center">{{__('No product found')}}</h4>
     @endif
 </section>
 @empty
-    <h4 class="mt-3 mb-3 text-center">No product found</h4>
+    <h4 class="mt-3 mb-3 text-center">{{__('No product found')}}</h4>
 @endforelse
 
 

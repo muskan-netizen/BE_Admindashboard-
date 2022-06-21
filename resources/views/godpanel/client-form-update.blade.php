@@ -35,6 +35,11 @@
                         enctype="multipart/form-data" autocomplete="off">
                         @method('PUT')
                         @csrf
+                        <div class="row mb-2">
+                            <div class="col-sm-12 text-right">
+                                <a class="btn btn-info waves-effect waves-light text-sm-right" href="{{route('client.index')}}"><< Back </a>
+                            </div>
+                        </div>
                         <div class=" row">
                            
                             <div class="col-md-6">
@@ -67,6 +72,16 @@
                                         <strong>{{ $errors->first('custom_domain') }}</strong>
                                     </span>
                                     @endif
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="languages">Client Type</label>
+                                    <select class="form-control" id="client_type" name="client_type">
+                                        @foreach($client_types as $key => $value)
+                                            <option value="{{$key}}" @if($client->client_type == $key) selected="selected" @endif >{{$value}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -175,7 +190,7 @@
                                     <label for="languages">Stage </label>
                                     <select class="form-control" id="dump_into" name="dump_into">
                                         <option value="DEV">DEV</option>
-                                        <option value="STAG">STAG</option>
+                                        <option value="STAGING">STAG</option>
                                         <option value="PROD">PROD</option>
                                     </select>
                                 </div>    
@@ -195,6 +210,18 @@
     <!--end default --> 
 
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+    var loc = "{{route('client.index')}}";
+    $('#side-menu').find('a').each(function() {
+        if($(this).attr('href') == loc)
+        {  
+            $(this).toggleClass('active');
+            $(this).parent().toggleClass('menuitem-active');
+        }
+    });
+});
+</script>
 @endsection
 @section('script')
 <script src="{{asset('assets/libs/dropzone/dropzone.min.js')}}"></script>

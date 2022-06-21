@@ -220,16 +220,19 @@
                     <div class="row mb-2">
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
+                            @include('backend.primary_currency')
                             {!! Form::text('price', decimal_format($product->variant[0]->price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
+                            @include('backend.primary_currency')
                             {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                       
                         @if($product->vendor->need_container_charges == 1)
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Container Charges (Optional)'), ['class' => 'control-label']) !!}
+                            @include('backend.primary_currency')
                             {!! Form::text('container_charges', $product->variant[0]->container_charges, ['class'=>'form-control', 'id' => 'container_charges', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         @endif
@@ -534,11 +537,7 @@
 
                     
 
-                    {{--<div class="row">
-                        <div class="col-md-12">
-                            <h4 class="mb-2 "> <span class="">{{ __("Taxes") }}</span></h4>
-                        </div>
-                    </div>
+                    {{--
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Service Charges'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="service_charges_tax" class="chk_box" data-color="#43bee1" @if($product->service_charges_tax == 1) checked @endif>
@@ -572,6 +571,28 @@
                     </div>
 
 
+                     
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('On Fixed Fee'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="fixed_fee_tax" class="form-control" data-color="#43bee1" @if($product->fixed_fee_tax == 1) checked @endif>
+                    </div>
+                
+                    <div class="form-group w-100" style="display:{{$product->fixed_fee_tax == 0 ? 'none!important' : 'block'}}" id="fixed_fee_tax_id">
+                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
+                        <select class="form-control" name="fixed_fee_tax_id">
+                            <option value="">{{__('Select any')}}</option>
+                            @foreach(taxRates() as $row)
+                                <option value="{{$row->id}}" {{$product->fixed_fee_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
+                            @endforeach
+                        </select>
+                    </div> --}}
+
+                    <div class="row">
+                        <div class="col-md-12">
+                        <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Taxes") }}</h5>
+                        </div>
+                    </div>
+                    
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Container Charges'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="container_charges_tax" class="form-control" data-color="#43bee1" @if($product->container_charges_tax == 1) checked @endif>
@@ -589,23 +610,6 @@
                         </select>
                     </div> 
                     
-                     
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', __('On Fixed Fee'),['class' => 'control-label']) !!}
-                        <input type="checkbox" data-plugin="switchery" name="fixed_fee_tax" class="form-control" data-color="#43bee1" @if($product->fixed_fee_tax == 1) checked @endif>
-                    </div>
-                
-                    <div class="form-group w-100" style="display:{{$product->fixed_fee_tax == 0 ? 'none!important' : 'block'}}" id="fixed_fee_tax_id">
-                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
-                        <select class="form-control" name="fixed_fee_tax_id">
-                            <option value="">{{__('Select any')}}</option>
-                            @foreach(taxRates() as $row)
-                                <option value="{{$row->id}}" {{$product->fixed_fee_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
-                            @endforeach
-                        </select>
-                    </div> --}}
-
-
 
                     @if($configData->delay_order == 1 || $product->delay_order_hrs > 0 || $product->delay_order_min > 0)
                     @if(in_array($configData->business_type,['laundry']))

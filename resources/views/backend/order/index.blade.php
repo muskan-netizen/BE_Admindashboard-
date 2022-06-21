@@ -75,28 +75,33 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                             <span class="align-middle">This is a gift.</span>
                                                         </div>
                                                     <% } %>
-                                                    <% if(order.scheduled_date_time) { %>
-                                                        <span class="badge badge-success ml-2">Scheduled</span>
+                                                    <% if(order.scheduled_date_time || order.schedule_pickup || order.schedule_dropoff) { %>
+                                                        <span class="badge badge-success ml-2">{{__('Scheduled')}}</span>
                                                        <!-- <span class="ml-2"><%= order.scheduled_date_time %></span> -->
                                                     <% } %>
 
 
-                                                    <% if(((vendor.delivery_fee > 0) || (order.scheduled_date_time))){ %>
+                                                    <% if(((vendor.delivery_fee > 0) || (order.scheduled_date_time) || order.schedule_pickup)){ %>
                                                         <% if(vendor.order_status != 'Rejected'){%>
-                                                            <% if(order.scheduled_slot == null){ %>
-                                                            <% if(order.scheduled_date_time){ %>
-                                                                   <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %></span>
-                                                               <% } else { %>
-                                                                   <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
-                                                               <% } %>
-                                                               <% }else{ %>
-                                                                <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
-                                                               <% } %>
+                                                            @if($client_preferences->scheduling_with_slots == 1 && $client_preferences->business_type == 'laundry') 
+                                                            <span class="ml-2 text-right">Slots: Pickup:  <%= order.scheduled_slot %> | Dropoff: <%= order.dropoff_scheduled_slot %>
+                                                            </span>
+                                                        @else
+                                                                <% if(order.scheduled_slot == null){ %>
+                                                                    <% if(order.scheduled_date_time){ %>
+                                                                        <span class="ml-2">{{__('Order scheduled for')}} <%= order.scheduled_date_time %></span>
+                                                                    <% } else { %>
+                                                                        <span class="ml-2">{{__('Expected Delivery by')}} <%= vendor.ETA %></span>
+                                                                    <% } %>
+                                                                <% }else{ %>
+                                                                    <span class="ml-2">{{__('Order scheduled for')}} <%= order.scheduled_date_time %>, {{__('Slot')}} : <%= order.scheduled_slot %></span>
+                                                                <% } %>
+                                                        @endif
                                                         <% } else if(vendor.order_status == 'Rejected' && vendor.cancelled_by != null){%>
                                                             <span class="ml-2 text-danger"><%= vendor.order_status %> by <%= vendor.cancelled_by.name %></span>
                                                         <% }%>
 
-                                                   <% } %>
+                                                    <% } %>
 
                                                 </div>
 
@@ -201,7 +206,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% } %>
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
-                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.payable_amount)+parseFloat(order.fixed_fee_amount)) %></span>
+                                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.payable_amount)+parseFloat(order.fixed_fee_amount)) %></span> --}}
+                                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(vendor.subtotal_amount) - parseFloat(vendor.discount_amount) ) + parseFloat(vendor.total_container_charges) + parseFloat(vendor.taxable_amount) + parseFloat(vendor.service_fee_percentage_amount) + parseFloat(order.fixed_fee_amount) + parseFloat(vendor.delivery_fee )) %></span>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -244,12 +250,23 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <label class="m-0">{{ __('Total') }}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_amount) %></span>
                                     </li>
+
+                                    <% if(order.total_other_taxes_amount > 0 || order.total_other_taxes_amount < 0) { %>
+                                       <li class="d-flex align-items-center justify-content-between">
+                                                <label class="m-0">{{ __('Tax') }}</label>
+                                                <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_other_taxes_amount) %></span>
+                                        </li>
+                                     <% }else { %>
+
                                     <% if(order.taxable_amount > 0 || order.taxable_amount < 0) { %>
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Tax') }}</label>
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.taxable_amount) %></span>
                                     </li>
-                                    <% } %>
+                                    <% } } %>
+
+
+
                                     <% if(order.total_service_fee > 0 || order.total_service_fee < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{ __('Service Fee') }}</label>
@@ -305,7 +322,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     <% } %>
                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Payable') }} </label>
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount)+parseFloat(order.fixed_fee_amount))%></span>
+                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount)+parseFloat(order.fixed_fee_amount))%></span> --}}
+
+                                        {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(order.total_amount) - parseFloat(order.total_discount_calculate) ) + parseFloat(order.total_container_charges) + parseFloat(order.taxable_amount) + parseFloat(order.total_service_fee) + parseFloat(order.fixed_fee_amount) + parseFloat(order.total_delivery_fee )) %></span> --}}
+
+                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(order.payable_amount))%></span>  
                                     </li>
                                 </ul>
                             </div>
@@ -329,21 +350,26 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 </script>
 <div class="container-fluid order-page">
     <div class="row d-flex align-items-center justify-content-between">
-
-        <div class="page-title-box d-flex justify-content-between">
-            <h4 class="page-title mr-3">{{ __('Orders') }}</h4>
-            {{--<div class="d-flex align-items-center">
+        <div class="col-md-6">
+            <div class="page-title-box d-flex justify-content-between">
+                <h4 class="page-title mr-3">{{ __('Orders') }}</h4>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="page-title-box page-title-box text-right pt-2">
                 <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
                     <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
-                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                        <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
+                    </b>
+                </a> 
+                @if ($client_preferences->business_type == 'laundry')
+                <a class="return-btn" href="{{route('rescheduled.orders')}}">
+                    <b>{{ __("Rescheduled Orders") }} <sup class="total-items">({{$rescheduleOrderCount}})</sup>
+                        <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
                     </b>
                 </a>
-                <a class="return-btn ml-3" href="{{route('cancel-order.requests')}}">
-                    <b>{{ __("Cancel Order Request") }} <sup class="total-items">({{$cancel_order_requests}})</sup>
-                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-                    </b>
-                </a>
-            </div>--}}
+                @endif
+            </div>
         </div>
         @if($client_preference_detail->third_party_accounting)
         @foreach($accounting as $accounting)

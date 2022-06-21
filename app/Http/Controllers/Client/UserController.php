@@ -27,7 +27,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
 use App\Models\UserDevice;
 use Session;
-use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction,UserDocs,UserRegistrationDocuments};
+use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction,UserDocs,UserRegistrationDocuments,OrderVendor,VendorOrderStatus, ClientCurrency};
 
 class UserController extends BaseController
 {
@@ -71,8 +71,12 @@ class UserController extends BaseController
     public function getFilterData(Request $request)
     {
         $current_user = Auth::user();
-        $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
-
+        $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
+        if($request->type == 'active'){
+            $users->where('status', 1);
+        }else if($request->type == 'inactive'){
+            $users->where('status', 3);
+        }
         return Datatables::of($users)
             ->addColumn('edit_url', function($users) {
                 return route('customer.new.edit', $users->id);
@@ -99,8 +103,8 @@ class UserController extends BaseController
             ->addColumn('is_superadmin', function($users) use($current_user) {
                 return $current_user->is_superadmin;
             })
-            ->addColumn('wallet', function($users) {
-                return $users->wallet;
+            ->addColumn('wallet_id', function($users) {
+                return $users->wallet->id ?? '';
             })
             ->addColumn('signup_date', function($users) {
                 $date = dateTimeInUserTimeZone($users->created_at, $users->timezone);
@@ -340,8 +344,33 @@ class UserController extends BaseController
         $user_docs = UserDocs::where('user_id', $id)->get();
         $user_registration_documents = UserRegistrationDocuments::get();
         $vendors = Vendor::where('status', 1)->get();
-      //  pr($user_docs);
-        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents]);
+        $active_orders = $this->getUserOrders($id,'active');
+        $completed_orders =  $this->getUserOrders($id,'completed');
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+        $langId = Session::get('customerLanguage');
+        $fixedFee = $this->fixedFee($langId);
+        return view('backend.users.editUser')->with(['subadmin' => $subadmin, 'vendors' => $vendors, 'permissions' => $permissions, 'user_permissions' => $user_permissions, 'vendor_permissions' => $vendor_permissions,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents,'active_orders'=>$active_orders,'completed_orders'=>$completed_orders,'clientCurrency'=>$clientCurrency,'fixedFee'=>$fixedFee]);
+    }
+    public function getUserOrders($id,$order_type){
+        $user = Auth::user();
+        if($order_type == 'active'){
+            $order_status_option_id = [2, 4, 5];
+        }elseif($order_type == 'completed'){
+            $order_status_option_id = [3, 6];
+        }
+        $orders = OrderVendor::with('orderDetail','products')->where('user_id',$id)->whereIn('order_status_option_id',$order_status_option_id)->orderBy('id','desc')->get();
+        foreach($orders as $key=>$order){
+            $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+            $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->order_id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
+            $order->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
+            $product_total_count = 0;
+            foreach ($order->products as $product) {
+                $product_total_count += $product->quantity * $product->price;
+                $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
+            }
+        }
+        return $orders; 
+
     }
     /**
      * Update the specified resource in storage.
@@ -414,7 +443,7 @@ class UserController extends BaseController
         $client = Client::where('code', $user->code)->firstOrFail();
         $rules = array(
             'name' => 'required|string|max:50',
-            'phone_number' => 'required|min:8|max:15',
+            'phone_number' => 'required|min:7|max:15',
             'company_name' => 'required',
             'company_address' => 'required',
             'country_id' => 'required',
@@ -511,14 +540,16 @@ class UserController extends BaseController
     {
         $pagiNate = 10;
         $user_transactions = Transaction::where('wallet_id', $request->walletId)->orderBy('id', 'desc')->get();
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         // dd($user_transactions->toArray());
         foreach ($user_transactions as $key => $trans) {
             // $user = User::find($trans->payable_id);
             $trans->serial = $key + 1;
             $trans->date = Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
             // $trans->date = convertDateTimeInTimeZone($trans->created_at, $user->timezone, 'l, F d, Y, H:i A');
-            $trans->description = json_decode($trans->meta)[0];
-            $trans->amount = '$' . sprintf("%.2f", ($trans->amount / 100));
+            $reason = json_decode($trans->meta, true);
+            $trans->description = $reason['description'] ?? $reason[0];
+            $trans->amount = $clientCurrency->currency->symbol . sprintf("%.2f", ($trans->amount / 100));
             $trans->type = $trans->type;
         }
         return Datatables::of($user_transactions)

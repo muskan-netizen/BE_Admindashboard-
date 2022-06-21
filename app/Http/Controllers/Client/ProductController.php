@@ -383,7 +383,6 @@ class ProductController extends BaseController
             $delete = ProductAddon::where('product_id', $product->id)->delete();
             $delete = ProductUpSell::where('product_id', $product->id)->delete();
             $delete = ProductCrossSell::where('product_id', $product->id)->delete();
-            $delete = ProductRelated::where('product_id', $product->id)->delete();
             $delete = ProductCelebrity::where('product_id', $product->id)->delete();
             $delete = ProductTag::where('product_id', $product->id)->delete();
 
@@ -437,15 +436,7 @@ class ProductController extends BaseController
                 ProductCrossSell::insert($crossArray);
             }
 
-            if ($request->has('releted_product') && count($request->releted_product) > 0) {
-                foreach ($request->releted_product as $key => $value) {
-                    $relateArray[] = [
-                        'product_id' => $product->id,
-                        'related_product_id' => $value
-                    ];
-                }
-                ProductRelated::insert($relateArray);
-            }
+            
 
             $existv = array();
 
@@ -915,7 +906,7 @@ class ProductController extends BaseController
                 }
             }
             catch(\Exception $e){
-                Log::info($e->getMessage());
+                // Log::info($e->getMessage());
             }
     }
     # check if last mile delivery on

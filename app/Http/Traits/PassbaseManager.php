@@ -5,12 +5,15 @@ use Illuminate\Support\Collection;
 use Passbase\Configuration;
 use Passbase\api\IdentityApi;
 use GuzzleHttp\Client;
+use App\Models\VerificationOption;
 use Log;
 trait PassbaseManager{ 
 
   public function init()
   {
-    $config = Configuration::getDefaultConfiguration()->setApiKey('X-API-KEY', $this->secret_key);
+    $passbase_creds = VerificationOption::select('credentials','test_mode')->where('code','passbase')->where('status',1)->first();
+    $creds_arr = json_decode($passbase_creds->credentials);
+    $config = Configuration::getDefaultConfiguration()->setApiKey('X-API-KEY', $creds_arr->secret_key ?? '');
     $apiInstance = new IdentityApi(new Client(),$config);
     return $apiInstance;
   }

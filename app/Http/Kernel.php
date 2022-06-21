@@ -41,7 +41,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            'throttle:160,1',
+            'throttle:360,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
@@ -78,5 +78,7 @@ class Kernel extends HttpKernel
         'systemAuth'    =>\App\Http\Middleware\SystemAuth::class,
         'ApiLocalization' => \App\Http\Middleware\ApiLocalization::class,
         'onlysuperadmin' => \App\Http\Middleware\OnlySuperAdmin::class,
+        'ConnectDbFromInventory' => \App\Http\Middleware\ConnectDbFromInventory::class,
+      
     ];
 }

@@ -21,7 +21,10 @@
             border-color: hsl(0, 50%, 50%);
             background: hsl(0, 50%, 90%);
         }
-
+        .error{
+            font-size:10px;
+            color:red;
+        }
     </style>
 @endsection
 @section('content')
@@ -67,6 +70,33 @@
 
         .invalid-feedback {
             display: block;
+        }
+        .al_body_template_one .order_popop .modal-body {
+            padding: 5px 15px 15px 15px;
+            background: #89898905;
+            box-shadow: 4px 10px 6px #838282;
+        }
+        .al_body_template_one .order_popop p {
+            font-size: 13px;
+            line-height: 19px;
+        }
+        .al_body_template_one .order_popop .modal-body textarea {
+            border: 1px solid#d9d3d3;
+        }
+        .al_body_template_one .order_popop .modal-body textarea::placeholder{
+            padding:5px 10px;
+        }
+        .al_body_template_one .order_popop .modal-body button.close {
+            position: absolute;
+            right: 5px;
+            top: 0px;
+            padding: 0px;
+            margin: 0px;
+        }
+        .al_body_template_one .order_popop .modal-body label {
+            display: inline-block;
+            font-size: 18px !important;
+            font-weight: 400;
         }
 
     </style>
@@ -156,6 +186,14 @@
                                                 <div class="row">
                                                     @if ($activeOrders->isNotEmpty())
                                                         @foreach ($activeOrders as $key => $order)
+                                                        @php
+                                                            
+                                                            $total_other_taxes=0.00;
+                                                            foreach(explode(":",$order->total_other_taxes) as $row){
+                                                                $total_other_taxes+=(float)$row;
+                                                            }
+                                                           
+                                                        @endphp
                                                             <div class="col-12">
                                                                 <div class="row no-gutters order_head">
                                                                     <div class="col-md-3 alOrderStatus">
@@ -173,19 +211,31 @@
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
-                                                                            <span class="ellipsis" data-toggle="tooltip"
-                                                                                data-placement="top" title="">
-                                                                                @if ($order->address)
-                                                                                    {{ $order->address->address }},
-                                                                                    {{ $order->address->street }},
-                                                                                    {{ $order->address->city }},
-                                                                                    {{ $order->address->state }},
-                                                                                    {{ $order->address->country }}
-                                                                                    {{ $order->address->pincode }}
-                                                                                @else
-                                                                                    NA
-                                                                                @endif
-                                                                            </span>
+                                                                            @if($order->luxury_option_id == 3)
+                                                                          
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="" >
+                                                                                    @if ( count($order->vendors) > 0)
+                                                                                        {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                            @else
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="">
+                                                                                    @if ($order->address)
+                                                                                        {{ $order->address->address }},
+                                                                                        {{ $order->address->street }},
+                                                                                        {{ $order->address->city }},
+                                                                                        {{ $order->address->state }},
+                                                                                        {{ $order->address->country }}
+                                                                                        {{ $order->address->pincode }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                            @endif  
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -259,8 +309,20 @@
                                                                                         @if (!empty($order->scheduled_date_time))
                                                                                             <span
                                                                                                 class="badge badge-success ml-2">{{__('Scheduled')}}</span>
-                                                                                            <span
-                                                                                                class="ml-2">{{ (($order->scheduled_slot)?dateTimeInUserTimeZone($order->scheduled_date_time, $timezone).'. Slot: '.$order->scheduled_slot:dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) ) }}</span>
+                                                                                                <span class="ml-2 text-right">
+                                                                                                    Slots: 
+                                                                                                    @if($clientPreference->scheduling_with_slots == 1 && $clientPreference->business_type == 'laundry')
+                                                                                                        {{'Pickup: '. date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone))).' '.$order->scheduled_slot.' | ' }}
+    
+                                                                                                        @if ($order->dropoff_scheduled_slot != "")
+                                                                                                            {{'Dropoff: '.date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_dropoff, $timezone))).' '.$order->dropoff_scheduled_slot }}
+                                                                                                        @else
+                                                                                                            Dropoff: N/A
+                                                                                                        @endif
+                                                                                                    @else
+                                                                                                        {{ (($order->scheduled_slot)?dateTimeInUserTimeZone($order->scheduled_date_time, $timezone).'. Slot: '.$order->scheduled_slot:dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) ) }}
+                                                                                                    @endif
+                                                                                                </span>
                                                                                         @elseif(!empty($vendor->ETA))
                                                                                             @if($clientPreference->hide_order_prepare_time!=1)
                                                                                                 <span class="ml-2">{{__('Your order will arrive by')}} {{ $vendor->ETA }}</span>
@@ -314,10 +376,22 @@
                                                                                                     target="_blank">{{ __('Details') }}</a>
                                                                                             @endif
                                                                                             @if ($vendor->order_status_option_id==1 && ($client_preference_detail->is_cancel_order_user == 1))
+                                                                                            <?php
+                                                                                            if($clientPreference->business_type == 'laundry'){
+                                                                                                $pickup_cancelling_charges = $clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges;
+                                                                                            }
+                                                                                        ?>
+
                                                                                             <h6 class="m-0">
-                                                                                                <label class="rating-star cancel_order"  data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                               @if ($clientPreference->business_type == 'laundry')
+                                                                                                    <label class="rating-star cancel_order" id="cancel_order_{{$order->order_number}}" data-pickup_order="{{date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone)))}}" data-order_id="{{$order->id}}" data-pickup_cancelling_charges="{{$pickup_cancelling_charges}}" data-order_number="{{$order->order_number}}" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
+                                                                                                        {{ __('Cancel Order') }}
+                                                                                                    </label>
+                                                                                                @else
+                                                                                                <label class="rating-star cancel_order" data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
                                                                                                     {{ __('Cancel Order') }}
                                                                                                 </label>
+                                                                                                @endif
                                                                                             </h6>
                                                                                             @endif
                                                                                             @if ($vendor->dineInTable)
@@ -415,12 +489,47 @@
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
-
-
-
-
+                                                                                            {{-- Check if order is created only --}}
+                                                                                            @if ($vendor->status == 0)
+                                                                                                <button  style="font-size:10px; padding: 0 5px; float: right; margin-top: 5px;" data-toggle="modal" data-target="#orderModel{{$order->id}}" class="reschedule_order btn btn-solid" data-id="{{$order->id}}" data-order_vendor_id="{{ $vendor->id ?? 0 }}" data-vendor_id="{{$vendor->id}}">Reschedule</button>
+                                                                                            @endif
                                                                                         </ul>
                                                                                     </div>
+                                                                                    <?php
+                                                                                        $pkup  = json_encode(date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_pickup, $timezone))));
+                                                                                        $dpoff = json_encode(date('Y-m-d', strtotime(dateTimeInUserTimeZone($order->schedule_dropoff, $timezone))));
+                                                                                        $rescheduling_charges = json_encode($clientCurrency->currency->symbol.$vendor->vendor->rescheduling_charges);
+                                                                                        $pickup_cancelling_charges = json_encode($clientCurrency->currency->symbol.$vendor->vendor->pickup_cancelling_charges);
+                                                                                        $newPickupClass = json_encode('pickup_'.$order->order_number);
+                                                                                        $newDropoffClass = json_encode('dropoff_'.$order->order_number);
+                                                                                    ?>
+                                                                                    @if ($clientPreference->business_type == 'laundry')
+                                                                                    {{-- Model to get Slots --}}
+                                                                                    <form onsubmit='checkDates({{$pkup}}, {{$dpoff}}, {{$rescheduling_charges}}, {{$pickup_cancelling_charges}}, {{$newPickupClass}}, {{$newDropoffClass}})' action="{{route('user.rescheduleOrder')}}" class="rescheduleOrder" id="rescheduleOrder" name="rescheduleOrder" method="post">
+                                                                                        @csrf
+                                                                                        <div class="modal fade" id="orderModel{{$order->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                                                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                                                                                <div class="modal-content">
+                                                                                                    <div class="modal-header" style="border-bottom: 1px solid #e5e8eb;">
+                                                                                                    <h5 class="modal-title text-capitalize" id="exampleModalLongTitle">Order Number: #{{$order->order_number}}</h5>
+                                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                                        <span aria-hidden="true">&times;</span>
+                                                                                                    </button>
+                                                                                                    </div>
+                                                                                                    <div class="modal-body">
+                                                                                                        <input type="hidden" name="order_id" value="{{Crypt::encrypt($order->id)}}">
+                                                                                                        @include('frontend.modals.rescheduling_modal', ['newPickupClass' => 'pickup_'.$order->order_number , 'newDropoffClass' => 'dropoff_'.$order->order_number ])
+                                                                                                    </div>
+                                                                                                    <div class="modal-footer">
+                                                                                                    <button type="submit" style="font-size:10px; padding: 0 5px; float: right; margin-top: 5px;" class="btn btn-solid reschedule_now_btn">Reschedule Now</button>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </form>
+                                                                                    {{-- Model to get Slots --}}
+                                                                                @endif
+
                                                                                 </div>
                                                                                 @if(count($vendor['vendor_dispatcher_status']))
                                                                                             <div class="step-indicator step-indicator-order">
@@ -497,9 +606,17 @@
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tax') }}</label>
-                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->taxable_amount
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format(($order->taxable_amount+$total_other_taxes)
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                                @if ($order->taxable_amount > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Container Charges') }}</label>
+                                                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format(($vendor->total_container_charges) * $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
                                                                                 @if ($order->total_service_fee > 0)
@@ -590,6 +707,7 @@
                                                 <div class="row">
                                                     @if ($pastOrders->isNotEmpty())
                                                         @foreach ($pastOrders as $key => $order)
+                                                       
                                                             <div class="col-12">
                                                                 <div class="row no-gutters order_head">
                                                                     <div class="col-md-3 alOrderStatus">
@@ -607,20 +725,32 @@
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
-                                                                            <span class="ellipsis" data-toggle="tooltip"
-                                                                                data-placement="top" title="">
-                                                                                @if ($order->address)
-                                                                                    {{ $order->address->house_number ?? false ? $order->address->house_number . ',' : '' }}
-                                                                                    {{ $order->address->address }},
-                                                                                    {{ $order->address->street }},
-                                                                                    {{ $order->address->city }},
-                                                                                    {{ $order->address->state }},
-                                                                                    {{ $order->address->country }}
-                                                                                    {{ $order->address->pincode }}
-                                                                                @else
-                                                                                    NA
-                                                                                @endif
-                                                                            </span>
+                                                                            @if($order->luxury_option_id == 3)
+                                                                          
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="" >
+                                                                                    @if ( count($order->vendors) > 0)
+                                                                                        {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                            @else
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="">
+                                                                                    @if ($order->address)
+                                                                                        {{ $order->address->house_number ?? false ? $order->address->house_number . ',' : '' }}
+                                                                                        {{ $order->address->address }},
+                                                                                        {{ $order->address->street }},
+                                                                                        {{ $order->address->city }},
+                                                                                        {{ $order->address->state }},
+                                                                                        {{ $order->address->country }}
+                                                                                        {{ $order->address->pincode }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                            @endif
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -634,13 +764,13 @@
                                                                         <a class="text-capitalize">{{ $order->user->name }}</a>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
-                                                                        <div class="col-md-3">
+                                                                        <div class="col-md-3" {{$order->luxury_option_id }}>
                                                                             
                                                                             @if($order->luxury_option_id == 3)
                                                                           
                                                                             <span class="ellipsis" data-toggle="tooltip"
-                                                                                data-placement="top" title="">
-                                                                                @if ( count($order->vendors) >0)
+                                                                                data-placement="top" title="" >
+                                                                                @if ( count($order->vendors) > 0)
                                                                                     {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
                                                                                 @else
                                                                                     NA
@@ -1096,20 +1226,32 @@
                                                                         @if ($client_preference_detail->business_type != 'taxi')
                                                                             <div class="col-md-3">
                                                                                 <h4>{{ __('Address') }}</h4>
-                                                                                <span class="ellipsis"
-                                                                                    data-toggle="tooltip" data-placement="top"
-                                                                                    title="">
-                                                                                    @if ($order->address)
-                                                                                        {{ $order->address->address }},
-                                                                                        {{ $order->address->street }},
-                                                                                        {{ $order->address->city }},
-                                                                                        {{ $order->address->state }},
-                                                                                        {{ $order->address->country }}
-                                                                                        {{ $order->address->pincode }}
-                                                                                    @else
-                                                                                        NA
-                                                                                    @endif
-                                                                                </span>
+                                                                                @if($order->luxury_option_id == 3)
+                                                                          
+                                                                                    <span class="ellipsis" data-toggle="tooltip"
+                                                                                        data-placement="top" title="" >
+                                                                                        @if ( count($order->vendors) > 0)
+                                                                                            {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                                        @else
+                                                                                            NA
+                                                                                        @endif
+                                                                                    </span>
+                                                                                @else
+                                                                                    <span class="ellipsis"
+                                                                                        data-toggle="tooltip" data-placement="top"
+                                                                                        title="">
+                                                                                        @if ($order->address)
+                                                                                            {{ $order->address->address }},
+                                                                                            {{ $order->address->street }},
+                                                                                            {{ $order->address->city }},
+                                                                                            {{ $order->address->state }},
+                                                                                            {{ $order->address->country }}
+                                                                                            {{ $order->address->pincode }}
+                                                                                        @else
+                                                                                            NA
+                                                                                        @endif
+                                                                                    </span>
+                                                                                @endif    
                                                                             </div>
                                                                         @endif
                                                                     </div>
@@ -1403,19 +1545,31 @@
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
                                                                             <h4>{{ __('Address') }}</h4>
-                                                                            <span class="ellipsis" data-toggle="tooltip"
-                                                                                data-placement="top" title="">
-                                                                                @if ($order->address)
-                                                                                    {{ $order->address->address }},
-                                                                                    {{ $order->address->street }},
-                                                                                    {{ $order->address->city }},
-                                                                                    {{ $order->address->state }},
-                                                                                    {{ $order->address->country }}
-                                                                                    {{ $order->address->pincode }}
-                                                                                @else
-                                                                                    NA
-                                                                                @endif
-                                                                            </span>
+                                                                            @if($order->luxury_option_id == 3)
+                                                                          
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="" >
+                                                                                    @if ( count($order->vendors) > 0)
+                                                                                        {{ $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA') ) : __('NA') }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                            @else
+                                                                                <span class="ellipsis" data-toggle="tooltip"
+                                                                                    data-placement="top" title="">
+                                                                                    @if ($order->address)
+                                                                                        {{ $order->address->address }},
+                                                                                        {{ $order->address->street }},
+                                                                                        {{ $order->address->city }},
+                                                                                        {{ $order->address->state }},
+                                                                                        {{ $order->address->country }}
+                                                                                        {{ $order->address->pincode }}
+                                                                                    @else
+                                                                                        NA
+                                                                                    @endif
+                                                                                </span>
+                                                                                @endif    
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -1746,7 +1900,7 @@
     </div>
 
 <!-- start cancel order -->
-<div class="modal fade vendor-order-cancel" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
+<div class="modal fade vendor-order-cancel order_popop" id="cancel_order" tabindex="-1" aria-labelledby="cancel_orderLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-body">
@@ -1790,12 +1944,25 @@
 
 @endsection
 @section('script')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
     @if(in_array('razorpay',$client_payment_options))
     <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
     @endif
-    @if(in_array('stripe',$client_payment_options))
-    <script src="https://js.stripe.com/v3/"></script>
+    @if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options) || in_array('stripe_ideal',$client_payment_options))
+    <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
     @endif
+    @if(in_array('stripe_oxxo',$client_payment_options))
+    <script>
+    var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+    </script>
+    @endif
+
+    @if(in_array('stripe_ideal',$client_payment_options))
+    <script>
+    var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
+    </script>
+    @endif
+
     @if(in_array('yoco',$client_payment_options))
     <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
     <script>
@@ -1816,7 +1983,11 @@
     @if(in_array('flutterwave',$client_payment_options))
     <script src="https://checkout.flutterwave.com/v3.js"></script>
     @endif
+    @if(in_array('payphone',$client_payment_options))
+    <script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
+    @endif
     <script src="{{ asset('js/payment.js') }}"></script>
+    <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
     <script type="text/javascript">
         $(document).delegate(".topup_wallet_btn_tip", "click", function() {
             $('#topup_wallet').modal('show');
@@ -1848,7 +2019,10 @@
         var credit_tip_url = "{{ route('user.tip_after_order') }}";
         var payment_stripe_url = "{{ route('payment.stripe') }}";
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+        var create_payphone_url = "{{route('payphone.createHash')}}";
         var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
+        var create_windcave_hash_url = "{{route('windcave.createHash')}}";
+        var create_paytech_hash_url = "{{route('paytech.createHash')}}";
         var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
         var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
         var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
@@ -1856,6 +2030,9 @@
         var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
         var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
         var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
+        var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+        var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
+        var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
         var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";
         var payment_yoco_url = "{{ route('payment.yocoPurchase') }}";
         var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
@@ -1867,9 +2044,14 @@
         var payment_payfast_url = "{{ route('payment.payfastPurchase') }}";
         var amount_required_error_msg = "{{ __('Please enter amount.') }}";
         var payment_method_required_error_msg = "{{ __('Please select payment method.') }}";
+        var check_pickup_schedule_slots = "{{route('cart.check_pickup_schedule_slots')}}";
+        var check_dropoff_schedule_slots = "{{route('cart.check_dropoff_schedule_slots')}}";
     </script>
 
     <script type="text/javascript">
+        localStorage.removeItem('check_pk_date_check');
+        localStorage.removeItem('check_date_check');
+        localStorage.removeItem('check_pickup_order_date');
         var ajaxCall = 'ToCancelPrevReq';
         $('.verifyEmail').click(function() {
             verifyUser('email');
@@ -1877,6 +2059,39 @@
         $('.verifyPhone').click(function() {
             verifyUser('phone');
         });
+
+          // Added by Ovi
+          function checkDates(prevPickup, prevDropoff, reschedulingCharges, pickupCancellingCharges, newPickupClass, newDropoffClass){
+            // var pickup_schedule_datetime = $('.'+newPickupClass).val();
+            // var dropoff_schedule_datetime = $('.'+newDropoffClass).val();
+            var pickup_schedule_datetime  = "{{date('Y-m-d')}}";
+            var dropoff_schedule_datetime = "{{date('Y-m-d')}}";
+
+            if(Date.parse(pickup_schedule_datetime) == Date.parse(prevPickup)){
+                if(localStorage.getItem('check_pk_date_check') == null){
+                    localStorage.setItem("check_pk_date_check", true);
+                    Swal.fire({ 
+                        icon: 'info',
+                        text: 'You are trying to reschedule the order on the day of pickup, additional '+pickupCancellingCharges+' will be debited from your wallet.',
+                        confirmButtonText: 'Ok',  
+                    });
+                    return false;
+                }   
+            }
+
+            if(Date.parse(dropoff_schedule_datetime) == Date.parse(prevDropoff)){
+                if(localStorage.getItem('check_date_check') == null){
+                    localStorage.setItem("check_date_check", true);
+                    Swal.fire({ 
+                        icon: 'info',
+                        text: 'You are trying to reschedule the order on the day of delivery, additional '+reschedulingCharges+' will be debited from your wallet.',
+                        confirmButtonText: 'Ok',  
+                    });
+                    return false;
+                }
+                return true;      
+            }
+        }
 
         function verifyUser($type = 'email') {
             ajaxCall = $.ajax({
@@ -1988,13 +2203,86 @@
         event.preventDefault();
         var id = $(this).data('id');
         var order_vendor_id = $(this).data('order_vendor_id');
-         $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id, function(markup)
-         {
-            $('#cancel_order').modal('show');
-            $('#cancel-order-form-modal').html(markup);
-        });
+        var pickup_cancelling_charges = $(this).data('pickup_cancelling_charges');
+        if (typeof pickup_cancelling_charges !== 'undefined' && pickup_cancelling_charges !== false) {
+            var order_id = $(this).data('order_id');
+            var pickup_order_date = $(this).data('pickup_order');
+            var order_number = $(this).data('order_number');
+            var today = "{{date('Y-m-d')}}";
+            if(Date.parse(pickup_order_date) == Date.parse(today)){
+                if(localStorage.getItem('check_pickup_order_date') == null){
+                    localStorage.setItem("check_pickup_order_date", true);
+                    Swal.fire({ 
+                        icon: 'info',
+                        text: 'You are trying to cancel the order on the day of pickup, additional '+pickup_cancelling_charges+' will be debited from your wallet.',
+                        confirmButtonText: 'Ok',  
+                    });
+                    
+                    $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id+'&pickup_cancelling_charges='+pickup_cancelling_charges+'&order_id='+order_id+'&pickup_order_date='+pickup_order_date+'&order_number='+order_number, function(markup)
+                    {
+                        $('#cancel_order').modal('show');
+                        $('#cancel-order-form-modal').html(markup);
+                    });
+                }   
+            }else{
+                $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id, function(markup)
+                {
+                    $('#cancel_order').modal('show');
+                    $('#cancel-order-form-modal').html(markup);
+                });
+            }
+        }
+        else{
+            $.get('/return-order/get-vendor-order-for-cancel?id=' + id +'&order_vendor_id=' + order_vendor_id, function(markup)
+            {
+                $('#cancel_order').modal('show');
+                $('#cancel-order-form-modal').html(markup);
+            });
+        }
     });
     ////////// cancel order end
 
+    // Added by Ovi
+    // Check Slot Availability
+    $(document).on("change", ".schedule_pickup_slot_select", function()
+    {
+        var url = "{{route('checkSlotOrders')}}"
+        var schedule_pickup_datetime = $('#pickup_schedule_datetime_re').val();
+        var vendor_id = $('#vendor_id').val();
+        // get schedule_pickup_slot_select class parent id
+        var parentRowID = this.parentNode.id;
+        // get parentRowID child first's value
+        var schedule_pickup_slot = document.getElementById(parentRowID).childNodes[1].value;
+        $.ajax({
+            type: "GET",
+            data: {
+                "schedule_pickup_datetime": schedule_pickup_datetime,
+                "schedule_pickup_slot":     schedule_pickup_slot,
+                "vendor_id":                vendor_id,
+            },
+            url: url,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(output) {
+                // Check if orderCount is greaten equal to orders_per_slot
+                if(output.orderCount >= output.orders_per_slot){
+                    success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
+                    // Disable the place order button
+                    $('.reschedule_now_btn').attr("disabled", true);
+                }else{
+                    // Enable the place order button
+                    $('.reschedule_now_btn').attr("disabled", false);
+                }
+            },
+            error: function(output) {
+                // console.log(output);
+            },
+        });
+    });
+
 </script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
+<script src="{{asset('front-assets/js/reschedule_order.js')}}"></script>
 @endsection

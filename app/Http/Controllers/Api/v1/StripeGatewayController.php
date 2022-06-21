@@ -21,7 +21,7 @@ class StripeGatewayController extends BaseController
     public $gateway;
     public $currency;
 
-    public function __construct()
+    public function config()
     {
         $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
         $creds_arr = json_decode($stripe_creds->credentials);
@@ -37,15 +37,16 @@ class StripeGatewayController extends BaseController
 
     public function stripePurchase(request $request)
     {
+        $this->config();
         // try {
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
             $amount = $this->getDollarCompareAmount($request->amount);
             $token = $request->input('stripe_token');
 
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
            
-            if (!$saved_payment_method) {
+            // if (!$saved_payment_method) {
                 $customerResponse = $this->gateway->createCustomer(array(
                     'description' => 'Creating Customer',
                     'name' => $user->name,
@@ -63,9 +64,9 @@ class StripeGatewayController extends BaseController
                     $request->request->set('customerReference', $customer_id);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            }else {
-                $customer_id = $saved_payment_method->customerReference;
-            }
+            // }else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            // }
             $postdata = [
                 'currency' => $this->currency,
                 // 'token' => $token,
@@ -94,8 +95,8 @@ class StripeGatewayController extends BaseController
                 $postdata['metadata']['order_number'] = $order_number;
                
             } 
-            $authorizeResponse = $this->gateway->authorize($postdata)->send();
-            if ($authorizeResponse->isSuccessful()) {
+            // $authorizeResponse = $this->gateway->authorize($postdata)->send();
+            // if ($authorizeResponse->isSuccessful()) {
                 $response = $this->gateway->purchase($postdata)->send();
                 // $response = $this->gateway->purchase([
                 //     'currency' => $this->currency,
@@ -192,9 +193,9 @@ class StripeGatewayController extends BaseController
                     // $this->failMail();
                     return $this->errorResponse($response->getMessage(), 400);
                 }
-            }else {
-                return $this->errorResponse($authorizeResponse->getMessage(), 400);
-            }
+            // }else {
+            //     return $this->errorResponse($authorizeResponse->getMessage(), 400);
+            // }
         // } catch (\Exception $ex) {
         //     // $this->failMail();
         //     return $this->errorResponse($ex->getMessage(), 400);
@@ -204,12 +205,13 @@ class StripeGatewayController extends BaseController
     public function subscriptionPaymentViaStripe(request $request)
     {
         try {
+            $this->config();
             $user = Auth::user();
             $address = UserAddress::where('user_id', $user->id);
             $token = $request->stripe_token;
             $plan = SubscriptionPlansUser::where('slug', $request->subscription_id)->firstOrFail();
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
-            if (!$saved_payment_method) {
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // if (!$saved_payment_method) {
                 $customerResponse = $this->gateway->createCustomer(array(
                     'description' => 'Creating Customer for subscription',
                     'email' => $request->email,
@@ -221,9 +223,9 @@ class StripeGatewayController extends BaseController
                     $request->request->set('customerReference', $customer_id);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            } else {
-                $customer_id = $saved_payment_method->customerReference;
-            }
+            // } else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            // }
 
             // $subscriptionResponse = $this->gateway->createSubscription(array(
             //     "customerReference" => $customer_id,
@@ -309,9 +311,9 @@ class StripeGatewayController extends BaseController
 
             $user = Auth::user();
 
-            $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
            
-            if (!$saved_payment_method) {
+            // if (!$saved_payment_method) {
                 $customerResponse = $stripe->customers->create([
                     'name' => $user->name,
                     'email' => $user->email,
@@ -328,9 +330,9 @@ class StripeGatewayController extends BaseController
                     $request->request->set('customerReference', $customer_id);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            }else {
-                $customer_id = $saved_payment_method->customerReference;
-            }
+            // }else {
+            //     $customer_id = $saved_payment_method->customerReference;
+            // }
 
             $description = '';
             $payment_form = $request->payment_form;
@@ -409,5 +411,45 @@ class StripeGatewayController extends BaseController
             $returnParams .= '&subscription_id='.$request->subscription_id;
         }
         return $this->successResponse(url($request->serverUrl.'payment/webview/stripe_fpx'.$returnParams)); 
+    }
+
+    public function paymentWebViewStripeIdeal(Request $request, $domain='')
+    {
+        $user = Auth::user();
+        $payment_form = $request->action;
+        $returnParams = '?amount='. $request->amount .'&auth_token='.$user->auth_token. '&payment_form=' . $payment_form;
+        if($payment_form == 'cart'){
+            $returnParams .= '&order_number='.$request->order_number;
+            if($request->has('address_id')){
+                $returnParams .= '&address_id='.$request->address_id;
+            }
+        }
+        elseif($payment_form == 'tip'){
+            $returnParams .= '&order_number='.$request->order_number;
+        }
+        elseif($payment_form == 'subscription'){
+            $returnParams .= '&subscription_id='.$request->subscription_id;
+        }
+        return $this->successResponse(url($request->serverUrl.'payment/webview/stripe_ideal'.$returnParams)); 
+    }
+
+    public function paymentWebViewStripeOXXO(Request $request, $domain='')
+    {
+        $user = Auth::user();
+        $payment_form = $request->action;
+        $returnParams = '?amount='. $request->amount .'&auth_token='.$user->auth_token. '&payment_form=' . $payment_form;
+        if($payment_form == 'cart'){
+            $returnParams .= '&order_number='.$request->order_number;
+            if($request->has('address_id')){
+                $returnParams .= '&address_id='.$request->address_id;
+            }
+        }
+        elseif($payment_form == 'tip'){
+            $returnParams .= '&order_number='.$request->order_number;
+        }
+        elseif($payment_form == 'subscription'){
+            $returnParams .= '&subscription_id='.$request->subscription_id;
+        }
+        return $this->successResponse(url($request->serverUrl.'payment/webview/stripe_oxxo'.$returnParams)); 
     }
 }

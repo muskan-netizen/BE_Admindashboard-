@@ -1,378 +1,12 @@
 @extends('layouts.store', ['title' => $vendor->name])
 @section('css')
-    <style type="text/css">
-        .main-menu .brand-logo {
-            display: inline-block;
-            padding-top: 20px;
-            padding-bottom: 20px
-        }
-
-        .productVariants .firstChild {
-            min-width: 150px;
-            text-align: left !important;
-            border-radius: 0 !important;
-            margin-right: 10px;
-            cursor: default;
-            border: none !important
-        }
-
-        .product-right .color-variant li,
-        .productVariants .otherChild {
-            height: 35px;
-            width: 35px;
-            border-radius: 50%;
-            margin-right: 10px;
-            cursor: pointer;
-            border: 1px solid #f7f7f7;
-            text-align: center
-        }
-
-        .productVariants .otherSize {
-            height: auto !important;
-            width: auto !important;
-            border: none !important;
-            border-radius: 0
-        }
-
-        .product-right .size-box ul li.active {
-            background-color: inherit
-        }
-
-        .product-box .product-detail h4,
-        .product-box .product-info h4 {
-            font-size: 16px
-        }
-
-        select.changeVariant {
-            color: #343a40;
-            border: 1px solid #bbb;
-            border-radius: 5px;
-            font-size: 14px
-        }
-
-        .counter-container {
-            border: 1px solid var(--theme-deafult);
-            border-radius: 5px;
-            padding: 2px
-        }
-
-        .switch {
-            opacity: 0;
-            position: absolute;
-            z-index: 1;
-            width: 18px;
-            height: 18px;
-            cursor: pointer
-        }
-
-        .switch+.lable {
-            position: relative;
-            display: inline-block;
-            margin: 0;
-            line-height: 20px;
-            min-height: 18px;
-            min-width: 18px;
-            font-weight: 400;
-            cursor: pointer
-        }
-
-        .switch+.lable::before {
-            cursor: pointer;
-            font-family: fontAwesome;
-            font-weight: 400;
-            font-size: 12px;
-            color: #32a3ce;
-            content: "\a0";
-            background-color: #fafafa;
-            border: 1px solid #c8c8c8;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
-            border-radius: 0;
-            display: inline-block;
-            text-align: center;
-            height: 16px;
-            line-height: 14px;
-            min-width: 16px;
-            margin-right: 1px;
-            position: relative;
-            top: -1px
-        }
-
-        .switch:checked+.lable::before {
-            display: inline-block;
-            content: '\f00c';
-            background-color: #f5f8fc;
-            border-color: #adb8c0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, .05), inset 0 -15px 10px -12px rgba(0, 0, 0, .05), inset 15px 10px -12px rgba(255, 255, 255, .1)
-        }
-
-        .switch+.lable {
-            margin: 0 4px;
-            min-height: 24px
-        }
-
-        .switch+.lable::before {
-            font-weight: 400;
-            font-size: 11px;
-            line-height: 17px;
-            height: 20px;
-            overflow: hidden;
-            border-radius: 12px;
-            background-color: #f5f5f5;
-            -webkit-box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, .15);
-            box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, .15);
-            border: 1px solid #ccc;
-            text-align: left;
-            float: left;
-            padding: 0;
-            width: 52px;
-            text-indent: -21px;
-            margin-right: 0;
-            -webkit-transition: text-indent .3s ease;
-            -o-transition: text-indent .3s ease;
-            transition: text-indent .3s ease;
-            top: auto
-        }
-
-        .switch.switch-bootstrap+.lable::before {
-            font-family: FontAwesome;
-            content: "\f00d";
-            box-shadow: none;
-            border-width: 0;
-            font-size: 16px;
-            background-color: #a9a9a9;
-            color: #f2f2f2;
-            width: 52px;
-            height: 22px;
-            line-height: 21px;
-            text-indent: 32px;
-            -webkit-transition: background .1s ease;
-            -o-transition: background .1s ease;
-            transition: background .1s ease
-        }
-
-        .switch.switch-bootstrap+.lable::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 3px;
-            border-radius: 12px;
-            box-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
-            width: 18px;
-            height: 18px;
-            text-align: center;
-            background-color: #f2f2f2;
-            border: 4px solid #f2f2f2;
-            -webkit-transition: left .2s ease;
-            -o-transition: left .2s ease;
-            transition: left .2s ease
-        }
-
-        .switch.switch-bootstrap:checked+.lable::before {
-            content: "\f00c";
-            text-indent: 6px;
-            color: #fff;
-            border-color: #b7d3e5
-        }
-
-        .switch-primary>.switch.switch-bootstrap:checked+.lable::before {
-            background-color: #337ab7
-        }
-
-        .switch-success>.switch.switch-bootstrap:checked+.lable::before {
-            background-color: #5cb85c
-        }
-
-        .switch-danger>.switch.switch-bootstrap:checked+.lable::before {
-            background-color: #d9534f
-        }
-
-        .switch-info>.switch.switch-bootstrap:checked+.lable::before {
-            background-color: #5bc0de
-        }
-
-        .switch-warning>.switch.switch-bootstrap:checked+.lable::before {
-            background-color: #f0ad4e
-        }
-
-        .switch.switch-bootstrap:checked+.lable::after {
-            left: 32px;
-            background-color: #fff;
-            border: 4px solid #fff;
-            text-shadow: 0 -1px 0 rgba(0, 200, 0, .25)
-        }
-
-        .switch-square {
-            opacity: 0;
-            position: absolute;
-            z-index: 1;
-            width: 18px;
-            height: 18px;
-            cursor: pointer
-        }
-
-        .switch-square+.lable {
-            position: relative;
-            display: inline-block;
-            margin: 0;
-            line-height: 20px;
-            min-height: 18px;
-            min-width: 18px;
-            font-weight: 400;
-            cursor: pointer
-        }
-
-        .switch-square+.lable::before {
-            cursor: pointer;
-            font-family: fontAwesome;
-            font-weight: 400;
-            font-size: 12px;
-            color: #32a3ce;
-            content: "\a0";
-            background-color: #fafafa;
-            border: 1px solid #c8c8c8;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
-            border-radius: 0;
-            display: inline-block;
-            text-align: center;
-            height: 16px;
-            line-height: 14px;
-            min-width: 16px;
-            margin-right: 1px;
-            position: relative;
-            top: -1px
-        }
-
-        .switch-square:checked+.lable::before {
-            display: inline-block;
-            background-color: #f5f8fc;
-            border-color: #adb8c0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, .05), inset 0 -15px 10px -12px rgba(0, 0, 0, .05), inset 15px 10px -12px rgba(255, 255, 255, .1)
-        }
-
-        .switch-square+.lable {
-            margin: 0 4px;
-            min-height: 24px
-        }
-
-        .switch.switch-bootstrap+.lable::before,
-        .switch.switch-bootstrap:checked+.lable::before {
-            content: "";
-            width: 40px;
-            height: 18px;
-            line-height: 21px
-        }
-
-        .switch.switch-bootstrap+.lable::after {
-            width: 14px;
-            height: 14px
-        }
-
-        .switch+.lable {
-            line-height: 14px
-        }
-
-        .switch.switch-bootstrap:checked+.lable::after {
-            left: 23px
-        }
-
-        .switch-square+.lable::before {
-            font-weight: 400;
-            font-size: 11px;
-            line-height: 17px;
-            height: 20px;
-            overflow: hidden;
-            border-radius: 2px;
-            background-color: #f5f5f5;
-            -webkit-box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, .15);
-            box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, .15);
-            border: 1px solid #ccc;
-            text-align: left;
-            float: left;
-            padding: 0;
-            width: 52px;
-            text-indent: -21px;
-            margin-right: 0;
-            -webkit-transition: text-indent .3s ease;
-            -o-transition: text-indent .3s ease;
-            transition: text-indent .3s ease;
-            top: auto
-        }
-
-        .switch-square.switch-bootstrap+.lable::before {
-            font-family: FontAwesome;
-            box-shadow: none;
-            border-width: 0;
-            font-size: 16px;
-            background-color: #a9a9a9;
-            color: #f2f2f2;
-            width: 52px;
-            height: 22px;
-            line-height: 21px;
-            text-indent: 32px;
-            -webkit-transition: background .1s ease;
-            -o-transition: background .1s ease;
-            transition: background .1s ease
-        }
-
-        .switch-square.switch-bootstrap+.lable::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 3px;
-            border-radius: 12px;
-            box-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
-            width: 18px;
-            height: 18px;
-            text-align: center;
-            background-color: #f2f2f2;
-            border: 4px solid #f2f2f2;
-            -webkit-transition: left .2s ease;
-            -o-transition: left .2s ease;
-            transition: left .2s ease
-        }
-
-        .switch-square.switch-bootstrap:checked+.lable::before {
-            text-indent: 6px;
-            color: #fff;
-            border-color: #b7d3e5
-        }
-
-        .switch-primary>.switch-square.switch-bootstrap:checked+.lable::before {
-            background-color: #337ab7
-        }
-
-        .switch-success>.switch-square.switch-bootstrap:checked+.lable::before {
-            background-color: #5cb85c
-        }
-
-        .switch-danger>.switch-square.switch-bootstrap:checked+.lable::before {
-            background-color: #d9534f
-        }
-
-        .switch-info>.switch-square.switch-bootstrap:checked+.lable::before {
-            background-color: #5bc0de
-        }
-
-        .switch-warning>.switch-square.switch-bootstrap:checked+.lable::before {
-            background-color: #f0ad4e
-        }
-
-        .switch-square.switch-bootstrap:checked+.lable::after {
-            left: 32px;
-            background-color: #fff;
-            border: 4px solid #fff;
-            text-shadow: 0 -1px 0 rgba(0, 200, 0, .25)
-        }
-
-        .switch-square.switch-bootstrap+.lable::after {
-            border-radius: 2px
-        }
-
-    </style>
+<style type="text/css">
+    .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}.product-box .product-detail h4,.product-box .product-info h4{font-size:16px}select.changeVariant{color:#343a40;border:1px solid #bbb;border-radius:5px;font-size:14px}.counter-container{border:1px solid var(--theme-deafult);border-radius:5px;padding:2px}.switch{opacity:0;position:absolute;z-index:1;width:18px;height:18px;cursor:pointer}.switch+.lable{position:relative;display:inline-block;margin:0;line-height:20px;min-height:18px;min-width:18px;font-weight:400;cursor:pointer}.switch+.lable::before{cursor:pointer;font-family:fontAwesome;font-weight:400;font-size:12px;color:#32a3ce;content:"\a0";background-color:#fafafa;border:1px solid #c8c8c8;box-shadow:0 1px 2px rgba(0,0,0,.05);border-radius:0;display:inline-block;text-align:center;height:16px;line-height:14px;min-width:16px;margin-right:1px;position:relative;top:-1px}.switch:checked+.lable::before{display:inline-block;content:'\f00c';background-color:#f5f8fc;border-color:#adb8c0;box-shadow:0 1px 2px rgba(0,0,0,.05),inset 0 -15px 10px -12px rgba(0,0,0,.05),inset 15px 10px -12px rgba(255,255,255,.1)}.switch+.lable{margin:0 4px;min-height:24px}.switch+.lable::before{font-weight:400;font-size:11px;line-height:17px;height:20px;overflow:hidden;border-radius:12px;background-color:#f5f5f5;-webkit-box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);border:1px solid #ccc;text-align:left;float:left;padding:0;width:52px;text-indent:-21px;margin-right:0;-webkit-transition:text-indent .3s ease;-o-transition:text-indent .3s ease;transition:text-indent .3s ease;top:auto}.switch.switch-bootstrap+.lable::before{font-family:FontAwesome;content:"\f00d";box-shadow:none;border-width:0;font-size:16px;background-color:#a9a9a9;color:#f2f2f2;width:52px;height:22px;line-height:21px;text-indent:32px;-webkit-transition:background .1s ease;-o-transition:background .1s ease;transition:background .1s ease}.switch.switch-bootstrap+.lable::after{content:'';position:absolute;top:2px;left:3px;border-radius:12px;box-shadow:0 -1px 0 rgba(0,0,0,.25);width:18px;height:18px;text-align:center;background-color:#f2f2f2;border:4px solid #f2f2f2;-webkit-transition:left .2s ease;-o-transition:left .2s ease;transition:left .2s ease}.switch.switch-bootstrap:checked+.lable::before{content:"\f00c";text-indent:6px;color:#fff;border-color:#b7d3e5}.switch-primary>.switch.switch-bootstrap:checked+.lable::before{background-color:#337ab7}.switch-success>.switch.switch-bootstrap:checked+.lable::before{background-color:#5cb85c}.switch-danger>.switch.switch-bootstrap:checked+.lable::before{background-color:#d9534f}.switch-info>.switch.switch-bootstrap:checked+.lable::before{background-color:#5bc0de}.switch-warning>.switch.switch-bootstrap:checked+.lable::before{background-color:#f0ad4e}.switch.switch-bootstrap:checked+.lable::after{left:32px;background-color:#fff;border:4px solid #fff;text-shadow:0 -1px 0 rgba(0,200,0,.25)}.switch-square{opacity:0;position:absolute;z-index:1;width:18px;height:18px;cursor:pointer}.switch-square+.lable{position:relative;display:inline-block;margin:0;line-height:20px;min-height:18px;min-width:18px;font-weight:400;cursor:pointer}.switch-square+.lable::before{cursor:pointer;font-family:fontAwesome;font-weight:400;font-size:12px;color:#32a3ce;content:"\a0";background-color:#fafafa;border:1px solid #c8c8c8;box-shadow:0 1px 2px rgba(0,0,0,.05);border-radius:0;display:inline-block;text-align:center;height:16px;line-height:14px;min-width:16px;margin-right:1px;position:relative;top:-1px}.switch-square:checked+.lable::before{display:inline-block;background-color:#f5f8fc;border-color:#adb8c0;box-shadow:0 1px 2px rgba(0,0,0,.05),inset 0 -15px 10px -12px rgba(0,0,0,.05),inset 15px 10px -12px rgba(255,255,255,.1)}.switch-square+.lable{margin:0 4px;min-height:24px}.switch.switch-bootstrap+.lable::before,.switch.switch-bootstrap:checked+.lable::before{content:"";width:40px;height:18px;line-height:21px}.switch.switch-bootstrap+.lable::after{width:14px;height:14px}.switch+.lable{line-height:14px}.switch.switch-bootstrap:checked+.lable::after{left:23px}.switch-square+.lable::before{font-weight:400;font-size:11px;line-height:17px;height:20px;overflow:hidden;border-radius:2px;background-color:#f5f5f5;-webkit-box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);border:1px solid #ccc;text-align:left;float:left;padding:0;width:52px;text-indent:-21px;margin-right:0;-webkit-transition:text-indent .3s ease;-o-transition:text-indent .3s ease;transition:text-indent .3s ease;top:auto}.switch-square.switch-bootstrap+.lable::before{font-family:FontAwesome;box-shadow:none;border-width:0;font-size:16px;background-color:#a9a9a9;color:#f2f2f2;width:52px;height:22px;line-height:21px;text-indent:32px;-webkit-transition:background .1s ease;-o-transition:background .1s ease;transition:background .1s ease}.switch-square.switch-bootstrap+.lable::after{content:'';position:absolute;top:2px;left:3px;border-radius:12px;box-shadow:0 -1px 0 rgba(0,0,0,.25);width:18px;height:18px;text-align:center;background-color:#f2f2f2;border:4px solid #f2f2f2;-webkit-transition:left .2s ease;-o-transition:left .2s ease;transition:left .2s ease}.switch-square.switch-bootstrap:checked+.lable::before{text-indent:6px;color:#fff;border-color:#b7d3e5}.switch-primary>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#337ab7}.switch-success>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#5cb85c}.switch-danger>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#d9534f}.switch-info>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#5bc0de}.switch-warning>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#f0ad4e}.switch-square.switch-bootstrap:checked+.lable::after{left:32px;background-color:#fff;border:4px solid #fff;text-shadow:0 -1px 0 rgba(0,200,0,.25)}.switch-square.switch-bootstrap+.lable::after{border-radius:2px}
+</style>
 @endsection
 @section('css-links')
-    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}">
-    <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}">
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
     <!-- section start -->
@@ -381,7 +15,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12">
-                        <div class="product-banner-img" >
+                        <div class="product-banner-img">
                             @if (!empty($vendor->banner))
                             <link rel="preload" as="image" href="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}" />
                             <img alt="" src="{{ $vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path'] }}">
@@ -394,6 +28,12 @@
                                 <div class="col-12 vendor-details-left px-sm-4 px-2 d-sm-flex align-items-center">
 
                                     <div class="vender-icon mr-sm-3">
+                                        <div class="vendor-stories">
+                                            <div class="circle-wrapper"></div>
+                                            <a href="" data-toggle="modal" data-target="#vendorStories_">
+                                                <img id="vendorStoriesImg" src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-sm avatar-lg" alt="profile-image">
+                                            </a>
+                                        </div>
                                         <div class="vendor-reviwes">
                                             @if ($vendor->vendorRating > 0)
                                                 <div class="rating-text-box ml-sm-auto">
@@ -406,7 +46,7 @@
                                                     <div class="reviews-text">Delivery Reviews</div>
                                                 </div> --}}
                                         </div>
-                                        <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image">
+                                        <!-- <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image"> -->
                                     </div>
                                     <div class="ml-sm-1">
                                                 <h3>{{ $vendor->name }}</h3>
@@ -444,7 +84,7 @@
                                                             <i class="fa fa-instagram"></i> <a target="_blank" href="{{$vendor->instagram_url}}">Visit Instagram</a>
                                                         </li>
                                                     @endif
-                                                    
+
 
                                                     @php
                                                         $checkSlot = findSlot('', $vendor->id, '');
@@ -506,7 +146,7 @@
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
-                                                    <li><a data-slug="{{ $data->category->slug }}" style="cursor: pointer;">{{ $data->category->translation_one->name }}({{ $data->products_count }})</a>
+                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation_one->name??'' }}({{ $data->products_count }})</a>
                                                     </li>
                                                 @empty
                                                 @endforelse
@@ -514,10 +154,10 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6 alScrollspyProduct">
-                                            <div class="row mt-2 d-flex align-items-center mb-sm-2">
+                                            <div class="row mt-2 d-flex align-items-start mb-sm-2 justify-content-center">
                                                 <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
                                                     <div class="radius-bar w-100">
-                                                        <div class="search_form d-flex align-items-center justify-content-between border">
+                                                        <div class="search_form d-flex align-items-center border">
                                                             <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                                                             <input class="form-control border-0 typeahead" type="search"
                                                                 placeholder="{{ __('Search') }}" id="vendor_search_box">
@@ -526,7 +166,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-5 text-right pl-0"><span > {{ __('Sort By') }} :</span>
+                                                <div class="col-5 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
                                                     <select name="order_type" id='order_type' class="product_tag_filter p-1">
                                                         <option value="featured">{{ __('Featured') }}</option>
                                                         <option value="a_to_z">{{ __('A to Z') }}</option>
@@ -564,7 +204,7 @@
                                             <section class="scrolling_section " id="{{ $data->category->slug }}">
                                                 @if (!empty($data->products))
                                                     <h2 class="category-head mt-0 mb-3">
-                                                        {{ $data->category->translation_one->name }}
+                                                        {{ $data->category->translation_one->name??'' }}
                                                         ({{ $data->products_count }})
                                                     </h2>
                                                     @forelse($data->products as $prod)
@@ -779,8 +419,8 @@
                                                                         <p class="mb-1 product_price">   {{__('Batch') }} : {{ $prod->batch_count }} </p> --}}
                                                                     @endif
 
-                                                                    <p class="mb-1 product_price">
-                                                                        {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,2,".",",") }}
+                                                                    <p class="mb-1 product_price ">
+                                                                        {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
                                                                         @if ($prod->variant[0]->compare_at_price > 0)
                                                                             <span
                                                                                 class="org_price ml-1 font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
@@ -857,7 +497,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <hr>
+                                <hr class="d-none d-md-block">
                             </div>
                         </div>
                     </div>
@@ -913,7 +553,7 @@
                                                     <div class="extra-items-price font-14">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.price_in_cart) %></div>
                                                 </div>
                                                 <div class="col-md-3 col-sm-4 text-right">
-                                                    <div class="extra-items-price font-14 mr-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
+                                                    <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
                                                 </div>
                                             </div>
                                             <% }); %>
@@ -926,7 +566,7 @@
                                                 <h6 class="m-0 font-14"><b>{{ __('Delivery fee') }}</b></h6>
                                             </div>
                                             <div class="col-md-6 col-sm-6 text-right">
-                                                <div class="extra-items-price font-14 mr-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.delivery_fee_charges) %></div>
+                                                <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.delivery_fee_charges) %></div>
                                             </div>
                                         </div>
                                     <% } %>
@@ -1019,7 +659,7 @@
                                     }
                                     %>
                                     <% if(variant.check_if_in_cart != '') { %>
-                                        <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>
+                                        {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                         <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href<%= variant.check_if_in_cart.id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" href="javascript:void(0)">{{ __('Add') }}</a>
                                         <div class="number" id="show_plus_minus<%= variant.check_if_in_cart.id %>">
                                             <span class="minus qty-minus-product <% if(is_customizable){ %> remove-customize <% } %>"  data-parent_div_id="show_plus_minus<%= variant.check_if_in_cart.id %>" data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" data-cart="<%= variant.check_if_in_cart.cart_id %>">
@@ -1031,7 +671,7 @@
                                             </span>
                                         </div>
                                     <% }else{ %>
-                                        <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>
+                                        {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                         <a class="add-cart-btn add_vendor_product" id="aadd_button_href<%= variant.product_id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.product.vendor_id %>" data-product_id="<%= variant.product_id %>" data-addon="<%= variant.isAddonExist %>" href="javascript:void(0)">{{ __('Add') }}</a>
                                         <div class="number" style="display:none;" id="ashow_plus_minus<%= variant.product_id %>">
                                             <span class="minus qty-minus-product"  data-parent_div_id="show_plus_minus<%= variant.product_id %>" readonly data-id="<%= variant.product_id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
@@ -1112,7 +752,7 @@
                                                                     <input type="checkbox" id="inlineCheckbox_<%= key1 %>_<%= key2 %>" class="product_addon_option" name="addonData[<%= key1 %>][]" addonId="<%= addon.addon_id %>" addonOptId="<%= option.id %>" addonPrice="<%= option.price %>">
                                                                 </div>
                                                             </div>
-                                                            <% if(key2 == (_.size(addon.setoptions) - 1 ) ){ %>
+                                                            <% if((key2 > 5) && (key2 == (_.size(addon.setoptions) - 1 )) ){ %>
                                                             </div>
                                                             <% } %>
                                                         <% }); %>
@@ -1205,21 +845,55 @@
             </div>
         </div>
     </div>
+    <!-- vendorStories -->
+    <!-- <div id="vendorStories" class="modal fade" tabindex="-1" aria-labelledby="vendorStoriesLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+                <img class="modal-content" id="img01">
+        </div>
+    </div> -->
 
 @endsection
 @section('script')
     <script src="{{ asset('front-assets/js/rangeSlider.min.js') }}"></script>
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
     <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+
+    <script>
+         //Get the modal vendorStories
+        var modal = document.getElementById("vendorStories");
+
+         //Get the image and insert it inside the modal - use its "alt" text as a caption
+        var img = document.getElementById("vendorStoriesImg");
+        var modalImg = document.getElementById("img01");
+        var captionText = document.getElementById("caption");
+            img.onclick = function(){
+            modal.style.display = "block";
+            modalImg.src = this.src;
+            captionText.innerHTML = this.alt;
+        }
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+         //When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+        modal.style.display = "none";
+        }
+    </script>
     <script>
         var get_product_addon_url = "{{ route('vendorProductAddons') }}"
 
         jQuery(window).scroll(function() {
 
             var scroll = jQuery(window).scrollTop();
+            var categories_list_height = $('.vendor-products-wrapper').height() +400;
+            
             if (scroll >= 400) {
                 jQuery(".categories-product-list").addClass("fixed-bar");
             } else {
+                jQuery(".categories-product-list").removeClass("fixed-bar");
+            }
+            if(scroll >= categories_list_height){
                 jQuery(".categories-product-list").removeClass("fixed-bar");
             }
         });
@@ -1329,6 +1003,7 @@
                 },
                 success: function(response) {
                     if (response.status == 'Success') {
+                        response = response.data;
                         $(that).parents('.product_row').find(".variant_response span").html('');
                         if (response.variant != '') {
 
@@ -1416,4 +1091,5 @@
             // }
         }
     </script>
+
 @endsection

@@ -774,4 +774,12 @@ class BaseController extends Controller{
 
     }
 
+
+    /******************    ---- check Keys from order Panel keys -----   ******************/
+    public function checkOrderPanelKeys(Request $request){
+        return response()->json([
+        'status' => 200,
+        'message' => 'Valid Order Panel API keys']);
+    }
+
 }
