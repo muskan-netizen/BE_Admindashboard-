@@ -197,6 +197,9 @@ class HomeController extends BaseController
 
                     $homeData['profile']->preferences->show_subscription_plan_popup = 0;
                     $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::find(1);
+                    if(@$showSubscriptionPlan->show_plan_customer == 1 && @$showSubscriptionPlan->every_sign_up == 1){
+                        $homeData['profile']->preferences->show_subscription_plan_popup_signup = 1;
+                    }
                     if(@$showSubscriptionPlan->show_plan_customer == 1 && @$showSubscriptionPlan->every_app_open == 1){
                         $homeData['profile']->preferences->show_subscription_plan_popup = 1;
                     }
