@@ -149,19 +149,19 @@
                                 <label for="isolate_single_vendor_order" >
                                     <small class="d-block">{{ __("Show Subscription plan to customer.") }}</small>
                                 </label>
-                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="show_plan_customer" class="chk_box status_check" data-color="#43bee1" {{($showSubscriptionPlan->show_plan_customer == 1) ? 'checked' : ''}}>
+                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="show_plan_customer" class="chk_box status_check" data-color="#43bee1" {{(@$showSubscriptionPlan->show_plan_customer == 1) ? 'checked' : ''}}>
                             </div>
                             <div class="form-group d-flex justify-content-between mb-2">
                                 <label for="isolate_single_vendor_order" >
                                     <small class="d-block">{{ __("On every sign-up(Website).") }}</small>
                                 </label>
-                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="every_sign_up" class="chk_box status_check" data-color="#43bee1" {{($showSubscriptionPlan->every_sign_up == 1) ? 'checked' : ''}}>
+                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="every_sign_up" class="chk_box status_check" data-color="#43bee1" {{(@$showSubscriptionPlan->every_sign_up == 1) ? 'checked' : ''}}>
                             </div>
                             <div class="form-group d-flex justify-content-between mb-2">
                                 <label for="isolate_single_vendor_order" >
                                     <small class="d-block">{{ __("On every app open.") }}</small>
                                 </label>
-                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="every_app_open" class="chk_box status_check" data-color="#43bee1" {{($showSubscriptionPlan->every_app_open == 1) ? 'checked' : ''}}>
+                                <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="every_app_open" class="chk_box status_check" data-color="#43bee1" {{(@$showSubscriptionPlan->every_app_open == 1) ? 'checked' : ''}}>
                             </div>
                         </div>
                     </div>
