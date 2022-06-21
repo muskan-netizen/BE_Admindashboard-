@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption};
+use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup};
 use DateTime;
 use DateInterval;
 use DateTimeZone;
@@ -193,6 +193,12 @@ class HomeController extends BaseController
                     }
                     if ($creds->code == 'flutterwave') {
                         $homeData['profile']->preferences->flutterwave_public_key = (isset($creds_arr->client_id) && (!empty($creds_arr->client_id))) ? $creds_arr->client_id : '';
+                    }
+
+                    $homeData['profile']->preferences->show_subscription_plan_popup = 0;
+                    $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::find(1);
+                    if($showSubscriptionPlan->show_plan_customer == 1 && $showSubscriptionPlan->every_app_open == 1){
+                        $homeData['profile']->preferences->show_subscription_plan_popup = 1;
                     }
                 }
             }
