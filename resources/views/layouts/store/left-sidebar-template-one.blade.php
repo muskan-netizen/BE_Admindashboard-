@@ -473,12 +473,21 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                     @foreach($navCategories as $cate)
                                     @if($cate['name'])
                                     <li class="al_main_category">
-                                        <a href="{{route('categoryDetail', $cate['slug'])}}" >
-                                            @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                                            <div class="nav-cate-img"> <img style="height:50px;width:50px; " class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'> </div>
-                                            @endif
-                                            {{$cate['name']}}
-                                        </a>
+
+                                        @if ($client_preference_detail->view_get_estimation_in_category == 1 && $client_preference_detail->business_type == "laundry")
+                                            <a href="/get-estimation#{{$cate['slug']}}">
+                                                @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
+                                                <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
+                                                @endif{{$cate['name']}}
+                                            </a>
+                                        @else
+                                            <a href="{{route('categoryDetail', $cate['slug'])}}">
+                                                @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
+                                                <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
+                                                @endif{{$cate['name']}}
+                                            </a>
+                                        @endif
+
                                         @if(!empty($cate['children']))
                                         <ul class="al_main_category_list">
                                             @foreach($cate['children'] as $childs)
@@ -524,6 +533,9 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
         icon_two_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
       }
    %>
+   @if ($client_preference_detail->view_get_estimation_in_category == 1 && $client_preference_detail->business_type == "laundry")
+   <li class="al_main_category"> <a href="/get-estimation#<%=category.slug %>"> @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list"> <% _.each(category.children, function(childs, key1){%> <li> <a href="/get-estimation#<%=category.slug %>"><span class="new-tag"><%=childs.name %></span></a> <% if(childs.children){%> <ul class="al_main_category_sub_list"> <% _.each(childs.children, function(chld, key2){%> <li><a href="/get-estimation#<%=category.slug %>"><%=chld.name %></a></li><%}); %> </ul> <%}%> </li><%}); %> </ul> <%}%> </li>
+   @else
     <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>" >
             @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div
                 class="nav-cate-img"> <img class="blur-up lazyload" data-icon_two="<%=icon_two_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>"
@@ -535,6 +547,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                     class="al_main_category_sub_list"> <% _.each(childs.children, function(chld, key2){%> <li><a
                             href="{{route('categoryDetail')}}/<%=chld.slug %>"><%=chld.name %></a></li><%}); %> </ul>
                 <%}%> </li><%}); %> </ul> <%}%> </li>
+    @endif
         <% }); %>
 </script>
 @if($client_preference_detail)

@@ -175,13 +175,14 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
 
         Route::resource('estimations', 'Client\EstimationController');
+        Route::resource('estimationsAddon', 'Client\EstimationAddonController');
 
         Route::get('estimations/edit', [EstimationController::class, 'show'])->name('estimations.edit');
         Route::post('estimations/create', [EstimationController::class, 'store'])->name('estimations.create');
         Route::post('estimations/update', [EstimationController::class, 'update'])->name('estimations.update');
         Route::post('estimations/delete', [EstimationController::class, 'destroy'])->name('estimations.delete');
 
-
+        Route::post('estimations/update-estimation-matching-logic', [EstimationController::class, 'updateEstimationMatchingLogic'])->name('estimations.updateEstimationMatchingLogic');
 
         Route::resource('slot', 'Client\ClientSlotController');
 
@@ -222,6 +223,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('vendor/product/list/{id}', 'Client\VendorController@VendorProductFilter')->name('vendor.product');
         Route::get('vendor/inventory-import/{id}', 'Client\VendorController@getInventoryImport')->name('get.inventory.import');
         Route::post('vendor/get-inventory-store-products', 'Client\VendorController@getInventoryStoreProducts')->name('get.inventory.store.products');
+        Route::post('vendor/post-inventory-store-products', 'Client\VendorController@postInventoryStoreProducts')->name('post.inventory.store.products');
         Route::get('vendor/payout/{id}', 'Client\VendorController@vendorPayout')->name('vendor.payout');
         Route::get('vendor/payout/filter/{id}', 'Client\VendorController@payoutFilter')->name('vendor.payout.filter');
         Route::post('vendor/payout/create/{id}', 'Client\VendorController@vendorPayoutCreate')->name('vendor.payout.create');

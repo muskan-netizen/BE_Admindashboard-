@@ -183,6 +183,47 @@ class BaseController extends Controller
         return $this->categoryOptionData;
     }
 
+
+    //function created by surendra singh-----------------------------//
+    public function printCategoryOptionsHeirarchy_new($tree, $parentCategory = [])
+    {
+        if (!is_null($tree) && count($tree) > 0) {
+            foreach ($tree as $key => $node) {
+                $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                if (!isset($node['children'])) {
+                    if($node['parent_id'] == 1){
+                        $parentCategory = [];
+                        $hierarchyName = $category;
+                    }else{
+                        $hierarchyName = implode(' > ', $parentCategory);
+                        $hierarchyName = $hierarchyName.' > '.$category;
+                    }
+                    $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                }
+            }
+
+            foreach ($tree as $key => $node) { 
+                
+                $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                if(isset($node['children']) && count($node['children']) > 0) {
+                    $parentCategory[] = $category;
+                    $hierarchyName = '';
+                    if(count($parentCategory) > 0){
+                        if($node['parent_id'] != 1){ // if category is not parent then make heirarchy
+                            $hierarchyName = implode(' > ', $parentCategory);
+                        }
+                    }
+                    $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                    //$hierarchyName = implode(' > ', $parentCategory);
+                    //$hierarchyName = $hierarchyName.' > '.$category;
+                    $this->printCategoryOptionsHeirarchy_new($node['children'], $parentCategory);
+                }
+            }
+        }
+        
+        return $this->categoryOptionData;
+    }
+
     /*      Category tree for vendor to enable & disable category      */
     public function printTreeToggle($tree, $activeCategory = [])
     {
@@ -442,6 +483,45 @@ class BaseController extends Controller
 
     }
     
+
+    # get All Product List From Inventory with product ids
+    public function getAllProductListFromInventoryByIds($productids){
+        try {
+
+                $preference_data = $this->checkIfInventoryOn();
+                if($preference_data != false) {
+                    $postdata =  ['productids' => $productids];
+                    $preference = new GClient(['headers' => ['shortcode' => $preference_data->inventory_service_key_code,
+                    'content-type' => 'application/json']
+                        ]);
+
+                    $url = $preference_data->inventory_service_key_url;
+                    $res = $preference->POST(
+                    $url.'/api/v1/product-list-by-productids',['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 200) { 
+                        $data = $response;
+                        $data['status'] = 200;
+                        $data['message'] =  'Success';
+                        return $data;
+                    }else{
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  'Error';
+                        return $data;
+                    }
+                }
+                }catch(\Exception $e)
+                    {
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+
+                    }
+
+    }
 
 
     }
