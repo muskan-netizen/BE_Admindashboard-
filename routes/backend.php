@@ -337,6 +337,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('subscription/plan/edit/user/{slug}', 'Client\SubscriptionPlansUserController@editSubscriptionPlan')->name('subscription.plan.edit.user');
         Route::get('subscription/plan/delete/user/{slug}', 'Client\SubscriptionPlansUserController@deleteSubscriptionPlan')->name('subscription.plan.delete.user');
         Route::post('subscription/plan/updateStatus/user/{slug}', 'Client\SubscriptionPlansUserController@updateSubscriptionPlanStatus')->name('subscription.plan.updateStatus.user');
+        Route::post('show/subscription/plan/customer', 'Client\SubscriptionPlansUserController@showSubscriptionPlanCustomer')->name('show.subscription.plan.customer');
         Route::get('subscription/plans/vendor', 'Client\SubscriptionPlansVendorController@getSubscriptionPlans')->name('subscription.plans.vendor')->middleware('onlysuperadmin');
         Route::post('subscription/plan/save/vendor/{slug?}', 'Client\SubscriptionPlansVendorController@saveSubscriptionPlan')->name('subscription.plan.save.vendor');
         Route::get('subscription/plan/edit/vendor/{slug}', 'Client\SubscriptionPlansVendorController@editSubscriptionPlan')->name('subscription.plan.edit.vendor');
