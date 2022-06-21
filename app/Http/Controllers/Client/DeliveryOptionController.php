@@ -21,6 +21,7 @@ class DeliveryOptionController extends Controller
         $shipingOption = ShippingOption::where('code', 'shiprocket')->first();
         $dunzoOption = ShippingOption::where('code', 'dunzo')->first();
         $ahoyOption = ShippingOption::where('code', 'ahoy')->first();
+        $shippoOption = ShippingOption::where('code', 'shippo')->first();
         $preference = ClientPreference::select('id','need_delivery_service','delivery_service_key_url','delivery_service_key_code','delivery_service_key')->first();
         # if last mile on
         $last_mile_teams = [];
@@ -28,7 +29,7 @@ class DeliveryOptionController extends Controller
             $last_mile_teams = $this->getLastMileTeams();
         }
 
-        return view('backend/deliveryoption/index')->with(['delOption' => $delOption,'opt'=>$shipingOption,'optDunzo'=>$dunzoOption,'optAhoy'=>$ahoyOption,'last_mile_teams'=>$last_mile_teams,'preference'=>$preference]);
+        return view('backend/deliveryoption/index')->with(['delOption' => $delOption,'opt'=>$shipingOption,'optDunzo'=>$dunzoOption,'optAhoy'=>$ahoyOption,'shippoOption'=>$shippoOption,'last_mile_teams'=>$last_mile_teams,'preference'=>$preference]);
     }
     
      //Set new dunzo configuration details function

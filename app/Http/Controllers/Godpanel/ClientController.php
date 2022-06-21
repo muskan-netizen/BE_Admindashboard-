@@ -20,6 +20,7 @@ use App\Http\Traits\ApiResponser;
 use App\Models\{AddonOption, AddonOptionTranslation, AddonSet, AddonSetTranslation, OrderVendorProduct, Banner, MobileBanner, Brand, BrandCategory, BrandTranslation, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Category, CategoryHistory, CategoryTranslation, Celebrity, CsvProductImport, CsvVendorImport, LoyaltyCard, Order, OrderProductAddon, OrderProductPrescription, OrderProductRating, OrderProductRatingFile, OrderReturnRequest, OrderReturnRequestFile, OrderTax, OrderVendor, Payment, PaymentOption, Product, ProductAddon, ProductCategory, ProductCelebrity, ProductCrossSell, ProductImage, ProductInquiry, ProductRelated, ProductTranslation, ProductUpSell, ProductVariant, ProductVariantImage, ProductVariantSet, Promocode, PromoCodeDetail, PromocodeRestriction, ServiceArea, SlotDay, SocialMedia, Transaction, User, UserAddress, UserDevice, UserLoyaltyPoint, UserPermissions, UserRefferal, UserVendor, UserWishlist, Variant, VariantCategory, VariantOption, VariantOptionTranslation, VariantTranslation, Vendor, VendorCategory, VendorMedia, VendorOrderStatus, VendorSlot, VendorSlotDate, Wallet,CabBookingLayout,CabBookingLayoutCategory,CabBookingLayoutTranslation,AppStyling,AppStylingOption,Tag,TagTranslation,ProductTag};
 use Exception;
 use \Spatie\DbDumper\Databases\MySql;
+use App\Http\Traits\BillingPlanManager;
 
 class ClientController extends Controller{
     use ApiResponser;
@@ -45,8 +46,8 @@ class ClientController extends Controller{
     {
         $languages = Language::where('id', '>', '0')->get();
         $business_types = BusinessType::get();
-       
-        return view('godpanel/client-form')->with(['languages' => $languages,'business_types' => $business_types]);
+        $client_types = BillingPlanManager::gettClientTypeList();
+        return view('godpanel/client-form')->with(['languages' => $languages, 'business_types' => $business_types, 'client_types' => $client_types]);
     }
 
     /**
@@ -60,7 +61,8 @@ class ClientController extends Controller{
         $client = Client::find($id);
         $languages = Language::where('id', '>', '0')->get();
         $business_types = BusinessType::get();
-      return view('godpanel/client-form-update')->with(['client' => $client, 'languages' => $languages, 'business_types' => $business_types]);
+        $client_types = BillingPlanManager::gettClientTypeList();
+      return view('godpanel/client-form-update')->with(['client' => $client, 'languages' => $languages, 'business_types' => $business_types, 'client_types' => $client_types]);
     }
     
     /**
@@ -83,8 +85,8 @@ class ClientController extends Controller{
             return redirect()->back()->withErrors(['error' => "Something went wrong."]);
         }
         $business_type = $request->business_type??null;
-      
-        $update = DB::table('clients')->where('id',$data->id)->update(['business_type' => $business_type]);
+        $client_type = $request->client_type??null;
+        $update = DB::table('clients')->where('id',$data->id)->update(['business_type' => $business_type, 'client_type' => $client_type]);
         $database_name = preg_replace('/\s+/', '', $request->database_name);
         Cache::set($database_name, $data);
         $languId = ($request->has('primary_language')) ? $request->primary_language : 1;
@@ -112,7 +114,7 @@ class ClientController extends Controller{
         if(!$save){
             return redirect()->back()->withErrors(['error' => "Something went wrong."]);
         }
-        $update = DB::table('clients')->where('id',$id)->update(['business_type' => $request->business_type]);
+        $update = DB::table('clients')->where('id',$id)->update(['business_type' => $request->business_type, 'client_type' => $request->client_type]);
         $this->dispatchNow(new EditClient($client->id));
         return redirect()->route('client.index')->with('success', 'Client Updated successfully!');
     }
@@ -474,7 +476,7 @@ class ClientController extends Controller{
 
                 foreach ($client as $key => $value) {
                     if($key == 'logo'){
-                        $clientData[$key] = $value['original'];
+                        $clientData[$key] = $value['logo_db_value'];
                     }else{
                         $clientData[$key] = $value;
                     }

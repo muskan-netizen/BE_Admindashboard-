@@ -27,7 +27,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
 	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
 	Route::get('dispatch-order-cancel-request/{id?}', 'Front\DispatcherController@dispatchOrderCancelRequest')->name('dispatch-order-cancel-request'); // Order Status update Dispatch details
-
+	Route::post('dispatch/customer/distance/notification/{id?}', 'Front\DispatcherController@dispatchCustomerDetails')->name('dispatch-customer-details'); // send distance & co2 emission push notification from dispatch to customer
     Route::get('testsms', 'Front\FrontController@testsms');
 
     Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
@@ -60,6 +60,10 @@ Route::group(['middleware' => ['domain']], function () {
 
 	// Initial route for all type of gateways
 	Route::post('post/payment/{gateway}', 'Front\PaymentController@postPayment')->name('payment.gateway.postPayment');
+	Route::post('send/payment/otp/{gateway}', 'Front\PaymentController@sendPaymentOtp')->name('send.payment.otp');
+	Route::post('verify/payment/otp/{gateway}', 'Front\PaymentController@verifyPaymentOtp')->name('verify.payment.otp');
+	Route::post('verify/payment/otp/app/{gateway}', 'Front\PaymentController@verifyPaymentOtpApp')->name('verify.payment.otp.app');
+	Route::post('verify/payment/otp/submit/{gateway}', 'Front\PaymentController@verifyPaymentOtpSubmit')->name('verify.payment.otp.submit');
 
 	Route::get('payment/gateway/returnResponse', 'Front\PaymentController@getGatewayReturnResponse')->name('payment.gateway.return.response');
 
@@ -75,8 +79,12 @@ Route::group(['middleware' => ['domain']], function () {
 
 
 	// Stripe
+	Route::post('/check_stripe_security', 'Front\StripeGatewayController@checkStripeSecurity')->name('check_stripe_security');
 	Route::post('payment/stripe', 'Front\StripeGatewayController@postPaymentViaStripe')->name('payment.stripe');
 	Route::post('user/subscription/payment/stripe', 'Front\StripeGatewayController@subscriptionPaymentViaStripe')->name('user.subscription.payment.stripe');
+	Route::get('/check_stripe_return_data', 'Front\StripeGatewayController@checkStripeReturnDataFrom3DAuth')->name('check_stripe_return_data');
+	Route::post('/payment/payment_init', 'Front\StripeGatewayController@paymentInit')->name('payment_init');
+	Route::post('payment/webhook/stripe', 'Front\StripeGatewayController@stripeWebhook')->name('payment.webhook.stripe');
 
 	// Stripe FPX
 	Route::post('payment/create/stripe_fpx', 'Front\StripeGatewayController@createStripeFPXPaymentIntent')->name('payment.create.stripe_fpx');
@@ -84,6 +92,15 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/webhook/stripe_fpx', 'Front\StripeGatewayController@stripeFPXWebhook')->name('payment.webhook.stripe_fpx');
 	Route::get('payment/webview/stripe_fpx', 'Front\StripeGatewayController@paymentWebViewStripeFPX')->name('payment.webview.stripe_fpx');
 	Route::get('payment/webview/response/stripe_fpx', 'Front\StripeGatewayController@webViewResponseStripeFPX')->name('payment.webview.response.stripe_fpx');
+
+
+		// Stripe OXXO
+		Route::post('payment/create/stripe_oxxo', 'Front\StripeGatewayController@createStripeOXXOPaymentIntent')->name('payment.create.stripe_oxxo');
+		 Route::get('payment/stripe_oxxo/clear', 'Front\StripeGatewayController@cartStripeOXXOClear')->name('payment.stripe_oxxo_clear');
+		Route::post('payment/webhook/stripe_oxxo', 'Front\StripeGatewayController@stripeOXXOWebhook')->name('payment.webhook.stripe_oxxo');
+		Route::get('payment/webview/stripe_oxxo', 'Front\StripeGatewayController@paymentWebViewStripeOXXO')->name('payment.webview.stripe_oxxo');
+		Route::get('payment/webview/response/stripe_oxxo', 'Front\StripeGatewayController@webViewResponseStripeOXXO')->name('payment.webview.response.stripe_oxxo');
+
 
 	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
@@ -94,7 +111,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	// Paystack
 	Route::post('payment/paystack', 'Front\PaystackGatewayController@paystackPurchase')->name('payment.paystackPurchase');
-	Route::post('payment/paystack/completePurchase', 'Front\PaystackGatewayController@paystackCompletePurchase')->name('payment.paystackCompletePurchase');
+	Route::get('payment/paystack/completePurchase', 'Front\PaystackGatewayController@paystackCompletePurchase')->name('payment.paystackCompletePurchase');
 	Route::get('payment/paystack/completePurchase/app', 'Front\PaystackGatewayController@paystackCompletePurchaseApp')->name('payment.paystackCompletePurchaseApp');
 	Route::get('payment/paystack/cancelPurchase/app', 'Front\PaystackGatewayController@paystackCancelPurchaseApp')->name('payment.paystackCancelPurchaseApp');
 
@@ -124,6 +141,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//Square
 	Route::match(['get','post'],'payment/square/page','Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square','Front\SquareController@createPayment')->name('payment.square.createPayment');
+
+	//Braintree
+	Route::match(['get','post'],'payment/braintree/page','Front\BraintreeController@beforePayment')->name('payment.braintree.beforePayment');
+	Route::post('payment/braintree','Front\BraintreeController@createPayment')->name('payment.braintree.createPayment'); 
 
 	//Ozow
 	Route::match(['get','post'],'payment/ozow/page','Front\OzowController@beforePayment')->name('payment.ozow.beforePayment');
@@ -196,6 +217,20 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/easypaisa', 'Front\EasypaisaController@createHash')->name('easypaisa.createHash');
 	Route::get('payment/easypaisa', 'Front\EasypaisaController@successPage')->name('easypaisa.success');
 
+	//Windcave routes 
+	Route::post('payment/windcave', 'Front\WindcaveController@createHash')->name('windcave.createHash');
+	Route::get('payment/windcave/success', 'Front\WindcaveController@successPage')->name('windcave.success');
+	Route::get('payment/windcave/fail', 'Front\WindcaveController@failPage')->name('windcave.fail');
+
+	//Paytech routes 
+	Route::post('payment/paytech', 'Front\PaytechController@createHash')->name('paytech.createHash');
+	Route::get('payment/paytech/success', 'Front\PaytechController@successPage')->name('paytech.success');
+	Route::get('payment/paytech/fail', 'Front\PaytechController@failPage')->name('paytech.fail');
+	
+	//payPhone routes
+	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
+	Route::get('payment/payphone/success', 'Front\PayphoneController@successPage')->name('payphone.success');
+	Route::any('payment/payphone/api', 'Front\PayphoneController@webViewPay')->name('payphone.webview');
 
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
@@ -304,6 +339,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('cart/schedule/update', 'Front\CartController@updateSchedule')->name('cart.updateSchedule');
 	Route::post('cart/productfaq/update', 'Front\CartController@updateCartProductFaq')->name('cart.productfaq');
 	Route::post('cart/schedule/slots', 'Front\CartController@checkScheduleSlots')->name('cart.check_schedule_slots');
+
+	Route::post('cart/pickup/schedule/slots', 'Front\CartController@checkPickupScheduleSlots')->name('cart.check_pickup_schedule_slots'); // Added by Ovi
+	Route::post('cart/dropoff/schedule/slots', 'Front\CartController@checkDropoffScheduleSlots')->name('cart.check_dropoff_schedule_slots'); // Added by Ovi
+
 	Route::post('cart/product-schedule/update', 'Front\CartController@updateProductSchedule')->name('cart.updateProductSchedule');
 	Route::get('cartProducts', 'Front\CartController@getCartData')->name('getCartProducts');
 	Route::get('cartDetails', 'Front\CartController@getCartProducts')->name('cartDetails');
@@ -346,6 +385,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
 	Route::get('firebase-messaging-sw.js', 'Front\FirebaseController@service_worker');
 	Route::post('category_kyc_submit', 'Front\CartController@updateCartCategoryKyc')->name('updateCartCategoryKyc');
+	//User Rider Routes
+	Route::post('rider/add','Front\RiderController@addRider')->name('rider.create');
+	Route::get('rider/delete','Front\RiderController@removeRider')->name('rider.remove');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
@@ -364,6 +406,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('verifyAccountProcess', 'Front\UserController@sendToken')->name('email.send');
 	Route::post('sendToken/{id}', 'Front\UserController@sendToken')->name('verifyInformation');
 	Route::post('user/placeorder', 'Front\OrderController@placeOrder')->name('user.placeorder');
+	Route::post('user/rescheduleOrder', 'Front\OrderController@rescheduleOrder')->name('user.rescheduleOrder'); // Added by Ovi
 	Route::get('user/newsLetter', 'Front\ProfileController@newsLetter')->name('user.newsLetter');
 	Route::get('user/verify_account', 'Front\UserController@verifyAccount')->name('user.verify');
 	Route::post('wishlist/update', 'Front\WishlistController@updateWishlist')->name('addWishlist');

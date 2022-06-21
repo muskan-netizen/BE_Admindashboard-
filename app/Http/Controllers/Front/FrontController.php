@@ -25,14 +25,14 @@ class FrontController extends Controller
     use \App\Http\Traits\smsManager;
 
     private $field_status = 2;
-    protected function sendSms($provider, $sms_key, $sms_secret, $sms_from, $to, $body){
+    protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
             $client_preference =  getClientPreferenceDetail();
             if($client_preference->sms_provider == 1)
             {
-                if(!empty($sms_secret) && !empty($sms_from)){
-                    $client = new TwilioClient($sms_key, $sms_secret);
-                    $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+                if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
+                    $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
+                    $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
                     Log::info('SMS twilio respons');
                     Log::info($send);
                 }else{
@@ -617,6 +617,7 @@ class FrontController extends Controller
     {
         $cartData = [];
         $user = Auth::user();
+        $client_data = Client::first();
         $countries = Country::get();
         $langId = Session::get('customerLanguage');
         $guest_user = true;
@@ -648,8 +649,17 @@ class FrontController extends Controller
             }
         }
 
+            if($user && $user->timezone)
+            $timezone = $user->timezone ?? $client_data->timezone;
+            elseif($client_data && $client_data->timezone)
+            $timezone = $client_data->timezone;
+            else
+            $timezone = 'Asia/Kolkata';
+
         foreach($cartData as $key => $data){
-            $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($user->timezone)->format('Y-m-d');
+           
+
+            $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
             $slots = showSlot($selectedDate,$data->vendor_id,'delivery');
             $time_slots = [];
@@ -661,8 +671,7 @@ class FrontController extends Controller
             $cartData[$key]->timeSlots = $time_slots;
         }
 
-        $user = Auth::user();
-        $timezone = $user->timezone ?? 'Asia/Kolkata';
+        
 
         $start_date = new DateTime("now", new  DateTimeZone($timezone) );
         $start_date =  $start_date->format('Y-m-d');
@@ -882,6 +891,37 @@ class FrontController extends Controller
             $hours = $hours+1;
         }
         return $hours;
+
+    }
+    protected function sendSuccessSMS($request, $order, $vendor_id = '')
+    {
+        //Log::info('sendSuccessSMS FrontController');
+        try {
+
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
+            // $currId = Session::get('customerCurrency');
+            // $currSymbol = Session::get('currencySymbol');
+            $customerCurrency = ClientCurrency::with('currency')->where('is_primary', '1')->first();
+            $currSymbol =$customerCurrency->currency->symbol;
+            $user = User::where('id', $order->user_id)->first();
+            if ($user) {
+                if ($user->dial_code == "971") {
+                    $to = '+' . $user->dial_code . "0" . $user->phone_number;
+                } else {
+                    $to = '+' . $user->dial_code . $user->phone_number;
+                }
+                
+                $provider = $prefer->sms_provider;
+                $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
+                $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
+            //    if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                if (!empty($prefer->sms_provider)) {
+                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                }
+            }
+        } catch (\Exception $ex) {
+            
+        }
 
     }
 }

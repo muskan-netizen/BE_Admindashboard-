@@ -24,7 +24,7 @@ class MailServiceProvider extends ServiceProvider
         //
         $mail = ClientPreference::where('id', '>', 0)->first(['id', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from']);
 
-        if (isset($mail->id)){
+        if (isset($mail->id) && isset($mail->mail_driver) && isset($mail->mail_host) && isset($mail->mail_username) && isset($mail->mail_password)){
             $config = array(
                 'driver'     => $mail->mail_driver,
                 'host'       => $mail->mail_host,

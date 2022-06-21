@@ -1497,7 +1497,7 @@ class VendorController extends BaseController{
             ];
             try{
                 dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
-                dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
+              //  dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
             }catch(Exception $e) {
 
             }
@@ -2715,6 +2715,18 @@ class VendorController extends BaseController{
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
         }
+    }
+
+
+
+    /******************    ---- vendor data sync with inventory -----   ******************/
+    public function vendorSyncInventory(Request $request){
+
+        
+        return response()->json([
+        'status' => 200,
+        'message' => 'Connected',
+        'data' => $request->toArray()]);
     }
 
 }

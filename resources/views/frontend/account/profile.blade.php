@@ -119,7 +119,7 @@
                         <div class="row welcome-msg justify-content-between">
                             <div class="col-12">
                                 <h4 class="d-inline-block m-0">
-                                    <span>{{ __('Your ') }} {{getNomenclatureName('Referral Code')}}: {{(isset($userRefferal['refferal_code'])) ? $userRefferal['refferal_code'] : ''}}</span>
+                                    <span>{{ __('Your ') }} {{__(getNomenclatureName('Referral Code'))}}: {{(isset($userRefferal['refferal_code'])) ? $userRefferal['refferal_code'] : ''}}</span>
                                 </h4>
                                 <sup class="position-relative">
                                     <a class="copy-icon ml-2" id="copy_icon" data-url="{{url('/'.'?ref=')}}{{(isset($userRefferal['refferal_code'])) ? $userRefferal['refferal_code'] : ''}}" style="cursor:pointer;">
@@ -146,7 +146,7 @@
 
                                             <div class="info-text mb-2">
                                                 <label class="m-0">{{ __('Phone Number') }}</label>
-                                                <p>{{$user->phone_number}}</p>
+                                                <p>{{ '+'.$user->dial_code.$user->phone_number}}</p>
                                             </div>
 
                                             <div class="info-text mb-2">

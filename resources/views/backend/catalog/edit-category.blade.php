@@ -118,7 +118,7 @@
             @endforeach
         </div>
         <input type="hidden" id="cateId" url="{{route('category.update', $category->id)}}">
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-md-4" id="template_type_main_div" style="display:none;">
                 <div class="form-group">
                     {!! Form::label('title', __('Warning Page'),['class' => 'control-label']) !!}
@@ -158,7 +158,7 @@
                 </div>
             </div>
 
-        </div>
+        </div> -->
         <div class="row">
             @foreach($category->translationSetUnique as $trans)
             <div class="col-lg-6">

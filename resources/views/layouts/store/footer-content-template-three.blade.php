@@ -10,6 +10,7 @@ $applocale = session()->get('applocale');
 }
 @endphp
 </article>
+</article>
 @if($clientData->whatsapp_url)
 <div class="royo_whatsapp_img">
     <a href="{{$clientData->whatsapp_url}}" target="_blank">
@@ -148,7 +149,7 @@ $applocale = session()->get('applocale');
 
                                 </li>
                             </ul>
-                            
+
 
                                 <!-- <img class="blur-up lazyload" data-src="{{ getImageUrl(asset('front-assets/images/google-play.svg'),'270/48') }}" alt=""> -->
                             </div>
@@ -228,7 +229,7 @@ $applocale = session()->get('applocale');
         </div>
     </div>
 </footer>
-</article>
+
 </article>
 
 <div class="modal fade single-vendor-order-modal" id="single_vendor_order_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="s_vendor_remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">

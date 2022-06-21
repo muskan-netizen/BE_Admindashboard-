@@ -47,7 +47,7 @@
 			</a>
 		</div>
 
-		<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel" style="display:none;">
+		<div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;">
 			<div class="carousel-inner">
 
 				@foreach($mobile_banners as $key => $banner)
@@ -553,7 +553,7 @@
 				</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
-		<section class="suppliers-section container "  >
+		<section class="suppliers-section container" id="homepage_trending_vendors_div">
 			<div class=" top-heading ">
 				<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
 			<div class="row">

@@ -105,7 +105,7 @@
                                     </div>
                                     <div class="col-md-3 mb-2" id="titleInput">
                                         <label for="fullname">{{__('Title')}}</label>
-                                        <input type="text" class="form-control" name="title" value="{{$user ? $user->title : ''}}">
+                                        <input type="text" class="form-control" name="title" value="{{$user ? $user->title : ''}}" placeholder="{{__('Mr./Miss/Mrs.')}}">
                                         <span class="invalid-feedback" id="title_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="emailInput">
@@ -203,6 +203,9 @@
                                             <input type="hidden" class="form-control" name="state" value="" id="state">
                                             <input type="hidden" class="form-control" name="country" value="" id="country"> --}}
                                             <span class="invalid-feedback" id="address_error"><strong></strong></span>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="vendor"> <i class="fa fa-map-marker"></i></button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -237,7 +240,7 @@
                                         $Dine_In = getNomenclatureName('Dine-In', true);
                                         $Dine_In = ($Dine_In === 'Dine-In') ? __('Dine-In') : $Dine_In;
                                     @endphp
-                                            <div class="col-md-2 mb-3">
+                                            <div class="col-md-2 col-4 mb-3">
                                                 <label for="">{{$Dine_In}}</label>
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" data-color="#43bee1" id="dine-in" name="dine_in">
@@ -249,7 +252,7 @@
                                         $Takeaway = getNomenclatureName('Takeaway', true);
                                         $Takeaway = ($Takeaway === 'Takeaway') ? __('Takeaway') : $Takeaway;
                                         @endphp
-                                            <div class="col-md-2 mb-3">
+                                            <div class="col-md-2 col-4 mb-3">
                                                 <label for="">{{$Takeaway}}</label>
                                                 <div class="mt-md-1">
                                                 <input type="checkbox" data-plugin="switchery" data-color="#43bee1" id="takeaway" name="takeaway">
@@ -261,7 +264,7 @@
                                         $Delivery = getNomenclatureName('Delivery', true);
                                         $Delivery = ($Delivery === 'Delivery') ? __('Delivery') : $Delivery;
                                         @endphp
-                                            <div class="col-md-2 mb-3">
+                                            <div class="col-md-2 col-4 mb-3">
                                                 <label for="">{{$Delivery}}</label>
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" data-color="#43bee1" id="delivery" name="delivery">
@@ -516,6 +519,51 @@
 
     </div>
 </section>
+
+<!-- start map model for vendor location -->
+
+<div id="show-map-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">{{ __("Select Location") }}</h4>
+                <button type="button" class="close remove-modal-open" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body p-4">
+
+                <div class="row">
+                    <form id="task_form" action="#" method="POST" style="width: 100%">
+                        <div class="col-md-12">
+                            <div id="googleMap" style="height: 500px; min-width: 500px; width:100%"></div>
+                            <input type="hidden" name="lat_input" id="lat_map" value="0" />
+                            <input type="hidden" name="lng_input" id="lng_map" value="0" />
+                            <input type="hidden" name="address_map" id="address_map" value="" />
+                            <input type="hidden" name="for" id="map_for" value="" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-info waves-effect waves-light remove-modal-open selectMapLocation">Ok</button>
+                <!--<button type="Cancel" class="btn btn-info waves-effect waves-light cancelMapLocation">cancel</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- end map model for vendor location -->
+@php
+$Default_latitude = '30.7187';
+$Default_longitude = '76.8106';
+$theme1 = \App\Models\ClientPreference::where(['id' => 1])->first('theme_admin','Default_latitude','Default_longitude');
+if($theme1){
+            $Default_latitude = $theme1->Default_latitude ? $theme1->Default_latitude : '30.7187' ;
+            $Default_longitude = $theme1->Default_longitude ? $theme1->Default_longitude : '76.8106' ;
+        }
+@endphp
+
 @endsection
 @section('script')
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
@@ -742,5 +790,95 @@ function isNumberKey(evt) {
         }
     @endif
     });
+
+
+    ///  start vendor register page map icon
+
+    var Default_latitude  =  {{ $Default_latitude }};
+    var Default_longitude =  {{ $Default_longitude }};
+
+    $(document).on('click', '.showMap', function() {
+        var no = $(this).attr('num');
+        var lats = document.getElementById(no + '_latitude').value;
+        var lngs = document.getElementById(no + '_longitude').value;
+        var address = document.getElementById(no+'_address').value;
+        console.log(lats + '--' + lngs);
+
+        document.getElementById('map_for').value = no;
+
+        if (lats == null || lats == '0' || lats =='') {
+            lats = Default_latitude;
+        }
+        if (lngs == null || lngs == '0'  || lngs == '') {
+            lngs = Default_longitude ;
+        }
+        if(address==null){
+            address= '';
+        }
+
+        var myLatlng = new google.maps.LatLng(lats, lngs);
+        var mapProp = {
+            center: myLatlng,
+            zoom: 13,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+
+        };
+        document.getElementById('lat_map').value= lats;
+        document.getElementById('lng_map').value= lngs ;
+        document.getElementById('address_map').value= address ;
+        var infowindow = new google.maps.InfoWindow();
+        var geocoder = new google.maps.Geocoder();
+        var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+        var marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            title: 'Hello World!',
+            draggable: true
+        });
+        document.getElementById('lat_map').value = lats;
+        document.getElementById('lng_map').value = lngs;
+
+        google.maps.event.addListener(marker, 'dragend', function() {
+            geocoder.geocode({
+            'latLng': marker.getPosition()
+            }, function(results, status) {
+
+            if (status == google.maps.GeocoderStatus.OK) {
+                if (results[0]) {
+                        document.getElementById('lat_map').value = marker.getPosition().lat();
+                        document.getElementById('lng_map').value = marker.getPosition().lng();
+                        document.getElementById('address_map').value= results[0].formatted_address;
+
+                    infowindow.setContent(results[0].formatted_address);
+
+                    infowindow.open(map, marker);
+                }
+            }
+            });
+        });
+       
+        $('#add-customer-modal').addClass('fadeIn');
+        $('#show-map-modal').modal({
+            //backdrop: 'static',
+            keyboard: false
+        });
+
+    });
+
+    $(document).on('click', '.selectMapLocation', function() {
+
+    var mapLat = document.getElementById('lat_map').value;
+    var mapLlng = document.getElementById('lng_map').value;
+    var mapFor = document.getElementById('map_for').value;
+    var address = document.getElementById('address_map').value;
+
+    document.getElementById(mapFor + '_latitude').value = mapLat;
+    document.getElementById(mapFor + '_longitude').value = mapLlng;
+    document.getElementById(mapFor + '_address').value = address;
+
+    $('#show-map-modal').modal('hide');
+   });
+    
+    //// end vendor register page map icon 
 </script>
 @endsection

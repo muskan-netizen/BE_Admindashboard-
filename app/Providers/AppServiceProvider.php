@@ -49,8 +49,8 @@ class AppServiceProvider extends ServiceProvider
         }
         $client_head = Client::where(['id' => 1])->first();
 
-        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree'];
-        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = '';
+        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo'];
+        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = $stripe_oxxo_publishable_key = '';
         $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
         if($payment_options){
             foreach($payment_options as $option){
@@ -61,6 +61,9 @@ class AppServiceProvider extends ServiceProvider
                 if($option->code == 'stripe_fpx'){
                     $stripe_fpx_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
                 }
+                if($option->code == 'stripe_oxxo'){
+                    $stripe_oxxo_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
+                }
                 if($option->code == 'yoco'){
                     $yoco_public_key = (isset($creds->public_key) && (!empty($creds->public_key))) ? $creds->public_key : '';
                 }
@@ -70,8 +73,13 @@ class AppServiceProvider extends ServiceProvider
                 if($option->code == 'cashfree'){
                     $cashfree_test_mode = ($option->test_mode == 0) ? false : true;
                 }
+                if($option->code == 'payphone'){
+                    $payphone_id = $creds->id??'';
+                    $payphone_token = $creds->token??'';
+                }
             }
         }
+        
 
         $count = 0;
         if($client_preference_detail){
@@ -94,14 +102,14 @@ class AppServiceProvider extends ServiceProvider
         view()->share('social_media_details', $social_media_details);
         view()->share('stripe_publishable_key', $stripe_publishable_key);
         view()->share('stripe_fpx_publishable_key', $stripe_fpx_publishable_key);
+        view()->share('stripe_oxxo_publishable_key', $stripe_oxxo_publishable_key);
         view()->share('yoco_public_key', $yoco_public_key);
         view()->share('checkout_public_key', $checkout_public_key);
         view()->share('client_preference_detail', $client_preference_detail);
         view()->share('client_payment_options', $client_payment_options);
         view()->share('cashfree_test_mode', $cashfree_test_mode);
-        // view()->share('set_template', $set_template);
-
-
+        view()->share('payphone_id', $payphone_id??'');
+        view()->share('payPhoneToken', $payphone_token??'');
     }
 
     public function connectDynamicDb($request)

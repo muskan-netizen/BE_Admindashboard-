@@ -1,7 +1,7 @@
 <form id="addRejectForm" method="post" enctype="multipart/form-data">
     @csrf
          <p id="error-case" style="color:red;"></p>
-        <label style="font-size:medium;">Enter reason for cancel the order.</label>
+        <label style="font-size:medium;">Enter reason for cancel the order. <small>(Optional)</small> </label>
         <textarea class="reject_reason" data-name="reject_reason" name="reject_reason" id="reject_reason" cols="50" rows="5"></textarea>
 
    
@@ -14,6 +14,9 @@
      $('.addrejectSubmit').on('click', function(e) {
                 e.preventDefault();
                 var reject_reason = $('#reject_reason').val();
+                var pickup_cancelling_charges = "{{@$pickup_cancelling_charges}}";
+                var pickup_order_date = "{{@$pickup_order_date}}";
+                var order_number = "{{@$order_number}}";
                 var order_id = "{{$order_vendor->order_id??0}}";
                 var vendor_id = "{{$order_vendor->vendor_id??0}}";
                 var order_vendor_id = "{{$order_vendor->id??0}}";
@@ -26,6 +29,9 @@
                         reject_reason: reject_reason,
                         "_token": "{{ csrf_token() }}",
                         order_vendor_id: order_vendor_id,
+                        pickup_cancelling_charges: pickup_cancelling_charges,
+                        pickup_order_date: pickup_order_date,
+                        order_number: order_number,
                     },
 
                     success: function(response) {

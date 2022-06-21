@@ -96,6 +96,9 @@ class OrderController extends Controller{
             ->addColumn('user_name', function($vendor_orders) {
                 return $vendor_orders->user ? $vendor_orders->user->name : '';
             })
+            ->addColumn('admin_commission', function($vendor_orders) {
+                return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+            })
             ->addColumn('order_status', function($vendor_orders) {
                 return $vendor_orders->OrderStatusOption->title;
             })
@@ -103,7 +106,23 @@ class OrderController extends Controller{
                 return $vendor_orders->vendor ? __($vendor_orders->vendor->name) : '';
             })
             ->addColumn('payment_option_title',function($vendor_orders){
-                return __($vendor_orders->orderDetail->paymentOption->title);
+               
+                $title = __($vendor_orders->orderDetail->paymentOption->title);
+                if($vendor_orders->orderDetail->paymentOption->code == 'stripe'){
+                    $title = __('Credit/Debit Card (Stripe)');
+                }elseif($vendor_orders->orderDetail->paymentOption->code == 'kongapay'){
+                    $title  = __('Pay Now');
+                }elseif($vendor_orders->orderDetail->paymentOption->code == 'mvodafone'){
+                    $title = __('Vodafone M-PAiSA');
+                }
+                elseif($vendor_orders->orderDetail->paymentOption->code == 'mobbex'){
+                    $title = __('Mobbex');
+                }
+                elseif($vendor_orders->orderDetail->paymentOption->code == 'offline_manual'){
+                    $json = json_decode($vendor_orders->orderDetail->paymentOption->credentials);
+                    $title = $json->manule_payment_title;
+                }
+                return __($title);
             })
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {

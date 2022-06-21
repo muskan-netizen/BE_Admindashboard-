@@ -34,6 +34,10 @@ class VendorSimpelExport implements FromCollection, WithHeadings, WithMapping{
                 "15",
                 "0",
             ];
+            $EasebuzzSubMerchent = EasebuzzSubMerchent();
+            if($EasebuzzSubMerchent ==1 ){
+              $dataArra[]=__("Sub Merchent Id");
+            }
         foreach ($vendor_registration_documents as $vendor_registration_document) {
             if($vendor_registration_document->file_type == "selector"){
                 $selectorValue = '';
@@ -49,7 +53,7 @@ class VendorSimpelExport implements FromCollection, WithHeadings, WithMapping{
         }
         $collection = collect();
         return $collection->push($dataArra);
-        //pr(collect($dataArra));
+     //   pr(collect($dataArra));
     }
 
     public function headings(): array{
@@ -73,7 +77,11 @@ class VendorSimpelExport implements FromCollection, WithHeadings, WithMapping{
              __('Commission Fixed Per Order'),
              __('Commission Monthly'),
         ];
-
+        $EasebuzzSubMerchent = EasebuzzSubMerchent();
+        if($EasebuzzSubMerchent ==1 ){
+            $heding[]=__("EaseBuzz Sub Merchent Id");
+        }
+      
         foreach ($vendor_registration_documents as $vendor_registration_document) {
             array_push($heding , $vendor_registration_document->primary->slug);
         }

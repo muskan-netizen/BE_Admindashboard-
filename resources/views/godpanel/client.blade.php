@@ -42,6 +42,7 @@
                             <thead>
                                 <tr>
                                     <th>{{ __("Name") }}</th>
+                                    <th>{{ __("Type") }}</th>
                                     <th>{{ __("Email") }}</th>
                                     <th>{{ __("Password") }}</th>
                                     <th>{{ __("Phone") }}</th>
@@ -57,6 +58,7 @@
                                     <td class="table-user">
                                         <a href="javascript:void(0);" class="text-body font-weight-semibold">{{$client->name}}</a>
                                     </td>
+                                    <td> @if($client->client_type == 1) <span class="badge bg-success" style="color:#fff;">Live</span> @else <span class="badge bg-warning" style="color:#fff;">Demo</span> @endif </td>
                                     <td> {{$client->email}} </td>
                                     <td style="width:100px;max-width:100px;"> </td>
                                     <td> {{$client->phone_number}} </td>

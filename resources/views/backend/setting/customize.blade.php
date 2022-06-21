@@ -297,7 +297,7 @@
                     <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
                     @csrf
                     <input type="hidden" name="send_to" id="send_to" value="customize">
-                    <div class="card-box mb-0 py-0 px-2">
+                    <div class="mb-0 py-0 px-2">
                        <div class="d-flex align-items-center justify-content-between">
                           <h4 class="header-title mb-0">{{ __("Android/IOS Link") }}</h4>
                           <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
@@ -870,7 +870,7 @@
         <!-- Category Kyc Documents start -->
             <div class="card-box pb-2">
                 <div class="d-flex align-items-center justify-content-between">
-                <h4 class="header-title m-0">{{ __("Category Kyc Documents") }}</h4>
+                <h4 class="header-title m-0">{{ __("User Place Order Documents") }}</h4>
                 <a class="btn btn-info d-block" id="add_category_kyc_document_modal_btn">
                     <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
                 </a>
@@ -986,6 +986,58 @@
                 </div>
             </form>
         </div>
+
+        {{-- Added By Ovi --}}
+        <div class="col-lg-6 mb-3">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box mb-0 pb-1 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title">Slotting & Orders Scheduling </h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 my-2">
+                            <div class="form-group d-flex justify-content-between mb-3">
+                                <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->off_scheduling_at_cart == '1')) checked='checked' @endif>
+                            </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 my-2">
+                            <div class="form-group d-flex justify-content-between mb-3">
+                                <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery" name="delay_order" id="delay_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delay_order == '1')) checked='checked' @endif>
+                            </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 my-2" id="scheduling_with_slots_div" style="display:none;">
+                            <div class="form-group d-flex justify-content-between mb-3">
+                                <label for="scheduling_with_slots" class="mr-2 mb-0">{{__('Schedule Pickup & Dropoff With Slots')}}<small class="d-block pr-5">Enable or disable schedule pickup & dropoff with slots for laundry.</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery" name="scheduling_with_slots" id="scheduling_with_slots" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->scheduling_with_slots == '1')) checked='checked' @endif>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 my-2" id="same_day_delivery_for_schedule_div" style="display:none;">
+                            <div class="form-group d-flex justify-content-between mb-3">
+                                <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Scheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for scheduling.</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery" name="same_day_delivery_for_schedule" id="same_day_delivery_for_schedule" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_delivery_for_schedule == '1')) checked='checked' @endif>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 my-2" id="same_day_orders_for_rescheduing_div" style="display:none;">
+                            <div class="form-group d-flex justify-content-between mb-3">
+                                <label for="same_day_delivery_for_schedule" class="mr-2 mb-0">{{__('Same Day Pickup & Delivery For Rescheduling')}}<small class="d-block pr-5">Enable or disable same day pickup & delivery for rescheduling.</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery" name="same_day_orders_for_rescheduing" id="same_day_orders_for_rescheduing" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->same_day_orders_for_rescheduing == '1')) checked='checked' @endif>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {{-- Added By Ovi --}}
         <!-- End refer and earn -->
     </div>
     <!-- Miscellaneous End  -->
@@ -994,7 +1046,50 @@
 <!-- End New Customize page -->
 
 </div>
-
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+        <h4 class="page-title text-uppercase">{{ __("Policy") }}</h4>
+        </div>
+    </div>
+</div>
+<div class="row col-spacing">
+        <!-- Order Email Notification start -->
+        <div class="col-lg-3 col-lg-3 mb-3">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box pb-1 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title ">{{ __('Cancellation Policy') }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-xl-12 my-2 p-0" id="addCur-160">
+                        <label class="primaryCurText">{{ __('Free Cancellation Upto') }}</label>
+                        <select class="form-control al_box_height" id="order_cancellation_time" name="order_cancellation_time">
+                            <option value="0"  {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 0)? 'selected' : '' }}>{{__('No Cancellation')}}</option>
+                            <option value="10" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 10)? 'selected' : '' }}>{{__('10 Minutes')}}</option>
+                            <option value="20" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 20)? 'selected' : '' }}>{{__('20 Minutes')}}</option>
+                            <option value="30" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 30)? 'selected' : '' }}>{{__('30 Minutes')}}</option>
+                            <option value="40" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 40)? 'selected' : '' }}>{{__('40 Minutes')}}</option>
+                            <option value="50" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 50)? 'selected' : '' }}>{{__('50 Minutes')}}</option>
+                            <option value="60" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 60)? 'selected' : '' }}>{{__('60 Minutes')}}</option>
+                            <option value="70" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 70)? 'selected' : '' }}>{{__('70 Minutes')}}</option>
+                            <option value="80" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 80)? 'selected' : '' }}>{{__('80 Minutes')}}</option>
+                            <option value="90" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 90)? 'selected' : '' }}>{{__('90 Minutes')}}</option>
+                            <option value="100" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 100)? 'selected' : '' }}>{{__('100 Minutes')}}</option>
+                            <option value="120" {{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time == 120)? 'selected' : '' }}>{{__('120 Minutes')}}</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-12 my-2 p-0" id="late-cancellation" style="{{ (isset($preference->order_cancellation_time) && $preference->order_cancellation_time > 0)? 'display:block;' : 'display:none;'}}">
+                        <label class="primaryCurText">{{ __('Late Cancellation Fee').'(%)' }}</label>
+                        <input class="form-control" type="number" min="0" id="cancellation_percentage" name="cancellation_percentage" value="{{ !empty($preference->cancellation_percentage)? $preference->cancellation_percentage : 20}}">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div id="add_or_edit_social_media_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -1253,7 +1348,7 @@
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom al">
-               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Category Kyc Document") }}</h4>
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add User Place Order Document") }}</h4>
                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
@@ -1360,6 +1455,29 @@
 <script src="{{asset('assets/js/jscolor.js')}}"></script>
 <script src="https://itsjavi.com/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.js"></script>
 <script type="text/javascript">
+
+$(document).ready(function(){
+    if($('#off_scheduling_at_cart').is(':checked') != true){
+        $('#scheduling_with_slots_div').show();
+    }
+    if($('#scheduling_with_slots_div').is(':checked') != true){
+        $('#same_day_delivery_for_schedule_div').show();
+        $('#same_day_orders_for_rescheduing_div').show();
+    }
+
+    $('#off_scheduling_at_cart').on('change', function() {
+        if($('#off_scheduling_at_cart').is(':checked')){
+            $('#scheduling_with_slots_div').hide();
+            $('#same_day_delivery_for_schedule_div').hide();
+            $('#same_day_orders_for_rescheduing_div').hide();
+        }else{
+            $('#scheduling_with_slots_div').show();
+            $('#same_day_delivery_for_schedule_div').show();
+            $('#same_day_orders_for_rescheduing_div').show();
+        }
+    });
+});
+
     $('#social_icons').on('change', function() {
         $(".input-group-text").html('<i class="fab fa-'+this.value+'"></i>');
     });
@@ -1462,6 +1580,12 @@
         let user_registration_document_id = $(this).data('user_registration_document_id');
         editUserRegistrationForm(user_registration_document_id);
     });
+    $(document).on("change", "#order_cancellation_time", function() {
+        $("#late-cancellation").css("display", "none");
+        if($(this).val() > 0){
+            $("#late-cancellation").css("display", "block");
+        }
+    });
     function editUserRegistrationForm(user_registration_document_id){
         let language_id = $('#option_client_language').val();
          $('#add_user_registration_document_modal input[name=user_registration_document_id]').val(user_registration_document_id);
@@ -1541,7 +1665,7 @@
                 }
             });
         $('#add_category_kyc_document_modal').modal('show');
-        $('#add_category_kyc_document_modal #standard-modalLabel').html('Add Category kyc Document');
+        $('#add_category_kyc_document_modal #standard-modalLabel').html('{{__("Add User Place Order Document")}}');
     });
 
      //category kyc form submit document
@@ -1615,7 +1739,7 @@
 
                   $("#add_category_kyc_document_modal input[name=vendor_registration_document_id]").val(response.data.id);
                   $(document).find("#add_category_kyc_document_modal select[name=is_required]").val(response.data.is_required).change();
-                  $('#add_category_kyc_document_modal #standard-modalLabel').html('Update Category KYC Document ');
+                  $('#add_category_kyc_document_modal #standard-modalLabel').html('{{__("Update User Place Order Documents")}}');
                   $('#add_category_kyc_document_modal').modal('show');
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_category_kyc_document_modal #category_kyc_document_name_'+value.language_id).val(value.name);

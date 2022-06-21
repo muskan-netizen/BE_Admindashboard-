@@ -58,7 +58,7 @@
                   <% if(payment_option.slug == 'stripe') { %>
                       <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper option-wrapper d-none">
                           <div class="form-control">
-                              <label class="d-flex flex-row pt-1 pb-1 mb-0">
+                              <label class="pb-1 mb-0">
                                   <div id="stripe-card-element"></div>
                               </label>
                           </div>
@@ -96,6 +96,9 @@
                         <span class="error text-danger" id="checkout_card_error"></span>
                     </div>
                   <% } %>
+                  <% if(payment_option.slug == 'payphone') { %>
+                    <div id="pp-button"></div>
+                <% } %>
 
               <% } %>
           <% }); %>

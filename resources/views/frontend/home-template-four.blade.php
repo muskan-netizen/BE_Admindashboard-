@@ -4,7 +4,7 @@
 @endsection
 @section('css')
 <style>
-.cardbanner {height:300px;}
+.cardbanner {height:400px;}
 .shimmer_effect .grid-row .cards {margin-bottom: 40px;}
 .shimmer_effect .grid-row .card_icon{display:none;}
 .shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
@@ -19,24 +19,19 @@
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
-	<div class="container-fliud mt-4 mb-5 shimmer_effect">
-		<div class="row mt-0">
-			<div class="col-md-2 offset-md-5 cards mb-3">
-				<div class="al_tabs loading"></div>
-			</div>
-		</div>
+	<div class="container-fliud mb-md-5 mb-2 shimmer_effect al_tabsShimmer">
 		<div class="row">
-			<div class="col-md-10 offset-md-1 cards">
+			<div class="col-lg-10 offset-lg-1 cards">
 				<div class="cardbanner loading"></div>
 			</div>
 		</div>
 	</div>
-	<div class="container-fliud mb-5 shimmer_effect px-3">
+	<div class="container-fliud mb-5 shimmer_effect px-md-3">
 		<div class="row">
-			<div class="col-md-10 offset-md-1 cards">
+			<div class="col-lg-10 offset-lg-1 cards">
 				<h2 class="h2-heading loading mb-3"></h2> </div>
 		</div>
-		<div class="col-md-10 offset-md-1">
+		<div class="col-lg-10 offset-lg-1">
 			<div class="grid-row grid-4-4">
 				<div class="cards">
 					<div class="card_image loading"></div>
@@ -144,77 +139,11 @@
 <!-- shimmer_effect end -->
 <!-- gradinet sec start -->
 <article class="al_gradientSec">
-	@if($client_preference_detail->business_type != 'taxi')
-		<div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif">
-			<div class="container-fluid text-center py-3" >
-				<div class="row align-items-center justify-content-center position-initial">
-					<div class="al_count_tabs_fourdesign d-none d-sm-block"  >
-								@if($mod_count > 1)
-								<ul class="nav nav-tabs navigation_tab_al nav-material tab-icons vendor_mods" id="top-tab" role="tablist">
-									@if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
-									<li class="navigation-tab-item" role="presentation">
-										<a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
-											{{$Delivery}}
-										</a>
-									</li>
-									@endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
-									<li class="navigation-tab-item " role="presentation">
-										<a class="nav-link al_dinein {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
-											{{$Dine_In}}
-										</a>
-									</li>
-									@endif @if($client_preference_detail->takeaway_check==1)
-									<li class="navigation-tab-item " role="presentation">
-										@php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
-										<a class="nav-link al_takeway {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
-											{{$Takeaway}}
-										</a>
-									</li>
-									@endif
-									<div class="navigation-tab-overlay_alnew_design"></div>
-								</ul>
-								@endif
-							</div>
-
-							<div class="al_count_tabs_new_design al_tab_mobile position-fixed d-block d-sm-none">
-								@if($mod_count > 1)
-								<ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods d-flex justify-content-around" id="top-tab" role="tablist">
-									@if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
-									<li class="navigation-tab-item pr-lg-3" role="presentation">
-										<a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
-											<span><img src="{{asset('images/al_custom3.png')}}" alt=""></span>
-											{{$Delivery}}
-										</a>
-									</li>
-									@endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
-									<li class="navigation-tab-item pr-lg-3 " role="presentation">
-										<a class="nav-link al_dinein {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
-											<span><img src="{{asset('images/al_custom1.png')}}" alt=""></span>
-											{{$Dine_In}}
-										</a>
-									</li>
-									@endif @if($client_preference_detail->takeaway_check==1)
-									<li class="navigation-tab-item  pr-lg-3" role="presentation">
-										@php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
-										<a class="nav-link al_takeway {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
-											<span><img src="{{asset('images/al_custom2.png')}}" alt=""></span>
-											{{$Takeaway}}
-										</a>
-									</li>
-									@endif
-								</ul>
-								@endif
-							</div>
-				</div>
-			</div>
-		</div>
-
-	@endif
 	@if(count($banners))
 	<section class="home-slider-wrapper"  >
 		<div class="container-fluid d-flex justify-content-center">
 
-			<div class="col-sm-10">
+			<div class="col-lg-10 p-0">
 				<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 				<div class="carousel-inner">
 
@@ -238,7 +167,7 @@
 				</a>
 			</div>
 
-			<div id="myMobileCarousel" class="carousel slide al_mobile_banner" data-ride="carousel" style="display:none;">
+			<div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;">
 				<div class="carousel-inner">
 
 					@foreach($mobile_banners as $key => $banner)
@@ -287,7 +216,7 @@
 <script type="text/template" id="vendors_template" >
 	<% _.each(vendors, function(vendor, k){%>
 		<% if(k < 7){%>
-			<div class="col-sm-3">
+			<div class="col-lg-3 col-md-4 col-6">
 				<div class="product-card-box position-relative text-center al_custom_vendors_sec_al p-3">
 					<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 						<div class="suppliers-img-outer position-relative " style="height:100px">
@@ -364,7 +293,8 @@
 									<%}%> @endif @endif
 							<div class="product-description_list">
 								<p class="al_ratingNumber mb-0">
-									<span class="rating-number"><%=product.averageRating %></span>
+									<!-- <span class="rating-number"><%=product.averageRating %></span> -->
+									<span class="Stars" style="--rating: <%=product.averageRating %>;" aria-label="Rating of this product is <%=product.averageRating %> out of 5."></span>
 								</p>
 								<p class="al_product_category mb-0">
 									<span>{{__('In')}} <%=product.category %></span>
@@ -519,7 +449,7 @@
 					</div>
 			</div>
 		</section> @elseif($homePageLabel->slug == 'trending_vendors')
-		<section class="suppliers-section">
+		<section class="suppliers-section" id="homepage_trending_vendors_div">
 			<div class="container"  >
 
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between ">
@@ -533,11 +463,11 @@
 		</section> @else
 		<section class="container-fliud mb-0 render_full_{{$homePageLabel->slug}} " id="{{$homePageLabel->slug.$key}}"  >
 
-				<div class=" col-md-10 offset-md-1 top-heading d-flex align-items-center justify-content-between">
+				<div class=" col-lg-10 offset-lg-1 top-heading d-flex align-items-center justify-content-between">
 				<h2 class="h2-heading mb-3 "> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
 
 			<div class="row">
-				<div class="col-md-10 offset-md-1"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
+				<div class="col-lg-10 offset-lg-1"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
 					<div class="product-5 product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@elseif($homePageLabel->slug=='recent_orders')
 					<div class="recent-orders product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@else
 					<div class="al product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif </div>

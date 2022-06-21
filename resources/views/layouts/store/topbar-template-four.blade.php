@@ -114,10 +114,10 @@ $preference = $client_preference_detail;
                                                 <label class="input-group-text" for="inputGroupSelect01"><i class="fa fa-globe" aria-hidden="true"></i></label>
                                             </div>
                                             <select class="custom-select" id="inputGroupSelect01">
-                                                <option selected>Language</option>
-                                                <option value="1">English</option>
-                                                <option value="2">Arabic</option>
-                                                <option value="3">Spanish</option>
+                                                <option>Language</option>
+                                                @foreach($languageList as $key => $listl)
+                                                <option {{$applocale ==  $listl->language->sort_code ?  'selected' : ''}} value="{{$listl->language_id}}">{{$listl->language->name}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
 
@@ -514,10 +514,10 @@ $preference = $client_preference_detail;
                                                 <label class="input-group-text" for="inputGroupSelect01"><i class="fa fa-globe" aria-hidden="true"></i></label>
                                             </div>
                                             <select class="custom-select" id="inputGroupSelect01">
-                                                <option selected>Language</option>
-                                                <option value="1">English</option>
-                                                <option value="2">Arabic</option>
-                                                <option value="3">Spanish</option>
+                                                <option>Language</option>
+                                                @foreach($languageList as $key => $listl)
+                                                <option {{$applocale ==  $listl->language->sort_code ?  'selected' : ''}} value="{{$listl->language_id}}">{{$listl->language->name}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
 
@@ -608,115 +608,115 @@ $preference = $client_preference_detail;
         </div>
     </nav>
 </div>
-<div class="al_mobile_menu al_new_mobile_header">
-                <a class="al_toggle-menu" href="#">
-                    <i></i>
-                    <i></i>
-                    <i></i>
+<div class="al_mobile_menu al_new_mobile_header d-none">
+    <a class="al_toggle-menu" href="#">
+        <i></i>
+        <i></i>
+        <i></i>
+    </a>
+    <div class="al_menu-drawer" id="navbarsfoodTemplate">
+        <ul class="header-dropdown ml-auto">
+            <li class="onhover-dropdown_al mobile-account_al">
+                <ul class="onhover-show-div">
+                    @if(Auth::user())
+                        @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                        <li>
+                            <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                        </li>
+                        @endif
+                        <li>
+                            <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
+                        </li>
+                        <li>
+                            <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
+                        </li>
+                    @else
+                    <li>
+                        <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
+                    </li>
+                    <li>
+                        <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
+                    </li>
+                    @endif
+                </ul>
+            </li>
+            @if($client_preference_detail->show_wishlist == 1)
+            <li class="onhover-dropdown_al mobile-wishlist_al">
+                <a href="{{route('user.wishlists')}}">
+                {{__('Wishlists')}}
                 </a>
-                <div class="al_menu-drawer" id="navbarsfoodTemplate">
-                    <ul class="header-dropdown ml-auto">
-                        <li class="onhover-dropdown_al mobile-account_al">
-                            <ul class="onhover-show-div">
-                                @if(Auth::user())
-                                    @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
-                                    <li>
-                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
-                                    </li>
-                                    @endif
-                                    <li>
-                                        <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
-                                    </li>
-                                    <li>
-                                        <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
-                                    </li>
-                                @else
-                                <li>
-                                    <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
-                                </li>
-                                <li>
-                                    <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
-                                </li>
-                                @endif
-                            </ul>
-                        </li>
-                        @if($client_preference_detail->show_wishlist == 1)
-                        <li class="onhover-dropdown_al mobile-wishlist_al">
-                            <a href="{{route('user.wishlists')}}">
-                                Wishlists
-                            </a>
-                        </li>
-                        @endif
+            </li>
+            @endif
 
-                        @if($client_preference_detail->cart_enable == 1)
-                        <li class="onhover-dropdown_al onhover-div mobile-cart">
-                            <a href="{{route('showCart')}}" style="position: relative">
-                                Viewcart
-                                <span class="cart_qty_cls" style="display:none"></span>
-                            </a>
-                            <ul class="show-div shopping-cart"></ul>
-                        </li>
-                        @endif
+            @if($client_preference_detail->cart_enable == 1)
+            <li class="onhover-dropdown_al onhover-div mobile-cart">
+                <a href="{{route('showCart')}}" style="position: relative">
+                {{__('Viewcart')}}
+                    <span class="cart_qty_cls" style="display:none"></span>
+                </a>
+                <ul class="show-div shopping-cart"></ul>
+            </li>
+            @endif
 
-                        @if($client_preference_detail->header_quick_link == 1)
-                        @foreach($pages as $page)
-                        @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
-                        @if(isset($last_mile_common_set) && $last_mile_common_set != false)
-                        <li class="onhover-dropdown_al">
-                            <a href="{{route('extrapage',['slug' => $page->slug])}}">
-                                @if(isset($page->translations) && $page->translations->first()->title != null)
-                                {{ $page->translations->first()->title ?? ''}}
-                                @else
-                                {{ $page->primary->title ?? ''}}
-                                @endif
-                            </a>
-                        </li>
-                        @endif
-                        @else
-                        <li class="onhover-dropdown_al">
-                            <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
-                                @if(isset($page->translations) && $page->translations->first()->title != null)
-                                {{ $page->translations->first()->title ?? ''}}
-                                @else
-                                {{ $page->primary->title ?? ''}}
-                                @endif
-                            </a>
-                        </li>
-                        @endif
-                        @endforeach
+            @if($client_preference_detail->header_quick_link == 1)
+            @foreach($pages as $page)
+            @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
+            @if(isset($last_mile_common_set) && $last_mile_common_set != false)
+            <li class="onhover-dropdown_al">
+                <a href="{{route('extrapage',['slug' => $page->slug])}}">
+                    @if(isset($page->translations) && $page->translations->first()->title != null)
+                    {{ $page->translations->first()->title ?? ''}}
+                    @else
+                    {{ $page->primary->title ?? ''}}
+                    @endif
+                </a>
+            </li>
+            @endif
+            @else
+            <li class="onhover-dropdown_al">
+                <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
+                    @if(isset($page->translations) && $page->translations->first()->title != null)
+                    {{ $page->translations->first()->title ?? ''}}
+                    @else
+                    {{ $page->primary->title ?? ''}}
+                    @endif
+                </a>
+            </li>
+            @endif
+            @endforeach
 
-                        @endif
-                        <li class="onhover-dropdown change-language">
-                            <a href="javascript:void(0)">{{$applocale}}
-                            <span class="icon-ic_lang align-middle"></span>
-                            <span class="language ml-1 align-middle">{{ __("language") }}</span>
-                            </a>
-                            <ul class="onhover-show-div">
-                                @foreach($languageList as $key => $listl)
-                                    <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
-                                    </li>
-                                @endforeach
-                            </ul>
+            @endif
+            <li class="onhover-dropdown change-language">
+                <a href="javascript:void(0)">{{$applocale}}
+                <span class="icon-ic_lang align-middle"></span>
+                <span class="language ml-1 align-middle">{{ __("language") }}</span>
+                </a>
+                <ul class="onhover-show-div">
+                    @foreach($languageList as $key => $listl)
+                        <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
+                            <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
                         </li>
+                    @endforeach
+                </ul>
+            </li>
 
-                        <li class="onhover-dropdown change-currency">
-                            <a href="javascript:void(0)">{{session()->get('iso_code')}}
-                            <span class="icon-ic_currency align-middle"></span>
-                            <span class="currency ml-1 align-middle">{{ __("currency") }}</span>
-                            </a>
-                            <ul class="onhover-show-div">
-                                @foreach($currencyList as $key => $listc)
-                                <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
-                                    <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr" currSymbol="{{$listc->currency->symbol}}">
-                                        {{$listc->currency->iso_code}}
-                                    </a>
-                                </li>
-                                @endforeach
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            <li class="onhover-dropdown change-currency">
+                <a href="javascript:void(0)">{{session()->get('iso_code')}}
+                <span class="icon-ic_currency align-middle"></span>
+                <span class="currency ml-1 align-middle">{{ __("currency") }}</span>
+                </a>
+                <ul class="onhover-show-div">
+                    @foreach($currencyList as $key => $listc)
+                    <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
+                        <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr" currSymbol="{{$listc->currency->symbol}}">
+                            {{$listc->currency->iso_code}}
+                        </a>
+                    </li>
+                    @endforeach
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
 
 

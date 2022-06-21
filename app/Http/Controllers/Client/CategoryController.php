@@ -373,8 +373,29 @@ class CategoryController extends BaseController
         $parent = Category::where('id', $id)->first();
         $array_of_ids = $this->getChildren($parent);
         array_push($array_of_ids, $id);
-        Category::destroy($array_of_ids);
+       
+
+        $dynamic = time().substr(md5(mt_rand()), 0, 7);
+     
+        $tot_var  = Product::whereIn('category_id', $array_of_ids)->select('id','sku')->get();
+        foreach($tot_var as $varr)
+        {   
+            $dynamic = time().substr(md5(mt_rand()), 0, 7);
+            Product::where('id', $varr->id)->update(['sku' => $varr->sku.$dynamic]);
+            ProductVariant::where('product_id', $varr->product_id)->update(['sku' => $varr->sku.$dynamic]);
+        }
+
+        foreach($array_of_ids as $varr)
+        {   
+            $dynamic = time().substr(md5(mt_rand()), 0, 7);
+            Category::where('id', $varr)->update(['slug' => $dynamic]);
+            
+        }
+
+
+
         Product::whereIn('category_id', $array_of_ids)->delete();
+        Category::destroy($array_of_ids);
         
         // category kyc document delete 
         CategoryKycDocumentMapping::where('category_id',$id)->delete();

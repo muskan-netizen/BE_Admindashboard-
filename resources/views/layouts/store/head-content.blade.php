@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" media="all" href="{{asset('css/waitMe.min.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('css/sweetalert2.min.css')}}">
+
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom-template-one.css')}}">--}}
 
 
@@ -35,9 +36,10 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_three/homepage/inner_page.css')}}">
 <link defer type="text/css" rel="stylesheet" href="{{asset('assets/css/thiredtemplate.css')}}"   />
 @elseif(isset($set_template)  && $set_template->template_id == 4)
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/homepage/homepage.css')}}">
+
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/footer/footer.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_four/homepage/homepage.css')}}">
 @elseif(isset($set_template)  && $set_template->template_id == 5)
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/homepage.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/header.css')}}">

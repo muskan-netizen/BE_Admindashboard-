@@ -194,7 +194,7 @@ use Illuminate\Support\Arr;
                                                             <img src="{{$imagePath}}" alt="">
                                                         </div>
                                                     </div>
-                                                    <div class="col-12">
+                                                    <div class="col-12 ac-royo-btn">
                                                         <div class="d-flex align-items-center justify-content-between">
                                                                 <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
                                                                     {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
@@ -490,7 +490,7 @@ use Illuminate\Support\Arr;
                                 </div>
 
                                 <script type="text/template" id="header_cart_template_ondemand">
-                                        <% _.each(cart_details.products, function(product, key){ console.log(product);%>
+                                        <% _.each(cart_details.products, function(product, key){%>
                                             <li>
                                                 <h6 class="d-flex align-items-center justify-content-between"> <%= product.vendor.name %> </h6>
                                             </li>

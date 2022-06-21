@@ -5,6 +5,7 @@ $set_common_business_type = $client_preference_detail->business_type??'';
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
   @include('layouts.store.title-meta')
   @include('layouts.store.head-content', ["demo" => "creative"])
 </head>
@@ -55,6 +56,11 @@ if(isset($set_template))
       @include('layouts.store/left-sidebar-template-one')
       @endif
     </header>
+
+    @if(isset($set_template)  && $set_template->template_id == 4)
+    @include('frontend.template_four.layouts.vendor_type')
+    @endif 
+
     @yield('content')
     @if(isset($set_template)  && $set_template->template_id == 1)
     @include('layouts.store/footer-content-template-one')
@@ -71,4 +77,4 @@ if(isset($set_template))
     @endif
     @include('layouts.store/footer')
 </body>
-</html> 
+</html>

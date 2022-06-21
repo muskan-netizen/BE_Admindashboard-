@@ -556,7 +556,7 @@
                                                     <td></td>
                                                 @else
                                                     <td>{{ __('Errors') }}</td>
-                                                    <td class="position-relative text-center">
+                                                    <td class="position-relative text-center alTooltipHover">
                                                         <i class="mdi mdi-exclamation-thick"></i>
                                                         <ul class="tooltip_error">
                                                             <?php $error_csv = json_decode($csv->error); ?>
@@ -871,6 +871,7 @@
 
         function setSkuFromName() {
             var n1 = $('#product_name').val();
+            n1 = n1.replace(/[.*+?^${}()/|[\]\\]+/g, '-');
             var sku_start = "{{ $sku_url }}" + ".";
             var total_sku = sku_start + n1;
             $('#sku').val(sku_start + n1);
@@ -883,7 +884,7 @@
                 $('#sku').val(total_sku.split(' ').join(''));
             }
 
-            alplaNumeric();
+            // alplaNumeric();
 
         }
 
