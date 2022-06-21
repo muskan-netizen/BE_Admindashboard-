@@ -161,6 +161,7 @@ class EstimationController extends BaseController{
                     $TagTranslation->slug = Str::slug($name, '-');
                     $TagTranslation->language_id = $language_id[$k];
                     $TagTranslation->estimate_product_id = $tag->id;
+                    $TagTranslation->price = $request->get('price');
                     $TagTranslation->save();
                 }
             }

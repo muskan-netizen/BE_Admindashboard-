@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet,ProductTranslation, Client, ClientPreference, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductCategory, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet,ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use DB,Log;
@@ -1849,8 +1849,8 @@ class VendorController extends BaseController
 
             foreach($estimate_products as $k => $product)
             {
-                //Product added
-                $productId = Product::updateOrCreate(
+                    //Product added
+                    $productId = Product::updateOrCreate(
                     [
                         'title'=>$product->primary->name,
                         'global_product_id'=>$product->id,
@@ -1865,7 +1865,47 @@ class VendorController extends BaseController
                         'category_id'=>$product->category_id,
                         'type_id'=>'1'
                     ]);
+                  
+                     //Product added
+                     $productVar = ProductVariant::updateOrCreate(
+                        [
+                            'title'=>$product->primary->name,
+                            'product_id'=>$productId->id,
+                            'sku'=>str_replace(' ','.',$product->primary->name).'.'.time().'.'.str_replace(' ','.',$product->category->slug),
+                        ],
+                        [
+                            'title'=>$product->primary->name,
+                            'product_id'=>$productId->id,
+                            'sku'=>str_replace(' ','.',$product->primary->name).'.'.time().'.'.str_replace(' ','.',$product->category->slug),
+                            'price'=>$product->primary->price,
+                            'barcode'=>time().$productId->id
+                        ]);
+                 
+                    //Product media image added
+                    $mediaId = VendorMedia::updateOrCreate(
+                    [
+                        'path'=>$product->icon['original'],
+                        'vendor_id'=>$request->vid,
+                    ],
+                    [
+                        'path'=>$product->icon['original'],
+                        'media'=>'1',
+                        'vendor_id'=>$request->vid
+                    ]);
+                    
+                    
+                     //Product image added
+                     $imageId = ProductImage::updateOrCreate(
+                        [
+                            'product_id'=>$productId->id,
+                            'media_id'=>$mediaId->id,
+                        ],
+                        [
+                            'product_id'=>$productId->id,
+                            'media_id'=>$mediaId->id
+                        ]);
 
+                  
 
                     //Product Translation added
                 $productTrans = ProductTranslation::updateOrCreate(
@@ -1886,17 +1926,18 @@ class VendorController extends BaseController
                         'category_id'=>$product->category_id
                     ],
                     [
-                        'product_id'=>$product->id,
+                        'product_id'=>$productId->id,
                         'category_id'=>$product->category_id
                     ]);
+
 
 
                     foreach($product->estimate_product_addons as $addon)
                     {
                         $set = $addon->estimate_addon_set;
 
-                        //ProductAddon set added
-                        AddonSet::updateOrCreate([
+                         //Product Addon set added
+                        $addonID = AddonSet::updateOrCreate([
                             'title'=>$set->title,
                             'vendor_id'=>$request->vid
                         ],
@@ -1908,6 +1949,50 @@ class VendorController extends BaseController
                             'position'=>$set->position,
                             'status'=>$set->status
                         ]);
+
+
+                         //ProductAddon added
+                         ProductAddon::updateOrCreate([
+                            'product_id'=>$productId->id,
+                            'addon_id'=>$addonID->id
+                        ],
+                        [
+                            'product_id'=>$productId->id,
+                            'addon_id'=>$addonID->id
+                        ]);
+
+
+                        $estimate_addon_id = $addon->estimate_addon_id;
+                        $optionAddon = EstimateAddonOption::where('estimate_addon_id',$estimate_addon_id)->get();
+                        foreach($optionAddon as $addonOpt)
+                        {
+                            //ProductAddon set added
+                              $optId =  AddonOption::updateOrCreate([
+                                    'title'=>$addonOpt->title,
+                                    'addon_id'=>$addonID->id
+                                ],
+                                [
+                                    'title'=>$addonOpt->title,
+                                    'addon_id'=>$addonID->id,
+                                    'position'=>$addonOpt->position,
+                                    'price'=>$addonOpt->price
+                                ]);
+
+
+                                //Addon option Translation added
+                                $addonTrans = AddonOptionTranslation::updateOrCreate(
+                                    [
+                                        'title'=>$product->primary->name,
+                                        'addon_opt_id'=>$optId->id,
+                                    ],
+                                    [
+                                        'title'=>$product->primary->name,
+                                        'addon_opt_id'=>$optId->id,
+                                        'language_id'=>'1'
+                                    ]);
+
+
+                        }
 
                     }
 

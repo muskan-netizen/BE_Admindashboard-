@@ -252,7 +252,7 @@ class EstimationController extends FrontController
             // By Checking Vendor (status) active, inactive, or pending.
             // ***End*** BY - OVI 
             $teststests = 0;
-            $all_vendors = Vendor::OrderBy('id','desc')->with(['products' => function($q) use($langId, $keywords, $addonKeywords){
+            $all_vendors = Vendor::OrderBy('id','desc')->with(['productsLive' => function($q) use($langId, $keywords, $addonKeywords){
                     $q->whereHas('translation',function($q) use($langId, $keywords){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
                         }
@@ -261,7 +261,7 @@ class EstimationController extends FrontController
                         $ad->select('id', 'title')->where('language_id', $langId)->whereIn('title', $addonKeywords);
                         });
                 }])->with('media.image','variant');
-            }])->whereHas('products.translation',function($q) use($langId, $keywords, $teststests){
+            }])->whereHas('productsLive.translation',function($q) use($langId, $keywords, $teststests){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
             })->where('status',1)->get();
 

@@ -177,6 +177,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('estimations', 'Client\EstimationController');
         Route::resource('estimationsAddon', 'Client\EstimationAddonController');
 
+        Route::get('estimations/barcode', [EstimationController::class, 'barcode'])->name('estimations.barcode');
         Route::get('estimations/edit', [EstimationController::class, 'show'])->name('estimations.edit');
         Route::post('estimations/create', [EstimationController::class, 'store'])->name('estimations.create');
         Route::post('estimations/update', [EstimationController::class, 'update'])->name('estimations.update');
