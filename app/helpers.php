@@ -29,7 +29,7 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
         $showSubscriptionPlanPopUp = 0;
         $user = Auth::user();
         $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::find(1);
-        if($showSubscriptionPlan->show_plan_customer == 1 && $showSubscriptionPlan->every_sign_up == 1 && !empty($user)){
+        if(@$showSubscriptionPlan->show_plan_customer == 1 && @$showSubscriptionPlan->every_sign_up == 1 && !empty($user)){
             $showSubscriptionPlanPopUp = 1;
         }
         return $showSubscriptionPlanPopUp;
