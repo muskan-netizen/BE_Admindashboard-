@@ -53,11 +53,10 @@ body section.cab-banner-area {
 
 
 /*arbic language css start here---*/
-body[dir=rtl] .slick-track {
-    transform: translate3d(0px, 0px, 0px) !important;
-}
-body[dir=rtl] .slick-next{left: auto !important; right: -30px !important;}
-body[dir=rtl] .slick-prev{left: -30px !important;}
+body[dir="rtl"] .menu-slider .slick-track {transform: translate3d(0px, 0px, 0px) !important;}
+body[dir=rtl].al_body_template_two .slick-next{left: auto !important; right: -30px !important;}
+
+body[dir=rtl].al_body_template_two .slick-prev{left: -30px !important;}
 body[dir="rtl"] .icon-nav ul li a i {margin-right: 5px !important;}
 body[dir="rtl"] .iti--allow-dropdown .iti__flag-container, body[dir="rtl"] .iti--separate-dial-code .iti__flag-container{
     right: auto !important;
@@ -85,10 +84,10 @@ body[dir="rtl"] .product-right.inner_spacing.pl-sm-3.p-0 {
     padding-left: 0px;
     padding-right: 1.5rem!important;
 }
-body[dir="rtl"] .rating-number, body .inner_spacing .rating{
+/* body[dir="rtl"] .rating-number, body .inner_spacing .rating{
     left:3px;
     right: auto !important;
-}
+} */
 body[dir="rtl"] #social-links li:first-child{
     margin-right: 0px;
 }
@@ -104,3 +103,16 @@ body[dir="rtl"] #social-links li:last-child{
 body[dir="rtl"] .btn.btn-solid.addWishList.mr-2 {
     margin-right: 0px !important;
 }
+
+/*third template arbic language css*/
+body[dir="rtl"].al_body_template_three .slick-next{left: auto !important; right:11px !important;}
+body[dir="rtl"].al_body_template_three .qty-box .input-group button i{
+    transform: rotate(182deg);
+}
+body[dir="rtl"].al_body_template_three .alSingleProducts .product-right{text-align:right;margin-right: 10px;}
+body[dir="rtl"].al_body_template_three .product-description h6{text-align: right;}
+body[dir="rtl"] .inner_spacing .rating {right: auto !important;left: 2px;}
+body[dir="rtl"] .al .col-lg-5.pl-0 {
+    padding-right: 0px;
+}
+
