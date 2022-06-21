@@ -40,7 +40,7 @@ trait AuthorizePaymentManager{
         $transaction_id = $response->getTransactionReference();
         return $transaction_id;
       }else{
-        Log::info();
+        Log::info('Exception Handling Error');
         Log::info($response->getMessage());
         return null;
       }

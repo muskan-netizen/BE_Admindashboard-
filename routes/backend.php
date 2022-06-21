@@ -175,13 +175,14 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
 
         Route::resource('estimations', 'Client\EstimationController');
+        Route::resource('estimationsAddon', 'Client\EstimationAddonController');
 
         Route::get('estimations/edit', [EstimationController::class, 'show'])->name('estimations.edit');
         Route::post('estimations/create', [EstimationController::class, 'store'])->name('estimations.create');
         Route::post('estimations/update', [EstimationController::class, 'update'])->name('estimations.update');
         Route::post('estimations/delete', [EstimationController::class, 'destroy'])->name('estimations.delete');
 
-
+        Route::post('estimations/update-estimation-matching-logic', [EstimationController::class, 'updateEstimationMatchingLogic'])->name('estimations.updateEstimationMatchingLogic');
 
         Route::resource('slot', 'Client\ClientSlotController');
 

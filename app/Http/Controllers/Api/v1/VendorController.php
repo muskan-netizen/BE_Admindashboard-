@@ -819,7 +819,7 @@ class VendorController extends BaseController{
                         ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
                             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                             ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
-                            ->withCount('OrderProduct'); // Or whatever the join logic is
+                            ->withCount('OrderProduct'); // Or whatever the join logic is (order_product_count)
 
                         $products->where('products.category_id', $category->category_id);
 

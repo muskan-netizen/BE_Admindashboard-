@@ -25,7 +25,7 @@ class PickupDeliveryController extends FrontController{
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'razorpay','stripe','paystack', 'payfast');
+        $code = array('cod', 'razorpay','stripe','paystack', 'payfast','authorize_net'); 
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
@@ -367,6 +367,14 @@ class PickupDeliveryController extends FrontController{
                     $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                     $order_place['data']['user_name'] = $user->email;
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
+
+                     //Send message if ride is booked for friend
+                    if($request->type == 1 && isset($request->friendPhoneNumber))
+                    {
+                        $msg = "Hi ".$request->friendName??'User'.", ".$user->name." has booked a ride for you.";
+                        $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
+                    }
+
                     return  $order_place;
                 }else{
                     DB::rollback();
@@ -423,6 +431,8 @@ class PickupDeliveryController extends FrontController{
                 }
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
+            Log::info("Request To Dispatch");
+            Log::info($request_to_dispatch);
             
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = User::find($order->user_id);

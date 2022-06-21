@@ -1552,7 +1552,10 @@ $(document).ready(function () {
 
             case '6':
                 paymentViaPayfast('', order);
-            break;
+                break;
+            case '18':
+                paymentViaAuthorize('', order);
+                break;
         
         }
 

@@ -1040,6 +1040,11 @@ class OrderController extends FrontController
                 $actual_amount = $vendor_payable_amount;
                 if ($vendor_cart_product->coupon) {
                     $coupon_id = $vendor_cart_product->coupon->promo->id;
+
+                    if($vendor_cart_product->coupon->promo->paid_by_vendor_admin == 0){
+                        $coupon_paid_by = 0;
+                    }
+
                     $coupon_name = $vendor_cart_product->coupon->promo->name;
                     if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
                         $amount = round($vendor_cart_product->coupon->promo->amount);
@@ -1072,6 +1077,7 @@ class OrderController extends FrontController
                 $vendor_payable_amount += $vendor_taxable_amount;
 
                 $OrderVendor->coupon_id = $coupon_id;
+                $OrderVendor->coupon_paid_by = $coupon_paid_by??1;
                 $OrderVendor->coupon_code = $coupon_name;
                 $OrderVendor->order_status_option_id = 1;
                 $OrderVendor->delivery_fee = $delivery_fee;

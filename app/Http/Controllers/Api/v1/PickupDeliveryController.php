@@ -221,6 +221,13 @@ class PickupDeliveryController extends BaseController{
                     $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
                     if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+
+                        //Send message if ride is booked for friend
+                        if($request->type == 1 && isset($request->friendPhoneNumber))
+                        {
+                            $msg = "Hi ".$request->friendName??'User'.", ".$user->name." has booked a ride for you.";
+                            $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
+                        }
                     }else{
                         DB::rollback();
                         return $request_to_dispatch;
@@ -780,6 +787,8 @@ class PickupDeliveryController extends BaseController{
 
 
     public function getOrderTrackingDetails(Request $request){
+        Log::info("Order Track Detail");
+        Log::info($request->all());
         $user = Auth::user();
         $langId = $user->language ?? 1;
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)
