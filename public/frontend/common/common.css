@@ -80,9 +80,8 @@ body section.cab-banner-area {
 
 /*arbic language css start here---*/
 body[dir="rtl"] .menu-slider .slick-track {transform: translate3d(0px, 0px, 0px) !important;}
-body[dir=rtl].al_body_template_two .slick-next{left: auto !important; right: -30px !important;}
-
-body[dir=rtl].al_body_template_two .slick-prev{left: -30px !important;}
+body[dir=rtl] .slick-next{left: auto !important; right: -30px !important;}
+body[dir=rtl] .slick-prev{left: -30px !important;}
 body[dir="rtl"] .icon-nav ul li a i {margin-right: 5px !important;}
 body[dir="rtl"] .iti--allow-dropdown .iti__flag-container, body[dir="rtl"] .iti--separate-dial-code .iti__flag-container{
     right: auto !important;
