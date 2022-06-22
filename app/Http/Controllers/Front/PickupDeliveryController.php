@@ -431,6 +431,8 @@ class PickupDeliveryController extends FrontController{
                 }
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
+            Log::info("Request To Dispatch");
+            Log::info($request_to_dispatch);
             
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = User::find($order->user_id);
