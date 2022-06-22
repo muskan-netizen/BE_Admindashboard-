@@ -66,3 +66,34 @@ article#page-container{position: relative;min-height: 100vh;overflow: hidden;}
 .al_body_template_two .product-order.py-3{position: relative;}
 .al_body_template_two .product-order.py-3:before{position: absolute;content: "";border-right:1px solid #eee;height:100%;right: -10px;}
 /* Order Placed css end */
+body.al_body_template_two .mobile-menu.main-menu{
+    bottom: 10px;
+    padding: 0 10px;
+    width: 97%;
+}
+/* body.al_body_template_two #content-wrap .site-header .navbar-brand{
+    padding: 0;
+    margin: auto;
+    width: 100%;
+    height: auto !important;
+} */
+body.al_body_template_two header{
+    padding: 0;
+}
+body.al_body_template_two .inner_spacing h4{
+    font-size: 12px;
+}
+body.al_body_template_two .shimmer_effect .grid-row .card_image{
+    height: 90px !important;
+}
+}
+
+
+
+body[dir=rtl] .slick-prev{
+    left: 30px !important;
+}
+
+
+
+    

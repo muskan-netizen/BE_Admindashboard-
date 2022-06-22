@@ -365,3 +365,35 @@ color:#43bee1
 #import-product .modal-dialog .table-responsive {
   overflow-x: visible;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*---arbic language css start here---*/
+body[dir="rtl"] .progress-order{
+  right: -24px;
+}
+body[dir="rtl"] .btn.btn-secondary.btn-success.waves-effect.waves-light span.btn-label {
+  margin: 0px 0px 0px 10px;
+}
+body[dir="rtl"] button.btn.btn-secondary.btn-success.waves-effect.waves-light{
+  padding: 0px 0px 0px 10px;
+}
+body[dir="rtl"] .dataTables_filter {
+  left: 0px;
+}
+
+
+

@@ -70,6 +70,77 @@ body .iti--separate-dial-code .iti__selected-flag {
 #vendorStories  .close{position: absolute;top: 15px;right: 35px;color: #f1f1f1;font-size: 40px;font-weight: bold;-webkit-transition: 0.3s;transition: 0.3s;}
 #vendorStories  .close:hover, #vendorStories  .close:focus {color: #bbb;text-decoration: none;cursor: pointer;}
 @media only screen and (max-width: 700px){ #vendorStories .modal-content{width: 100%;}} */
+/* vendorStories page css end */
+body section.cab-banner-area {
+    margin: 0 !important;
+}
+
+
+
+
+/*arbic language css start here---*/
+body[dir="rtl"] .menu-slider .slick-track {transform: translate3d(0px, 0px, 0px) !important;}
+body[dir=rtl] .slick-next{left: auto !important; right: -30px !important;}
+body[dir=rtl] .slick-prev{left: -30px !important;}
+body[dir="rtl"] .icon-nav ul li a i {margin-right: 5px !important;}
+body[dir="rtl"] .iti--allow-dropdown .iti__flag-container, body[dir="rtl"] .iti--separate-dial-code .iti__flag-container{
+    right: auto !important;
+    left: 0 !important;
+}
+body[dir="rtl"] .iti--separate-dial-code .iti__selected-dial-code{
+    margin-right: 6px;
+}
+body[dir="rtl"] .offset-xl-2{
+    margin-left: 0px !important;
+    margin-right:16.6666666667% !important;
+}
+body[dir="rtl"] .toggle-password {
+    text-align: left;
+    left: 10px;
+}
+body[dir="rtl"] .login-with-username div#password-wrapper a{
+    left: 40px;
+    text-align: left;
+}
+body[dir="rtl"] .iti__flag-box, .iti__country-name{
+    margin-left: 6px;
+}
+body[dir="rtl"] .product-right.inner_spacing.pl-sm-3.p-0 {
+    padding-left: 0px;
+    padding-right: 1.5rem!important;
+}
+/* body[dir="rtl"] .rating-number, body .inner_spacing .rating{
+    left:3px;
+    right: auto !important;
+} */
+body[dir="rtl"] #social-links li:first-child{
+    margin-right: 0px;
+}
+body[dir="rtl"] #social-links li:last-child{
+    margin-right: 20px;
+}
+/* body[dir="rtl"] div#exzoom {
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    position: relative;
+    z-index: 9999;
+} */
+body[dir="rtl"] .btn.btn-solid.addWishList.mr-2 {
+    margin-right: 0px !important;
+}
+
+/*third template arbic language css*/
+body[dir="rtl"].al_body_template_three .slick-next{left: auto !important; right:11px !important;}
+body[dir="rtl"].al_body_template_three .qty-box .input-group button i{
+    transform: rotate(182deg);
+}
+body[dir="rtl"].al_body_template_three .alSingleProducts .product-right{text-align:right;margin-right: 10px;}
+body[dir="rtl"].al_body_template_three .product-description h6{text-align: right;}
+body[dir="rtl"] .inner_spacing .rating {right: auto !important;left: 2px;}
+body[dir="rtl"] .al .col-lg-5.pl-0 {
+    padding-right: 0px;
+}
+
 
 
 /* vendorStories page css end */
