@@ -687,7 +687,7 @@ class VendorController extends BaseController
         $client_preference_detail =ClientPreference::select('id','business_type')->first();
         $product = Product::with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
             $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
-        }])->select('products.id', 'products.sku', 'products.vendor_id', 'products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title')
+        }])->select('products.id', 'products.sku', 'products.vendor_id', 'products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id')
         ->join('product_translations', 'product_translations.product_id', '=', 'products.id') 
         ->orderBy('product_translations.title', $ordring)  
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
@@ -750,7 +750,7 @@ class VendorController extends BaseController
             $datatable->addColumn('product_name', function ($product) use ($request) {
                 $edit_url = route('product.edit', $product->id);
                 $action =  '<a href="'.$edit_url .'"
-                target="_blank">'.Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30);
+                target="_blank" title="'.(($product->global_product_id)?' Global Item':'').'">'.Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30).(($product->global_product_id)?' (Global)':'').'</a>';
                 
                 return $action;
             })
@@ -1844,7 +1844,7 @@ class VendorController extends BaseController
        }
 
        try{
-        
+        DB::beginTransaction();
          $estimate_products = EstimateProduct::with(['primary','category','estimate_product_addons'])->whereIn('id',$request->product_id)->get();
 
             foreach($estimate_products as $k => $product)
@@ -1991,20 +1991,16 @@ class VendorController extends BaseController
                                         'language_id'=>'1'
                                     ]);
 
-
                         }
 
                     }
-
                     
             }
-
-
-
 
             return response()->json(array('success' => true,'message'=>'Global Product import successfuly.'));
 
         }catch (Exception $e) {
+            DB::rollback();
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
            

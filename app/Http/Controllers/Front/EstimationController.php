@@ -160,6 +160,7 @@ class EstimationController extends FrontController
         // Get language ID from Request Header - By Ovi
         $langId  = Session::get('customerLanguage')??'1';
         $user_id = Auth::user()->id;
+        $currency = Session::get('customerCurrency');
         // Get Cart from Estimated Product Cart based on user_id - By Ovi
         $userCart = EstimatedProductCart::where('user_id', $user_id)->first();
         if(!$userCart){
@@ -168,8 +169,8 @@ class EstimationController extends FrontController
         }
         // Get Products from added Estimated Cart using cart id - By Ovi
         $userProducts = EstimatedProduct::where('estimated_cart_id', $userCart->id )->get();
-
-
+        $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
+        $doller_compare = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
         // Search for similar products and addons. - By Ovi
         $searchResult = $this->searchProducts($userProducts, $langId);
         $navCategories = $this->categoryNav($langId);
@@ -193,6 +194,8 @@ class EstimationController extends FrontController
             $product->variantSet = $variantData->variantSet;
             $product->variant_multiplier = 1;
             $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+            $vendor->variant_multiplier = $doller_compare;
+            $vendor->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
             $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
             $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
 

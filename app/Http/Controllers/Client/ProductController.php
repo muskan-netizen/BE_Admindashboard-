@@ -8,12 +8,13 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client,Tag,ProductTag,ProductFaq,TaxRate};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq,TaxRate};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
+use App\Imports\QrcodesImport;
 use GuzzleHttp\Client as GCLIENT;
 class ProductController extends BaseController
 {
@@ -842,6 +843,25 @@ class ProductController extends BaseController
             return response()->json([
                 'status' => 'success',
                 'message' => 'Product image deleted successfully!'
+            ]);
+        }
+    }
+
+    public function importCsvQrcode(Request $request){
+       
+        $fileModel = new CsvQrcodeImport;
+        if($request->file('qrcode_excel')) {
+            $fileName = time().'_'.$request->file('qrcode_excel')->getClientOriginalName();
+            $filePath = $request->file('qrcode_excel')->storeAs('csv_qrcodes', $fileName, 'public');
+            $fileModel->name = $fileName;
+            $fileModel->path = '/storage/' . $filePath;
+            $fileModel->status = 1;
+            $fileModel->save();
+            $data = Excel::import(new QrcodesImport($fileModel->id), $request->file('qrcode_excel'));
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Qrcode code import successfully!'
             ]);
         }
     }

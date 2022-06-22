@@ -17,7 +17,9 @@
                                         <img style="width:30%;" src="{{asset('assets/images/loading_new.gif')}}" alt="">
                                     </div>
                                     @forelse($vendors as $vendor)
-                                    
+                                        {{-- @php
+                                        dd($vendor);
+                                        @endphp --}}
                                         <section class="scrolling_section" id="{{ $vendor->slug }}">
                                            
                                             <?php $productDetails = \App\Models\Product::where('vendor_id', $vendor->id)->get(); ?>
@@ -72,7 +74,7 @@
                                                                         $option_id_new = implode(',',array_unique($option_id));
                                                                         $prod_ids_new = implode(',',array_unique($prod_ids));
                                                                         
-                                                                        $final_price += number_format($prod->variant[0]->price+$addon_price, 2, '.', '');
+                                                                        $final_price += number_format(($prod->variant[0]->price *$vendor->variant_multiplier)+$addon_price , 2, '.', '');
                                                                     ?>
                                                                         
                                                                     @endforeach

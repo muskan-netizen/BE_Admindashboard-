@@ -173,11 +173,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('tag/update', [TagController::class, 'update'])->name('tag.update');
         Route::post('tag/delete', [TagController::class, 'destroy'])->name('tag.delete');
 
-
+        Route::get('estimations/barcode', [EstimationController::class, 'barcode'])->name('estimations.barcode');
         Route::resource('estimations', 'Client\EstimationController');
         Route::resource('estimationsAddon', 'Client\EstimationAddonController');
 
-        Route::get('estimations/barcode', [EstimationController::class, 'barcode'])->name('estimations.barcode');
         Route::get('estimations/edit', [EstimationController::class, 'show'])->name('estimations.edit');
         Route::post('estimations/create', [EstimationController::class, 'store'])->name('estimations.create');
         Route::post('estimations/update', [EstimationController::class, 'update'])->name('estimations.update');
@@ -292,6 +291,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('customer/export/export', 'Client\UserController@export')->name('customer.export');
         Route::resource('product', 'Client\ProductController');
         Route::post('product/updateActions', 'Client\ProductController@updateActions')->name('product.update.action');   # update all product actions
+        Route::post('product/importCSVQrCode', 'Client\ProductController@importCsvQrcode')->name('qrcode.import');
         Route::post('product/importCSV', 'Client\ProductController@importCsv')->name('product.import');
         Route::post('product/validate', 'Client\ProductController@validateData')->name('product.validate');
         Route::post('product/sku/validate', 'Client\ProductController@validateSku')->name('product.sku.validate');

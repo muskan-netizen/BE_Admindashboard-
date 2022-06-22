@@ -17,7 +17,7 @@ use App\Models\EstimateProductAddon;
 use Illuminate\Support\Facades\Storage;
 use App\Models\EstimateProductTranslation;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client,ClientLanguage,EstimateAddonSet,EstimateAddonOption,EstimateAddonOptionTranslation,EstimateAddonSetTranslation};
+use App\Models\{Client,ClientLanguage, CsvQrcodeImport, EstimateAddonSet,EstimateAddonOption,EstimateAddonOptionTranslation,EstimateAddonSetTranslation, QrcodeImport};
 
 class EstimationController extends BaseController{
     use ApiResponser;
@@ -255,4 +255,18 @@ class EstimationController extends BaseController{
         Session::flash('success', 'Estimation logic updated.');
         return redirect()->back();
     }
+
+    public function barcode(Request $request)
+    {
+        try {
+
+            $codes = QrcodeImport::paginate(25);
+            $files = CsvQrcodeImport::get();
+            return view('backend.qrcode.index')->with(['codes' => $codes,'files'=>$files]);
+
+        } catch (Exception $e) {
+            return $this->errorResponse([], $e->getMessage());
+        }
+    }
+
 }
