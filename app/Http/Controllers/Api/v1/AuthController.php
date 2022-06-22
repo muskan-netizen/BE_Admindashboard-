@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate,UserRegistrationDocuments,UserDocs};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate,UserRegistrationDocuments,UserDocs};
 use Log;
 
 class AuthController extends BaseController
@@ -503,6 +503,12 @@ class AuthController extends BaseController
             $preferData['distance_unit'] = $prefer->distance_unit;
             $preferData['app_template_id'] = $prefer->app_template_id;
             $preferData['web_template_id'] = $prefer->web_template_id;
+
+            $preferData['show_subscription_plan_popup_signup'] = 0;
+            $showSubscriptionPlan = ShowSubscriptionPlanOnSignup::find(1);
+            if(@$showSubscriptionPlan->show_plan_customer == 1 && @$showSubscriptionPlan->every_sign_up == 1){
+                $preferData['show_subscription_plan_popup_signup'] = 1;
+            }
             $response['client_preference'] = $preferData;
             $response['refferal_code'] = $userRefferal ? $userRefferal->refferal_code : '';
 
