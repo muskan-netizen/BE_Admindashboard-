@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class QrcodeImport extends Model
 {
     use HasFactory;
+
+    public function qrcode(){
+        return $this->belongsTo('App\Models\AssignQrcodesToOrder');
+     }
+ 
 }

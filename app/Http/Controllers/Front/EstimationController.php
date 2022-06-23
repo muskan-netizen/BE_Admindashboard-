@@ -176,7 +176,7 @@ class EstimationController extends FrontController
         $navCategories = $this->categoryNav($langId);
 
         foreach($searchResult as $vendor){
-          foreach($vendor->products as $product){
+          foreach($vendor->productsLive as $product){
             
             $p_id = $product->id;
 

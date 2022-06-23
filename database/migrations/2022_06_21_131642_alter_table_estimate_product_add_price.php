@@ -14,7 +14,7 @@ class AlterTableEstimateProductAddPrice extends Migration
     public function up()
     {
         Schema::table('estimate_product_translations', function (Blueprint $table) {
-            $table->decimal('price', 16, 8)->nullable()->change();
+            $table->decimal('price', 16, 8)->nullable();
         });
     }
 

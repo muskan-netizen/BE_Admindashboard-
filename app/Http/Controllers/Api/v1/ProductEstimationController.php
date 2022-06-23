@@ -141,12 +141,12 @@ class ProductEstimationController extends Controller
             $addon_price = 0; 
             foreach ($vendor->productsLive as $prod){
                 foreach($prod->sets as $set){
-                    array_push($addon_id, $set->addon_id);
+                    // array_push($addon_id, $set->addon_id);
                     $addon_price = $set->setoptions->sum('price');
                 }
             }
 
-          foreach($vendor->products as $product){
+          foreach($vendor->productsLive as $product){
             
             $p_id = $product->id;
 
@@ -166,7 +166,7 @@ class ProductEstimationController extends Controller
             $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
             $vendor->variant_multiplier = $doller_compare;
             $vendor->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
-            $product->price = ($product->variant->isNotEmpty()) ? (($product->variant->first()->price*$doller_compare)+$addon_price) : 0;
+            $vendor->product_price = ($product->variant->isNotEmpty()) ? (($product->variant->first()->price*$doller_compare)+$addon_price) : 0;
 
             $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
             $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
@@ -197,9 +197,9 @@ class ProductEstimationController extends Controller
         if($searchCode)
         {
             AssignQrcodesToOrder::create([
-                'order_id'=>$request->order_id,
-                'order_no'=>$request->order_no,
-                'batch_no'=>$request->batch_no,
+                'order_id'=>$request->order_id??null,
+                'order_no'=>$request->order_no??null,
+                'batch_no'=>$request->batch_no??null,
                 'qrcode'=>$request->qrcode
             ]);
         }else{
