@@ -56,6 +56,9 @@ class SocialController extends BaseController{
         }
         $email = ($request->has('email') && !empty($request->email)) ? $request->email : 'xyz';
         $customer = User::where('email', $email)->first();
+        Log::info('$customer->phone_number--');
+            Log::info($customer);
+            Log::info('$customer->phone_number--');
         if(!$customer){
             $customer = '';
             if($driver == 'facebook'){
