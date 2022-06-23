@@ -48,6 +48,9 @@
                                                         <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>
                                                     @endif
                                                 </div>
+                                                @if ($vendor->is_show_vendor_details == 1 && $vendor->order_min_amount > 0)
+                                                    <span class="badge badge-danger">{{ __('Minimum order value') }}{{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
+                                                @endif
 
                                         </div>
                                         @if($vendor->desc)
@@ -78,8 +81,8 @@
                 <div class="collection-filter col-md-3">
                     <div class="collection-filter-block mb-3 bg-transparent p-0">
                         <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
+                        @if(!empty($brands) && count($brands) > 0)
                         <div class="collection-collapse-block open mb-2">
-                            @if(!empty($brands) && count($brands) > 0)
                             <h3 class="collapse-block-title">brand</h3>
                             <div class="collection-collapse-block-content pb-0">
                                 <div class="collection-brand-filter">
@@ -93,8 +96,8 @@
                                     @endforeach
                                 </div>
                             </div>
-                            @endif
                         </div>
+                        @endif
                         @if(!empty($variantSets) && count($variantSets) > 0)
                         @foreach($variantSets as $key => $sets)
                         <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
@@ -145,6 +148,7 @@
                         </div>
                         @endif
                     </div>
+                    @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
@@ -153,7 +157,7 @@
                             </span> -->
                         </h5>
                             <div class="offer-slider al">
-                                @if(!empty($newProducts) && count($newProducts) > 0)
+                                
                                 @foreach($newProducts as $newProds)
 
                                     @foreach($newProds as $new)
@@ -213,9 +217,10 @@
                                 </div>
                                 @endforeach
                             @endforeach
-                            @endif
+                            
                         </div>
                     </div>
+                    @endif
                     <!-- side-bar banner end here -->
                 </div>
                 <div class="collection-content col-lg-9">

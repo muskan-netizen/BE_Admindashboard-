@@ -100,6 +100,7 @@ class CustomDomain{
           
           // Set Currency
           $primeCurcy = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.is_primary', 1)->first();
+          Session::put('client_primary_currency', $primeCurcy->iso_code);
           if (!Session::has('customerCurrency') || empty(Session::get('customerCurrency'))){
               if($primeCurcy){
                 Session::put('customerCurrency', $primeCurcy->currency_id);

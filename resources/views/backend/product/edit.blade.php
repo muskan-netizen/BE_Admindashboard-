@@ -95,7 +95,7 @@
             </div>
         </div>
         <div class="col-4 text-right" style="margin: auto;">
-            <button type="button" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
+            <button type="submit" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
         </div>
     </div>
     <a href="{{route('vendor.catalogs',$product->vendor_id)}}">{{ $product->vendor->name}} </a>
@@ -522,18 +522,18 @@
                         </div>
                     </div>
 
-                    @if($configData->minimum_order_batch == 1 || $product->minimum_order_count > 0)
+                    {{--@if($configData->minimum_order_batch == 1 || $product->minimum_order_count > 0)--}}
                     <div class="row">
                                 <div class="col-md-6 mb-2">
                                     {!! Form::label('title', __('Minimum Order Count'),['class' => 'control-label']) !!}
-                                    {!! Form::number('minimum_order_count', $product->minimum_order_count, ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    {!! Form::number('minimum_order_count', $product->minimum_order_count, ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
-                                    {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                    {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
                     </div>            
-                    @endif
+                    {{--@endif--}}
 
                     
 
