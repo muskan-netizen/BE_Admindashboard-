@@ -18,6 +18,7 @@ class CreateAssignQrcodesToOrdersTable extends Migration
             $table->string('order_no')->nullable();
             $table->integer('order_id')->nullable();
             $table->string('batch_no')->nullable();
+            $table->string('qrcode')->nullable();
             $table->timestamps();
         });
     }

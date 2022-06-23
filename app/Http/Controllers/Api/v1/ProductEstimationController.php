@@ -143,6 +143,7 @@ class ProductEstimationController extends Controller
                 foreach($prod->sets as $set){
                     array_push($addon_id, $set->addon_id);
                     $addon_price = $set->setoptions->sum('price');
+                }
             }
 
           foreach($vendor->products as $product){
@@ -192,7 +193,6 @@ class ProductEstimationController extends Controller
 
     public function assingQrcode(Request $request)
     {
-        $langId   = $request->header('language')??'1';
         $searchCode = QrcodeImport::where('code',$request->code)->first();
         if($searchCode)
         {
@@ -201,12 +201,28 @@ class ProductEstimationController extends Controller
                 'order_no'=>$request->order_no,
                 'batch_no'=>$request->batch_no
             ]);
+        }else{
+            return $this->successResponse('Qrcode Assigned.');
         }
-        // Return Vendor Count and Result.
-        $success['vendor_count'] = $searchCode->count().' Vendors Found';
-        $success['result']       = $searchCode;
-        return $this->successResponse($success);
+        return $this->errorResponse('Qrcode not found in System.','404');
+    }
 
+    public function qrcodeList(Request $request)
+    {
+        $searchCode = QrcodeImport::whereHas(['assignCode'=>function($q){
+           return $q->whereNotIn('')
+        }])->get();
+        if($searchCode)
+        {
+            AssignQrcodesToOrder::create([
+                'order_id'=>$request->order_id,
+                'order_no'=>$request->order_no,
+                'batch_no'=>$request->batch_no
+            ]);
+        }else{
+            return $this->successResponse('Qrcode Assigned.');
+        }
+        return $this->errorResponse('Qrcode not found in System.','404');
     }
 
     public function searchProductExpection($userProducts, $langId)
