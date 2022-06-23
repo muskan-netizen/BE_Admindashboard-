@@ -1,6 +1,12 @@
 <section class="section-b-space ratio_asos" style="padding:0px;">
     <div class="collection-wrapper">
+
         <div class="container">
+            <button type="button" class="close mt-2" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+            <h2 class="category-head m-0" style="position:initial;">{{__("Select Vendors")}}</h2>
+            
             <div class="position-relative">
                 <div class="categories-product-list">
                     <div class="row">
@@ -11,11 +17,13 @@
                                         <img style="width:30%;" src="{{asset('assets/images/loading_new.gif')}}" alt="">
                                     </div>
                                     @forelse($vendors as $vendor)
-                                    
+                                        {{-- @php
+                                        dd($vendor);
+                                        @endphp --}}
                                         <section class="scrolling_section" id="{{ $vendor->slug }}">
                                            
                                             <?php $productDetails = \App\Models\Product::where('vendor_id', $vendor->id)->get(); ?>
-                                            @if (!empty($vendor->products))
+                                            @if (!empty($vendor->productsLive))
                                                 <div class="col-md-12 mb-3 mt-3 d-sm-flex">
                                                     <div
                                                         class="vender-icon mr-sm-1 text-center text-sm-left mb-2 mb-sm-0">
@@ -27,7 +35,7 @@
                                                         <span class="badge @if($vendor->match == "Complete Match") badge-danger @else badge-primary @endif" style="font-size:10px;">
                                                             {{ ($vendor->match != "") ? $vendor->match : 'Partial Match'; }}
                                                         </span>
-                                                        <h4 style="color:black; padding-left:10px;"> {{ $vendor->name }} ({{ $vendor->products->count() }})</h4>
+                                                        <h4 style="color:black; padding-left:10px;"> {{ $vendor->name }} ({{ $vendor->productsLive->count() }})</h4>
                                                         <ul class="vendor-info">
                                                             <li class="d-block vendor-location" style="font-size:12px; color:#6c757d;">
                                                                 <i class="icon-location"></i> {{ $vendor->address }}
@@ -48,8 +56,9 @@
                                                                         $addon_id = array();
                                                                         $option_id = array();
                                                                     @endphp
-                                                                    @foreach ($vendor->products as $prod)
+                                                                    @foreach ($vendor->productsLive as $prod)
                                                                     <?php
+                                                                    // dd($prod->variant[0]->price);
                                                                         array_push($prod_ids, $prod->id);
                                                                       
                                                                          $addon_price = 0; 
@@ -65,7 +74,7 @@
                                                                         $option_id_new = implode(',',array_unique($option_id));
                                                                         $prod_ids_new = implode(',',array_unique($prod_ids));
                                                                         
-                                                                        $final_price += number_format($prod->variant_price+$addon_price * $prod->variant_multiplier, 2, '.', '');
+                                                                        $final_price += number_format(($prod->variant[0]->price *$vendor->variant_multiplier)+$addon_price , 2, '.', '');
                                                                     ?>
                                                                         
                                                                     @endforeach
@@ -79,7 +88,7 @@
                                                                 data-vendor_id="{{ $vendor_id }}"
                                                                 data-product_id="{{ $prod_ids_new}}"
                                                                 data-addonId="{{ $addon_id_new }}"
-                                                                data-option_id="{{ $option_id_new }}" href="javascript:void(0)">{{ __('Add') }}
+                                                                data-option_id="{{ $option_id_new }}" href="javascript:void(0)">{{ __('Proceed Button') }}
                                                                 </a>
                                                             </a>
                                                             </div>

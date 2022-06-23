@@ -66,7 +66,7 @@ class MyCashGatewayController extends FrontController
                 'api_key' => $this->api_key,
                 'username' => $this->username,
                 'password' => $this->password,
-                'customer_mobile' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
+                'customer_mobile' => $user->dial_code . $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
                 'merchant_mobile' => $this->merchant_phone,
                 'product_id' => 233,
                 'amount' => $amount
@@ -189,7 +189,7 @@ class MyCashGatewayController extends FrontController
             'api_key' => $this->api_key,
             'username' => $this->username,
             'password' => $this->password,
-            'mobile_number' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
+            'mobile_number' => $user->dial_code . $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
         );
         // \Log::info($request->all());
         // \Log::info($data);
@@ -283,7 +283,7 @@ class MyCashGatewayController extends FrontController
                 'username' => $this->username,
                 'password' => $this->password,
                 'request_id' => $request->request_id,
-                'customer_mobile' => $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
+                'customer_mobile' => $user->dial_code . $user->phone_number, //'6797016954',//'6797417595',//'6797142243',//
                 'otp' => $request->otp
             );
 

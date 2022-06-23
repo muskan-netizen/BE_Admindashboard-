@@ -109,6 +109,8 @@ class WindcaveController extends FrontController
             "notificationUrl" => route('windcave.success').'?oid='.$order_number
         );
         $url = $this->postCurl($data,$this->token);
+        \Log::info('resp=');
+        \Log::info(json_encode($url));
         return json_encode($url->links[1]);
     }
 

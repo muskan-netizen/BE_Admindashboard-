@@ -4122,6 +4122,9 @@ $(document).ready(function () {
             case 39:
                 paymentViaStripeIdeal('', payment_option_id, ''); 
             break;
+            case 40:
+                paymentViaUseRede('', payment_option_id, ''); 
+            break;
         
         }
 
@@ -4510,6 +4513,16 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+            case '40':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaUseRede(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
+           
         
         }
 
@@ -4705,6 +4718,9 @@ $(document).ready(function () {
 
             case 39:
                 paymentViaStripeIdeal('', payment_option_id, ''); 
+            break;
+            case 40:
+                paymentViaUseRede('', payment_option_id, ''); 
             break;
 
         }

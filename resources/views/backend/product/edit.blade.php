@@ -137,7 +137,7 @@
             <div class="col-lg-7">
                 @csrf
                 @method('PUT')
-                <div class="card-box">
+                <div class="card-box" style="display:{{(($product->global_product_id!='')?'none':'block')}}">
                     <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">{{ __("General") }}</h5>
                     <div class="row mb-2 row-spacing">
                         <div class="col-md-5 mb-2" style="cursor: not-allowed;">
@@ -176,7 +176,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-box ">
+                <div class="card-box " style="display:{{(($product->global_product_id!='')?'none':'block')}}">
                     <div class="row mb-2 bg-light">
                         <div class="col-8" style="margin:auto; padding: 8px !important;">
                             <h5 class="text-uppercase  mt-0 mb-0">{{ __("Product Information") }}</h5>
@@ -281,7 +281,7 @@
                 @endif
 
                 @if($productVariants->count() > 0)
-                <div class="card-box">
+                <div class="card-box" >
                     <div class="row mb-2 bg-light">
                         <div class="col-8" style="margin:auto;">
                             <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
@@ -758,7 +758,7 @@
                 </div>
 
                 @if($client_preference_detail->business_type != 'taxi')
-                <div class="card-box">
+                <div class="card-box" style="display:{{(($product->global_product_id!='')?'none':'block')}}">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Relate with other products") }}</h5>
                     <div class="row">
                         @if($configData->celebrity_check == 1)
