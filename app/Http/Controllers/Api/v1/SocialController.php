@@ -56,10 +56,9 @@ class SocialController extends BaseController{
         }
         $email = ($request->has('email') && !empty($request->email)) ? $request->email : 'xyz';
         $customer = User::where('email', $email)->first();
-        Log::info('$customer->phone_number--');
-            Log::info($customer);
-            Log::info('$customer->phone_number--');
+        
         if(!$customer){
+            $customerOldPhoneNumber = $customer->phone_number;
             $customer = '';
             if($driver == 'facebook'){
                 $customer = User::where('facebook_auth_id', $request->auth_id)->first();
@@ -85,7 +84,7 @@ class SocialController extends BaseController{
                 $eml = $eml ?? 'dummyemail@xy'.time().uniqid();
                 $customer->email = ($request->has('email') && !empty($request->email)) ? $request->email : $eml;
                 $customer->password = Hash::make($request->auth_id);
-                // $customer->phone_number = $customerOldPhoneNumber;
+                $customer->phone_number = $customerOldPhoneNumber;
                 $customer->type = 1;
                 $customer->role_id = 1;
             }
