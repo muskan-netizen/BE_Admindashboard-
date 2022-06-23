@@ -282,7 +282,6 @@
     });
 
     function submitProductImportForm() {
-        alert('fjg');
         var form = document.getElementById('save_imported_products');
         var formData = new FormData(form);
         var data_uri = "{{route('product.import')}}";
@@ -304,7 +303,7 @@
                 // location.reload();
                 if (response.status == 'success') {
                     $(".modal .close").click();
-                    // location.reload();
+                    location.reload();
                 } else {
 
                     $(".show_all_error.invalid-feedback").show();
@@ -318,9 +317,9 @@
             },
             complete: function() {
                 $(".loader_box").hide();
-                // setTimeout(function() {
-                //     location.reload();
-                // }, 2000);
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
                
             }
         });
