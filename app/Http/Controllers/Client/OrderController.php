@@ -1515,7 +1515,10 @@ class OrderController extends BaseController
         DB::beginTransaction();
         try {
             $return = OrderReturnRequest::find($request->id);
-            $returns = OrderReturnRequest::where('id', $request->id)->update(['status' => $request->status ?? null, 'reason_by_vendor' => $request->reason_by_vendor ?? null]);
+            $returns = OrderReturnRequest::find($request->id);
+            $returns->status = trim($request->status);
+            $returns->reason_by_vendor = $request->reason_by_vendor;
+            $returns->save();
             if (isset($returns)) {
                 if ($request->status == 'Accepted' && $return->status != 'Accepted') {
                     $user = User::find($return->return_by);
