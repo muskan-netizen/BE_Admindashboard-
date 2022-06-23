@@ -58,7 +58,7 @@ class SocialController extends BaseController{
         $customer = User::where('email', $email)->first();
         
         if(!$customer){
-            $customerOldPhoneNumber = $customer->phone_number;
+            $customerOldPhoneNumber = !empty($customer->phone_number)? $customer->phone_number : '';
             $customer = '';
             if($driver == 'facebook'){
                 $customer = User::where('facebook_auth_id', $request->auth_id)->first();
