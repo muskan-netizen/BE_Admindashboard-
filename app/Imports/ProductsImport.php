@@ -264,7 +264,7 @@ class ProductsImport implements ToCollection{
 
                     $i++;
                 }
-
+pr($data);
                 if (!empty($data)) {
                     foreach ($data as $da) {
 
