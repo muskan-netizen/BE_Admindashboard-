@@ -35,13 +35,18 @@ class EasebuzzController  extends FrontController
     }
 
     function order (Request $request){
-      //  pr($request->all());
+      // pr($request->all());
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         if($primaryCurrency->currency->iso_code != 'INR' ) {
             $error =  __(' Currency format error!');
             return $this->errorResponse($error, 400);
         }
+        
         $user = Auth::user();
+        if(strlen($user->phone_number)<7) {
+            $error =  __(' Invalid phone number!');
+            return $this->errorResponse($error, 400);
+        }
         // pr($request->all());
         $amount =  $this->getDollarCompareAmount($request->amount);
     
@@ -99,7 +104,7 @@ class EasebuzzController  extends FrontController
         $easebuzzObj = new Easebuzz($this->MERCHANT_KEY, $this->SALT, $this->ENV);
         $response = $easebuzzObj->initiatePaymentAPI($postData);
         // echo "order";
-        
+        //pr($response );
         if($response->status == 1){
             return $this->successResponse($response, 'Order has been created successfully');
         }else{
