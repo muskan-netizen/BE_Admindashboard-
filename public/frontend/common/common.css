@@ -137,7 +137,5 @@ body[dir="rtl"].al_body_template_three .qty-box .input-group button i{
 body[dir="rtl"].al_body_template_three .alSingleProducts .product-right{text-align:right;margin-right: 10px;}
 body[dir="rtl"].al_body_template_three .product-description h6{text-align: right;}
 body[dir="rtl"] .inner_spacing .rating {right: auto !important;left: 2px;}
-body[dir="rtl"] .al .col-lg-5.pl-0 {
-    padding-right: 0px;
-}
+body[dir="rtl"] .al .col-lg-5.pl-0 {padding-right: 0px;}
 
