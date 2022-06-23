@@ -268,6 +268,8 @@ class ProductController extends BaseController
             'product_name' => 'required|string',
             'sku' => 'required|unique:products,sku,'.$product->id,
             'url_slug' => 'required',
+            'minimum_order_count' => 'required|numeric|min:1',
+            'batch_count' => 'required|numeric|min:1'
         );
         $validation  = Validator::make($request->all(), $rule);
         if ($validation->fails()) {

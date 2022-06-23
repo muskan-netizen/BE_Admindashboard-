@@ -324,7 +324,6 @@
                                                                                             placeholder="1" type="text"
                                                                                             value="{{ $variant_quantity }}"
                                                                                             class="input-number"
-                                                                                            step="0.01"
                                                                                             id="quantity_ondemand_{{ $cartProductId }}"
                                                                                             readonly>
                                                                                         <span
@@ -900,7 +899,7 @@
 
         var addonids = [];
         var addonoptids = [];
-        var showChar = 140;
+        var showChar = 136;
         var ellipsestext = "...";
         var moretext = "Read more";
         var lesstext = "Read less";
@@ -915,7 +914,7 @@
 
                     var html = firstContent + '<span class="moreellipses">' + ellipsestext +
                         '&nbsp;</span><span class="morecontent"><span style="display:none;">' + lastContent +
-                        '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+                        '</span><a href="" class="morelink">' + moretext + '</a></span>';
 
                     $(this).html(html);
                 }

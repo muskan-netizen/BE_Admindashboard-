@@ -3,8 +3,10 @@
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
 $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'];
 @endphp
-@section('css')
+@section('css-links')
 <link rel="stylesheet" href="{{ asset('assets/css/intlTelInput.css') }}">
+@endsection
+@section('css') 
 <style type="text/css">
 .file>label,
 .file.upload-new>label {width: 100%;border: 1px solid #ddd;padding: 30px 0;height: 216px;}
@@ -13,6 +15,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
 .update_pic,
 .file.upload-new .update_pic {width: 100%;height: auto;margin: auto;text-align: center;border: 0;border-radius: 0;}
 .file--upload>label {margin-bottom: 0;}
+.bgFourPage{background-image : url({{getImageUrl(asset('assets/images/bannerFour.jpg'),'1920/1200')}});} 
 </style>
 @endsection
 @section('content')
@@ -65,7 +68,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
                                     </div>
                                     <div class="form-group mb-0">
                                         <div class="col-12 mb-1 p-0">
-                                            <label for="" class="m-0">{{ __('Email (optinal)') }}</label>
+                                            <label for="" class="m-0">{{ __('Email (Optional)') }}</label>
                                             <input type="email" class="form-control @error('email') is-invalid @enderror"
                                                 placeholder="{{ __('Email') }}" name="email" value="{{ old('email') }}">
                                             @error('email')
