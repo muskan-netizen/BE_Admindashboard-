@@ -199,7 +199,8 @@ class ProductEstimationController extends Controller
             AssignQrcodesToOrder::create([
                 'order_id'=>$request->order_id,
                 'order_no'=>$request->order_no,
-                'batch_no'=>$request->batch_no
+                'batch_no'=>$request->batch_no,
+                'qrcode'=>$request->qrcode
             ]);
         }else{
             return $this->successResponse('Qrcode Assigned.');
@@ -207,23 +208,23 @@ class ProductEstimationController extends Controller
         return $this->errorResponse('Qrcode not found in System.','404');
     }
 
-    public function qrcodeList(Request $request)
-    {
-        $searchCode = QrcodeImport::whereHas(['assignCode'=>function($q){
-           return $q->whereNotIn('')
-        }])->get();
-        if($searchCode)
-        {
-            AssignQrcodesToOrder::create([
-                'order_id'=>$request->order_id,
-                'order_no'=>$request->order_no,
-                'batch_no'=>$request->batch_no
-            ]);
-        }else{
-            return $this->successResponse('Qrcode Assigned.');
-        }
-        return $this->errorResponse('Qrcode not found in System.','404');
-    }
+    // public function qrcodeList(Request $request)
+    // {
+    //     $searchCode = QrcodeImport::whereHas(['assignCode'=>function($q){
+    //        return $q->whereNotIn('')
+    //     }])->get();
+    //     if($searchCode)
+    //     {
+    //         AssignQrcodesToOrder::create([
+    //             'order_id'=>$request->order_id,
+    //             'order_no'=>$request->order_no,
+    //             'batch_no'=>$request->batch_no
+    //         ]);
+    //     }else{
+    //         return $this->successResponse('Qrcode Assigned.');
+    //     }
+    //     return $this->errorResponse('Qrcode not found in System.','404');
+    // }
 
     public function searchProductExpection($userProducts, $langId)
     {
