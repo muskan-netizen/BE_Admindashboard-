@@ -74,9 +74,8 @@ class SocialController extends BaseController{
                 $eml = "appleuser@".time().uniqid().".com";
             }
             Log::info('$customer->phone_number');
-            Log::info($customer);
+            Log::info($customerOldPhoneNumber);
             Log::info('$customer->phone_number');
-            // $customerOldPhoneNumber = $customer->phone_number;
 
             if(!$customer){
                 $customer = new User();
