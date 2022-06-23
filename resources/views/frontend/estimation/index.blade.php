@@ -977,7 +977,6 @@
         });
 
         $(document).on('click', '.add_real_cart', function(){
-            
                 $('.add_to_real_cart_loader').show();
                 var url        = "{{ route('postCartRequestFromEstimation') }}";
                 var vendor_id  = $(this).attr("data-vendor_id");

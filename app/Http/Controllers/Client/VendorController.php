@@ -1849,6 +1849,7 @@ class VendorController extends BaseController
 
             foreach($estimate_products as $k => $product)
             {
+                \Log::info($product->primary);
                     //Product added
                     $productId = Product::updateOrCreate(
                     [
@@ -1996,7 +1997,7 @@ class VendorController extends BaseController
                     }
                     
             }
-
+            DB::commit();
             return response()->json(array('success' => true,'message'=>'Global Product import successfuly.'));
 
         }catch (Exception $e) {
