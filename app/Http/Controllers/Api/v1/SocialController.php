@@ -71,12 +71,15 @@ class SocialController extends BaseController{
                 $eml = "appleuser@".time().uniqid().".com";
             }
            
+            $customerOldPhoneNumber = $customer->phone_number;
+
             if(!$customer){
                 $customer = new User();
                 $customer->name = $request->name;
                 $eml = $eml ?? 'dummyemail@xy'.time().uniqid();
                 $customer->email = ($request->has('email') && !empty($request->email)) ? $request->email : $eml;
                 $customer->password = Hash::make($request->auth_id);
+                $customer->phone_number = $customerOldPhoneNumber;
                 $customer->type = 1;
                 $customer->role_id = 1;
             }

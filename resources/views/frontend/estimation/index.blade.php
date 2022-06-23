@@ -985,18 +985,18 @@
                 var addon_id   = $(this).attr("data-addonId");
                 var option_id  = $(this).attr("data-option_id");
                 var quantity   = 1;
-            
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                        data: {
+                var data = {
                             "vendor_id":       vendor_id,
                             "product_id":      product_id,
                             "quantity":        quantity,
                             "addon_id":         addon_id,
                             "addonoptID":      option_id,
                             "from_estimation": true,
-                        },
+                        };
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                        data: data,
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },

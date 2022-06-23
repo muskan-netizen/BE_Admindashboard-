@@ -24,7 +24,7 @@
         background-color: #000;
         border-radius: 5px;
         box-shadow: 0 0 10px rgb(0 0 0 / 20%);
-        padding: 0 10px;
+        padding: 0 0;
         right: 20px;
         top: 0;
         opacity: 0;
@@ -46,7 +46,12 @@
         transform: rotate(-90deg);
     }
     .user_info_icon:hover p{opacity: 1;}
-
+    .al_user{padding-right:45px}
+    .alFromUsers span.switchery.switchery-default {
+    position: absolute;
+    right: 0;
+    top:0;
+}
     @media screen and (max-width:576px){
         .user_subscription .card-body label small {
                 font-size: 13px;
@@ -138,27 +143,27 @@
             </div>
 
             <div class="row user_subscription">
-                <div class="col-sm-2 col-xs-12">
+                <div class="col-md-3 col-sm-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="user_info_icon text-right pb-1">
                                  <i class="fa fa-info-circle" aria-hidden="true"></i>
                                  <p>{{ __("This will be by pass if the customer already have plan.") }}</p>
                             </div>
-                            <div class="form-group d-flex justify-content-between mb-2">
-                                <label for="isolate_single_vendor_order" >
+                            <div class="form-group alFromUsers position-relative mb-2">
+                                <label for="isolate_single_vendor_order" class="al_user">
                                     <small class="d-block">{{ __("Show Subscription plan to customer.") }}</small>
                                 </label>
                                 <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="show_plan_customer" class="chk_box status_check" data-color="#43bee1" {{(@$showSubscriptionPlan->show_plan_customer == 1) ? 'checked' : ''}}>
                             </div>
-                            <div class="form-group d-flex justify-content-between mb-2">
-                                <label for="isolate_single_vendor_order" >
-                                    <small class="d-block">{{ __("On every sign-up(Website).") }}</small>
+                            <div class="form-group alFromUsers position-relative mb-2">
+                                <label for="isolate_single_vendor_order" class="al_user">
+                                    <small class="d-block">{{ __("On every sign-up(Web).") }}</small>
                                 </label>
                                 <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="every_sign_up" class="chk_box status_check" data-color="#43bee1" {{(@$showSubscriptionPlan->every_sign_up == 1) ? 'checked' : ''}}>
                             </div>
-                            <div class="form-group d-flex justify-content-between mb-2">
-                                <label for="isolate_single_vendor_order" >
+                            <div class="form-group alFromUsers position-relative mb-2">
+                                <label for="isolate_single_vendor_order" class="al_user">
                                     <small class="d-block">{{ __("On every app open.") }}</small>
                                 </label>
                                 <input class="show-subscription-plan" type="checkbox" data-plugin="switchery" name="every_app_open" class="chk_box status_check" data-color="#43bee1" {{(@$showSubscriptionPlan->every_app_open == 1) ? 'checked' : ''}}>
@@ -166,7 +171,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-10 col-xs-12">
+                <div class="col-md-9 col-sm-8">
                     <div class="card">
                         <div class="card-body">
                             <div class="table-responsive">
