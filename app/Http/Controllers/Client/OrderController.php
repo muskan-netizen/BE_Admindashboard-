@@ -1515,10 +1515,7 @@ class OrderController extends BaseController
         DB::beginTransaction();
         try {
             $return = OrderReturnRequest::find($request->id);
-            $returns = OrderReturnRequest::find($request->id);
-            $returns->status = trim($request->status);
-            $returns->reason_by_vendor = $request->reason_by_vendor;
-            $returns->save();
+            $returns = OrderReturnRequest::where('id', $request->id)->update(['status' => $request->status ?? null, 'reason_by_vendor' => $request->reason_by_vendor ?? null]);
             if (isset($returns)) {
                 if ($request->status == 'Accepted' && $return->status != 'Accepted') {
                     $user = User::find($return->return_by);
@@ -1526,8 +1523,8 @@ class OrderController extends BaseController
                     $order_product = OrderProduct::find($return->order_vendor_product_id);
                     $credit_amount = $order_product->price + $order_product->taxable_amount;
                     $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
-                    DB::commit();
                 }
+                DB::commit();
                 return $this->successResponse($returns, 'Updated.');
             }
             return $this->errorResponse('Invalid order', 200);
