@@ -43,6 +43,9 @@ $(document).ready(function () {
     $(".age_restriction_yes").click(function () {
         $.cookie('age_restriction', 1);
         $('#age_restriction').modal('hide');
+        if(setShowSubscriptionPlan == 'showed'){
+            $("#show-subscription-plan-mdl").modal("show");
+        }
     });
 
     // $( document ).ready(function() {

@@ -7,6 +7,24 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
     Route::group(['middleware' => ['dbCheck', 'checkAuth', 'apilogger']], function() {
 
+
+        Route::group(['prefix' => 'estimation'], function () {
+    
+            Route::get('get-product-estimation-with-addons', 'Api\v1\ProductEstimationController@getProductEstimationWithAddons');
+            
+            Route::post('add-estimated-products-in-cart', 'Api\v1\ProductEstimationController@addEstimatedProductInCart');
+            
+            Route::post('remove-products-from-estimated-cart', 'Api\v1\ProductEstimationController@removeProductFromEstimatedCart');
+            Route::post('remove-addons-from-estimated-cart', 'Api\v1\ProductEstimationController@removeAddonsFromEstimatedCart');
+            
+            Route::post('get-estimation', 'Api\v1\ProductEstimationController@getEstimation');
+            Route::post('assign-order-qrcode', 'Api\v1\ProductEstimationController@assingQrcode');
+            
+            Route::post('transfer-estimated-cart-products-to-real-cart', 'Api\v1\ProductEstimationController@transferEstimatedCartProductsToRealCart');
+        
+        });
+
+
         Route::post('sendTestMail', 'Api\v1\BaseController@sendTestMail');
 
         Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
