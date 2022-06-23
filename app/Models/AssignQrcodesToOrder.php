@@ -9,5 +9,6 @@ class AssignQrcodesToOrder extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['order_id','order_no','batch_no'];
+    protected $fillable = ['order_id','order_no','batch_no','qrcode'];
+    
 }
