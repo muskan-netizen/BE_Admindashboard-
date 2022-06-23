@@ -690,9 +690,10 @@ class VendorController extends BaseController
         }])->select('products.id', 'products.sku', 'products.vendor_id', 'products.is_live', 'products.is_new', 'products.is_featured', 'products.has_inventory', 'products.has_variant', 'products.sell_when_out_of_stock', 'products.Requires_last_mile', 'products.averageRating', 'products.brand_id','products.minimum_order_count','products.batch_count', 'products.title','products.global_product_id')
         ->join('product_translations', 'product_translations.product_id', '=', 'products.id') 
         ->orderBy('product_translations.title', $ordring)  
+        ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
 
-            //pr($products->get()->toArray());
+            // pr($product->get()->toArray());
         $datatable = Datatables::of($product)
             ->addIndexColumn()
             ->addColumn('single_product_check', function ($product) use ($request) {
