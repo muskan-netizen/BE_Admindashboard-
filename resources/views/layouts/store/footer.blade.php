@@ -255,6 +255,11 @@ if($showSubscriptionPlanPopUp == 1){
 /////////////Authorize Payment Routes
     var authorize_before_payment = "{{route('payment.authorize.beforePayment')}}";
     var authorize_create_payment = "{{route('payment.authorize.createPayment')}}";
+/////////////Pagarme Payment Routes
+    var userede_before_payment = "{{route('payment.userede.beforePayment')}}";
+    var userede_create_payment = "{{route('payment.userede.createPayment')}}";
+
+    var client_primary_currency = "{{ session()->get('client_primary_currency') }}";
 
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";

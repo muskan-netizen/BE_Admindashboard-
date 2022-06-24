@@ -86,10 +86,15 @@
                         @endif
                     @endif
                     <div class="row mt-3">
-                        <div class="offset-xl-2 col-xl-8 text-left">
+                        <div class="{{ (session('preferences')->concise_signup == 1)? 'mx-auto':'offset-xl-2 col-xl-8 text-left' }}">
                             <form name="register" id="register" enctype="multipart/form-data" action="{{ route('customer.register') }}"
                                 class="px-lg-4" method="post"> @csrf
-                                <div class="row form-group mb-0">
+                                @if(session('preferences')->concise_signup == 1)
+                                <input type="hidden" name="name" value="guest">
+                                <input type="hidden" name="email" id="guest-email" value="">
+                                @endif
+                                <div class="row form-group mb-0 {{ (session('preferences')->concise_signup == 1)? 'mx-auto':'' }}">
+                                    @if(session('preferences')->concise_signup == 0)
                                     <div class="col-md-6 mb-3">
                                         <label for="">{{ __('Full Name') }}</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
@@ -100,7 +105,8 @@
                                             </span>
                                         @enderror
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    @endif
+                                    <div class="col-md-{{ (session('preferences')->concise_signup == 1)? '12 text-left':'6' }} mb-3">
                                         <label for="">{{ __('Phone No.') }}</label>
                                         <input type="tel"
                                             class="form-control @error('phone_number') is-invalid @enderror"
@@ -118,7 +124,8 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="row form-group mb-0">
+                                <div class="row form-group mb-0 {{ (session('preferences')->concise_signup == 1)? 'mx-auto':'' }}">
+                                    @if(session('preferences')->concise_signup == 0)
                                     <div class="col-md-6 mb-3">
                                         <label for="">{{ __('Email') }}</label>
                                         <input type="email" class="form-control @error('email') is-invalid @enderror"
@@ -129,7 +136,8 @@
                                             </span>
                                         @enderror
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    @endif
+                                    <div class="col-md-{{ (session('preferences')->concise_signup == 1)? '12 text-left':'6' }} mb-3">
                                         <label for="">{{ __('Password') }}</label>
                                         <div class="position-relative">
                                             <input type="password" id="password-field"
@@ -293,6 +301,13 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
     <script>
         $(document).ready(function() {
+            @if(session('preferences')->concise_signup == 1)
+                $('#phone').change(function() {
+                    var custPhone = $(this).val();
+                    $('#guest-email').val(custPhone+'@gmail.com');
+                });
+            @endif
+
             $("#register").validate({
                 errorClass: 'errors',
                 rules: {

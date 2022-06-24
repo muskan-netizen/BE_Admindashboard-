@@ -1526,8 +1526,8 @@ class OrderController extends BaseController
                     $order_product = OrderProduct::find($return->order_vendor_product_id);
                     $credit_amount = $order_product->price + $order_product->taxable_amount;
                     $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
-                    DB::commit();
                 }
+                DB::commit();
                 return $this->successResponse($returns, 'Updated.');
             }
             return $this->errorResponse('Invalid order', 200);

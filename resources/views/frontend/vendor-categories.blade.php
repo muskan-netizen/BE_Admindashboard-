@@ -45,6 +45,9 @@
                                                         <a href="{{$vendor->instagram_url}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->instagram_url}}"><i class="fa fa-instagram"></i></a>
                                                     @endif
                                                 </div>
+                                                @if ($vendor->is_show_vendor_details == 1 && $vendor->order_min_amount > 0)
+                                                    <span class="badge badge-danger">{{ __('Minimum order value') }}{{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
+                                                @endif
                                         </div>
                                         @if($vendor->desc)
                                             <div class="col-md-12 text-center">

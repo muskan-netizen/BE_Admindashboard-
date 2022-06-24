@@ -468,7 +468,6 @@
                                 <div class="col-12 text-right mb-2">
                                     <button class="btn btn-info button" 
                                         type="button">{{ __('Import form Inventory') }}</button>
-                                    </a>
                                 </div>
                                 </a> --}}
 
@@ -480,8 +479,6 @@
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
                                         @csrf
-
-
                                         @if(session()->get("applocale_admin") == "ta")
                                         <a
                                             href="{{ url('file-download' . '/tamil_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
@@ -702,7 +699,7 @@
     <!-- Global product import popup -->
     <div id="global-product-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true" style="display: none;">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg ">
             <div class="modal-content">
                 <div class="modal-header border-bottom">
                     <h4 class="modal-title">{{ __('Product Action') }}</h4>
