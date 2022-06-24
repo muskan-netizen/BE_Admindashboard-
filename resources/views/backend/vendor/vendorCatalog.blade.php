@@ -464,13 +464,14 @@
                                     <button class="btn btn-info button" id="csv_button"
                                         type="button">{{ __('Import form Woocommerce') }}</button>
                                 </div>
-                                {{-- <a href="{{route('get.inventory.import',$vendor->slug)}}">
+                                @if($client_preference_detail->enable_inventory_service == 1)
+                                <a href="{{route('get.inventory.import',$vendor->slug)}}">
                                 <div class="col-12 text-right mb-2">
                                     <button class="btn btn-info button" 
                                         type="button">{{ __('Import form Inventory') }}</button>
-                                    </a>
                                 </div>
-                                </a> --}}
+                                </a>
+                                @endif
 
                                 <div class="col-md-4 text-right mb-2">
                                     <button class="btn btn-info button" id="import_global"
@@ -480,8 +481,6 @@
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
                                         @csrf
-
-
                                         @if(session()->get("applocale_admin") == "ta")
                                         <a
                                             href="{{ url('file-download' . '/tamil_sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
