@@ -148,6 +148,8 @@ class CartController extends FrontController
     public function postCartRequestFromEstimation(Request $request)
     {
         $product_ids = explode(',', $request->product_id);
+        // \Log::info($request->all());
+        // dd('hi');
         $vendor_id = $request->vendor_id;
         $variant_id = array();
         $minimum_order_count = array();

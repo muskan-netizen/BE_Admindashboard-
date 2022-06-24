@@ -992,6 +992,8 @@
                             "addonoptID":      option_id,
                             "from_estimation": true,
                         };
+                        // console.log(data);
+                        // return false;
                 $.ajax({
                     type: "POST",
                     url: url,

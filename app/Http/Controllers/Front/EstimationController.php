@@ -267,7 +267,6 @@ class EstimationController extends FrontController
             }])->whereHas('productsLive.translation',function($q) use($langId, $keywords, $teststests){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
             })->where('status',1)->get();
-
             // Return All Vendors with Products, Addons - By Ovi 
             return $all_vendors;
     }
