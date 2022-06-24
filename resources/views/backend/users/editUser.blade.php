@@ -362,9 +362,11 @@
                                 <div class="col-sm-4">
                                     <span class="alNewOrderListingView_orderDateTime">{{$order->created_date}}</span>
                                 </div>
+                                @if($order->orderDetail->address)
                                 <div class="col-sm-5">
                                     <span class="alNewOrderListingView_orderAddress">{{$order->orderDetail->address->house_number?$order->orderDetail->address->house_number.', ' : ''}}{{$order->orderDetail->address->address}}</span>
                                 </div>
+                                @endif
                             </div> 
                             <div class="row mt-2">
                                 <div class="col-sm-3">
