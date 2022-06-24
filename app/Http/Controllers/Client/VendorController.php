@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate};
+use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate,ProductTranslation,ProductCategory,ProductVariant};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use DB,Log;
@@ -1716,6 +1716,8 @@ class VendorController extends BaseController
                     }
 
         }
+
+        
         // this vendio export ony for get simel vendor ewport
         public function export() {
             return Excel::download(new VendorSimpelExport, 'vendor_simpel.xlsx');
@@ -1754,7 +1756,7 @@ class VendorController extends BaseController
 
     
     # get Inventory Store Products
-    public function getInventoryStoreProducts(Request $request){
+    public function getInventoryStoreProducts(Request $request) {
         
         $store_product = [];
         
@@ -1763,37 +1765,138 @@ class VendorController extends BaseController
            $store_product = $store_product_list['data'];
            
         }
-       
-        $returnHTML = view('backend.vendor.inventory-product-list')->with(['store_product' => $store_product,'vendor_id' => $request->vendor_id])->render();
+        
+        $returnHTML = view('backend.vendor.inventory-product-list')->with(['store_product' => $store_product,'vendor_slug' => $request->vendor_slug,'vendor_id' => $request->vendor_id])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
 
 
     # get Inventory Store Products
-    public function postInventoryStoreProducts(Request $request){   
+    public function postInventoryStoreProducts(Request $request) {   
         
         $store_product = [];
+        $client_lang = [];
         $productids = $request->productids;
         $store_product_list = $this->getAllProductListFromInventoryByIds($productids);
         if($store_product_list['status'] == 200){
-
            $store_product = $store_product_list['data'];
         }
 
-       
-       foreach($store_product as $key => $product)
-       {    
-           unset($product['category']);
-           unset($product['primary']);
-           $product['vendor_id'] = $request->vendor_id;
+        if($store_product_list['status'] == 200){
+            $client_lang = $store_product_list['client_lang'];
+         }
+         
+         try {
+                DB::beginTransaction();
 
-           
-           $product = Product::updateOrCreate(['sku' => $product['sku']],$product);
-       }
-        
-       return redirect()->back();
+                # update or insert all selected products from inventory 
+                foreach($store_product as $key => $product)
+                {    
+                    $product_translation = $product['translation'];
+                    $variant_data = $product['variant_data'];
+                    $variant_set_data = $product['variant_set_data'];
+                    unset($product['category']);
+                    unset($product['primary']);
+                    unset($product['translation']);
+                    unset($product['variant_data']);
+                    unset($product['variant_set_data']);
+                    
+                    foreach($request->order_category as $key => $cat_ids){
+                        
+                        $cat = explode('_',$cat_ids);
+
+                        if($product['category_id'] == $cat[0])
+                        $product['category_id'] = $cat[1];
+                    }
+
+                    $product['vendor_id'] = $request->vendor_id;
+                    $product['import_from_inventory'] = 1;
+                    
+                    $product_import = Product::updateOrCreate(['sku' => $product['sku']],$product);
+                    
+                    foreach($product_translation as $pro_translation) {     # import product translation 
+                        unset($pro_translation['id']);
+                        unset($pro_translation['product_id']);
+                        unset($pro_translation['created_at']);
+                        unset($pro_translation['updated_at']);
+                        
+                        $product_translation_import = ProductTranslation::updateOrCreate(['product_id' => $product_import->id],$pro_translation);
+                    }
+
+                    foreach($variant_data as $key => $variant) {     # import product variant 
+                        
+                        unset($variant['id']);
+                        unset($variant['product_id']);
+                        unset($variant['created_at']);
+                        unset($variant['updated_at']);
+                        
+                        $variant['product_id'] = $product_import->id;
+                        $variant['barcode'] = $this->generateBarcodeNumber();
+                      
+                        $product_variant_import = ProductVariant::updateOrCreate(['sku' => $variant['sku']],$variant);
+                    }
+
+
+                    
+
+                //    ProductCategory::updateOrCreate(['product_id' => $product_import->id],['category_id' => $product['category_id']]);
+                    
+                    
+                }
+       
+                    # update or insert client languages from inventory 
+                foreach($client_lang as $key => $lang)
+                {    
+                        $code = Auth::user()->code;
+                        $already_lang = ClientLanguage::updateOrCreate(['language_id' => $lang],['client_code' => $code,'is_active' => 1]);
+                    
+                }
+
+                DB::commit();
+
+            } catch (\PDOException $e) {
+                Log::info($e->getMessage());
+                DB::rollBack();
+               
+            }    
+
+      
+       return Redirect::route('get.inventory.import',$request->vendor_slug);
            
     }
+
+    private function generateBarcodeNumber()
+    {
+        $random_string = substr(md5(microtime()), 0, 14);
+        while (ProductVariant::where('barcode', $random_string)->exists()) {
+            $random_string = substr(md5(microtime()), 0, 14);
+        }
+        return $random_string;
+    }
+
+
+
+
+    # get category list of selected products 
+    public function getInventoryCategoryListProducts(Request $request) {
+          
+            $inventory_category = [];
+            $productids = $request->productids;
+            $inventory_category_list = $this->getAllCategoryListFromInventoryByIds($productids);
+            if($inventory_category_list['status'] == 200){
+               $inventory_category = $inventory_category_list['data'];
+            }
+
+            $order_category = Category::select('id')->where('slug','!=','Root')->whereHas('translation_one',function ($q){
+                $q->where('name','!=',null);
+            })->with('translation_one')->get();     
+         
+        $returnHTML = view('backend.vendor.inventory-category-list')->with(['inventory_category' => $inventory_category,'order_category' => $order_category])->render();
+        return response()->json(array('success' => true, 'html' => $returnHTML));
+    }
+
+
+    
     
 
 

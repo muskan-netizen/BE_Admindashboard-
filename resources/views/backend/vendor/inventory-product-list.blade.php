@@ -1,9 +1,10 @@
 
-    <div class="col-md-12">
+    <div class="col-12">
         <div class="table-responsive">
             <form name="inventry-import" method="post" action="{{route('post.inventory.store.products')}}">
                 @csrf()
                 <input name="vendor_id" value="{{$vendor_id}}" type="hidden">
+                <input name="vendor_slug" value="{{$vendor_slug}}" type="hidden">
                 <table class="table table-centered table-nowrap table-striped" id="">
                     <thead>
                         <tr>
@@ -27,9 +28,16 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div class="col-12">
-                    <button class="btn btn-info waves-effect waves-light w-100">{{ __("Import") }}</button>
+
+                <div class="col-12 p-0" id="inventory_category_list">
+
+
                 </div>
+
+                
+
+
+               
             </form>
         </div>
     </div>
@@ -42,5 +50,31 @@
                 $("#action_product_button").css("display", "none");
                 $('.single_product_check').prop('checked', false);
             }
+        });
+
+        
+        $(document).on('click',".single_product_check, .all-product_check",function() {
+            var productids = [];
+            $("input[name='productids[]']:checked").each(function(index, elem){
+                productids.push($(elem).val());
+            });
+
+           
+            var url = "{{ route('get.inventory.category.products')}}";
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: "json",
+                data: {productids: productids},
+                success: function(response) {
+                    if (response.success == true) {
+                        
+                        $('#inventory_category_list').html('');
+                        $('#inventory_category_list').html(response.html);
+                        
+                    }
+                }
+            }); 
+             
         });
         </script>
