@@ -32,9 +32,8 @@
                         @csrf
                         <select onchange="this.form.submit()" class="matching_logic form-control" id="matching_logic" name="matching_logic">
                             @if (!empty($clientPreference) && !empty($clientPreference->estimation_matching_logic))
-                                <option value="" selected>Estimation Logic: {{$clientPreference->estimation_matching_logic}}</option>
-                                <option value="String Match">String Match</option>
-
+                                <option value="String Match" {{(($clientPreference->estimation_matching_logic == "String Match")?"Selected":"")}}>String Match</option>
+                               
                                 {{-- @if ($clientPreference->estimation_matching_logic == 'Automatic')
                                     <option value="String Match">String Match</option>
                                     <option value="Bidding">Bidding</option>
@@ -93,6 +92,7 @@
                                     <th>{{ __('Icon') }}</th>
                                     <th>{{ __('Category') }}</th>
                                     <th>{{ __('Name') }}</th>
+                                    <th>{{ __('Price') }}</th>
                                     <th>{{ __('Action') }}</th>
                                 </tr>
                             </thead>
@@ -115,6 +115,12 @@
                                             <a class="edit_product_tag_btn" data-estimate_product_id="{{ $tag->id }}"
                                                 href="javascript:void(0)">
                                                 {{ $tag->primary ? $tag->primary->name : '' }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a class="edit_product_tag_btn" data-estimate_product_id="{{ $tag->id }}"
+                                                href="javascript:void(0)">
+                                                {{ $tag->primary->price ? $tag->primary->price : '0.00' }}
                                             </a>
                                         </td>
                                         <td>
@@ -273,13 +279,18 @@
                                         @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-8 mb-2">
+                                    <div class="col-md-6 mb-2">
                                         <label for="product_addons">{{ __("Product Addons") }}</label>
                                         <select class="product_addons form-control select2-multiple" id="product_addons" name="product_addons[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                             @foreach($getAllEstimateAddonSets as $addonSet)
                                                 <option value="{{$addonSet->id}}">{{$addonSet->title}}</option>
                                             @endforeach
                                         </select>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-2">
+                                        <label for="product_addons">{{ __("Default Price") }}</label>
+                                        <input type="text" class="form-control" id="product_tag_name_price" name="price" placeholder="" value="{{$client_language->price}}">
                                     </div>
                                 </div>
                             </div>
@@ -663,6 +674,7 @@
                         if (response.status = 'Success') {
                             $("#add_product_tag_modal input[name=estimate_product_id]").val(response.data[0]
                                 .id);
+                            $('#add_product_tag_modal #product_tag_name_price').val(response.data[0].translations[0].price);
                             $('#add_product_tag_modal #standard-modalLabel').html('Update Product Tag');
                             $('#add_product_tag_modal').modal('show');
                             $.each(response.data[0].translations, function(index, value) {

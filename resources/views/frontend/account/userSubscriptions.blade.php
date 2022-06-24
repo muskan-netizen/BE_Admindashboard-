@@ -406,7 +406,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
-
+    var stripe_ideal_publishable_key ='{{ $stripe_ideal_publishable_key }}';
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();

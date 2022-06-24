@@ -21,6 +21,10 @@ class Vendor extends Model implements Auditable{
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
     }
 
+    public function productsLive(){
+      return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_live','1');
+    }
+
     public function slot(){
       $client = Client::first();
       $mytime = Carbon::now()->setTimezone($client->timezone);

@@ -19,6 +19,9 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
       
     });
 });
+
+
+
 Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
    
     Route::group(['middleware' => ['dbCheck', 'apilogger']], function() {
@@ -26,7 +29,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('social/info', 'Api\v1\SocialController@getKeys');
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
     });
-    Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {
+    Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {            
         
         Route::get('profile', 'Api\v1\ProfileController@profile');
         Route::get('getProfile', 'Api\v1\ProfileController@getProfile');

@@ -25,7 +25,7 @@ class PickupDeliveryController extends FrontController{
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'razorpay','stripe','paystack', 'payfast');
+        $code = array('cod', 'razorpay','stripe','paystack', 'payfast','authorize_net'); 
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
@@ -431,6 +431,8 @@ class PickupDeliveryController extends FrontController{
                 }
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
+            Log::info("Request To Dispatch");
+            Log::info($request_to_dispatch);
             
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = User::find($order->user_id);
