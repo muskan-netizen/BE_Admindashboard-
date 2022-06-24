@@ -4523,6 +4523,17 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+
+            case '42':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    //payWithDpo
+                    payWithDpo(order);
+                }
+                else{
+                    return false;
+                }
+            break;
            
         
         }
