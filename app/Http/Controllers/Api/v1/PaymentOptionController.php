@@ -224,8 +224,8 @@ class PaymentOptionController extends BaseController{
     public function postPaymentVia_mvodafone(Request $request){
         $gateway = new MvodafoneController();
         return $gateway->createPayLinkApp($request);
-        }
-        
+    }
+
     public function postPaymentVia_paypal(Request $request){
         try{
             $paypal_creds = PaymentOption::select('credentials')->where('code', 'paypal')->where('status', 1)->first();
