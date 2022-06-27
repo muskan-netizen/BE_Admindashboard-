@@ -82,13 +82,13 @@ class OpenpayPaymentController extends FrontController
         $country_code = $client->country ? $client->country->code : 'MX';
         $user = Auth::user();
         $address = UserAddress::where('user_id', $user->id)->first() ;
-        $order_number  = $request->order_number ?? generateOrderNo();
+        $order_number  =  generateOrderNo();
         $payment_form  = $request->payment_form ?? 'cart';
-        $cart_id  = '';
+        $card_id  = '';
       
         if($payment_form == 'cart'){
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-            $cart_id =  $cart->id;
+            $card_id =  $cart->id;
         }
         
         //pr(Openpay::getProductionMode());
@@ -181,7 +181,7 @@ class OpenpayPaymentController extends FrontController
                 'payment_form'=>  $payment_form ,
                 'user_id'=> auth()->user()->id,
                 'subscription_id' =>$request->subscription_id ?? '',
-                'cart_id' =>$cart_id,
+                'card_id' =>$card_id,
             ];
             $description = json_encode($order_info);
             $chargeData = array(
@@ -211,12 +211,12 @@ class OpenpayPaymentController extends FrontController
         // Handle the event
         Log::info($request->type);
         Log::info($request->transaction['description']);
-        Log::info(json_decode($request->transaction['description']));
+        
         switch ($request->type) {
             case 'charge.succeeded':
-                $meta_data      = json_decode($request->transaction->description);
-                Log::info($meta_data);
-                $cart_id        = $meta_data->cart_id ? $meta_data->cart_id : '';
+                $meta_data      = $request->transaction['description'];
+                Log::info($meta_data->card_id);
+                $cart_id        = $meta_data->card_id ? $meta_data->card_id : '';
                 $payment_form   = $meta_data->payment_form;
                 $user_id        = $meta_data->user_id;
                 $transactionId  = $request->transaction->id;
