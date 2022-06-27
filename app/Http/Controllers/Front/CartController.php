@@ -1481,6 +1481,9 @@ class CartController extends FrontController
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;
 
+            $cart_product_prescription = CartProductPrescription::where('cart_id', $cart->id)->count();
+            $cart->cart_product_prescription = $cart_product_prescription;
+
             if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                 if($cart->pickupSlotsCnt==0){
                     $mdate = (object)findSlotNew('',$cart->vendor_id,1);
