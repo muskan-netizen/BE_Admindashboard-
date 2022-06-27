@@ -120,6 +120,8 @@ class UserSubscriptionController extends FrontController
                 }elseif($payment_option->code == 'offline_manual'){
                     $json = json_decode($payment_option->credentials);
                     $payment_option->title = $json->manule_payment_title;
+                }elseif($payment_option->code == 'mycash'){
+                    $payment_option->title = __('Digicel MyCash');
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
