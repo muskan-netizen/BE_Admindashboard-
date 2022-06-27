@@ -464,14 +464,14 @@
                                     <button class="btn btn-info button" id="csv_button"
                                         type="button">{{ __('Import form Woocommerce') }}</button>
                                 </div>
-                                {{-- <a href="{{route('get.inventory.import',$vendor->slug)}}">
+                             <a href="{{route('get.inventory.import',$vendor->slug)}}">
                                 @if($client_preference_detail->enable_inventory_service == 1)
                                 <a href="{{route('get.inventory.import',$vendor->slug)}}">
                                 <div class="col-12 text-right mb-2">
                                     <button class="btn btn-info button" 
                                         type="button">{{ __('Import form Inventory') }}</button>
                                 </div>
-                                </a> --}}
+                                </a> 
 
                                 <div class="col-md-4 text-right mb-2">
                                     <button class="btn btn-info button" id="import_global"
