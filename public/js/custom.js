@@ -1703,6 +1703,7 @@ $(document).ready(function () {
             return false;
         }
         var orderResponse = '';
+        
         $.ajax({
             type: "POST",
             dataType: 'json',

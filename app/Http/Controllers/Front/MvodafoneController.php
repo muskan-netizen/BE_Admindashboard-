@@ -144,7 +144,7 @@ class MvodafoneController extends FrontController
 
    public function successPage(Request $request)
    {
-    // dd($request);
+     //dd($request->auth_token);
     if(isset($request->auth_token))
     {
       $user = User::find($request->auth_token);

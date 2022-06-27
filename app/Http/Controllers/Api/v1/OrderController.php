@@ -411,7 +411,7 @@ class OrderController extends BaseController
                         $vendor_payable_amount += $vendor_taxable_amount;
 
                         $order_vendor->coupon_id = $coupon_id;
-                        $OrderVendor->coupon_paid_by = $coupon_paid_by??1;
+                        $order_vendor->coupon_paid_by = $coupon_paid_by??1;
                         $order_vendor->coupon_code = $coupon_name;
                         $order_vendor->order_status_option_id = 1;
                         $order_vendor->delivery_fee = $delivery_fee;

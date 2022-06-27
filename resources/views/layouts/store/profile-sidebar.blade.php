@@ -6,6 +6,7 @@
     @default
     <?php $ordertitle = 'Orders';  ?>
 @endswitch
+@php if($client_preference_detail->client_code == '67dcfd'){ $ordertitle = 'Orders'; } @endphp
 <div class="dashboard-left">
     <div class="collection-mobile-back">
         <span class="filter-back d-lg-none d-inline-block">

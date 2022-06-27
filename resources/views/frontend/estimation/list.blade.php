@@ -58,7 +58,6 @@
                                                                     @endphp
                                                                     @foreach ($vendor->productsLive as $prod)
                                                                     <?php
-                                                                    // dd($prod->variant[0]->price);
                                                                         array_push($prod_ids, $prod->id);
                                                                       
                                                                          $addon_price = 0; 
