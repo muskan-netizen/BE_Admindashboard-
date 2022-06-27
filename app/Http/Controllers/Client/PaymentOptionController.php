@@ -31,8 +31,8 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede');
-    
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay');
+    //,'openpay'
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -566,6 +566,18 @@ class PaymentOptionController extends BaseController
                             $json_creds = json_encode(array(
                                 'userede_Rede_PV' => $request->userede_Rede_PV,
                                 'userede_Rede_token' => $request->userede_Rede_token
+                            ));
+                            break;    
+                        case 'openpay':
+                            $validatedData = $request->validate([
+                                'openpay_merchant_id' => 'required',
+                                'openpay_private_key' => 'required',
+                                'openpay_public_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'openpay_merchant_id' => $request->openpay_merchant_id,
+                                'openpay_private_key' => $request->openpay_private_key,
+                                'openpay_public_key' => $request->openpay_public_key
                             ));
                             break;    
 

@@ -4523,7 +4523,15 @@ $(document).ready(function () {
                     return false;
                 }
             break;
-           
+            case '41':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    payWithOpenPay(address_id, payment_option_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
         
         }
 

@@ -148,6 +148,8 @@ class CartController extends FrontController
     public function postCartRequestFromEstimation(Request $request)
     {
         $product_ids = explode(',', $request->product_id);
+        // \Log::info($request->all());
+        // dd('hi');
         $vendor_id = $request->vendor_id;
         $variant_id = array();
         $minimum_order_count = array();
@@ -302,8 +304,8 @@ class CartController extends FrontController
 
             $addonSets = $addon_ids = $addon_options = array();
 
-            if($request->has('addon_id')){
-                $addon_ids = $request->addon_id;
+            if($request->has('addonID')){
+                $addon_ids = $request->addonID;
             }
            
             if($request->has('addonoptID')){

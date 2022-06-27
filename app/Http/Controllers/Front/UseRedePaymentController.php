@@ -69,13 +69,26 @@ class UseRedePaymentController extends FrontController
         $cart_number =  str_replace(' ', '', $request->number);
 
         try {
-            $transaction = (new \Rede\Transaction($amount , 'pedido' . time()))->creditCard(
-                $cart_number,// '5448280000000007',
-                $request->cvc,// '123',
-                $request->expMonth,// '06',
-                $request->expYear,// '2028',
-                $request->holder_name,// 'John Snow'
-            );
+            if($request->cart_type == 'creditCard'){
+                 // for creditCard 
+                $transaction = (new \Rede\Transaction($amount , 'pedido' . time()))->creditCard(
+                    $cart_number,// '5448280000000007',
+                    $request->cvc,// '123',
+                    $request->expMonth,// '06',
+                    $request->expYear,// '2028',
+                    $request->holder_name,// 'John Snow'
+                );
+            }else{
+                // for debitCard 
+                $transaction = (new \Rede\Transaction($amount , 'pedido' . time()))->debitCard(
+                    $cart_number,// '5448280000000007',
+                    $request->cvc,// '123',
+                    $request->expMonth,// '06',
+                    $request->expYear,// '2028',
+                    $request->holder_name,// 'John Snow'
+                );  
+            }
+            
       
             //Transaction that will be authorized
             $transaction = (new  \Rede\eRede($this->store))->create($transaction);

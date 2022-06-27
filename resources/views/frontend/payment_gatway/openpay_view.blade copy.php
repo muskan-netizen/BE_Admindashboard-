@@ -77,7 +77,7 @@
     @endif
     <div class="row">
         <div class="offset-lg-3 col-lg-6">
-            <form id="pagarme-payment-form" action="{{route('payment.userede.createPayment')}}" method="POST">
+            <form id="openpay_form" action="{{route('payment.opnepay.createPayment')}}" method="POST">
             @csrf
                 <div class="form-group">
                     <label>{{__('Card Holder Name')}}: </label>
@@ -129,24 +129,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>{{__('Card Type')}}: </label>
-                        <select class="form-control" id="cc-exp-month" name="cart_type" required>
-                            <option value="creditCard">{{__('Credit Card')}}</option>
-                            <option value="debitCard">{{__('Debit Card')}}</option>
-                        </select>
-                </div>
+                
                 @forelse($data as $key=>$value)
                 <input type="hidden" name="{{$key}}" value="{{$value}}">
                 @empty
                 @endforelse
-                @csrf
+
                 <input type="hidden" name="card_id" id="cc-card_id">
                 <button id="process-payment-btn" class="btn btn-solid w-100 mt-4" type="submit">{{__('Process Payment')}}</button>
             </form>
         </div>
     </div>
 </div>
-
+<script type="text/javascript" src="https://resources.openpay.mx/lib/openpay-data-js/1.2.38/openpay-data.v1.min.js"></script>
+<script type="text/javascript">
+var deviceDataId = OpenPay.deviceData.setup("openpay_form");
+</script>
 </body>
 </html>

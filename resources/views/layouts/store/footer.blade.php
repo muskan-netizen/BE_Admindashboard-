@@ -259,6 +259,10 @@ if($showSubscriptionPlanPopUp == 1){
     var userede_before_payment = "{{route('payment.userede.beforePayment')}}";
     var userede_create_payment = "{{route('payment.userede.createPayment')}}";
 
+    /////////////openpay Payment Routes
+    var openpay_before_payment = "{{route('payment.opnepay.beforePayment')}}";
+    var opnepay_create_payment = "{{route('payment.opnepay.createPayment')}}";
+
     var client_primary_currency = "{{ session()->get('client_primary_currency') }}";
 
 // Logged In User Detail

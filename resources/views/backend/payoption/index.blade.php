@@ -107,6 +107,10 @@
                 $manule_payment_title = (isset($creds->manule_payment_title)) ? $creds->manule_payment_title : '';
                 $userede_Rede_PV = (isset($creds->userede_Rede_PV)) ? $creds->userede_Rede_PV : '';
                 $userede_Rede_token = (isset($creds->userede_Rede_token)) ? $creds->userede_Rede_token : '';
+                $openpay_merchant_id = (isset($creds->openpay_merchant_id)) ? $creds->openpay_merchant_id : '';
+                $openpay_private_key = (isset($creds->openpay_private_key)) ? $creds->openpay_private_key : '';
+                $openpay_public_key = (isset($creds->openpay_public_key)) ? $creds->openpay_public_key : '';
+                
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -946,6 +950,31 @@
                                     <input type="text" name="userede_Rede_token" id="userede_Rede_token" class="form-control" value="{{$userede_Rede_token}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'openpay') )
+                    <div class="mt-2" id="openpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="openpay_merchant_id" class="mr-3">{{ __("Merchant Id") }}</label>
+                                    <input type="text" name="openpay_merchant_id" id="openpay_merchant_id" class="form-control" value="{{$openpay_merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="openpay_private_key" class="mr-3">{{ __("Private Key") }}</label>
+                                    <input type="text" name="openpay_private_key" id="openpay_private_key" class="form-control" value="{{$openpay_private_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="openpay_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="openpay_public_key" id="openpay_public_key" class="form-control" value="{{$openpay_public_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            
                         </div>
                     </div>
                     @endif

@@ -7,6 +7,7 @@
         <?php $ordertitle = 'Orders'; ?>
          <?php $hidereturn = 0; ?>
 @endswitch
+@php if($client_preference_detail->client_code == '67dcfd'){ $ordertitle = 'Orders'; } @endphp
 @extends('layouts.store', ['title' => __('My '.$ordertitle)])
 @section('css')
     <style type="text/css">

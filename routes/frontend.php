@@ -283,8 +283,11 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/userede/page','Front\UseRedePaymentController@beforePayment')->name('payment.userede.beforePayment');
 	Route::match(['get','post'],'/payment/userede/respons', 'Front\UseRedePaymentController@responsUs')->name('payment.userede.responsUs');
 	Route::post('/payment/userede/payment_init', 'Front\UseRedePaymentController@paymentInit')->name('payment.userede.createPayment');
-	
 
+	// OpenpayPaymentController payment test
+	Route::match(['get','post'],'payment/opnepay/page','Front\OpenpayPaymentController@beforePayment')->name('payment.opnepay.beforePayment');
+	Route::post('/payment/opnepay/payment_init', 'Front\OpenpayPaymentController@paymentInit')->name('payment.opnepay.createPayment');
+	Route::post('payment/webhook/opnepay', 'Front\OpenpayPaymentController@opnepayWebhook')->name('payment.webhook.opnepay');
 	// test VNPAY payment gateway
 	Route::get('/vnpay-gateway', 'Front\VnpayController@VnPay_gateway')->name('vnpay-gateway');
 	Route::post('payment/vnpay/request', 'Front\VnpayController@order')->name('vnpay.order');
