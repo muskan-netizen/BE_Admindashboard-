@@ -207,7 +207,7 @@ class OpenpayPaymentController extends FrontController
     public function opnepayWebhook(Request $request, $domain = '')
     {
         Log::info($request->all());
-        $request = json_decode($request->all());
+        //$request = json_decode($request->all());
         // Handle the event
         Log::info($request->type);
         Log::info($request->transaction->description);
