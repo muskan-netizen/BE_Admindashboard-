@@ -169,13 +169,14 @@ class EstimationController extends FrontController
         }
         // Get Products from added Estimated Cart using cart id - By Ovi
         $userProducts = EstimatedProduct::where('estimated_cart_id', $userCart->id )->get();
+        //dd($userProducts);
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         $doller_compare = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
         // Search for similar products and addons. - By Ovi
         $searchResult = $this->searchProducts($userProducts, $langId);
         $navCategories = $this->categoryNav($langId);
 
-        foreach($searchResult as $vendor){
+        foreach($searchResult['all_vendors'] as $vendor){
           foreach($vendor->productsLive as $product){
             
             $p_id = $product->id;
@@ -208,7 +209,7 @@ class EstimationController extends FrontController
           }
         }
         
-        $returnHTML = view('frontend.estimation.list')->with(['vendor_count'=> $searchResult->count().' Vendors Found','vendors' => $searchResult,'navCategories' => $navCategories])->render();
+        $returnHTML = view('frontend.estimation.list')->with(['vendor_count'=> $searchResult['all_vendors']->count().' Vendors Found','vendors' => $searchResult['all_vendors'],'navCategories' => $navCategories])->render();
         return response()->json(array('status' => 'Success', 'html' => $returnHTML));
 
         // Return Vendor Count and Result.
@@ -233,7 +234,7 @@ class EstimationController extends FrontController
                 // dd($product->estimated_product_addons->count());
                 // Get Specific ($this) Product Translation - By Ovi
                 $estimateProductTranslation = EstimateProductTranslation::where('estimate_product_id', $product->product_id)->where('language_id', $langId)->first();
-        
+                //dd($estimateProductTranslation);
                 // Save Product Name in $keywords, so that we can run search later - By Ovi
                 $keywords[] =  ($estimateProductTranslation) ? $estimateProductTranslation->name : '';
 
@@ -245,6 +246,7 @@ class EstimationController extends FrontController
                     $addonKeywords[] = $estimatedProductAddon->estimated_product_addon_option->title;
                 }
             }
+            //dd($addonKeywords);
 
             // ***Start*** BY - OVI 
             // Query to get:
@@ -267,9 +269,10 @@ class EstimationController extends FrontController
             }])->whereHas('productsLive.translation',function($q) use($langId, $keywords, $teststests){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
             })->where('status',1)->get();
-
             // Return All Vendors with Products, Addons - By Ovi 
-            return $all_vendors;
+            $data['addonKey'] = $addonKeywords;
+            $data['all_vendors'] = $all_vendors;
+            return $data;
     }
 
     public function destroy(Request $request)
