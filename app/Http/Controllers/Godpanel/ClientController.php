@@ -519,18 +519,18 @@ class ClientController extends Controller{
 
       public function socketUrl(Request $request,$id)
       {
-        $schemaName = GlobalFunction::checkDbStat($id);
+        $data = GlobalFunction::checkDbStat($id);
           try {
-              
-                  DB::connection($schemaName)->beginTransaction();
+                  
+                  DB::connection($data['schemaName'])->beginTransaction();
                   $update = DB::table('clients')->where('id',$id)->update(['socket_url' => $request->socket_url]);
-                  $update_sub = DB::connection($schemaName)->table('clients')->where('id',1)->update(['socket_url' => $request->socket_url]);
-                  DB::connection($schemaName)->commit();
+                  $update_sub = DB::connection($data['schemaName'])->table('clients')->where('id',1)->update(['socket_url' => $request->socket_url]);
+                  DB::connection($data['schemaName'])->commit();
                   return redirect()->route('client.index')->with('success', 'Client updated successfully!');
              
               
           } catch (\PDOException $e) {
-              DB::connection($schemaName)->rollBack();
+              DB::connection($data['schemaName'])->rollBack();
               return redirect()->route('client.index')->with('error', $e->getMessage());
           }
               
