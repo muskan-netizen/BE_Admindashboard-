@@ -207,7 +207,7 @@ class OpenpayPaymentController extends FrontController
     public function opnepayWebhook(Request $request, $domain = '')
     {
         Log::info($request->all());
-
+        $request = (object)$request->all();
         // Handle the event
         switch ($request->type) {
             case 'charge.succeeded':
