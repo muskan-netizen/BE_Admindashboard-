@@ -173,7 +173,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('tag/update', [TagController::class, 'update'])->name('tag.update');
         Route::post('tag/delete', [TagController::class, 'destroy'])->name('tag.delete');
 
-
+        Route::get('estimations/barcode', [EstimationController::class, 'barcode'])->name('estimations.barcode');
         Route::resource('estimations', 'Client\EstimationController');
         Route::resource('estimationsAddon', 'Client\EstimationAddonController');
 
@@ -212,6 +212,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('payment', 'Client\PaymentController');
         Route::resource('accounting', 'Client\AccountController');
         Route::get('vendor/filterdata', 'Client\VendorController@getFilterData')->name('vendor.filterdata');
+        Route::POST('vendor/importglobalproducts', 'Client\VendorController@importGlobalProducts')->name('import.global.product');
         Route::post('vendor/status/update', 'Client\VendorController@postUpdateStatus')->name('vendor.status');
         Route::get('user/filterdata', 'Client\UserController@getFilterData')->name('user.filterdata');
         Route::resource('vendor', 'Client\VendorController');
@@ -221,9 +222,11 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::DELETE('vendor/vendor-permission-del/{id}', 'Client\VendorController@userVendorPermissionDestroy')->name('user.vendor.permission.destroy');
         Route::get('vendor/catalogs/{id}', 'Client\VendorController@vendorCatalog')->name('vendor.catalogs');
         Route::get('vendor/product/list/{id}', 'Client\VendorController@VendorProductFilter')->name('vendor.product');
+        Route::get('global/product/list', 'Client\VendorController@VendorGlobalProductFilter')->name('vendor.global.product');
         Route::get('vendor/inventory-import/{id}', 'Client\VendorController@getInventoryImport')->name('get.inventory.import');
         Route::post('vendor/get-inventory-store-products', 'Client\VendorController@getInventoryStoreProducts')->name('get.inventory.store.products');
         Route::post('vendor/post-inventory-store-products', 'Client\VendorController@postInventoryStoreProducts')->name('post.inventory.store.products');
+        Route::post('vendor/get-inventory-category-products', 'Client\VendorController@getInventoryCategoryListProducts')->name('get.inventory.category.products'); 
         Route::get('vendor/payout/{id}', 'Client\VendorController@vendorPayout')->name('vendor.payout');
         Route::get('vendor/payout/filter/{id}', 'Client\VendorController@payoutFilter')->name('vendor.payout.filter');
         Route::post('vendor/payout/create/{id}', 'Client\VendorController@vendorPayoutCreate')->name('vendor.payout.create');
@@ -289,6 +292,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('customer/export/export', 'Client\UserController@export')->name('customer.export');
         Route::resource('product', 'Client\ProductController');
         Route::post('product/updateActions', 'Client\ProductController@updateActions')->name('product.update.action');   # update all product actions
+        Route::post('product/importCSVQrCode', 'Client\ProductController@importCsvQrcode')->name('qrcode.import');
         Route::post('product/importCSV', 'Client\ProductController@importCsv')->name('product.import');
         Route::post('product/validate', 'Client\ProductController@validateData')->name('product.validate');
         Route::post('product/sku/validate', 'Client\ProductController@validateSku')->name('product.sku.validate');

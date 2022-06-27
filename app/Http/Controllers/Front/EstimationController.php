@@ -160,6 +160,7 @@ class EstimationController extends FrontController
         // Get language ID from Request Header - By Ovi
         $langId  = Session::get('customerLanguage')??'1';
         $user_id = Auth::user()->id;
+        $currency = Session::get('customerCurrency');
         // Get Cart from Estimated Product Cart based on user_id - By Ovi
         $userCart = EstimatedProductCart::where('user_id', $user_id)->first();
         if(!$userCart){
@@ -168,14 +169,15 @@ class EstimationController extends FrontController
         }
         // Get Products from added Estimated Cart using cart id - By Ovi
         $userProducts = EstimatedProduct::where('estimated_cart_id', $userCart->id )->get();
-
-
+        //dd($userProducts);
+        $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
+        $doller_compare = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
         // Search for similar products and addons. - By Ovi
         $searchResult = $this->searchProducts($userProducts, $langId);
         $navCategories = $this->categoryNav($langId);
 
-        foreach($searchResult as $vendor){
-          foreach($vendor->products as $product){
+        foreach($searchResult['all_vendors'] as $vendor){
+          foreach($vendor->productsLive as $product){
             
             $p_id = $product->id;
 
@@ -193,6 +195,8 @@ class EstimationController extends FrontController
             $product->variantSet = $variantData->variantSet;
             $product->variant_multiplier = 1;
             $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+            $vendor->variant_multiplier = $doller_compare;
+            $vendor->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
             $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
             $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
 
@@ -205,7 +209,7 @@ class EstimationController extends FrontController
           }
         }
         
-        $returnHTML = view('frontend.estimation.list')->with(['vendor_count'=> $searchResult->count().' Vendors Found','vendors' => $searchResult,'navCategories' => $navCategories])->render();
+        $returnHTML = view('frontend.estimation.list')->with(['vendor_count'=> $searchResult['all_vendors']->count().' Vendors Found','vendors' => $searchResult['all_vendors'],'navCategories' => $navCategories])->render();
         return response()->json(array('status' => 'Success', 'html' => $returnHTML));
 
         // Return Vendor Count and Result.
@@ -230,7 +234,7 @@ class EstimationController extends FrontController
                 // dd($product->estimated_product_addons->count());
                 // Get Specific ($this) Product Translation - By Ovi
                 $estimateProductTranslation = EstimateProductTranslation::where('estimate_product_id', $product->product_id)->where('language_id', $langId)->first();
-        
+                //dd($estimateProductTranslation);
                 // Save Product Name in $keywords, so that we can run search later - By Ovi
                 $keywords[] =  ($estimateProductTranslation) ? $estimateProductTranslation->name : '';
 
@@ -242,6 +246,7 @@ class EstimationController extends FrontController
                     $addonKeywords[] = $estimatedProductAddon->estimated_product_addon_option->title;
                 }
             }
+            //dd($addonKeywords);
 
             // ***Start*** BY - OVI 
             // Query to get:
@@ -252,7 +257,7 @@ class EstimationController extends FrontController
             // By Checking Vendor (status) active, inactive, or pending.
             // ***End*** BY - OVI 
             $teststests = 0;
-            $all_vendors = Vendor::OrderBy('id','desc')->with(['products' => function($q) use($langId, $keywords, $addonKeywords){
+            $all_vendors = Vendor::OrderBy('id','desc')->with(['productsLive' => function($q) use($langId, $keywords, $addonKeywords){
                     $q->whereHas('translation',function($q) use($langId, $keywords){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
                         }
@@ -261,12 +266,13 @@ class EstimationController extends FrontController
                         $ad->select('id', 'title')->where('language_id', $langId)->whereIn('title', $addonKeywords);
                         });
                 }])->with('media.image','variant');
-            }])->whereHas('products.translation',function($q) use($langId, $keywords, $teststests){
+            }])->whereHas('productsLive.translation',function($q) use($langId, $keywords, $teststests){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
             })->where('status',1)->get();
-
             // Return All Vendors with Products, Addons - By Ovi 
-            return $all_vendors;
+            $data['addonKey'] = $addonKeywords;
+            $data['all_vendors'] = $all_vendors;
+            return $data;
     }
 
     public function destroy(Request $request)

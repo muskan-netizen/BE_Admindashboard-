@@ -715,6 +715,12 @@
                                 <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif> 
                             </div>
                         </div> 
+                        <div class="col-sm-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="verify_phone" class="mr-3 mb-0">{{ __("Concise SignUp") }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="concise_signup" id="concise_signup" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->concise_signup == '1')) checked='checked' @endif> 
+                            </div>
+                        </div> 
                         @foreach($verify_options as $key => $opt)
                         @php $creds = json_decode($opt->credentials); @endphp
                         <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">

@@ -90,8 +90,8 @@ class TaxController extends Controller{
         ->addColumn('tax_types', function($orders){
             $tax_types = [];
             foreach ($orders->taxes as $tax) {
-                if($tax){
-                    $tax_types[]= $tax->category->title;
+                if($tax && !is_null($tax->category)){
+                    $tax_types[]= $tax->category->title??'';
                 }
             }
             return implode(', ',$tax_types);
