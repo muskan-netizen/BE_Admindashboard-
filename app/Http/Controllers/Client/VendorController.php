@@ -108,6 +108,9 @@ class VendorController extends BaseController
             ->rawColumns(['checkbox'])
             ->make(true);
     }
+
+
+
     public function index(){
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
@@ -1776,11 +1779,11 @@ class VendorController extends BaseController
 
     # get Inventory Store Products
     public function postInventoryStoreProducts(Request $request) {   
-        
         $store_product = [];
         $client_lang = [];
         $productids = $request->productids;
         $store_product_list = $this->getAllProductListFromInventoryByIds($productids);
+        
         if($store_product_list['status'] == 200){
            $store_product = $store_product_list['data'];
         }
@@ -1817,7 +1820,7 @@ class VendorController extends BaseController
                     
                     $product_import = Product::updateOrCreate(['sku' => $product['sku']],$product);
                     
-                    foreach($product_translation as $pro_translation) {     # import product translation 
+                    foreach($product_translation as  $key => $pro_translation) {     # import product translation 
                         unset($pro_translation['id']);
                         unset($pro_translation['product_id']);
                         unset($pro_translation['created_at']);
@@ -1864,7 +1867,7 @@ class VendorController extends BaseController
             }    
 
       
-       return Redirect::route('get.inventory.import',$request->vendor_slug);
+       return Redirect::route('vendor.catalogs',$request->vendor_slug);
            
     }
 
