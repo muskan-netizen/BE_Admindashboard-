@@ -50,6 +50,8 @@ class PaymentOptionController extends BaseController{
             }elseif($option->code == 'offline_manual'){
                 $json = json_decode($option->credentials);
                 $option->title = $json->manule_payment_title;
+            }elseif($option->code == 'mycash'){
+                $option->title = __('Digicel MyCash');
             }
             $option->title = __($option->title);
         }

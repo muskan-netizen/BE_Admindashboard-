@@ -858,6 +858,7 @@ class CartController extends FrontController
                 Session()->put('vid','');
                 //get Coupon Discount for product case
                 $coupon_product_ids = [];
+                $coupon_vendor_ids = [];
                 $coupon_product_discount = 0;
                 $in_or_not = 0;
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) && isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)){
@@ -866,6 +867,10 @@ class CartController extends FrontController
                         $coupon_product_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
                         $in_or_not = $vendorData->coupon->promo->restriction_type;
 
+                    }
+                    elseif($vendorData->coupon->promo->restriction_on == 1){
+                        $coupon_vendor_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
+                        $in_or_not = $vendorData->coupon->promo->restriction_type;
                     }
                 }
                 $cart_product_ids = [];
@@ -932,8 +937,12 @@ class CartController extends FrontController
                     $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
-                    if(($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids)) || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids)))
-                    {
+                    if(
+                        ($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids)) 
+                        || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids))
+                        || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids)) 
+                        || ($in_or_not == 1 && !in_array($vendorData->vendor_id, $coupon_vendor_ids))
+                    ){
                         $coupon_product_discount = $coupon_product_discount + $quantity_price + $quantity_container_charges;
                     }
                    /* Getting Add On info */
@@ -958,8 +967,12 @@ class CartController extends FrontController
                                 $opt_quantity_price_new += $opt_quantity_price;
                                 $payable_amount = $payable_amount + $opt_quantity_price;
                                 $quantity_price = $quantity_price + $opt_quantity_price;
-                                if(($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids)) || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids)))
-                                {
+                                if(
+                                    ($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids)) 
+                                    || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids))
+                                    || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids)) 
+                                    || ($in_or_not == 1 && !in_array($vendorData->vendor_id, $coupon_vendor_ids))
+                                ){
                                     $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
                                 }
                             }
@@ -1082,7 +1095,7 @@ class CartController extends FrontController
                
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
                     if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
-                        if($vendorData->coupon->promo->restriction_on == 0)
+                        if($vendorData->coupon->promo->restriction_on == 0 || $vendorData->coupon->promo->restriction_on == 1)
                         {
                             $couponGetAmount = $coupon_product_discount;
                         }
@@ -1153,7 +1166,7 @@ class CartController extends FrontController
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
                 $promoCodeRequest->setMethod('POST');
-                $promoCodeRequest->request->add(['vendor_id' => $vendorData->vendor_id,'amount' => $couponGetAmount,'is_cart' => 1, 'cart_product_ids' => $cart_product_ids]);
+                $promoCodeRequest->request->add(['vendor_id' => $vendorData->vendor_id, 'cart_id' => $cart_id, 'amount' => $couponGetAmount,'is_cart' => 1, 'cart_product_ids' => $cart_product_ids]);
                 $promoCodeResponse = $promoCodeController->postPromoCodeList($promoCodeRequest)->getData();
                 if($promoCodeResponse->status == 'Success'){
                     if(!empty($promoCodeResponse->data)){
