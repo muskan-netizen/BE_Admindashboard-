@@ -210,7 +210,8 @@ class OpenpayPaymentController extends FrontController
         //$request = json_decode($request->all());
         // Handle the event
         Log::info($request->type);
-        Log::info($request->transaction->description);
+        Log::info($request->transaction['description']);
+        Log::info(json_decode($request->transaction['description']));
         switch ($request->type) {
             case 'charge.succeeded':
                 $meta_data      = json_decode($request->transaction->description);
