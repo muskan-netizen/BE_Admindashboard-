@@ -220,9 +220,9 @@ class OpenpayPaymentController extends FrontController
                 $cart_id        = $meta_data->card_id ? $meta_data->card_id : '';
                 $payment_form   = $meta_data->payment_form;
                 $user_id        = $meta_data->user_id;
-                $transactionId  = $request->transaction->id;
-                $order_number   = $request->transaction->order_id;
-                $amount         = $request->transaction->amount;
+                $transactionId  = $request->transaction['id'];
+                $order_number   = $request->transaction['order_id'];
+                $amount         = $request->transaction['amount'];
                 Log::info('amount');
                 Log::info($amount);
                 if($payment_form == 'cart'){
