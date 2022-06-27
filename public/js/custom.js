@@ -673,7 +673,6 @@ $(document).ready(function () {
     });
 
     $(document).on("change", "#schedule_datetime", function () {
-        //alert($(this).val());
         cartHeader();
     });  
 
@@ -2107,7 +2106,7 @@ $(document).ready(function () {
         $(".spinner-box").show();
         
         $.ajax({
-            data: { address_id: address_id, schedule_date: $("#schedule_datetime").val()},
+            data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
             dataType: 'json',
             url: cart_product_url,
@@ -2162,6 +2161,11 @@ $(document).ready(function () {
                                     $("#order_placed_btn").removeAttr("disabled");
                                     $("#order_placed_btn").removeClass("d-none");
                                 }
+                                if(response.schedule_datetime!=null){
+                                    $("#schedule_datetime").val(response.schedule_datetime);
+                                    $("#taskschedule").click();
+                                }
+                                
                             }
                             cartTotalProductCount();
 
