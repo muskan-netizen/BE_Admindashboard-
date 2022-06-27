@@ -292,6 +292,11 @@ a.button.disabled {
     <div class="row">
             <div class="bkng-tb-cntnt">
                 <div class="pymnts">
+                @if(\Session::has('error'))
+                    <div class="alert alert-danger">
+                        <span>{!! \Session::get('error') !!}</span>
+                    </div>
+                @endif
                     <form action="{{route('payment.opnepay.createPayment')}}" method="POST" id="payment-form">
                         <input type="hidden" name="token_id" id="token_id">
                         @csrf
