@@ -15,7 +15,7 @@ class Client extends Authenticatable implements Auditable
     use Notifiable;
     protected $guard = 'client';
     protected $fillable = [
-        'name', 'email', 'password', 'encpass', 'phone_number', 'database_path', 'database_name', 'database_username', 'database_password', 'logo', 'company_name', 'company_address', 'custom_domain','status', 'code', 'country_id', 'timezone', 'is_deleted', 'is_blocked','sub_domain'
+        'name', 'email', 'password', 'encpass', 'phone_number', 'database_path', 'database_name', 'database_username', 'database_password', 'logo', 'company_name', 'company_address', 'custom_domain','status', 'code', 'country_id', 'timezone', 'is_deleted', 'is_blocked','sub_domain','socket_url'
     ];
 
     /**
