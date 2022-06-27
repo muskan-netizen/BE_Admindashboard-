@@ -988,7 +988,7 @@
                             "vendor_id":       vendor_id,
                             "product_id":      product_id,
                             "quantity":        quantity,
-                            "addon_id":         addon_id,
+                            "addonID":         addon_id,
                             "addonoptID":      option_id,
                             "from_estimation": true,
                         };

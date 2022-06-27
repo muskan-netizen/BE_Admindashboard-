@@ -304,8 +304,8 @@ class CartController extends FrontController
 
             $addonSets = $addon_ids = $addon_options = array();
 
-            if($request->has('addon_id')){
-                $addon_ids = $request->addon_id;
+            if($request->has('addonID')){
+                $addon_ids = $request->addonID;
             }
            
             if($request->has('addonoptID')){
