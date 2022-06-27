@@ -214,7 +214,8 @@ class OpenpayPaymentController extends FrontController
         
         switch ($request->type) {
             case 'charge.succeeded':
-                $meta_data      = $request->transaction['description'];
+                $meta_data      = json_decode($request->transaction['description']);
+                
                 Log::info($meta_data->card_id);
                 $cart_id        = $meta_data->card_id ? $meta_data->card_id : '';
                 $payment_form   = $meta_data->payment_form;
