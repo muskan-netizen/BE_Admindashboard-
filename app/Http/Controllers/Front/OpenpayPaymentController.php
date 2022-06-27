@@ -242,7 +242,7 @@ class OpenpayPaymentController extends FrontController
                             $payment->order_id = $order->id;
                             $payment->transaction_id = $transactionId;
                             $payment->balance_transaction = $amount;
-                            $payment->payment_option_id = 4;
+                            $payment->payment_option_id = 41;
                             $payment->type = 'cart';
                             $payment->save();
 
