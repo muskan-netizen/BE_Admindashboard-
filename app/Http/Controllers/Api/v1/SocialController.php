@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{User, Product, Cart, ClientCurrency, Brand, CartAddon, UserDevice, ClientPreference, CartProduct};
+use Log;
 
 class SocialController extends BaseController{
 	/**
@@ -55,6 +56,7 @@ class SocialController extends BaseController{
         }
         $email = ($request->has('email') && !empty($request->email)) ? $request->email : 'xyz';
         $customer = User::where('email', $email)->first();
+        $customerOldPhoneNumber = !empty($customer->phone_number)? $customer->phone_number : '';
         if(!$customer){
             $customer = '';
             if($driver == 'facebook'){
@@ -70,8 +72,7 @@ class SocialController extends BaseController{
                 $customer = User::where('apple_auth_id', $request->auth_id)->first();
                 $eml = "appleuser@".time().uniqid().".com";
             }
-           
-            $customerOldPhoneNumber = $customer->phone_number;
+            
 
             if(!$customer){
                 $customer = new User();
@@ -79,7 +80,6 @@ class SocialController extends BaseController{
                 $eml = $eml ?? 'dummyemail@xy'.time().uniqid();
                 $customer->email = ($request->has('email') && !empty($request->email)) ? $request->email : $eml;
                 $customer->password = Hash::make($request->auth_id);
-                $customer->phone_number = $customerOldPhoneNumber;
                 $customer->type = 1;
                 $customer->role_id = 1;
             }
@@ -96,6 +96,10 @@ class SocialController extends BaseController{
         if($request->has('phone_number')){
             $customer->phone_number = $request->phone_number;
         }
+        Log::info('$customer->phone_number');
+        Log::info($customerOldPhoneNumber);
+        Log::info('$customer->phone_number');
+        $customer->phone_number = $customerOldPhoneNumber;
         $customer->status = 1;
         $customer->is_email_verified = 1;
         // $customer->is_phone_verified = 0;

@@ -397,7 +397,7 @@ class ClientPreferenceController extends BaseController{
             $preference->same_day_delivery_for_schedule = ($request->has('same_day_delivery_for_schedule') && $request->same_day_delivery_for_schedule == 'on') ? 1 : 0;  //Added by ovi
             $preference->same_day_orders_for_rescheduing = ($request->has('same_day_orders_for_rescheduing') && $request->same_day_orders_for_rescheduing == 'on') ? 1 : 0; //Added by ovi
         }
-
+        $preference->concise_signup = (!empty($request->concise_signup) && $request->concise_signup == 'on')? 1 : 0;
         $preference->save();
 
 
@@ -642,28 +642,31 @@ class ClientPreferenceController extends BaseController{
         $method_id_arr = $data['method_id'];
         $method_name_arr = $data['method_name'];
         $active_arr = $data['active'];
-        foreach ($method_id_arr as $key => $id) {
-            $saved_creds = VerificationOption::select('credentials')->where('id', $id)->first();
-            if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
-                $json_creds = $saved_creds->credentials;
-            } else {
-                $json_creds = NULL;
-            }
-
-            $status = 0;
-            $test_mode = 0;
-            if ((isset($active_arr[$id])) && ($active_arr[$id] == 'on')) {
-                $status = 1;
-
-                if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'passbase')) {
-                    $json_creds = json_encode(array(
-                        'publish_key' => $data['passbase_publish_key'],
-                        'secret_key'  => $data['passbase_secret_key'],
-                    ));
+        if(!empty($method_id_arr)){
+            foreach ($method_id_arr as $key => $id) {
+                $saved_creds = VerificationOption::select('credentials')->where('id', $id)->first();
+                if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
+                    $json_creds = $saved_creds->credentials;
+                } else {
+                    $json_creds = NULL;
                 }
-                
+    
+                $status = 0;
+                $test_mode = 0;
+                if ((isset($active_arr[$id])) && ($active_arr[$id] == 'on')) {
+                    $status = 1;
+    
+                    if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'passbase')) {
+                        $json_creds = json_encode(array(
+                            'publish_key' => $data['passbase_publish_key'],
+                            'secret_key'  => $data['passbase_secret_key'],
+                        ));
+                    }
+                    
+                }
+                VerificationOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
             }
-            VerificationOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
         }
+        
     }
 }
