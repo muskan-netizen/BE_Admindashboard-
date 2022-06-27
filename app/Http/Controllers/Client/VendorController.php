@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet,ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use DB,Log;
@@ -108,6 +108,9 @@ class VendorController extends BaseController
             ->rawColumns(['checkbox'])
             ->make(true);
     }
+
+
+    
     public function index(){
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
@@ -1922,7 +1925,7 @@ class VendorController extends BaseController
             ->addColumn('product_image', function ($product) use ($request) {
                 $image = '';
                 if($product->icon){
-                    $image_path = $product->icon['proxy_url'] . '100/100' . $product->icon['image_path'];
+                    $image_path = $product->icon['proxy_url'] . '30/30' . $product->icon['image_path'];
                     $image = '<img  class="rounded-circle" src="'. $image_path.'">';
                 }
                 return $image;
@@ -1952,6 +1955,7 @@ class VendorController extends BaseController
 
             foreach($estimate_products as $k => $product)
             {
+                \Log::info($product->primary);
                     //Product added
                     $productId = Product::updateOrCreate(
                     [
@@ -2054,6 +2058,19 @@ class VendorController extends BaseController
                         ]);
 
 
+                          //ProductAddon added
+                          AddonSetTranslation::updateOrCreate([
+                            'title'=>$set->title,
+                            'addon_id'=>$addonID->id
+                        ],
+                        [
+                            'title'=>$set->title,
+                            'addon_id'=>$addonID->id,
+                            'language_id'=>'1'
+                        ]);
+
+
+
                          //ProductAddon added
                          ProductAddon::updateOrCreate([
                             'product_id'=>$productId->id,
@@ -2099,7 +2116,7 @@ class VendorController extends BaseController
                     }
                     
             }
-
+            DB::commit();
             return response()->json(array('success' => true,'message'=>'Global Product import successfuly.'));
 
         }catch (Exception $e) {

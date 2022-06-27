@@ -148,6 +148,8 @@ class CartController extends FrontController
     public function postCartRequestFromEstimation(Request $request)
     {
         $product_ids = explode(',', $request->product_id);
+        // \Log::info($request->all());
+        // dd('hi');
         $vendor_id = $request->vendor_id;
         $variant_id = array();
         $minimum_order_count = array();
@@ -302,8 +304,8 @@ class CartController extends FrontController
 
             $addonSets = $addon_ids = $addon_options = array();
 
-            if($request->has('addon_id')){
-                $addon_ids = $request->addon_id;
+            if($request->has('addonID')){
+                $addon_ids = $request->addonID;
             }
            
             if($request->has('addonoptID')){
@@ -1480,6 +1482,9 @@ class CartController extends FrontController
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;
+
+            $cart_product_prescription = CartProductPrescription::where('cart_id', $cart->id)->count();
+            $cart->cart_product_prescription = $cart_product_prescription;
 
             if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                 if($cart->pickupSlotsCnt==0){
