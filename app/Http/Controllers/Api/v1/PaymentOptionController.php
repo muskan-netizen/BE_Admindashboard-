@@ -50,6 +50,10 @@ class PaymentOptionController extends BaseController{
             }elseif($option->code == 'offline_manual'){
                 $json = json_decode($option->credentials);
                 $option->title = $json->manule_payment_title;
+            }elseif($option->code == 'mycash'){
+                $option->title = __('Digicel MyCash');
+            }elseif($option->code == 'windcave'){
+                $option->title = __('Windcave (Debit/Credit card)');
             }
             $option->title = __($option->title);
         }
@@ -220,6 +224,12 @@ class PaymentOptionController extends BaseController{
         $gateway = new VnpayController();
         return $gateway->order($request);
     }
+
+    public function postPaymentVia_mvodafone(Request $request){
+        $gateway = new MvodafoneController();
+        return $gateway->createPayLinkApp($request);
+    }
+
 
     public function postPaymentVia_paypal(Request $request){
         try{
