@@ -44,9 +44,11 @@ class OpenpayPaymentController extends FrontController
         Openpay::setId($this->openpay_merchant_id);
         Openpay::setApiKey($this->openpay_private_key);
         Openpay::setProductionMode(false);
+        Openpay::setEndpointUrl('https://sandbox-api.openpay.co');
+        
     }
     public function beforePayment(Request $request) 
-    {
+    {   
       //  $request->merge(['amount_2'=>Crypt::encrypt($request->amount)]);
         $openpay_merchant_id = $this->openpay_merchant_id;
         $openpay_private_key =$this->openpay_private_key;
@@ -74,6 +76,8 @@ class OpenpayPaymentController extends FrontController
             'number.number'      => __('Incorrect Card Number.'),
             
         ]);
+        $absUrl = Openpay::getEndpointUrl();
+        pr($absUrl);
         //pr($request->all());
         $amount      = $request->amount;
         $amount      = $this->getDollarCompareAmount($amount);
@@ -98,7 +102,7 @@ class OpenpayPaymentController extends FrontController
             $openpay = Openpay::getInstance($this->openpay_merchant_id, $this->openpay_private_key, $country_code);
             
             $saved_payment_method = $this->getSavedUserPaymentMethod($request);
-         
+            // save customer
             if (!$saved_payment_method) {
                 $customerData = array(
                         'name' => $user->name,
@@ -135,7 +139,7 @@ class OpenpayPaymentController extends FrontController
             $card_last_four_digit = substr(  $cart_number, -4); 
            
             $saved_payment_cart = UserSavedPaymentMethods::where(['user_id'=>Auth::user()->id,'card_last_four_digit'=> $card_last_four_digit,'card_expiry_month'=>   $request->expMonth,'card_expiry_year'=> $request->expYear])->first();
-           
+           // save cart
             if(!$saved_payment_cart)
             {
                 $cardData = array(
