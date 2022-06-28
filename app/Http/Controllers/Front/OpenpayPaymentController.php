@@ -39,12 +39,17 @@ class OpenpayPaymentController extends FrontController
         $this->openpay_merchant_id = (isset($creds_arr->openpay_merchant_id)) ? $creds_arr->openpay_merchant_id : '';
         $this->openpay_private_key = (isset($creds_arr->openpay_private_key)) ? $creds_arr->openpay_private_key : '';
         $this->openpay_public_key = (isset($creds_arr->openpay_public_key)) ? $creds_arr->openpay_public_key : '';
-        $environment = $this->environment = (isset($openpay->test_mode) && ($openpay->test_mode == '1')) ?  'false' : 'true';
+        $environment = $this->environment = (isset($openpay->test_mode) && ($openpay->test_mode == '1')) ?  'test' : 'production';
         //pr($environment);
         Openpay::setId($this->openpay_merchant_id);
         Openpay::setApiKey($this->openpay_private_key);
-        Openpay::setProductionMode(false);
-        Openpay::setEndpointUrl('https://sandbox-api.openpay.co');
+        if(  $environment == 'test'){
+            Openpay::setProductionMode(false);
+        }else{
+            Openpay::setProductionMode(true);
+        }
+       
+        //Openpay::setEndpointUrl('https://sandbox-api.openpay.co');
         
     }
     public function beforePayment(Request $request) 
@@ -76,8 +81,7 @@ class OpenpayPaymentController extends FrontController
             'number.number'      => __('Incorrect Card Number.'),
             
         ]);
-        $absUrl = Openpay::getEndpointUrl();
-        pr($absUrl);
+       
         //pr($request->all());
         $amount      = $request->amount;
         $amount      = $this->getDollarCompareAmount($amount);
