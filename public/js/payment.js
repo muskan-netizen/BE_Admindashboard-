@@ -2496,7 +2496,9 @@ $(document).ready(function() {
 
     ///////////////////////////PayU payment Gateway //////////////////////////////
     window.payWithOpenPay = function payWithOpenPay(address_id='', payment_option_id='', order='') {
-        if(default_country_code !="MX" || default_country_code !="CO" || default_country_code !="PE" ){
+        console.log(default_country_code);
+        if(default_country_code != "MX" && default_country_code !="CO" && default_country_code !="PE" ){
+            console.log('openpay only accpoet default_country_code = MX,CO,PE');
             if (path.indexOf("cart") !== -1) {
                 success_error_alert('error', 'Something went wrong!Please try again.', ".payment_response");
                 $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
@@ -2509,7 +2511,7 @@ $(document).ready(function() {
             }
             return false;
         }
-        
+        //return false;
         let total_amount = 0;
         let tip = 0;
         let tipElement = $("#cart_tip_amount");
