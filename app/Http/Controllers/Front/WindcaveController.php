@@ -114,7 +114,7 @@ class WindcaveController extends FrontController
 
     public function createHashApp(Request $request)
     {
-        $request->request->add(['from'=>$request->action,'amt'=>number_format($request->amount,2),'subsid'=>$request->subscription_id??'']);
+        $request->request->add(['from'=>$request->action,'amt'=>$request->amount,'subsid'=>$request->subscription_id??'']);
         $user = auth()->user();
         $order_number =  $this->orderNumber($request);
         $data = array(
