@@ -185,7 +185,7 @@ class CartController extends FrontController
                 "addonoptID" => array_unique($option_id)
             ]);
 
-            // dd($addon_id);
+             //dd($request->toArray());
 
             $result = $this->postAddToCart($request);
             // echo $result;

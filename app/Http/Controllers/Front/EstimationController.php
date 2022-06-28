@@ -208,7 +208,7 @@ class EstimationController extends FrontController
 
         //   }
         // }
-        
+        //dd($searchResult);
         $returnHTML = view('frontend.estimation.list')->with(['vendor_count'=> count($searchResult).' Vendors Found','vendors' => $searchResult,'navCategories' => $navCategories])->render();
         return response()->json(array('status' => 'Success', 'html' => $returnHTML));
 
@@ -242,11 +242,24 @@ class EstimationController extends FrontController
 
                 // Loop through these addons and save the ($title) for later search - By Ovi
                 foreach($estimatedProductAddons as $k=> $estimatedProductAddon){
-                    $addonKeywords[$i][$k] = $estimatedProductAddon->estimated_product_addon_option->title;
+                    $addonKeywords[$estimateProductTranslation->name][] = $estimatedProductAddon->estimated_product_addon_option->title;
                 }
             }
-           //dd($addonKeywords);
+            //$keys = implode(',',$keywords);
+            //$keysAdd = implode(',',$addonKeywords);
+            //$keys =array_values($addonKeywords);
 
+            $pkeyCnt = count($keywords);
+            $pkeys = '';
+            foreach($keywords as $no => $name)
+            {
+                $comma = '';
+                if($no<$pkeyCnt-1)$comma = ',';
+
+                $pkeys .= "'".$name."'".$comma;
+            }
+            //dd($pkeys);
+         
             // ***Start*** BY - OVI 
             // Query to get:
             // 1) All the Vendor list with similar product, string saved in ($keywords)
@@ -255,37 +268,97 @@ class EstimationController extends FrontController
             // Product Translations, comparing ($language_id)
             // By Checking Vendor (status) active, inactive, or pending.
             // ***End*** BY - OVI 
-            $teststests = 0;
-            $all_vendors = Vendor::OrderBy('id','desc')->with(['productsLive' => function($q) use($langId, $keywords, $addonKeywords){
-                    $q->whereHas('translation',function($q) use($langId, $keywords){
-                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
-                        }
-                )->with(['sets.setoptions' => function($ad) use($langId, $addonKeywords){
-                    $ad->whereHas('translation_one',function($ad) use($langId, $addonKeywords){
-                        $ad->select('id', 'title')->where('language_id', $langId)->whereIn('title', $addonKeywords);
-                        });
-                }])->with('media.image','variant');
-            }])->whereHas('productsLive.translation',function($q) use($langId, $keywords, $teststests){
-                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
-            })->where('status',1)->get();
+            // $teststests = 0;
+            // $all_vendors = Vendor::OrderBy('id','desc')->with(['productsLive' => function($q) use($langId, $keywords, $addonKeywords){
+            //         $q->whereHas('translation',function($q) use($langId, $keywords){
+            //             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
+            //             }
+            //     )->with(['sets.setoptions' => function($ads) use($langId, $addonKeywords){
+            //         $ads->whereHas('translation_one',function($ad) use($langId, $addonKeywords){
+            //             $ad->select('id', 'title')->where('language_id', $langId)->whereIn('title', $addonKeywords);
+            //             });
+            //     }])->with('media.image','variant');
+            // }])->where('status',1)->get();
 
-            $newarr = array();
-            if(isset($all_vendors)){
-                $all_array = $all_vendors->toArray();
-                foreach($all_array as $i=> $data){
-                    // $newarr[$k]['all'] = $all_array[$k];
-                    // $newarr[$k]['all']['all_count'] = count($addonKeywords);
+            $data = array();
+            //FEtch Vendor with Products
+            $vendors = DB::select("SELECT v.id as vid,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN ($pkeys) and is_live='1' group by p.id");
+            foreach($vendors as $vp)
+            {
 
-                    foreach($addonKeywords as $k=> $data1){
-                        $newarr[$i]['all'] = $data;
-                        $newarr[$i]['all']['all_count'] = count($data1);
-                    }
+                $pkeyCnt = 0;
+                $pkeyCnt = count($addonKeywords[$vp->ptitle]);
+                $addonsKeys = '';
+                foreach($addonKeywords[$vp->ptitle] as $no => $name)
+                {
+                    $comma = '';
+                    if($no<$pkeyCnt-1)$comma = ',';
 
+                    $addonsKeys .= "'".$name."'".$comma;
                 }
 
-               
+            $addons =array();
+            //pr($addonKeywords[$vp->ptitle]);
+              //Fetch Products Addon set
+                 $addon = DB::select("SELECT paj.addon_id as aid,sa.title,ado.id as aoid from product_addons as paj join addon_sets as sa on sa.id=paj.addon_id join addon_options as ado on paj.addon_id=ado.addon_id join addon_option_translations as adot on ado.id=adot.addon_opt_id where sa.status='1' and product_id='$vp->pid' and adot.title IN ($addonsKeys) group by paj.addon_id ");
+                 foreach($addon as $vpa)
+                 {
+                   
+                    $addoption = array();
+                    $addoptionP = array();
+                    $addoptiont = array();
+
+                     //Fetch Addon options
+                    $addonSetOpt = DB::select("SELECT ao.id as aoid,ao.price,ao.title from addon_options as ao join addon_option_translations as aot on ao.id=aot.addon_opt_id where addon_id='$vpa->aid' and  aot.title IN ($addonsKeys)");
+                    foreach($addonSetOpt as $opts)
+                    {
+                        $addoption[] = array(
+                            'optId' => $opts->aoid,
+                            'title' => $opts->title,
+                            'price' => $opts->price
+                        );
+                    }
+
+                    $addons[] = array(
+                        'addonId' => $vpa->aid,
+                        'addonName' => $vpa->title,
+                        'option' => $addoption,
+                    );
+
+                 }
+
+                 $data[] = array(
+                    'vid' => $vp->vid,
+                    'address' => $vp->address,
+                    'name' => $vp->vname,
+                    'title' => $vp->ptitle,    
+                    'logo' => $vp->logo,    
+                    'pid' => $vp->pid,
+                    'price' => $vp->pprice,
+                    'addon'=> $addons,
+                    'needCnt'   => $pkeyCnt
+                );
+
             }
-            //print_r($newarr);
+          // dd($data);
+
+            // $newarr = array();
+            // if(isset($all_vendors)){
+            //     $all_array = $all_vendors->toArray();
+            //     foreach($all_array as $i=> $data){
+            //         // $newarr[$k]['all'] = $all_array[$k];
+            //         // $newarr[$k]['all']['all_count'] = count($addonKeywords);
+
+            //         foreach($addonKeywords as $k=> $data1){
+            //             $newarr[$i]['all'] = $data;
+            //             $newarr[$i]['all']['all_count'] = count($data1);
+            //         }
+
+            //     }
+
+               
+            // }
+           // print_r($all_array);
             //print_r($all_vendors->toArray());
             //die;
             // $addonKeywordsP = [];
@@ -300,7 +373,7 @@ class EstimationController extends FrontController
             // Return All Vendors with Products, Addons - By Ovi 
            // $data['addonKey'] = $addonKeywords;
            // $data['all_vendors'] = $newarr;
-            return $newarr;
+            return $data;
     }
 
     public function destroy(Request $request)
