@@ -284,6 +284,7 @@ class ProfileController extends BaseController{
             $user->phone_token = $phoneCode;
             $user->phone_token_valid_till = $sendTime;
             $user->phone_number = $request->phone_number;
+            $user->dial_code = $request->callingCode;
             if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
                 $to = $request->phone_number;
                 $provider = $prefer->sms_provider;
