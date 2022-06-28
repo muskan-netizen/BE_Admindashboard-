@@ -91,7 +91,7 @@ class WindcaveController extends FrontController
    
          $request->amt = $amt;
         }
-        $request->request->add(['amt'=>number_format($amt,2)]);
+        $request->request->add(['amt'=>getDollarCompareAmount($amt,$this->currency)]);
         return $time;
     }
 
