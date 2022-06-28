@@ -101,7 +101,7 @@ class OpenpayPaymentController extends FrontController
         }
         
         //pr(Openpay::getProductionMode());
-       //try {
+       try {
             Openpay::setId($this->openpay_merchant_id);
             Openpay::setApiKey($this->openpay_private_key);
             $openpay = Openpay::getInstance($this->openpay_merchant_id, $this->openpay_private_key, $country_code);
@@ -269,13 +269,13 @@ class OpenpayPaymentController extends FrontController
                     return Redirect::to(route('user.subscription.plans'))->with('error', 'Transaction has been cancelled'.$errorMsg);
                 }
             }
-        // } catch (\Exception $e) {
-        //     $data = Session::get('opnepay_data');
-        //     unset($data['_token']);
-        //     Log::info($e->getMessage());
+        } catch (\Exception $e) {
+            $data = Session::get('opnepay_data');
+            unset($data['_token']);
+            Log::info($e->getMessage());
            
-        //     return Redirect::to(route('payment.opnepay.beforePayment',$data))->with('error',$e->getMessage());
-        // }
+            return Redirect::to(route('payment.opnepay.beforePayment',$data))->with('error',$e->getMessage());
+        }
     }
     
     public function opnepayWebhook(Request $request, $domain = '')
