@@ -2102,11 +2102,11 @@ class VendorController extends BaseController
                                 //Addon option Translation added
                                 $addonTrans = AddonOptionTranslation::updateOrCreate(
                                     [
-                                        'title'=>$product->primary->name,
+                                        'title'=>$addonOpt->title,
                                         'addon_opt_id'=>$optId->id,
                                     ],
                                     [
-                                        'title'=>$product->primary->name,
+                                        'title'=>$addonOpt->title,
                                         'addon_opt_id'=>$optId->id,
                                         'language_id'=>'1'
                                     ]);

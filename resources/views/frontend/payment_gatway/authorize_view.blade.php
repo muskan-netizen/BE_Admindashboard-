@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/font-awesome.min.css')}}">
     <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
     <link rel="stylesheet" type="text/css" href="{{asset('css/payment.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{asset('front-asset/css/payment.css')}}">
+    <!-- <link rel="stylesheet" type="text/css" href="{{asset('front-asset/css/payment.css')}}"> -->
     <style>
         .spinner-overlay .page-spinner .circle-border {
             background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 33%, rgba(255, 255, 255, 1) 100%);
