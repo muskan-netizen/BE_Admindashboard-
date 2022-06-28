@@ -260,25 +260,21 @@ class OpenpayPaymentController extends FrontController
     
     public function opnepayWebhook(Request $request, $domain = '')
     {
+        Log::info("openpay webhook worl");
+       
         Log::info($request->all());
-        //$request = json_decode($request->all());
-        // Handle the event
-        Log::info($request->type);
-        Log::info($request->transaction['description']);
         
         switch ($request->type) {
             case 'charge.succeeded':
                 $meta_data      = json_decode($request->transaction['description']);
                 
-                Log::info($meta_data->card_id);
                 $cart_id        = $meta_data->card_id ? $meta_data->card_id : '';
                 $payment_form   = $meta_data->payment_form;
                 $user_id        = $meta_data->user_id;
                 $transactionId  = $request->transaction['id'];
                 $order_number   = $request->transaction['order_id'];
                 $amount         = $request->transaction['amount'];
-                Log::info('amount');
-                Log::info($amount);
+                
                 if($payment_form == 'cart'){
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
@@ -370,44 +366,13 @@ class OpenpayPaymentController extends FrontController
                 }
                 break;
             
-            case 'payment_intent.payment_failed':
-                $paymentIntent = $event->data->object;
-                // \Log::info($paymentIntent);
-
-                $meta = $paymentIntent->metadata;
-                // \Log::info($meta);
-                $user_id = $payment_form = $order_number = '';
-                // $amount = $paymentIntent->amount / 100;
-                if($meta){
-                    $payment_form = $meta->payment_form;
-                    $user_id = $meta->user_id;
-                }
-                $user = User::find($user_id);
-
-                if($payment_form == 'cart'){
-                    $order_number = $meta->order_number;
-                    $order = Order::where('order_number', $order_number)->first();
-                    if($order){
-                        // $wallet_amount_used = $order->wallet_amount_used;
-                        // if($wallet_amount_used > 0){
-                        //     $wallet = $user->wallet;
-                        //     $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
-                        // }
-
-                        // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-                        // foreach($order_products as $order_prod){
-                        //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
-                        // }
-                        // OrderProduct::where('order_id', $order->id)->delete();
-                        // OrderProductPrescription::where('order_id', $order->id)->delete();
-                        // VendorOrderStatus::where('order_id', $order->id)->delete();
-                        // OrderVendor::where('order_id', $order->id)->delete();
-                        // OrderTax::where('order_id', $order->id)->delete();
-                        // $order->delete();
-                    }
-                }
+            case 'verification':
+                Log::info($request->all());
                 break;
-            
+            case 'charge.failed':
+                    Log::info($request->all());
+            break;
+                
             // ... handle other event types
             default:
                 echo 'Received unknown event type ' . $event->type;
