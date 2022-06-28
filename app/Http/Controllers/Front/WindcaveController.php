@@ -100,7 +100,7 @@ class WindcaveController extends FrontController
         $order_number =  $this->orderNumber($request);
         $data = array(
             "type" => 'purchase',
-            "amount" => number_format($request->amt,2),
+            "amount" => getDollarCompareAmount($request->amt,$this->currency),
             "currency" => $this->currency,
             "merchantReference" => $order_number,
             "storeCard" => true,
@@ -119,7 +119,7 @@ class WindcaveController extends FrontController
         $order_number =  $this->orderNumber($request);
         $data = array(
             "type" => 'purchase',
-            "amount" => number_format($request->amt,2),
+            "amount" => getDollarCompareAmount($request->amt,$this->currency),
             "currency" => $this->currency,
             "merchantReference" => $order_number,
             "storeCard" => true,
