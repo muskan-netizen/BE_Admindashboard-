@@ -54,7 +54,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '38', 'path' => '', 'code' => 'offline_manual', 'title' => 'Offline Manual Payment', 'off_site' => '0', 'status' => '0'),
         array('id' => '39', 'path' => '', 'code' => 'stripe_ideal', 'title' => 'Stripe Ideal', 'off_site' => '1', 'status' => '0'),
         array('id' => '40', 'path' => '', 'code' => 'userede', 'title' => 'Userede', 'off_site' => '0', 'status' => '0'),
-        array('id' => '42', 'path' => '', 'code' => 'dpo', 'title' => 'Direct Pay Online', 'off_site' => '0', 'status' => '0')
+        array('id' => '42', 'path' => '', 'code' => 'dpo', 'title' => 'Direct Pay Online', 'off_site' => '1', 'status' => '0')
       );
 
       if($option_count == 0)

@@ -11,6 +11,7 @@ use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController, MyCashGatewayController};
+use App\Http\Controllers\Front\DpoController;
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
 use App\Http\Controllers\Front\MpesaController;
@@ -70,10 +71,11 @@ class PaymentOptionController extends BaseController{
             }else{
                 $domain = $client->sub_domain.env('SUBMAINDOMAIN');
             }
-            //$server_url = "http://192.168.97.160:9091/";
-            $server_url = "https://".$domain."/";
+             $server_url = "http://192.168.96.67:8007/";
+           // $server_url = "http://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
+            
             $function = 'postPaymentVia_'.$gateway;
             if(method_exists($this, $function)) {
                 if(!empty($request->action)){
@@ -87,6 +89,11 @@ class PaymentOptionController extends BaseController{
         }else{
             return $this->errorResponse("Invalid Gateway Request", 400);
         }
+    }
+
+    public function postPaymentVia_dpo(Request $request){
+        $gateway = new DpoController();
+        return $gateway->createAppTocken($request);
     }
 
     public function postPaymentVia_mycash(Request $request){

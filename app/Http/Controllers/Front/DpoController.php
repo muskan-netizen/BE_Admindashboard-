@@ -35,11 +35,9 @@ class DpoController extends FrontController
     private $appUrl;
     private $serviceType;
     private $token;
-    protected $url;
 
-    public function __construct(UrlGenerator $url)
+    public function __construct()
     {
-        $this->url = $url;
         $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'dpo')->where('status', 1)->first();
         $json = json_decode($payOpt->credentials);
         $this->companyToken = $json->company_token;
@@ -97,10 +95,10 @@ class DpoController extends FrontController
         return $time;
     }
 
-    public function createTocken(Request $request)
+    public function createTocken(Request $request, UrlGenerator $url)
     {
         $order_number =  $this->orderNumber($request);
-        $redirectUrl = $this->url->to('/payment/dpo/redirect/?order_no='.$order_number);
+        $redirectUrl = $url->to('/payment/dpo/redirect/?order_no='.$order_number);
         $user = User::where('auth_token', $request->auth_token)->first();
         $total_amount = $this->getDollarCompareAmount($request->amt);
         $name = explode(' ',$user->name);
@@ -144,6 +142,54 @@ class DpoController extends FrontController
         }
     }
 
+    public function createAppTocken(Request $request)
+    {
+        $request->from = $request->action;
+        $order_number =  $this->orderNumber($request);
+        $user = Auth::user();
+        $redirectUrl = $request->serverUrl.'payment/dpo/redirect/?order_no='.$order_number.'&payment_via=app&status=200&utoken='.$user->auth_token;
+        $total_amount = $this->getDollarCompareAmount($request->amt);
+        $name = explode(' ',$user->name);
+        $customerFirstName = $name[0];
+        $customerLastName = !empty($name[1])? $name[1] : '';
+        $xml = "<API3G>
+                    <CompanyToken>".$this->companyToken."</CompanyToken>
+                    <Request>createToken</Request>
+                    <Transaction>
+                        <PaymentAmount>".$total_amount."</PaymentAmount>
+                        <PaymentCurrency>".$this->currency."</PaymentCurrency>
+                        <CompanyRef>tr1ss1212bnbv</CompanyRef>
+                        <RedirectURL>".$redirectUrl."</RedirectURL>
+                        <BackURL>http://www.domain.com/backurl.php </BackURL>
+                        <CompanyRefUnique>0</CompanyRefUnique>
+                        <PTL>100000</PTL>
+                        <CompanyAccRef>www</CompanyAccRef>
+                        <PTLtype>minutes</PTLtype>
+                        <DefaultPayment>XP</DefaultPayment>
+                        <AllowRecurrent></AllowRecurrent>
+                        <customerFirstName>".$customerFirstName."</customerFirstName>
+                        <customerLastName>".$customerLastName."</customerLastName>
+                        <customerEmail>".$user->email."</customerEmail>
+                        <customerPhone>".$user->phone_number."</customerPhone>
+                    </Transaction>
+                    <Services>
+                        <Service>
+                            <ServiceType>".$this->serviceType."</ServiceType>
+                            <ServiceDescription>Airlines Service</ServiceDescription>
+                            <ServiceTypeName>Airlines Service</ServiceTypeName>
+                            <ServiceDate>2022/06/25 06:52</ServiceDate>
+                        </Service>
+                    </Services>
+                </API3G>";
+                
+        
+        $result = $this->postCurl($xml);
+        $paymentTocken = $this->xml2array($result);
+        if(!empty($paymentTocken['TransToken'])){
+            return $this->successResponse($this->appUrl.'payv2.php?ID='.$paymentTocken['TransToken']);
+        }
+    }
+
     private function postCurl($xml){
     
         $curl = curl_init();
@@ -180,7 +226,6 @@ class DpoController extends FrontController
 
     public function successPage(Request $request)
     {   
-        
         if(isset($request->auth_token))
         {
             $user = User::find($request->auth_token);
@@ -260,12 +305,18 @@ class DpoController extends FrontController
             $super_admin = User::where('is_superadmin', 1)->pluck('id');
             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
-            if (isset($request->auth_token) && $request->auth_token != '') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=200&order=' . $order->order_number;
-                return Redirect::to($returnUrl);
-            } else {
-                return Redirect::to(route('order.success', [$order->id]));
+            if(!empty($request->payment_via)){
+                 if (empty($request->TransID)) {
+                    return $this->errorResponse('', 400);
+                }
+            }else{
+                if (isset($request->TransID) && $request->TransID != '') {
+                    return Redirect::to(route('order.success', [$order->id]));
+                } else {
+                    
+                }
             }
+            
         } else {
             $data = Payment::where('transaction_id', $request->order_no)->first();
             $data->delete();
@@ -275,12 +326,13 @@ class DpoController extends FrontController
             if (isset($order->wallet_amount_used)) {
                 $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number]);
             }
-            if (isset($request->auth_token) && $request->auth_token != '') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=windcave' . '&status=00&order=' . $order->order_number;
-                return Redirect::to($returnUrl);
-            } else {
+
+            if(!empty($request->payment_via)){
+                return $this->errorResponse('', 400);
+            }else{
                 return Redirect::to(route('showCart'))->with('error','Transaction failed.');
             }
+            
         }
     }
 
@@ -290,17 +342,31 @@ class DpoController extends FrontController
         $data = Payment::where('transaction_id', $request->order_no)->first();
         if (isset($request->order_no) && $request->status == '0000') {  
             $user = auth()->user();
+            if(!empty($request->payment_via)){
+                $user = User::where('auth_token', $request->utoken)->first();
+            }
             $wallet = $user->wallet;
             $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->order_no . '</b>']);
 
-            if (isset($request->TransID) && $request->TransID != '') {
-                return Redirect::to(route('user.wallet'))->with('success','Wallet updated successfully.');
-            } else {
-                return Redirect::to(route('user.wallet'))->with('error','Transaction failed.');
+            if(!empty($request->payment_via)){
+                if (empty($request->TransID)) {
+                   return $this->errorResponse('', 400);
+                }
+            }else{
+                if (isset($request->TransID) && $request->TransID != '') {
+                    return Redirect::to(route('user.wallet'))->with('success','Wallet updated successfully.');
+                } else {
+                    return Redirect::to(route('user.wallet'))->with('error','Transaction failed.');
+                }
             }
         } else {
             $data->delete();
-            return Redirect::to(route('user.wallet'))->with('error','Transaction failed.');
+            if(!empty($request->payment_via)){
+                return $this->errorResponse('', 400);
+            }else{
+                return Redirect::to(route('user.wallet'))->with('error','Transaction failed.');
+            }
+            
         }
         return $this->successResponse($request->getTransactionReference());
     }
@@ -309,16 +375,27 @@ class DpoController extends FrontController
     public function completeOrderSubs($request)
     {
         $user = auth()->user();
+        if(!empty($request->payment_via)){
+            $user = User::where('auth_token', $request->utoken)->first();
+        }
         $data = Payment::where('transaction_id', $request->order_no)->first();
         if (isset($request->order_no) && $request->status == '0000') {
             $subscription = explode('_', $request->order_no);
-            $request->request->add(['user_id' => $user->id, 'payment_option_id' =>34, 'amount' => $data->balance_transaction, 'transaction_id' => $request->order_no]);
+            $request->request->add(['user_id' => $user->id, 'payment_option_id' =>42, 'amount' => $data->balance_transaction, 'transaction_id' => $request->order_no]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription[2]);
-            if (isset($request->TransID) && $request->TransID != '') {
-                return Redirect::to(route('user.subscription.plans'))->with('success', 'Subscription added successfully.');
-            } else {
+
+            if(!empty($request->payment_via)){
+                if (empty($request->TransID)) {
+                    return $this->errorResponse('', 400);
+                }
+            }else{
+                if (isset($request->TransID) && $request->TransID != '') {
+                    return Redirect::to(route('user.subscription.plans'))->with('success', 'Subscription added successfully.');
+                } else {
+                }
             }
+            
         } else {
             $data->delete();
             return Redirect::to(route('user.subscription.plans'))->with('error','Transaction failed.');
@@ -334,10 +411,16 @@ class DpoController extends FrontController
             $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $request->order_no]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
-            if (isset($request->TransID) && $request->TransID != '') {
-                return Redirect::to(route('user.orders'))->with('success','Tip amount added successfuly.');
-            } else {
-                
+            if(!empty($request->payment_via)){
+                if (empty($request->TransID)) {
+                    return $this->errorResponse('', 400);
+                }
+            }else{
+                if (isset($request->TransID) && $request->TransID != '') {
+                    return Redirect::to(route('user.orders'))->with('success','Tip amount added successfuly.');
+                } else {
+                    
+                }
             }
         } else {
             $data->delete();

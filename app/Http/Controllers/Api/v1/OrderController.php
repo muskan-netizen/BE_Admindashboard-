@@ -515,7 +515,7 @@ class OrderController extends BaseController
                     // exit();
                     // $ex_gateways = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 24,25,28]; // if Stripe, paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout, authorise.net, stripe_fpx, cashfree,easebuzz,vnpay
                     // need to add weebhook for razorpay (10) and remove from ex_gateways
-                    $ex_gateways = [1,2,3,14,15,16,10,20,21,22,23,26,38];
+                    $ex_gateways = [1,2,3,14,15,16,10,20,21,22,23,26,38,42];
                     //Delete cart if payment is done from these gateways
                     if (in_array($request->payment_option_id, $ex_gateways)) {
 
