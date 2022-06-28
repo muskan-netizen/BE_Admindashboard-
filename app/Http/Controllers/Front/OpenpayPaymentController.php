@@ -194,7 +194,59 @@ class OpenpayPaymentController extends FrontController
             );
             
             $openPayCustomerCharges = $openPayCustomer->charges->create($chargeData);
-           // pr($openPayCustomerCharges);
+            pr($openPayCustomerCharges->id);
+            if(isset($openPayCustomerCharges->id))
+            {    
+                if($payment_form == 'cart'){
+                    $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                
+                    if ($order) {
+                        $returnUrlParams = '';
+                        $returnUrl = route('order.success', $order->id);
+                        return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
+
+                        // Send Email
+                        //  $this->successMail();
+                    }
+                } elseif($payment_form == 'wallet'){
+                    $returnUrl = route('user.wallet');
+                    return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                }
+                elseif($payment_form == 'tip'){
+                    $returnUrl = route('user.orders');
+                    return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                }
+                elseif($payment_form == 'subscription'){
+                    $returnUrl = route('user.subscription.plans');
+                    return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
+                }
+            }
+            else{
+                if($payment_form == 'cart'){
+                    $order = Order::where('order_number', $order_number)->first();
+                    if($order){
+                        $user= user::find($order->user_id);
+                        $wallet_amount_used = $order->wallet_amount_used;
+                        if($wallet_amount_used > 0){
+                            $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                            if(!$transaction){
+                                $wallet = $user->wallet;
+                                $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                            }else{
+                                return Redirect::to(route('showCart'))->with('error', 'Your order has already been cancelled');
+                            }
+                        }
+                    }
+                    
+                    return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled');
+                } elseif($payment_form == 'wallet'){
+                    return Redirect::to(route('user.wallet'))->with('error', 'Transaction has been cancelled');
+                } elseif($payment_form == 'tip'){
+                    return Redirect::to(route('user.orders'))->with('error', 'Transaction has been cancelled');
+                } elseif($payment_form == 'subscription'){
+                    return Redirect::to(route('user.subscription.plans'))->with('error', 'Transaction has been cancelled');
+                }
+            }
         // } catch (\Exception $e) {
         //     $data = Session::get('opnepay_data');
         //     unset($data['_token']);
@@ -226,10 +278,6 @@ class OpenpayPaymentController extends FrontController
                 Log::info('amount');
                 Log::info($amount);
                 if($payment_form == 'cart'){
-                    
-            
-                    
-                   
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
                         $order->payment_status = 1;
