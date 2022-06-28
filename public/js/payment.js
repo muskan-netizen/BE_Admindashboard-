@@ -2496,7 +2496,7 @@ $(document).ready(function() {
 
     ///////////////////////////PayU payment Gateway //////////////////////////////
     window.payWithOpenPay = function payWithOpenPay(address_id='', payment_option_id='', order='') {
-        if(client_primary_currency !="INR"){
+        if(default_country_code !="MX" || default_country_code !="CO" || default_country_code !="PE" ){
             if (path.indexOf("cart") !== -1) {
                 success_error_alert('error', 'Something went wrong!Please try again.', ".payment_response");
                 $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");

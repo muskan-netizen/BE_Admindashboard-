@@ -43,8 +43,8 @@ class OpenpayPaymentController extends FrontController
         //pr($environment);
         Openpay::setId($this->openpay_merchant_id);
         Openpay::setApiKey($this->openpay_private_key);
-        if(  $environment == 'test'){
-            Openpay::setProductionMode(false);
+        if( $environment == 'test'){
+            Openpay::setSandboxMode(true);
         }else{
             Openpay::setProductionMode(true);
         }
@@ -90,9 +90,10 @@ class OpenpayPaymentController extends FrontController
         $country_code = $client->country ? $client->country->code : 'MX';
         $user = Auth::user();
         $address = UserAddress::where('user_id', $user->id)->first() ;
-        $order_number  =  generateOrderNo();
+        $order_number  = $request->order_number ?? generateOrderNo();
         $payment_form  = $request->payment_form ?? 'cart';
         $card_id  = '';
+        $errorMsg='';
       
         if($payment_form == 'cart'){
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
@@ -100,7 +101,7 @@ class OpenpayPaymentController extends FrontController
         }
         
         //pr(Openpay::getProductionMode());
-        //try {
+       //try {
             Openpay::setId($this->openpay_merchant_id);
             Openpay::setApiKey($this->openpay_private_key);
             $openpay = Openpay::getInstance($this->openpay_merchant_id, $this->openpay_private_key, $country_code);
@@ -203,6 +204,19 @@ class OpenpayPaymentController extends FrontController
             
             $openPayCustomerCharges = $openPayCustomer->charges->create($chargeData);
             pr($openPayCustomerCharges->id);
+        // } catch (OpenpayApiTransactionError $e) {
+        //     $errorMsg = 'ERROR on the transaction: ' . $e->getMessage();
+        // } catch (OpenpayApiRequestError $e) {
+        //     $errorMsg ='ERROR on the request: ' . $e->getMessage();
+        // } catch (OpenpayApiConnectionError $e) {
+        //     $errorMsg ='ERROR while connecting to the API: ' . $e->getMessage();
+        // } catch (OpenpayApiAuthError $e) {
+        //     $errorMsg ='ERROR on the authentication: ' . $e->getMessage();
+        // } catch (OpenpayApiError $e) {
+        //     $errorMsg = 'ERROR on the API: ' .$e->getMessage();
+        // } catch (Exception $e) {
+        //     $errorMsg = 'Error on the script: ' . $e->getMessage();
+        // }
             if(isset($openPayCustomerCharges->id))
             {    
                 if($payment_form == 'cart'){
@@ -246,13 +260,13 @@ class OpenpayPaymentController extends FrontController
                         }
                     }
                     
-                    return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled');
+                    return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled'.$errorMsg);
                 } elseif($payment_form == 'wallet'){
-                    return Redirect::to(route('user.wallet'))->with('error', 'Transaction has been cancelled');
+                    return Redirect::to(route('user.wallet'))->with('error', 'Transaction has been cancelled'.$errorMsg);
                 } elseif($payment_form == 'tip'){
-                    return Redirect::to(route('user.orders'))->with('error', 'Transaction has been cancelled');
+                    return Redirect::to(route('user.orders'))->with('error', 'Transaction has been cancelled'.$errorMsg);
                 } elseif($payment_form == 'subscription'){
-                    return Redirect::to(route('user.subscription.plans'))->with('error', 'Transaction has been cancelled');
+                    return Redirect::to(route('user.subscription.plans'))->with('error', 'Transaction has been cancelled'.$errorMsg);
                 }
             }
         // } catch (\Exception $e) {
