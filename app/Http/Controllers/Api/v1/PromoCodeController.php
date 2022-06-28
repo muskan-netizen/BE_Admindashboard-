@@ -10,8 +10,7 @@ use App\Models\Promocode;
 use App\Models\CartCoupon;
 use App\Models\CartProduct;
 use Illuminate\Http\Request;
-use App\Models\ClientCurrency;
-use App\Models\PromoCodeDetail;
+use App\Models\{AddonOption, ClientCurrency, PromoCodeDetail};
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -26,6 +25,7 @@ class PromoCodeController extends Controller{
     public function postPromoCodeList(Request $request){
         try {
             $user = Auth::user();
+            $langId = $user->language;
             $promo_codes = new \Illuminate\Database\Eloquent\Collection;
             $vendor_id = $request->vendor_id;
             $validator = $this->validatePromoCodeList($request);
@@ -48,11 +48,19 @@ class PromoCodeController extends Controller{
             $now = Carbon::now()->toDateTimeString();
             $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id");
             $cart_products = CartProduct::with(['product.variant' => function($q){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
-                            $q->groupBy('product_id');
-                        }])->where('vendor_id', $request->vendor_id)->where('cart_id', $request->cart_id)->get();
+                $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                $q->groupBy('product_id');
+            },
+            'addon.set' => function ($qry) use ($langId) {
+                $qry->where('language_id', $langId);
+            },
+            'addon.option' => function ($qry) use ($langId) {
+                $qry->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                $qry->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
+                $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
+            }
+            ])->where('vendor_id', $request->vendor_id)->where('cart_id', $request->cart_id)->get();
             $total_minimum_spend = 0;
-
             foreach ($cart_products as $cart_product) {
                 $total_price = 0;
                 if(isset($cart_product->product->variant) && !empty($cart_product->product->variant->first()))
@@ -61,6 +69,20 @@ class PromoCodeController extends Controller{
                 }
 
                 $total_minimum_spend += $total_price * $cart_product->quantity;
+
+                $product_addon_price = 0;
+                if (!empty($cart_product->addon)) {
+                    foreach ($cart_product->addon as $ck => $addons) {
+                        $opt_quantity_price = 0;
+                        $opt_price_in_currency = $addons->option ? $addons->option->price : 0;
+                        $addon_option = AddonOption::where(['addon_id'=>$addons->addon_id,'id'=>$addons->option_id]);
+                        if($addon_option->exists()){
+                            $addon_price = $addon_option->first()->price * $cart_product->quantity;
+                        }                        
+                        $product_addon_price += $addon_price;
+                    }
+                }
+                $total_minimum_spend += $product_addon_price;
             }
             if ($product_ids) {
                 $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');

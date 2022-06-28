@@ -464,14 +464,16 @@
                                     <button class="btn btn-info button" id="csv_button"
                                         type="button">{{ __('Import form Woocommerce') }}</button>
                                 </div>
+                                
                                 @if($client_preference_detail->enable_inventory_service == 1)
                                 <a href="{{route('get.inventory.import',$vendor->slug)}}">
-                                <div class="col-12 text-right mb-2">
-                                    <button class="btn btn-info button" 
-                                        type="button">{{ __('Import form Inventory') }}</button>
-                                </div>
+                                    <div class="col-12 text-right mb-2">
+                                        <button class="btn btn-info button" 
+                                            type="button">{{ __('Import form Inventory') }}</button>
+                                    </div>
                                 </a>
                                 @endif
+                               
 
                                 <div class="col-md-4 text-right mb-2">
                                     <button class="btn btn-info button" id="import_global"
@@ -701,7 +703,7 @@
     <!-- Global product import popup -->
     <div id="global-product-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true" style="display: none;">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg ">
             <div class="modal-content">
                 <div class="modal-header border-bottom">
                     <h4 class="modal-title">{{ __('Product Action') }}</h4>
