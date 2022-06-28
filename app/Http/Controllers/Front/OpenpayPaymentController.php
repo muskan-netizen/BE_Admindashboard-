@@ -270,11 +270,35 @@ class OpenpayPaymentController extends FrontController
                 }
             }
         } catch (\Exception $e) {
-            $data = Session::get('opnepay_data');
-            unset($data['_token']);
+            Log::info($e->getMessage());
+            $errorMsg =$e->getMessage();
+            if($payment_form == 'cart'){
+                $order = Order::where('order_number', $order_number)->first();
+                if($order){
+                    $user= user::find($order->user_id);
+                    $wallet_amount_used = $order->wallet_amount_used;
+                    if($wallet_amount_used > 0){
+                        $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                        if(!$transaction){
+                            $wallet = $user->wallet;
+                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                        }
+                    }
+                }
+                
+                return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled'.$errorMsg);
+            } elseif($payment_form == 'wallet'){
+                return Redirect::to(route('user.wallet'))->with('error', 'Transaction has been cancelled'.$errorMsg);
+            } elseif($payment_form == 'tip'){
+                return Redirect::to(route('user.orders'))->with('error', 'Transaction has been cancelled'.$errorMsg);
+            } elseif($payment_form == 'subscription'){
+                return Redirect::to(route('user.subscription.plans'))->with('error', 'Transaction has been cancelled'.$errorMsg);
+            }
+            // $data = Session::get('opnepay_data');
+            // unset($data['_token']);
             Log::info($e->getMessage());
            
-            return Redirect::to(route('payment.opnepay.beforePayment',$data))->with('error',$e->getMessage());
+            //return Redirect::to(route('payment.opnepay.beforePayment',$data))->with('error',$e->getMessage());
         }
     }
     
