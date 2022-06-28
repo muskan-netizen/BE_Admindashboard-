@@ -568,6 +568,16 @@ class PaymentOptionController extends BaseController
                                 'userede_Rede_token' => $request->userede_Rede_token
                             ));
                             break;    
+                        case 'dpo':
+                            $validatedData = $request->validate([
+                                'company_token' => 'required',
+                                'service_type' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'company_token' => $request->company_token,
+                                'service_type' => $request->service_type
+                            ));
+                            break;    
 
                     }
                 }

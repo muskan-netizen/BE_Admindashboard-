@@ -385,6 +385,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_dpo_subscription = "{{route('dpo.subscription')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";
