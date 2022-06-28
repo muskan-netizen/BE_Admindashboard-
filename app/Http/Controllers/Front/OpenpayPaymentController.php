@@ -203,7 +203,7 @@ class OpenpayPaymentController extends FrontController
             );
             
             $openPayCustomerCharges = $openPayCustomer->charges->create($chargeData);
-            pr($openPayCustomerCharges->id);
+           // pr($openPayCustomerCharges->id);
         // } catch (OpenpayApiTransactionError $e) {
         //     $errorMsg = 'ERROR on the transaction: ' . $e->getMessage();
         // } catch (OpenpayApiRequestError $e) {
@@ -226,9 +226,6 @@ class OpenpayPaymentController extends FrontController
                         $returnUrlParams = '';
                         $returnUrl = route('order.success', $order->id);
                         return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
-
-                        // Send Email
-                        //  $this->successMail();
                     }
                 } elseif($payment_form == 'wallet'){
                     $returnUrl = route('user.wallet');
