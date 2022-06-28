@@ -35,7 +35,7 @@ trait PagarmePaymentManager{
     ]);
     return $card;
   }
-  public function create_transaction($data)
+  public function create_transaction_via_creditCard($data)
   {
     try{
       $pagarme = $this->init();
@@ -80,7 +80,65 @@ trait PagarmePaymentManager{
       Log::info($ex);
       return null;
     }
-    
+  }
+  public function create_transaction_via_pix($data)
+  { 
+    try{
+      $pagarme = $this->init();
+      $response = $pagarme->transactions()->create([
+        // 'amount' => $data['amount'],
+        // 'card_id' => $data['card_id'],
+        // 'payment_method' => 'credit_card',
+        // 'postback_url' => 'http://requestb.in/pkt7pgpk',
+        // 'async' => false,
+        'customer' => [
+          // 'external_id' => 'EXTERNALID'.$data['customer']->id,
+          'name' => $data['customer']->name, 
+          'email' => $data['customer']->email,
+          'type' => 'individual',
+          "document" => "01234567890",
+          "phones" => [
+            "home_phone" => [
+              "country_code" => "55",
+              "number" => "22180513",
+              "area_code" => "21"
+            ]
+          ]
+        ],
+        // 'billing' => [
+        //     'name' => $data['customer']->name,
+        //     'address' => [
+        //       'country' => 'br',
+        //       'street' => 'Avenida Brigadeiro Faria Lima',
+        //       // 'street_number' => '1811',
+        //       'state' => 'sp',
+        //       'city' => 'Sao Paulo',
+        //       // 'neighborhood' => 'Jardim Paulistano',
+        //       'zipcode' => '01451001'
+        //     ]
+        // ],
+        'items' => $data['items'],
+        'payments' => [
+          [
+            "payment_method" =>  "pix",
+            "pix" => [
+                "expires_in" => "52134613",
+                "additional_information" => [
+                  [
+                    "name" => "Quantidade",
+                    "value" => "2"
+                  ]
+                ]
+            ]
+          ]
+        ]
+      ]);
+    }catch(\Exception $ex){
+      dd($ex);
+      Log::info('Trait Error');
+      Log::info($ex);
+      return null;
+    }
   }
 
   public function create_payment_link($data)
