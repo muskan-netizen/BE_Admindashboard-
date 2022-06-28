@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers\Front;
 
@@ -108,7 +108,9 @@ class PagarmeController extends FrontController
                 $item['tangible'] = true;
             }
             array_push($data['items'],$item);
-            $payment = $this->create_transaction($data);
+            // dd($data);
+            $payment = $this->create_transaction_via_pix($data);
+            dd($payment);
             $request['amount'] = $amount;
             if(!is_null($payment) && isset($payment->status) && $payment->status == 'paid')
             {
