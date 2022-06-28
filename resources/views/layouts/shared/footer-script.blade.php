@@ -37,8 +37,10 @@ if (Session::has('toaster')) {
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+<script src="https://chat.royoorders.com/socket.io/socket.io.js"></script>
 
 <script>
+    
     let stripe_publishable_key = "{{ $stripe_publishable_key }}";
     let is_hyperlocal = 0;
     var business_type = '';
@@ -98,8 +100,9 @@ if (Session::has('toaster')) {
 @if(!str_contains(url()->current(), '/godpanel'))
 @if((!empty(Auth::user())))
 <script>
-      $(document).ready(function() {
-
+     createSocketConnection();
+      $(document).ready( async function() {
+       
         // Audio.prototype.play = (function(play) {
 
         //     return function() {
@@ -142,7 +145,13 @@ if (Session::has('toaster')) {
     // socket.on('createOrderByCustomer_' + host_arr[0] + "_" + "{{ (!empty(Auth::user()))?Auth::user()->id:0 }}", (message) => {
     //     get_latest_order_socket(message.order_number);
     // });
+    async function createSocketConnection(){
 
+        socket = new io(SocketConstants.Socket_url);
+        await socket.connect(); 
+        console.log(socket);
+        console.log(SocketConstants.Socket_url);
+    }
     function get_latest_order_socket(order_number){
         console.log(order_number);
         Audio.prototype.play = (function(play) {
@@ -372,7 +381,7 @@ if (Session::has('toaster')) {
 
 
 @yield('script-bottom')
-
+<script  src="{{asset('assets/js/chat/chatNotifications.js')}}"></script>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
 <script>

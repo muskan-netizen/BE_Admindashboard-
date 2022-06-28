@@ -85,8 +85,8 @@
         });
     </script>
 @endsection
-@section('script')
-<script src="https://chat.royoorders.com/socket.io/socket.io.js"></script>
+@section('script-bottom')
+
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>

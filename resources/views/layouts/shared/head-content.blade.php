@@ -115,7 +115,31 @@ if($theme && !empty($theme->map_key)){
 @endif
 @endif
 @endif
+@php 
+$mapKey = '1234';
+if(Auth::check()){
+	$cl_data = \App\Models\Client::where(['id' => 1])->first();
+	$socket_url = @$cl_data->socket_url;
+	$admin_chat = @$cl_data->admin_chat;
+	$driver_chat = @$cl_data->driver_chat;
+	$customer_chat = @$cl_data->customer_chat;
+}
 
+@endphp
+<script>
+	var sUrl = "{!! $socket_url !!}";
+	var admin_chat = "{!! $admin_chat !!}";
+	var driver_chat = "{!! $driver_chat !!}";
+	var customer_chat = "{!! $customer_chat !!}";
+	var socket = null;
+	var SocketConstants = {
+    	Socket_url : sUrl,
+		admin_chat : admin_chat,
+		driver_chat : driver_chat,
+		customer_chat : customer_chat,
+		socket:'',
+	} 
+</script>
 <script src="{{asset('assets/js/constants.js')}}"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
 <link href="{{asset('assets/libs/flatpickr/flatpickr.min.css') }}" rel="stylesheet" type="text/css" />

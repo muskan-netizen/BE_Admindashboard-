@@ -6,13 +6,11 @@
 // await socket.connect(); 
 
 // // Add a connect listener
-socket.on('connect',async function() {
-    await getChatRooms();
-    console.log('Client has connected to the server!');
-});
+
 // // Add a connect listener
 socket.on('new-message',function(data) {
-    newMessage(data)
+    //newMessage(data)
+    //alert();
     console.log('Received a message from the server!',data);
 });
 // // Add a disconnect listener
