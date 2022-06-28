@@ -52,6 +52,8 @@ class PaymentOptionController extends BaseController{
                 $option->title = $json->manule_payment_title;
             }elseif($option->code == 'mycash'){
                 $option->title = __('Digicel MyCash');
+            }elseif($option->code == 'windcave'){
+                $option->title = __('Windcave (Debit/Credit card)');
             }
             $option->title = __($option->title);
         }
