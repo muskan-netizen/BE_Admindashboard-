@@ -1841,12 +1841,12 @@ class CartController extends FrontController
         }
 
         if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
-            $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->setTimezone('UTC')->format('Y-m-d H:i:s');
+            $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
         }else{
-            $schedule_datetime_del = Carbon::now()->setTimezone('UTC')->format('Y-m-d H:i:s');
+            $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
         }
 
-
+        
         if ($cart) {
             $cart_details = $this->getCart($cart, $address_id,$request->code, $schedule_datetime_del);
         }
@@ -2078,7 +2078,7 @@ class CartController extends FrontController
                         ['form_params' => ($postdata)]
                     );
                     $response = json_decode($res->getBody(), true);
-                    pr($response);
+                    
                     if ($response && $response['message'] == 'success') {
                         return $response['total'];
                     }
