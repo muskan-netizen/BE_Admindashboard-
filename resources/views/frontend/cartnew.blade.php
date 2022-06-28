@@ -328,7 +328,6 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <% if(cart_details.pharmacy_check == 1){ %>
                                     <% if(vendor_product.product.pharmacy_check == 1){ %>
                                         <button type="button" class="btn btn-solid prescription_btn mt-2" data-product="<%= vendor_product.product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">Add Prescription</button>
-                                        
                                         <% if(cart_details.cart_product_prescription > 0){ %>
                                             <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong><%= cart_details.cart_product_prescription %> Prescription Added</strong></h4>
                                         <% } %>
