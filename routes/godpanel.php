@@ -20,6 +20,7 @@ Route::group(['prefix' => '/godpanel'], function () {
 
 		/**socket url update */
 		Route::post('socketUpdate/{id}', 'Godpanel\ClientController@socketUrl')->name('client.socketUpdate');
+		Route::post('socketUpdateAction/{id}', 'Godpanel\ClientController@socketUpdateAction')->name('client.socketUpdateAction');
 		/**socket url update */
 
 		Route::post('exportDb/{dbname}', 'Godpanel\ClientController@exportDb')->name('client.exportdb');

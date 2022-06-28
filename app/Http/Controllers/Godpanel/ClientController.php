@@ -537,6 +537,27 @@ class ClientController extends Controller{
               
       }
 
+      public function socketUpdateAction(Request $request,$id)
+      {
+        $data = GlobalFunction::checkDbStat($id);
+          try {
+                  $action = $request->action;
+                  DB::connection($data['schemaName'])->beginTransaction();
+                  $update = DB::table('clients')->where('id',$id)->update([$action => $request->status]);
+                  $update_sub = DB::connection($data['schemaName'])->table('clients')->where('id',1)->update([$action => $request->status]);
+                  DB::connection($data['schemaName'])->commit();
+                  return response()->json(array('success' => true, 'message'=>'Socket url status has been updated.'));
+             
+              
+          } catch (\PDOException $e) {
+              DB::connection($data['schemaName'])->rollBack();
+              return response()->json(array('success' => false, 'message'=>'Something went wrong.'));
+
+          }
+              
+              
+      }
+
 
      
 }
