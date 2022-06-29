@@ -612,10 +612,14 @@
                     @endif
                     @if ( (strtolower($opt->code) == 'easebuzz') )
                     <div class="mt-2" id="easebuzz_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                    <h6 class="mt-3">
+                        <span>{{ __('Webhook Url') }} : </span>
+                        <a href="javascript:;" class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.easebuzz.easybuzzNotify')}}</span></a>
+                    </h6> 
                         <div class="row">
                         <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="easebuzz_merchant_key" class="mr-3">{{ __("Easebuzz Sub Merchant") }}</label>
+                                    <label for="easebuzz_merchant_key" class="mr-3">{{ __("Sub Merchant") }}</label>
                                     <input type="checkbox"   data-plugin="switchery" name="easebuzz_Sub_merchant" class="chk_box" data-color="#43bee1" @if($easebuzz_Sub_merchant == 1) checked @endif>
                                 </div>
                             </div>
