@@ -3815,10 +3815,46 @@ $(document).ready(function () {
     }
 
     $(document).on('click', '.prescription_btn', function (e) {
-        $("#product_id").val($(this).data("product"));
-        $("#vendor_idd").val($(this).data("vendor_id"));
-        $('#prescription_form').modal('show');
-    });
+        e.preventDefault();
+        $(".uploaded-prescription").html("");
+        $(".uploaded-prescription-img").val(null);
+        var cart = $(this).data("cart");
+        var product = $(this).data("product");
+        var vendor = $(this).data("vendor_id");
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: get_product_prescription,
+            dataType: 'json',
+            data: {cart:cart,product:product},
+            beforeSend: function () {
+                $(".loader_box").show();
+            },
+            success: function (response) {
+                $("#product_id").val(product);
+                $("#vendor_idd").val(vendor);
+
+                // show-prescription-doc
+                var showPrescriptionDoc = '';
+                $.each(response, function (key, res) {
+                    showPrescriptionDoc += '<img src="'+res.prescription.proxy_url+'50/50'+res.prescription.image_path+'" alt="product-img" height="60">'
+                });
+                
+                $(".show-prescription-doc").html(showPrescriptionDoc);
+                $('#prescription_form').modal('show');
+            },
+            complete: function () {
+                $('.loader_box').hide();
+            }
+        });
+    });    
 
     $(document).on('click', '.submitPrescriptionForm', function (e) {
         e.preventDefault();
