@@ -1,6 +1,12 @@
 <section class="section-b-space ratio_asos" style="padding:0px;">
     <div class="collection-wrapper">
+
         <div class="container">
+            <button type="button" class="close mt-2" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+            <h2 class="category-head m-0" style="position:initial;">{{__("Select Vendors")}}</h2>
+            
             <div class="position-relative">
                 <div class="categories-product-list">
                     <div class="row">
@@ -10,27 +16,35 @@
                                     <div class="loading add_to_real_cart_loader" style="position: absolute;top: 30%;left: 45%; display:none;">
                                         <img style="width:30%;" src="{{asset('assets/images/loading_new.gif')}}" alt="">
                                     </div>
-                                    @forelse($vendors as $vendor)
-                                    
-                                        <section class="scrolling_section" id="{{ $vendor->slug }}">
+                                    @forelse($vendors as $vendorss)
+                                    @forelse($vendorss as $vendor)
+                                       
+                                       {{-- @php
+                                        dd($vendor['logo']['image_s3_url']);
+                                        @endphp --}}
+
+                                        <section class="scrolling_section" id="{{ $vendor['slug'] }}">
                                            
-                                            <?php $productDetails = \App\Models\Product::where('vendor_id', $vendor->id)->get(); ?>
-                                            @if (!empty($vendor->products))
+                                            @if (!empty($vendor['products_live']))
                                                 <div class="col-md-12 mb-3 mt-3 d-sm-flex">
                                                     <div
                                                         class="vender-icon mr-sm-1 text-center text-sm-left mb-2 mb-sm-0">
-                                                        <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}"
+                                                        <img src="{{ $vendor['logo']['image_s3_url']}}"
                                                         class="rounded-circle avatar-lg" alt="profile-image">
                                                     </div>
-
+                                                    @php
+                                                    $cnt = $vendor['all_count'];
+                                                    $cntSet = count($vendor['products_live'][0]['sets']);
+                                                    //dd($cnt.'-'.$cntSet);
+                                                    @endphp
                                                     <div class="ml-sm-1">
-                                                        <span class="badge @if($vendor->match == "Complete Match") badge-danger @else badge-primary @endif" style="font-size:10px;">
-                                                            {{ ($vendor->match != "") ? $vendor->match : 'Partial Match'; }}
+                                                        <span class="badge @if($cntSet == $cnt) badge-danger @else badge-primary @endif" style="font-size:10px;">
+                                                            {{ ($cntSet == $cnt) ? "Complete Match" : 'Partial Match'; }}
                                                         </span>
-                                                        <h4 style="color:black; padding-left:10px;"> {{ $vendor->name }} ({{ $vendor->products->count() }})</h4>
+                                                        <h4 style="color:black; padding-left:10px;"> {{ $vendor['name'] }} ({{ count($vendor['products_live'])}})</h4>
                                                         <ul class="vendor-info">
                                                             <li class="d-block vendor-location" style="font-size:12px; color:#6c757d;">
-                                                                <i class="icon-location"></i> {{ $vendor->address }}
+                                                                <i class="icon-location"></i> {{ $vendor['address'] }}
                                                             </li>
                                                            
                                                         </ul>
@@ -44,28 +58,28 @@
                                                                         $final_price = 0;
                                                                         $prod_ids = array();
                                                                         $variant_id = array();
-                                                                        $vendor_id = $vendor->id;
+                                                                        $vendor_id = $vendor['id'];
                                                                         $addon_id = array();
                                                                         $option_id = array();
-                                                                    @endphp
-                                                                    @foreach ($vendor->products as $prod)
-                                                                    <?php
-                                                                        array_push($prod_ids, $prod->id);
-                                                                      
-                                                                         $addon_price = 0; 
-                                                                        foreach($prod->sets as $set){
-                                                                            array_push($addon_id, $set->addon_id);
-                                                                            $addon_price = $set->setoptions->sum('price');
+                                                                        $addon_price = array(); 
 
-                                                                            foreach($set->setoptions as $key => $option){
-                                                                                array_push($option_id, $option->id );
+                                                                    @endphp
+                                                                    @foreach ($vendor['products_live'] as $prod)
+                                                                    <?php
+                                                                        array_push($prod_ids, $prod['id']);
+                                                                        foreach($prod['sets'] as $set){
+                                                                            array_push($addon_id, $set['addon_id']);
+                                                                            foreach($set['setoptions'] as $key => $option){
+                                                                                array_push($option_id, $option['id']);
+                                                                                array_push($addon_price, $option['price']??0); 
+                                                                                //echo $option['id'].'-'; 
                                                                             }
                                                                         } 
                                                                         $addon_id_new = implode(',',array_unique($addon_id));
                                                                         $option_id_new = implode(',',array_unique($option_id));
                                                                         $prod_ids_new = implode(',',array_unique($prod_ids));
                                                                         
-                                                                        $final_price += number_format($prod->variant_price+$addon_price * $prod->variant_multiplier, 2, '.', '');
+                                                                        $final_price += number_format(($prod['variant'][0]['price'])+array_sum($addon_price) , 2, '.', '');
                                                                     ?>
                                                                         
                                                                     @endforeach
@@ -79,7 +93,7 @@
                                                                 data-vendor_id="{{ $vendor_id }}"
                                                                 data-product_id="{{ $prod_ids_new}}"
                                                                 data-addonId="{{ $addon_id_new }}"
-                                                                data-option_id="{{ $option_id_new }}" href="javascript:void(0)">{{ __('Add') }}
+                                                                data-option_id="{{ $option_id_new }}" href="javascript:void(0)">{{ __('Proceed Button') }}
                                                                 </a>
                                                             </a>
                                                             </div>
@@ -92,6 +106,9 @@
                                                 <h4 class="mt-3 mb-3 text-center">No product found</h4>
                                             @endif
                                         </section>
+                                    @empty
+                                        <h4 class="mt-3 mb-3 text-center">No product found</h4>
+                                    @endforelse
                                     @empty
                                         <h4 class="mt-3 mb-3 text-center">No product found</h4>
                                     @endforelse

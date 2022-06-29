@@ -198,25 +198,15 @@
     <div class="row">
 
         
-
-        <div class="col-lg-9 col-xl-9">
-            <div class="">
-                
-                <div class="tab-content ">
-                   <div class="col-md-4">
-                        <select name="store_list" class="form-control" id="store_list">
-                            <option>{{__('Select Store')}}</option>
-                            @foreach($store_list_data as $key => $store)
-                                <option value="{{ $store['id']??0 }}"> {{ $store['name']??'' }}</option>
-                            @endforeach
-                        </select>
-                   </div>
-                   <div class="col-md-8" id="inventory_product_list">
-
-                   </div>
-
-                </div> <!-- end tab-content -->
-            </div> <!-- end card-box-->
+        <input type="hidden" name="vendor_slug" value="{{$vendor->slug}}" id="vendor_slug">
+        <div class="col-lg-4">
+            <select name="store_list" class="form-control mb-3" id="store_list">
+                <option>{{__('Select Store')}}</option>
+                @foreach($store_list_data as $key => $store)
+                    <option value="{{ $store['id']??0 }}"> {{ $store['name']??'' }}</option>
+                @endforeach
+            </select>
+            <div  id="inventory_product_list"></div>
 
         </div>
     </div>
@@ -227,13 +217,13 @@
     $("select[name='store_list']").change(function() {
         
         var vendor_id = $('#store_list :selected').val();
-       
+        var vendor_slug = $('#vendor_slug').val();
         var url = "{{ route('get.inventory.store.products')}}";
         $.ajax({
             url: url,
             type: "POST",
             dataType: "json",
-            data: {vendor_id: vendor_id},
+            data: {vendor_id: vendor_id,vendor_slug:vendor_slug},
             success: function(response) {
                 if (response.success == true) {
                     
@@ -244,6 +234,8 @@
             }
         });
     });
+
+    
     </script>
 
 @endsection

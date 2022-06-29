@@ -430,6 +430,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";
     var create_paytech_hash_url = "{{route('paytech.createHash')}}";
+    var create_dpo_tocken = "{{route('dpo.createTocken')}}";
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
@@ -454,6 +455,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
     var wallet_balance_insufficient_msg = "{{ __('Insufficient funds in wallet') }}";
     var user_wallet_balance = parseFloat("{{ $user_wallet_balance }}");
+    var stripe_ideal_publishable_key ='{{ $stripe_ideal_publishable_key }}';
 
 
     var inline='';

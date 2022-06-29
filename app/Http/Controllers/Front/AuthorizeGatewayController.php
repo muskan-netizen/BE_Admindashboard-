@@ -30,6 +30,7 @@ class AuthorizeGatewayController extends FrontController
 	public function beforePayment(Request $request)
     {
     	$data = $request->all();
+        Log::info($data);
         $data['come_from'] = 'app';
         $data['login_id'] = $this->login_id;
         $data['client_key'] = $this->client_key;

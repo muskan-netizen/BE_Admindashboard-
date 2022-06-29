@@ -4,9 +4,16 @@ $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->fir
 $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'];
 @endphp
 
-@section('css')
+@section('css-links')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+@endsection
+@section('css') 
+<style type="text/css">
+   .bgFourPage{ 
+    background-image : url({{getImageUrl(asset('assets/images/bannerFour.jpg'),'1920/1200')}});
+   } 
+</style>
 @endsection
 
 @section('content')

@@ -105,7 +105,7 @@ class UserSubscriptionController extends FrontController
         else{
             return response()->json(["status"=>"Error", "message" => __("Subscription plan not active")]);
         }
-        $code = array('stripe', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal');
+        $code = array('stripe', 'dpo', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay');
         $ex_codes = array('cod');
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {
@@ -120,6 +120,10 @@ class UserSubscriptionController extends FrontController
                 }elseif($payment_option->code == 'offline_manual'){
                     $json = json_decode($payment_option->credentials);
                     $payment_option->title = $json->manule_payment_title;
+                }elseif($payment_option->code == 'mycash'){
+                    $payment_option->title = __('Digicel MyCash');
+                }elseif($payment_option->code == 'windcave'){
+                    $payment_option->title = __('Windcave (Debit/Credit card)');
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);

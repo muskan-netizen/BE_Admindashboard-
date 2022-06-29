@@ -7,6 +7,7 @@
         <?php $ordertitle = 'Orders'; ?>
          <?php $hidereturn = 0; ?>
 @endswitch
+@php if($client_preference_detail->client_code == '67dcfd'){ $ordertitle = 'Orders'; } @endphp
 @extends('layouts.store', ['title' => __('My '.$ordertitle)])
 @section('css')
     <style type="text/css">
@@ -2021,6 +2022,7 @@
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
         var create_payphone_url = "{{route('payphone.createHash')}}";
         var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
+        var create_dpo_tocken = "{{route('dpo.createTocken')}}";
         var create_windcave_hash_url = "{{route('windcave.createHash')}}";
         var create_paytech_hash_url = "{{route('paytech.createHash')}}";
         var create_flutterwave_url = "{{route('flutterwave.createHash')}}";

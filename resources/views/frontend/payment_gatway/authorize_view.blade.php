@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/font-awesome.min.css')}}">
     <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
-    <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('css/payment.css')}}">
     <style>
         .spinner-overlay .page-spinner .circle-border {
             background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 33%, rgba(255, 255, 255, 1) 100%);
@@ -24,14 +24,14 @@
             }
         }
         .payment-top-haeder{
-            background: {{getClientPreferenceDetail()->web_color}}; 
+            background: '{{getClientPreferenceDetail()->web_color}}'; 
         }
         .btn-solid{
             padding: 13px 29px;
             color: #ffffff !important;
             letter-spacing: 0.05em;
             border: 2px solid var(--theme-deafult);
-            background: {{getClientPreferenceDetail()->web_color}};
+            background: '{{getClientPreferenceDetail()->web_color}}';
             -webkit-transition: background 300ms ease-in-out;
             transition: background 300ms ease-in-out;
         }
@@ -109,10 +109,10 @@ function paymentFormUpdate(opaqueData) {
     </div>
 </div>
 
-<div class="container">
+<div class="container al_payment_gateway">
     <div class="row">
         <div class="offset-lg-3 col-lg-6">
-            <form id="authorize-payment-form" action="{{route('payment.authorize.createPayment')}}" method="POST">
+            <form class="al_payment_gatewayForm" id="authorize-payment-form" action="{{route('payment.authorize.createPayment')}}" method="POST">
 
                 <div class="form-group mb-1 Error_message">
         

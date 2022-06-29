@@ -371,7 +371,7 @@ class PickupDeliveryController extends FrontController{
                      //Send message if ride is booked for friend
                     if($request->type == 1 && isset($request->friendPhoneNumber))
                     {
-                        $msg = "Hi ".$request->friendName??'User'.", ".$user->name." has booked a ride for you.";
+                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you.";
                         $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
                     }
 
@@ -431,6 +431,8 @@ class PickupDeliveryController extends FrontController{
                 }
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
+            Log::info("Request To Dispatch");
+            Log::info($request_to_dispatch);
             
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = User::find($order->user_id);

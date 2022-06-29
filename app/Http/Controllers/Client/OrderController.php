@@ -547,8 +547,8 @@ class OrderController extends BaseController
         $orderPlacedNo = '';
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-        
         try {
+
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
@@ -569,6 +569,7 @@ class OrderController extends BaseController
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
+                        \Log::info('11');
                         $order_dispatch = $this->checkIfanyProductLastMileon($request);
                         if ($order_dispatch && $order_dispatch == 1){
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
@@ -961,6 +962,7 @@ class OrderController extends BaseController
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 if ($prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
+
                     $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
                     if ($dispatch_domain_laundry && $dispatch_domain_laundry != false && $laundry == 0) {
 
@@ -1097,7 +1099,6 @@ class OrderController extends BaseController
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
                 $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
             }
-            \Log::info(json_encode( $postdata));
 
             $client = new Client([
                 'headers' => [
@@ -1108,7 +1109,6 @@ class OrderController extends BaseController
             ]);
 
             $url = $dispatch_domain->delivery_service_key_url;
-            \Log::info( $url);
 
             $res = $client->post(
                 $url . '/api/task/create',
@@ -1254,7 +1254,6 @@ class OrderController extends BaseController
     public function placeRequestToDispatchLaundry($order, $vendor, $dispatch_domain, $team_tag, $colm)
     {
         try {
-
             $order = Order::find($order);
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
@@ -1266,6 +1265,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'No';
                 $payable_amount = 0.00;
             }
+
 
 
             $dynamic = uniqid($order->id . $vendor);
@@ -1335,7 +1335,6 @@ class OrderController extends BaseController
                     'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
                 );
 
-
                 if (isset($order->schedule_dropoff) && !empty($order->schedule_dropoff)) {
                     $task_type = 'schedule';
                     $schedule_time = $order->schedule_dropoff ?? null;
@@ -1368,15 +1367,16 @@ class OrderController extends BaseController
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'request_type'=>$rtype??'P',
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted??'0'
             ];
-            if($order_vendor->is_restricted == 1)
-            {
-                $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
-                $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
-            }
 
+            // if($order_vendor->is_restricted == 1)
+            // {
+            //     $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+            //     $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+            // }
 
+            
             $client = new Client([
                 'headers' => [
                     'personaltoken' => $dispatch_domain->laundry_service_key,
@@ -1384,11 +1384,14 @@ class OrderController extends BaseController
                     'content-type' => 'application/json'
                 ]
             ]);
+
             $url = $dispatch_domain->laundry_service_key_url;
             $res = $client->post(
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
             );
+
+
             $response = json_decode($res->getBody(), true);
 
             if ($response && $response['task_id'] > 0) {
@@ -1523,8 +1526,8 @@ class OrderController extends BaseController
                     $order_product = OrderProduct::find($return->order_vendor_product_id);
                     $credit_amount = $order_product->price + $order_product->taxable_amount;
                     $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
-                    DB::commit();
                 }
+                DB::commit();
                 return $this->successResponse($returns, 'Updated.');
             }
             return $this->errorResponse('Invalid order', 200);

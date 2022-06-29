@@ -1057,5 +1057,8 @@
    "No Result Found":"No se han encontrado resultados",
    "Slot is required" : "Se requiere ranura",
    "Invalid schedule date time" :"Hora de fecha de programación no válida",
-   "Credit/Debit Card (Stripe)"  :  "Tarjeta de crédito/débito (Stripe)"
+   "Credit/Debit Card (Stripe)"  :  "Tarjeta de crédito/débito (Stripe)",
+   "Are you 18 or older?" : "¿Tienes 18 años o más?",
+   "Are you sure you want to continue?" : "¿Estás segura de que quieres continuar?"
+
 }

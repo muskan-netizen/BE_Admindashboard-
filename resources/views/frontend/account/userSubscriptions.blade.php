@@ -385,6 +385,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_dpo_subscription = "{{route('dpo.subscription')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";
@@ -406,7 +407,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
-
+    var stripe_ideal_publishable_key ='{{ $stripe_ideal_publishable_key }}';
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();

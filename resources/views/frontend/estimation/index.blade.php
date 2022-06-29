@@ -977,7 +977,6 @@
         });
 
         $(document).on('click', '.add_real_cart', function(){
-            
                 $('.add_to_real_cart_loader').show();
                 var url        = "{{ route('postCartRequestFromEstimation') }}";
                 var vendor_id  = $(this).attr("data-vendor_id");
@@ -985,18 +984,20 @@
                 var addon_id   = $(this).attr("data-addonId");
                 var option_id  = $(this).attr("data-option_id");
                 var quantity   = 1;
-            
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                        data: {
+                var data = {
                             "vendor_id":       vendor_id,
                             "product_id":      product_id,
                             "quantity":        quantity,
-                            "addon_id":         addon_id,
+                            "addonID":         addon_id,
                             "addonoptID":      option_id,
                             "from_estimation": true,
-                        },
+                        };
+                        // console.log(data);
+                        // return false;
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                        data: data,
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },

@@ -34,7 +34,7 @@ class PaymentMethodSeeder extends Seeder
               $payop = PaymentMethod::where('id', $option['id'])->first();
 
               if ($payop !== null) {
-                  $payop->update(['id' => $option['id'], 'name' => $option['name'],'image' => $option['image'],'is_show' => $option['is_show']]);
+                  $payop->update(['id' => $option['id'], 'name' => $option['name'],'image' => $option['image']]);
               } else {
                   $payop = PaymentMethod::create([
                     'id'      => $option['id'],

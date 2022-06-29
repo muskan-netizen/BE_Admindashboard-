@@ -17,7 +17,7 @@ use App\Models\EstimateProductAddon;
 use Illuminate\Support\Facades\Storage;
 use App\Models\EstimateProductTranslation;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client,ClientLanguage,EstimateAddonSet,EstimateAddonOption,EstimateAddonOptionTranslation,EstimateAddonSetTranslation};
+use App\Models\{Client,ClientLanguage, CsvQrcodeImport, EstimateAddonSet,EstimateAddonOption,EstimateAddonOptionTranslation,EstimateAddonSetTranslation, Product, ProductTranslation, QrcodeImport};
 
 class EstimationController extends BaseController{
     use ApiResponser;
@@ -90,6 +90,7 @@ class EstimationController extends BaseController{
                     $TagTranslation->slug = Str::slug($name, '-');
                     $TagTranslation->language_id = $language_id[$k];
                     $TagTranslation->estimate_product_id = $tag->id;
+                    $TagTranslation->price = $request->get('price');
                     $TagTranslation->save();
                 }
             }
@@ -149,9 +150,17 @@ class EstimationController extends BaseController{
                 $tag->icon = Storage::disk('s3')->put($this->folderName, $file, 'public');
                 $tag->category_id = $request->get('product_category');
             }
+            $pids = Product::where('global_product_id',$estimate_product_id)->get();
+            Product::where('global_product_id',$estimate_product_id)->update(['title'=>$request->name[0],'url_slug'=>Str::slug($request->name[0], '-')]);
+            //dd($pid);
+            if(isset($pids)){
+                foreach($pids as $pid)
+                {
+                    ProductTranslation::where('product_id',$pid->id)->update(['title'=>$request->name[0]]);
+                }
+            }
 
             $tag->save();
-            \Log::info($tag);
             $language_id = $request->language_id;
             EstimateProductTranslation::where('estimate_product_id', $estimate_product_id)->delete();
             foreach ($request->name as $k => $name) {
@@ -161,6 +170,7 @@ class EstimationController extends BaseController{
                     $TagTranslation->slug = Str::slug($name, '-');
                     $TagTranslation->language_id = $language_id[$k];
                     $TagTranslation->estimate_product_id = $tag->id;
+                    $TagTranslation->price = $request->get('price');
                     $TagTranslation->save();
                 }
             }
@@ -254,4 +264,18 @@ class EstimationController extends BaseController{
         Session::flash('success', 'Estimation logic updated.');
         return redirect()->back();
     }
+
+    public function barcode(Request $request)
+    {
+        try {
+
+            $codes = QrcodeImport::paginate(25);
+            $files = CsvQrcodeImport::get();
+            return view('backend.qrcode.index')->with(['codes' => $codes,'files'=>$files]);
+
+        } catch (Exception $e) {
+            return $this->errorResponse([], $e->getMessage());
+        }
+    }
+
 }
