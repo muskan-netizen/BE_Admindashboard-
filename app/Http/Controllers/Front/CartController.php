@@ -148,16 +148,23 @@ class CartController extends FrontController
     public function postCartRequestFromEstimation(Request $request)
     {
         $product_ids = explode(',', $request->product_id);
-        // \Log::info($request->all());
-        // dd('hi');
+
         $vendor_id = $request->vendor_id;
         $variant_id = array();
         $minimum_order_count = array();
         $addon_id = array();
         $option_id = array();
-        foreach($product_ids as $product_id ){
-            $product = Product::find($product_id);
+        $data = json_decode($request->addonoptID);
+        // \Log::info($request->addonoptID);
+        // foreach($data as $product_id ){
+        //     $product = Product::find(108);
+        //     \Log::info(json_encode($product));
+        // }
+        // dd('hi');
+        foreach($data as $product_id ){
 
+            $product = Product::find($product_id->pid);
+            //\Log::info($product->title.' - '.$product->id);
             $request->merge([
                 "product_id" => $product->id,
                 "variant_id" => $product->variant[0]->id,
@@ -165,30 +172,17 @@ class CartController extends FrontController
                 "minimum_order_count" => $product->minimum_order_count,
                 "from_estimation" => true
             ]);
-    
-            $addon_price = 0; 
 
-            foreach($product->sets as $set){
-                array_push($addon_id, strval($set->addon_id));
-                $addon_price = $set->setoptions->sum('price');
-    
-                foreach($set->setoptions as $key => $option){
-                    array_push($option_id, strval($option->id) );
-                }
-            } 
 
             $request->merge([
-                "addonID" => $addon_id
+                "addonID" => $product_id->addonAr
             ]);
 
             $request->merge([
-                "addonoptID" => array_unique($option_id)
+                "addonoptID" => $product_id->optAr
             ]);
-
-             //dd($request->toArray());
 
             $result = $this->postAddToCart($request);
-            // echo $result;
         }
 
     
