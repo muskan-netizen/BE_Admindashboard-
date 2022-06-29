@@ -982,5 +982,19 @@
   "Wishlists":"قوائم الامنيات",
   "Does this include a gift?":"هل هذا يشمل هدية",
   "Your ":"لك",
-  "Referral Code":"كود الإحالة"
+  "Referral Code":"كود الإحالة",
+  "Merchants" : "التجار",
+  "Reports" : "التقارير",
+  "Banners" : "لافتات",
+  "Campaigns" : "الحملات",
+  "Tools" : "أدوات",
+  "DB Audit Logs" : "سجلات تدقيق قاعدة البيانات",
+  "All Orders" : "جميع الطلبات",
+  "Cancel Order Request" : "طلب إلغاء الطلب",
+  "Payout Requests": "طلبات الدفع",
+  "Order Refunds" : "طلب المبالغ المستردة",
+  "Product Reviews" : "تعليقات المنتج",
+  "Product Performance Report" : "تقرير أداء المنتج",
+  "Web Banners" : "لافتات الويب",
+  "Mobile Banners" : "لافتات المحمول"
 }
