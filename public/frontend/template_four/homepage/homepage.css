@@ -197,8 +197,8 @@ body.al_body_template_four .menu_navigation_al_four .slick-next{right: 0;backgro
 body.al_body_template_four .vendor-products-wrapper .add_vendor_product{min-width: 80px;}
 /*search custom scrollbar css start here*/
 ::-webkit-scrollbar { width: 10px;}
-  /* Track */::-webkit-scrollbar-track {  background: #f1f1f1; }
-/* Handle */::-webkit-scrollbar-thumb {  background-color: var(--theme-deafult); }
+  /* Track */::-webkit-scrollbar-track {background: #f1f1f1;}
+/* Handle */::-webkit-scrollbar-thumb {background-color: var(--theme-deafult);}
   /*search css end here*/
 
 
