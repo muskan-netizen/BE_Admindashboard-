@@ -111,6 +111,8 @@
                 $openpay_private_key = (isset($creds->openpay_private_key)) ? $creds->openpay_private_key : '';
                 $openpay_public_key = (isset($creds->openpay_public_key)) ? $creds->openpay_public_key : '';
                 
+                $company_token = (isset($creds->company_token)) ? $creds->company_token : '';
+                $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -124,7 +126,7 @@
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
                             </div>
                         </div>
-                        @if ( (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify') && (strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!= 'windcave') && (strtolower($opt->code)!= 'payphone') && (strtolower($opt->code)!= 'offline_manual'))
+                        @if ( (strtolower($opt->code) != 'dpo') &&  (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify') && (strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!= 'windcave') && (strtolower($opt->code)!= 'payphone') && (strtolower($opt->code)!= 'offline_manual'))
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label>
@@ -955,7 +957,11 @@
                     @endif
                     @if ( (strtolower($opt->code) == 'openpay') )
                     <div class="mt-2" id="openpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
-                        <div class="row">
+                    <h6 class="mt-3">
+                        <span>{{ __('Webhook Url') }} : </span>
+                        <a href="javascript:;" class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.webhook.opnepay')}}</span></a>
+                    </h6>    
+                    <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="openpay_merchant_id" class="mr-3">{{ __("Merchant Id") }}</label>
@@ -975,6 +981,24 @@
                                 </div>
                             </div>
                             
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'dpo') )
+                    <div class="mt-2" id="dpo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="company_token" class="mr-3">{{ __("Company Token") }}</label>
+                                    <input type="text" name="company_token" id="company_token" class="form-control" value="{{$company_token}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="service_type" class="mr-3">{{ __("Service Type") }}</label>
+                                    <input type="text" name="service_type" id="service_type" class="form-control" value="{{$service_type}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     @endif

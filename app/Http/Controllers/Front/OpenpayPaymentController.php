@@ -82,7 +82,7 @@ class OpenpayPaymentController extends FrontController
             
         ]);
        
-        //pr($request->all());
+       // pr($request->all());
         $amount      = $request->amount;
         $amount      = $this->getDollarCompareAmount($amount);
         $cart_number =  str_replace(' ', '', $request->number);
@@ -91,15 +91,15 @@ class OpenpayPaymentController extends FrontController
         $user = Auth::user();
         $address = UserAddress::where('user_id', $user->id)->first() ;
         $order_number  = $request->order_number ?? generateOrderNo();
-        $payment_form  = $request->payment_form ?? 'cart';
+        $payment_from  = $request->payment_from ? $request->payment_from : 'cart';
         $card_id  = '';
         $errorMsg='';
-      
-        if($payment_form == 'cart'){
+      //pr($payment_from);
+        if($payment_from == 'cart'){
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $card_id =  $cart->id;
         }
-        
+        //pr($payment_from);
         //pr(Openpay::getProductionMode());
        try {
             Openpay::setId($this->openpay_merchant_id);
@@ -187,7 +187,7 @@ class OpenpayPaymentController extends FrontController
             //pr($openPayCustomerCart);
             // create charges tragi
             $order_info = [
-                'payment_form'=>  $payment_form ,
+                'payment_from'=>  $payment_from ,
                 'user_id'=> auth()->user()->id,
                 'subscription_id' =>$request->subscription_id ?? '',
                 'card_id' =>$card_id,
@@ -205,7 +205,7 @@ class OpenpayPaymentController extends FrontController
             $openPayCustomerCharges = $openPayCustomer->charges->create($chargeData);
         
              
-            if($payment_form == 'cart'){
+            if($payment_from == 'cart'){
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
             
                 if ($order) {
@@ -213,22 +213,22 @@ class OpenpayPaymentController extends FrontController
                     $returnUrl = route('order.success', $order->id);
                     return Redirect::to(url($returnUrl . $returnUrlParams))->with('success', 'Transaction has been completed successfully');
                 }
-            } elseif($payment_form == 'wallet'){
+            } elseif($payment_from == 'wallet'){
                 $returnUrl = route('user.wallet');
                 return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
             }
-            elseif($payment_form == 'tip'){
+            elseif($payment_from == 'tip'){
                 $returnUrl = route('user.orders');
                 return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
             }
-            elseif($payment_form == 'subscription'){
+            elseif($payment_from == 'subscription'){
                 $returnUrl = route('user.subscription.plans');
                 return Redirect::to(url($returnUrl))->with('success', 'Transaction has been completed successfully');
             }
         } catch (\Exception $e) {
             Log::info($e->getMessage());
             $errorMsg =$e->getMessage();
-            if($payment_form == 'cart'){
+            if($payment_from == 'cart'){
                 $order = Order::where('order_number', $order_number)->first();
                 if($order){
                     $user= user::find($order->user_id);
@@ -243,11 +243,11 @@ class OpenpayPaymentController extends FrontController
                 }
                 
                 return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled'.$errorMsg);
-            } elseif($payment_form == 'wallet'){
+            } elseif($payment_from == 'wallet'){
                 return Redirect::to(route('user.wallet'))->with('error', 'Transaction has been cancelled'.$errorMsg);
-            } elseif($payment_form == 'tip'){
+            } elseif($payment_from == 'tip'){
                 return Redirect::to(route('user.orders'))->with('error', 'Transaction has been cancelled'.$errorMsg);
-            } elseif($payment_form == 'subscription'){
+            } elseif($payment_from == 'subscription'){
                 return Redirect::to(route('user.subscription.plans'))->with('error', 'Transaction has been cancelled'.$errorMsg);
             }
             // $data = Session::get('opnepay_data');
@@ -269,13 +269,13 @@ class OpenpayPaymentController extends FrontController
                 $meta_data      = json_decode($request->transaction['description']);
                 
                 $cart_id        = $meta_data->card_id ? $meta_data->card_id : '';
-                $payment_form   = $meta_data->payment_form;
+                $payment_from   = $meta_data->payment_from;
                 $user_id        = $meta_data->user_id;
                 $transactionId  = $request->transaction['id'];
                 $order_number   = $request->transaction['order_id'];
                 $amount         = $request->transaction['amount'];
                 
-                if($payment_form == 'cart'){
+                if($payment_from == 'cart'){
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
                         $order->payment_status = 1;
@@ -302,7 +302,7 @@ class OpenpayPaymentController extends FrontController
                                         'description' => 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>',
                                         'order_number' => $order->order_number,
                                         'transaction_id' => $transactionId,
-                                        'payment_option' => 'Stripe'
+                                        'payment_option' => 'open-pay'
                                     ]);
                                 }
                             }
@@ -347,18 +347,18 @@ class OpenpayPaymentController extends FrontController
                         // Send Email
                         //   $this->successMail();
                     }
-                } elseif($payment_form == 'wallet'){
+                } elseif($payment_from == 'wallet'){
                     $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
                     $walletController = new WalletController();
                     $walletController->creditWallet($request);
                 }
-                elseif($payment_form == 'tip'){
+                elseif($payment_from == 'tip'){
                     $order_number = $charges[0]->metadata->order_number;
                     $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                     $orderController = new OrderController();
                     $orderController->tipAfterOrder($request);
                 }
-                elseif($payment_form == 'subscription'){
+                elseif($payment_from == 'subscription'){
                     $subscription = $charges[0]->metadata->subscription_id;
                     $request->request->add(['user_id' => $user_id, 'payment_option_id' => 19, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
@@ -372,6 +372,7 @@ class OpenpayPaymentController extends FrontController
             case 'charge.failed':
                     Log::info($request->all());
             break;
+
                 
             // ... handle other event types
             default:
