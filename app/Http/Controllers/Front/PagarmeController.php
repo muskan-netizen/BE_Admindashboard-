@@ -109,8 +109,7 @@ class PagarmeController extends FrontController
             }
             array_push($data['items'],$item);
             // dd($data);
-            $payment = $this->create_transaction_via_pix($data);
-            dd($payment);
+            $payment = $this->create_transaction_via_creditCard($data);
             $request['amount'] = $amount;
             if(!is_null($payment) && isset($payment->status) && $payment->status == 'paid')
             {
