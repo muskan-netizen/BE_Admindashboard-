@@ -82,12 +82,16 @@ body section.cab-banner-area {
 body[dir="rtl"] .menu-slider .slick-track {transform: translate3d(0px, 0px, 0px) !important;}
 body[dir=rtl] .slick-next{left: auto !important; right: -30px !important;}
 body[dir=rtl] .slick-prev{left: -30px !important;}
+body[dir="rtl"].al_body_template_two .menu-slider .slick-track{display: contents;}
 body[dir="rtl"].al_body_template_two .vendors .no-arrow .slick-next {right: -30px;left: auto;}
 body[dir="rtl"].al_body_template_two .vendors .no-arrow .slick-prev {left: -30px;right: auto;}
 body[dir="rtl"] .icon-nav ul li a i {margin-right: 5px !important;}
 body[dir="rtl"] .iti--allow-dropdown .iti__flag-container, body[dir="rtl"] .iti--separate-dial-code .iti__flag-container{
     right: auto !important;
     left: 0 !important;
+}
+body[dir="rtl"].al_body_template_two .footer-theme .sub-title h4 {
+    text-align: right;
 }
 body[dir="rtl"] .iti--separate-dial-code .iti__selected-dial-code{
     margin-right: 6px;
@@ -139,9 +143,7 @@ body[dir="rtl"].al_body_template_three .qty-box .input-group button i{
 body[dir="rtl"].al_body_template_three .alSingleProducts .product-right{text-align:right;margin-right: 10px;}
 body[dir="rtl"].al_body_template_three .product-description h6{text-align: right;}
 body[dir="rtl"] .inner_spacing .rating {right: auto !important;left: 2px;}
-body[dir="rtl"] .al .col-lg-5.pl-0 {
-    padding-right: 0px;
-}
+body[dir="rtl"] .al .col-lg-5.pl-0 {padding-right: 0px;}
 
 
 
