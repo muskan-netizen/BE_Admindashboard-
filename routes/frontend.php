@@ -229,11 +229,20 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/windcave', 'Front\WindcaveController@createHash')->name('windcave.createHash');
 	Route::get('payment/windcave/success', 'Front\WindcaveController@successPage')->name('windcave.success');
 	Route::get('payment/windcave/fail', 'Front\WindcaveController@failPage')->name('windcave.fail');
+	
+	//DPO routes 
+	Route::post('payment/dpo', 'Front\DpoController@createTocken')->name('dpo.createTocken');
+	Route::get('payment/dpo/redirect', 'Front\DpoController@successPage')->name('dpo.redirect');
+	Route::get('payment/dpo/success', 'Front\DpoController@successPage')->name('dpo.success');
+	Route::get('payment/dpo/fail', 'Front\DpoController@failPage')->name('dpo.fail');
 
 	//Paytech routes 
 	Route::post('payment/paytech', 'Front\PaytechController@createHash')->name('paytech.createHash');
 	Route::get('payment/paytech/success', 'Front\PaytechController@successPage')->name('paytech.success');
 	Route::get('payment/paytech/fail', 'Front\PaytechController@failPage')->name('paytech.fail');
+
+	Route::post('payment/dpo/wallet', 'Front\DpoController@createTocken')->name('dpo.createTocken');
+	Route::post('payment/dpo/subscription', 'Front\DpoController@createTocken')->name('dpo.subscription');
 	
 	//payPhone routes
 	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
