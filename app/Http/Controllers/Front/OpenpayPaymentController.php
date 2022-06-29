@@ -262,7 +262,7 @@ class OpenpayPaymentController extends FrontController
     {
         Log::info("openpay webhook worl");
        
-        Log::info($request->all());
+        //Log::info($request->all());
         
         switch ($request->type) {
             case 'charge.succeeded':
@@ -271,11 +271,13 @@ class OpenpayPaymentController extends FrontController
                 $cart_id        = $meta_data->card_id ? $meta_data->card_id : '';
                 $payment_from   = $meta_data->payment_from;
                 $user_id        = $meta_data->user_id;
+                $subscription_id= $meta_data->subscription_id;
                 $transactionId  = $request->transaction['id'];
                 $order_number   = $request->transaction['order_id'];
                 $amount         = $request->transaction['amount'];
-                
+                //Log::info($payment_from);
                 if($payment_from == 'cart'){
+                   // Log::info('in cart'.$payment_from);
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
                         $order->payment_status = 1;
@@ -348,21 +350,22 @@ class OpenpayPaymentController extends FrontController
                         //   $this->successMail();
                     }
                 } elseif($payment_from == 'wallet'){
+                    //Log::info('in wallet'.$payment_from);
                     $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
                     $walletController = new WalletController();
                     $walletController->creditWallet($request);
                 }
                 elseif($payment_from == 'tip'){
-                    $order_number = $charges[0]->metadata->order_number;
+                    //Log::info('in tip'.$payment_from);
                     $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                     $orderController = new OrderController();
                     $orderController->tipAfterOrder($request);
                 }
                 elseif($payment_from == 'subscription'){
-                    $subscription = $charges[0]->metadata->subscription_id;
+                    //Log::info('in subscription'.$payment_from);
                     $request->request->add(['user_id' => $user_id, 'payment_option_id' => 19, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
-                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
+                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription_id);
                 }
                 break;
             

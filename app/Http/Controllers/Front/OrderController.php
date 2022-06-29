@@ -1149,7 +1149,7 @@ class OrderController extends FrontController
             }
             $payable_amount = $payable_amount - $loyalty_amount_saved;
 
-            $ex_gateways_wallet = [4,36]; // stripe,mycash
+            $ex_gateways_wallet = [4,36,41]; // stripe,mycash
             $wallet_amount_used = 0;
             if ($user) {
                 if ($user->balanceFloat > 0) {
