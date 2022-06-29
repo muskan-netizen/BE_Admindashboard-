@@ -511,7 +511,6 @@ $(document).ready(function () {
         var selected_option = $("input[name='subscription_payment_method']:checked");
         // var subscription_id = $('#subscription_payment_form #subscription_id').val();
         var payment_option_id = selected_option.data("payment_option_id");
-        console.log(payment_option_id);
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
             // $('#subscription_payment').modal('hide');
@@ -4126,6 +4125,9 @@ $(document).ready(function () {
             case 40:
                 paymentViaUseRede('', payment_option_id, ''); 
             break;
+            case 42:
+                paymentViaDpoSubscription('', payment_option_id, ''); 
+            break;
         
         }
 
@@ -4523,6 +4525,25 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+            case '41':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    payWithOpenPay(address_id, payment_option_id, order);
+                }else{
+                    return false;
+                }
+            break;
+            case '42':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
+                if (order != '') {
+                    //payWithDpo
+                    payWithDpo(order);
+                }
+                else{
+                    return false;
+                }
+            break;
            
         
         }
@@ -4722,6 +4743,12 @@ $(document).ready(function () {
             break;
             case 40:
                 paymentViaUseRede('', payment_option_id, ''); 
+            break;
+            case 41:
+                payWithOpenPay('', payment_option_id, '');
+            break;
+            case 42:
+                paymentViaDpo('', payment_option_id, ''); 
             break;
 
         }
