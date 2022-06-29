@@ -968,11 +968,13 @@
     "Add Vendors": "Add Vendors",
     "Total Loyalty Card Spent": "Total Loyalty Card Spent",
     "Payout Requests": "Payout Requests",
+    "Order Refunds" :"Order Refunds",
     "Pending Payout Value": "Pending Payout Value",
     "Completed Payout Value": "Completed Payout Value",
     "Payout Type": "Payout Type",
     "Loyalty Card": "Loyalty Card",
     "Product Reviews": "Product Reviews",
+    "Product Performance Report": "Product Performance Report",
     "Average Rating": "Average Rating",
     "Total Reviews": "Total Reviews",
     "Upload Tutorials": "Upload Tutorials",
@@ -995,5 +997,13 @@
     "Mobbex": "Mobbex",
     "Mexican Peso": "Mexican Peso",
     "Details": "Details",
-    "Do you want to give a tip": "Do you want to give a tip"
+    "Do you want to give a tip": "Do you want to give a tip",
+    "Merchants" : "Merchants",
+    "Campaigns" : "Campaigns",
+    "Tools" : "Tools",
+    "DB Audit Logs" : "DB Audit Logs",
+    "All Orders" : "All Orders",
+    "Cancel Order Request" : "Cancel Order Request",
+    "Web Banners" : "Web Banners",
+    "Mobile Banners" : "Mobile Banners"
  }
