@@ -957,7 +957,11 @@
                     @endif
                     @if ( (strtolower($opt->code) == 'openpay') )
                     <div class="mt-2" id="openpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
-                        <div class="row">
+                    <h6 class="mt-3">
+                        <span>{{ __('Webhook Url') }} : </span>
+                        <a href="javascript:;" class="webhook_url"><span id="pwd_spn" class="password-span">{{route('payment.webhook.opnepay')}}</span></a>
+                    </h6>    
+                    <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="openpay_merchant_id" class="mr-3">{{ __("Merchant Id") }}</label>
@@ -981,7 +985,7 @@
                     </div>
                     @endif
                     @if ( (strtolower($opt->code) == 'dpo') )
-                    <div class="mt-2" id="dpo" @if($opt->status != 1) style="display:none" @endif>
+                    <div class="mt-2" id="dpo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
