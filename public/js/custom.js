@@ -4731,6 +4731,9 @@ $(document).ready(function () {
             case 40:
                 paymentViaUseRede('', payment_option_id, ''); 
             break;
+            case 41:
+                payWithOpenPay('', payment_option_id, ''); 
+            break;
 
         }
     }
