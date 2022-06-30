@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/font-awesome.min.css')}}">
     <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
-    <link rel="stylesheet" type="text/css" href="{{asset('css/payment.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
     <style>
         .spinner-overlay .page-spinner .circle-border {
             background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 33%, rgba(255, 255, 255, 1) 100%);
@@ -24,79 +25,37 @@
             }
         }
         .payment-top-haeder{
-            background: '{{getClientPreferenceDetail()->web_color}}';
+            background: {{getClientPreferenceDetail()->web_color}}; 
         }
         .btn-solid{
             padding: 13px 29px;
             color: #ffffff !important;
             letter-spacing: 0.05em;
             border: 2px solid var(--theme-deafult);
-            background: '{{getClientPreferenceDetail()->web_color}}';
+            background: {{getClientPreferenceDetail()->web_color}};
             -webkit-transition: background 300ms ease-in-out;
             transition: background 300ms ease-in-out;
         }
     </style>
 </head>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script type="text/javascript" src="https://www.simplify.com/commerce/v1/simplify.js"></script>
 <script type="text/javascript" src="{{asset('js/card.js')}}"></script>
+<script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script type="text/javascript">
-    function simplifyResponseHandler(data) {
-        console.log(data);
-        // return false;
-        var $paymentForm = $("#simplify-payment-form");
-        // Remove all previous errors
-        $(".error").remove();
-        // Check for errors
-        if (data.error) {
-            // Show any validation errors
-            if (data.error.code == "validation") {
-                var fieldErrors = data.error.fieldErrors,
-                        fieldErrorsLength = fieldErrors.length,
-                        errorList = "";
-                for (var i = 0; i < fieldErrorsLength; i++) {
-                    // errorList += "<div class='error'>Field: '" + fieldErrors[i].field +
-                    //         "' is invalid - " + fieldErrors[i].message + "</div>";
-                    errorList += "<div class='error'>"+ fieldErrors[i].message + "</div>";
-                }
-                // Display the errors
-                $paymentForm.after(errorList);
-            }
-            // Re-enable the submit button
-            $("#process-payment-btn").removeAttr("disabled");
-        } else {
-            // The token contains id, last4, and card type
-            var token = data["id"];
-            // Insert the token into the form so it gets submitted to the server
-            $paymentForm.append("<input type='hidden' name='simplifyToken' value='" + token + "' />");
-            // Submit the form to the server
-            $paymentForm.get(0).submit();
-        }
-    }
     $(document).ready(function() {
+        document.addEventListener('contextmenu', event => event.preventDefault());
+      
+
         number = document.querySelector('#cc-number');
         cvc = document.querySelector('#cc-cvc');
+        exp_month = document.querySelector('#cc-exp-month');
+        exp_year = document.querySelector('#cc-exp-year');
         Payment.formatCardNumber(number);
         Payment.formatCardCVC(cvc);
-        $("#simplify-payment-form").on("submit", function() {
-            var number = $("#cc-number").val();
-            // console.log(number.replace(/\s/g, ''));
-            // Disable the submit button
-            $("#process-payment-btn").attr("disabled", "disabled");
-            // Generate a card token & handle the response
-            SimplifyCommerce.generateToken({
-                key: "{{$data['public_key']}}",
-                card: {
-                    number: number.replace(/\s/g, ''),
-                    cvc: $("#cc-cvc").val(),
-                    expMonth: $("#cc-exp-month").val(),
-                    expYear: $("#cc-exp-year").val()
-                }
-            }, simplifyResponseHandler);
-            // Prevent the form from submitting
-            return false;
-        });
+        // Payment.formatCardExpiry(exp_month+"/"+exp_year);
+       
     });
+  
 </script>
 <body>
 
@@ -104,30 +63,49 @@
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
-                <img src="{{ getClientDetail()->logo_image_url }}" alt="" height="50">
+                <img src="{{ getClientDetail()->logo_image_url }}" alt="" height="50">  
             </div>
         </div>
     </div>
 </div>
 
-<div class="container al_payment_gateway">
+<div class="container">
+    @if(\Session::has('error'))
+        <div class="alert alert-danger">
+            <span>{!! \Session::get('error') !!}</span>
+        </div>
+    @endif
     <div class="row">
         <div class="offset-lg-3 col-lg-6">
-            <form class="al_payment_gatewayForm" id="simplify-payment-form" action="{{route('payment.simplify.createPayment')}}" method="POST">
-                <!-- The $10 amount is set on the server side -->
+            <form id="openpay_form" action="{{route('payment.opnepay.createPayment')}}" method="POST">
+            @csrf
                 <div class="form-group">
-                    <label>{{__('Credit Card Number')}}: </label>
-                    <input class="form-control" id="cc-number" type="text" maxlength="20" autocomplete="off" value="" autofocus />
+                    <label>{{__('Card Holder Name')}}: </label>
+                    <input class="form-control" id="cc-name" value ="{{ old('holder_name') }}" type="text" maxlength="20" autocomplete="off" name="holder_name" required autofocus />
+               
+                    @if($errors->first('holder_name'))
+                    <span class="form-error">{{$errors->first('holder_name')}}</span>
+                    @endif     
+                </div>
+                <div class="form-group">
+                    <label>{{__('Card Number')}}: </label>
+                    <input class="form-control" id="cc-number"  value ="{{ old('number') }}" type="text" maxlength="20" autocomplete="off" name="number" required autofocus />
+                    @if($errors->first('number'))
+                    <span class="form-error">{{$errors->first('number')}}</span>
+                    @endif 
                 </div>
                 <div class="form-group">
                     <label>{{__('CVC')}}: </label>
-                    <input class="form-control" id="cc-cvc" type="text" maxlength="4" autocomplete="off" value=""/>
+                    <input class="form-control" id="cc-cvc" value ="{{ old('cvc') }}" type="text" maxlength="4" autocomplete="off" name="cvc" required />
+                    @if($errors->first('cvc'))
+                    <span class="form-error">{{$errors->first('cvc')}}</span>
+                    @endif
                 </div>
                 <div class="form-group">
                     <label>{{__('Expiry Date')}}: </label>
                     <div class="row align-items-center">
                         <div class="col-sm-6">
-                            <select class="form-control" id="cc-exp-month">
+                            <select class="form-control" id="cc-exp-month" name="expMonth" required>
                                 <option value="01">Jan</option>
                                 <option value="02">Feb</option>
                                 <option value="03">Mar</option>
@@ -143,7 +121,7 @@
                             </select>
                         </div>
                         <div class="col-sm-6">
-                            <select class="form-control" id="cc-exp-year">
+                            <select class="form-control" id="cc-exp-year" name="expYear" required>
                                 @for($i=0; $i<10; $i++)
                                 <option value="{{date('y') + $i}}">{{date('Y') + $i}}</option>
                                 @endfor
@@ -151,16 +129,21 @@
                         </div>
                     </div>
                 </div>
+                
                 @forelse($data as $key=>$value)
                 <input type="hidden" name="{{$key}}" value="{{$value}}">
                 @empty
                 @endforelse
-                @csrf
-                <button id="process-payment-btn" class="btn btn-solid w-100 mt-3" type="submit">{{__('Process Payment')}}</button>
+
+                <input type="hidden" name="card_id" id="cc-card_id">
+                <button id="process-payment-btn" class="btn btn-solid w-100 mt-4" type="submit">{{__('Process Payment')}}</button>
             </form>
         </div>
     </div>
 </div>
-
+<script type="text/javascript" src="https://resources.openpay.mx/lib/openpay-data-js/1.2.38/openpay-data.v1.min.js"></script>
+<script type="text/javascript">
+var deviceDataId = OpenPay.deviceData.setup("openpay_form");
+</script>
 </body>
 </html>

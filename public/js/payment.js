@@ -1136,6 +1136,97 @@ $(document).ready(function() {
         });
     }
 
+    window.payWithDpo = function payWithDpo(order='')
+    {
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let total_amount = 0;
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscriptionId = $("input[name='subscription_id']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_from = '';
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            payment_from = 'cart';
+            var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            var rowData = 'amt='+total_amount+'&from='+payment_from;
+        }else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            subsId = subscriptionId.val();
+            payment_from = 'subscription';
+            var rowData = 'subsid='+subsId+'&from='+payment_from+'&amt='+total_amount;
+        }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+            var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
+        }
+        console.log('create_dpo_tocken_url', create_dpo_tocken_url);
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: create_dpo_tocken_url,
+            data: rowData,
+            success: function(resp) {
+               // console.log('resp',resp);
+                window.location.replace(resp);
+                // window.location.href = resp.href;
+          },
+          error: function(error) {
+              console.log(error);
+          }
+        
+        });
+    }
+    
+    window.paymentViaDpo = function paymentViaDpo(order='')
+    {
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let total_amount = 0;
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscriptionId = $("input[name='subscription_id']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_from = '';
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            payment_from = 'cart';
+            var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            var rowData = 'amt='+total_amount+'&from='+payment_from;
+        }else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            subsId = subscriptionId.val();
+            payment_from = 'subscription';
+            var rowData = 'subsid='+subsId+'&from='+payment_from+'&amt='+total_amount;
+        }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+            var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
+        }
+        
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: create_dpo_tocken,
+            data: rowData,
+            success: function(resp) {
+                if(resp != ''){
+                    window.location.replace(resp);
+                }else{
+                    alert('Tray Again');
+                }
+          },
+          error: function(error) {
+              console.log(error);
+          }
+        
+        });
+    }
     window.payWithPaytech = function payWithPaytech(order='')
     {
         let cartElement = $("input[name='cart_total_payable_amount']");
@@ -2017,6 +2108,102 @@ $(document).ready(function() {
     });
 }
 
+///////////////////////////Dpo payment Gateway //////////////////////////////
+window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id='', payment_option_id='', order='') {
+        
+    let total_amount = 0;
+    let tip = 0;
+    let cartElement = $("input[name='cart_total_payable_amount']");
+    let walletElement = $("input[name='wallet_amount']");
+
+    let product_name = $("#hidden_product_name").val();
+    let category_name = $("#category_name").val();
+
+
+    let subscriptionElement = $("input[name='subscription_amount']");
+    let tipElement = $("#cart_tip_amount");
+    let payment_form = '';
+    let returnParams = '';
+
+    let ajaxData = [];
+    if (path.indexOf("cart") !== -1) {
+        total_amount = cartElement.val();
+        payment_form = 'cart';
+        ajaxData.push(
+            {name: 'address_id', value: address_id},
+            {name: 'order_number', value: order.order_number},
+            {name: 'from', value: 'cart'},
+            {name: 'product_name', value: 'product_name'},
+            {name: 'category_name', value: 'category_name'}
+        );
+        returnParams += 'order=' + order.order_number;
+    } else if (path.indexOf("wallet") !== -1) {
+        total_amount = walletElement.val();
+        from = 'wallet';
+        ajaxData.push({name: 'from', value: 'wallet'});
+    } else if (path.indexOf("subscription") !== -1) {
+        total_amount = subscriptionElement.val();
+        from = 'subscription';
+        ajaxData = $("#subscription_payment_form").serializeArray();
+        ajaxData.push({name: 'from', value: 'subscription'});
+    } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+        total_amount = walletElement.val();
+        from = 'tip';
+        ajaxData.push( 
+            {name: 'from', value: 'tip'},
+            {name: 'order_number', value: $("#order_number").val()}
+        );
+        returnParams += 'order=' + $("#order_number").val();
+    }
+    ajaxData.push({ name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id }, { name: 'category_name', value: category_name },{ name: 'product_name', value: product_name },{name: 'payment_form', value:payment_form });
+    returnParams += '&amount=' + total_amount + '&from=' + payment_form;
+    $.ajax({
+        type: "POST",
+        dataType: 'json',
+        url: create_dpo_subscription,
+        data: ajaxData,
+        success: function(resp) {
+            // alert(123);
+            //console.log(resp);
+            // alert(resp);
+            
+            if (resp != '') {                   
+                window.location.replace(resp);
+            } else {
+                if (path.indexOf("cart") !== -1) {
+                    success_error_alert('error', resp.message, ".payment_response");
+                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                } else if (path.indexOf("wallet") !== -1) {
+                    success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                    $(".topup_wallet_confirm").removeAttr("disabled");
+                } else if (path.indexOf("subscription") !== -1) {
+                    success_error_alert('error', resp.message, "#subscription_payment_form .payment_response");
+                    $(".subscription_confirm_btn").removeAttr("disabled");
+                } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+                    success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                    $(".topup_wallet_confirm").removeAttr("disabled");
+                } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
+                    success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                    $(".topup_wallet_confirm").removeAttr("disabled");
+                }
+            }
+        },
+        error: function(error) {
+            var response = $.parseJSON(error.responseText);
+            if (path.indexOf("cart") !== -1) {
+                success_error_alert('error', response.message, ".payment_response");
+                $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+            } else if (path.indexOf("wallet") !== -1) {
+                success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                $(".topup_wallet_confirm").removeAttr("disabled");
+            } else if (path.indexOf("subscription") !== -1) {
+                success_error_alert('error', response.message, "#subscription_payment_form .payment_response");
+                $(".subscription_confirm_btn").removeAttr("disabled");
+            }
+        }
+    });
+}
+
 
 
     ///////////////////////////EaseBuzz payment Gateway //////////////////////////////
@@ -2492,5 +2679,62 @@ $(document).ready(function() {
         data.payment_option_id =40;
         data._token = $('input[name=_token]').val(); 
         $.redirect(userede_before_payment, data);
+    }
+
+    ///////////////////////////PayU payment Gateway //////////////////////////////
+    window.payWithOpenPay = function payWithOpenPay(address_id='', payment_option_id='', order='') {
+        console.log(default_country_code);
+        if(default_country_code != "MX" && default_country_code !="CO" && default_country_code !="PE" ){
+            console.log('openpay only accpoet default_country_code = MX,CO,PE');
+            if (path.indexOf("cart") !== -1) {
+                success_error_alert('error', 'Something went wrong!Please try again.', ".payment_response");
+                $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+            } else if (path.indexOf("wallet") !== -1) {
+                success_error_alert('error', 'Something went wrong!Please try again.', "#wallet_topup_form .payment_response");
+                $(".topup_wallet_confirm").removeAttr("disabled");
+            } else if (path.indexOf("subscription") !== -1) {
+                success_error_alert('error', 'Something went wrong!Please try again.', "#subscription_payment_form .payment_response");
+                $(".subscription_confirm_btn").removeAttr("disabled");
+            }
+            return false;
+        }
+        //return false;
+        let total_amount = 0;
+        let tip = 0;
+        let tipElement = $("#cart_tip_amount");
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let cart_id = $("#cart_total_payable_amount").data("cart_id");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        let walletElement = $("input[name='wallet_amount']");
+        let ajaxData = [];
+        let data = [];
+        
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            tip = tipElement.val();
+            data.tip = tip;
+            data.address_id = address_id;
+            data.payment_from = 'cart';
+            data.cart_id = cart_id;
+            data.order_number = order.order_number;
+
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            data.payment_from ='wallet';
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            // ajaxData = $("#subscription_payment_form").serializeArray();
+            data.subscription_id = subscription_id.val();
+            data.payment_from ='subscription';
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            data.payment_from ='tip';
+            data.order_number = $("#order_number").val();
+        }
+        data.amount = total_amount;
+        data.payment_option_id =payment_option_id;
+        data._token = $('input[name=_token]').val(); 
+        $.redirect(openpay_before_payment, data);
     }
 });
