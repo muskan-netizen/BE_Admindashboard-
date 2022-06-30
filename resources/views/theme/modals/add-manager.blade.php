@@ -60,11 +60,11 @@
                                 <p class="text-muted mt-3 mb-2">Permission to create task</p>
                                 <div class="radio radio-primary form-check-inline">
                                     <input type="radio" id="yes1" value="1" name="can_create_task" checked>
-                                    <label for="yes1"> Yes </label>
+                                    <label for="yes1"> {{__('Yes')}} </label>
                                 </div>
                                 <div class="radio radio-success form-check-inline">
                                     <input type="radio" id="no1" value="0" name="can_create_task">
-                                    <label for="no1"> No </label>
+                                    <label for="no1"> {{__('No')}} </label>
                                 </div>
                                 <span class="invalid-feedback" role="alert">
                                     <strong></strong>
@@ -80,11 +80,11 @@
                                 <p class="text-muted mt-3 mb-2">Permission to edit own tasks</p>
                                 <div class="radio radio-primary form-check-inline">
                                     <input type="radio" id="yes2" value="1" name="can_edit_task_created" checked>
-                                    <label for="yes2"> Yes </label>
+                                    <label for="yes2"> {{__('Yes')}} </label>
                                 </div>
                                 <div class="radio radio-success form-check-inline">
                                     <input type="radio" id="no2" value="0" name="can_edit_task_created">
-                                    <label for="no2"> No </label>
+                                    <label for="no2"> {{__('No')}} </label>
                                 </div>
                                 <span class="invalid-feedback" role="alert">
                                     <strong></strong>
@@ -100,11 +100,11 @@
                                 <p class="text-muted mt-3 mb-2">Permission to Edit any tasks</p>
                                 <div class="radio radio-primary form-check-inline">
                                     <input type="radio" id="yes3" value="1" name="can_edit_all" checked>
-                                    <label for="yes3"> Yes </label>
+                                    <label for="yes3"> {{__('Yes')}} </label>
                                 </div>
                                 <div class="radio radio-success form-check-inline">
                                     <input type="radio" id="no3" value="0" name="can_edit_all">
-                                    <label for="no3"> No </label>
+                                    <label for="no3"> {{__('No')}} </label>
                                 </div>
                                 <span class="invalid-feedback" role="alert">
                                     <strong></strong>
@@ -120,11 +120,11 @@
                                 <p class="text-muted mt-3 mb-2">Permission to Edit any tasks</p>
                                 <div class="radio radio-primary form-check-inline">
                                     <input type="radio" id="yes4" value="1" name="can_manage_unassigned_tasks" checked>
-                                    <label for="yes4"> Yes </label>
+                                    <label for="yes4"> {{__('Yes')}} </label>
                                 </div>
                                 <div class="radio radio-success form-check-inline">
                                     <input type="radio" id="no4" value="0" name="can_manage_unassigned_tasks">
-                                    <label for="no4"> No </label>
+                                    <label for="no4"> {{__('No')}} </label>
                                 </div>
                                 <span class="invalid-feedback" role="alert">
                                     <strong></strong>
@@ -140,11 +140,11 @@
                                 <p class="text-muted mt-3 mb-2">Permission to Edit any tasks</p>
                                 <div class="radio radio-primary form-check-inline">
                                     <input type="radio" id="yes5" value="1" name="can_edit_auto_allocation" checked>
-                                    <label for="yes5"> Yes </label>
+                                    <label for="yes5">{{__('Yes')}}</label>
                                 </div>
                                 <div class="radio radio-success form-check-inline">
                                     <input type="radio" id="no5" value="0" name="can_edit_auto_allocation">
-                                    <label for="no5"> No </label>
+                                    <label for="no5"> {{__('No')}} </label>
                                 </div>
                                 <span class="invalid-feedback" role="alert">
                                     <strong></strong>

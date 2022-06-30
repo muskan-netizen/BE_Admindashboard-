@@ -8,14 +8,12 @@
         padding-top: 20px;
         padding-bottom: 20px;
     }
+
 </style>
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
-</header>
+
 <style type="text/css">
     .productVariants .firstChild {
         min-width: 150px;
@@ -79,7 +77,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row my-md-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
                 @include('layouts.store/profile-sidebar')
@@ -104,12 +102,12 @@
                                         <h5 class="mt-0 mb-1">{{$user->name}}</h5>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 text-center text-md-right mt-3 mt-md-0">
+                                <div class="col-sm-6 text-right mt-0 mt-md-0">
                                     <button type="button" class="btn btn-solid openProfileModal">{{ __('Edit Profile') }}</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-box p-4 mb-3">
+                        <div class="card-box">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <h6 class="m-0">{{ __('About Me') }}</h6>
                             </div>
@@ -121,7 +119,7 @@
                         <div class="row welcome-msg justify-content-between">
                             <div class="col-12">
                                 <h4 class="d-inline-block m-0">
-                                    <span>{{ __('Your Referral Code') }}: {{(isset($userRefferal['refferal_code'])) ? $userRefferal['refferal_code'] : ''}}</span>
+                                    <span>{{ __('Your ') }} {{__(getNomenclatureName('Referral Code'))}}: {{(isset($userRefferal['refferal_code'])) ? $userRefferal['refferal_code'] : ''}}</span>
                                 </h4>
                                 <sup class="position-relative">
                                     <a class="copy-icon ml-2" id="copy_icon" data-url="{{url('/'.'?ref=')}}{{(isset($userRefferal['refferal_code'])) ? $userRefferal['refferal_code'] : ''}}" style="cursor:pointer;">
@@ -148,7 +146,7 @@
 
                                             <div class="info-text mb-2">
                                                 <label class="m-0">{{ __('Phone Number') }}</label>
-                                                <p>{{$user->phone_number}}</p>
+                                                <p>{{ '+'.$user->dial_code.$user->phone_number}}</p>
                                             </div>
 
                                             <div class="info-text mb-2">
@@ -239,6 +237,7 @@
                     separateDialCode: true,
                     hiddenInput: "full_number",
                     utilsScript: "{{asset('assets/js/utils.js')}}",
+                    initialCountry: "{{ Session::get('default_country_code','US') }}",
                 });
                 $('.dropify').dropify();
             },
@@ -257,9 +256,9 @@
         temp.val(url).select();
         document.execCommand("copy");
         temp.remove();
-        $("#copy_message").text("URL Copied!").show(); 
-        setTimeout(function(){ 
-            $("#copy_message").text('').hide(); 
+        $("#copy_message").text("{{ __('URL Copied!') }}").show();
+        setTimeout(function(){
+            $("#copy_message").text('').hide();
         }, 3000);
     });
 </script>

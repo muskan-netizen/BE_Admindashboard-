@@ -23,6 +23,9 @@ class AlterOrdersTableForScheduledDateTime extends Migration{
      */
     public function down()
     {
-        //
+        Schema::table('orders', function (Blueprint $table) {
+            $table->dropColumn('scheduled_date_time');
+        });
+        
     }
 }

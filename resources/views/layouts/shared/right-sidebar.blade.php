@@ -1,7 +1,7 @@
 <!-- Right Sidebar -->
 <div class="right-bar">
   <div data-simplebar class="h-100">
-  
+
       <!-- Nav tabs -->
       <ul class="nav nav-tabs nav-bordered nav-justified" role="tablist">
           <!-- <li class="nav-item">
@@ -24,7 +24,7 @@
       <!-- Tab panes -->
       <div class="tab-content pt-0">
           <div class="tab-pane" id="chat-tab" role="tabpanel">
-              
+
               <form class="search-bar p-3">
                   <div class="position-relative">
                       <input type="text" class="form-control" placeholder="Search...">
@@ -396,3 +396,105 @@
 
 <!-- Right bar overlay-->
 <div class="rightbar-overlay"></div>
+
+<!-- Modal -->
+<div class="modal fade received-orders" id="received_new_orders" tabindex="-1" aria-labelledby="received_ordersLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="received_ordersLabel">{{__('New Order Received')}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body pt-0">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/template" id="latest_order_template">    
+    
+    <div class="row">
+        <% _.each(orders, function(order, k){%>
+            <% if(order.vendors.length !== 0) { %>
+                <div class="col-xl-12"  id="latest_full_order_div<%= k %>">
+                    <% _.each(order.vendors, function(vendor, ve){%>
+                        <div class="row  <%= ve ==0 ? 'mt-0' : 'mt-2'%>" id="latest_single_order_div<%= k %><%= ve %>">
+                            <div class="col-12 order-hover-btn">
+
+                                <div id="update-single-status" class="my-2">
+                                    <% if(vendor.order_status_option_id == 1) { %>
+                                        <button class="update_order_status btn-info" data-full_div="#latest_full_order_div<%= k %>"  data-single_div="#latest_single_order_div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Accept') }}</button>
+                                        <button class="update_order_status btn-danger" data-full_div="#latest_full_order_div<%= k %>"  data-single_div="#latest_single_order_div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __("Reject") }}</button>
+                                        <% } else if(vendor.order_status_option_id == 2) { %>
+                                            <button class="update_order_status btn-warning" data-full_div="#latest_full_order_div<%= k %>"  data-single_div="#latest_single_order_div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="4" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __("Processing") }}</button>
+                                        <% } else if(vendor.order_status_option_id == 4) { %>
+                                                <button class="update_order_status btn-success" data-full_div="#latest_full_order_div<%= k %>"  data-single_div="#latest_single_order_div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="5" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __("Out For Delivery") }}</button>
+                                        <% } else if(vendor.order_status_option_id == 5) { %>
+                                            <button class="update_order_status btn-info" data-full_div="#latest_full_order_div<%= k %>"  data-single_div="#latest_single_order_div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="6" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __("Delivered") }}</button>
+                                        <% } else { %>
+
+                                    <% } %>
+                                </div>
+
+                                <a href="<%= vendor.vendor_detail_url %>" class="row order_detail order_detail_data align-items-top pb-1 mb-0 card-box no-gutters h-100">
+                                    <span class="left_arrow pulse">
+                                    </span>
+                                    <div class="col-5 col-sm-3">
+                                        <h5 class="m-0"><%= vendor.vendor_name %></h5>
+                                        <ul class="status_box mt-1 pl-0">
+                                            <li>
+                                                <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
+                                                <label class="m-0 in-progress"><%= vendor.order_status %></label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-7 col-sm-6">
+                                        <div class="row no-gutters product_list align-items-center flex-wrap">
+                                            <% _.each(vendor.products, function(product, pr){%>
+                                                <div class="col-4 text-center mb-2">
+                                                    <div class="list-img">
+                                                        <img src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
+                                                        <span class="item_no position-absolute">x<%= product.quantity %></span>
+                                                    </div>
+                                                    <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
+                                                    <label class="items_price">{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(product.price) %></label>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 mt-md-0 mt-sm-2">
+                                        <ul class="price_box_bottom m-0 p-0">
+                                            <li class="d-flex align-items-center justify-content-between">
+                                                <label class="m-0">Total</label>
+                                                <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(vendor.subtotal_amount) %></span>
+                                            </li>
+                                            <li class="d-flex align-items-center justify-content-between">
+                                                <label class="m-0">Promocode</label>
+                                                <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(vendor.discount_amount) %></span>
+                                            </li>
+                                            <li class="d-flex align-items-center justify-content-between">
+                                                <label class="m-0">Delivery</label>
+                                                <% if(vendor.delivery_fee !== null) { %>
+                                                <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(vendor.delivery_fee) %></span>
+                                                <% }else { %>
+                                                    <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }} 0.00</span>
+                                                <% } %>
+                                            </li>
+                                            <li class="grand_total d-flex align-items-center justify-content-between">
+                                                <label class="m-0">Amount</label>
+                                                <span>{{ App\Models\ClientCurrency::getAdminCurrencySymbol() }}<%= Helper.formatPrice(vendor.payable_amount) %></span> 
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+        <% }); %>
+    </div>
+</script>

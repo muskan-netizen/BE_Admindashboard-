@@ -65,6 +65,20 @@ class TypeSeeder extends Seeder
                 'image' => 'dispatcher.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
             ],
+            [
+                'id' => 8,
+                'sequence' => 7,
+                'title' => 'On Demand Service',
+                'image' => 'ondemand.png',
+                'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+            ],
+            [
+                'id' => 9,
+                'sequence' => 8,
+                'title' => 'Laundry',
+                'image' => 'laundry.png',
+                'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+            ]
         );
         foreach ($types as $type) {
            Type::upsert($type, ['id', 'title','description', 'sequence','image']);

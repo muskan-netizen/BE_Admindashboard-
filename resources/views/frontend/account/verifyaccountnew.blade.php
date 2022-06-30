@@ -12,10 +12,7 @@
       background: #dddddd;
     }
 </style>
-<header>
-    <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
-</header>
+
 <section class="wrapper-main mb-5 py-lg-5">
     <div class="container">
         <script type="text/template" id="email_verified_template">
@@ -58,6 +55,9 @@
                                 <div class="row text-center mt-2">
                                     <div class="col-12 resend_txt">
                                         <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
+                                        
+                                        <div class="countdown text-danger"></div>
+                                        
                                         <a class="verifyEmail" href="javascript:void(0)"><u>{{__('RESEND')}}</u></a>
                                     </div>
                                     <div class="col-md-12 mt-3">
@@ -78,12 +78,12 @@
                 @if($user->is_phone_verified == 0)
                 <img src="{{asset('front-assets/images/phone-otp.svg')}}">
                 <h3 class="mb-2">{{__('Verify Phone')}}</h3>
-                <p>{{__('Enter the code we just sent you on your email address')}}</p>
+                <p>{{__('Enter the code we just sent you on your phone number')}}</p>
                 <div class="row mt-3">
                     <div class="offset-xl-3 col-xl-6 text-left">
                         <div class="verify_id input-group mb-3 radius-flag">
                             <input type="tel" class="form-control" id="phone_number" value="{{'+'.Auth::user()->dial_code.Auth::user()->phone_number}}" disabled="">
-                            <input type="hidden" id="dial_code" value="{{Auth::user()->dial_code}}">
+                            <input type="hidden" id="dial_code" value="{{Auth::user()->dial_code ?? (Session::get('default_country_phonecode','1'))}}">
                             <div class="input-group-append position-absolute position-right">
                                 <a class="input-group-text" id="edit_phone" href="javascript:void(0)">{{__('Edit')}}</a>
                             </div>
@@ -103,6 +103,7 @@
                         <div class="row text-center mt-2">
                             <div class="col-12 resend_txt">
                                 <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
+                                <div class="phonecountdown text-danger"></div>
                                 <a class="verifyPhone" href="javascript:void(0)"><u>{{__('RESEND')}}</u></a>
                             </div>
                             <div class="col-md-12 mt-3">
@@ -120,7 +121,7 @@
             </div>
         </div>
     </div>
-</section> 
+</section>
 @endsection
 @section('script')
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
@@ -134,6 +135,7 @@
         separateDialCode: true,
         hiddenInput: "full_number",
         utilsScript: "{{asset('assets/js/utils.js')}}",
+        initialCountry: "{{ Session::get('default_country_code','US') }}",
     });
     $(document).ready(function() {
         $("#phone_number").keypress(function(e) {
@@ -210,8 +212,29 @@
             success: function(response) {
                 if($type == 'email'){
                     $('.verifyEmail').removeClass('disabled').html(resend_text);
+                    
+                    $('.verifyEmail').css('display','none');
+                    $('.countdown').html('');
+                    $('.countdown').css('display','');
+                    startEmailTimer();
+                    setTimeout( function() {
+                        $('.verifyEmail').css('display','');
+                        $('.countdown').css('display','none');
+                        $('.countdown').html('');
+                    }, 61000 );
+
                 }else{
                     $('.verifyPhone').removeClass('disabled').html(resend_text);
+                    
+                    $('.verifyPhone').css('display','none');
+                    $('.phonecountdown').html('');
+                    $('.phonecountdown').css('display','');
+                    startPhoneTimer();
+                    setTimeout( function() {
+                        $('.verifyPhone').css('display','');
+                        $('.phonecountdown').css('display','none');
+                        $('.phonecountdown').html('');
+                    }, 61000 );
                 }
                 if($type == 'email'){
                     $('.edit_email_feedback').html(response.message);
@@ -292,5 +315,51 @@
             },
         });
     });
+
+    function startEmailTimer()
+    {
+        var timer2 = "1:01";
+        var interval = setInterval(function() {
+
+
+        var timer = timer2.split(':');
+        //by parsing integer, I avoid all extra string processing
+        var minutes = parseInt(timer[0], 10);
+        var seconds = parseInt(timer[1], 10);
+        --seconds;
+        minutes = (seconds < 0) ? --minutes : minutes;
+        if (minutes < 0) clearInterval(interval);
+        seconds = (seconds < 0) ? 59 : seconds;
+        seconds = (seconds < 10) ? '0' + seconds : seconds;
+        //minutes = (minutes < 10) ?  minutes : minutes;
+        $('.countdown').html(minutes + ':' + seconds);
+        timer2 = minutes + ':' + seconds;
+        }, 1000);
+    }
+
+    function startPhoneTimer()
+    {
+        var timer2 = "1:01";
+        var interval = setInterval(function() {
+
+
+        var timer = timer2.split(':');
+        //by parsing integer, I avoid all extra string processing
+        var minutes = parseInt(timer[0], 10);
+        var seconds = parseInt(timer[1], 10);
+        --seconds;
+        minutes = (seconds < 0) ? --minutes : minutes;
+        if (minutes < 0) clearInterval(interval);
+        seconds = (seconds < 0) ? 59 : seconds;
+        seconds = (seconds < 10) ? '0' + seconds : seconds;
+        //minutes = (minutes < 10) ?  minutes : minutes;
+        $('.phonecountdown').html(minutes + ':' + seconds);
+        timer2 = minutes + ':' + seconds;
+        }, 1000);
+    }
+
+    
+                                            
+                                        
 </script>
 @endsection

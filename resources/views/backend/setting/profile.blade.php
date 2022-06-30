@@ -14,7 +14,7 @@
         z-index: 5;
     }
 
-    .input-group .intl-tel-input .form-control {
+    .input-group .intl-tel-input .form-control al_box_height {
         border-top-left-radius: 4px;
         border-top-right-radius: 0;
         border-bottom-left-radius: 4px;
@@ -24,12 +24,12 @@
 @endsection
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid profile-page">
 
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Profile</h4>
+                <h4 class="page-title">{{ __("Profile") }}</h4>
             </div>
         </div>
     </div>
@@ -49,47 +49,60 @@
         @endif
     </div>
     <div class="row">
-        @if(Auth::user()->is_superadmin == 1)
-        <div class="col-md-12">
+        @if(Auth::user()->is_superadmin == 1) 
+        <div class="col-md-10 col-xl-7 col-lg-8">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">Organization details</h4>
-                    <p class="sub-header">
-                        View and edit your organization's profile details.
-                    </p>
                     <form id="UpdateClient" method="post" action="{{route('client.profile.update',Auth::user()->code)}}" enctype="multipart/form-data">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="mb-0">
+                            <h4 class="header-title">{{ __("Organization details") }}</h4>
+                            <p class="sub-header">
+                                {{ __("View and edit your organization's profile details.") }}
+                            </p>
+                        </div>
+                       
+                        <button type="submit" class=" mt-3 btn btn-info waves-effect waves-light">{{ __("Update") }}</button>
+                     </div>
+
                         @method('PUT')
                         @csrf
                         <div class="row mb-2 d-flex align-items-center">
                             <div class="col-md-4 positoin-relative">
-                                <label>Upload Logo</label>
-                                <input type="file" accept="image/*" data-plugins="dropify" name="logo" data-default-file="{{$client->logo['proxy_url'] . '300/100' . $client->logo['image_path']}}" />
-                                <label class="logo-size d-block text-right mt-1">Image Size 300x100</label>
+                                <label>{{ __("Upload Logo") }}</label>
+                                <input type="file" accept="image/png, image/gif, image/jpeg, image/jpg" data-plugins="dropify" name="logo" data-default-file="{{$client->logo['image_fit'] . '300/100' . $client->logo['image_path']}}" />
+                                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 300x100</label>
                             </div>
-                            <div class="offset-2 col-md-6">
+                            <div class="offset-1 col-md-7">
                                 <div class="row">
                                     <div class="col-md-6 mb-2">
                                         <div class="form-group">
-                                        <p class="sub-header">Short Code </p>
+                                        <p class="sub-header">{{ __("Short Code") }} </p>
                                             <h1 class="control-label">{{Auth::user()->code}}</h1>
-                                        </div> 
+                                        </div>
                                     </div>
                                     <div class="col-md-6 mb-2">
+                                        @if(isset($client_preference_detail->ios_link) && !empty($client_preference_detail->ios_link))
                                         <div class="text-center mb-3">
-                                            <a href="#" target="_blank"><img src="{{asset('assets/images/iosstore.png')}}" alt="image" > </a>
+                                            <a href="{{ $client_preference_detail->ios_link }}" target="_blank"><img src="{{asset('assets/images/iosstore.png')}}" alt="image" > </a>
                                         </div>
+                                        @endif
+
+                                        @if(isset($client_preference_detail->android_app_link) && !empty($client_preference_detail->android_app_link))
                                         <div class="text-center">
-                                            <a href="#" target="_blank"><img src="{{asset('assets/images/playstore.png')}}" alt="image" > </a>
+                                            <a href="{{ $client_preference_detail->android_app_link }}" target="_blank"><img src="{{asset('assets/images/playstore.png')}}" alt="image" > </a>
                                         </div>
+                                        @endif
+
                                     </div>
-                                </div>                              
+                                </div>
                             </div>
                         </div>
                         <div class=" row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="name" class="control-label">NAME</label>
-                                    <input type="text" class="form-control" name="name" id="name" value="{{ old('name', Auth::user()->name ?? '')}}" placeholder="John Doe">
+                                    <label for="name" class="control-label">{{ __("NAME") }}</label>
+                                    <input type="text" class="form-control al_box_height" name="name" id="name" value="{{ old('name', Auth::user()->name ?? '')}}" placeholder="John Doe">
                                     @if($errors->has('name'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('name') }}</strong>
@@ -97,10 +110,10 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="email" class="control-label">EMAIL</label>
-                                    <input type="email" class="form-control" id="email" name="email" value="{{ old('email', Auth::user()->email ?? '')}}" placeholder="Enter email address" disabled="" style="cursor:not-allowed;">
+                                    <label for="email" class="control-label">{{ __("EMAIL") }}</label>
+                                    <input type="email" class="form-control al_box_height" id="email" name="email" value="{{ old('email', Auth::user()->email ?? '')}}" placeholder="Enter email address" disabled="" style="cursor:not-allowed;">
                                     @if($errors->has('email'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('email') }}</strong>
@@ -108,11 +121,11 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="phone_number" class="control-label">CONTACT NUMBER</label>
+                                    <label for="phone_number" class="control-label">{{ __("CONTACT NUMBER") }}</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" name="phone_number" id="phone_number" value="{{ old('phone_number', Auth::user()->phone_number ?? '')}}">
+                                        <input type="text" class="form-control al_box_height" name="phone_number" id="phone_number" value="{{ old('phone_number', Auth::user()->phone_number ?? '')}}">
                                     </div>
                                     @if($errors->has('phone_number'))
                                     <span class="text-danger" role="alert">
@@ -121,10 +134,10 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="company_address" class="control-label">COMPANY ADDRESS</label>
-                                    <input type="text" class="form-control" id="company_address" name="company_address" value="{{ old('company_address', $client->company_address ?? '')}}" placeholder="Enter company address">
+                                    <label for="company_address" class="control-label">{{ __("COMPANY ADDRESS") }}</label>
+                                    <input type="text" class="form-control al_box_height" id="company_address" name="company_address" value="{{ old('company_address', $client->company_address ?? '')}}" placeholder="Enter company address">
                                     @if($errors->has('company_address'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('company_address') }}</strong>
@@ -132,10 +145,10 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="company_name" class="control-label">COMPANY NAME</label>
-                                    <input type="text" class="form-control" name="company_name" id="company_name" value="{{ old('company_name', $client->company_name ?? '')}}" placeholder="Enter company name">
+                                    <label for="company_name" class="control-label">{{ __("COMPANY NAME") }}</label>
+                                    <input type="text" class="form-control al_box_height" name="company_name" id="company_name" value="{{ old('company_name', $client->company_name ?? '')}}" placeholder="Enter company name">
                                     @if($errors->has('company_name'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('company_name') }}</strong>
@@ -143,15 +156,15 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group mb-3" id="countryInput">
-                                    <label for="country">COUNTRY</label>
+                                    <label for="country">{{ __("COUNTRY") }}</label>
                                     @if($errors->has('country'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('country') }}</strong>
                                     </span>
                                     @endif
-                                    <select class="form-control" id="country" name="country_id" value="{{ old('country', $client->id ?? '')}}" placeholder="Country">
+                                    <select class="form-control al_box_height" id="country" name="country_id" value="{{ old('country', $client->id ?? '')}}" placeholder="Country">
                                         @foreach($countries as $code=> $country)
                                             <option value="{{ $country->id }}" @if($client->country_id == $country->id) selected @endif>{{ $country->name }}</option>
                                         @endforeach
@@ -162,18 +175,18 @@
                                 </div>
                             </div>
 
-                
-                            <div class="col-md-6">
+
+                            <div class="col-md-4">
                                 <div class="form-group mb-3" id="timezoneInput">
-                                    <label for="timezone">TIMEZONE</label>
+                                    <label for="timezone">{{ __("TIMEZONE") }}</label>
                                     @if($errors->has('timezone'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('timezone') }}</strong>
                                     </span>
                                     @endif
-                                    <select class="form-control" id="timezone" name="timezone" value="{{ old('timezone', $client->timezone ?? '')}}" placeholder="Timezone">
+                                    <select class="form-control al_box_height" id="timezone" name="timezone" value="{{ old('timezone', $client->timezone ?? '')}}" placeholder="Timezone">
                                         @foreach($tzlist as $tz)
-                                        <option value="{{ $tz }}" @if($client->timezone == $tz) selected @endif>{{ $tz }}</option>
+                                        <option value="{{ $tz->timezone }}" @if($client->timezone == $tz->timezone) selected @endif>{{ $tz->timezone }} {{ $tz->diff_from_gtm }}</option>
                                         @endforeach
                                     </select>
                                     <span class="invalid-feedback" role="alert">
@@ -182,21 +195,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button type="submit" class="btn btn-info waves-effect waves-light">Update</button>
-                            </div>
-                        </div>
                     </form>
                 </div>
             </div>
-        </div>
+        </div> 
         @endif
-        
-      
+
+
     </div>
 
-    
+
 
 </div> <!-- container -->
 @endsection
@@ -234,5 +242,5 @@
     });
 </script>
 @endsection
-    
+
 

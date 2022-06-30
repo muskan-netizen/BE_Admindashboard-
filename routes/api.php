@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -15,6 +16,13 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Testing by ovi
+
+
 $prefix = 'v1';
+$prefix_v = 'v2';
 require_once $prefix."/auth.php";
 require_once $prefix."/guest.php";
+require_once $prefix_v."/auth.php";
+require_once $prefix_v."/guest.php";

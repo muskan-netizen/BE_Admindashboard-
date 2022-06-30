@@ -13,6 +13,10 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        Commands\CartReminder::class,
+        Commands\AutoRejectOrders::class,
+        Commands\SetDummyDataForDemo::class,
+        Commands\RejectOrderNotification::class
         //
     ];
 
@@ -24,6 +28,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('cart:reminder')->hourly();
+        $schedule->command('auto:reject_order')->everyMinute();
+        $schedule->command('auto:reject_order_notifi')->everyMinute();
+        $schedule->command('set_default_dummy:data')->dailyAt('00:30');
+        $schedule->command('send_campaign:notification')->everyMinute();
         // $schedule->command('inspire')->hourly();
     }
 

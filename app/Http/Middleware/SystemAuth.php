@@ -37,7 +37,10 @@ class SystemAuth
                 abort(404);
             }
 
-            $user = User::where('auth_token', $token)->first();
+            $user = User::whereHas('device',function  ($qu) use ($token){
+                $qu->where('access_token', $token);
+            })->first();
+            
             if(!$user)
             {
                 return response()->json(['error' => 'Invalid Session', 'message' => 'Session has been expired.'], 401);

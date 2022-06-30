@@ -25,7 +25,7 @@ class UserSubscriptionController extends FrontController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function __construct(request $request)
+    public function __construct()
     {
         $preferences = ClientPreference::where(['id' => 1])->first();
         if((isset($preferences->subscription_mode)) && ($preferences->subscription_mode == 0)){
@@ -59,7 +59,11 @@ class UserSubscriptionController extends FrontController
                 $subFeaturesList = array();
                 if($sub->features->isNotEmpty()){
                     foreach($sub->features as $feature){
-                        $subFeaturesList[] = $feature->feature->title;
+                        $title = $feature->feature->title;
+                        if($feature->feature_id == 2){
+                            $title = $feature->percent_value . $title;
+                        }
+                        $subFeaturesList[] = $title;
                     }
                     unset($sub->features);
                 }
@@ -83,10 +87,14 @@ class UserSubscriptionController extends FrontController
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         $sub_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
         if($sub_plan){
-            $subFeaturesList = '<ul>';
+            $subFeaturesList = '<ul class="list-unstyled">';
             if($sub_plan->features->isNotEmpty()){
                 foreach($sub_plan->features as $feature){
-                    $subFeaturesList = $subFeaturesList.'<li><i class="fa fa-check"></i><span class="ml-1">'.$feature->feature->title.'</span></li>';
+                    $title = $feature->feature->title;
+                    if($feature->feature_id == 2){
+                        $title = $feature->percent_value . $title;
+                    }
+                    $subFeaturesList = $subFeaturesList.'<li class="d-block"><i class="fa fa-check"></i><span class="ml-1">'.$title.'</span></li>';
                 }
                 unset($sub_plan->features);
             }
@@ -97,12 +105,23 @@ class UserSubscriptionController extends FrontController
         else{
             return response()->json(["status"=>"Error", "message" => __("Subscription plan not active")]);
         }
-        $code = array('stripe');
+        $code = array('stripe', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash');
         $ex_codes = array('cod');
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {
             if( (in_array($payment_option->code, $ex_codes)) || (!empty($payment_option->credentials)) ){
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
+                if($payment_option->code == 'stripe'){
+                    $payment_option->title = 'Credit/Debit Card (Stripe)';
+                }elseif($payment_option->code == 'kongapay'){
+                    $payment_option->title = 'Pay Now';
+                }elseif($payment_option->code == 'mvodafone'){
+                    $payment_option->title = 'Vodafone M-PAiSA';
+                }elseif($payment_option->code == 'offline_manual'){
+                    $json = json_decode($payment_option->credentials);
+                    $payment_option->title = $json->manule_payment_title;
+                }
+                $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
             }
             else{
@@ -119,9 +138,11 @@ class UserSubscriptionController extends FrontController
      */
     public function checkActiveSubscription(Request $request, $domain = '', $slug = '')
     {
+        $now = Carbon::now()->toDateString();
         $userActiveSubscription = SubscriptionInvoicesUser::with(['plan'])
                                 ->whereNull('cancelled_at')
                                 ->where('user_id', Auth::user()->id)
+                                ->where('end_date', '>=', $now )
                                 ->orderBy('end_date', 'desc')->first();
         if( ($userActiveSubscription) && ($userActiveSubscription->plan->slug != $slug) ){
             return $this->errorResponse(__('You cannot buy two subscriptions at the same time'), 402);
@@ -136,10 +157,14 @@ class UserSubscriptionController extends FrontController
      */
     public function purchaseSubscriptionPlan(Request $request, $domain = '', $slug = '')
     {
-        $user = Auth::user();
+        if( (isset($request->user_id)) && (!empty($request->user_id)) ){
+            $user = User::find($request->user_id);
+        }else{
+            $user = Auth::user();
+        }
         $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
         $last_subscription = SubscriptionInvoicesUser::with(['plan', 'features.feature'])
-            ->where('user_id', Auth::user()->id)
+            ->where('user_id', $user->id)
             ->where('subscription_id', $subscription_plan->id)
             ->orderBy('end_date', 'desc')->first();
         if( ($user) && ($subscription_plan) ){
@@ -179,21 +204,31 @@ class UserSubscriptionController extends FrontController
             $subscription_invoice_id = $subscription_invoice->id;
             if($subscription_invoice_id){
                 $payment = new Payment;
+                $payment->user_id = $user->id;
                 $payment->balance_transaction = $request->amount;
                 $payment->transaction_id = $request->transaction_id;
                 $payment->user_subscription_invoice_id = $subscription_invoice_id;
+                $payment->payment_option_id = $request->payment_option_id;
                 $payment->date = Carbon::now()->format('Y-m-d');
+                $payment->type = 'subscription';
                 $payment->save();
 
                 $subscription_invoice_features = array();
                 foreach($subscription_plan->features as $feature){
-                    $subscription_invoice_features[] = array(
+                    $features_array = array(
                         'user_id' => $user->id,
                         'subscription_id' => $subscription_plan->id,
                         'subscription_invoice_id' => $subscription_invoice_id,
                         'feature_id' => $feature->feature_id,
-                        'feature_title' => $feature->feature->title
+                        'feature_title' => $feature->feature->title,
+                        'percent_value' => null,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
                     );
+                    if($feature->feature_id == 2){
+                        $features_array['percent_value'] = $feature->percent_value;
+                    }
+                    $subscription_invoice_features[] = $features_array;
                 }
                 if(!empty($subscription_invoice_features)){
                     SubscriptionInvoiceFeaturesUser::insert($subscription_invoice_features);

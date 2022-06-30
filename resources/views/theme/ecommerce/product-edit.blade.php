@@ -10,7 +10,7 @@
 @section('content')
     <!-- Start Content-->
     <div class="container-fluid">
-    
+
         <!-- start page title -->
         <div class="row">
             <div class="col-12">
@@ -25,8 +25,8 @@
                     <h4 class="page-title">Add / Edit Product</h4>
                 </div>
             </div>
-        </div>     
-        <!-- end page title --> 
+        </div>
+        <!-- end page title -->
 
 
         <div class="row">
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label for="product-description">Product Description <span class="text-danger">*</span></label>
+                        <label for="product-description">{{__('Product Description')}} <span class="text-danger">*</span></label>
                         <textarea class="form-control" id="product-description" rows="5" placeholder="Please enter description"></textarea>
                     </div>
 
@@ -110,7 +110,7 @@
             </div> <!-- end col -->
 
             <div class="col-lg-6">
-                
+
                 <div class="card-box">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Product Images</h5>
 
@@ -191,7 +191,7 @@
             </div>
         </div>
 
-        
+
     </div> <!-- container -->
 @endsection
 

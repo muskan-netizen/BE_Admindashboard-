@@ -333,13 +333,13 @@
                                 <nav aria-label="Page navigation example">
                                     <ul class="pagination justify-content-center">
                                         <li class="page-item disabled">
-                                            <a class="page-link" href="javascript: void(0);" tabindex="-1">Previous</a>
+                                            <a class="page-link" href="javascript: void(0);" tabindex="-1">{{ __("Previous") }}</a>
                                         </li>
                                         <li class="page-item"><a class="page-link" href="javascript: void(0);">1</a></li>
                                         <li class="page-item"><a class="page-link" href="javascript: void(0);">2</a></li>
                                         <li class="page-item"><a class="page-link" href="javascript: void(0);">3</a></li>
                                         <li class="page-item">
-                                            <a class="page-link" href="javascript: void(0);">Next</a>
+                                            <a class="page-link" href="javascript: void(0);">{{ __("Next") }}</a>
                                         </li>
                                     </ul>
                                 </nav>
@@ -347,13 +347,13 @@
                                 <nav aria-label="Page navigation example">
                                     <ul class="pagination justify-content-end">
                                         <li class="page-item disabled">
-                                            <a class="page-link" href="javascript: void(0);" tabindex="-1">Previous</a>
+                                            <a class="page-link" href="javascript: void(0);" tabindex="-1">{{ __("Previous") }}</a>
                                         </li>
                                         <li class="page-item"><a class="page-link" href="javascript: void(0);">1</a></li>
                                         <li class="page-item"><a class="page-link" href="javascript: void(0);">2</a></li>
                                         <li class="page-item"><a class="page-link" href="javascript: void(0);">3</a></li>
                                         <li class="page-item">
-                                            <a class="page-link" href="javascript: void(0);">Next</a>
+                                            <a class="page-link" href="javascript: void(0);">{{ __("Next") }}</a>
                                         </li>
                                     </ul>
                                 </nav>
@@ -361,22 +361,22 @@
                             </div>
 
                             <div class="col-md-6">
-                                <h4 class="header-title mt-3 mt-sm-0">Breadcrumb</h4>
+                                <h4 class="header-title mt-3 mt-sm-0">{{ __("Breadcrumb") }}</h4>
                                 <p class="text-muted font-14">
-                                    Indicate the current page’s location within a navigational hierarchy.
+                                    {{ __("Indicate the current page’s location within a navigational hierarchy.") }}
                                 </p>
 
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item active">Home</li>
+                                    <li class="breadcrumb-item active">{{ __("Home") }}</li>
                                 </ol>
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
-                                    <li class="breadcrumb-item active">Library</li>
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">{{ __("Home") }}</a></li>
+                                    <li class="breadcrumb-item active">{{ __("Library") }}</li>
                                 </ol>
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
-                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Library</a></li>
-                                    <li class="breadcrumb-item active">Data</li>
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">{{ __("Home") }}</a></li>
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">{{ __("Library") }}</a></li>
+                                    <li class="breadcrumb-item active">{{ __("Data") }}</li>
                                 </ol>
 
                             </div>

@@ -2,21 +2,27 @@
 namespace App\Http\Controllers\Front;
 
 use Auth;
-use Session;
+use Session,Str;
 use Timezonelist;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Mail; 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction};
+use App\Models\UserDevice;
+use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction,UserDocs,UserRegistrationDocuments};
 
 class ProfileController extends FrontController
 {
     private $folderName = '/profile/image';
-    
+
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/profile/image';
+    }
     /**
      * Display send refferal page
      *
@@ -64,7 +70,7 @@ class ProfileController extends FrontController
         }
         return response()->json(array('success' => true, 'message' => 'Send Successfully'));
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -74,9 +80,17 @@ class ProfileController extends FrontController
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-        $user = User::with('country', 'address')->select('id', 'name', 'email', 'description', 'phone_number', 'image', 'type', 'country_id', 'timezone')->where('id', Auth::user()->id)->first();
+        $user = User::with('country', 'address')->select('id', 'name', 'email', 'description', 'phone_number', 'dial_code', 'image', 'type', 'country_id', 'timezone')->where('id', Auth::user()->id)->first();
         $user_addresses = UserAddress::where('user_id', Auth::user()->id)->get();
         $refferal_code = UserRefferal::where('user_id', Auth::user()->id)->first();
+        if(!$refferal_code){
+            $userRefferal = new UserRefferal();
+            $userRefferal->refferal_code = $this->randomData("user_refferals", 8, 'refferal_code');
+            $userRefferal->user_id = Auth::user()->id;
+            $userRefferal->save();
+        }
+
+
         $timezone_list = Timezonelist::create('timezone', $user->timezone, [
             'id'    => 'timezone',
             'class' => 'styled form-control',
@@ -91,21 +105,31 @@ class ProfileController extends FrontController
      */
     public function updateAccount(Request $request, $domain = '')
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|min:3|max:80',
-            'phone_number' => 'required'
-        ]);
-        $messages = array(
-            'name.required' => __('The name field is required'),
-            'phone_number.required' => __('Phone number field is required')
-        );
+
+        $phonenumber= str_replace('-', '', $request->phone_number);
+        $request->phone_number = str_replace(' ', '', $phonenumber);
+        $user = User::where('id', Auth::user()->id)->first();
+        
+        if($user->phone_number!=$request->phone_number){
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|min:3|max:80',
+                'phone_number' => 'required|unique:users'
+            ]);
+        }else{
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|min:3|max:80',
+                'phone_number' => 'required'
+            ]);
+        }
+
         if ($validator->fails()) {
             foreach ($validator->errors()->toArray() as $error_key => $error_value) {
                 $errors['error'] = $error_value[0];
                 return redirect()->back()->withInput()->withErrors($errors);
             }
         }
-        $user = User::where('id', Auth::user()->id)->first();
+
+
         if ($user){
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
@@ -115,8 +139,26 @@ class ProfileController extends FrontController
             $user->timezone = $request->timezone;
             $user->dial_code = $request->dialCode;
             $user->description = $request->description;
-            $user->phone_number = str_replace('-', '', $request->phone_number);
+            $user->phone_number = $request->phone_number;
+            
             $user->save();
+            
+            $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+            if ($user_registration_documents->count() > 0) {
+                foreach ($user_registration_documents as $user_registration_document) {
+                    $doc_name = str_replace(" ", "_", $user_registration_document->primary->slug);
+                    if ($user_registration_document->file_type != "Text") {
+                        if ($request->hasFile($doc_name)) {
+                            $filePath = $this->folderName . '/' . Str::random(40);
+                            $file = $request->file($doc_name);
+                            $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                            UserDocs::updateOrCreate(['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $file_name]);
+                        }
+                    } else {
+                        UserDocs::updateOrCreate(['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id],['file_name' => $request->$doc_name]);
+                    }
+                }
+            }
             return redirect()->back()->with('success', 'Profile has been updated');
         }
         return redirect()->back()->with('errors', 'Profile updation failed');
@@ -144,13 +186,16 @@ class ProfileController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function editAccount(Request $request){
-        $user = User::select('id', 'name', 'email', 'description', 'phone_number', 'dial_code', 'image', 'type', 'country_id')->where('id', Auth::user()->id)->first();
+        $user = User::select('id', 'name', 'email', 'description', 'phone_number', 'dial_code', 'image', 'type', 'country_id','timezone')->where('id', Auth::user()->id)->first();
         $user_addresses = UserAddress::where('user_id', Auth::user()->id)->get();
         $timezone_list = Timezonelist::create('timezone', $user->timezone, [
             'id'    => 'timezone',
             'class' => 'styled form-control',
         ]);
-        $returnHTML = view('frontend.account.edit-profile')->with(['user' => $user, 'userAddresses' => $user_addresses, 'timezone_list' => $timezone_list])->render();
+        $user_docs = UserDocs::where('user_id', Auth::user()->id)->get();
+        $user_registration_documents = UserRegistrationDocuments::get();
+//pr( $user_docs->toArray());
+        $returnHTML = view('frontend.account.edit-profile')->with(['user' => $user,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents , 'userAddresses' => $user_addresses, 'timezone_list' => $timezone_list])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 
@@ -158,7 +203,7 @@ class ProfileController extends FrontController
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     */
+     */ 
     public function changePassword(Request $request, $domain = ''){
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
@@ -172,9 +217,11 @@ class ProfileController extends FrontController
      */
     public function submitChangePassword(Request $request, $domain = ''){
         $request->validate([
+            'old_password' => 'required',
             'new_password' => 'required|string|min:6',
             'confirm_password' => 'required|same:new_password',
         ],[
+            'old_password.required' => __('The old password field is required.'),
             'new_password.required' => __('The new password field is required.'),
             'new_password.min' => __('The new password must be at least 6 characters.'),
             'confirm_password.required' => __('The confirm password field is required.'),
@@ -182,10 +229,20 @@ class ProfileController extends FrontController
         ]);
         $user = User::where('id', Auth::user()->id)->first();
         if ($user){
-            $user->password = Hash::make($request['new_password']);
-            $user->save();
+            if (Hash::check($request['old_password'], $user->password)) {
+                $user->password = Hash::make($request['new_password']);
+                $user->save();
+            }else{
+                return redirect()->route('user.changePassword')->with('error', __('Your Old password is incorrect'));
+            }
         }
         return redirect()->route('user.profile')->with('success', __('Your Password has been changed successfully'));
+    }
+
+    public function save_fcm(Request $request){
+        UserDevice::updateOrCreate(['device_token' => $request->fcm_token],['user_id' => Auth::user()->id, 'device_type' => "web"])->first();
+        Session::put('current_fcm_token', $request->fcm_token);
+        return response()->json([ 'status'=>'success', 'message' => 'Token updated successfully']);
     }
 
 }

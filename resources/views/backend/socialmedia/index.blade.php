@@ -7,7 +7,7 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">Social Media</h4>
+                <h4 class="page-title">{{ __("Social Media") }}</h4>
             </div>
         </div>
         <div class="col-sm-6 text-sm-right">
@@ -23,10 +23,10 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Icon</th>
-                                    <th>Title</th>
-                                    <th>URL</th>
-                                    <th>Action</th>
+                                    <th>{{ __("Icon") }}</th>
+                                    <th>{{ __("Title") }}</th>
+                                    <th>{{ __("URL") }}</th>
+                                    <th>{{ __("Action") }}</th>
                                 </tr>
                             </thead>
                             <tbody id="post_list">
@@ -50,27 +50,27 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-bottom">
-                    <h4 class="modal-title" id="standard-modalLabel">Social Media</h4>
+                    <h4 class="modal-title" id="standard-modalLabel">{{ __("Social Media") }}</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
                 <div class="modal-body">
                     <form class="" action="">
                         <div class="form-group">
-                            <label for="">Name</label>
+                            <label for="">{{ __("Name") }}</label>
                              <input class="form-control icp icp-auto" value="fas fa-anchor" type="text"/>
                         </div>
                         <div class="form-group">
-                            <label for="">Name</label>
+                            <label for="">{{ __("Name") }}</label>
                             <input class="form-control" type="text">
                         </div>
                         <div class="form-group">
-                            <label for="">Name</label>
+                            <label for="">{{ __("Name") }}</label>
                             <input class="form-control" type="text">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-primary">{{ __("Save changes") }}</button>
                 </div>
             </div>
         </div>

@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Language</h4>
+                <h4 class="page-title">{{ __("Language") }}</h4>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
                         </div>
                         <div class="col-sm-4 text-right">
                             <a class="btn btn-info waves-effect waves-light text-sm-right"
-                                href="{{route('language.create')}}"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                                href="{{route('language.create')}}"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                             </a>
                         </div>
                     </div>
@@ -36,8 +36,8 @@
                         <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Sort Code</th>
+                                    <th>{{ __("Name") }}</th>
+                                    <th>{{ __("Sort Code") }}</th>
                                 </tr>
                             </thead>
                             <tbody>

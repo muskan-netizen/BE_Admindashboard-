@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Tax</h4>
+                <h4 class="page-title">{{ __("Tax") }}</h4>
             </div>
         </div>
     </div>
@@ -34,11 +34,11 @@
                 <div class="card-body">
                     <div class="row mb-2">
                         <div class="col-sm-8">
-                            <h4 class="page-title">Tax Category</h4>
+                            <h4 class="page-title">{{ __("Tax Category") }}</h4>
                         </div>
                         <div class="col-sm-4 text-right">
                             <button class="btn btn-info waves-effect waves-light text-sm-right addTaxCateModal"
-                             userId="0"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                             userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                             </button>
                         </div>
                     </div>
@@ -47,10 +47,10 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Code</th>
-                                    <th>Description</th>
-                                    <th>Action</th>
+                                    <th>{{ __("Name") }}</th>
+                                    <th>{{ __("Code") }}</th>
+                                    <th>{{ __("Description") }}</th>
+                                    <th>{{ __("Action") }}</th>
                                 </tr>
                             </thead>
                             <tbody id="post_list">
@@ -60,18 +60,19 @@
                                     <td><a class="editTaxCateModal text-capitalize" userId="{{$cat->id}}" href="javascript:void(0);"> {{ $cat->title }}</a> </td>
                                     <td> {{ $cat->code }} </td>
                                     <td> {{ $cat->description }} </td>
-                                    
-                                    <td> 
+
+                                    <td>
                                         <div class="form-ul" style="width: 60px;">
                                             <div class="inner-div" style="float: left;">
-                                                <a class="action-icon editTaxCateModal" userId="{{$cat->id}}" href="javascript:void(0);"><i class="mdi mdi-square-edit-outline"></i></a> 
+                                                <a class="action-icon editTaxCateModal" userId="{{$cat->id}}" href="javascript:void(0);"><i class="mdi mdi-square-edit-outline"></i></a>
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('tax.destroy', $cat->id) }}">
+                                                <form method="POST" action="{{ route('tax.destroy', $cat->id) }}" id="deleteTaxCategory">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="submit" onclick="return confirm('Are you sure? You want to delete the tax category.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> 
+                                                       <button type="submit" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> 
+                                                     <!--  <button type="submit" onclick="sweetAlert_popup('Are you sure?','You want to delete the tax category.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>  --> 
 
                                                     </div>
                                                 </form>
@@ -85,18 +86,18 @@
                     </div>
                     <div class="pagination pagination-rounded justify-content-end mb-0"></div>
                 </div>
-            </div> 
-        </div> 
+            </div>
+        </div>
         <div class="col-6">
             <div class="card">
                 <div class="card-body">
                     <div class="row mb-2">
                         <div class="col-sm-8">
-                            <h4 class="page-title">Tax Rate</h4>
+                            <h4 class="page-title">{{ __("Tax Rate") }}</h4>
                         </div>
                         <div class="col-sm-4 text-right">
                             <button class="btn btn-info waves-effect waves-light text-sm-right addTaxRateModal"
-                             userId="0"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                             userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                             </button>
                         </div>
                     </div>
@@ -105,44 +106,45 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Identifier</th>
-                                    <th>Tax Categories</th>
-                                    <th>Postal Code(s)</th>
-                                    <th>Tax Rate</th>
-                                    <th>Action</th>
+                                    <th>{{ __("Identifier") }}</th>
+                                    <th>{{ __("Tax Categories") }}</th>
+                                    <th>{{ __("Postal Code(s)") }}</th>
+                                    <th>{{ __("Tax Rate") }}</th>
+                                    <th>{{ __("Action") }}</th>
                                 </tr>
                             </thead>
                             <tbody id="post_list">
                                 @foreach($taxRates as $rat)
-                                <tr data-row-id="{{$cat->id}}">
+                                <tr data-row-id="{{$rat->id}}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td> {{ $rat->identifier }} </td>
-                                    <td> 
+                                    <td>
                                         @foreach($rat->category as $cats)
                                             <span>{{$cats->title}}</span><br/>
                                         @endforeach
                                     </td>
-                                    <td> 
+                                    <td>
                                         @if( $rat->is_zip == 1)
                                             {{ $rat->zip_code }}
                                         @elseif( $rat->is_zip == 2)
                                             {{ $rat->zip_from }} - {{ $rat->zip_to }}
                                         @else
-                                            N/A
+                                            {{ __("N/A") }}
                                         @endif
                                     </td>
                                     <td> {{ $rat->tax_rate }} </td>
-                                    <td> 
+                                    <td>
                                         <div class="form-ul" style="width: 60px;">
                                             <div class="inner-div" style="float: left;">
-                                                <a class="action-icon editTaxRateModal" userId="{{$rat->id}}" href="javascript:void(0);"><i class="mdi mdi-square-edit-outline"></i></a> 
+                                                <a class="action-icon editTaxRateModal" userId="{{$rat->id}}" href="javascript:void(0);"><i class="mdi mdi-square-edit-outline"></i></a>
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('taxRate.destroy', $rat->id) }}">
+                                                <form method="POST" action="{{ route('taxRate.destroy', $rat->id) }}" id="deleteTax">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="submit" onclick="return confirm('Are you sure? You want to delete the tax rate.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> 
+                                                       <button type="submit" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
+                                                       <!-- <button type="submit" onclick="return confirm('Are you sure? You want to delete the tax rate.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> -->
                                                     </div>
                                                 </form>
                                             </div>
@@ -162,5 +164,41 @@
 @include('backend.tax.modals')
 @endsection
 @section('script')
+<script type="text/javascript">
+    $('#deleteTax').submit(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete the tax rate.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $("#deleteTax").off("submit").submit();
+            }else{
+                return false;
+            }
+        });
+    });
+    $('#deleteTaxCategory').submit(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__(' You want to delete the tax category.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $("#deleteTaxCategory").off("submit").submit();
+            }else{
+                return false;
+            }
+        });
+    });
+</script>
 @include('backend.tax.pagescript')
 @endsection

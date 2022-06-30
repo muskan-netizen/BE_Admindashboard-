@@ -11,7 +11,7 @@ class SubscriptionInvoicesVendor extends Model
     protected $table = "subscription_invoices_vendor";
 
     public function plan(){
-        return $this->belongsTo('App\Models\SubscriptionPlansVendor', 'subscription_id', 'id'); 
+        return $this->belongsTo('App\Models\SubscriptionPlansVendor', 'subscription_id', 'id')->withTrashed(); 
     }
 
     public function vendor(){

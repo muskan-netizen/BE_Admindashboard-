@@ -9,6 +9,10 @@ class VendorOrderStatus extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+       'order_id','order_vendor_id', 'order_status_option_id', 'vendor_id'
+    ];
+
     public function OrderStatusOption(){
        return $this->hasOne('App\Models\OrderStatusOption', 'id', 'order_status_option_id'); 
     }

@@ -13,4 +13,12 @@ class UserAddress extends Model
     {
         return $this->belongsTo('App\Models\Country');
     }
+    public function CarDetails()
+    {
+        return $this->hasOne('App\Models\CarDetails');
+    }
+    public function images()
+    {
+        return $this->hasOne('App\Models\CarImages')->select('id' ,'image'); ;
+    }
 }

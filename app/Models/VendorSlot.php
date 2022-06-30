@@ -14,4 +14,19 @@ class VendorSlot extends Model
         $mytime = Carbon::now()->setTimezone($client->timezone);
         return $this->hasMany('App\Models\SlotDay', 'slot_id', 'id')->where('day', $mytime->dayOfWeek+1); 
     }
+
+    public function dayOne(){
+        $client = Client::first();
+        $mytime = Carbon::now()->setTimezone($client->timezone);
+        return $this->hasOne('App\Models\SlotDay', 'slot_id', 'id')->where('day', $mytime->dayOfWeek+1); 
+    }
+
+    public function days(){
+        return $this->hasOne('App\Models\SlotDay', 'slot_id', 'id'); 
+    }
+    public function deleteVendorSlots($vendor_id)
+    {
+        return $this->where('vendor_id',$vendor_id)->delete();
+    }
+
 }

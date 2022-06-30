@@ -24,6 +24,7 @@ class BrandController extends FrontController
         $vid = '';
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
+        $preferences = Session::get('preferences');
         $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
         $navCategories = $this->categoryNav($langId);
         $vendorIds = array();
@@ -33,20 +34,24 @@ class BrandController extends FrontController
                 $vendorIds[] = $value->id;
             }
         }
+        // if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+        //     if(Session::has('vendors')){
+        //         $vendorIds = Session::get('vendors');
+        //     }
+        // }
+
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-            if(Session::has('vendors')){
-                $vendorIds = Session::get('vendors');
-            }
+            $vendorIds = $this->getServiceAreaVendors();
         }
 
         $brand = Brand::with(['translation' => function($q) use($langId){
                     $q->where('language_id', $langId);
-                    }])->select('id', 'image')
+                    }])->select('id', 'image','image_banner')
                     ->where('status', '!=', 2)
                     ->where('id', $brandId)->firstOrFail();
         $brand->translation_title = ($brand->translation->first()) ? $brand->translation->first()->title : '';
 
-        $products = Product::with(['media.image', 'translation' => function($q) use($langId){
+        $products = Product::with(['vendor', 'media.image', 'translation' => function($q) use($langId){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     },
                     'variant' => function($q) use($langId){
@@ -54,9 +59,12 @@ class BrandController extends FrontController
                         $q->groupBy('product_id');
                     },
                 ])
-                ->select('id', 'sku', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'brand_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating')
-                ->where('brand_id', $brandId)
-                ->where('is_live', 1)->paginate(8);
+                ->select('id', 'vendor_id', 'sku', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'brand_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count')
+                ->where('brand_id', $brandId);
+        if (is_array($vendorIds)) {
+            $products = $products->whereIn('vendor_id', $vendorIds);
+        }
+        $products = $products->where('is_live', 1)->paginate(12);
         
         $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
         if(!empty($products)){
@@ -64,6 +72,7 @@ class BrandController extends FrontController
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                 $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
+                $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 // foreach ($value->variant as $k => $v) {
                 //     $value->variant[$k]->multiplier = $clientCurrency->doller_compare;
                 // }
@@ -166,7 +175,7 @@ class BrandController extends FrontController
                             }
                             $q->groupBy('product_id');
                         },
-                    ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating')
+                    ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count')
                     ->where('brand_id', $brandId)
                     ->where('is_live', 1)
                     ->whereIn('id', function($qr) use($startRange, $endRange){ 
@@ -186,7 +195,10 @@ class BrandController extends FrontController
         if(!empty($products)){
             foreach ($products as $key => $value) {
                 foreach ($value->variant as $k => $v) {
-                    $value->variant[$k]->multiplier = $clientCurrency->doller_compare;
+                    $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
+                    $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                    $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
+                    $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 }
             }
         }

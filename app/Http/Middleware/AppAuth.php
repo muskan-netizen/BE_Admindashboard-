@@ -9,7 +9,7 @@ use JWT\Token;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use App\Models\{BlockedToken, User, ClientLanguage, ClientCurrency};
+use App\Models\{BlockedToken, User, ClientLanguage, ClientCurrency,UserDevice};
 
 class AppAuth{
     /**
@@ -21,7 +21,7 @@ class AppAuth{
      */
     public function handle($request, Closure $next){
         $header = $request->header();
-        $token = $header['authorization'][0];
+        $token = $header['authorization'][0]??null;
         if (!Token::check($token, 'royoorders-jwt')){
             return response()->json(['error' => 'Invalid Token', 'message' => 'Session Expired'], 401);
             abort(404);
@@ -31,11 +31,32 @@ class AppAuth{
             return response()->json(['error' => 'Invalid Session', 'message' => 'Session Expired'], 401);
             abort(404);
         }
-        $user = User::where('auth_token', $token)->first();
+
+        
+        $user = User::whereHas('device',function  ($qu) use ($token){
+                    $qu->where('access_token', $token);
+                })->first();
+
         if(!$user){
             return response()->json(['error' => 'Invalid Session', 'message' => 'Invalid Token or session has been expired.'], 401);
             abort(404);
+        } 
+       
+        if(isset($user) && $user->status != 1){
+                    $blockToken = new BlockedToken();
+                $header = $request->header();
+                $blockToken->token = $header['authorization'][0];
+                $blockToken->expired = '1';
+                $blockToken->save();
+
+                $del_token = UserDevice::where('access_token', $header['authorization'][0])->delete();
+
+                return response()->json([
+                    'message' => __('Successfully logged out')
+                ]);
         }
+
+        $timezone = $user->timezone;
         $languages = ClientLanguage::where('is_primary', 1)->first();
         $primary_cur = ClientCurrency::where('is_primary', 1)->first();
         $language_id = $languages->language_id;
@@ -52,8 +73,21 @@ class AppAuth{
                 $currency_id = $checkCur->currency_id;
             }
         }
+        if(isset($header['timezone'][0]) && !empty($header['timezone'][0])){
+            $timezone = $header['timezone'][0];
+        }
+        if(isset($header['latitude'][0]) && !empty($header['latitude'][0])){
+            $user->latitude = $header['latitude'][0];
+        }
+        if(isset($header['longitude'][0]) && !empty($header['longitude'][0])){
+            $user->longitude = $header['longitude'][0];
+        }
+        if(isset($header['type'][0]) && !empty($header['type'][0])){
+            $user->vendorType = $header['type'][0];
+        }
         $user->language = $language_id;
         $user->currency = $currency_id;
+        $user->timezone = $timezone;
         Auth::login($user);
         return $next($request);
     }

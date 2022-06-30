@@ -1,4 +1,7 @@
 @extends('layouts.store', ['title' => __('Change Password')])
+@section('css-links')
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
+@endsection
 @section('css')
 <style type="text/css">
     .main-menu .brand-logo {
@@ -59,21 +62,65 @@
         display: block;
     }
 </style>
-<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
-</header>
-<section class="register-page section-b-space">
+<section class="section-b-space">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-xl-4">
-                <h3>{{__('Change Password')}}</h3>
-                  <div class="outer-box"> 
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-sm-left">
+                    @if (\Session::has('success'))
+                        <div class="alert alert-success">
+                            <span>{!! \Session::get('success') !!}</span>
+                        </div>
+                    @endif
+                    @if (\Session::has('error'))
+                    <div class="alert alert-danger">
+                        <span>{!! \Session::get('error') !!}</span>
+                    </div>
+                @endif
+                    @if ( ($errors) && (count($errors) > 0) )
+                        <div class="alert alert-danger">
+                            <ul class="m-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="row my-md-3">
+            <div class="col-lg-3">
+                <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
+                <div class="dashboard-left mb-3">
+                    <div class="collection-mobile-back">
+                        <span class="filter-back d-lg-none d-inline-block">
+                            <i class="fa fa-angle-left" aria-hidden="true"></i>{{ __('Back') }}
+                        </span>
+                    </div>
+                    @include('layouts.store/profile-sidebar')
+                </div>
+            </div>
+            <div class="col-lg-5 offset-lg-2">
+                <div class="dashboard-right">
+                    <div class="dashboard">
+                        <div class="page-title">
+                            <h2>{{__('Change Password')}}</h2>
+                        </div>
+                        <div class="outer-box">
                     <form name="register" id="register" action="{{route('user.submitChangePassword')}}" class="theme-form" method="post"> @csrf
                         <div class="form-row mb-2">
+                            <div class="col-md-12 mb-3">
+                                <label for="review">{{__('Old Password')}}</label>
+                                <input type="password" class="form-control mb-0" id="review" placeholder="{{__('Current Password')}}" name="old_password">
+                                @if($errors->has('old_password'))
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('old_password') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
                             <div class="col-md-12 mb-3">
                                 <label for="review">{{__('Password')}}</label>
                                 <input type="password" class="form-control mb-0" id="review" placeholder="{{__('Password')}}" name="new_password">
@@ -104,6 +151,8 @@
                         </div>
                     </form>
                 </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -117,6 +166,7 @@
         separateDialCode: true,
         hiddenInput: "full_number",
         utilsScript: "{{asset('assets/js/utils.js')}}",
+        initialCountry: "{{ Session::get('default_country_code','US') }}",
     });
     $(document).ready(function () {
         $("#phone").keypress(function (e) {

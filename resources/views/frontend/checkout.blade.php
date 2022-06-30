@@ -9,10 +9,7 @@
 </style>
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
-</header>
+
 <style type="text/css">
     .productVariants .firstChild {
         min-width: 150px;

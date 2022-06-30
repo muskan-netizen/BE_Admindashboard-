@@ -1,3 +1,6 @@
+@php
+    \Session::forget('success');
+@endphp
 <!-- Footer Start -->
 <footer class="footer">
     <div class="container-fluid">

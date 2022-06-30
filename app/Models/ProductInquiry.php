@@ -11,6 +11,6 @@ class ProductInquiry extends Model
     protected $fillable = ['name', 'email', 'phone_number','company_name', 'message', 'product_id','vendor_id', 'product_variant_id'];
 
     public function product(){
-        return $this->belongsTo('App\Models\Product')->select('id', 'sku');
+        return $this->belongsTo('App\Models\Product')->select('id', 'sku')->whereNotNull('sku');
       }
 }

@@ -9,6 +9,8 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
 </head>
 <body>
     <div id="app">
@@ -62,5 +64,46 @@
             @yield('content')
         </main>
     </div>
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyBtE2uCaikxgUDbn5SqmzW2fGcGOpUlkqc",
+        authDomain: "royo-order-version2.firebaseapp.com",
+        projectId: "royo-order-version2",
+        storageBucket: "royo-order-version2.appspot.com",
+        messagingSenderId: "1073948422654",
+        appId: "1:1073948422654:web:4dd137a854484fa3c410af",
+        measurementId: "G-59QSSL4RQ1"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    const messaging = firebase.messaging();
+
+    function initFirebaseMessagingRegistration() {
+        messaging.requestPermission().then(function () {
+            return messaging.getToken()
+        }).then(function(token) {
+            
+            axios.post("{{ route('fcmToken') }}",{
+                _method:"PATCH",
+                token
+            }).then(({data})=>{
+                console.log(data)
+            }).catch(({response:{data}})=>{
+                console.error(data)
+            })
+
+        }).catch(function (err) {
+            console.log(`Token Error :: ${err}`);
+        });
+    }
+
+    initFirebaseMessagingRegistration();
+  
+    messaging.onMessage(function({data:{body,title}}){
+        new Notification(title, {body});
+    });
+    </script>
 </body>
 </html>

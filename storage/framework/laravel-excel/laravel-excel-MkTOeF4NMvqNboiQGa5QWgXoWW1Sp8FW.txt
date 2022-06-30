@@ -1,3 +1,0 @@
-sku,category,title,description,meta_titile,meta_keyword,meta_description,price,compare_at_price,cost_price,track_inventory,quantity,sell_when_out_of_stock,is_new,featured,live,brand_id,physical
-ddddd,6,,,,,,,,,,,,,,,,
-ddddddddss,,,,,,,,,,,,,,,,,

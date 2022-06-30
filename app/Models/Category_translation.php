@@ -9,4 +9,7 @@ class Category_translation extends Model
 {
     protected $table='category_translations';
    	protected $fillable = ['language_id', 'name', 'category_id'];
+
+
+       
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\UserRegistrationDocuments;
+use App\Models\ClientPreference;
 
 class SignupRequest extends FormRequest{
     /**
@@ -20,16 +22,34 @@ class SignupRequest extends FormRequest{
      * @return array
      */
     public function rules(){
-        return [
+
+        $preferences = ClientPreference::first();
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+        $rules = [
             'name' => 'required|min:3|max:50',
-            'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|max:50',
-            'phone_number' => 'required|string|min:10|max:15|unique:users',
             'device_type' => 'required|string',
             'device_token' => 'required|string',
             'term_and_condition' => 'accepted',
             'refferal_code' => 'nullable|exists:user_refferals,refferal_code',
         ];
+
+        $preferences = ClientPreference::first();
+
+
+        if($preferences->verify_email == 1){
+            $rules['email'] = 'required|email|unique:users';
+        }
+        
+        if($preferences->verify_phone == 1){
+            $rules['phone_number'] = 'required|string|min:8|max:15|unique:users';
+        }
+        foreach ($user_registration_documents as $user_registration_document) {
+            if($user_registration_document->is_required == 1){
+                $rules[$user_registration_document->primary->slug] = 'required';
+            }
+        }
+        return $rules;
     }
     public function messages(){
         return [

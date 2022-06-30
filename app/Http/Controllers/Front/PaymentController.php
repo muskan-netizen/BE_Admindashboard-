@@ -10,8 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\{Order, User, Cart, ClientCurrency, CartProduct};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Front\FrontController;
-
+use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController, MyCashGatewayController};
 
 class PaymentController extends FrontController{
 
@@ -50,7 +49,7 @@ class PaymentController extends FrontController{
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
                             $opt_quantity_price = 0;
                             $opt_price_in_currency = $addon->option->price;
-                            $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                            $opt_price_in_doller_compare = $opt_price_in_currency * $dollar_compare;
                             $opt_quantity_price = $opt_price_in_doller_compare * $vendor_cart_product->quantity;
                             $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
                         }
@@ -76,6 +75,20 @@ class PaymentController extends FrontController{
         foreach ($payment_options as $k => $payment_option) {
             if( (in_array($payment_option->code, $ex_codes)) || (!empty($payment_option->credentials)) ){
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
+                if($payment_option->code == 'stripe'){
+                    $payment_option->title = 'Credit/Debit Card (Stripe)';
+                }elseif($payment_option->code == 'kongapay'){
+                    $payment_option->title = 'Pay Now';
+                }elseif($payment_option->code == 'mvodafone'){
+                    $payment_option->title = 'Vodafone M-PAiSA';
+                }elseif($payment_option->code == 'mobbex'){
+                    $payment_option->title = __('Mobbex');
+                }
+                elseif($payment_option->code == 'offline_manual'){
+                    $json = json_decode($payment_option->credentials);
+                    $payment_option->title = $json->manule_payment_title;
+                }
+                $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
             }
             else{
@@ -90,8 +103,122 @@ class PaymentController extends FrontController{
         return view('frontend.account.complete-checkout')->with(['auth_token' => $token, 'action' => $action, 'address_id' => $address_id]);
     }
 
+    public function paylinkCompleteCheckout(Request $request, $domain = '', $token = '', $action = '', $address_id ='')
+    {
+        return view('frontend.account.complete-checkout')->with(['auth_token' => $token, 'action' => $action, 'address_id' => $address_id]);
+    }
+
     public function getCheckoutSuccess(Request $request, $domain = '', $id = '')
     {
         return view('frontend.account.checkout-success');
+    }
+
+    public function getGatewayReturnResponse(Request $request)
+    {
+        return view('frontend.account.gatewayReturnResponse');
+    }
+
+    public function verifyPaymentOtp(Request $request, $domain='', $gateway)
+    {
+        if($gateway == 'mycash'){
+            $data = $request->all();
+            return view('frontend.payment_gatway.mycash_otp_verify', compact('data'));
+        }
+    }
+
+    public function verifyPaymentOtpApp(Request $request, $domain='', $gateway)
+    {
+        if($gateway == 'mycash'){
+            $data = $request->all();
+            // \Log::info($data);
+            return view('frontend.payment_gatway.mycash_otp_verify', compact('data'));
+        }
+    }
+
+    public function sendPaymentOtp(Request $request, $domain='', $gateway)
+    {
+        if(!empty($gateway)){
+            $function = 'sendPaymentOtpVia_'.$gateway;
+            if(method_exists($this, $function)) {
+                if(!empty($request->payment_form)){
+                    $response = $this->$function($request); // call related gateway for payment processing
+                    return $response;
+                }
+            }
+            else{
+                return $this->errorResponse("Invalid Gateway Request", 400);
+            }
+        }else{
+            return $this->errorResponse("Invalid Gateway Request", 400);
+        }
+    }
+
+    public function sendPaymentOtpVia_mycash(Request $request){
+        $gateway = new MyCashGatewayController();
+        return $gateway->sendOtp($request);
+    }
+
+    public function verifyPaymentOtpSubmit(Request $request, $domain='', $gateway)
+    {
+        if(!empty($gateway)){
+            $function = 'verifyPaymentOtpVia_'.$gateway;
+            if(method_exists($this, $function)) {
+                if(!empty($request->payment_form)){
+                    $response = $this->$function($request); // call related gateway for payment processing
+                    return $response;
+                }
+            }
+            else{
+                return $this->errorResponse("Invalid Gateway Request", 400);
+            }
+        }else{
+            return $this->errorResponse("Invalid Gateway Request", 400);
+        }
+    }
+
+    public function verifyPaymentOtpVia_mycash(Request $request){
+        $gateway = new MyCashGatewayController();
+        return $gateway->verifyOtp($request);
+    }
+
+    public function postPayment(Request $request, $domain='', $gateway = ''){
+        if(!empty($gateway)){
+            $function = 'postPaymentVia_'.$gateway;
+            if(method_exists($this, $function)) {
+                if(!empty($request->payment_form)){
+                    $response = $this->$function($request); // call related gateway for payment processing
+                    return $response;
+                }
+            }
+            else{
+                return $this->errorResponse("Invalid Gateway Request", 400);
+            }
+        }else{
+            return $this->errorResponse("Invalid Gateway Request", 400);
+        }
+    }
+
+    public function postPaymentVia_cashfree(Request $request){
+        $gateway = new CashfreeGatewayController();
+        return $gateway->createOrder($request);
+    }
+    public function postPaymentVia_easebuzz(Request $request){
+        $gateway = new EasebuzzController();
+        return $gateway->order($request);
+    }
+
+    public function postPaymentVia_vnpay(Request $request){
+        $gateway = new VnpayController();
+        return $gateway->order($request);
+    }
+
+    public function postPaymentVia_payu(Request $request){
+        $gateway = new PayUGatewayController();
+        return $gateway->purchase($request);
+    }
+
+    public function postPaymentVia_mycash(Request $request){
+        $gateway = new MyCashGatewayController();
+        return $gateway->purchase($request);
     }
 }

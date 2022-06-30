@@ -7,44 +7,52 @@ use Config;
 use Validation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\Web\OrderProductRatingRequest;
 use App\Http\Requests\Web\OrderProductReturnRequest;
-use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile};
+use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, User, UserDevice, UserVendor};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
+use App\Models\Client as CP;
+use App\Models\Transaction;
+use App\Models\AutoRejectOrderCron;
+
+use App\Http\Traits\OrderTrait;
+use App\Models\{LoyaltyCard,ClientCurrency,VendorOrderCancelReturnPayment};
 
 class ReturnOrderController extends FrontController{
-	
+
     use ApiResponser;
-    
+    use OrderTrait;
     /**
      * order details in modal
     */
     public function getOrderDatainModel(Request $request){
-        try { 
+        try {
             $order_details = Order::with(['vendors.products.productReturn','products.productRating', 'user', 'address',
             'vendors'=>function($qw)use($request){
                 $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
             },'vendors.products'=>function($qw)use($request){
                 $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
-            },'products'=>function($qw)use($request){
+            },'vendors.products.pvariant.media.pimage.image',
+            'products'=>function($qw)use($request){
                 $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
             }])->whereHas('vendors',function($q)use($request){
                 $q->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
             })
             ->where('orders.user_id', Auth::user()->id)->where('orders.id', $request->id)->orderBy('orders.id', 'DESC')->first();
-           
+
             if(isset($order_details)){
-              
+
                 if ($request->ajax()) {
                  return \Response::json(\View::make('frontend.modals.return-product-order', array('order' => $order_details))->render());
                 }
             }
             return $this->errorResponse('Invalid order', 404);
-            
+
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
@@ -56,23 +64,36 @@ class ReturnOrderController extends FrontController{
     */
     public function getReturnProducts(Request $request, $domain = ''){
         try {
+
             $langId = Session::get('customerLanguage');
             $navCategories = $this->categoryNav($langId);
             $reasons = ReturnReason::where('status','Active')->orderBy('order','asc')->get();
             $order_details = Order::with(['vendors.products' => function ($q1)use($request){
                 $q1->where('id', $request->return_ids);
-            },'products' => function ($q1)use($request){
+            }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
+            'products' => function ($q1)use($request){
                 $q1->where('id', $request->return_ids);
             },'products.productRating', 'user', 'address'])
             ->whereHas('vendors.products',function($q)use($request){
                 $q->where('id', $request->return_ids);
-            })->where('orders.user_id', Auth::user()->id)->orderBy('orders.id', 'DESC')->first();
-            
+            })->where('orders.user_id', Auth::user()->id)->where('id', $request->order_id)->orderBy('orders.id', 'DESC')->first();
+
             if(isset($order_details)){
-              return view('frontend.account.return-order')->with(['order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
+                foreach($order_details->vendors as $key => $vendor){
+                    foreach($vendor->products as $product){
+                        if($product->pvariant->media->isNotEmpty()){
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'];
+                        }elseif($product->media->isNotEmpty()){
+                            $product->image_url = $product->media->first()->image->path['image_fit'].'74/100'.$product->media->first()->image->path['image_path'];
+                        }else{
+                            $product->image_url = ($product->image) ? $product->image['image_fit'].'74/100'.$product->image['image_path'] : '';
+                        }
+                    }
+                }
+                return view('frontend.account.return-order')->with(['order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
             }
             return $this->errorResponse('Invalid order', 404);
-            
+
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
@@ -80,23 +101,22 @@ class ReturnOrderController extends FrontController{
 
 
     /**
-     * return  order product 
+     * return  order product
     */
     public function updateProductReturn(OrderProductReturnRequest $request){
-     
         try {
             $user = Auth::user();
             $order_deliver = 0;
             $order_details = OrderProduct::where('id',$request->order_vendor_product_id)->whereHas('order',function($q){$q->where('user_id',Auth::id());})->first();
             if($order_details)
-            $order_deliver = VendorOrderStatus::where(['order_id' => $order_details->order_id,'vendor_id' => $order_details->vendor_id,'order_status_option_id' => 5])->count();
-            
+            $order_deliver = VendorOrderStatus::where(['order_id' => $order_details->order_id,'vendor_id' => $order_details->vendor_id,'order_status_option_id' => 6])->count();
+
             if($order_deliver > 0){
                 $returns = OrderReturnRequest::updateOrCreate(['order_vendor_product_id' => $request->order_vendor_product_id,
                 'order_id' => $order_details->order_id,
                 'return_by' => Auth::id()],['reason' => $request->reason??null,'coments' => $request->coments??null]);
 
-            //    if ($image = $request->file('images')) { 
+            //    if ($image = $request->file('images')) {
             //         foreach ($image as $files) {
             //         $file =  substr(md5(microtime()), 0, 15).'_'.$files->getClientOriginalName();
             //         $storage = Storage::disk('s3')->put('/return', $files, 'public');
@@ -104,37 +124,292 @@ class ReturnOrderController extends FrontController{
             //         $img->order_return_request_id = $returns->id;
             //         $img->file = $storage;
             //         $img->save();
-                   
+
             //         }
             //     }
 
-            if(isset($request->add_files) && is_array($request->add_files))    # send  array of insert images 
+            if(isset($request->add_files) && is_array($request->add_files))    # send  array of insert images
                 {
                     foreach ($request->add_files as $storage) {
                         $img = new OrderReturnRequestFile();
                         $img->order_return_request_id = $returns->id;
                         $img->file = $storage;
                         $img->save();
-                       
+
                     }
-                }  
-               
-              if(isset($request->remove_files) && is_array($request->remove_files))    # send index array of deleted images 
+                }
+
+              if(isset($request->remove_files) && is_array($request->remove_files))    # send index array of deleted images
                 $removefiles = OrderReturnRequestFile::where('order_return_request_id',$returns->id)->whereIn('id',$request->remove_files)->delete();
-       
+
             }
             if(isset($returns)) {
+                $this->sendSuccessNotification($user->id, $order_details->vendor_id);
+                $this->sendSuccessEmail($request);
                 return $this->successResponse($returns,'Return Submitted.');
             }
             return $this->errorResponse('Invalid order', 200);
-            
+
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
+    public function sendSuccessNotification($id, $vendorId){
+        $super_admin = User::where('is_superadmin', 1)->pluck('id');
+        $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
+        $devices = UserDevice::whereNotNull('device_token')->where('user_id', $id)->pluck('device_token');
+        foreach($devices as $device){
+            $token[] = $device;
+        }
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token');
+        foreach($devices as $device){
+            $token[] = $device;
+        }
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $super_admin)->pluck('device_token');
+        foreach($devices as $device){
+            $token[] = $device;
+        }
+        $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+        // dd($token);
 
-    
+        $from = env('FIREBASE_SERVER_KEY');
+
+        $notification_content = NotificationTemplate::where('id', 3)->first();
+        if($notification_content){
+            $headers = [
+                'Authorization: key=' . $from,
+                'Content-Type: application/json',
+            ];
+            $data = [
+                "registration_ids" => $token,
+                "notification" => [
+                    'title' => $notification_content->label,
+                    'body'  => $notification_content->content,
+                ]
+            ];
+            $dataString = $data;
+
+            $ch = curl_init();
+            curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
+            curl_setopt( $ch,CURLOPT_POST, true );
+            curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
+            curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
+            curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+            curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $dataString ) );
+            $result = curl_exec($ch );
+            // dd($result);
+            curl_close( $ch );
+        }
+    }
+
+    public function sendSuccessEmail($request){
+        if( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
+            $user = User::where('auth_token', $request->auth_token)->first();
+        }else{
+            $user = Auth::user();
+        }
+        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+        $message = __('An otp has been sent to your email. Please check.');
+        if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+            $sendto =  $user->email;
+            $client_name = 'Sales';
+            $mail_from = $data->mail_from;
+            try {
+                $order_vendor_product = OrderVendorProduct::where('id', $request->order_vendor_product_id)->first();
+                $email_template_content = '';
+                $email_template = EmailTemplate::where('id', 4)->first();
+                if($email_template){
+                    //for changeing the value upto 2 decimal
+                    $order_vendor_product->price = number_format((float)$order_vendor_product->price, 2, '.', '') ?? $order_vendor_product->price;
+                    
+                    $email_template_content = $email_template->content;
+                    $email_template_content = str_ireplace("{product_image}", $order_vendor_product->image['image_fit'].'200/200'.$order_vendor_product->image['image_path'], $email_template_content);
+                    $email_template_content = str_ireplace("{product_name}", $order_vendor_product->product->title, $email_template_content);
+                    $email_template_content = str_ireplace("{price}", $order_vendor_product->price, $email_template_content);
+                }
+                $data = [
+                    'link' => "link",
+                    'email' => $sendto,
+                    'mail_from' => $mail_from,
+                    'client_name' => $client_name,
+                    'logo' => $client->logo['original'],
+                    'subject' => $email_template->subject,
+                    'customer_name' => ucwords($user->name),
+                    'email_template_content' => $email_template_content,
+                ];
+                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($data))->onQueue('verify_email');
+                $notified = 1;
+            } catch (\Exception $e) {
+            }
+        }
+    }
+
+    /**
+     * vendor  details
+    */
+    public function getVendorOrderForCancel(Request $request){
+
+        $client_preferences = ClientPreference::first();
+        $user = Auth::user();
+        // For Deduction of cancelation charges for laundry
+        if($client_preferences->business_type == 'laundry'){
+            $pickup_cancelling_charges  = substr($request->pickup_cancelling_charges, 1);
+            $order_id                   = $request->order_id;
+            $order_number               = $request->order_number;
+            $pickup_order_date          = $request->pickup_order_date;
+        }
+
+        try {
+
+            $order_vendor = OrderVendor::where('id',$request->id)->first();
+            if($client_preferences->business_type == 'laundry'){
+                return \Response::json(\View::make('frontend.modals.vendor-cancel-order')->with([
+                    'order_vendor' => $order_vendor,
+                    'pickup_cancelling_charges' => $pickup_cancelling_charges,
+                    'pickup_order_date' => $pickup_order_date,
+                    'order_number'  => $order_number,
+                    'order_id'  => $order_id,
+                ])->render());
+            }else{
+                if(isset($order_vendor)){
+                    if ($request->ajax()) {
+                     return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor))->render());
+                    }
+                }
+                return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor))->render());
+            }
 
 
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+
+    /**
+     * Change the status of order
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function vendorOrderForCancel(Request $request, $domain = '')
+    {
+
+        DB::beginTransaction();
+        $client_preferences = ClientPreference::first();
+        try {
+
+            $today = date('Y-m-d');
+            $user = Auth::user();
+            if($client_preferences->business_type == 'laundry'){
+                if($request->pickup_order_date == $today){
+                    if($user->balanceFloat >= $request->pickup_cancelling_charges){
+                        if ($user) {
+                            $wallet_amount_used = $user->balanceFloat;
+                            if ($wallet_amount_used >= $request->pickup_cancelling_charges) {
+                                if ($wallet_amount_used > 0) {
+                                    $wallet->withdrawFloat($request->pickup_cancelling_charges, ['Wallet has been <b>debited</b> for cancelling the order on pickup day under order number <b>#' . $request->order_number . '</b>']);
+                                }
+                            }
+                        }
+                    }else{
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => __('Insufficient wallet balance, required cancelling charges are '.$request->pickup_cancelling_charges.'. Please recharge your wallet.')
+                        ]);
+                    }
+                }
+            }
+
+
+            $timezone = Auth::user()->timezone;
+            $request->status_option_id = 3;
+            $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
+            $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
+
+            if ($currentOrderStatus->order_status_option_id == 3 && $request->status_option_id == 3) { //$request->status_option_id == 2){
+                return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
+            }
+            if ($currentOrderStatus->order_status_option_id >= 2 ) { //$request->status_option_id == 2){
+                return response()->json(['status' => 'error', 'message' => __('Order is accepted, you can not reject this order !!!')]);
+            }
+            $vendor_id = $request->vendor_id;
+            $orderData = Order::with(array(
+                'vendors' => function ($query) use ($vendor_id) {
+                    $query->where('vendor_id', $vendor_id);
+                }
+            ))->find($request->order_id);
+            // get vendor return amount from order
+            $return_response =  $this->GetVendorReturnAmount($request,$orderData);
+
+            if (!$vendor_order_status_check) {
+                $vendor_order_status = new VendorOrderStatus();
+                $vendor_order_status->order_id = $request->order_id;
+                $vendor_order_status->vendor_id = $request->vendor_id;
+                $vendor_order_status->order_vendor_id = $request->order_vendor_id;
+                $vendor_order_status->order_status_option_id = $request->status_option_id;
+                $vendor_order_status->save();
+                if ($request->status_option_id == 2 || $request->status_option_id == 3) {
+                    $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
+                    AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
+                }
+
+                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id,
+                    'reject_reason' => $request->reject_reason,  'cancelled_by' => Auth::id(),
+                ]);
+             
+
+                if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
+                    $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
+                    $response = Http::get($dispatch_traking_url);
+                }
+
+                // if($currentOrderStatus->payment_option_id != 1){
+
+                // $user = User::find(Auth::id());
+                // $wallet = $user->wallet;
+                // $credit_amount = $currentOrderStatus->payable_amount;
+                // $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
+
+                // }
+                if($return_response['vendor_return_amount'] > 0){
+                    $user = User::find(Auth::id());
+                    $wallet = $user->wallet;
+                    $credit_amount = $return_response['vendor_return_amount'] ; //$currentOrderStatus->payable_amount;
+                    $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
+                }
+                // diarise loyalty 
+                $orderData->loyalty_points_used    =  $orderData->loyalty_points_used - $return_response['vendor_loyalty_points'];
+                $orderData->loyalty_amount_saved   =  $orderData->loyalty_amount_saved - $return_response['vendor_loyalty_amount'];
+                $orderData->loyalty_points_earned  =  $orderData->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
+                $orderData->save();
+                $vendor_return_payment                          = new VendorOrderCancelReturnPayment();
+                $vendor_return_payment->order_id                = $orderData ->id;
+                $vendor_return_payment->order_vendor_id         = $currentOrderStatus->id;
+                $vendor_return_payment->wallet_amount           = $return_response['vendor_wallet_amount'] ;
+                $vendor_return_payment->online_payment_amount   = $return_response['vendor_online_payment_amount'];
+                $vendor_return_payment->loyalty_amount          = $return_response['vendor_loyalty_amount'];
+                $vendor_return_payment->loyalty_points          = $return_response['vendor_loyalty_points'];
+                $vendor_return_payment->loyalty_points_earned   = $return_response['vendor_loyalty_points_earned'];
+                $vendor_return_payment->total_return_amount     = $return_response['vendor_return_amount'];
+                $vendor_return_payment->save();
+
+                DB::commit();
+            //  $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('Order Cancelled Successfully.')
+                ]);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
 }

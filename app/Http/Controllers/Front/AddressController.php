@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Models\{Country, UserWishlist, User, Product, UserAddress};
-use Illuminate\Http\Request;
-use App\Http\Controllers\Front\FrontController;
-use Carbon\Carbon;
 use Auth;
 use Session;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Front\FrontController;
+use App\Models\{Country, UserWishlist, User,CarImages ,Product, UserAddress};
 
 class AddressController extends FrontController{
     /**
@@ -18,7 +20,7 @@ class AddressController extends FrontController{
     public function index(Request $request, $domain = ''){
         $langId = Session::get('customerLanguage');
         $countries = Country::get();
-        $useraddress = UserAddress::where('user_id', Auth::user()->id)->with('country')->get();
+        $useraddress = UserAddress::where('user_id', Auth::user()->id)->where('status', 1)->orderBy('id','desc')->with('country')->get();
         $navCategories = $this->categoryNav($langId);
         return view('frontend/account/addressbook')->with(['useraddress' => $useraddress, 'navCategories' => $navCategories, 'countries'=>$countries]);
     }
@@ -42,11 +44,13 @@ class AddressController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, $domain = ''){
+
+       
         $validatedData = $request->validate([
                 'type' => 'required',
-                'city' => 'required',
-                'state' => 'required',
-                'pincode' => 'required',
+                // 'city' => 'required',
+                // 'state' => 'required',
+                // 'pincode' => 'required',
                 'address' => 'required',
                 'country' => 'required',
         ], [
@@ -54,26 +58,41 @@ class AddressController extends FrontController{
             'type.required' => __('Address Type is required'),
             'city.required' => __('The city field is required.'),
             'state.required' => __('The state field is required.'),
-            'pincode.required' => __('The pincode field is required.'),
+            'pincode.required' => __('The zip code field is required.'),
         ]);
+        $client = getClientPreferenceDetail();
+
         $country = Country::select('code', 'name')->where('id', $request->country)->first();
         $address = new UserAddress;
         $address->type = $request->type;
-        $address->city = $request->city;
-        $address->state = $request->state;
+        $address->city = $request->city??"";
+        $address->state = $request->state??"";
         $address->street = $request->street;
         $address->country = $country->name;
         $address->country_code = $country->code;
         $address->user_id = Auth::user()->id;
         $address->address = $request->address;
-        $address->pincode = $request->pincode;
+        $address->pincode = $request->pincode??"";
         $address->latitude  = $request->latitude;
         $address->longitude  = $request->longitude;
+        $address->house_number = $request->house_number??"";
+        $address->extra_instruction = $request->extra_instruction??"";
         $address->save();
+        // car check and save
+        // if($client->address_is_car == 1){
+        //     $request->merge(['car_id'=>$address->id]);
+        //     //save car details
+        //     CarDetails::saveCarDetail($request);
+        //     //car images
+        //     if ($request->hasFile('image')) {
+        //         CarImages::saveImage($request);
+        //     }
+        // }
+        $msg = $client->address_is_car == 1 ? __('Car Has Been Added Successfully') : __('Address Has Been Added Successfully');
         if($request->ajax()){
-            return response()->json(['status' => 'success', 'message' => __('Address Has Been Added Successfully'), 'address' => $address]);
+            return response()->json(['status' => 'success', 'message' => $msg, 'address' => $address]);
         }else{
-            return redirect()->route('user.addressBook')->with('success', __('Address Has Been Added Successfully'));
+            return redirect()->route('user.addressBook')->with('success', $msg);
         }
     }
 
@@ -91,15 +110,23 @@ class AddressController extends FrontController{
             'address' => 'required',
             'country' => 'required',
         ], [
-            'type.required' => __('Address Type is required')
+            'type.required' => __('Address Type is required'),
+            'pincode.required' => __('The zip code field is required.')
         ]);
         $country = Country::select('code', 'name')->where('id', $request->country)->first();
         $user = User::where('id', Auth::user()->id)->first();
         if ($user){
             $user->country_id = $request->country;
             $user->save();
-        }
-        $address = UserAddress::find($id);
+        }        
+
+        //mark previous entry to delete
+        $updateaddress = UserAddress::where('id', $id)->update(['status' => 0]);
+
+        //create a new address
+        $prevaddress = UserAddress::find($id);
+        $address = new UserAddress;        
+        $address->user_id = $prevaddress->user_id;
         $address->type = $request->type;
         $address->address = $request->address;
         $address->street = $request->street;
@@ -110,6 +137,12 @@ class AddressController extends FrontController{
         $address->pincode = $request->pincode;
         $address->latitude  = $request->latitude;
         $address->longitude  = $request->longitude;
+        $address->house_number = $request->house_number??"";
+        $address->extra_instruction = $request->extra_instruction??"";
+        $address->is_primary = $prevaddress->is_primary;
+        $address->phonecode = $prevaddress->phonecode;
+        $address->type_name = $prevaddress->type_name;        
+        $address->created_at = $prevaddress->created_at;
         $address->save();
         return redirect()->route('user.addressBook')->with('success', __('Address Has Been Updated Successfully'));
     }
@@ -139,7 +172,7 @@ class AddressController extends FrontController{
         $countries = Country::all();
         return response()->json(['status' => 'success', 'countries' => $countries, 'address' => $address]);
     }
-   
+
     /**
      * Set Primary Address for user
      *
@@ -159,9 +192,10 @@ class AddressController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function delete($domain = '', $id){
-        $address = UserAddress::find($id)->delete();
+        //$address = UserAddress::find($id)->delete();        
+        $address = UserAddress::where('id', $id)->update(['status' => 0]);
         return redirect()->route('user.addressBook')->with('success', __('Address Has Been Deleted Successfully'));
     }
-   
+
 
 }

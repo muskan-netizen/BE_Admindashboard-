@@ -9,9 +9,82 @@
         $('.selectize-select').selectize();
     });
 
+
+    $('.importUserModal').click(function(){
+        $('#import-form').modal('show');
+         $('.dropify').dropify();
+    });
+
+
+    function submitImportUserForm() {
+        var form = document.getElementById('save_imported_customer');
+        var formData = new FormData(form);
+        var data_uri = "{{route('customer.import')}}";
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: data_uri,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                location.reload();
+                if (response.status == 'success') {
+                    // $("#import-form").modal('hide');
+                    $('#p-message').empty();
+                    $('#p-message').append('Document uploaded Successfully!');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
+
+                } else {
+                    $('#p-message').empty();
+                    $('#p-message').append('Document uploading Failed!');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text(response.message);
+
+                }
+                return response;
+            },
+            beforeSend: function() {
+                $('#p-message').empty();
+                $('#p-message').append('Document uploading!');
+
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $('#p-message').empty();
+                $('#p-message').append('Document uploading!');
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+
+
+                $(".loader_box").hide();
+            }
+        });
+    }
+
+
+
     var userActive = $('.chk_box');
 
-    $(userActive).on("change" , function() {
+    // $(userActive).on("change" , function() {
+    $(document).delegate('input[name="userAccountStatus"]', 'change', function() {
         var user_id = $(this).data('id');
         var chk = $('#cur_' + user_id + ':checked').length;
 
@@ -38,15 +111,15 @@
         });
     });
 
-    $(".editVendor").click(function (e) {  
-        
+    $(".editVendor").click(function (e) {
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
         });
         e.preventDefault();
-       
+
         var uid = $(this).attr('userId');
 
         $.ajax({
@@ -74,7 +147,7 @@
             e.preventDefault();
     });
 
-    $(document).on('click', '.submitCustomerForm', function() { 
+    $(document).on('click', '.submitCustomerForm', function() {
         var form =  document.getElementById('add_user');
         var formData = new FormData(form);
         var urls = "{{URL::route('customer.store')}}";
@@ -109,7 +182,7 @@
                 console.log(response);
                 if (response.status == 'success') {
                     $("#" + modal + " .close").click();
-                    location.reload(); 
+                    location.reload();
                 } else {
                     $(".show_all_error.invalid-feedback").show();
                     $(".show_all_error.invalid-feedback").text(response.message);
@@ -123,6 +196,10 @@
                         $("#" + key + "Input" + inp + " input").addClass("is-invalid");
                         $("#" + key + "Input" + inp + " span.invalid-feedback").children("strong").text(errors[key][0]);
                         $("#" + key + "Input span.invalid-feedback").show();
+
+                        // $("#" + key + "Input input").addClass("is-invalid");
+                        // $("#" + key + "Input span.invalid-feedback").children("strong").text(errors[key][0]);
+                        // $("#" + key + "Input span.invalid-feedback").show();
                     });
                 } else {
                     $(".show_all_error.invalid-feedback").show();
@@ -134,5 +211,5 @@
 
     }
 
-    
+
 </script>

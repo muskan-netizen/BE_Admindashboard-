@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Clients</h4>
+                <h4 class="page-title">{{ __('Clients') }}</h4>
             </div>
         </div>
     </div>
@@ -19,11 +19,18 @@
                     <div class="row mb-2">
                         <div class="col-sm-8">
                             <div class="text-sm-left">
-                                @if (\Session::has('success'))
+                                @if(\Session::has('success'))
                                 <div class="alert alert-success">
                                     <span>{!! \Session::get('success') !!}</span>
                                 </div>
                                 @endif
+
+                                @if(\Session::has('error'))
+                                <div class="alert alert-error">
+                                    <span>{!! \Session::get('error') !!}</span>
+                                </div>
+                                @endif
+
                             </div>
                         </div>
                         <div class="col-sm-4 text-right">
@@ -34,14 +41,15 @@
                         <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Password</th>
-                                    <th>Phone</th>
-                                    <th>DB Name</th>
-                                    <th>SUB Domain</th>
-                                    <th>Client Code</th>
-                                    <th style="width: 85px;">Action</th>
+                                    <th>{{ __("Name") }}</th>
+                                    <th>{{ __("Type") }}</th>
+                                    <th>{{ __("Email") }}</th>
+                                    <th>{{ __("Password") }}</th>
+                                    <th>{{ __("Phone") }}</th>
+                                    <th>{{ __("DB Name") }}</th>
+                                    <th>{{ __("SUB Domain") }}</th>
+                                    <th>{{ __("Client Code") }}</th>
+                                    <th style="width: 85px;">{{ __("Action") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -50,20 +58,21 @@
                                     <td class="table-user">
                                         <a href="javascript:void(0);" class="text-body font-weight-semibold">{{$client->name}}</a>
                                     </td>
+                                    <td> @if($client->client_type == 1) <span class="badge bg-success" style="color:#fff;">Live</span> @else <span class="badge bg-warning" style="color:#fff;">Demo</span> @endif </td>
                                     <td> {{$client->email}} </td>
                                     <td style="width:100px;max-width:100px;"> </td>
                                     <td> {{$client->phone_number}} </td>
                                     <td> {{$client->database_name}} </td>
-                                    <td><a target="_blank" href="{{$client->sub_domain_url}}">{{$client->sub_domain }}.royoorders.com</a> </td>
+                                    <td><a target="_blank" href="{{$client->sub_domain_url}}">{{$client->sub_domain }}{{env('SUBMAINDOMAIN') }}</a> </td>
                                     <td> {{$client->code}} </td>
                                     <td>
                                         <a href="{{route('client.edit', $client->id)}}" class="btn btn-primary-outlineaction-icon p-0"> 
                                             <i class="mdi mdi-square-edit-outline"></i>
                                         </a>
-                                        <a class="btn btn-primary-outlineaction-icon delete-client p-0" data-client_id="{{ $client->id }}" data-url="{{ URL::to('godpanel/delete/client/'.$client->id) }}">
-                                            <i class="mdi mdi-delete"></i>
-                                        </a>
+                                      
+                                        
                                     </td>
+                                  
                                 </tr>
                                 @endforeach
                             </tbody>

@@ -7,11 +7,16 @@
 <link href="{{asset('assets/libs/flatpickr/flatpickr.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
 
+<style>
+    .percentage_value_wrapper{
+        display: none;
+    }
+</style>
 @endsection
 
 @section('content')
 <!-- Start Content-->
-<div class="container-fluid">
+
 
     <div class="content dashboard-boxes">
 
@@ -22,12 +27,12 @@
             <div class="row align-items-center">
                 <div class="col-sm-6">
                     <div class="page-title-box">
-                        <h4 class="page-title">User Subscription Plans</h4>
+                        <h4 class="page-title">{{ __('User Subscription Plans') }}</h4>
                     </div>
                 </div>
                 <div class="col-sm-6 text-sm-right">
                     <button class="btn btn-info waves-effect waves-light text-sm-right" data-toggle="modal" data-target="#add-subscription-plan">
-                        <i class="mdi mdi-plus-circle mr-1"></i> Add Plan
+                        <i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Plan') }}
                     </button>
                 </div>
             </div>
@@ -62,7 +67,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card widget-inline">
-                        <div class="card-body">
+                        <div class="card-body p-2">
                             <div class="row">
                                 <div class="col-sm-6 col-md-6 mb-3 mb-md-0">
                                     <div class="text-center">
@@ -70,7 +75,7 @@
                                             <i class="mdi mdi-account-multiple-plus text-primary mdi-24px"></i>
                                             <span data-plugin="counterup" id="total_subscribed_users_count">{{ $subscribed_users_count }}</span>
                                         </h3>
-                                        <p class="text-muted font-15 mb-0">Total Subscribed Users</p>
+                                        <p class="text-muted font-15 mb-0">{{ __('Total Subscribed Users') }}</p>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-md-6 mb-3 mb-md-0">
@@ -79,7 +84,7 @@
                                             <i class="mdi mdi-account-multiple-plus text-primary mdi-24px"></i>
                                             <span data-plugin="counterup" id="total_subscribed_users_percentage">{{ $subscribed_users_percentage }}</span>
                                         </h3>
-                                        <p class="text-muted font-15 mb-0">Total Subscribed Users (%)</p>
+                                        <p class="text-muted font-15 mb-0">{{ __("Total Subscribed Users") }} (%)</p>
                                     </div>
                                 </div>
                             </div>
@@ -98,42 +103,42 @@
                                     <table class="table table-centered table-nowrap table-striped" id="sub-plans-datatable">
                                         <thead>
                                             <tr>
-                                                <th>Image</th>
-                                                <th>Title</th>
-                                                <th>Description</th>
-                                                <th>Price</th>
-                                                <th>Features</th>
-                                                <th>Frequency</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
+                                                <th>{{ __("Image") }}</th>
+                                                <th>{{ __("Title") }}</th>
+                                                <th>{{ __("Description") }}</th>
+                                                <th>{{ __("Price") }}</th>
+                                                <th>{{ __("Features") }}</th>
+                                                <th>{{ __("Frequency") }}</th>
+                                                <th>{{ __("Status") }}</th>
+                                                <th>{{ __("Action") }}</th>
                                             </tr>
                                         </thead>
                                         <tbody id="subscriptions_list">
                                             @foreach($subscription_plans as $plan)
-                                            <?php 
+                                            <?php
                                             ?>
                                             <tr data-row-id="{{$plan->slug}}">
-                                                <td> 
+                                                <td>
                                                     <img src="{{$plan->image['proxy_url'].'40/40'.$plan->image['image_path']}}" class="rounded-circle" alt="{{$plan->slug}}" >
                                                 </td>
                                                 <td><a href="javascript:void(0)" class="editSubscriptionPlanBtn" data-id="{{$plan->slug}}">{{$plan->title}}</a></td>
-                                                <td>{{$plan->Description}}</td>
-                                                <td>${{$plan->price}}</td>
-                                                <td>{{$plan->features}}</td>
-                                                <td>{{ucfirst($plan->frequency)}}</td>
+                                                <td>{{$plan->description}}</td>
+                                                <td>${{decimal_format($plan->price)}}</td>
+                                                <td>{{__($plan->features)}}</td>
+                                                <td>{{__(ucfirst($plan->frequency))}}</td>
                                                 <td>
                                                     <input type="checkbox" data-id="{{$plan->slug}}" data-plugin="switchery" name="userSubscriptionStatus" class="chk_box status_check" data-color="#43bee1" {{($plan->status == 1) ? 'checked' : ''}} >
-                                                </td> 
-                                                <td> 
+                                                </td>
+                                                <td>
                                                     <div class="form-ul" style="width: 60px;">
                                                         <div class="inner-div" >
                                                             @if(Auth::user()->is_superadmin == 1)
                                                                 <a href="javascript:void(0)" class="action-icon editSubscriptionPlanBtn" data-id="{{$plan->slug}}"><i class="mdi mdi-square-edit-outline"></i></a>
-                                                                <a href="{{route('subscription.plan.delete.user', $plan->slug)}}" onclick="return confirm('Are you sure? You want to delete the subscription plan.')" class="action-icon"> <i class="mdi mdi-delete" title="Delete subscription plan"></i></a>
-                                                            @endif    
+                                                                <a href="{{route('subscription.plan.delete.user', $plan->slug)}}" onclick="return confirm('Are you sure? You want to delete the subscription plan.')" class="action-icon deleteSubscriptionPlanBtn"> <i class="mdi mdi-delete" title="Delete subscription plan"></i></a>
+                                                            @endif
                                                         </div>
                                                     </div>
-                                                </td> 
+                                                </td>
                                             </tr>
                                         @endforeach
                                         </tbody>
@@ -149,13 +154,13 @@
 
     </div>
 
-</div> <!-- container -->
+ <!-- container -->
 
 <div id="add-subscription-plan" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addSubscriptionPlan_Label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Plan</h4>
+                <h4 class="modal-title">{{ __('Add Plan') }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="user_subscription_form" method="post" enctype="multipart/form-data" action="{{ route('subscription.plan.save.user') }}">
@@ -165,16 +170,16 @@
                         <div class="col-md-12">
                             <div class="row mb-2">
                                 <div class="col-md-12">
-                                    <label>Upload Image</label>
+                                    <label>{{ __('Upload Image') }}</label>
                                     <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="" />
-                                    <label class="logo-size text-right w-100">Image Size 120x120</label>
-                                </div> 
+                                    <label class="logo-size text-right w-100">{{ __('Image Size') }} 120x120</label>
+                                </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        {!! Form::label('title', 'Enable',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Enable'),['class' => 'control-label']) !!}
                                         <div class="mt-md-1">
                                             <input type="checkbox" data-plugin="switchery" name="status" class="form-control status" data-color="#43bee1" checked='checked'>
                                         </div>
@@ -182,36 +187,42 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="nameInput">
-                                        {!! Form::label('title', 'Title',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Title'),['class' => 'control-label']) !!}
                                         {!! Form::text('title', null, ['class'=>'form-control', 'required'=>'required']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 features_wrapper">
                                     <div class="form-group">
-                                        <label for="">Features</label>
-                                        <select class="form-control select2-multiple" name="features[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required="required">
+                                        <label for="">{{ __("Features") }}</label>
+                                        <select class="form-control select2-multiple subscription_features" name="features[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required="required">
                                             @foreach($features as $feature)
                                                 <option value="{{$feature->id}}"> {{$feature->title}} </option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-md-12 percentage_value_wrapper">
+                                    <div class="form-group">
+                                        <label for="percent_value">{{ __('Percent Value') }}</label>
+                                        <input class="form-control" type="number" id="percent_value" name="percent_value" min="0" placeholder="Percent Value"  onKeyPress="if(this.value.length==6) return false;">
+                                    </div>
+                                </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="">Price</label>
+                                        <label for="">{{ __('Price') }}</label>
                                         <input class="form-control" type="number" name="price" min="0" required="required">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="">Frequency</label>
+                                        <label for="">{{ __("Frequency") }}</label>
                                         <select class="form-control" name="frequency" required="required">
-                                            <option value="weekly">Weekly</option>
-                                            <option value="monthly">Monthly</option>
-                                            <option value="yearly">Yearly</option>
+                                            <option value="weekly">{{ __("Weekly") }}</option>
+                                            <option value="monthly">{{ __("Monthly") }}</option>
+                                            <option value="yearly">{{ __("Yearly") }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -223,7 +234,7 @@
                                 </div><?php */ ?>
                                 <div class="col-md-12">
                                     <div class="form-group" id="descInput">
-                                        {!! Form::label('title', 'Description',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
                                         {!! Form::textarea('description', null, ['class' => 'form-control', 'rows' => '3']) !!}
                                     </div>
                                 </div>
@@ -232,7 +243,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-info waves-effect waves-light submitAddSubscriptionForm">Submit</button>
+                    <button type="submit" class="btn btn-info waves-effect waves-light submitAddSubscriptionForm">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -290,6 +301,17 @@
                 return response;
             }
         });
+    });
+
+    $(document).on("input", ".subscription_features", function(e){
+        var features = $(this).val();
+        if(features.includes('2')){
+            $(this).parents('.features_wrapper').next().show();
+            $(this).parents('.features_wrapper').next().find('input').attr('required', true);
+        }else{
+            $(this).parents('.features_wrapper').next().hide();
+            $(this).parents('.features_wrapper').next().find('input').removeAttr('required');
+        }
     });
 
 </script>

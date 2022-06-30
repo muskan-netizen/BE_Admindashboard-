@@ -11,11 +11,11 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">Promocode</h4>
+                <h4 class="page-title">{{ __('Promocode') }}</h4>
             </div>
         </div>
         <div class="col-sm-6 text-sm-right">
-            <button class="btn btn-info waves-effect waves-light text-sm-right openPromoModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> Add </button>
+            <button class="btn btn-info waves-effect waves-light text-sm-right openPromoModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }} </button>
         </div>
     </div>
     <div class="row">
@@ -49,20 +49,20 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Image</th>
-                                    <th>Promo Code</th>
-                                    <th style="width:150px">Title</th>
-                                    <th style="width:150px">Description</th>
-                                    <th>Promo Types</th>
-                                    <th>Total Amount</th>
-                                    <th>Expiry Date</th>
+                                    <th>{{ __('Image') }}</th>
+                                    <th>{{ __('Promo Code') }}</th>
+                                    <th style="width:150px">{{ __('Title') }}</th>
+                                    <th style="width:150px">{{ __('Description') }}</th>
+                                    <th>{{ __('Promo Types') }}</th>
+                                    <th>{{ __('Total Amount') }}</th>
+                                    <th>{{ __('Expiry Date') }}</th>
                                     <!-- <th>Min Amount To Spend</th>
                                     <th>Max Amount To Spend</th>
                                     <th>Limit Per User</th>
                                     <th>Total Limit</th>
                                     <th>Restriction On</th>
                                     <th>Restriction Type</th> -->
-                                    <th>Action</th>
+                                    <th>{{ __('Action') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="post_list">
@@ -76,8 +76,8 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                     <td style="width:100px"><p class="ellips">{{$promo->title}}</p></td>
                                     <td style="width:100px"><p class="ellips">{{$promo->short_desc}}</p></td>
                                     <td>{{$promo->type ? $promo->type->title : ''}}</td>
-                                    <td>{{$promo->amount}}</td>
-                                    <td>{{convertDateTimeInTimeZone($promo->expiry_date, $timezone, 'M d Y, H:i A')}}</td>
+                                    <td>{{decimal_format($promo->amount)}}</td>
+                                    <td>{{dateTimeInUserTimeZone($promo->expiry_date, $timezone)}}</td>
                                     <td>
                                         @if($promo->added_by == Auth::id() || Auth::user()->is_superadmin == 1)
                                         <div class="form-ul" style="width: 60px;">
@@ -87,11 +87,11 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                                 </a>
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{route('promocode.destroy', $promo->id) }}">
+                                                <form method="POST" action="{{route('promocode.destroy', $promo->id) }}" id="deletePromoCode">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                        <button type="submit" onclick="return confirm('Are you sure? You want to delete the Promocode.')" class="btn btn-primary-outline action-icon">
+                                                        <button type="submit" id="deletePromoButton" class="btn btn-primary-outline action-icon">
                                                             <i class="mdi mdi-delete"></i>
                                                         </button>
                                                     </div>
@@ -116,5 +116,24 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
 @include('backend.promocode.modals')
 @endsection
 @section('script')
+<script type="text/javascript">
+    $('#deletePromoButton').click(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete the Promocode.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $("#deletePromoCode").off("submit").submit();
+            }else{
+                return false;
+            }
+        });
+    });
+</script>
 @include('backend.promocode.pagescript')
 @endsection

@@ -3,13 +3,6 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
-<style type="text/css">
-    .main-menu .brand-logo {
-        display: inline-block;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-</style>
 
 @endsection
 
@@ -19,18 +12,11 @@
     $now = \Carbon\Carbon::now()->toDateString();
     $after7days = \Carbon\Carbon::now()->addDays(7)->toDateString();
 @endphp
-<header>
-    <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
-</header>
+
 <style type="text/css">
-    .invalid-feedback {
-        display: block;
-    }
-    ul li {
-        margin: 0 0 10px;
-        color: #6c757d;
-    }
+.invalid-feedback {display: block;}
+ul li {margin: 0 0 10px;color: #6c757d;}
+.main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}
 </style>
 
 <section class="section-b-space">
@@ -69,7 +55,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row my-md-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">my account</a></div>
                 @include('layouts.store/profile-sidebar')
@@ -84,8 +70,9 @@
                 </div>
 
                 <div class="row">
+                    @if(!empty($subscription))
                     <div class="col-12 mb-4">
-                        @if(!empty($subscription))
+
                             <div class="card subscript-box">
                                 @if( (empty($subscription->cancelled_at)) || (!empty($subscription->cancelled_at)) && ($subscription->cancelled_at >= $now))
                                 <div class="row align-items-center mb-2">
@@ -108,7 +95,7 @@
                                                     @endforeach
                                                 </ul><?php */ ?>
                                             </div>
-                                            
+
                                             <div class="col-sm-6 form-group mb-0">
                                                 <b class="mr-2">
                                                     @if(!empty($subscription->cancelled_at))
@@ -125,7 +112,7 @@
                                                         @endif
                                                     @endif
                                                 </b>
-                                                <span>{{ convertDateTimeInTimeZone($subscription->end_date, $timezone, 'F d, Y') }}</span>
+                                                <span>{{ dateTimeInUserTimeZone($subscription->end_date, $timezone, true, false) }}</span>
                                             </div>
                                             <div class="col-sm-6 mb-0 text-center text-sm-right">
                                                 @if( $subscription->end_date >= $now )
@@ -147,12 +134,13 @@
                                 </div>
                                 @endif
                             </div>
-                        @endif
+
                     </div>
-                    
+                    @endif
+
                     @if($subscription_plans->isNotEmpty())
                         @foreach($subscription_plans as $plan)
-                            <div class="col-md-4 col-sm-6">
+                            <div class="col-md-3 col-sm-6 mb-3 mb-md-2">
                                 <div class="pricingtable">
                                     <div class="gold-icon position-relative">
                                         <img src="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}">
@@ -183,7 +171,7 @@
                         @endforeach
                     @endif
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -240,7 +228,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="" id="subscription_payment_form">
+      <form action="" id="subscription_payment_form"> 
         @csrf
         @method('POST')
         <div>
@@ -289,19 +277,53 @@
         <% _.each(payment_options, function(payment_option, k){%>
             <% if( (payment_option.slug != 'cash_on_delivery') && (payment_option.slug != 'loyalty_points') ) { %>
                 <label class="radio mt-2">
-                    <%= payment_option.title %> 
+                    <%= payment_option.title %>
                     <input type="radio" name="subscription_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.slug %>" data-payment_option_id="<%= payment_option.id %>">
                     <span class="checkround"></span>
                 </label>
                 <% if(payment_option.slug == 'stripe') { %>
-                    <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
+                    <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper option-wrapper d-none">
                         <div class="form-control">
-                            <label class="d-flex flex-row pt-1 pb-1 mb-0">
+                            <label class="pb-1 mb-0">
                                 <div id="stripe-card-element"></div>
                             </label>
                         </div>
                         <span class="error text-danger" id="stripe_card_error"></span>
                     </div>
+                <% } %>
+                <% if(payment_option.slug == 'stripe_fpx') { %>
+                    <div class="col-md-12 mt-3 mb-3 stripe_fpx_element_wrapper option-wrapper d-none">
+                        <label for="fpx-bank-element">
+                            FPX Bank
+                        </label>
+                        <div class="form-control">
+                            <div id="fpx-bank-element">
+                              <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                        </div>
+                        <span class="error text-danger" id="stripe_fpx_error"></span>
+                    </div>
+                <% } %>
+                <% if(payment_option.slug == 'yoco') { %>
+                    <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
+                        <div class="form-control">
+                            <div id="yoco-card-frame">
+                            <!-- Yoco Inline form will be added here -->
+                            </div>
+                        </div>
+                        <span class="error text-danger" id="yoco_card_error"></span>
+                    </div>
+                <% } %>
+                <% if(payment_option.slug == 'checkout') { %>
+                    <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper option-wrapper d-none">
+                        <div class="form-control card-frame">
+                            <!-- form will be added here -->
+                        </div>
+                        <span class="error text-danger" id="checkout_card_error"></span>
+                    </div>
+                <% } %>
+                <% if(payment_option.slug == 'payphone') { %>
+                    <div id="pp-button"></div>
                 <% } %>
             <% } %>
         <% }); %>
@@ -311,22 +333,94 @@
 @endsection
 
 @section('script')
-<script src="https://js.stripe.com/v3/"></script>
+@if(in_array('razorpay',$client_payment_options))
+<script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
+@endif
+@if(in_array('stripe',$client_payment_options) || in_array('stripe_fpx',$client_payment_options) || in_array('stripe_oxxo',$client_payment_options))
+<script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+@endif
+@if(in_array('stripe_oxxo',$client_payment_options))
+<script>
+var stripe_oxxo_publishable_key = '{{ $stripe_oxxo_publishable_key }}';
+</script>
+@endif
+@if(in_array('yoco',$client_payment_options))
+<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <script type="text/javascript">
+    var sdk = new window.YocoSDK({
+        publicKey: yoco_public_key
+    });
+    var inline='';
+</script>
+@endif
+@if(in_array('checkout',$client_payment_options))
+<script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
+@endif
+@if(in_array('payphone',$client_payment_options))
+<script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
+@endif
+<script type="text/javascript">
+    var stripe_fpx = '';
+    var fpxBank = '';
+    var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
+    var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
+    var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var create_payphone_url = "{{route('payphone.createHash')}}";
+    var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
+    var create_windcave_hash_url = "{{route('windcave.createHash')}}";
+    var create_paytech_hash_url = "{{route('paytech.createHash')}}";
+    var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
+    var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+    var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var subscription_payment_options_url = "{{route('user.subscription.plan.select', ':id')}}";
     var user_subscription_purchase_url = "{{route('user.subscription.plan.purchase', ':id')}}";
     var user_subscription_cancel_url = "{{route('user.subscription.plan.cancel', ':id')}}";
-    var payment_stripe_url = "{{route('user.subscription.payment.stripe')}}";
+    var payment_stripe_url = "{{route('payment.stripe')}}";
+    var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
+    var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
+    var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
+    var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
+    var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
+    var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
+    var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
-    console.log(payment_stripe_url);
+
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
-        var method = $(this).data("payment_option_id");
-        if(method == 4){
-            $("#subscription_payment_methods .stripe_element_wrapper").removeClass('d-none');
-        }else{
-            $("#subscription_payment_methods .stripe_element_wrapper").addClass('d-none');
+        var method = $(this).val();
+        var code = method.replace('radio-', '');
+
+        if (code != '') {
+            $("#subscription_payment_methods .option-wrapper").addClass('d-none');
+            $("#subscription_payment_methods ."+code+"_element_wrapper").removeClass('d-none');
+        } else {
+            $("#subscription_payment_methods .option-wrapper").addClass('d-none');
         }
+
+        if (code == 'yoco') {
+            // $("#subscription_payment_methods .yoco_element_wrapper").removeClass('d-none');
+            // Create a new dropin form instance
+
+            var yoco_amount_payable = $("input[name='subscription_amount']").val();
+            inline = sdk.inline({
+                layout: 'field',
+                amountInCents:  yoco_amount_payable * 100,
+                currency: 'ZAR'
+            });
+            // this ID matches the id of the element we created earlier.
+            inline.mount('#yoco-card-frame');
+        }
+        // else {
+        //     $("#subscription_payment_methods .yoco_element_wrapper").addClass('d-none');
+        // }
+
+        if (code == 'checkout') {
+            // $("#subscription_payment_methods .checkout_element_wrapper").removeClass('d-none');
+            Frames.init(checkout_public_key);
+        }
+        // else {
+        //     $("#subscription_payment_methods .checkout_element_wrapper").addClass('d-none');
+        // }
     });
 
     $(document).on('click', '.cancel-subscription-link', function(){
@@ -334,5 +428,15 @@
         $('#cancel-subscription-form').attr('action', user_subscription_cancel_url.replace(":id", id));
     });
 </script>
+@if(in_array('kongapay',$client_payment_options))
+<script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
+@endif
+@if(in_array('flutterwave',$client_payment_options))
+<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>
+@endif
+<script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
+
+
 
 @endsection

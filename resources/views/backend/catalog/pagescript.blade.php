@@ -73,6 +73,7 @@
                 $('#addVariantForm #AddVariantBox').html(data.html);
                 $('.dropify').dropify();
                 $('.selectize-select').selectize();
+
                 var picker = new jscolor('#add-hexa-colorpicker-1', options);
             },
             error: function(data) {
@@ -91,7 +92,7 @@
         var did = $(this).attr('dataid');
         $.ajax({
             type: "get",
-            url: "<?php echo url('client/variant'); ?>" + '/' + did + '/edit',
+            url: "{{url('client/variant')}}" + '/' + did + '/edit',
             data: '',
             dataType: 'json',
             beforeSend: function() {
@@ -110,7 +111,7 @@
                     try {
                         var picker = new jscolor('#' + ids, options);
                     } catch (err) {
-                       console.log(err.message);
+                        console.log(err.message);
                     }
                 });
                 var getURI = document.getElementById('submitEditHidden').value;
@@ -161,12 +162,23 @@
 
     $(document).on('click', '.deleteVariant', function() {
         var did = $(this).attr('dataid');
-        if (confirm("Are you sure? You want to delete this variant.")) {
-            $('#varDeleteForm' + did).submit();
-        }
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete this variant.')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $('#varDeleteForm' + did).submit();
+            }
+        });
         return false;
     });
-    
+
+
+
 
     $("#varient-datatable tbody").sortable({
         placeholder: "ui-state-highlight",
@@ -231,8 +243,10 @@
         });
     });
     $(document).ready(function() {
+
         $('#addVariantmodal .selectize-select').selectize();
         $('#addBrandmodal .selectize-select').selectize();
+
     });
 
     $("#brand-datatable tbody").sortable({
@@ -242,9 +256,18 @@
     });
     $(document).on('click', '.deleteBrand', function() {
         var did = $(this).attr('dataid');
-        if (confirm("Are you sure? You want to delete this brand.")) {
-            $('#brandDeleteForm' + did).submit();
-        }
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete this brand.')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $('#brandDeleteForm' + did).submit();
+            }
+        });
         return false;
     });
     $('.saveBrandOrder').on('click', function(e) {
@@ -256,6 +279,7 @@
         $('#brand_order').submit();
     });
     $('.editBrandBtn').on('click', function(e) {
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -265,7 +289,7 @@
         var did = $(this).attr('dataid');
         $.ajax({
             type: "get",
-            url: "<?php echo url('client/brand'); ?>" + '/' + did + '/edit',
+            url: "{{url('client/brand')}}" + '/' + did + '/edit',
             data: '',
             dataType: 'json',
             success: function(data) {
@@ -276,11 +300,138 @@
                 $('#editBrandForm #editBrandBox').html(data.html);
                 $('.dropify').dropify();
                 $('.selectize-select').selectize();
+
+               // $("#cateSelectBox")[0].selectize.clear();
+                //$('#cateSelectBox option:selected')[0].selectize.clear();
+
                 document.getElementById('editBrandForm').action = data.submitUrl;
+
+
             },
             error: function(data) {
                 console.log('data2');
             }
         });
     });
+
+    function deleteCategory(catid)
+    {
+        Swal.fire({  
+        title: 'Are you sure? You want to delete category.',    
+        showCancelButton: true,  
+        confirmButtonText: `Ok`,    
+        }).then((result) => {  
+            if (result.value) {    
+                $.ajax({
+                    url: '{{ url("client/category/delete" ) }}/'+catid,
+                    type: "GET",
+                    data: {},
+                    success: function(response) {
+                        $('.catid'+catid).remove();
+                        $('.deletecategorymsg span').text('Category deleted successfully!');
+                        $('.deletecategorymsg').css('display','');
+                        setTimeout(function(){
+                            location.reload();
+                        }, 1500);
+                            
+                        },
+                    });
+            } 
+        });
+    }
+
+            // Product Tag Script
+    $('#add_product_tag_modal_btn').click(function(e) {
+        document.getElementById("productTagForm").reset();
+        $('#add_product_tag_modal input[name=tag_id]').val("");
+        $('#add_product_tag_modal').modal('show');
+        $('#add_product_tag__modal #standard-modalLabel').html('Add Tag');
+    });
+    $(document).on('click', '.submitSaveProductTag', function(e) {
+        var tag_id = $("#add_product_tag_modal input[name=tag_id]").val();
+        if (tag_id) {
+            var post_url = "{{ route('tag.update') }}";
+        } else {
+            var post_url = "{{ route('tag.create') }}";
+        }
+        var form_data = new FormData(document.getElementById("productTagForm"));
+        $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+               if (response.status == 'Success') {
+                  $('#add_or_edit_social_media_modal').modal('hide');
+                  $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+               }
+            },
+            error: function(response) {
+               $('#add_product_tag_modal .product_tag_err').html('The default language name field is required.');
+            }
+        });
+    });
+    $(document).on("click", ".edit_product_tag_btn", function() {
+        let tag_id = $(this).data('tag_id');
+        $('#add_product_tag_modal input[name=tag_id]').val(tag_id);
+        $.ajax({
+            method: 'GET',
+            data: {
+               tag_id: tag_id
+            },
+            url: "{{ route('tag.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                  $("#add_product_tag_modal input[name=tag_id]").val(response.data.id);
+                  $('#add_product_tag_modal #standard-modalLabel').html('Update Product Tag');
+                  $('#add_product_tag_modal').modal('show');
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_product_tag_modal #product_tag_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {
+
+            }
+        });
+    });
+    $(document).on("click", ".delete_product_tag_btn", function() {
+         var tag_id = $(this).data('tag_id');
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+          }).then((result) => {
+            if(result.value)
+            {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('tag.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     tag_id: tag_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
+                  }
+               });
+            }
+        });
+    });
+    //End Product Tag Script
+
+    
 </script>

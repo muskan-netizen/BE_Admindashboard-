@@ -30,6 +30,7 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
+            \App\Http\Middleware\Localization::class,
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
@@ -37,11 +38,10 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\Localization::class,
         ],
 
         'api' => [
-            'throttle:160,1',
+            'throttle:360,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
@@ -54,6 +54,8 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'languageSwitch' => \App\Http\Middleware\LanguageSwitch::class,
+        'adminLanguageSwitch' => \App\Http\Middleware\Adminlanguageswitch::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
@@ -74,5 +76,9 @@ class Kernel extends HttpKernel
         'webAuth' => \App\Http\Middleware\WebAuth::class,
         'ClientAuth' => \App\Http\Middleware\ClientAuth::class,
         'systemAuth'    =>\App\Http\Middleware\SystemAuth::class,
+        'ApiLocalization' => \App\Http\Middleware\ApiLocalization::class,
+        'onlysuperadmin' => \App\Http\Middleware\OnlySuperAdmin::class,
+        'ConnectDbFromInventory' => \App\Http\Middleware\ConnectDbFromInventory::class,
+      
     ];
 }

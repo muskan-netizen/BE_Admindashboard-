@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Currencies</h4>
+                <h4 class="page-title">{{ __('Currencies') }}</h4>
             </div>
         </div>
     </div>
@@ -31,10 +31,10 @@
                         <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Iso Code</th>
-                                    <th>Symbol</th>
-                                    <th>Priority</th>
+                                    <th>{{ __("Name") }}</th>
+                                    <th>{{ __("Iso Code") }}</th>
+                                    <th>{{ __("Symbol") }}</th>
+                                    <th>{{ __("Priority") }}</th>
                                 </tr>
                             </thead>
                             <tbody>

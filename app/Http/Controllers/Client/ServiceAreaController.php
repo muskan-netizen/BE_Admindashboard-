@@ -48,6 +48,7 @@ class ServiceAreaController extends BaseController{
         $area->description      = $request->description;
         $area->polygon          = \DB::raw("ST_GEOMFROMTEXT('POLYGON((".$latlng."))')");
         $area->save();
+
         return redirect()->back()->with('success', 'Service area saved successfully!');
     }
 
@@ -99,7 +100,7 @@ class ServiceAreaController extends BaseController{
         $area->polygon        = \DB::raw("ST_GEOMFROMTEXT('POLYGON((".$latlng."))')");
         $area->save();
         return redirect()->back()->with('success', 'Service area updated successfully!');
- 
+
     }
 
     /**
@@ -112,5 +113,66 @@ class ServiceAreaController extends BaseController{
         $vendor = Vendor::where('id', $vendor_id)->firstOrFail();
         $area = ServiceArea::where('id', $request->area_id)->delete();
         return redirect()->back()->with('success', 'Service area deleted successfully!');
+    }
+
+
+    # draw a circle with radius in vendor service area
+    public function drawCircleWithRadius(Request $request, $domain = '', $vendor_id){
+
+        $vendor = Vendor::where('id',$vendor_id)->first();
+       $client_preference_detail =   getClientPreferenceDetail();
+        if(isset($vendor) && !empty($vendor)){
+
+            if(isset($vendor->latitude) && !empty($vendor->latitude) && isset($vendor->longitude) && !empty($vendor->longitude)) {
+                $xCoords = [];
+                $yCoords = [];
+                $points = [];
+                $centerX = $vendor->latitude;
+                $centerY = $vendor->longitude;
+                $steps = 30;
+                $distance = $request->radius;
+
+                if($client_preference_detail->distance_unit_for_time == 'kilometer'){
+                    $distance = $distance / 1.609344 ;
+                }
+
+                $for_lat_deg = (1/69)*$distance;
+                $for_lng_deg = (1/54)*$distance;
+                  for ($i = 0; $i < $steps; $i++) {
+
+                     $x = ($centerX + $for_lat_deg * cos(2 * pi() * ($i / $steps)));
+                     $y = ($centerY + $for_lng_deg * sin(2 * pi() * ($i / $steps)));
+                     $point = "(".$x.", ".$y.")";
+                     array_push($points,$point);
+
+                }
+                $pointse = implode(',',$points);
+                $latlng = str_replace('),(', ';', $pointse);
+                $latlng = str_replace(')', '', $latlng);
+                $latlng = str_replace('(', '', $latlng);
+                $latlng = str_replace(', ', ' ', $latlng);
+                $codsArray = explode(';', $latlng);
+                $latlng = implode(', ', $codsArray);
+                $latlng = $latlng. ', ' . $codsArray[0];
+
+                $area = new ServiceArea();
+                $area->vendor_id        = $vendor->id;
+                $area->name             = "Area - ".$request->radius." ".$client_preference_detail->distance_unit_for_time." Radius";
+                $area->geo_array        = $pointse;
+                $area->zoom_level       = $request->zoom_level??3;
+                $area->description      = $request->description??null;
+                $area->polygon          = \DB::raw("ST_GEOMFROMTEXT('POLYGON((".$latlng."))')");
+                $area->save();
+
+
+                return redirect()->back()->with('success', 'Service area updated successfully!');
+            }
+
+            return redirect()->back()->with('error', 'Error in create Service area!');
+
+
+        }
+        return redirect()->back()->with('error', 'Error in create Service area!');
+
     }
 }

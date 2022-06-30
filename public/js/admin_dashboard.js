@@ -1,6 +1,17 @@
 $(document).ready(function () {
-    const $flatpickr =  $("#range-datepicker").flatpickr({ 
+    const $flatpickr =  $("#range-datepicker").flatpickr({
         mode: "range",
+        // locale: {
+        //     firstDayOfWeek: 1,
+        //     weekdays: {
+        //         shorthand: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+        //         longhand: ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"]
+        //     },
+        //     months: {
+        //         shorthand: ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"],
+        //         longhand: ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"]
+        //     },
+        // },
         onClose: function(selectedDates, dateStr, instance) {
             getDashboardData(dashboard_filter_url);
         }
@@ -16,18 +27,23 @@ $(document).ready(function () {
     getDashboardData(dashboard_filter_url);
     $(".yearSales").click(function () {
         $flatpickr.clear();
-        var url = yearlyInfo_url;
         getDashboardData(dashboard_filter_url, 'yearly');
+        $('.weeklySales, .monthlySales').removeClass('btn-light').removeClass('btn-secondary').addClass('btn-light');
+        $(this).removeClass('btn-light').removeClass('btn-secondary').addClass('btn-secondary');
     });
     $(".monthlySales").click(function () {
         $flatpickr.clear();
         getDashboardData(dashboard_filter_url, 'monthly');
+        $('.yearSales, .weeklySales').removeClass('btn-light').removeClass('btn-secondary').addClass('btn-light');
+        $(this).removeClass('btn-light').removeClass('btn-secondary').addClass('btn-secondary');
     });
     $(".weeklySales").click(function () {
         $flatpickr.clear();
         getDashboardData(dashboard_filter_url, 'weekly');
+        $('.yearSales, .monthlySales').removeClass('btn-light').removeClass('btn-secondary').addClass('btn-light');
+        $(this).removeClass('btn-light').removeClass('btn-secondary').addClass('btn-secondary');
     });
-    function getDashboardData(dashboard_filter_url, type = 'monthly'){
+    function getDashboardData(dashboard_filter_url, type = 'yearly'){
         var date_filter = $('#range-datepicker').val();
         $.getJSON(dashboard_filter_url,{type:type,date_filter:date_filter}, function (response) {
             if(response.status == 'Success'){
@@ -76,12 +92,12 @@ $(document).ready(function () {
         }
         var options = {
             series: [{
-                name: 'Revenue',
+                name: Revenue_lng,
                 type: 'column',
                 data: revenue
             }, {
-                name: 'Sales',
-                type: 'line',
+                name: Sales_lng,
+                type: '',
                 data: sales
             }],
             chart: {
@@ -129,12 +145,12 @@ $(document).ready(function () {
             },
             yaxis: [{
                 title: {
-                    text: 'Net Revenue',
+                    text: Net_Revenue_lng,
                 },
             }, {
                 opposite: true,
                 title: {
-                    text: 'Number of Sales'
+                    text: Number_of_Sales_lng
                 }
             }]
         };
@@ -149,9 +165,9 @@ $(document).ready(function () {
                 series: series,
                 labels: labels,
                 chart: {
-                    width: 550,
+                    width: 320,
                     type: 'donut',
-                    offsetX: -100,
+                    offsetX: -130,
                 },
                 dataLabels: {
                     enabled: false
@@ -160,17 +176,22 @@ $(document).ready(function () {
                     breakpoint: 480,
                     options: {
                         chart: {
-                            width: 200
+                            width: 300,
+                            offsetX: -70,
+                            offsetY: -70,
+
                         },
                         legend: {
-                            show: false
+                            position: 'bottom',
+                            height: 150,
+                            width : 240
                         }
                     }
                 }],
                 legend: {
                     position: 'bottom',
-                    offsetX: 0,
-                    height: 130,
+                    height: 80,
+                    width : 306
                 },
                 noData: {
                     text: "No Data Found",

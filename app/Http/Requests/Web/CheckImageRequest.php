@@ -21,9 +21,8 @@ class CheckImageRequest extends FormRequest{
      * @return array
      */
     public function rules(){
-        $id = Auth::id();
         return [
-          'images.*' => 'image'
+          'images.*' => 'required|image'
         ];
     }
     

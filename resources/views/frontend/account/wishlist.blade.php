@@ -6,14 +6,6 @@
         padding-top: 20px;
         padding-bottom: 20px;
     }
-</style>
-@endsection
-@section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
-</header>
-<style type="text/css">
     .productVariants .firstChild {
         min-width: 150px;
         text-align: left !important;
@@ -56,6 +48,11 @@
         padding-top: .85rem;
     }
 </style>
+@endsection
+@section('content')
+@php
+$timezone = Auth::user()->timezone;
+@endphp
 <section class="section-b-space">
     <div class="container">
         @if ($errors->any())
@@ -67,11 +64,11 @@
                 </ul>
             </div>
         @endif
-        <div class="row">
+        <div class="row my-md-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{__('My Account')}}</a></div>
-                <div class="dashboard-left">
-                    <div class="collection-mobile-back"><span class="filter-back"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
+                <div class="dashboard-left mb-3">
+                    <div class="collection-mobile-back"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
                     @include('layouts.store/profile-sidebar')
                 </div>
             </div>
@@ -79,9 +76,9 @@
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            <h2>{{__('Wishlist')}}</h2>
+                            <h2>{{__(getNomenclatureName('Wishlist', true)) }}</h2>
                         </div>
-                        <div class="box-account box-info mt-3">
+                        <div class="box-account box-info mt-md-3 mt-2">
                             <div class="row">
                                 <div class="col-sm-12 table-responsive table-responsive-xs">
                                     <table class="table wishlist-table border">
@@ -89,12 +86,14 @@
                                             <tr class="table-head">
                                                 <th scope="col">
                                                     <div class="form-group mb-0">
+                                                        @if(count($wishList))
                                                         <div class="custom-control custom-checkbox">
                                                             <input type="checkbox" class="custom-control-input" id="w-all">
                                                             <label class="custom-control-label" for="w-all"></label>
                                                         </div>
+                                                        @endif
                                                     </div>
-                                                </th>   
+                                                </th>
                                                 <th scope="col">{{__('Image')}}</th>
                                                 <th scope="col">{{__('Product Name')}}</th>
                                                 <th scope="col">{{__('Price')}}</th>
@@ -104,50 +103,55 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if(!empty($wishList))
-                                                @foreach($wishList as $key => $wish)
-                                                    <tr class="wishlist-row">
-                                                        <td>
-                                                            <div class="form-group mb-0">
-                                                                @if($wish['product']['variant'][0]['quantity'] > 0)
-                                                                <div class="custom-control custom-checkbox">
-                                                                    <input type="checkbox" class="custom-control-input" id="wp-{{$wish['product']['id']}}" data-variant="{{$wish['product']['variant'][0]['id']}}">
-                                                                    <label class="custom-control-label" for="wp-{{$wish['product']['id']}}"></label>
-                                                                </div>
-                                                                @endif
+                                            @forelse($wishList as $key => $wish)
+                                            <tr class="wishlist-row">
+                                                <td>
+                                                    <div class="form-group mb-0">
+                                                        @if(empty($wish['product']['deleted_at']))
+                                                            @if($wish['product']['variant'][0]['quantity'] > 0)
+                                                            <div class="custom-control custom-checkbox">
+                                                                <input type="checkbox" class="custom-control-input" id="wp-{{$wish['product']['id']}}" data-variant="{{$wish['product']['variant'][0]['id']}}">
+                                                                <label class="custom-control-label" for="wp-{{$wish['product']['id']}}"></label>
                                                             </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="product-icon">
-                                                                @foreach($wish['product']['media'] as $media)
-                                                                    <img src="{{$media['image']['path']['proxy_url'].'200/200'.$media['image']['path']['image_path']}}" alt="Product Image" height="50">
-                                                                    @break
-                                                                @endforeach
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="product-title pl-1">
-                                                                <h4 class="m-0">{{ $wish['product']['translation_title'] }}</h4>
-                                                            </div>
-                                                        </td>
-                                                        <td>{{ Session::get('currencySymbol') . $wish['product']['variant_price'] }}</td>
-                                                        <td>{{date('M d, Y', strtotime($wish['added_on']))}}</td>
-                                                        <td>
-                                                            @if($wish['product']['variant_quantity'] > 0)
-                                                                <i class="fa fa-check-square-o mr-1" aria-hidden="true"></i>
-                                                                <span>{{__('In Stock')}}</span>
-                                                            @else
-                                                                <span>{{__('Not In Stock')}}</span>
                                                             @endif
-                                                        </td>
-                                                        <td><a href="{{ route('removeWishlist', $wish['product']['sku']) }}" class="icon me-3"><i class="ti-close"></i> </a></td>
-                                                    </tr>
-                                                @endforeach
-                                            @else
-                                                <tr><td align="center" colspan="6">{{__('No Item Exists In Your Wishlist')}}</td></tr>
-                                            @endif
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="product-icon">
+                                                        @foreach($wish['product']['media'] as $media)
+                                                            <img src="{{$media['image']['path']['proxy_url'].'200/200'.$media['image']['path']['image_path']}}" alt="Product Image" height="50">
+                                                            @break
+                                                        @endforeach
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="product-title pl-1">
+                                                        <h4 class="m-0">{{ $wish['product']['translation_title'] }}</h4>
+                                                    </div>
+                                                </td>
+                                                <td>{{ Session::get('currencySymbol') }}{{decimal_format($wish['product']['variant_price'])}}</td>
+                                                <td>{{ dateTimeInUserTimeZone($wish['added_on'], $timezone, true, false) }}</td>
+                                                <td>
+                                                    @if(empty($wish['product']['deleted_at']))
+                                                        @if($wish['product']['variant_quantity'] > 0)
+                                                            <i class="fa fa-check-square-o mr-1" aria-hidden="true"></i>
+                                                            <span>{{__('In Stock')}}</span>
+                                                        @else
+                                                            <span>{{__('Not In Stock')}}</span>
+                                                        @endif
+                                                    @else
+                                                        <span class="text-danger">This product no longer exists</span>
+                                                    @endif
+                                                </td>
+                                                <td><a href="{{ route('removeWishlist', $wish['product']['sku']) }}" class="icon me-3"><i class="ti-close"></i> </a></td>
+                                            </tr>
+                                            @empty
+                                            <tr><td align="center" colspan="6">{{__('No Item Exists In Your Wishlist')}}</td></tr>
+                                            @endforelse
+
                                         </tbody>
-                                        @if(!empty($wishList))
+                                        @if(count($wishList))
                                             <tfoot class="border-top border-bottom">
                                                 <tr>
                                                     <td colspan="7" class="pt-2">

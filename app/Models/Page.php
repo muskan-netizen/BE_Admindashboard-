@@ -15,7 +15,11 @@ class Page extends Model{
         return $this->hasOne(PageTranslation::class, 'page_id', 'id');
     }
     public function translations()
-{
-    return $this->hasMany(PageTranslation::class);
-}
+    {
+        return $this->hasMany(PageTranslation::class);
+    }
+    public function faqs()
+    {
+        return $this->hasMany(FaqTranslations::class);
+    }
 }

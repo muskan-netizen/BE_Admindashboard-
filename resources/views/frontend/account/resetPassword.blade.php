@@ -62,10 +62,7 @@
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
-</header>
+
 <section class="register-page section-b-space">
     <div class="container">
      <div class="row justify-content-center">

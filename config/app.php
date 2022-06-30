@@ -54,7 +54,15 @@ return [
 
     'url' => env('APP_URL', 'https://localhost'),
 
+    'IMG_URL1' => env('IMG_URL1', 'https://images.royoorders.com/insecure/fill/'),
+
+    'FIT_URl' => env('FIT_URl', 'https://images.royoorders.com/insecure/fit/'),
+
+    'IMG_URL2' => env('IMG_URL2', '/sm/0/plain'),
+
     'asset_url' => env('ASSET_URL', null),
+
+    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt','144'=>'sk'],
 
     /*
     |--------------------------------------------------------------------------
@@ -150,7 +158,7 @@ return [
         Illuminate\Filesystem\FilesystemServiceProvider::class,
         Illuminate\Foundation\Providers\FoundationServiceProvider::class,
         Illuminate\Hashing\HashServiceProvider::class,
-        //Illuminate\Mail\MailServiceProvider::class,
+        // Illuminate\Mail\MailServiceProvider::class,
         Illuminate\Notifications\NotificationServiceProvider::class,
         Illuminate\Pagination\PaginationServiceProvider::class,
         Illuminate\Pipeline\PipelineServiceProvider::class,
@@ -162,11 +170,12 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         AkibTanjim\Currency\CurrencyServiceProvider::class,
-        
+        Kreait\Laravel\Firebase\ServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         Orangehill\Iseed\IseedServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
+        Jorenvh\Share\Providers\ShareServiceProvider::class,
 
 
         /*
@@ -190,6 +199,11 @@ return [
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
         Spatie\Geocoder\GeocoderServiceProvider::class,
         Jackiedo\Timezonelist\TimezonelistServiceProvider::class,
+        // HTMLMin\HTMLMin\HTMLMinServiceProvider::class,
+        App\Providers\MailConfigServiceProvider::class,
+        // OwenIt\Auditing\AuditingServiceProvider::class,
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
+        Paytabscom\Laravel_paytabs\PaypageServiceProvider::class,
     ],
 
     /*
@@ -249,6 +263,9 @@ return [
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+        'Share' => Jorenvh\Share\ShareFacade::class,
+        // 'HTMLMin' => HTMLMin\HTMLMin\Facades\HTMLMin::class,
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class
     ],
 
 ];

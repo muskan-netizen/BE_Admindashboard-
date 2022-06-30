@@ -20,15 +20,74 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, AppStylingOption, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate};
-
+use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption};
+use Kutia\Larafirebase\Facades\Larafirebase;
+use App\Http\Controllers\Client\VendorController;
+use Math;
+use SimpleXMLElement;
+use Log;
 class CustomerAuthController extends FrontController
 {
+    use ApiResponser;
+
+    private $folderName = '/vendor/extra_docs';
+
+    public function __construct(Request $request)
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/vendor/extra_docs';
+    }
 
     public function getTestHtmlPage()
     {
         return view('test');
+    }
+
+    public function getDemoCabBookingPage()
+    {
+        return view('cabdemo');
+    }
+
+    public function fcm()
+    {
+        return view('firebase');
+    }
+
+    public function sendNotification(){
+        // $token = ["fXC1tzHiywg:APA91bGj3YXxPXuiBjCSAhlt0leikG2eq2gIJm3EFtSjkfp4c6akzpeDOqq2XfvUxxX99i36aCPf8gFsJIZrU7Ywcx6ZCIMh9vAPJctpxyU0_pagKF-wgVURZ2Z6C6XMaWAFZCDlas3L"];
+        $token = ["eeYu6qYp4Uknu9TiiXY-AQ:APA91bGE-MSY_KRBOBoZcBtUUgVZtFFHRcQAHK0dad-7J0X9JvX4r9fS7Ywrj700nOM1tm4IMVA4jG9P6nOHgae0HnmxFkY62U4cRDpOq_7HIZuNVs8lWqvrZ6_IssydzMw375GDyum_"];
+       //previous
+    //    $from = 'AAAA-gxQcf4:APA91bF2-7wHcDDUpdnOAjPkRECMcMqZyto1g3CloNTSvp4tvaM6yX2H1H3FFWQj3mHE_t0LkKKu5M_ASTjIaKvvuLDTrXe9eO7Xi7k8YbH6M355gz7x0GTbK7E9F7I7CAQS3AILs4J_';
+        $from = 'AAAAA_v18xQ:APA91bFEvE7X7b8xFL6sV5F8iT1-RDRHLniD6mVypmx39XLtDavdE25910WJMig0y43Mp3kJPuhRphXKA1SERhkH_u_lzuujc0Gpf4BGN-wdC80ddDqcccGOKfplwV9LQ5qZVyKuWZRx';
+
+        $notification_content = NotificationTemplate::where('id', 3)->first();
+        if($notification_content){
+            $headers = [
+                'Authorization: key=' . $from,
+                'Content-Type: application/json',
+            ];
+            $data = [
+                "registration_ids" => $token,
+                "notification" => [
+                    'title' => "Title message",
+                    'body'  => "Sample Body Message",
+                ]
+            ];
+            $dataString = $data;
+
+            $ch = curl_init();
+            curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
+            curl_setopt( $ch,CURLOPT_POST, true );
+            curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
+            curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
+            curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+            curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $dataString ) );
+            $result = curl_exec($ch );
+            dd($result);
+            curl_close( $ch );
+        }
     }
 
     public function loginForm($domain = '')
@@ -36,7 +95,14 @@ class CustomerAuthController extends FrontController
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
-        return view('frontend.account.loginnew')->with(['navCategories' => $navCategories]);
+        $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
+        if($set_template->template_id == 4)
+        {
+            $login_page = "template_four.account.loginnew";
+        }else{
+            $login_page = "account.loginnew";
+        }
+        return view('frontend.'.$login_page)->with(['navCategories' => $navCategories]);
     }
 
     public function registerForm($domain = '', Request $request)
@@ -44,10 +110,31 @@ class CustomerAuthController extends FrontController
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
+
+        $privacy = Page::with(['translations' => function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+        }])->whereHas('translations', function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+        })->first();
+
+        $terms = Page::with(['translations' => function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+        }])->whereHas('translations', function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+        })->first();
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+            //pr($user_registration_documents);
+        $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
+        if($set_template->template_id == 4)
+        {
+            $register_page = "template_four.account.registernew";
+        }else{
+            $register_page = "account.registernew";
+        }
         if (!Session::get('referrer')) {
-            return view('frontend.account.registernew')->with(['navCategories' => $navCategories]);
+            return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
         } else {
-            return view('frontend.account.registernew')->with(['navCategories' => $navCategories, 'code' => Session::get('referrer')]);
+            return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
         }
     }
 
@@ -73,6 +160,18 @@ class CustomerAuthController extends FrontController
     public function login(LoginRequest $req, $domain = ''){
         if (Auth::attempt(['email' => $req->email, 'password' => $req->password, 'status' => 1])) {
             $userid = Auth::id();
+            if($req->has('access_token')){
+                if($req->access_token){
+                    $user_device = UserDevice::where('user_id', $userid)->where('device_token', $req->access_token)->first();
+                    if(!$user_device){
+                        $user_device = new UserDevice();
+                        $user_device->user_id = $userid;
+                        $user_device->device_type = 'web';
+                        $user_device->device_token = $req->access_token;
+                        $user_device->save();
+                    }
+                }
+            }
             $this->checkCookies($userid);
             $user_cart = Cart::where('user_id', $userid)->first();
             if ($user_cart) {
@@ -95,7 +194,13 @@ class CustomerAuthController extends FrontController
             } else {
                 Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
             }
-            return redirect()->route('user.verify');
+            if(session()->has('url.intended')){
+                $url = session()->get('url.intended');
+                session()->forget('url.intended');
+                return redirect($url);
+            }else{
+                return redirect()->route('user.verify');
+            }
         }
         $checkEmail = User::where('email', $req->email)->first();
         if ($checkEmail) {
@@ -108,16 +213,45 @@ class CustomerAuthController extends FrontController
     /**     * Display register Form     */
     public function register(SignupRequest $req, $domain = ''){
         try {
+            $phonenumber= str_replace('-', '', $req->phone_number);
+            $req->phone_number = str_replace(' ', '', $phonenumber);
+            if( (empty($req->email)) && (empty($req->phone_number)) ){
+                $validator = $req->validate([
+                    'email'  => 'required',
+                    'phone_number'  => 'required|unique:users'
+                ],[
+                    "email.required" => __('The email field is required.'),
+                    "phone_number.required" => __('The phone number field is required.'),
+                ]);
+            }
+            else{
+
+                $preferences = ClientPreference::first();
+                if(!empty($req->email) && ($preferences->verify_email == 0)){
+
+                    $validator = $req->validate([
+                        'email'  => 'email|unique:users'
+                    ]);
+                }
+
+                if(!empty($req->phone_number) && isset($preferences) && ($preferences->verify_phone == 0)){
+                    $validator = $req->validate([
+                        'phone_number' => 'string|min:8|max:15|unique:users'
+                    ]);
+                }
+            }
             $user = new User();
             $county = Country::where('code', strtoupper($req->countryData))->first();
+            $client_timezone = Client::where('id', '>', 0)->value('timezone');
             $phoneCode = mt_rand(100000, 999999);
             $emailCode = mt_rand(100000, 999999);
             $sendTime = \Carbon\Carbon::now()->addMinutes(10)->toDateTimeString();
+            $email = (!empty($req->email)) ? $req->email : '';//('ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com');
             $user->type = 1;
             $user->status = 1;
             $user->role_id = 1;
             $user->name = $req->name;
-            $user->email = $req->email;
+            $user->email = $email;
             $user->is_email_verified = 0;
             $user->is_phone_verified = 0;
             $user->country_id = $county->id;
@@ -127,6 +261,7 @@ class CustomerAuthController extends FrontController
             $user->phone_number = $req->phone_number;
             $user->phone_token_valid_till = $sendTime;
             $user->email_token_valid_till = $sendTime;
+            $user->timezone = $client_timezone;
             $user->password = Hash::make($req->password);
             $user->save();
             $wallet = $user->wallet;
@@ -137,6 +272,32 @@ class CustomerAuthController extends FrontController
             }
             $userRefferal->user_id = $user->id;
             $userRefferal->save();
+            $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+            if ($user_registration_documents->count() > 0) {
+                foreach ($user_registration_documents as $user_registration_document) {
+                    $doc_name = str_replace(" ", "_", $user_registration_document->primary->slug);
+                    if ($user_registration_document->file_type != "Text" && $user_registration_document->file_type != "selector") {
+                        if ($req->hasFile($doc_name)) {
+                            $vendor_docs =  new UserDocs();
+                            $vendor_docs->user_id = $user->id;
+                            $vendor_docs->user_registration_document_id = $user_registration_document->id;
+                            $filePath = $this->folderName . '/' . Str::random(40);
+                            $file = $req->file($doc_name);
+                            $vendor_docs->file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                            $vendor_docs->save();
+                        }
+                    } else {
+                        if (!empty($req->$doc_name)) {
+                            $vendor_docs =  new UserDocs();
+                            $vendor_docs->user_id = $user->id;
+                            $vendor_docs->user_registration_document_id = $user_registration_document->id;
+                            $vendor_docs->file_name = $req->$doc_name;
+                            $vendor_docs->save();
+                        }
+                    }
+                }
+            }
+
             if ($user->id > 0) {
                 if ($req->refferal_code != null) {
                     $refferal_amounts = ClientPreference::first();
@@ -160,49 +321,480 @@ class CustomerAuthController extends FrontController
                 Auth::login($user);
                 $this->checkCookies($user->id);
                 Session::forget('referrer');
-                $this->newUserSendToken();
+                $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
+                        'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from',
+                        'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider',
+                        'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
+                if(!empty($prefer->sms_provider) ){
+                    $response['send_otp'] = 1;
+                    $to = '+'.$user->dial_code.$user->phone_number;
+                    $provider = $prefer->sms_provider;
+                    $body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
+                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+
+                }
+                if(!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)){
+                    $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+                    $confirured = $this->setMailDetail($prefer->mail_driver, $prefer->mail_host, $prefer->mail_port, $prefer->mail_username, $prefer->mail_password, $prefer->mail_encryption);
+                    $client_name = $client->name;
+                    $mail_from = $prefer->mail_from;
+                    $sendto = $req->email;
+                    try {
+                        $email_template_content = '';
+                        $email_template = EmailTemplate::where('id', 2)->first();
+                        if($email_template){
+                            $email_template_content = $email_template->content;
+                            $email_template_content = str_ireplace("{code}", $emailCode, $email_template_content);
+                            $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+                        }
+                        $data = [
+                            'code' => $emailCode,
+                            'link' => "link",
+                            'email' => $sendto,
+                            'mail_from' => $mail_from,
+                            'client_name' => $client_name,
+                            'logo' => $client->logo['original'],
+                            'subject' => $email_template->subject,
+                            'customer_name' => ucwords($user->name),
+                            'email_template_content' => $email_template_content,
+                        ];
+                        dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
+                        $notified = 1;
+                    } catch (\Exception $e) {
+                        $user->save();
+                    }
+                }
                 return redirect()->route('user.verify');
             }
         } catch (Exception $e) {
         }
     }
+
+    /**     * proceed to user login on phone number     */
+    public function proceedToPhoneLogin($req, $domain = ''){
+        $user = User::where('phone_number', $req->phone_number)->where('dial_code', $req->dialCode)->where('status', 1)->first();
+        if ($user) {
+            Auth::login($user);
+            $user->is_phone_verified = 1;
+            $user->phone_token = NULL;
+            $user->phone_token_valid_till = NULL;
+            $user->save();
+            $userid = $user->id;
+            if($req->has('access_token')){
+                if($req->access_token){
+                    $user_device = UserDevice::where('user_id', $userid)->where('device_token', $req->access_token)->first();
+                    if(!$user_device){
+                        $user_device = new UserDevice();
+                        $user_device->user_id = $userid;
+                        $user_device->device_type = 'web';
+                        $user_device->device_token = $req->access_token;
+                        $user_device->save();
+                    }
+                }
+            }
+            $this->checkCookies($userid);
+
+            $user_cart = Cart::where('user_id', $userid)->first();
+            if ($user_cart) {
+                $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
+                if ($unique_identifier_cart) {
+                    $unique_identifier_cart_products = CartProduct::where('cart_id', $unique_identifier_cart->id)->get();
+                    foreach ($unique_identifier_cart_products as $unique_identifier_cart_product) {
+                        $user_cart_product_detail = CartProduct::where('cart_id', $user_cart->id)->where('product_id', $unique_identifier_cart_product->product_id)->first();
+                        if ($user_cart_product_detail) {
+                            $user_cart_product_detail->quantity = ($unique_identifier_cart_product->quantity + $user_cart_product_detail->quantity);
+                            $user_cart_product_detail->save();
+                            $unique_identifier_cart_product->delete();
+                        } else {
+                            $unique_identifier_cart_product->cart_id = $user_cart->id;
+                            $unique_identifier_cart_product->save();
+                        }
+                    }
+                    $unique_identifier_cart->delete();
+                }
+            } else {
+                Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
+            }
+            $message = __('Logged in successfully');
+            $redirect_to = '';
+            if(session()->has('url.intended')){
+                $redirect_to = session()->get('url.intended');
+                session()->forget('url.intended');
+            }else{
+                $redirect_to = route('user.verify');
+            }
+            $req->request->add(['is_phone'=>1, 'redirect_to'=>$redirect_to]);
+            $response = $req->all();
+            return $this->successResponse($response, $message);
+        }
+        else {
+            return $this->errorResponse(__('Invalid phone number'), 404);
+        }
+    }
+
+    /*** Login user via username ***/
+    public function loginViaUsername(Request $request, $domain = ''){
+        try{
+            $errors = array();
+
+            $phone_regex = '/^[0-9\-\(\)\/\+\s]*$/';
+            $email_regex = '/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/';
+            $username = $request->username;
+
+            if(preg_match($phone_regex, $username))
+            {
+                $validator = Validator::make($request->all(), [
+                    'username'  => 'required',
+                    'dialCode'  => 'required',
+                    'countryData'  => 'required'
+                ]);
+
+                if($validator->fails()){
+                    foreach($validator->errors()->toArray() as $error_key => $error_value){
+                        $errors['error'] = __($error_value[0]);
+                        return response()->json($errors, 422);
+                    }
+                }
+
+                $phone_number = preg_replace('/\D+/', '', $username);
+                $dialCode = $request->dialCode;
+                $fullNumber = $request->full_number;
+                // $fullNumberWithoutPlus = str_replace('+', '', $fullNumber);
+                // $phone_number = substr($fullNumberWithoutPlus, strlen($dialCode));
+                $phoneCode = mt_rand(100000, 999999);
+                $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
+                $request->request->add(['is_phone'=>1, 'phone_number'=>$phone_number, 'phoneCode'=>$phoneCode, 'sendTime'=>$sendTime, 'codeSent'=>0]);
+
+                $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
+                if(!$user){
+                    if(session()->get("locale") == "ar"){
+                        return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك.'), 404);
+                    }
+                    return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
+
+                    $registerUser = $this->registerViaPhone($request)->getData();
+                    if($registerUser->status == 'Success'){
+                        $user = $registerUser->data;
+                    }else{
+                        return $this->errorResponse(__('Invalid data'), 404);
+                    }
+                }else{
+                    $user->phone_token = $phoneCode;
+                    $user->phone_token_valid_till = $sendTime;
+                    $user->save();
+                }
+
+                $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
+                            'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
+
+                if($dialCode == "971"){
+                    $to = '+'.$dialCode."0".$phone_number;
+                } else {
+                    $to = '+'.$dialCode.$phone_number;
+                }
+                $provider = $prefer->sms_provider;
+                $body = "Please enter OTP ".$phoneCode." to verify your account.";
+                if(!empty($provider) ){
+                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+
+                    if($send ==1){
+                        $request->request->add(['codeSent' => 1]);
+                        $message = __('An otp has been sent to your phone. Please check.');
+                        $response = $request->all();
+                        unset($response->_token);
+                        return $this->successResponse($response, $message);
+                    }else{
+
+                        if(session()->get("locale") == "ar"){
+                            return $this->errorResponse(__('حدث خطأ ما في إرسال OTP. نأسف للإزعاج'), 404);
+                        }
+                        return $this->errorResponse(__('Something went wrong in sending OTP. We are sorry to for the inconvenience'), 404);
+                    }
+                }else{
+                    if(session()->get("locale") == "ar"){
+                        return $this->errorResponse(__('لم يتم تكوين خدمة الموفر. الرجاء الاتصال بالإدارة'), 404);
+                    }
+                    return $this->errorResponse(__('Provider service is not configured. Please contact administration'), 404);
+                }
+            }
+            elseif (preg_match($email_regex, $username))
+            {
+                $validator = Validator::make($request->all(), [
+                    'username'  => 'required'
+                ]);
+
+                if($validator->fails()){
+                    foreach($validator->errors()->toArray() as $error_key => $error_value){
+                        $errors['error'] = __($error_value[0]);
+                        return response()->json($errors, 422);
+                    }
+                }
+                $username = str_ireplace(' ', '', $username);
+                if (Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1])) {
+                    $userid = Auth::id();
+                    $Authuser = Auth::user();
+                    $update_last_login = User::where('id',$userid)->update(['last_login_at' => Carbon::now()->toDateTimeString()]);
+                    if($request->has('access_token')){
+                        if($request->access_token){
+                            $user_device = UserDevice::where('user_id', $userid)->where('device_token', $request->access_token)->first();
+                            if(!$user_device){
+                                $user_device = new UserDevice();
+                                $user_device->user_id = $userid;
+                                $user_device->device_type = 'web';
+                                $user_device->device_token = $request->access_token;
+                                $user_device->save();
+                            }
+                        }
+                    }
+                    if($Authuser->is_superadmin == 1 || $Authuser->is_admin == 1){
+                        Auth::logout();
+                        Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1]);
+                    }
+                    $this->checkCookies($userid);
+                    $user_cart = Cart::where('user_id', $userid)->first();
+                    if ($user_cart) {
+                        $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
+                        if ($unique_identifier_cart) {
+                            $unique_identifier_cart_products = CartProduct::where('cart_id', $unique_identifier_cart->id)->get();
+                            foreach ($unique_identifier_cart_products as $unique_identifier_cart_product) {
+                                $user_cart_product_detail = CartProduct::where('cart_id', $user_cart->id)->where('product_id', $unique_identifier_cart_product->product_id)->first();
+                                if ($user_cart_product_detail) {
+                                    $user_cart_product_detail->quantity = ($unique_identifier_cart_product->quantity + $user_cart_product_detail->quantity);
+                                    $user_cart_product_detail->save();
+                                    $unique_identifier_cart_product->delete();
+                                } else {
+                                    $unique_identifier_cart_product->cart_id = $user_cart->id;
+                                    $unique_identifier_cart_product->save();
+                                }
+                            }
+                            $unique_identifier_cart->delete();
+                        }
+                    } else {
+                        Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
+                    }
+                    $message = 'Logged in successfully';
+                    $redirect_to = '';
+                    if(session()->has('url.intended')){
+                        $redirect_to = session()->get('url.intended');
+                        session()->forget('url.intended');
+                    }else{
+                        $redirect_to = route('user.verify');
+                    }
+                    $request->request->add(['is_email'=>1, 'redirect_to'=>$redirect_to]);
+                    $response = $request->all();
+                    return $this->successResponse($response, $message);
+                }
+                $checkEmail = User::where('email', $username)->first();
+                if ($checkEmail) {
+                    if($checkEmail->status != 1){
+                        if(session()->get("locale") == "ar"){
+                            return $this->errorResponse(__('أنت غير مخول للوصول إلى هذا الحساب'), 404);
+                        }
+                        return $this->errorResponse(__('You are unauthorized to access this account.'), 404);
+                    }else{
+                        if(session()->get("locale") == "ar"){
+                            return $this->errorResponse(__('كلمة سر خاطئة'), 404);
+                        }
+                        return $this->errorResponse(__('Incorrect Password'), 404);
+                    }
+                }
+                if(session()->get("locale") == "ar"){
+                    return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
+                }
+                return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
+            }
+            else {
+                if(session()->get("locale") == "ar"){
+                    return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك.'), 404);
+                }
+                return $this->errorResponse(__('Invalid email or phone number'), 404);
+            }
+        }
+        catch(\Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
+    }
+
+    /**
+     * Verify Login user via Phone number and create token
+     *
+     */
+    public function verifyPhoneLoginOtp(Request $request, $domain = ''){
+        try {
+            $username = $request->username;
+            $dialCode = $request->dialCode;
+            $phone_number = preg_replace('/\D+/', '', $username);
+            $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
+            if(!$user){
+                $errors['error'] = __('Your phone number is not registered');
+                return response()->json($errors, 422);
+            }
+            $currentTime = Carbon::now()->toDateTimeString();
+            $message = 'Account verified successfully.';
+
+            if($user->phone_token != $request->verifyToken){
+                return $this->errorResponse(__('OTP is not valid'), 404);
+            }
+            if($currentTime > $user->phone_token_valid_till){
+                return $this->errorResponse(__('OTP has been expired.'), 404);
+            }
+            $request->request->add(['phone_number'=>$phone_number]);
+            return $this->proceedToPhoneLogin($request);
+        }
+        catch (Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
+    }
+
+    /*** register user via phone number ***/
+    public function registerViaPhone($req, $domain = ''){
+        try {
+            $user = new User();
+            $country = Country::where('code', strtoupper($req->countryData))->first();
+            $client_timezone = Client::where('id', '>', 0)->value('timezone');
+            // $emailCode = mt_rand(100000, 999999);
+            $email = ''; //'ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com';
+            $user->type = 1;
+            $user->status = 1;
+            $user->role_id = 1;
+            $user->name = 'RO'.substr($req->phone_number, -6);
+            $user->email = $email; //$req->email;
+            $user->is_email_verified = 0;
+            $user->is_phone_verified = 0;
+            $user->country_id = $country->id;
+            $user->phone_token = $req->phoneCode;
+            $user->dial_code = $req->dialCode;
+            // $user->email_token = $emailCode;
+            $user->phone_number = $req->phone_number;
+            $user->phone_token_valid_till = $req->sendTime;
+            $user->timezone = $client_timezone;
+            // $user->email_token_valid_till = $sendTime;
+            // $user->password = Hash::make($req->password);
+            $user->save();
+
+            $wallet = $user->wallet;
+            $userRefferal = new UserRefferal();
+            $userRefferal->refferal_code = $this->randomData("user_refferals", 8, 'refferal_code');
+            if ($req->refferal_code != null) {
+                $userRefferal->reffered_by = $req->refferal_code;
+            }
+            $userRefferal->user_id = $user->id;
+            $userRefferal->save();
+            if ($user->id > 0) {
+                if ($req->refferal_code != null) {
+                    $refferal_amounts = ClientPreference::first();
+                    if ($refferal_amounts) {
+                        if ($refferal_amounts->reffered_by_amount != null && $refferal_amounts->reffered_to_amount != null) {
+                            $reffered_by = UserRefferal::where('refferal_code', $req->refferal_code)->first();
+                            $user_refferd_by = $reffered_by->user_id;
+                            $user_refferd_by = User::where('id', $reffered_by->user_id)->first();
+                            if ($user_refferd_by) {
+                                //user reffered by amount
+                                $wallet_user_reffered_by = $user_refferd_by->wallet;
+                                $wallet_user_reffered_by->depositFloat($refferal_amounts->reffered_by_amount, ['Referral code used by <b>' . $req->phone_number . '</b>']);
+                                $wallet_user_reffered_by->balance;
+                                //user reffered to amount
+                                $wallet->depositFloat($refferal_amounts->reffered_to_amount, ['You used referral code of <b>' . $user_refferd_by->name . '</b>']);
+                                $wallet->balance;
+                            }
+                        }
+                    }
+                }
+                Session::forget('referrer');
+            }
+
+            return $this->successResponse($user , 'Successfully registered');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
     public function postVendorregister(Request $request, $domain = ''){
         try {
+            //pr($request->all());
             DB::beginTransaction();
             $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
-            if (empty($request->input('user_id'))){
-                if($vendor_registration_documents->count() > 0){
-                    $request->validate([
+            if (empty($request->input('user_id'))) {
+                if ($vendor_registration_documents->count() > 0) {
+                    $rules_array = [
+
                         'address' => 'required',
                         'full_name' => 'required',
                         'email' => 'required|email|unique:users',
-                        'vendor_registration_document.*.did_visit' => 'required',
+                        // 'vendor_registration_document.*.did_visit' => 'required',
                         'password' => 'required|string|min:6|max:50',
                         'confirm_password' => 'required|same:password',
-                        'name' => 'required|string|max:150|unique:vendors',
+                        'name' => 'required|string|max:150', //|unique:vendors
                         'phone_number' => 'required|string|min:6|max:15|unique:users',
-                    ]);
-                }else{
-                    $request->validate([
-                        'address' => 'required',
-                        'full_name' => 'required',
-                        'email' => 'required|email|unique:users',
-                        'password' => 'required|string|min:6|max:50',
-                        'confirm_password' => 'required|same:password',
-                        'name' => 'required|string|max:150|unique:vendors',
-                        'phone_number' => 'required|string|min:6|max:15|unique:users',
-                    ]);
+                        'check_conditions' => 'required',
+                        'city' => 'required',
+                        'pincode' => 'required',
+                        'state' => 'required',
+                        'country' => 'required',
+                    ];
+                    foreach ($vendor_registration_documents as $vendor_registration_document) {
+                        if($vendor_registration_document->is_required == 1){
+                            $rules_array[$vendor_registration_document->primary->slug] = 'required';
+                        }
+                    }
+
+                    $request->validate(
+                        // [
+                        //     'address' => 'required',
+                        //     'full_name' => 'required',
+                        //     'email' => 'required|email|unique:users',
+                        //     'vendor_registration_document.*.did_visit' => 'required',
+                        //     'password' => 'required|string|min:6|max:50',
+                        //     'confirm_password' => 'required|same:password',
+                        //     'name' => 'required|string|max:150|unique:vendors',
+                        //     'phone_number' => 'required|string|min:6|max:15|unique:users',
+                        //     'check_conditions' => 'required',
+                        // ],
+                        $rules_array,
+                        ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
+                    );
+                } else {
+                    $request->validate(
+                        [
+                            'address' => 'required',
+                            'full_name' => 'required',
+                            'email' => 'required|email|unique:users',
+                            'password' => 'required|string|min:6|max:50',
+                            'confirm_password' => 'required|same:password',
+                            'name' => 'required|string|max:150',
+                            'phone_number' => 'required|string|min:6|max:15|unique:users',
+                            'check_conditions' => 'required',
+                            'city' => 'required',
+                        'pincode' => 'required',
+                        'state' => 'required',
+                        'country' => 'required',
+                        ],
+                        ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
+                    );
                 }
-            }else {
+            } else {
                 $rules_array = [
-                        'address' => 'required',
-                        'name' => 'required|string|max:150|unique:vendors',
+                    'address' => 'required',
+                    'name' => 'required|string|max:150',
+                    'check_conditions' => 'required',
+                    'city' => 'required',
+                    'pincode' => 'required',
+                    'state' => 'required',
+                    'country' => 'required',
                 ];
                 foreach ($vendor_registration_documents as $vendor_registration_document) {
-                    $rules_array[$vendor_registration_document->primary->slug] = 'required';
+                    if($vendor_registration_document->is_required == 1){
+                        $rules_array[$vendor_registration_document->primary->slug] = 'required';
+                    }
                 }
-                $request->validate($rules_array);
+                $request->validate(
+                    $rules_array,
+                    ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
+                );
             }
+
+
+
             $client_detail = Client::first();
             $client_preference = ClientPreference::first();
             if(!$request->user_id){
@@ -234,9 +826,22 @@ class CustomerAuthController extends FrontController
                 $user->save();
             }
             $vendor = new Vendor();
-            $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-            $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-            $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+            $count = 0;
+            if($client_preference){
+                if($client_preference->dinein_check == 1){$count++;}
+                if($client_preference->takeaway_check == 1){$count++;}
+                if($client_preference->delivery_check == 1){$count++;}
+            }
+            if($count > 1){
+                $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
+                $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
+                $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+            }
+            else{
+                $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
+                $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
+                $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
+            }
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
             if ($request->hasFile('upload_logo')) {
@@ -250,7 +855,11 @@ class CustomerAuthController extends FrontController
             $vendor->status = 0;
             $vendor->name = $request->name;
             $vendor->email = $request->email;
-            $vendor->phone_no = $user->phone_no;
+            $vendor->phone_no = $user->phone_number;
+            $vendor->city = $request->city;
+            $vendor->state = $request->state;
+            $vendor->country = $request->country;
+            $vendor->pincode = $request->pincode;
             $vendor->address = $request->address;
             $vendor->website = $request->website;
             $vendor->latitude = $request->latitude;
@@ -259,22 +868,37 @@ class CustomerAuthController extends FrontController
             $vendor->slug = Str::slug($request->name, "-");
             $vendor->save();
             $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
-            if($vendor_registration_documents->count() > 0){
+            if ($vendor_registration_documents->count() > 0) {
                 foreach ($vendor_registration_documents as $vendor_registration_document) {
-                    $vendor_registration_document_id = $vendor_registration_document->id;
-                    $name = $vendor_registration_document->primary->slug;
-                    $vendor_registration_document = $request->$name;
-                    $vendor_docs =  new VendorDocs();
-                    $vendor_docs->vendor_id = $vendor->id;
-                    $vendor_docs->vendor_registration_document_id = $vendor_registration_document_id;
-                    $vendor_docs->file_name = Storage::disk('s3')->put('/vendor', $vendor_registration_document, 'public');
-                    $vendor_docs->save();
+                    $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);
+                    if ($vendor_registration_document->file_type != "Text" && $vendor_registration_document->file_type != "selector") {
+                        if ($request->hasFile($doc_name)) {
+                            $vendor_docs =  new VendorDocs();
+                            $vendor_docs->vendor_id = $vendor->id;
+                            $vendor_docs->vendor_registration_document_id = $vendor_registration_document->id;
+                            $filePath = $this->folderName . '/' . Str::random(40);
+                            $file = $request->file($doc_name);
+                            $vendor_docs->file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                            $vendor_docs->save();
+                        }
+                    } else {
+                        if (!empty($request->$doc_name)) {
+                            $vendor_docs =  new VendorDocs();
+                            $vendor_docs->vendor_id = $vendor->id;
+                            $vendor_docs->vendor_registration_document_id = $vendor_registration_document->id;
+                            $vendor_docs->file_name = $request->$doc_name;
+                            $vendor_docs->save();
+                        }
+                    }
                 }
             }
             UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
             foreach ($permission_details as $permission_detail) {
                 UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
             }
+            // vendor additional data
+            $this->addDataSaveVendor($request , $vendor->id);
+
             $content = '';
             $email_template = EmailTemplate::where('id', 1)->first();
             if($email_template){
@@ -323,8 +947,12 @@ class CustomerAuthController extends FrontController
                 'logo' => $client_detail->logo['original'],
                 'mail_from' => $client_preference->mail_from,
             ];
-            dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
-            dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
+            try{
+                dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
+            //    dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
+            }catch(Exception $e) {
+
+            }
             DB::commit();
             return response()->json([
                 'status' => 'success',
@@ -338,8 +966,83 @@ class CustomerAuthController extends FrontController
             ]);
         }
     }
+    public function addDataSaveVendor(Request $request, $vendor_id){
+
+        $vendor = Vendor::where('id', $vendor_id)->firstOrFail();
+        $VendorController = new VendorController();
+
+        $request->merge(["return_json"=>1]);
+        $VendorConfigrespons = $VendorController->updateConfig($request,'',$vendor_id)->getData();//$this->updateConfig($vendor_id);
+       // pr($VendorConfigrespons);
+        if($request->has('can_add_category')){
+            $vendor->add_category = $request->can_add_category == 'on' ? 1 : 0;
+        }
+        if ($request->has('assignTo')) {
+            $vendor->vendor_templete_id = $request->assignTo;
+        }
+
+        $vendor->save();
+        if($request->has('category_ids')){
+            foreach($request->category_ids as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Vendor created Successfully!',
+            'data' => $VendorConfigrespons
+        ]);
+        // pr($VendorConfigrespons);
+    }
     public function logout(){
         Auth::logout();
+        if (!empty(Session::get('current_fcm_token'))) {
+            UserDevice::where('device_token', Session::get('current_fcm_token'))->delete();
+            Session::forget('current_fcm_token');
+        }
         return redirect()->route('customer.login');
     }
+
+
+
+    # zillowGetData
+
+    public function zillowGetData()
+    {
+
+
+
+
+        $params = (array('address' => '7356 CARTER AVE', 'citystatezip' => 'NEWARK'));
+
+        $params['zws-id'] = 'X1-ZWz16b0yk0045n_8mfo0';
+			$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
+			$result = new SimpleXMLElement($url, 0, true);dd($params);
+
+			// save this in object so that we could reuse it
+			if ( isset($result->response->results->result->zpid) ) {
+				$this->zpid = (string)$result->response->results->result->zpid;
+			}
+
+			return $result->response;
+
+    }
+
+
+    // public function getDatazillo($params);
+    // {
+    //     $params['zws-id'] = $this->zws_id;
+	// 		$url = 'http://www.zillow.com/webservice/GetSearchResults.htm?' . http_build_query($params);
+	// 		$result = new SimpleXMLElement($url, 0, true);
+
+	// 		// save this in object so that we could reuse it
+	// 		if ( isset($result->response->results->result->zpid) ) {
+	// 			$this->zpid = (string)$result->response->results->result->zpid;
+	// 		}
+
+	// 		return $result;
+    // }
+
+
 }
+

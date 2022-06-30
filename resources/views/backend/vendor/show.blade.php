@@ -1,7 +1,8 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Vendor'])
 
 @section('css')
-<link href="{{asset('assets/css/calender_main.css')}}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
+<link href="{{asset('assets/css/calendar_main-5.9.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .fc-v-event {
         border-color: #43bee1;
@@ -138,19 +139,31 @@
     .pricingtable.red:hover .price-value {
         color: #fff
     }
+    .iti{
+        width: 100%;
+    }
 
     /**/
 </style>
 @endsection
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid vendor-show-page">
 
     <!-- start page title -->
     <div class="row">
-        <div class="col-12">
+        <div class="col-12 d-flex align-items-center">
             <div class="page-title-box">
-                <h4 class="page-title">{{ucfirst($vendor->name)}} profile</h4>
+                <h4 class="page-title">{{ucfirst($vendor->name)}} {{ __('profile') }}</h4>
+            </div>
+            <div class="form-group mb-0 ml-3">
+                <div class="site_link position-relative">
+                    <a href="{{route('vendorDetail',$vendor->slug)}}" target="_blank"><span id="pwd_spn" class="password-span">{{route('vendorDetail',$vendor->slug)}}</span></a>
+                    <label class="copy_link float-right" id="cp_btn" title="copy">
+                        <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
+                        <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">{{ __('Copied') }}</span>
+                    </label>
+                </div>
             </div>
         </div>
     </div>
@@ -195,25 +208,35 @@
                 <ul class="nav nav-pills navtab-bg nav-justified">
                     <li class="nav-item">
                         <a href="{{ route('vendor.catalogs', $vendor->id) }}" aria-expanded="false" class="nav-link {{($tab == 'catalog') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Catalog
+                            {{ __('Catalog') }}
                         </a>
                     </li>
+                    @if(($client_preference_detail->business_type != 'taxi') || (($client_preference_detail->business_type == 'taxi') && ($client_preference_detail->pickup_delivery_service_area == 1)))
                     <li class="nav-item">
                         <a href="{{ route('vendor.show', $vendor->id) }}" aria-expanded="false" class="nav-link {{($tab == 'configuration') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Configuration
+                            {{ __('Configuration') }}
                         </a>
                     </li>
+                    @endif
+                    @if ($client_preference_detail->business_type != 'taxi')
                     <li class="nav-item">
                         <a href="{{ route('vendor.categories', $vendor->id) }}" aria-expanded="true" class="nav-link {{($tab == 'category') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Categories & Add Ons
+                            {{ __('Categories & Add Ons') }}
                         </a>
                     </li>
-
+                    @endif
+                    @if ($is_payout_enabled == 1)
+                        <li class="nav-item">
+                            <a href="{{ route('vendor.payout', $vendor->id) }}" aria-expanded="false" class="nav-link {{ $tab == 'payout' ? 'active' : '' }} {{ $vendor->status == 1 ? '' : 'disabled' }}">
+                                {{ __('Payout') }}
+                            </a>
+                        </li>
+                    @endif
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane {{($tab == 'configuration') ? 'active show' : '' }} " id="configuration">
 
-                        <!-- <div class="row">
+                        {{-- <div class="row">
                                 <div class="col-md-12">
                                     <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" id="slot-configs" method="post">
                                         @csrf
@@ -258,7 +281,7 @@
                                         </div>
                                         <div class="row mb-2">
                                             <div class="col-md-2">
-                                                {!! Form::label('title', 'Can Add Category',['class' => 'control-label']) !!} 
+                                                {!! Form::label('title', 'Can Add Category',['class' => 'control-label']) !!}
                                                 <div>
                                                     <input type="checkbox" data-plugin="switchery" name="add_category" class="form-control can_add_category1" data-color="#43bee1" @if($vendor->add_category == 1) checked @endif >
                                                 </div>
@@ -271,7 +294,7 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group" id="commission_fixed_per_orderInput">
-                                                    {!! Form::label('title', 'Commission Fixed Per Order',['class' => 'control-label']) !!} 
+                                                    {!! Form::label('title', 'Commission Fixed Per Order',['class' => 'control-label']) !!}
                                                     <input class="form-control" name="commission_fixed_per_order" type="text" value="{{$vendor->commission_fixed_per_order}}" onkeypress="return isNumberKey(event)">
                                                 </div>
                                             </div>
@@ -284,30 +307,30 @@
                                         </div>
                                     </form>
                                 </div>
-                            </div> -->
+                            </div> --}}
 
                         @include('backend.vendor.vendorSubscriptions')
 
-                        @if(session('preferences.is_hyperlocal') == 1)
+                        @if((session('preferences.is_hyperlocal') == 1) || ($client_preference_detail->business_type == 'taxi'))
                         <div class="card-box">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="row align-items-center mb-3">
                                         <div class="col-sm-6">
-                                            <h4 class="mb-2 "><span> Service Area </span></h4>
+                                            <h4 class="mb-2 "><span> {{ __('Service Area') }} </span></h4>
                                         </div>
                                         <div class="col-sm-6 text-center text-sm-right">
-                                            <button class="btn btn-info openServiceModal"> Add Service Area</button>
+                                            <button class="btn btn-info openServiceModal"> {{ __('Add Service Area') }}</button>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <div class="table-responsive" style="max-height: 612px; overflow-y: auto;">
+                                            <div class="table-responsive mb-3" style="height: 330px; overflow-y: auto;">
                                                 <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                                                     <thead>
                                                         <tr>
-                                                            <th>Name</th>
-                                                            <th style="width: 85px;">Action</th>
+                                                            <th>{{ __('Name') }}</th>
+                                                            <th style="width: 85px;">{{ __('Action') }}</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -333,9 +356,28 @@
                                                 </table>
                                             </div>
 
+
+                                            <form action="{{  route('draw.circle.with.radius',$vendor->id) }}" method="post">
+                                                @csrf()
+                                             <div class="row">
+                                                <div class="col-md-12 col-xl-4">
+                                                {!! Form::label('title', 'Draw area with radius('.$client_preference_detail->distance_unit_for_time.')',['class' => 'control-label']) !!}
+                                                </div>
+                                                <div class="col-md-6 col-xl-4">
+
+                                                    <div class="form-group" id="commission_monthlyInput">
+                                                        <input class="form-control"  name="radius" type="number" min="0.01" step="0.01" required>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 col-xl-4">
+                                                    <button type="submit" class="btn btn-info"> {{ __('Go') }}</button>
+                                                </div>
+                                             </div>
+                                            </form>
+
                                         </div>
                                         <div class="col-md-8">
-
                                             <div class="card-box p-1 m-0" style="height:400px;">
                                                 <div id="show_map-canvas"></div>
                                             </div>
@@ -346,39 +388,112 @@
                         </div>
                         @endif
                         @if($vendor->show_slot == 0)
-                        <div class="card-box">
-                            <div class="row">
-                                <h4 class="mb-4 "> Weekly Slot</h4>
-                                <div class="col-md-12">
-                                    <div class="row mb-2">
-                                        <div class="col-md-12">
-                                            <div id='calendar'>
+                        @if($client_preferences->scheduling_with_slots != 1)
+                        @if($client_preference_detail->business_type != 'laundry')
+                            <div class="card-box">
+                                <div class="row">
+                                    <h4 class="mb-4 "> {{ __('Weekly Slot') }}</h4>
+                                    <div class="col-md-12">
+                                        <div class="row mb-2">
+                                            <div class="col-md-12 col-lg-4">
+                                                <div id='calendar_slot_alldays'>
+                                                    <table class="table table-centered table-nowrap table-striped" id="calendar_slot_alldays_table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="2">This week</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-lg-8">
+                                                <div id='calendar'>
 
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
+                    @else
+                        @if($client_preference_detail->business_type == 'laundry')
+                            <div class="card-box">
+                                <div class="row">
+                                    <h4 class="mb-4 "> {{ __('Weekly Slot For Pickup') }}</h4>
+                                    <div class="col-md-12">
+                                        <div class="row mb-2">
+                                            <div class="col-md-12 col-lg-4">
+                                                <div id='calendar_slot_alldays'>
+                                                    <table class="table table-centered table-nowrap table-striped" id="calendar_pickup_slot_alldays_table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="2">This week</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-lg-8">
+                                                <div id='calendarForPickUp'>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <h4 class="mb-4 "> {{ __('Weekly Slot For Dropoff') }}</h4>
+                                    <div class="col-md-12">
+                                        <div class="row mb-2">
+                                            <div class="col-md-12 col-lg-4">
+                                                <div id='calendar_slot_alldays'>
+                                                    <table class="table table-centered table-nowrap table-striped" id="calendar_dropoff_slot_alldays_table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="2">This week</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-lg-8">
+                                                <div id='calendarForDropoff'>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @endif
                         @endif
 
-                        @if($vendor->dine_in == 1)
+                        @if(($client_preferences->dinein_check == 1) && ($vendor->dine_in == 1))
                         <div class="card-box">
                             <div class="row">
-                                <h4 class="mb-4 "> Table Booking </h4>
+                                <h4 class="mb-4 "> {{ __('Table Booking ') }}</h4>
                                 <div class="col-md-12">
                                     <div class="row">
                                         <div class="col-md-2 mb-2 text-center text-sm-left">
-                                            <h5>Categories</h5>
+                                            <h5>{{ __('Categories') }}</h5>
                                         </div>
                                         <div class="col-md-2 mb-2 text-center text-sm-right">
-                                            <button class="btn btn-info addDineinCategory"> Add Category </button>
+                                            <button class="btn btn-info addDineinCategory"> {{ __('Add Category') }} </button>
                                         </div>
                                         <div class="col-md-2 mb-2 text-center text-sm-left">
-                                            <h5>Tables</h5>
+                                            <h5>{{ __('Tables') }}</h5>
                                         </div>
                                         <div class="col-md-6 mb-2 text-center text-sm-right">
-                                            <button class="btn btn-info addDineinTable"> Add Table </button>
+                                            <button class="btn btn-info addDineinTable"> {{ __("Add Table") }} </button>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -387,8 +502,8 @@
                                                 <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                                                     <thead>
                                                         <tr>
-                                                            <th>Name</th>
-                                                            <th style="width: 85px;">Action</th>
+                                                            <th>{{ __('Name') }}</th>
+                                                            <th style="width: 85px;">{{ __('Action') }}</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -419,10 +534,10 @@
                                                 <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                                                     <thead>
                                                         <tr>
-                                                            <th>Name</th>
-                                                            <th>Category Name</th>
-                                                            <th>QR Code</th>
-                                                            <th style="width: 85px;">Action</th>
+                                                            <th>{{ __('Name') }}</th>
+                                                            <th>{{ __('Category Name') }}</th>
+                                                            <th>{{ __("QR Code") }}</th>
+                                                            <th style="width: 85px;">{{ __("Action") }}</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -432,7 +547,7 @@
                                                                 <a href="javascript:void(0);" class="text-body font-weight-semibold">{{$vendor_table->table_number}}</a>
                                                             </td>
                                                             <td class="table-user">
-                                                                <a href="javascript:void(0);" class="text-body font-weight-semibold">{{$vendor_table->category->title}}</a>
+                                                                <a href="javascript:void(0);" class="text-body font-weight-semibold">{{$vendor_table->category->title??null}}</a>
                                                             </td>
                                                             <td class="table-user">
                                                             {{ QrCode::size(100)->generate($vendor_table->qr_url); }}
@@ -484,7 +599,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Table</h4>
+                <h4 class="modal-title">{{ __("Add Table") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form action="{{ route('vendor.addTable', $vendor->id) }}" method="POST" enctype="multipart/form-data">
@@ -492,24 +607,24 @@
                 <div class="modal-body mt-0" id="editCardBox">
                     <div class="row">
                         <div class="col-sm-4">
-                            <label>Upload Category image</label>
+                            <label>{{ __("Upload Category image") }}</label>
                             <input type="file" accept="image/*" data-default-file="" data-plugins="dropify" name="image" class="dropify" id="image" />
-                            <label class="logo-size d-block text-right mt-1">Image Size 1026x200</label>
+                            <label class="logo-size d-block text-right mt-1">{{ __('Image Size') }} 1026x200</label>
                         </div>
                         <div class="col-sm-3 mb-2">
-                            {!! Form::label('title', 'Table Number',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Table Number'),['class' => 'control-label']) !!}
                             {!! Form::text('table_number', '',['class' => 'form-control', 'placeholder' => 'Table Number', 'required'=>'required']) !!}
                         </div>
                         <div class="col-sm-3 mb-2">
-                            {!! Form::label('title', 'Category',['class' => 'control-label']) !!}
-                            <select class="selectize-select form-control" name="vendor_dinein_category_id" id="assignTo">
+                            {!! Form::label('title', __('Category'),['class' => 'control-label']) !!}
+                            <select class="selectize-select form-control" name="vendor_dinein_category_id">
                                 @foreach($dinein_categories as $dinein_category)
                                 <option value="{{$dinein_category->id}}">{{$dinein_category->title}}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-sm-2 mb-2">
-                            {!! Form::label('title', 'Seating Number',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Seat Capacity'),['class' => 'control-label']) !!}
                             {!! Form::number('seating_number', '1',['class' => 'form-control', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => 'Seating Number', 'required'=>'required']) !!}
                         </div>
                         <input type="hidden" name="vendor_id" value="{{ $vendor->id }}" />
@@ -522,7 +637,7 @@
                                     <h4 class="col-md-12"> {{ $langs->langName.' Language' }} </h4>
                                     <div class="col-md-6">
                                         <div class="form-group" id="{{ ($langs->langId == 1) ? 'nameInput' : 'nameotherInput' }}">
-                                            {!! Form::label('title', 'Name',['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                                             @if($langs->is_primary == 1)
                                             {!! Form::text('name[]', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                             @else
@@ -536,19 +651,19 @@
                                     {!! Form::hidden('language_id[]', $langs->langId) !!}
                                     <div class="col-md-6">
                                         <div class="form-group" id="meta_titleInput">
-                                            {!! Form::label('title', 'Meta Title',['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!}
                                             {!! Form::text('meta_title[]', null, ['class' => 'form-control']) !!}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            {!! Form::label('title', 'Meta Description',['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __('Meta Description'),['class' => 'control-label']) !!}
                                             {!! Form::textarea('meta_description[]', null, ['class'=>'form-control', 'rows' => '3']) !!}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            {!! Form::label('title', 'Meta Keywords',['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __('Meta Keywords'),['class' => 'control-label']) !!}
                                             {!! Form::textarea('meta_keywords[]', null, ['class' => 'form-control', 'rows' => '3']) !!}
                                         </div>
                                     </div>
@@ -560,7 +675,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">Save</button>
+                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">{{ __('Save') }}</button>
                     </div>
                 </div>
             </form>
@@ -572,7 +687,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Table Category</h4>
+                <h4 class="modal-title">{{ __("Add Table Category") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form action="{{ route('vendor.addCategory', $vendor->id) }}" method="POST">
@@ -580,7 +695,7 @@
                 <div class="modal-body mt-0" id="editCardBox">
                     <div class="row">
                         <div class="col-lg-12 mb-2">
-                            {!! Form::label('title', 'Category Name',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Category Name'),['class' => 'control-label']) !!}
                             {!! Form::text('title', '',['class' => 'form-control', 'placeholder' => 'Category Name', 'required'=>'required']) !!}
                         </div>
                         <input type="hidden" name="vendor_id" value="{{ $vendor->id }}" />
@@ -593,7 +708,7 @@
                                     <h4 class="col-md-12"> {{ $langs->langName.' Language' }} </h4>
                                     <div class="col-md-6">
                                         <div class="form-group" id="{{ ($langs->langId == 1) ? 'nameInput' : 'nameotherInput' }}">
-                                            {!! Form::label('title', 'Name',['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                                             @if($langs->is_primary == 1)
                                             {!! Form::text('name[]', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                             @else
@@ -613,7 +728,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">Save</button>
+                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">{{ __('Save') }}</button>
                     </div>
                 </div>
             </form>
@@ -625,7 +740,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Service Area</h4>
+                <h4 class="modal-title">{{ __("Add Service Area") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="geo_form" action="{{ route('vendor.serviceArea', $vendor->id) }}" method="POST">
@@ -635,18 +750,18 @@
                     <input type="hidden" name="zoom_level" value="13" id="zoom_level" />
                     <div class="row">
                         <div class="col-lg-12 mb-2">
-                            {!! Form::label('title', 'Area Name',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Area Name'),['class' => 'control-label']) !!}
                             {!! Form::text('name', '',['class' => 'form-control', 'placeholder' => 'Area Name', 'required'=>'required']) !!}
                         </div>
                         <div class="col-lg-12 mb-2">
-                            {!! Form::label('title', 'Area Description',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Area Description'),['class' => 'control-label']) !!}
                             {!! Form::textarea('description', '',['class' => 'form-control', 'rows' => '3', 'placeholder' => 'Area Description']) !!}
                         </div>
                         <div class="col-lg-12">
                             <div class="input-group mb-3">
                                 <input type="text" id="pac-input" class="form-control" placeholder="Search by name" aria-label="Recipient's username" aria-describedby="button-addon2" name="loc_name">
                                 <div class="input-group-append">
-                                    <button class="btn btn-info" type="button" id="refresh">Edit Mode</button>
+                                    <button class="btn btn-info" type="button" id="refresh">{{ __("Edit Mode") }}</button>
                                 </div>
                             </div>
                             <div class="" style="height:96%;">
@@ -660,9 +775,17 @@
                         <button type="button"
                             class="btn btn-block btn-outline-blue waves-effect waves-light">Cancel</button>
                     </div> -->
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">Save</button>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">{{ __("Save") }}</button>
+                        </div>
+                        <div class="col-md-6 p-0">
+                        <input id="remove-line" class="btn btn-block btn-blue waves-effect waves-light w-100" type="button" value="Remove" />
+                        </div>
                     </div>
+
+
                 </div>
             </form>
         </div>
@@ -672,6 +795,8 @@
 <form name="noPurpose" id="noPurpose"> @csrf </form>
 
 @include('backend.vendor.profile-modals')
+@include('backend.vendor.modals.laundry.pickup-modals')
+@include('backend.vendor.modals.laundry.dropoff-modals')
 @endsection
 
 @section('script')
@@ -679,13 +804,21 @@
 @include('backend.vendor.pagescript')
 
 <script src="{{asset('assets/libs/moment/moment.min.js')}}"></script>
-
-<script src="{{asset('assets/js/calender_main.js')}}"></script>
+<script type="text/javascript">
+    var vendor_id = "<?= $vendor->id ?>";
+    var getURLForPickUp = "{{route('vendor.calender.pickup', $vendor->id)}}";
+    var getURLForDropOff = "{{route('vendor.calender.dropoff', $vendor->id)}}";
+    var hour12FromBlade = "{{$hour12}}";
+</script>
+<script src="{{asset('assets/js/pickup_laundry.js')}}"></script>
+<script src="{{asset('assets/js/dropoff_laundry.js')}}"></script>
+<script src="{{asset('assets/js/calendar_main-5.9.js')}}"></script>
 <script src="{{ asset('assets/js/pages/jquery.cookie.js') }}"></script>
 <script>
+    var pickup_delivery_service_area = "{{ isset($client_preference_detail->pickup_delivery_service_area) ? $client_preference_detail->pickup_delivery_service_area : 0 }}"
     $( document ).ready(function() {
         $(".base_url").html(base_url);
-    }); 
+    });
     $(document).on("click", ".editTablebtn", function() {
         let table_id = $(this).data('id');
         $.ajax({
@@ -695,7 +828,6 @@
             },
             url: "{{ route('vendor_table_edit') }}",
             success: function(response) {
-                console.log(response);
                 if (response.status = 'Success') {
                     var image = response.data.image.image_fit + "100/100" + response.data.image.image_path;
                     $("#edit_table_form .dropify-preview .dropify-render").html("<img src='" + image + "'/>").show();
@@ -754,20 +886,12 @@
     var all_coordinates = @json($all_coordinates);
     var areajson_json = all_coordinates; //{all_coordinates};
 
-    /*function gm_authFailure() {
-
-        $('.excetion_keys').append('<span><i class="mdi mdi-block-helper mr-2"></i> <strong>Google Map</strong> key is not valid</span><br/>');
-        $('.displaySettingsError').show();
-    }*/
-
-
-
     function initialize_show() {
 
         // var myLatlng = new google.maps.LatLng("{{ $center['lat'] }}","{{ $center['lng']  }}");
         //console.log(myLatlng);
-        var latitude = parseFloat("{{ $center['lat'] }}");
-        var longitude = parseFloat("{{ $center['lng'] }}");
+        var latitude  =  all_coordinates[0].coordinates['0']['lat'];
+        var longitude =  all_coordinates[0].coordinates['0']['lng'];
         var myOptions = {
             zoom: parseInt(10),
             center: {
@@ -802,7 +926,6 @@
                 fillOpacity: 0.35,
                 geo_name: data.name,
                 geo_pos: data.coordinates[i],
-
             });
 
             no_parking_geofences_json_geo_area.setMap(map);
@@ -816,6 +939,7 @@
     var lat_longs = new Array();
     var markers = new Array();
     var drawingManager;
+    var _myPolygon;
     var no_parking_geofences_json = all_coordinates; //{all_coordinates};
     var newlocation = '<?php echo json_encode($co_ordinates); ?>';
     var first_location = JSON.parse(newlocation);
@@ -882,6 +1006,13 @@
                 alert('You can draw only one zone at a time');
                 event.overlay.setMap(null);
             }
+            _myPolygon = event.overlay;
+        });
+
+        $('#remove-line').on('click', function() {
+            $('#latlongs').val('');
+            _myPolygon.setMap(null);
+
         });
 
         searchBox.addListener("places_changed", () => {
@@ -943,7 +1074,7 @@
         if (length < 6) {
             Swal.fire(
                 'Select Location?',
-                'Please Drow a Location On Map first',
+                'Please Draw a Location On Map first',
                 'question'
             )
             e.preventDefault();
@@ -1031,7 +1162,7 @@
                 paths: triangleCoords,
                 draggable: true, // turn off if it gets annoying
                 editable: true,
-                strokeColor: '#bb3733',
+                strokeColor: '#424fsd',
                 //strokeOpacity: 0.8,
                 //strokeWeight: 2,
                 fillColor: '#bb3733',
@@ -1046,7 +1177,7 @@
             });
         }
     }
-    if (is_hyperlocal) {
+    if ((is_hyperlocal) || (pickup_delivery_service_area == 1)) {
         google.maps.event.addDomListener(window, 'load', initialize);
         google.maps.event.addDomListener(window, 'load', initialize_show);
         google.maps.event.addDomListener(window, 'load', initialize_edit);
@@ -1064,6 +1195,26 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        // var getSlots = function (data){
+        //     $.ajax({
+        //         url:"{{route('vendor.calender.data', $vendor->id)}}",
+        //         type:"GET",
+        //         async:false,
+        //         headers: {
+        //             'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         dataType:"JSON",
+        //         success: function (response) {
+        //             // calendar.addEventSource( response );
+        //             // calendar.refetchEvents();
+        //             return response;
+        //         },
+        //         error: function(response) {
+        //         }
+        //       });
+        // }
+
+        if($('#calendar').length > 0){
         var calendarEl = document.getElementById('calendar');
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -1073,20 +1224,32 @@
                 center: 'title',
                 right: 'timeGridWeek,timeGridDay'
             },
+            slotLabelFormat: [
+                {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: "{{$hour12}}"
+                }
+            ],
+            eventTimeFormat: { // like '14:30:00'
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: "{{$hour12}}"
+            },
             navLinks: true,
             selectable: true,
             selectMirror: true,
             height: 'auto',
             editable: false,
             nowIndicator: true,
+            eventMaxStack: 1,
             select: function(arg) {
-
-                calendar.addEvent({
-                    title: '',
-                    start: arg.start,
-                    end: arg.end,
-                    allDay: arg.allDay
-                })
+                // calendar.addEvent({
+                //     title: '',
+                //     start: arg.start,
+                //     end: arg.end,
+                //     allDay: arg.allDay
+                // })
                 $('#standard-modal').modal({
                     //backdrop: 'static',
                     keyboard: false
@@ -1097,35 +1260,108 @@
                 if (arg.allDay == true) {
                     document.getElementById('start_time').value = "00:00";
                     document.getElementById('end_time').value = "23:59";
-
                 } else {
                     var startTime = ("0" + arg.start.getHours()).slice(-2) + ":" + ("0" + arg.start.getMinutes()).slice(-2);
                     var EndTime = ("0" + arg.end.getHours()).slice(-2) + ":" + ("0" + arg.end.getMinutes()).slice(-2);
 
                     document.getElementById('start_time').value = startTime;
                     document.getElementById('end_time').value = EndTime;
-
                 }
 
+
                 $('#slot_date').flatpickr({
-                    minDate: "today"
+                    minDate: "today",
+                    defaultDate: arg.start
                 });
             },
-            events: {
-                url: "{{route('vendor.calender.data', $vendor->id)}}"
+            // events: {
+            //     url: "{{route('vendor.calender.data', $vendor->id)}}",
+            //     success: function (response) {
+            //         $("#calendar_slot_alldays_table tbody").html("");
+            //         var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            //         var slotDayList = [];
+            //         $.each(response, function(index, data){
+            //             var slotDay = parseInt(moment(data.start).format('d')) + 1;
+            //             var slotStartTime = moment(data.start).format('h:mm A');
+            //             var slotEndTime = moment(data.end).format('h:mm A');
+            //             $.each(days, function(key, value){
+            //                 if(slotDay == key + 1){
+            //                     if(slotDayList.includes(slotDay)){
+            //                         $("#calendar_slot_alldays_table tbody tr[data-slotDay='"+slotDay+"'] td:nth-child(2)").append("<br>"+slotStartTime+" - "+slotEndTime);
+            //                     }
+            //                     else{
+            //                         $("#calendar_slot_alldays_table tbody").append("<tr data-slotDay="+slotDay+"><td>"+value+"</td><td>"+slotStartTime+" - "+slotEndTime+"</td></tr>");
+            //                     }
+            //                 }
+            //             });
+            //             slotDayList.push(slotDay);
+            //         });
+            //     },
+            // },
+
+            events: function(info, successCallback, failureCallback) {
+                $.ajax({
+                    url: "{{route('vendor.calender.data', $vendor->id)}}",
+                    type: "GET",
+                    data: "start="+info.startStr+"&end="+info.endStr,
+                    dataType:'json',
+                    success: function (response) {
+                        var startDate = moment(info.start).format('MMM DD');
+                        var endDate = moment(info.end - 1).format('DD, YYYY');
+                        $("#calendar_slot_alldays_table thead th").html(startDate+" - "+endDate);
+                        $("#calendar_slot_alldays_table tbody").html("");
+                        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                        var slotDayList = [];
+                        var events = [];
+                        $.each(response, function(index, data){
+                            var slotDay = parseInt(moment(data.start).format('d')) + 1;
+                            @if($hour12)
+                                var slotStartTime = moment(data.start).format('h:mm A');
+                                var slotEndTime = moment(data.end).format('h:mm A');
+                            @else
+                                var slotStartTime = moment(data.start).format('H:mm');
+                                var slotEndTime = moment(data.end).format('H:mm');
+                            @endif
+
+                            $.each(days, function(key, value){
+                                if(slotDay == key + 1){
+                                    if(slotDayList.includes(slotDay)){
+                                        $("#calendar_slot_alldays_table tbody tr[data-slotDay='"+slotDay+"'] td:nth-child(2)").append("<br>"+slotStartTime+" - "+slotEndTime);
+                                    }
+                                    else{
+                                        $("#calendar_slot_alldays_table tbody").append("<tr data-slotDay="+slotDay+"><td>"+value+"</td><td>"+slotStartTime+" - "+slotEndTime+"</td></tr>");
+                                    }
+                                }
+                            });
+                            slotDayList.push(slotDay);
+
+                            events.push({
+                                title: data.title,
+                                start: data.start,
+                                end: data.end,
+                                type: data.type,
+                                color: data.color,
+                                type_id: data.type_id,
+                                slot_id: data.slot_id,
+                                slot_dine_in: data.slot_dine_in,
+                                slot_takeaway: data.slot_takeaway,
+                                slot_delivery: data.slot_delivery,
+                            });
+                        });
+                        successCallback(events);
+                    }
+                });
             },
             eventResize: function(arg) {
-                console.log(arg.event.extendedProps);
-
             },
             eventClick: function(ev) {
-
                 $('#edit-slot-modal').modal({
                     //backdrop: 'static',
                     keyboard: false
                 });
+                // console.log(ev.event.extendedProps);
                 var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-                var day = ev.event.start.getDay();
+                var day = ev.event.start.getDay() + 1;
 
                 document.getElementById('edit_type').value = ev.event.extendedProps.type;
                 document.getElementById('edit_day').value = day;
@@ -1135,12 +1371,32 @@
                 document.getElementById('deleteSlotDayid').value = ev.event.extendedProps.type_id;
                 document.getElementById('deleteSlotId').value = ev.event.extendedProps.slot_id;
                 document.getElementById('deleteSlotType').value = ev.event.extendedProps.type;
+                document.getElementById('deleteSlotTypeOld').value = ev.event.extendedProps.type;
+
+                if(ev.event.extendedProps.type == 'date'){
+                    $("#edit_slotDate").prop("checked", true);
+                    $(".modal .forDateEdit").show();
+                }else{
+                    $("#edit_slotDay").prop("checked", true);
+                    $(".modal .forDateEdit").hide();
+                }
+
+                if(ev.event.extendedProps.slot_delivery == 0){
+                    $("#edit_delivery").prop("checked", false);
+                }
+                if(ev.event.extendedProps.slot_takeaway == 0){
+                    $("#edit_takeaway").prop("checked", false);
+                }
+                if(ev.event.extendedProps.slot_dine_in == 0){
+                    $("#edit_dine_in").prop("checked", false);
+                }
 
                 $('#edit_slot_date').flatpickr({
-                    minDate: "today"
+                    minDate: "today",
+                    defaultDate: (ev.event.extendedProps.type == 'date') ? ev.event.start : ev.event.start
                 });
 
-                $('#edit-slot-modal #edit_slotlabel').text('Edit For All ' + days[day] + '   ');
+                $('#edit-slot-modal #edit_slotlabel').text('Edit For All ' + days[day-1] + '   ');
 
                 var startTime = ("0" + ev.event.start.getHours()).slice(-2) + ":" + ("0" + ev.event.start.getMinutes()).slice(-2);
                 document.getElementById('edit_start_time').value = startTime;
@@ -1156,6 +1412,7 @@
         });
 
         calendar.render();
+        }
 
     });
 
@@ -1183,6 +1440,7 @@
 
     $(document).on('change', '.slotTypeEdit', function() {
         var val = $(this).val();
+        $('#edit-slot-modal #deleteSlotType').val(val);
         if (val == 'day') {
             $('.modal .weekDaysEdit').show();
             $('.modal .forDateEdit').hide();
@@ -1193,6 +1451,8 @@
     });
 
     $(document).on('click', '#deleteSlotBtn', function() {
+        var date = $('#edit_slot_date').val();
+        $('#edit-slot-modal #deleteSlotDate').val(date);
         if (confirm("Are you sure? You want to delete this slot.")) {
             $('#deleteSlotForm').submit();
         }

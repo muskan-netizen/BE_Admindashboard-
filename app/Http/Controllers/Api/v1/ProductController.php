@@ -7,7 +7,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand};
+use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand,TagTranslation,Tag};
 use Validation;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -41,7 +41,7 @@ class ProductController extends BaseController
                         $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                         $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
                         $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
-                        $q1->where('ast.language_id', $langId);
+                        $q1->where('set.status', 1)->where('ast.language_id', $langId);
                     },
                     'variantSet' => function($z) use($langId){
                         $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
@@ -54,7 +54,7 @@ class ProductController extends BaseController
                         ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
                         ->whereIn('pvs.product_variant_id', $pvIds)
                         ->where('vt.language_id', $langId);
-                    }, 
+                    },
                     'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                         $q->where('language_id', $langId);
@@ -64,7 +64,7 @@ class ProductController extends BaseController
                         $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                         $q2->where('apt.language_id', $langId);
                     },
-                    ])->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating')
+                    ])->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count')
                     ->where('id', $pid)
                     ->first();
         if(!$products){
@@ -114,6 +114,10 @@ class ProductController extends BaseController
             $product = Product::with(['inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
+                        'category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        },
                         'variant' => function($v){
                             $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','barcode','tax_category_id')
                             ->groupBy('product_id'); // return first variant
@@ -123,7 +127,7 @@ class ProductController extends BaseController
                             $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                             $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
                             $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
-                            $q1->where('ast.language_id', $langId);
+                            $q1->where('set.status', 1)->where('ast.language_id', $langId);
                         },
                         'variantSet' => function($z) use($langId){
                             $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
@@ -136,7 +140,7 @@ class ProductController extends BaseController
                             ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
                             ->where('pvs.product_id', $pid)
                             ->where('vt.language_id', $langId);
-                        }, 
+                        },
                         'translation' => function($q) use($langId){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $langId);
@@ -144,15 +148,42 @@ class ProductController extends BaseController
                         'addOn.setoptions' => function($q2) use($langId){
                             $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
                             $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
-                            $q2->where('apt.language_id', $langId);
+                            $q2->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                         },
-                        ])->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating')
+                        ])->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count')
                         ->where('id', $pid)
                         ->first();
 
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
+            $product->vendor->is_vendor_closed = 0;
+            if($product->vendor->show_slot == 0){
+                if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
+                    $product->vendor->is_vendor_closed = 1;
+                }else{
+                    $product->vendor->is_vendor_closed = 0;
+                    if($product->vendor->slotDate->isNotEmpty()){
+                        $product->vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
+                        $product->vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
+                    }elseif($product->vendor->slot->isNotEmpty()){
+                        $product->vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
+                        $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
+                    }
+                }
+            }
+
+            $slotsDate = 0;
+            if($product->vendor->is_vendor_closed){
+                $slotsDate = findSlot('',$product->vendor->id,'');
+                $product->delaySlot = $slotsDate;
+                $product->vendor->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
+            }else{
+                $product->delaySlot  = 0;
+                $product->vendor->closed_store_order_scheduled = 0;
+            }
+
+
             $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             foreach ($product->variant as $key => $value) {
@@ -205,6 +236,7 @@ class ProductController extends BaseController
                 }
             }
             $product->product_media = $data_image;
+            $product->share_link = getServerURL() . $product->vendor->slug . '/product/' . $product->url_slug;
             $response['products'] = $product;
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
@@ -225,8 +257,8 @@ class ProductController extends BaseController
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
-        
-            
+
+
     }
 
     public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [])
@@ -289,7 +321,7 @@ class ProductController extends BaseController
             if(!$product){
                 return $this->errorResponse('No record found.', 404);
             }
-            
+
             $langId = Auth::user()->language;
             $userid = Auth::user()->id;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
@@ -316,11 +348,11 @@ class ProductController extends BaseController
             }
 
             if(empty($pv_ids)){
-                return $this->errorResponse('Invalid product sets or product has been removed.', 404);
+                return $this->errorResponse('Invalid product sets or product has been removed.', 404, ['variant_empty'=>true]);
             }
 
             $variantData = ProductVariant::join('products as pro', 'product_variants.product_id', 'pro.id')
-                        ->with(['wishlist', 'product.media.image', 'media.image', 'translation' => function($q) use($langId){
+                        ->with(['wishlist', 'product.media.image', 'media.pimage.image', 'translation' => function($q) use($langId){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $langId);
                         },'wishlist' =>  function($q) use($userid){
@@ -340,7 +372,7 @@ class ProductController extends BaseController
                 foreach ($variantData->media as $media_key => $media_value) {
                     $data_image[$media_key]['product_variant_id'] = $media_value->product_variant_id;
                     $data_image[$media_key]['media_id'] = $media_value->product_image_id;
-                    $data_image[$media_key]['image'] = $media_value->image;
+                    $data_image[$media_key]['image'] = $media_value->pimage->image;
                 }
             }else{
                 foreach ($variantData->product->media as $media_key => $media_value) {
@@ -361,5 +393,41 @@ class ProductController extends BaseController
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+
+    # get all product tags
+
+    public function getAllProductTags(Request $request)
+    {
+        try{
+            $langId = Auth::user()->language;
+            $userid = Auth::user()->id;
+
+            $get_all_tags = Tag::with(['translations' =>  function($q)use($langId){
+                $q->where('language_id',$langId);
+            }])->get();
+
+            return $this->successResponse($get_all_tags);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+     # get product faq 
+     public function getProductFaq(Request $request, $product_id){
+        $langId = Auth::user()->language;
+
+        if(empty($langId))
+        $langId = ClientLanguage::orderBy('is_primary','desc')->value('language_id');
+
+        $product_faqs = ProductFaq::where('product_id',$product_id)->with(['translations' => function ($qs) use($langId){
+            $qs->where('language_id',$langId);
+        }])->get();
+        
+        if(!$product_faqs){
+            return response()->json(['error' => 'No record found.'], 404);
+        }
+        return response()->json([
+            'data' => $product_faqs,
+        ]);
     }
 }

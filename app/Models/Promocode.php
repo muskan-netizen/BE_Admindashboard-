@@ -11,7 +11,7 @@ class Promocode extends Model
 
     protected $table = 'promocodes';
 
-    protected $fillable = ['name', 'amount', 'expiry_date', 'promo_type_id', 'allow_free_delivery', 'minimum_spend', 'maximum_spend', 'first_order_only', 'limit_per_user', 'limit_total', 'paid_by_vendor_admin','restriction_on', 'image','short_desc'];
+    protected $fillable = ['name', 'amount', 'expiry_date', 'promo_type_id', 'allow_free_delivery', 'minimum_spend', 'maximum_spend', 'first_order_only', 'limit_per_user', 'limit_total', 'paid_by_vendor_admin','restriction_on', 'image','short_desc', 'promo_visibility'];
 
     public function restriction()
     {
@@ -27,9 +27,10 @@ class Promocode extends Model
         if(!empty($value)){
             $img = $value;
         }
-        $values['proxy_url'] = env('IMG_URL1');
-        $values['image_path'] = env('IMG_URL2').'/'.\Storage::disk('s3')->url($img);
-        $values['image_fit'] = env('FIT_URl');
+        $ex = checkImageExtension($img);
+        $values['proxy_url'] = \Config::get('app.IMG_URL1');
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+        $values['image_fit'] = \Config::get('app.FIT_URl');
         return $values;
     }
 

@@ -24,7 +24,7 @@
                 e(".sm").addClass("hover-unset");
             }),
             e(window).width() > "1200" &&
-            e("#sub-menu > li").hover(
+            e("#sub-menu  > li").hover(
                 function () {
                     e(this).children().hasClass("has-submenu") && e(this).parents().find("nav").addClass("sidebar-unset");
                 },
@@ -190,10 +190,180 @@
             slidesToScroll: 1,
             autoplay: !0,
             autoplaySpeed: 3e3,
+            arrows: true,
             responsive: [
                 { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-                { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             ],
+        }),
+        e(".product-4-on_sale").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
+        e(".product-4-new_products").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
+        e(".product-4-best_sellers").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
+        e(".recent-orders").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 2.1,
+            slidesToScroll: 2,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
+        e('.suppliers-slider').slick({
+            dots: false,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            arrows: false,
+            dots: false,
+            responsive: [
+              {
+                breakpoint: 991,
+                settings: {
+                  slidesToShow: 3,
+                  slidesToScroll: 1,
+                  infinite: true,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 767,
+                settings: {
+                  slidesToShow: 2,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 480,
+                settings: {
+                  slidesToShow:1,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              }
+            ]
+        });
+        e('.suppliers-slider').slick({
+            dots: false,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            arrows: false,
+            dots: false,
+            responsive: [
+              {
+                breakpoint: 991,
+                settings: {
+                  slidesToShow: 3,
+                  slidesToScroll: 1,
+                  infinite: true,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 767,
+                settings: {
+                  slidesToShow: 2,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 480,
+                settings: {
+                  slidesToShow:1,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              }
+            ]
+        });
+        e(".brand-slider").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 4,
+            arrows:false,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                {
+                  breakpoint: 1367,
+                  settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    arrows: false,
+                    infinite: true
+                  }
+                },
+                {
+                  breakpoint: 991,
+                  settings: {
+                    slidesToShow: 2,
+                    arrows: false,
+                    slidesToScroll: 1
+                  }
+                },
+                {
+                  breakpoint: 767,
+                  settings: {
+                    slidesToShow: 2,
+                    arrows: false,
+                    slidesToScroll: 1
+                  }
+                },
+                {
+                  breakpoint: 480,
+                  settings: {
+                    slidesToShow: 1,
+                    arrows:false,
+                    slidesToScroll: 1
+                  }
+                }
+              ],
         }),
         e(".tools-product-4").slick({
             infinite: !0,
@@ -239,7 +409,7 @@
             dots: !1,
             infinite: !0,
             speed: 300,
-            slidesToShow: 6,
+            slidesToShow: 8,
             slidesToScroll: 6,
             responsive: [
                 { breakpoint: 1367, settings: { slidesToShow: 5, slidesToScroll: 5, infinite: !0 } },
@@ -432,7 +602,7 @@
             e(".collection-grid-view").css("opacity", "1"),
                 e(".product-wrapper-grid").removeClass("list-view"),
                 e(".product-wrapper-grid").children().children().removeClass(),
-                e(".product-wrapper-grid").children().children().addClass("col-lg-3");
+                e(".product-wrapper-grid").children().children().addClass("col-lg-3 mt-3");
         }),
         e(".product-2-layout-view").on("click", function (s) {
             e(".product-wrapper-grid").hasClass("list-view") || (e(".product-wrapper-grid").children().children().removeClass(), e(".product-wrapper-grid").children().children().addClass("col-lg-6"));
@@ -451,6 +621,7 @@
         }),
         e(".filter-btn").on("click", function (s) {
             e(".collection-filter").css("left", "-15px");
+            e("body").toggleClass("overflow-hidden");
         }),
         e(".filter-back").on("click", function (s) {
             e(".collection-filter").css("left", "-365px"), e(".sidebar-popup").trigger("click");
@@ -523,8 +694,8 @@
     }),
     $(".color-box li").click(function () {
         $(this).addClass("active").siblings().removeClass("active");
-    }),
-    $('<div class="sidebar-btn dark-light-btn"><div class="dark-light"><div class="theme-layout-version">Dark</div></div></div>').appendTo($("body"));
+    })
+
 var body_event = $("body");
 function openNav() {
     document.getElementById("mySidenav").classList.add("open-side");
@@ -572,7 +743,7 @@ body_event.on("click", ".theme-layout-version", function () {
     // );
 }),
     $(function () {
-        $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
+        // $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
     }),
     jQuery(".setting-title h4").append('<span class="according-menu"></span>'),
     jQuery(".setting-title").on("click", function () {
@@ -582,8 +753,31 @@ body_event.on("click", ".theme-layout-version", function () {
 
     $(window).on("load", function () {
         $('[data-toggle="tooltip"]').tooltip();
-        console.log(localStorage['theme_color']);
         if(localStorage['theme_color'] == "dark"){
             $(".theme-layout-version").text("Light");
         }
+        $.ajax({
+            url: url2,
+            type: "GET",
+            dataType: 'json',
+            // data: { 'theme_color': localStorage['theme_color'] },
+            success: function (data) {
+                if(data.client_preferences.show_dark_mode == 2){
+                    if(localStorage['theme_color'] == 'dark'){
+                        $('<div class="sidebar-btn dark-light-btn" id="dark-light-btn-toggle"><div class="dark-light"><div class="theme-layout-version">Light</div></div></div>').appendTo($("body"));
+                    }
+                    else{
+                        $('<div class="sidebar-btn dark-light-btn" id="dark-light-btn-toggle"><div class="dark-light"><div class="theme-layout-version">Dark</div></div></div>').appendTo($("body"));
+                    }
+                    $("#dark-light-btn-toggle").removeClass('d-none');
+                }
+                else{
+                    // localStorage['theme_color'] = '';
+                    // $("body").removeClass("dark"),
+                    // window.sessionStorage.setItem("theme", "light");
+                    // $(".theme-layout-version").text("Dark");
+                    $("#dark-light-btn-toggle").addClass('d-none');
+                }
+            }
+        });
     });

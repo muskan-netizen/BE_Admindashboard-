@@ -16,7 +16,7 @@ use App\Http\Traits\ToasterResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{User, UserVendor, Vendor, UserAddress, ClientPreference, Client, SubscriptionPlansVendor, SubscriptionFeaturesListVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, Payment, PaymentOption};
+use App\Models\{User, UserVendor, Vendor,ClientCurrency, UserAddress, ClientPreference, Client, SubscriptionPlansVendor, SubscriptionFeaturesListVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, Payment, PaymentOption};
 
 class VendorSubscriptionController extends BaseController
 {
@@ -49,9 +49,11 @@ class VendorSubscriptionController extends BaseController
                 $sub->features = $subFeaturesList;
             }
         }
-        return view('backend.vendor.vendorSubscriptions')->with(['subscription_plans'=>$sub_plans, 'subscription'=>$active_subscription]);
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+        pr( $clientCurrency);
+        return view('backend.vendor.vendorSubscriptions')->with(['subscription_plans'=>$sub_plans, 'clientCurrency'=> $clientCurrency,'subscription'=>$active_subscription]);
     }
-    
+
     /**
      * select vendor subscription.
      *
@@ -258,7 +260,7 @@ class VendorSubscriptionController extends BaseController
                 $subscription_invoice->save();
                 DB::commit();
                 return redirect()->back()->with('success', 'Subscription has been '.$message.' successfully');
-            } 
+            }
             catch (Exception $e) {
                 DB::rollback();
                 return redirect()->back()->with('error', $e->getMessage());

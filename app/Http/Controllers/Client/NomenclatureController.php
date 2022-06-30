@@ -7,77 +7,334 @@ use App\Models\Nomenclature;
 use App\Models\NomenclatureTranslation;
 use App\Http\Controllers\Client\BaseController;
 
-class NomenclatureController extends BaseController{
+class NomenclatureController extends BaseController
+{
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request){
+    public function store(Request $request)
+    {
+        NomenClature::updateOrCreate(['label' => 'vendors'], ['label' => 'vendors']);
+        NomenClature::updateOrCreate(['label' => 'Loyalty Cards'], ['label' => 'Loyalty Cards']);
+        NomenClature::updateOrCreate(['label' => 'Takeaway'], ['label' => 'Takeaway']);
+        NomenClature::updateOrCreate(['label' => 'Search'], ['label' => 'Search']);
+        NomenClature::updateOrCreate(['label' => 'Wishlist'], ['label' => 'Wishlist']);
+        NomenClature::updateOrCreate(['label' => 'Dine-In'], ['label' => 'Dine-In']);
+        NomenClature::updateOrCreate(['label' => 'Delivery'], ['label' => 'Delivery']);
+        NomenClature::updateOrCreate(['label' => 'Zip Code'], ['label' => 'Zip Code']);
+        NomenClature::updateOrCreate(['label' => 'Want To Tip'], ['label' => 'Want To Tip']);
+        NomenClature::updateOrCreate(['label' => 'Fixed Fee'], ['label' => 'Fixed Fee']);        
+        NomenClature::updateOrCreate(['label' => 'Royo Dispatcher'], ['label' => 'Royo Dispatcher']);
+        NomenClature::updateOrCreate(['label' => 'Referral Code'], ['label' => 'Referral Code']);
+        $label_array = ['vendors','Loyalty Cards','Takeaway','Search','Wishlist','Dine-In','Delivery','Zip Code','Want To Tip','Fixed Fee','Royo Dispatcher', 'Referral Code'];
+        $name_array = ['names','loyalty_cards_names','takeaway_names','search_names','wishlist_names','dinein_names','delivery_names','zipCode_name','wantToTip_name','FixedFee_name','royo_dispatcher_names','referral_code_names'];
+        $lang_id_array = ['language_ids','loyalty_cards_language_ids','takeaway_language_ids','search_language_ids','wishlist_language_ids','dinein_language_ids','delivery_language_ids','zipCode_language_ids','wantToTip_language_ids','FixedFee_language_ids','royo_dispatcher_language_ids','referral_code_language_ids'];
+        $newrequest = $request->toArray();  
+        //pr($newrequest);     
+        for($j=0;$j<count($label_array);$j++)
+        {
+            if (count($newrequest[$name_array[$j]]) > 0) {
+                $value_exists = [];
+                foreach ($newrequest[$name_array[$j]] as $singlename) {
+                    if ($singlename) {
+                        $value_exists[] = $singlename;
+                    }
+                }
+                $nomenclature = NomenClature::where('label', $label_array[$j])->first();
+                if (count($value_exists) > 0) {
+                    $this->validate($request, [
+                        $name_array[$j].'.0' => 'required|string',
+                    ]);
+                    $m=0;
+                    foreach ($newrequest[$name_array[$j]] as $single_name_array) {
+                        if ($single_name_array) {                         
+                            NomenclatureTranslation::updateOrCreate(['language_id' => $newrequest[$lang_id_array[$j]][$m], 'nomenclature_id' => $nomenclature->id], ['name' => $single_name_array]);
+                        }
+                        $m++;
+                    }
+                } else {
+                    NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
+                }
+            }
+        }
+        return redirect()->route('configure.customize')->with('success', 'Nomenclature Saved Successfully!');
+    }
+
+    public function store_backup(Request $request)
+    {       
         $names = $request->names;
         $loyalty_cards_language_ids = $request->loyalty_cards_language_ids;
         $loyalty_cards_names = $request->loyalty_cards_names;
-        if(count($names) > 0){
+        $takeaway_names = $request->takeaway_names;
+        $search_names = $request->search_names;
+        $wishlist_names = $request->wishlist_names;
+        $dinein_names = $request->dinein_names;
+        $delivery_names = $request->delivery_names;
+        $zipCode_names = $request->zipCode_name;
+        $wantToTip_names = $request->wantToTip_name;
+        $FixedFee_names = $request->FixedFee_name;
+        $royo_dispatcher_names = $request->royo_dispatcher_names;
+        NomenClature::updateOrCreate(['id' => 1], ['label' => 'vendors']);
+        NomenClature::updateOrCreate(['id' => 2], ['label' => 'Loyalty Cards']);
+        NomenClature::updateOrCreate(['id' => 3], ['label' => 'Takeaway']);
+        NomenClature::updateOrCreate(['id' => 4], ['label' => 'Search']);
+        NomenClature::updateOrCreate(['id' => 5], ['label' => 'Wishlist']);
+        NomenClature::updateOrCreate(['id' => 6], ['label' => 'Dine-In']);
+        NomenClature::updateOrCreate(['id' => 7], ['label' => 'Delivery']);
+        NomenClature::updateOrCreate(['id' => 8], ['label' => 'Zip Code']);
+        NomenClature::updateOrCreate(['id' => 11], ['label' => 'Royo Dispatcher']);      
+        
+
+         if (count($names) > 0) {
             $names_value_exists = [];
             foreach ($names as $name) {
-                if($name){
-                    $names_value_exists[]=$name;
+                if ($name) {
+                    $names_value_exists[] = $name;
                 }
             }
-            if(count($names_value_exists) > 0){
+            $nomenclature = NomenClature::where('label', 'vendors')->first();
+            if (count($names_value_exists) > 0) {
                 $this->validate($request, [
-                  'names.0' => 'required|string',
+                    'names.0' => 'required|string',
                 ]);
                 NomenclatureTranslation::truncate();
                 $language_ids = $request->language_ids;
                 foreach ($names as $key => $name) {
-                    if($name){
-                        $nomenclature = NomenClature::where('label', 'vendors')->first();
-                        if($nomenclature){
-                            $nomenclature->update(['label' => "vendors"]);
-                        }else{
-                            $nomenclature = NomenClature::create(['label' => "vendors"]);
-                        }
+                    if ($name) {
+                        // $nomenclature = NomenClature::where('label', 'vendors')->first();
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $language_ids[$key], 'nomenclature_id' => $nomenclature->id], ['name' => $name]);
                         $nomenclature_translation =  new NomenclatureTranslation();
-                        $nomenclature_translation->name = $name;
-                        $nomenclature_translation->language_id = $language_ids[$key];
-                        $nomenclature_translation->nomenclature_id = $nomenclature->id;
-                        $nomenclature_translation->save();
                     }
                 }
-            }else{
-                NomenclatureTranslation::where('nomenclature_id', 1)->delete();
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
             }
         }
-        if(count($loyalty_cards_names) > 0){
+        if (count($loyalty_cards_names) > 0) {
             $value_exists = [];
             foreach ($loyalty_cards_names as $loyalty_cards_name) {
-                if($loyalty_cards_name){
-                    $value_exists[]=$loyalty_cards_name;
+                if ($loyalty_cards_name) {
+                    $value_exists[] = $loyalty_cards_name;
                 }
             }
-            if(count($value_exists) > 0){
+            $nomenclature = NomenClature::where('label', 'Loyalty Cards')->first();
+            if (count($value_exists) > 0) {
                 $this->validate($request, [
-                  'loyalty_cards_names.0' => 'required|string',
+                    'loyalty_cards_names.0' => 'required|string',
                 ]);
                 foreach ($loyalty_cards_names as $ke => $loyalty_cards_name) {
-                    if($loyalty_cards_name){
-                        $nomenclature = NomenClature::where('label', 'Loyalty Cards')->first();
-                        if($nomenclature){
-                            $nomenclature->update(['label' => "Loyalty Cards"]);
-                        }else{
-                            $nomenclature = NomenClature::create(['label' => "Loyalty Cards"]);
-                        }
-                        $nomenclature_translation =  new NomenclatureTranslation();
-                        $nomenclature_translation->name = $loyalty_cards_name;
-                        $nomenclature_translation->language_id = $loyalty_cards_language_ids[$ke];
-                        $nomenclature_translation->nomenclature_id = $nomenclature->id;
-                        $nomenclature_translation->save();
+                    if ($loyalty_cards_name) {                         
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $loyalty_cards_language_ids[$ke], 'nomenclature_id' => $nomenclature->id], ['name' => $loyalty_cards_name]);
                     }
                 }
-            }else{
-                NomenclatureTranslation::where('nomenclature_id', 2)->delete();
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
+            }
+        }
+        if (count($takeaway_names) > 0) {
+            $names_value_exists = [];
+            foreach ($takeaway_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            $nomenclature = NomenClature::where('label', 'Takeaway')->first();
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'takeaway_names.0' => 'required|string',
+                ]);
+                $takeaway_language_ids = $request->takeaway_language_ids;
+                foreach ($takeaway_names as $takeaway_key => $takeaway_name) {
+                    if ($takeaway_name) {                        
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $takeaway_language_ids[$takeaway_key], 'nomenclature_id' => $nomenclature->id], ['name' => $takeaway_name]);
+                    }
+                }
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
+            }
+        }
+        if (count($search_names) > 0) {
+            $names_value_exists = [];
+            foreach ($search_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            $nomenclature = NomenClature::where('label', 'Search')->first();
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'search_names.0' => 'required|string',
+                ]);
+                $search_language_ids = $request->search_language_ids;
+                foreach ($search_names as $takeaway_key => $search_name) {
+                    if ($search_name) {                        
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $search_language_ids[$takeaway_key], 'nomenclature_id' => $nomenclature->id], ['name' => $search_name]);
+                    }
+                }
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
+            }
+        }
+        if (count($wishlist_names) > 0) {
+            $names_value_exists = [];
+            foreach ($wishlist_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            $nomenclature = NomenClature::where('label', 'Wishlist')->first();
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'wishlist_names.0' => 'required|string',
+                ]);
+                $wishlist_language_ids = $request->wishlist_language_ids;
+                foreach ($wishlist_names as $wishlist_key => $wishlist_name) {
+                    if ($wishlist_name) {                        
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $wishlist_language_ids[$wishlist_key], 'nomenclature_id' => $nomenclature->id], ['name' => $wishlist_name]);
+                    }
+                }
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
+            }
+        }
+        if (count($dinein_names) > 0) {
+            $names_value_exists = [];
+            foreach ($dinein_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            $nomenclature = NomenClature::where('label', 'Dine-In')->first();
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'dinein_names.0' => 'required|string',
+                ]);
+                $dinein_language_ids = $request->dinein_language_ids;
+                foreach ($dinein_names as $dinein_key => $dinein_name) {
+                    if ($dinein_name) {                        
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $dinein_language_ids[$dinein_key], 'nomenclature_id' => $nomenclature->id], ['name' => $dinein_name]);
+                    }
+                }
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
+            }
+        }
+        if (count($delivery_names) > 0) {
+            $names_value_exists = [];
+            foreach ($delivery_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            $nomenclature = NomenClature::where('label', 'Delivery')->first();
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'delivery_names.0' => 'required|string',
+                ]);
+                $delivery_language_ids = $request->delivery_language_ids;
+                foreach ($delivery_names as $delivery_key => $delivery_name) {
+                    if ($delivery_name) {                        
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $delivery_language_ids[$delivery_key], 'nomenclature_id' => $nomenclature->id], ['name' => $delivery_name]);
+                    }
+                }
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
+            }
+        }
+        if (count($zipCode_names) > 0) {
+            $names_value_exists = [];
+            foreach ($zipCode_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            $nomenclature = NomenClature::where('label', 'Zip Code')->first();
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'zipCode_name.0' => 'required|string',
+                ]);
+                $zipCode_language_ids = $request->zipCode_language_ids;
+                foreach ($zipCode_names as $zipCode_key => $zipCode_name) {
+                    if ($zipCode_name) {                        
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $zipCode_language_ids[$zipCode_key], 'nomenclature_id' => $nomenclature->id], ['name' => $zipCode_name]);
+                    }
+                }
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
+            }
+        }
+        if (!empty($wantToTip_names) > 0) {
+            $names_value_exists = [];
+            foreach ($wantToTip_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            $nomenclature = NomenClature::where('label', 'Want To Tip')->first();
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'wantToTip_name.0' => 'required|string',
+                ]);
+                $wantToTip_language_ids = $request->wantToTip_language_ids;
+                foreach ($wantToTip_names as $wantToTip_key => $wantToTip_name) {
+                    if ($wantToTip_name) {                        
+                        //echo $wantToTip_name;
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $wantToTip_language_ids[$wantToTip_key], 'nomenclature_id' => $nomenclature->id], ['name' => $wantToTip_name]);
+                    }
+                }
+                //dd("reached");
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
+            }
+        }
+        if (!empty($FixedFee_names) > 0) {
+            $names_value_exists = [];
+            foreach ($FixedFee_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'FixedFee_name.0' => 'required|string',
+                ]);
+                $FixedFee_language_ids = $request->FixedFee_language_ids;
+                foreach ($FixedFee_names as $FixedFee_key => $FixedFee_name) {
+                    if ($FixedFee_name) {
+                        $nomenclature = NomenClature::where('label', 'Fixed Fee')->first();
+                        //echo $FixedFee_name;
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $FixedFee_language_ids[$FixedFee_key], 'nomenclature_id' => $nomenclature->id], ['name' => $FixedFee_name]);
+                    }
+                }
+                //dd("reached");
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
+            }
+        }
+        
+        if (count($royo_dispatcher_names) > 0) {
+            $names_value_exists = [];
+            foreach ($royo_dispatcher_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            $nomenclature = NomenClature::where('label', 'Royo Dispatcher')->first();
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'royo_dispatcher_names.0' => 'required|string',
+                ]);
+                $royo_dispatcher_language_ids = $request->royo_dispatcher_language_ids;
+                foreach ($royo_dispatcher_names as $royo_dispatcher_key => $royo_dispatcher_name) {
+                    if ($royo_dispatcher_name) {                        
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $royo_dispatcher_language_ids[$royo_dispatcher_key], 'nomenclature_id' => $nomenclature->id], ['name' => $royo_dispatcher_name]);
+                    }
+                }
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', $nomenclature->id)->delete();
             }
         }
         return redirect()->route('configure.customize')->with('success', 'Nomenclature Saved Successfully!');

@@ -16,21 +16,25 @@ class VendorDineinTable extends Model
       if(!empty($value)){
         $img = $value;
       }
-      $values['proxy_url'] = env('IMG_URL1');
-      $values['image_fit'] = env('FIT_URl');
-      $values['image_path'] = env('IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $ex = checkImageExtension($img);
+      $values['proxy_url'] = \Config::get('app.IMG_URL1');
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      $values['image_fit'] = \Config::get('app.FIT_URl');
       $values['original'] = \Storage::disk('s3')->url($img);
       $values['logo_db_value'] = $value;
-      
+
       return $values;
     }
 
     public function translations(){
-      $langData = $this->hasMany('App\Models\VendorDineinTableTranslation');
-      return $langData;
+      return $this->hasMany('App\Models\VendorDineinTableTranslation');
     }
     public function category(){
-      $langData = $this->hasOne('App\Models\VendorDineinCategory', 'id', 'vendor_dinein_category_id');
-      return $langData;
+      return $this->hasOne('App\Models\VendorDineinCategory', 'id', 'vendor_dinein_category_id');
     }
+    public function deleteByVendor($vendor_id){
+      $ids = $this->where('vendor_id',$vendor_id)->pluck('id')->toArray();
+      $delete_trans = VendorDineinTableTranslation::whereIn('vendor_dinein_table_id',$ids)->delete();
+      return $this->where('vendor_id',$vendor_id)->delete();
+  }
 }

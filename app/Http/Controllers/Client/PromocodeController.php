@@ -102,7 +102,7 @@ class PromocodeController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function save(Request $request, Promocode $promocode, $update = 'false'){
-        foreach ($request->only('name', 'amount', 'expiry_date', 'promo_type_id', 'minimum_spend', 'maximum_spend', 'limit_per_user', 'limit_total', 'paid_by_vendor_admin','short_desc', 'title') as $key => $value) {
+        foreach ($request->only('name', 'amount', 'expiry_date', 'promo_type_id', 'minimum_spend', 'maximum_spend', 'limit_per_user', 'limit_total', 'paid_by_vendor_admin','short_desc', 'title', 'promo_visibility') as $key => $value) {
             $promocode->{$key} = $value;
         }
         if ($request->hasFile('image')) {    /* upload logo file */

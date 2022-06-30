@@ -12,6 +12,33 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        //
+        'payment/payfast/notify',
+        'payment/payfast/notify/app',
+        'payment/paypal/notify',
+        'payment/mobbex/notify',
+        'webhook/lalamove',
+        'webhook/ship-rocket',
+        'passbase/webhook',
+        'webhook/dunzo',
+        'webhook/ahoy',
+        'easebuzz_respont',
+        'payment/easebuzz/notify',
+        'payment/easebuzz/api',
+        
+        'ccavenue/success',
+        'vnpay_respont',
+        'payment/vnpay/api',
+        'payment/vnpay/notify', 
+        
+        'payment/cashfree/notify',
+        'verify/payment/otp/app/*',
+
+        /** routes for edit order **/
+        'edit-order/*',
+        'payment/webhook/*',
+        
+        'payment/paytab/return',
+        'payment/paytab/callback',
+        'dispatch/customer/distance/notification/*'
     ];
 }

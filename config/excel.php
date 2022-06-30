@@ -44,10 +44,12 @@ return [
         'csv'                    => [
             'delimiter'              => ',',
             'enclosure'              => '"',
+            'input_encoding'         => 'ISO-8859-1',
             'line_ending'            => PHP_EOL,
-            'use_bom'                => false,
+            'use_bom'                => true,
             'include_separator_line' => false,
             'excel_compatibility'    => false,
+
         ],
 
         /*
@@ -124,8 +126,12 @@ return [
             'delimiter'        => ',',
             'enclosure'        => '"',
             'escape_character' => '\\',
+            'line_ending'      => PHP_EOL,
             'contiguous'       => false,
-            'input_encoding'   => 'UTF-8',
+            'use_bom'          => true,
+            'input_encoding'   => 'ISO-8859-1',
+            'include_separator_line' => false,
+            'excel_compatibility'    => true,
         ],
 
         /*

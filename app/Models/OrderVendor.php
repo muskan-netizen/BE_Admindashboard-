@@ -12,6 +12,9 @@ class OrderVendor extends Model{
 	public function orderDetail(){
 	    return $this->hasOne('App\Models\Order' , 'id', 'order_id'); 
 	}
+	public function paymentOption(){
+	    return $this->hasOne('App\Models\PaymentOption' , 'id', 'payment_option_id'); 
+	}
     public function vendor(){
 	    return $this->hasOne('App\Models\Vendor' , 'id', 'vendor_id'); 
 	}
@@ -24,6 +27,9 @@ class OrderVendor extends Model{
 	public function payment(){
 	    return $this->hasOne('App\Models\Payment' , 'order_id', 'order_id'); 
 	}
+	public function accounting(){
+	    return $this->hasOne('App\Models\OrderVendorAccounting' , 'order_vendor_id', 'id'); 
+	}
 	public function coupon(){
 	    return $this->hasOne('App\Models\Promocode' , 'id', 'coupon_id'); 
 	}
@@ -33,7 +39,62 @@ class OrderVendor extends Model{
 	public function orderstatus(){
 	    return $this->hasOne('App\Models\VendorOrderStatus' , 'vendor_id', 'vendor_id', 'order_id', 'order_id')->orderBy('id', 'DESC')->latest(); 
 	}
+	public function OrderStatusOption(){
+       return $this->hasOne('App\Models\OrderStatusOption', 'id', 'order_status_option_id'); 
+    }
+	public function cancelledBy()
+	{
+		return $this->belongsTo('App\Models\User','cancelled_by','id')->select('id','name');
+	}
+	public function acceptedBy()
+	{
+		return $this->belongsTo('App\Models\User','accepted_by','id')->select('id','name');
+	}
 	public function scopeBetween($query, $from, $to){
         $query->whereBetween('created_at', [$from, $to]);
+    }
+
+	# get dispatcher status title 
+	public function getDispatcherStatusAttribute($value)
+    {
+		$title = DispatcherStatusOption::where('id',$value)->value('title');
+
+		switch ($title) {
+			case "Created":
+			  $title = "Hold on! We are looking for drivers nearby!";
+			  break;
+			case "Assigned":
+			  $title = "Your driver has been assigned!";
+			  break;
+			case "Started":
+			  $title = "Your driver is moving to you!";
+			  break;
+			case "Arrived":
+			  $title = "Your driver has reached to your pickup location!";
+			  break;
+			case "Completed":
+			  $title = "You have arrived at your destination!";
+			  break;  
+			default:
+			$title = $title;
+		  }
+
+        return ucfirst($title);
+    }
+
+	public function allStatus(){
+	    return $this->hasMany('App\Models\VendorOrderStatus','order_vendor_id','id'); 
+	}
+
+	public function dineInTable(){
+	    return $this->belongsTo('App\Models\VendorDineinTable' , 'vendor_dinein_table_id', 'id'); 
+	}
+
+	public function tempCart(){
+	    return $this->hasOne('App\Models\TempCart' , 'order_vendor_id', 'id'); 
+	}
+
+	public function cancel_request(){
+        return $this->hasOne('App\Models\OrderCancelRequest', 'order_vendor_id', 'id')->select('*', 'status as status_id')->orderBy('updated_at', 'desc');
     }
 }

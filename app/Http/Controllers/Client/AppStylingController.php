@@ -4,10 +4,19 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{AppStyling, AppStylingOption};
+use App\Models\{AppStyling, AppStylingOption,ClientPreference,AppDynamicTutorial,Client};
+use Illuminate\Support\Facades\Storage;
 
 class AppStylingController extends BaseController
 {
+
+    private $folderName = '/app_styling/tutorials';
+
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/app_styling/tutorials';
+    }
     /**
      * Display a listing of the resource.
      *
@@ -23,6 +32,7 @@ class AppStylingController extends BaseController
         $primary_color_options = [];
         $secondary_color_options = [];
         $tertiary_color_options = [];
+        $signup_tag_line_text = [];
         $regular_fonts = AppStyling::where('name', 'Regular Font')->first();
         if ($regular_fonts) {
             $regular_font_options = AppStylingOption::where('app_styling_id', $regular_fonts->id)->get();
@@ -39,10 +49,31 @@ class AppStylingController extends BaseController
         if ($tab_style) {
             $tab_style_options = AppStylingOption::where('app_styling_id', $tab_style->id)->get();
         }
-        $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
-        if ($homepage_style) {
-            $homepage_style_options = AppStylingOption::where('app_styling_id', $homepage_style->id)->get();
+
+
+        $client_preferences = ClientPreference::first();
+
+        switch($client_preferences->business_type){
+            case "taxi":    # if business type is taxi
+            $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
+            if ($homepage_style) {
+                $homepage_style_options = AppStylingOption::where('image', 'home_six.png')->where('app_styling_id', $homepage_style->id)->get();
+            }
+            break;
+            case "food_grocery_ecommerce":    # if business type is taxi
+            $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
+            if ($homepage_style) {
+                $homepage_style_options = AppStylingOption::where('image','!=', 'home_six.png')->where('app_styling_id', $homepage_style->id)->get();
+            }
+            break;
+            default:
+            $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
+            if ($homepage_style) {
+                $homepage_style_options = AppStylingOption::where('app_styling_id', $homepage_style->id)->get();
+            }
         }
+
+      
         $primary_color = AppStyling::where('name', 'Primary Color')->first();
         if ($primary_color) {
             $primary_color_options = AppStylingOption::where('app_styling_id', $primary_color->id)->first();
@@ -55,7 +86,13 @@ class AppStylingController extends BaseController
         if ($tertiary_color) {
             $tertiary_color_options = AppStylingOption::where('app_styling_id', $tertiary_color->id)->first();
         }
-        return view('backend/app_styling/index')->with(['tertiary_color_options' => $tertiary_color_options, 'secondary_color_options' => $secondary_color_options, 'primary_color_options' => $primary_color_options, 'medium_font_options' => $medium_font_options, 'bold_font_options' => $bold_font_options, 'regular_font_options' => $regular_font_options, 'tab_style_options' => $tab_style_options, 'homepage_style_options' => $homepage_style_options]);
+        $signup_tag_line = AppStyling::where('name', 'Home Tag Line')->first();
+        if($signup_tag_line){
+            $signup_tag_line_text = AppStylingOption::where('app_styling_id', $signup_tag_line->id)->first();
+        }
+
+        $dynamicTutorials = AppDynamicTutorial::orderBy('sort')->get();
+        return view('backend/app_styling/index')->with(['tertiary_color_options' => $tertiary_color_options, 'secondary_color_options' => $secondary_color_options, 'primary_color_options' => $primary_color_options, 'medium_font_options' => $medium_font_options, 'bold_font_options' => $bold_font_options, 'regular_font_options' => $regular_font_options, 'tab_style_options' => $tab_style_options, 'homepage_style_options' => $homepage_style_options, 'signup_tag_line_text' => $signup_tag_line_text, 'dynamicTutorials' => $dynamicTutorials]);
     }
     /**
      * Store a regular font.
@@ -136,4 +173,49 @@ class AppStylingController extends BaseController
             'message' => 'Updated successfully!'
         ]);
     }
+
+    public function updateSignupTagLine(Request $request)
+    {
+        $signUpTag = AppStylingOption::find($request->id);
+        $signUpTag->name = $request->updated_text;
+        $signUpTag->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Updated successfully!'
+        ]);
+    }
+
+    public function addTutorials(Request $request)
+    {
+        $maxTutorialValue = AppDynamicTutorial::max('sort');
+        $tutorialObj = new AppDynamicTutorial;
+        if ($request->hasFile('file_name')) {    /* upload logo file */
+            $file = $request->file('file_name');
+            $tutorialObj->file_name = Storage::disk('s3')->put($this->folderName, $file, 'public');
+        }
+        $tutorialObj->sort = (!empty($maxTutorialValue))?($maxTutorialValue+1):1;
+        $tutorialObj->save();
+        return redirect()->back()->with('success', __("Tutorial updated successfully"));
+    }
+
+    public function saveOrderTutorials(Request $request)
+    {
+        foreach ($request->order as $key => $value) {
+            $home_page = AppDynamicTutorial::where('id', $value['row_id'])->first();
+            $home_page->sort = $key + 1;
+            $home_page->save();
+        }
+        return response()->json([
+            'status'=>'success',
+            'message' => __('Tutorials order updated Successfully!'),
+        ]);
+    }
+    
+    public function deleteTutorials(Request $request, $domain, $id)
+    {
+        $tutorialObj = AppDynamicTutorial::find($id);
+        $tutorialObj->delete();
+        return redirect()->back()->with('success', __("Tutorial deleted successfully"));
+    }
+
 }

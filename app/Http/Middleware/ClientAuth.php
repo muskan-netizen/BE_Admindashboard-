@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
-use App\Models\{Client, ClientPreference, ClientLanguage, ClientCurrency,Permissions,UserVendor};
+use App\Models\{Client, ClientPreference, ClientLanguage, ClientCurrency,Permissions,UserVendor,Country};
 
 class ClientAuth{
     /**
@@ -28,12 +28,13 @@ class ClientAuth{
                 Auth::logout();
                 return redirect('login')->with(['account_blocked' => 'Your account has been blocked by admin. Please contact administration.']);
             }
+
             if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1){
                                 $route_name = $request->route()->getName();
                                 $currentPath = \Request::path();
                                 $per_url = explode('/', $currentPath);
-                               
-                                   
+
+
                                 if (Auth::user()->is_superadmin == 0) {
                                     if ($route_name == 'customer.edit') {
                                         return Redirect::route('client.profile');
@@ -63,8 +64,8 @@ class ClientAuth{
                                         else {
                                             $sub_admin_per = true;
                                         }
-                                            
-                    
+
+
                                         if ($sub_admin_per == false) {
                                             return Redirect::route('client.profile');
                                         }
@@ -78,9 +79,20 @@ class ClientAuth{
                  return redirect('login')->with(['account_blocked' => 'You are unauthorized user.']);
              }
 
-            
+             $cl = Client::first();
+             $getAdminCurrentCountry = Country::where('id', '=', $cl->country_id)->get()->first();
+             if(!empty($getAdminCurrentCountry)){
+                $countryCode = $getAdminCurrentCountry->code;
+                $phoneCode = $getAdminCurrentCountry->phonecode;
+              }else{
+                $countryCode = '';
+                $phoneCode = '';
+              }
+
+              Session::put('default_country_code', $countryCode);
+              Session::put('default_country_phonecode', $phoneCode);
         }
         return redirect('user/login');
-        
+
     }
 }

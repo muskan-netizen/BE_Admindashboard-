@@ -22,13 +22,13 @@ class CelebrityController extends BaseController
     {
         try {
             if(empty($keyword) || strtolower($keyword) == 'all'){
-                $celebrity = Celebrity::with('country')->where('status', '!=', 3)
+                $celebrity = Celebrity::with('country')->whereNotIn('status', [2,3])
                             ->select('id', 'name', 'avatar', 'description', 'country_id')->get();
                 return $this->successResponse($celebrity);
             }
             $chars = str_split($keyword);
             $celebrity = Celebrity::with('country')->select('id', 'name', 'avatar', 'description', 'country_id')
-                            ->where('status', '!=', 3)
+                            ->whereNotIn('status', [2,3])
                             ->where(function ($q) use ($chars) {
                                 foreach ($chars as $key => $value) {
                                     if($key == 0){
@@ -51,8 +51,8 @@ class CelebrityController extends BaseController
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $langId = Auth::user()->language;
-            $celebrity = Celebrity::where('status', '!=', 3)
-                            ->select('id', 'name', 'avatar', 'description', 'country_id')->where('id', $cid)->get();
+            $celebrity = Celebrity::whereNotIn('status', [2,3])
+                            ->select('id', 'name', 'avatar', 'description', 'country_id')->where('id', $cid)->first();
             if(!$celebrity){
                 return $this->errorResponse('Celebrity not found.', 404);
             }
@@ -65,30 +65,76 @@ class CelebrityController extends BaseController
                         ->join('variant_translations as vt','vt.variant_id','vr.id')
                         ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
                         ->where('vt.language_id', $langId)
-                        ->whereIn('product_variant_sets.product_id', function($qry) use($cid){ 
+                        ->whereIn('product_variant_sets.product_id', function($qry) use($cid){
                             $qry->select('product_id')->from('product_celebrities')
                                 ->where('celebrity_id', $cid);
                             })
                         ->groupBy('product_variant_sets.variant_type_id')->get();
 
-            $products = Product::join('product_celebrities as pc', 'pc.product_id', 'products.id')
-                        ->with(['category.categoryDetail','inwishlist' => function($qry) use($userid){
+            $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                        $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                        ->where('category_translations.language_id', $langId);
+                    }, 'inwishlist' => function($qry) use($userid){
                         $qry->where('user_id', $userid);
                     },
-                    'media.image', 'translation' => function($q) use($langId){
-                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                    'media.image',
+                    'addOn' => function($q1) use($langId){
+                        $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                        $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                        $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                        $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                    },
+                    'addOn.setoptions' => function($q2) use($langId){
+                        $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                        $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                        $q2->where('apt.language_id', $langId);
+                    },
+                    'translation' => function($q) use($langId){
+                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     },
                     'variant' => function($q) use($langId){
-                        $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
-                        $q->groupBy('product_id');
-                    },
+                        $q->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode');
+                        // $q->groupBy('product_id');
+                    }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
+                    'celebrities' => function($q) use($cid){
+                        $q->where('celebrity_id', $cid);
+                    }
                 ])
-                ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.celebrity_id')
-                ->where('pc.celebrity_id', $cid)
+                // ->join('product_celebrities as pc', 'pc.product_id', 'products.id')
+                // ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.celebrity_id')
+                ->whereHas('celebrities', function($q) use($cid){
+                    $q->where('celebrity_id', $cid);
+                })
+                ->select('id', 'sku', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'brand_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'category_id','minimum_order_count','batch_count')
+                //, 'pc.celebrity_id')
+                // ->where('pc.celebrity_id', $cid)
+                ->where('is_live', 1)
                 ->paginate($paginate);
             if(!empty($products)){
                 foreach ($products as $key => $product) {
+                    $p_id = $product->id;
+                    $variantData = $product->with(['variantSet' => function ($z) use ($langId, $p_id) {
+                        $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                        $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+                        $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                        $z->where('vt.language_id', $langId);
+                        $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
+                    },'variantSet.options'=> function($zx) use($langId, $p_id){
+                        $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
+                        ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
+                        ->where('pvs.product_id', $p_id)
+                        ->where('vt.language_id', $langId);
+                    }])->where('id', $p_id)->first();
+                    $product->variantSet = $variantData->variantSet;
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+                    $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+                    $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
+                    $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html),ENT_QUOTES) : '';
+                    $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
+                    $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                    $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+                    $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+                    $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
                     }
@@ -181,7 +227,7 @@ class CelebrityController extends BaseController
                     ])->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating')
                     ->where('pc.celebrity_id', $cid)
                     ->where('products.is_live', 1)
-                    ->whereIn('id', function($qr) use($startRange, $endRange){ 
+                    ->whereIn('id', function($qr) use($startRange, $endRange){
                         $qr->select('product_id')->from('product_variants')
                             ->where('price',  '>=', $startRange)
                             ->where('price',  '<=', $endRange);

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\{Client, Category, Product, ClientPreference, UserDevice, UserLoyaltyPoint, Wallet, VendorSavedPaymentMethods};
+use App\Models\{Client, Category, Product, ClientPreference, UserDevice, UserLoyaltyPoint, Wallet, VendorSavedPaymentMethods, Nomenclature,NomenclatureTranslation};
 use Illuminate\Support\Facades\Storage;
 use Session;
 
@@ -12,27 +12,32 @@ class BaseController extends Controller
 {
     private $htmlData = '';
     private $toggleData = '';
+    private $optionData = ''; 
+    private $categoryOptionData = []; 
     private $successCount = 0;
+    private $parent_cat_id = 0;
     private $makeArray = array();
 
     public function buildTree($elements, $parentId = "1")
     {
         $branch = array();
         foreach ($elements as $element) {
-            if ($element['parent_id'] == $parentId) {
-                $children = $this->buildTree($elements, $element['id']);
-                if ($children) {
-                    $element['children'] = $children;
+            if(isset($element['parent_id']) && !empty($element['parent_id'])){
+                if ($element['parent_id'] == $parentId) {
+                    $children = $this->buildTree($elements, $element['id']);
+                    if ($children) {
+                        $element['children'] = $children;
+                    }
+                    $branch[] = $element;
                 }
-                $branch[] = $element;
-            }
+            }   
         }
         return $branch;
     }
 
     /*      Category tree on vendor col-3 and category  page    */
     public function printTree($tree, $from = 'category', $activeCategory = [], $blockedCategory = [], $html = '')
-    {
+    {   
         if (!is_null($tree) && count($tree) > 0) {
             $this->htmlData .= '<ol class="dd-list">';
             foreach ($tree as $node) {
@@ -41,15 +46,16 @@ class BaseController extends Controller
                 }
                 if(!empty($activeCategory)){
                     if (in_array($node['id'], $activeCategory)) {
-                        $this->htmlData .= '<li class="dd-item dd3-item" data-id="' . $node["id"] . '">';
+                        $this->htmlData .= '<li class="dd-item dd3-item catid'.$node["id"].'" data-id="' . $node["id"] . '">';
                         if ($from == 'category') {
                             $this->htmlData .= '<div class="dd-handle dd3-handle"></div>';
                         }
                         $icon = $node['icon']['proxy_url'] . '30/30' . $node['icon']['image_path'];
+                        $is_vendr = ($from == 'vendor' && $node["is_core"] == 0)?1:0;
                         if (isset($node['translation_one'])) {
-                            $this->htmlData .= '<div class="dd3-content"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] . '</a><span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="'.$is_vendr.'" href="#"> ' . $node['translation_one']["name"] . '</a></div><span class="inner-div text-right">';
                         } else {
-                            $this->htmlData .= '<div class="dd3-content"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '<span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '</div><span class="inner-div text-right">';
                         }
                         if (!in_array($node["id"], $blockedCategory)) {
                             $status = 2; //$icon = 'mdi-lock-open-variant';
@@ -61,10 +67,16 @@ class BaseController extends Controller
                                     $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> <i class="mdi mdi-square-edit-outline"></i></a><a class="action-icon" dataid="' . $node["id"] . '" title="' . $title . '" onclick="' . $askMessage . '" href="' . url("client/category/delete/" . $node["id"]) . '"> <i class="mdi ' . $icon . '"></i></a>';
                                 }
                             } elseif ($from == 'vendor' && $node["is_core"] == 0) {
-                                $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="1" href="#"> <i class="mdi mdi-square-edit-outline"></i></a>
-                                <a class="action-icon" dataid="' . $node["id"] . '" onclick="' . $askMessage . '" href="' . url("client/category/delete/" . $node["id"]) . '" title="' . $title . '"> <i class="mdi ' . $icon . '"></i></a>';
+                                // $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="1" href="#"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                // <a class="action-icon" dataid="' . $node["id"] . '" onclick="' . $askMessage . '" href="' . url("client/category/delete/" . $node["id"]) . '" title="' . $title . '"> <i class="mdi ' . $icon . '"></i></a>';
+                                $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="1" href="#"> <i class="mdi mdi-square-edit-outline"></i></a>';
+
+                                $this->htmlData .= '<button type="button" class="btn btn-primary-outline action-icon delete-category" title="' . $title . '" data-destroy_url="' . url("client/category/delete/" . $node["id"]) . '" data-rel="'.$node["id"].'"><i class="mdi mdi-delete"></i></button>';
                             }
                         }
+
+                        
+
                         $this->htmlData .= '</span> </div>';
                         if (isset($node['children']) && count($node['children']) > 0) {
                             $ss = $this->printTree($node['children'], $from, $activeCategory, $blockedCategory);
@@ -72,28 +84,41 @@ class BaseController extends Controller
                         $this->htmlData .= '</li>';
                     }
                 }else{
-                    $this->htmlData .= '<li class="dd-item dd3-item" data-id="' . $node["id"] . '">';
+                    if($node['type_id'] == 4 || $node['type_id']==5 || $node['type_id']==1 || $node['type_id']==3){
+                        $this->htmlData .= '<li class="dd-item dd3-item dd-nochildren catid'.$node["id"].'" data-id="' . $node["id"] . '">';
+                    } else {
+                        $this->htmlData .= '<li class="dd-item dd3-item catid'.$node["id"].'" data-id="' . $node["id"] . '">';
+                    }
                         if ($from == 'category') {
                             $this->htmlData .= '<div class="dd-handle dd3-handle"></div>';
                         }
                         $icon = $node['icon']['proxy_url'] . '30/30' . $node['icon']['image_path'];
                         if (isset($node['translation_one'])) {
-                            $this->htmlData .= '<div class="dd3-content"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] . '</a><span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal ellips" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] .' (' . @$node['type']["title"] . ') </a></div><span class="inner-div text-right">';
                         } else {
-                            $this->htmlData .= '<div class="dd3-content"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '<span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '</div><span class="inner-div text-right">';
                         }
                         if (!in_array($node["id"], $blockedCategory)) {
                             $status = 2; //$icon = 'mdi-lock-open-variant';
                             $title = 'Delete';
                             $icon = 'mdi-delete';
-                            $askMessage = "return confirm('Are you sure? You want to delete category.')";
+                            //$askMessage = "return confirm('Are you sure? You want to delete category.')";
+                            $askMessage = "deleteCategory(".$node['id'].")";
+                            // $askMessage = "return Swal.fire({title: 'Are you sure? You want to delete category.', showCancelButton:true,confirmButtonText: 'Ok',}).then((result) => {
+                            //     if (result.isConfirmed) {
+                            //       Swal.fire(
+                            //         'Deleted!',                                    
+                            //         'success'
+                            //       )
+                            //     }
+                            //   })";
                             if ($from == 'category') {
                                 if ($node["is_core"] == 1) {
-                                    $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> <i class="mdi mdi-square-edit-outline"></i></a><a class="action-icon" dataid="' . $node["id"] . '" title="' . $title . '" onclick="' . $askMessage . '" href="' . url("client/category/delete/" . $node["id"]) . '"> <i class="mdi ' . $icon . '"></i></a>';
+                                    $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> <i class="mdi mdi-square-edit-outline"></i></a><a class="action-icon" dataid="' . $node["id"] . '" title="' . $title . '" onclick="' . $askMessage . '" href="#"> <i class="mdi ' . $icon . '"></i></a>';
                                 }
                             } elseif ($from == 'vendor' && $node["is_core"] == 0) {
                                 $this->htmlData .= '<a class="action-icon openCategoryModal" dataid="' . $node["id"] . '" is_vendor="1" href="#"> <i class="mdi mdi-square-edit-outline"></i></a>
-                                <a class="action-icon" dataid="' . $node["id"] . '" onclick="' . $askMessage . '" href="' . url("client/category/delete/" . $node["id"]) . '" title="' . $title . '"> <i class="mdi ' . $icon . '"></i></a>';
+                                <a class="action-icon" dataid="' . $node["id"] . '" onclick="' . $askMessage . '" href="#" title="' . $title . '"> <i class="mdi ' . $icon . '"></i></a>';
                             }
                         }
                         $this->htmlData .= '</span> </div>';
@@ -109,6 +134,53 @@ class BaseController extends Controller
         return $this->htmlData;
     }
 
+    /*      Category options heirarchy      */
+    public function printCategoryOptionsHeirarchy($tree, $parentCategory = [])
+    {
+        if (!is_null($tree) && count($tree) > 0) {
+            foreach ($tree as $key => $node) {
+                if($node['parent_id'] == 1){
+                    $parentCategory = array($node['translation'][0]['name']??'');
+                }
+                // type_id 1 means product in type table
+                if (isset($node['children']) && count($node['children']) > 0) {
+                    if($node['parent_id'] != 1 && !empty($node['translation'][0]['name'])){
+                        $parentCategory[] = $node['translation'][0]['name'];
+                    }
+                    
+                    // start including parent category
+                    $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                    $hierarchyName = $category; // assume first category is parent
+                    if(count($parentCategory) > 0){
+                        if($node['parent_id'] != 1){ // if category is not parent then make heirarchy
+                            $hierarchyName = implode(' > ', $parentCategory);
+                            $hierarchyName = $hierarchyName.' > '.$category;
+                        }
+                    }
+                    $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                    // end including parent category
+
+                    $this->printCategoryOptionsHeirarchy($node['children'], $parentCategory);
+                }
+                else{
+                    // if ($node['type_id'] == 1 || $node['type_id'] == 3 || $node['type_id'] == 7 || $node['type_id'] == 8) {
+                        $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                        if($node['parent_id'] == 1){
+                            $parentCategory = [];
+                            $hierarchyName = $category;
+                        }else{
+                            $hierarchyName = implode(' > ', $parentCategory);
+                            $hierarchyName = $hierarchyName.' > '.$category;
+                        }
+                        // $this->optionData .= '<option value="'.$node['id'].'">'.$hierarchyName.'</option>';
+                        $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                    // }
+                }
+            }
+        }
+        return $this->categoryOptionData;
+    }
+
     /*      Category tree for vendor to enable & disable category      */
     public function printTreeToggle($tree, $activeCategory = [])
     {
@@ -119,7 +191,7 @@ class BaseController extends Controller
                 if ($node['type_id'] == 1 || $node['type_id'] == 3) {
                     $this->toggleData .= '<li class="dd-item dd3-item" data-id="' . $node["id"] . '">';
                     $icon = $node['icon']['proxy_url'] . '30/30' . $node['icon']['image_path'];
-                    $this->toggleData .= '<div class="dd3-content"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node["slug"] . '<span class="inner-div text-right">';
+                    $this->toggleData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node["slug"] . '</div><span class="inner-div text-right">';
                     $name = 'category[' . $node["id"] . ']';
                     $this->toggleData .= '<a class="action-icon" data-id="' . $node["id"] . '" href="javascript:void(0)">';
                     if ($node['type_id'] == 3) {
@@ -179,7 +251,6 @@ class BaseController extends Controller
             }
             $count++;
         }
-
         return $this->successCount;
     }
 
@@ -249,5 +320,34 @@ class BaseController extends Controller
         $saved_payment_method = VendorSavedPaymentMethods::where('user_id', $request->user_id)
                         ->where('payment_option_id', $request->payment_option_id)->first();
         return $saved_payment_method;
+    }
+
+    public function getNomenclatureName($searchTerm, $langId, $plural = true){
+        $result = Nomenclature::with(['translations' => function($q) use($langId) {
+                    $q->where('language_id', $langId);
+                }])->where('label', 'LIKE', "%{$searchTerm}%")->first();
+        if($result){
+            $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
+        }
+        return $plural ? $searchTerm : rtrim($searchTerm, 's');
+    }
+
+    # check if last mile delivery on
+    public function checkIfLastMileOn()
+    {
+        $preference = ClientPreference::first();
+        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+            return $preference;
+        else
+            return false;
+    }
+    
+    public function fixedFee($lang_id){
+        if(Nomenclature::where('label','Fixed Fee')->exists()){
+            $nomenclatures_translation_id=Nomenclature::where('label','Fixed Fee')->first()->id;
+            return NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->exists() ? NomenclatureTranslation::where(['nomenclature_id'=>$nomenclatures_translation_id,'language_id'=>$lang_id])->first()->name : "Fixed Fee Per Order";
+        }else{
+            return "Fixed Fee Per Order";
+        }
     }
 }

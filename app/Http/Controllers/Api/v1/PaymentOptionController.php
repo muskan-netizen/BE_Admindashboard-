@@ -10,49 +10,70 @@ use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController, MyCashGatewayController};
+use App\Http\Controllers\Front\CcavenueController;
+use App\Http\Controllers\Front\KongapayController;
+use App\Http\Controllers\Front\MpesaController;
+use App\Http\Controllers\Front\MvodafoneController;
+use App\Http\Controllers\Front\PayphoneController;
+use App\Http\Controllers\Front\ToyyibPayController;
+use App\Http\Controllers\Front\VivawalletController;
+use App\Http\Controllers\Front\WindcaveController;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction};
+use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, CartDeliveryFee, CartProductPrescription, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction, UserVendor};
 
-class PaymentOptionController extends Controller{
+class PaymentOptionController extends BaseController{
     use ApiResponser;
     public $gateway;
 
     public function getPaymentOptions(Request $request, $page = ''){
         if($page == 'wallet'){
-            $code = array('paypal', 'stripe');
-        }else{
-            $code = array('cod', 'paypal', 'stripe');
+            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','viva_wallet', 'mycash');
         }
-        $payment_options = PaymentOption::whereIn('code', $code)->get(['id', 'title', 'off_site']);
+        elseif($page == 'pickup_delivery'){
+            $code = array('cod', 'razorpay','stripe','payfast','offline_manual');
+        }
+        else{
+            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','viva_wallet', 'mycash');
+        }
+        $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
+        foreach($payment_options as $option){
+            if($option->code == 'stripe'){
+                $option->title = __('Credit/Debit Card (Stripe)');
+            }elseif($option->code == 'kongapay'){
+                $option->title = 'Pay Now';
+            }elseif($option->code == 'mvodafone'){
+                $option->title = 'Vodafone M-PAiSA';
+            }elseif($option->code == 'mobbex'){
+                $option->title = __('Mobbex');
+            }elseif($option->code == 'offline_manual'){
+                $json = json_decode($option->credentials);
+                $option->title = $json->manule_payment_title;
+            }
+            $option->title = __($option->title);
+        }
         return $this->successResponse($payment_options, '', 201);
     }
 
     public function postPayment(Request $request, $gateway = ''){
-        if(!empty($gateway)){
+        if(!empty($gateway)){            
             $code = $request->header('code');
             $client = Client::where('code',$code)->first();
-            $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN');
+            $domain = '';
+            if(!empty($client->custom_domain)){
+                $domain = $client->custom_domain;
+            }else{
+                $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+            }
+            //$server_url = "http://192.168.97.160:9091/";
+            $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
             $function = 'postPaymentVia_'.$gateway;
             if(method_exists($this, $function)) {
                 if(!empty($request->action)){
                     $response = $this->$function($request); // call related gateway for payment processing
-                    $responseArray = $response->getOriginalContent();
-                    if($responseArray['status'] == 'Success'){
-                        if($gateway != 'paypal'){
-                            $request->transaction_id = $responseArray['data'];
-                            if($request->action == 'cart'){
-                                $orderResponse = $this->postPlaceOrder($request);
-                                return $orderResponse;
-                            }
-                            else if($request->action == 'wallet'){
-                                $walletResponse = $this->creditMyWallet($request);
-                            }
-                        }
-                    }
                     return $response;
                 }
             }
@@ -62,6 +83,137 @@ class PaymentOptionController extends Controller{
         }else{
             return $this->errorResponse("Invalid Gateway Request", 400);
         }
+    }
+
+    public function postPaymentVia_mycash(Request $request){
+        $gateway = new MyCashGatewayController();
+        return $gateway->purchase($request);
+    }
+
+    public function postPaymentVia_ccavenue(Request $request){
+        $gateway = new CcavenueController();
+        return $gateway->CcavenuePurchase($request);
+    }
+
+    public function postPaymentVia_kongapay(Request $request){
+        $gateway = new KongapayController();
+        return $gateway->kongapayPurchase($request);
+    }
+
+    public function postPaymentVia_stripe(Request $request){
+        $gateway = new StripeGatewayController();
+        return $gateway->stripePurchase($request);
+    }
+
+    public function postPaymentVia_stripe_fpx(Request $request){
+        $gateway = new StripeGatewayController();
+        return $gateway->paymentWebViewStripeFPX($request);
+    }
+    
+    public function postPaymentVia_stripe_oxxo(Request $request){
+        $gateway = new StripeGatewayController();
+        return $gateway->paymentWebViewStripeOXXO($request);
+    }
+
+    public function postPaymentVia_paystack(Request $request){
+        $gateway = new PaystackGatewayController();
+        return $gateway->paystackPurchase($request);
+    }
+
+    public function postPaymentVia_payfast(Request $request){
+        $gateway = new PayfastGatewayController();
+        return $gateway->payfastPurchase($request);
+    }
+
+    public function postPaymentVia_mobbex(Request $request){
+        $gateway = new MobbexGatewayController();
+        return $gateway->mobbexPurchase($request);
+    }
+
+    public function postPaymentVia_yoco(Request $request){
+        $gateway = new YocoGatewayController();
+        return $gateway->yocoWebview($request);
+    }
+
+    public function postPaymentVia_paylink(Request $request){
+        $gateway = new PaylinkGatewayController();
+        return $gateway->paylinkPurchase($request);
+    }
+
+    public function postPaymentVia_razorpay(Request $request){
+        $gateway = new RazorpayGatewayController();
+        return $gateway->razorpayPurchase($request);
+    }
+
+    public function postPaymentVia_simplify(Request $request){
+        $gateway = new SimplifyGatewayController();
+        return $gateway->simplifyPurchase($request);
+    }
+    public function postPaymentVia_square(Request $request){
+        $gateway = new SquareGatewayController();
+        return $gateway->squarePurchase($request);
+    }
+    public function postPaymentVia_pagarme(Request $request){
+        $gateway = new PagarmeGatewayController();
+        return $gateway->pagarmePurchase($request);
+    }
+
+    public function postPaymentVia_checkout(Request $request){
+        $gateway = new CheckoutGatewayController();
+        return $gateway->checkoutPurchase($request);
+    }
+    public function postPaymentVia_authorize_net(Request $request){
+        $gateway = new AuthorizeGatewayController();
+        return $gateway->authorizePurchase($request); 
+    }
+
+    public function postPaymentVia_cashfree(Request $request){
+        $gateway = new CashfreeGatewayController();
+        return $gateway->createOrder($request);
+    }
+    public function postPaymentVia_easebuzz(Request $request){
+        $gateway = new EasebuzzController();
+        return $gateway->order($request);
+    }
+
+    public function postPaymentVia_windcave(Request $request){
+        $gateway = new WindcaveController();
+        return $gateway->createHashApp($request);
+    }
+
+    public function postPaymentVia_viva_wallet(Request $request){
+        $gateway = new VivawalletController();
+        return $gateway->createPayLinkApp($request);
+    }
+
+    public function postPaymentVia_payphone(Request $request){
+        $gateway = new PayphoneController();
+        return $gateway->createHashApp($request);
+    }
+
+    public function postPaymentVia_toyyibpay(Request $request){ 
+
+        //for getting server main url from header        
+        $code = $request->header('code');
+        $client = Client::where('code',$code)->first();
+        $domain = '';
+        if(!empty($client->custom_domain)){
+            $domain = $client->custom_domain;
+        }else{
+            $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+        }
+        $server_url = "https://".$domain."/";
+        $request['serverUrl'] = $server_url;
+        $request['currencyId'] = $request->header('currency'); 
+        $request['auth_token'] = $request->header('authorization') ?? "";
+
+        $gateway = new ToyyibPayController();
+        return $gateway->orderForApp($request);
+    }
+
+    public function postPaymentVia_vnpay(Request $request){
+        $gateway = new VnpayController();
+        return $gateway->order($request);
     }
 
     public function postPaymentVia_paypal(Request $request){
@@ -95,32 +247,32 @@ class PaymentOptionController extends Controller{
         }
     }
 
-    public function postPaymentVia_stripe(Request $request){
-        try{
-            $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
-            $creds_arr = json_decode($stripe_creds->credentials);
-            $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
-            $this->gateway = Omnipay::create('Stripe');
-            $this->gateway->setApiKey($api_key);
-            $this->gateway->setTestMode(true); //set it to 'false' when go live
-            $token = $request->stripe_token;
-            $response = $this->gateway->purchase([
-                'currency' => 'INR',
-                'token' => $token,
-                'amount' => $request->amount,
-                'metadata' => ['order_id'=>'11'],
-                'description' => 'Transaction type purchase',
-            ])->send();
-            if ($response->isSuccessful()) {
-                return $this->successResponse($response->getTransactionReference());
-            }
-            else {
-                return $this->errorResponse($response->getMessage(), 400);
-            }
-        }catch(\Exception $ex){
-            return $this->errorResponse($ex->getMessage(), 400);
-        }
-    }
+    // public function postPaymentVia_stripe(Request $request){
+    //     try{
+    //         $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
+    //         $creds_arr = json_decode($stripe_creds->credentials);
+    //         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+    //         $this->gateway = Omnipay::create('Stripe');
+    //         $this->gateway->setApiKey($api_key);
+    //         $this->gateway->setTestMode(true); //set it to 'false' when go live
+    //         $token = $request->stripe_token;
+    //         $response = $this->gateway->purchase([
+    //             'currency' => 'INR',
+    //             'token' => $token,
+    //             'amount' => $request->amount,
+    //             'metadata' => ['order_id'=>'11'],
+    //             'description' => 'Transaction type purchase',
+    //         ])->send();
+    //         if ($response->isSuccessful()) {
+    //             return $this->successResponse($response->getTransactionReference());
+    //         }
+    //         else {
+    //             return $this->errorResponse($response->getMessage(), 400);
+    //         }
+    //     }catch(\Exception $ex){
+    //         return $this->errorResponse($ex->getMessage(), 400);
+    //     }
+    // }
 
     public function creditMyWallet(Request $request)
     {
@@ -165,7 +317,7 @@ class PaymentOptionController extends Controller{
                                                         'shortcode' => $dispatch_domain->delivery_service_key_code,
                                                         'content-type' => 'application/json']
                                                             ]);
-                            $url = $dispatch_domain->delivery_service_key_url;                      
+                            $url = $dispatch_domain->delivery_service_key_url;
                             $res = $client->post($url.'/api/get-delivery-fee',
                                 ['form_params' => ($postdata)]
                             );
@@ -175,10 +327,10 @@ class PaymentOptionController extends Controller{
                             }
                     }
                 }
-            }    
+            }
             catch(\Exception $e){}
     }
-    # check if last mile delivery on 
+    # check if last mile delivery on
     public function checkIfLastMileOn(){
         $preference = ClientPreference::first();
         if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
@@ -325,10 +477,10 @@ class PaymentOptionController extends Controller{
                                 $final_coupon_discount_amount = $coupon_discount_amount * $clientCurrency->doller_compare;
                                 $total_discount += $final_coupon_discount_amount;
                                 $vendor_payable_amount -=$final_coupon_discount_amount;
-                                $vendor_discount_amount +=$final_coupon_discount_amount; 
-                            }   
+                                $vendor_discount_amount +=$final_coupon_discount_amount;
+                            }
                         }
-                        
+
                         $order_vendor->coupon_id = $coupon_id;
                         $order_vendor->coupon_code = $coupon_name;
                         $order_vendor->order_status_option_id = 1;
@@ -379,19 +531,179 @@ class PaymentOptionController extends Controller{
                             'order_id' => $order->id,
                             'transaction_id' => $request->transaction_id,
                             'balance_transaction' => $order->payable_amount,
+                            'type' => 'cart'
                         ]);
                     }
                     DB::commit();
-                    return $this->successResponse($order, 'Order placed successfully.', 201);
+                    return $this->successResponse($order, __('Order placed successfully.'), 201);
                     }
                 }else{
-                    return $this->errorResponse(['error' => 'Empty cart.'], 404);
+                    return $this->errorResponse(['error' => __('Empty cart.')], 404);
                 }
-        
+
             }
             catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
+
+
+    public function sdkResponsePayment(Request $request, $gateway = ''){
+        if(!empty($gateway)){
+            $function = 'sdkPaymentVia_'.$gateway;
+            if(method_exists($this, $function)) {
+                if(!empty($request->action)){
+                    $response = $this->$function($request); // call related gateway for payment processing
+                    return $response;
+                }
+            }
+            else{
+                return $this->errorResponse("Invalid Gateway Request", 400);
+            }
+        }else{
+            return $this->errorResponse("Invalid Gateway Request", 400);
+        }
+    }
+
+
+    public function sdkPaymentVia_flutterwave(Request $request)
+    {
+        try{
+            $user = Auth::user();
+            $transaction_id = $request->transaction_id;
+            $request->amount = $request->amount;
+            if($request->action == 'cart'){
+                $order_number = $request->order_number;
+                $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                if ($order) {
+                    $order->payment_status = 1;
+                    $order->save();
+                    $payment_exists = Payment::where('transaction_id', $transaction_id)->first();
+                    if (!$payment_exists) {
+                        $this->savePaymentCartDetails($request,$order,$user);
+                    }
+                }
+            } elseif($request->action == 'wallet'){
+                 $this->savePaymentWalletDetails($request);
+            }
+            elseif($request->action == 'tip'){
+                 $this->savePaymentTipDetails($request);
+            }
+            elseif($request->action == 'subscription'){
+                $request->request->add(['payment_option_id' => '30']);
+                 $this->savePaymentSubscriptionDetails($request);
+            }
+            return $this->successResponse('', __('Payment completed successfully'), 200);
+        }
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), 400);
+        }
+    }
+
+    public function sdkFailedPayment(Request $request)
+    {
+        try{
+            $user = Auth::user();
+            if($request->action == 'cart'){
+                $order_number = $request->order_number;
+                $order = Order::where('order_number', $order_number)->first();
+                if($order){
+                    $wallet_amount_used = $order->wallet_amount_used;
+                    if($wallet_amount_used > 0){
+                        $transaction = Transaction::where('type', 'deposit')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                        if(!$transaction){
+                            $wallet = $user->wallet;
+                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order <b>'. $order->order_number. '</b>']);
+                        }
+                    }
+                }
+            }
+            return $this->errorResponse(__('Payment failed'), 400);
+        }
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), 400);
+        }
+    }
+
+    function savePaymentWalletDetails(Request $request)
+    {
+        $transaction_id = $request->transaction_id;
+        $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $transaction_id]);
+        $walletController = new WalletController();
+        $walletController->creditMyWallet($request);
+        return true;
+    }
+
+    function savePaymentTipDetails(Request $request)
+    {
+        $transaction_id = $request->transaction_id;
+        $request->request->add(['order_number' => $request->order_number, 'tip_amount' => $request->amount, 'transaction_id' => $transaction_id]);
+        $orderController = new OrderController();
+        $orderController->tipAfterOrder($request);
+        return true;
+    }
+
+    function savePaymentSubscriptionDetails(Request $request)
+    {
+        $transaction_id = $request->transaction_id;
+        $request->request->add(['payment_option_id' => $request->payment_option_id, 'transaction_id' => $transaction_id]);
+        $subscriptionController = new UserSubscriptionController();
+        $subscriptionController->purchaseSubscriptionPlan($request, $request->subscription_id);
+        return true;
+    }
+
+    function savePaymentCartDetails(Request $request, $order,$user)
+    {
+        $transaction_id = $request->transaction_id;
+        $payment = new Payment();
+        $payment->date = date('Y-m-d');
+        $payment->order_id = $order->id;
+        $payment->transaction_id = $transaction_id;
+        $payment->balance_transaction = $request->amount;
+        $payment->type = 'cart';
+        $payment->save();
+
+        // Auto accept order
+        $orderController = new OrderController();
+        $orderController->autoAcceptOrderIfOn($order->id);
+
+        // Remove cart
+        $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+        Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+        CartAddon::where('cart_id', $cart->id)->delete();
+        CartCoupon::where('cart_id', $cart->id)->delete();
+        CartProduct::where('cart_id', $cart->id)->delete();
+        CartProductPrescription::where('cart_id', $cart->id)->delete();
+        CartDeliveryFee::where('cart_id', $cart->id)->delete();
+
+        // Send Notification
+        if (!empty($order->vendors)) {
+            foreach ($order->vendors as $vendor_value) {
+                $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+            }
+        }
+        $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+        $super_admin = User::where('is_superadmin', 1)->pluck('id');
+        $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+        $request->request->add(['user_id'=>$order->user_id,'address_id'=>$order->address_id]);
+        //Send Email to customer
+        $orderController->sendSuccessEmail($request, $order);
+        //Send Email to Vendor
+        foreach ($order->vendors->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+            $orderController->sendSuccessEmail($request, $order, $vendor_id);
+        }
+        //Send SMS to customer
+        $orderController->sendSuccessSMS($request, $order);
+    
+        return true;
+    }
+
+
+
+
+
 }

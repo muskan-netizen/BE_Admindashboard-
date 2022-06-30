@@ -13,7 +13,7 @@ class PermissionSeeder extends Seeder{
     public function run(){
         DB::table('permissions')->truncate();
         $permissions_array = [];
-        $permissions = ['DASHBOARD', 'ORDERS', 'VENDORS', 'CUSTOMERS', 'Profile', 'CUSTOMIZE', 'CONFIGURATIONS', 'BANNER','CATALOG', 'TAX', 'PAYMENT','PROMOCODE', 'LOYALTY CARDS', 'CELEBRITY', 'WEB STYLING', 'APP STYLING', 'Accounting Orders', 'Accounting Loyality', 'Accounting Promo Codes', 'Accounting Taxes', 'Accounting Vendors','Subscriptions Customers', 'Subscriptions Vendors', 'CMS Pages', 'CMS Emails', 'Inquiries'];
+        $permissions = ['DASHBOARD', 'ORDERS', 'VENDORS', 'CUSTOMERS', 'Profile', 'CUSTOMIZE', 'CONFIGURATIONS', 'BANNER','CATALOG', 'TAX', 'PAYMENT','PROMOCODE', 'LOYALTY CARDS', 'CELEBRITY', 'WEB STYLING', 'APP STYLING', 'Accounting Orders', 'Accounting Loyality', 'Accounting Promo Codes', 'Accounting Taxes', 'Accounting Vendors','Subscriptions Customers', 'Subscriptions Vendors', 'CMS Pages', 'CMS Emails', 'Inquiries','Tools'];
         foreach ($permissions as $permission) {
            $permissions_array[]=array(
             'name' => $permission,

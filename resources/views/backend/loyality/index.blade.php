@@ -26,8 +26,8 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-12">
-                            <label class="mr-2 mb-0">Enable</label>
-                            <input type="checkbox" id="activeCheck" {{$status == 0 ? 'checked' : ''}} data-plugin="switchery" name="validity_index" class="chk_box1" data-color="#43bee1">
+                            <label class="mr-2 mb-0">{{ __('Enable') }}</label>
+                            <input type="checkbox" id="activeCheck" {{$status == 0 ? 'checked' : ''}} data-plugin="switchery" name="validity_index" class="chk_box1 " data-color="#43bee1">
                         </div>
                         <div class="col-12">
                         <form id="setRedeem">
@@ -35,16 +35,21 @@
                                 <div class="row mt-3">
                                     <div class="col-md-12">
                                         <div class="form-group mb-0">
+                                            <h4 class="header-title">{{ __('Redemption Value') }}</h4> 
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
-                                                    <span class="input-group-text primaryKey" id="basic-addon1"></span>
+                                                    <span class="input-group-text primaryKey" id="basic-addon1">
+                                                        @if(isset($client_cur) && !empty($client_cur->currency))
+                                                            {{$client_cur->currency->symbol ?? ''}}
+                                                        @endif
+                                                    </span>
                                                 </div>
                                                 <input type="text" onkeypress="return isNumberKey(event);" class="form-control" name="redeem_points_per_primary_currency" id="redeem_points_per_primary_currency" placeholder="Value" aria-label="Username" aria-describedby="basic-addon1">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-12 mt-3">
-                                        <button type="button" class="btn btn-primary setredeempoints w-100">Save changes</button>
+                                        <button type="button" class="btn btn-primary setredeempoints w-100">{{ __('Save changes') }}</button>
                                     </div>
                                 </div>
                             </form>
@@ -59,7 +64,7 @@
                     <div class="row mb-2">
                         <div class="col-sm-12 text-right">
                             <button class="btn btn-info waves-effect waves-light text-sm-right"
-                              data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                              data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
                             </button>
                         </div>
                     </div>
@@ -69,12 +74,13 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Minimum Points</th>
-                                    <th>Earnings Per Order</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th>{{ __('Image') }}</th>
+                                    <th>{{ __('Name') }}</th>
+                                    <th>{{ __('Description') }}</th>
+                                    <th>{{ __('Minimum Points') }}</th>
+                                    <th>{{ __('Earnings Per Order') }}</th>
+                                    <th>{{ __('Status') }}</th>
+                                    <th>{{ __('Action') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="post_list">
@@ -82,6 +88,9 @@
                                 <tr data-row-id="{{$ban->id}}">
                                     <td class="draggableTd">
                                         <span class="dragula-handle"></span>
+                                    </td>
+                                    <td>
+                                        <img src="{{$ban->image['proxy_url'].'40/40'.$ban->image['image_path']}}" class="rounded-circle" alt="{{$ban->name}}" >
                                     </td>
                                     <td><a class="openEditModal" loyaltyID="{{$ban->id}}" href="#"> {{ $ban->name }} </a></td>
                                     <td> {{ Str::limit($ban->description, 50, ' ...') }} </td>
@@ -96,11 +105,11 @@
                                                 <a class="action-icon openEditModal" loyaltyID="{{$ban->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a> 
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('loyalty.destroy', $ban->id) }}">
+                                                <form method="POST" action="{{ route('loyalty.destroy', $ban->id) }}" id="deleteLoyality">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="submit" onclick="return confirm('Are you sure? You want to delete the {{getNomenclatureName('Loyalty Cards', false)}}.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> 
+                                                       <button type="button" class="btn btn-primary-outline action-icon" id="deleteLoyalityButton"><i class="mdi mdi-delete"></i></button> 
                                                     </div>
                                                 </form>
                                             </div>
@@ -122,5 +131,24 @@
 @include('backend.loyality.modals')
 @endsection
 @section('script')
+<script type="text/javascript">
+    $('#deleteLoyalityButton').click(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"You want to delete the {{getNomenclatureName('Loyalty Cards', false)}}.",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $("#deleteLoyality").off("submit").submit();
+            }else{
+                return false;
+            }
+        });
+    });
+</script>
 @include('backend.loyality.pagescript')
 @endsection

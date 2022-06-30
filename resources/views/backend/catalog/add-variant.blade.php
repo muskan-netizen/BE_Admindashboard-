@@ -3,11 +3,15 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', 'Select Category',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Select Category'),['class' => 'control-label']) !!}
                     <select class="selectize-select form-control" id="cateSelectBox" name="cate_id">
+                        <option value="">{{ __("Select Category") }}...</option>
                         @foreach($categories as $cate)
-                            <option value="{{$cate->id}}">{{ ucfirst($cate->slug) }}</option>
+                            <option value="{{$cate['id']}}">{{$cate['hierarchy']}}</option>
                         @endforeach
+                        {{-- @foreach($categories as $cate)
+                            <option value="{{$cate->id}}">{{ ucfirst($cate->slug) }}</option>
+                        @endforeach --}}
                     </select>
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -16,24 +20,26 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', 'Type',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Type'),['class' => 'control-label']) !!}
                     <select class="form-control selectize-select dropDownType" name="type" dataFor="add">
-                        <option value="1">DropDown</option>
-                        <option value="2">Color</option>
+                        <option value="1">{{ __("DropDown") }}</option>
+                        <option value="2">{{ __("Color") }}</option>
                     </select>
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>
                 </div>
             </div>
-        </div>                            
-        <div class="row rowYK">
+        </div>
+
+        <div class="row rowYK ">
             <div class="col-md-12">
-                <h5>Variant Title</h5>
+                <h5>{{ __("Variant Title") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
-                <table class="table table-borderless mb-0" id="banner-datatable" >
-                    <tr>
+
+                <table class="table table-borderless table-responsive al_table_responsive_data" id="banner-datatable" >
+                    <tr >
                         @foreach($languages as $langs)
                             <th>{{$langs->language->name}}</th>
                         @endforeach
@@ -41,36 +47,37 @@
                     <tr>
                         @foreach($languages as $langs)
                             @if($langs->is_primary == 1)
-                                <td>
+                                <td >
                                     {!! Form::hidden('language_id[]', $langs->language_id) !!}
                                     {!! Form::text('title[]', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                 </td>
                             @else
-                                <td>
+                                <td >
                                     {!! Form::hidden('language_id[]', $langs->language_id) !!}
                                     {!! Form::text('title[]', null, ['class' => 'form-control']) !!}
                                 </td>
                             @endif
-                        @endforeach 
+                        @endforeach
                     </tr>
                 </table>
             </div>
         </div>
+
         <div class="row rowYK">
             <div class="col-md-12">
-                <h5>Variant Options</h5>
+                <h5>{{ __("Variant Options") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
-                <table class="table table-borderless mb-0 optionTableAdd" id="banner-datatable">
+                <table class="table table-borderless table-responsive al_table_responsive_data optionTableAdd" id="banner-datatable">
                     <tr class="trForClone">
-                        <th class="hexacodeClass-add" style="display:none;">Color Code</th>
+                        <th class="hexacodeClass-add" style="display:none;">{{ __("Color Code") }}</th>
                         @foreach($languages as $langs)
                             <th>{{$langs->language->name}}</th>
                         @endforeach
                         <th></th>
                     </tr>
                     <tr>
-                        <td style="min-width: 200px; display:none;" class="hexacodeClass-add">
+                        <td style="min-width: 200px; display:none;" class="hexacodeClass-add col-md-6">
                             <input type="text" name="hexacode[]" class="form-control hexa-colorpicker" value="cccccc" id="add-hexa-colorpicker-1">
                         </td>
                        @foreach($languages as $key => $langs)
@@ -83,7 +90,7 @@
                 </table>
             </div>
             <div class="col-md-12">
-                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-Add">Add Option</button>
+                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-Add">{{ __("Add Option") }}</button>
             </div>
         </div>
     </div>

@@ -2,7 +2,7 @@
 namespace Database\Seeders;
 use DB;
 use Illuminate\Database\Seeder;
-
+use App\Models\PaymentOption;
 class PaymentOptionSeeder extends Seeder
 {
     /**
@@ -10,14 +10,78 @@ class PaymentOptionSeeder extends Seeder
      *
      * @return void
      */
-    public function run(){ 
-      DB::table('payment_options')->truncate();
+    public function run(){
+
+      $option_count = DB::table('payment_options')->count();
+
       $payment_options = array(
-        array('id' => '1','code' => 'cod','path' => '','title' => 'Cash On Delivery', 'off_site' => '0', 'status' => '0'),
+        array('id' => '1','code' => 'cod','path' => '','title' => __('Cash On Delivery'), 'off_site' => '0', 'status' => '0'),
         // array('id' => '2','code' => 'loyalty-points','path' => '','title' => 'loyalty Points', 'offsite' => '0', 'status' => '1'),
         array('id' => '3', 'path' => 'omnipay/paypal', 'code' => 'paypal',  'title' => 'PayPal', 'off_site' => '1', 'status' => '0'),
-        array('id' => '4', 'path' => 'omnipay/stripe', 'code' => 'stripe', 'title' => 'Stripe', 'off_site' => '0', 'status' => '0')
-      ); 
-      DB::table('payment_options')->insert($payment_options);
+        array('id' => '4', 'path' => 'omnipay/stripe', 'code' => 'stripe', 'title' => 'Stripe', 'off_site' => '0', 'status' => '0'),
+        array('id' => '5', 'path' => 'paystackhq/omnipay-paystack', 'code' => 'paystack', 'title' => 'Paystack', 'off_site' => '1', 'status' => '0'),
+        array('id' => '6', 'path' => 'omnipay/payfast', 'code' => 'payfast', 'title' => 'Payfast', 'off_site' => '1', 'status' => '0'),
+        array('id' => '7', 'path' => 'mobbex/sdk', 'code' => 'mobbex', 'title' => 'Mobbex', 'off_site' => '1', 'status' => '0'),
+        array('id' => '8', 'path' => 'yoco/yoco-php-laravel', 'code' => 'yoco', 'title' => 'Yoco', 'off_site' => '1', 'status' => '0'),
+        array('id' => '9', 'path' => 'paylink/paylink', 'code' => 'paylink', 'title' => 'Paylink', 'off_site' => '1', 'status' => '0'),
+        array('id' => '10', 'path' => 'razorpay/razorpay', 'code' => 'razorpay', 'title' => 'Razorpay', 'off_site' => '0', 'status' => '0'),
+        array('id' => '11', 'path' => 'adyen/php-api-library', 'code' => 'gcash', 'title' => 'GCash', 'off_site' => '1', 'status' => '0'),
+        array('id' => '12', 'path' => 'rak/simplify', 'code' => 'simplify', 'title' => 'Simplify', 'off_site' => '1', 'status' => '0'),
+        array('id' => '13', 'path' => 'square/square', 'code' => 'square', 'title' => 'Square', 'off_site' => '1', 'status' => '0'),
+        array('id' => '14', 'path' => 'tradesafe/omnipay-ozow', 'code' => 'ozow', 'title' => 'Ozow', 'off_site' => '1', 'status' => '0'),
+        array('id' => '15', 'path' => 'pagarme/pagarme-php', 'code' => 'pagarme', 'title' => 'Pagarme', 'off_site' => '1', 'status' => '0'),
+        array('id' => '17', 'path' => 'checkout/checkout-sdk-php', 'code' => 'checkout', 'title' => 'Checkout', 'off_site' => '0', 'status' => '0'),
+        array('id' => '18', 'path' => 'academe/omnipay-authorizenetapi', 'code' => 'authorize_net', 'title' => 'Authorize.net', 'off_site' => '1', 'status' => '0'),
+        array('id' => '19', 'path' => 'omnipay/stripe', 'code' => 'stripe_fpx', 'title' => 'Stripe FPX', 'off_site' => '1', 'status' => '0'),
+        array('id' => '20', 'path' => 'kongapay/pay', 'code' => 'kongapay', 'title' => 'KongaPay', 'off_site' => '1', 'status' => '0'),
+        array('id' => '21', 'path' => 'vivawallet/pay', 'code' => 'viva_wallet', 'title' => 'Viva Wallet', 'off_site' => '1', 'status' => '0'),
+        array('id' => '22', 'path' => 'ccavenue/pay', 'code' => 'ccavenue', 'title' => 'CCAvenue', 'off_site' => '1', 'status' => '0'), 
+        array('id' => '23', 'path' => 'easypaisa/pay', 'code' => 'easypaisa', 'title' => 'Easypaisa', 'off_site' => '1', 'status' => '0'),
+        array('id' => '24', 'path' => 'cashfree', 'code' => 'cashfree', 'title' => 'Cashfree', 'off_site' => '1', 'status' => '0'),
+        array('id' => '25', 'path' => 'easebuzz', 'code' => 'easebuzz', 'title' => 'PAYMENT GATEWAY - EASEBUZZ', 'off_site' => '1', 'status' => '0'),
+        array('id' => '26', 'path' => 'tarsoft/toyyibpay', 'code' => 'toyyibpay', 'title' => 'Toyyibpay', 'off_site' => '1', 'status' => '0'),
+        array('id' => '27', 'path' => '', 'code' => 'paytab', 'title' => 'PayTab', 'off_site' => '1', 'status' => '0'),
+        array('id' => '28', 'path' => 'vnpay', 'code' => 'vnpay', 'title' => 'VNPay', 'off_site' => '1', 'status' => '0'),
+        array('id' => '29', 'path' => '', 'code' => 'mvodafone', 'title' => 'Mpesa Vodafone', 'off_site' => '1', 'status' => '0'),
+        array('id' => '30', 'path' => '', 'code' => 'flutterwave', 'title' => 'Flutter Wave', 'off_site' => '0', 'status' => '0'),
+        array('id' => '31', 'path' => '', 'code' => 'payu', 'title' => 'PayU', 'off_site' => '1', 'status' => '0'),
+        array('id' => '32', 'path' => '', 'code' => 'payphone', 'title' => 'payPhone', 'off_site' => '0', 'status' => '0'),
+        array('id' => '33', 'path' => 'braintree/braintree_php', 'code' => 'braintree', 'title' => 'Braintree', 'off_site' => '1', 'status' => '0'),
+        array('id' => '34', 'path' => 'windcave', 'code' => 'windcave', 'title' => 'Windcave', 'off_site' => '1', 'status' => '0'),
+        array('id' => '35', 'path' => 'paytech', 'code' => 'paytech', 'title' => 'PayTech', 'off_site' => '1', 'status' => '0'),
+        array('id' => '36', 'path' => 'mycash', 'code' => 'mycash', 'title' => 'MyCash', 'off_site' => '1', 'status' => '0'),
+        array('id' => '37', 'path' => '', 'code' => 'stripe_oxxo', 'title' => 'Stripe OXXO', 'off_site' => '1', 'status' => '0'),
+        array('id' => '38', 'path' => '', 'code' => 'offline_manual', 'title' => 'Offline Manual Payment', 'off_site' => '0', 'status' => '0')
+      );
+
+      if($option_count == 0)
+      {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('payment_options')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        DB::table('payment_options')->insert($payment_options);
+      }
+      else{
+          foreach ($payment_options as $option) {
+              $payop = PaymentOption::where('code', $option['code'])->first();
+
+              if ($payop !== null) {
+                  $payop->update(['id' => $option['id'], 'title' => $option['title'],'off_site' => $option['off_site']]);
+              } else {
+                  $payop = PaymentOption::create([
+                    'id' => $option['id'],
+                    'title' => $option['title'],
+                    'code' => $option['code'],
+                    'path' => $option['path'],
+                    'off_site' => $option['off_site'],
+                    'status' => $option['status'],
+                  ]);
+              }
+          }
+      }
+
+
+
     }
 }

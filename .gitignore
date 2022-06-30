@@ -2,7 +2,6 @@
 /node_modules
 /vendor
 /resources/js
-/routes/web.php
 .env
 .env.backup
 .phpunit.result.cache
@@ -12,4 +11,10 @@ npm-debug.log
 yarn-error.log
 query.php
 /storage/framework/laravel-excel/
+/storage/framework/sessions/
 storage/debugbar/
+composer.lock
+package-lock.json
+/storage
+.DS_Store
+/public/storage

@@ -36,8 +36,14 @@ class DatabaseSeeder extends Seeder
               SubscriptionFeaturesListUserSeeder::class,
               SubscriptionFeaturesListVendorSeeder::class,
               SubscriptionStatusOptionsSeeder::class,
-              HomePageLabelSeeder::class
-              EmailTemplateSeeder::class
+              HomePageLabelSeeder::class,
+              HomePageLabelSeederDefault::class,
+              EmailTemplateSeeder::class,
+              NotificationTemplateSeeder::class,
+              WebStylingSeeder::class,
+              SmsProviderSeeder::class,
+              NomenclatureTableSeeder::class,
+              PayoutOptionSeeder::class,
           ]);
         // $this->call(UsersTableSeeder::class);
        // $this->call(AppStylingOptionsTableSeeder::class);

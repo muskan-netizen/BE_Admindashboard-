@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Refer And Earn</h4>
+                <h4 class="page-title">{{ __("Refer And Earn") }}</h4>
             </div>
         </div>
     </div>
@@ -32,14 +32,14 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="card-box">
-                            <h4 class="header-title">Reffered by earning</h4>
+                            <h4 class="header-title">{{ __("Reffered by earning") }}</h4>
                             <p class="sub-header">
-                                Update reffered by earning here.
+                                {{ __("Update reffered by earning here.") }}
                             </p>
                             <div class="row mb-2">
                                 <div class="col-sm-12">
                                     <div class="form-group mb-3">
-                                        <label for="reffered_by_amount">Reffered by earning</label>
+                                        <label for="reffered_by_amount">{{ __("Reffered by earning") }}</label>
                                         <input type="text" name="reffered_by_amount" id="reffered_by_amount" placeholder="xyz" class="form-control" value="{{ old('reffered_by_amount', $reffer_by ?? '')}}">
                                         @if($errors->has('reffered_by_amount'))
                                         <span class="text-danger" role="alert">
@@ -52,7 +52,7 @@
                             <div class="row mb-2">
                                 <div class="col-md-4">
                                     <div class="form-group mb-0 text-center">
-                                        <button class="btn btn-info btn-block" type="submit"> Save </button>
+                                        <button class="btn btn-info btn-block" type="submit"> {{ __("Save") }} </button>
                                     </div>
                                 </div>
                             </div>
@@ -68,14 +68,14 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="card-box">
-                            <h4 class="header-title">Reffered to earning</h4>
+                            <h4 class="header-title">{{ __("Reffered to earning") }}</h4>
                             <p class="sub-header">
-                                Update reffered to earning here.
+                                {{ __("Update reffered to earning here.") }}
                             </p>
                             <div class="row mb-2">
                                 <div class="col-sm-12">
                                     <div class="form-group mb-3">
-                                        <label for="reffered_to_amount">Reffered to earning </label>
+                                        <label for="reffered_to_amount">{{ __("Reffered to earning") }} </label>
                                         <input type="text" name="reffered_to_amount" id="reffered_to_amount" class="form-control" value="{{ old('reffered_to_amount', $reffer_to ?? '')}}">
                                         @if($errors->has('reffered_to_amount'))
                                         <span class="text-danger" role="alert">
@@ -88,7 +88,7 @@
                             <div class="row mb-2">
                                 <div class="col-md-4">
                                     <div class="form-group mb-0 text-center">
-                                        <button class="btn btn-info btn-block" type="submit"> Save </button>
+                                        <button class="btn btn-info btn-block" type="submit"> {{ __("Save") }} </button>
                                     </div>
                                 </div>
                             </div>

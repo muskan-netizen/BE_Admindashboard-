@@ -2,7 +2,7 @@
     <div class="col-md-12">
         <div class="row rowYK">
             <div class="col-md-12">
-                <h5>Addon Title</h5>
+                <h5>{{ __('Addon Title') }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
                 <table class="table table-borderless mb-0" id="edit_addon-datatable" >
@@ -32,7 +32,7 @@
             <div class="col-md-12" style="overflow-x: auto;">
                 <table class="table table-borderless mb-0 optionTableEdit" id="edit_addon-datatable">
                     <tr class="trForClone">
-                        <th>Price($)</th>
+                        <th>{{ __('Price') }}($)</th>
                         @foreach($languages as $langs)
                         <th>{{$langs->language->name}}</th>
                         @endforeach
@@ -41,7 +41,7 @@
                    @foreach($addon->option as $first => $opt)
                    <tr class="input_tr">
                         <td style="min-width: 100px;">
-                            {!! Form::text('price[]', $opt->price, ['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'min' => '1', 'required' => 'required']) !!}
+                            {!! Form::text('price[]', decimal_format($opt->price), ['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'min' => '1', 'required' => 'required']) !!}
                             {!! Form::hidden('option_id[]', $opt->id) !!}
                         </td>
                         @foreach($languages as $langs)
@@ -63,7 +63,7 @@
                         @endforeach
                         <td class="lasttd">
                             @if($first > 0)
-                            <a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a>
+                            <a href="javascript:void(0);"  data_addon_id="{{$optDataId}}"  class="action-icon delete_addon_set"> <i class="mdi mdi-delete"></i></a>
                             @endif
                         </td>
                     </tr>
@@ -71,13 +71,13 @@
                 </table>
             </div>
             <div class="col-md-12">
-                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-edit">Add Option</button>
+                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-edit">{{ __('Add Option') }}</button>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6" style="display:none;">
                 <div class="form-group">
-                    {!! Form::label('title', 'Min Select',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Min Select'),['class' => 'control-label']) !!}
                     {!! Form::text('min_select', $addon->min_select, ['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'id'=> 'min_select']) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -86,7 +86,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group" style="display:none;">
-                    {!! Form::label('title', 'Max Select',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Max Select'),['class' => 'control-label']) !!}
                     {!! Form::text('max_select', $addon->max_select, ['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'id' => 'max_select']) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -95,12 +95,12 @@
             </div>
             <div class="col-12 mb-2">
                 <div class="price-range-slider"> 
-                    {!! Form::label('title', 'Min & Max Range',['class' => 'control-label']) !!}:<input type="text" id="slider_output" readonly="" style="border:0; color:#f6931f; font-weight:bold;">
+                    {!! Form::label('title', __('Min & Max Range'),['class' => 'control-label']) !!}:<input type="text" id="slider_output" readonly="" style="border:0; color:#f6931f; font-weight:bold;">
                     <div id="slider-range1" class="range-bar"></div>
                 </div>
             </div>
             <div class="col-md-12">
-                <p>If max select is greater than total option than max will be total option</p>
+                <p>{{ __("If max select is greater than total option than max will be total option") }}</p>
             </div>
         </div> 
     </div>

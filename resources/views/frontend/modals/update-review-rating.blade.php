@@ -5,12 +5,12 @@
     <input type="hidden" name="only_set_radio" id="only_set_radio" value="0">
     <div id="remove_files">
     </div>
-    
- 
+
+
     <textarea class="form-control" maxlength="500" name="hidden_review" hidden>{{$rating_details->review??''}}</textarea>
     <div class="rating-form">
         <fieldset class="form-group">
-            <legend class="form-legend">Rating:</legend> 
+            <legend class="form-legend">Rating:</legend>
             <div class="form-item">
 
             <input id="rating-5" name="rating" type="radio" value="5" {{ $rating == 5 ? 'checked' : '' }}/>
@@ -64,9 +64,9 @@
 
     <div class="row rating_files">
         <div class="col-12">
-            <h4>Upload Images</h4>
+            <h4>{{__('Upload Image')}}</h4>
         </div>
-        <div class="col-6 col-md-3 col-lg-2">
+        <div class="col-6 col-md-3">
             <div class="file file--upload">
                 <label for="input-file">
                     <span class="plus_icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
@@ -75,34 +75,34 @@
             </div>
         </div>
 
-        <div class="col-10">
+        <div class="col-9">
             <span class="row show-multiple-image-preview" id="thumb-output">
                 @if(isset($rating_details->reviewFiles))
                 @foreach ($rating_details->reviewFiles as $files)
-                    <img class="col-6 col-md-3 col-lg-2 update_pic" src="{{$files->file['proxy_url'].'300/300'.$files->file['image_path']}}">
-                    <i class="fa fa-trash server-img-del" aria-hidden="true" data-id={{$files->id}}></i>
+                    <div class="col-6 col-md-4"><img class="update_pic" src="{{$files->file['proxy_url'].'300/300'.$files->file['image_path']}}">
+                    <i class="fa fa-trash server-img-del" aria-hidden="true" data-id={{$files->id}}></i></div>
                 @endforeach
                 @endif
-                
+
             </span>
-        </div> 
-        
+        </div>
+
     </div>
 
     <div class="form-row">
-                                            
+
         <div class="col-md-12 mb-3">
-            <label for="review">Review</label>
+            <label for="review">{{__('Review')}}</label>
             <textarea class="form-control"
-                placeholder="Wrire Your Testimonial Here"
-                id="exampleFormControlTextarea1" rows="4"  name="review" maxlength="500" required>{{$rating_details->review??''}}</textarea>
+                placeholder="{{__('Write Your Testimonial Here')}}"
+                id="exampleFormControlTextarea1" rows="4"  name="review" maxlength="500">{{$rating_details->review??''}}</textarea>
         </div>
         <span class="text-danger" id="error-msg"></span>
         <span class="text-success" id="success-msg"></span>
         <div class="col-md-12">
-            <button class="btn btn-solid buttonload" type="submit" id="review_form_button">Submit Your Review</button>
+            <button class="btn btn-solid buttonload" type="submit" id="review_form_button">{{__('Submit Your Review')}}</button>
         </div>
-        
+
     </div>
   </form>
 
@@ -120,8 +120,8 @@ $(document).ready(function (e) {
 
   $('input[type=radio][name=rating]').on('change', function() {
     $('#only_set_radio').val(1);
-    $('.rating_files').show(); 
-    $('.form-row').show();    
+    $('.rating_files').show();
+    $('.form-row').show();
     $(this).closest("form").submit();
     });
 
@@ -146,8 +146,8 @@ for (i = 0; i < filesAmount; i++) {
 var reader = new FileReader();
 reader.onload = function(event) {
 var file = event.target;
-$("#thumb-output").append("<img class=\"col-6 col-md-3 col-lg-2 update_pic\" src=\"" + event.target.result + "\" title=\"" + file.name + "\"/>" +
-            "<i class='fa fa-trash local-img-del' aria-hidden='true' data-id='"+ i +"'></i>");
+$("#thumb-output").append("<div class='col-6 col-md-4'> <img class=\"update_pic\" src=\"" + event.target.result + "\" title=\"" + file.name + "\"/>" +
+            "<i class='fa fa-trash local-img-del' aria-hidden='true' data-id='"+ i +"'></i></div>");
 //$($.parseHTML('<img>')).addClass('col-6 col-md-3 col-lg-2 update_pic').attr('src', event.target.result).appendTo(imgPreviewPlaceholder);
 }
 reader.readAsDataURL(input.files[i]);
@@ -171,7 +171,7 @@ $('.server-img-del').on('click',function(e){
 
 
 
-});    
+});
 $('#review-upload-form').submit(function(e) {
 e.preventDefault();
 
@@ -180,7 +180,7 @@ let TotalImages = $('#input-file')[0].files.length; //Total Images
 let review = $('#exampleFormControlTextarea1').val();
 if(TotalImages > 0)
 {
-    
+   console.log(1);
 let images = $('#input-file')[0];
 for (let i = 0; i < TotalImages; i++) {
 formData.append('images' + i, images.files[i]);
@@ -201,13 +201,13 @@ beforeSend: function () {
     },
 success: (data) => {
 if(data.status == 'Success')
-    {   
+    {
         $("#input-file").val('');
         for(var i = 0; i < data.data.length; i++) {
             console.log(data.data[i]['name']);
-            $("#remove_files").append("<input type='hidden' name='add_files[]' id='"+ data.data[i]['ids'] +"' = value='"+ data.data[i]['name'] +"'>");
-            $("#thumb-output").append("<img class=\"col-6 col-md-3 col-lg-2 update_pic\" src=\"" + data.data[i]['img_path'] + "\" />" +
-            "<i class='fa fa-trash local-img-del' aria-hidden='true' data-id='"+ data.data[i]['ids'] +"'></i>");
+            $("#remove_files").append("<input type='hidden' name='add_files[]' id='"+ data.data[i]['ids'] +"'  value='"+ data.data[i]['name'] +"'>");
+            $("#thumb-output").append("<div class='col-6 col-md-4'> <img class=\"update_pic\" src=\"" + data.data[i]['img_path'] + "\" />" +
+            "<i class='fa fa-trash local-img-del' aria-hidden='true' data-id='"+ data.data[i]['ids'] +"'></i></div>");
         }
 
         $("#review_form_button").html('Submit Your Review').prop('disabled', false);
@@ -224,6 +224,7 @@ error: function(data){
 }
 else
 {
+
 $.ajax({
 type:'POST',
 url: "{{ route('update.order.rating')}}",
@@ -242,7 +243,7 @@ if(data.status == 'Success')
             $("#review_form_button").html('Submit Your Review').prop('disabled', false);
         }
         else
-        {   
+        {
            $("#review_form_button").html('Submit Your Review');
            var set_rating = $('#only_set_radio').val();
            if(set_rating == 1){
@@ -252,6 +253,7 @@ if(data.status == 'Success')
             $(location).prop('href', url);
            }
         }
+        $('#success-msg').text(data.message);
     }else{
         $('#error-msg').text(data.message);
         $("#review_form_button").html('Submit Your Review').prop('disabled', false);

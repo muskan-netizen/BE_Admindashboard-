@@ -11,7 +11,7 @@ class SubscriptionInvoicesUser extends Model
     protected $table = "subscription_invoices_user";
 
     public function plan(){
-        return $this->belongsTo('App\Models\SubscriptionPlansUser', 'subscription_id', 'id'); 
+        return $this->belongsTo('App\Models\SubscriptionPlansUser', 'subscription_id', 'id')->withTrashed(); 
     }
 
     public function user(){

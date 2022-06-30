@@ -12,6 +12,9 @@ use Illuminate\Validation\Validator;
 use Illuminate\Support\Facades\Cache;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Models\UserDevice;
+use Session;
+
 class LoginController extends Controller{
     /*
     |--------------------------------------------------------------------------
@@ -45,7 +48,7 @@ class LoginController extends Controller{
     public function getClientLogin(){
         return view('auth.login');
     }
-    
+
     public function clientLogin(Request $request){
         $this->validate($request, [
             'email'           => 'required|max:255|email',
@@ -60,7 +63,8 @@ class LoginController extends Controller{
             }
             $client = User::where('email',$request->email)->first();
             if($client->is_superadmin == 1 || $client->is_admin == 1){
-               
+                Auth::logout();
+                Auth::attempt(['email' => $request->email, 'password' => $request->password]);
                 return redirect()->route('client.dashboard');
             }else{
                 Auth::logout();
@@ -70,9 +74,13 @@ class LoginController extends Controller{
         return redirect()->back()->with('Error', 'Invalid Credentials');
     }
 
-    public function Logout(){   
+    public function Logout(){
         Auth::guard('client')->logout();
         Auth::logout();
+        if (!empty(Session::get('current_fcm_token'))) {
+            UserDevice::where('device_token', Session::get('current_fcm_token'))->delete();
+            Session::forget('current_fcm_token');
+        }
         return redirect()->route('customer.login');
     }
 

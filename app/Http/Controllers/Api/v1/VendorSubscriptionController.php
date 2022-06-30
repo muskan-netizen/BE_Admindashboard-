@@ -108,10 +108,12 @@ class VendorSubscriptionController extends BaseController
     public function checkActiveSubscriptionPlan($id, $slug = '')
     {
         try{
+            $now = Carbon::now()->toDateString();
             $vendorActiveSubscription = SubscriptionInvoicesVendor::with(['plan'])
                                     ->whereNull('cancelled_at')
                                     ->where('vendor_id', $id)
                                     ->where('status_id', '!=', 4)
+                                    ->where('end_date', '>=', $now )
                                     ->orderBy('end_date', 'desc')->first();
             if( ($vendorActiveSubscription) && ($vendorActiveSubscription->plan->slug != $slug) ){
                 return $this->errorResponse('You cannot buy two subscriptions at the same time', 400);

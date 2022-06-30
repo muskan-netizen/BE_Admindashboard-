@@ -63,10 +63,7 @@
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
-</header>
+
 <section class="register-page section-b-space">
     <div class="container">
         <div class="row">
@@ -90,6 +87,7 @@
         separateDialCode: true,
         hiddenInput: "full_number",
         utilsScript: "{{asset('assets/js/utils.js')}}",
+        initialCountry: "{{ Session::get('default_country_code','US') }}",
     });
     $(document).ready(function () {
         $("#phone").keypress(function (e) {

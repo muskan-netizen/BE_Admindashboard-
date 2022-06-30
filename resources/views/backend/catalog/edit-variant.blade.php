@@ -3,11 +3,15 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', 'Select Category',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Select Category'),['class' => 'control-label']) !!}
                     <select class="form-control selectize-select" id="edit_cateSelectBox" name="cate_id">
+                        <option value="">{{ __("Select Category") }}...</option>
                         @foreach($categories as $cate)
-                            <option value="{{$cate->id}}" @if($variant->varcategory->category_id == $cate->id) selected @endif>{{$cate->translation_one['name']}}</option>
+                            <option value="{{$cate['id']}}" @if(@$variant->varcategory->category_id == $cate['id']) selected @endif>{{$cate['hierarchy']}}</option>
                         @endforeach
+                        {{-- @foreach($categories as $cate)
+                            <option value="{{$cate->id}}" @if(@$variant->varcategory->category_id == $cate->id) selected @endif>{{$cate->translation_one['name']}}</option>
+                        @endforeach --}}
                     </select>
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -17,7 +21,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', 'Select List',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Select List'),['class' => 'control-label']) !!}
                     <select class="form-control selectize-select dropDownType" name="type" dataFor="edit">
                         <option value="1" @if($variant->type == 1) selected @endif>DropDown</option>
                         <option value="2" @if($variant->type == 2) selected @endif>Color</option>
@@ -28,14 +32,14 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="row rowYK">
             <div class="col-md-12">
-                <h5>Variant Title</h5>
+                <h5>{{ __("Variant Title") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
                 <input type="hidden" name="submitHide" id="submitEditHidden" value="{{route('variant.update', $variant->id)}}">
-                <table class="table table-borderless mb-0" id="edit_banner-datatable" >
+                <table class="table table-responsive al_table_responsive_data table-borderless" id="edit_banner-datatable" >
                     <tr>
                         @foreach($languages as $langs)
                             <td>{{$langs->language->name}}</td>
@@ -59,22 +63,22 @@
                                 {!! Form::hidden('language_id[]', $langs->language_id) !!}
                                 <input type="text" name="title[]" class="form-control" value="{{$valueData}}" @if($langs->is_primary == 1) required @endif>
                             </td>
-                        @endforeach 
+                        @endforeach
 
                     </tr>
-                    
+
                 </table>
             </div>
         </div>
 
         <div class="row rowYK">
             <div class="col-md-12">
-                <h5>Variant Options</h5>
+                <h5>{{ __("Variant Options") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
-                <table class="table table-borderless mb-0 optionTableEdit" id="edit_variant-datatable">
+                <table class="table table-responsive al_table_responsive_data table-borderless optionTableEdit" id="edit_variant-datatable">
                     <tr class="trForClone">
-                        <td class="hexacodeClass-edit" style="@if($variant->type == 1) display: none @endif">Color Code</td>
+                        <td class="hexacodeClass-edit" style="@if($variant->type == 1) display: none @endif">{{ __("Color Code") }}</td>
                         @foreach($languages as $langs)
                             <td>{{$langs->language->name}}</td>
                         @endforeach
@@ -83,7 +87,7 @@
 
                    @foreach($variant->option as $first => $opt)
                    <tr>
-                        <td style="min-width: 200px; @if($variant->type == 1) display: none @endif" class="hexacodeClass-edit">
+                        <td style="min-width: 150px; @if($variant->type == 1) display: none @endif" class="hexacodeClass-edit">
                             <input type="text" name="hexacode[]" class="form-control hexa-colorpicker" value="{{$opt->hexacode}}" id="hexa-colorpicker-{{$opt->id}}">
 
                             {!! Form::hidden('option_id[]', $opt->id) !!}
@@ -107,7 +111,7 @@
                                 <input type="hidden" name="opt_id[{{$langs->language_id}}][]" class="form-control" value="{{$optDataId}}" @if($langs->is_primary == 1) required @endif>
                                 <input type="text" name="opt_title[{{$langs->language_id}}][]" class="form-control" value="{{$optData}}" @if($langs->is_primary == 1) required @endif>
                             </td>
-                        @endforeach 
+                        @endforeach
 
 
                         <td class="lasttd">
@@ -116,13 +120,13 @@
                             @endif
                         </td>
                     </tr>
-                        
+
                     @endforeach
-                    
+
                 </table>
             </div>
             <div class="col-md-12">
-                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-edit">Add Option</button>
+                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-edit">{{ __("Add Option") }}</button>
             </div>
         </div>
     </div>

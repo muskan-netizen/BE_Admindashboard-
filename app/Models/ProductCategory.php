@@ -15,6 +15,6 @@ class ProductCategory extends Model
 	    return $this->hasOne('App\Models\CategoryTranslation', 'category_id', 'category_id')->select('id', 'name', 'category_id'); 
 	}
 	public function categoryDetail(){
-	    return $this->belongsTo('App\Models\Category', 'category_id', 'id'); 
+	    return $this->belongsTo('App\Models\Category', 'category_id', 'id')->whereNull('deleted_at'); 
 	}
 }

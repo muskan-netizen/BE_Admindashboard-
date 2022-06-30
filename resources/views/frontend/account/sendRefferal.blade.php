@@ -13,10 +13,6 @@
 
 @section('content')
 
-<header>
-    <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
-</header>
 <style type="text/css">
     .productVariants .firstChild {
         min-width: 150px;
@@ -60,7 +56,7 @@
 
 <section class="login-page section-b-space">
     <div class="container">
-        <div class="row">
+        <div class="row my-md-3">
             <div class="offset-lg-3 col-lg-6">
                 <div class="dashboard-right">
                     <h3>Send Refferal</h3>
@@ -70,6 +66,8 @@
                                 <h5>Hello, {{ucwords(Auth::user()->name)}} !</h5>
                                 <!-- <p>To enjoy shopping from our website, Please verify below information. So you will not face any interruption in future.</p> -->
                             </div>
+                            <div id="msg"></div>
+
                             <div class="box-account box-info">
                                 <!-- <form name="register" id="register" action="{{route('customer.register')}}" class="theme-form" method="post"> @csrf -->
                                 <form id="sendEmail" class="theme-form">@csrf
@@ -107,7 +105,7 @@
 
     $("#sendEmail").submit(function(event) {
         event.preventDefault();
-        console.log("fregwr");
+        //console.log("fregwr");
         var form = document.getElementById('sendEmail');
         var formData = new FormData(form);
         $.ajaxSetup({
@@ -124,9 +122,17 @@
             contentType: false,
             processData: false,
             success: function(response) {
-                console.log(response);
-                alert("Sent Successfully");
-                window.location.href = "{{route('user.profile')}}";
+                // Swal.fire({
+                //    title: "Success!",
+                //    text: "Sent Successfully.",
+                //    icon: "success",
+                //    button: "OK",
+                // });
+                var html ='<div class="alert alert-success"><span>{{__("Sent Successfully")}}</span></div>';
+                $('#msg').html(html);
+                setTimeout(reload, 3000);
+               // alert("Sent Successfully");
+               // window.location.href = "{{route('user.profile')}}";
             },
             error: function(data) {
                 $(".invalid-feedback2").html(data.responseJSON.error);
@@ -134,6 +140,9 @@
             },
         });
     });
+    function reload(){
+        window.location.href = "{{route('user.profile')}}";
+    }
 </script>
 
 @endsection

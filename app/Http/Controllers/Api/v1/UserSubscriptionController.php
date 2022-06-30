@@ -49,12 +49,12 @@ class UserSubscriptionController extends BaseController
         }
         return response()->json(["status"=>"Success", "data"=>['all_plans'=>$sub_plans, 'subscription'=>$active_subscription, "clientCurrency"=>$clientCurrency]]);
     }
-    
+
     /**
      * select user subscription.
      * Required Params-
      *  slug
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function selectSubscriptionPlan(Request $request, $slug = '')
@@ -87,12 +87,25 @@ class UserSubscriptionController extends BaseController
             else{
                 return response()->json(["status"=>"Error", "message" => "Invalid Data"]);
             }
-            $code = array('stripe');
+            $code = array('stripe', 'stripe_fpx', 'paystack', 'payfast', 'yoco', 'paylink', 'checkout','kongapay','ccavenue', 'cashfree','easebuzz','vnpay','paytab','toyyibpay','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','viva_wallet', 'mycash');
             $ex_codes = array('cod');
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
             foreach ($payment_options as $k => $payment_option) {
                 if( (in_array($payment_option->code, $ex_codes)) || (!empty($payment_option->credentials)) ){
                     $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
+                    if($payment_option->code == 'stripe'){
+                        $payment_option->title = 'Credit/Debit Card (Stripe)';
+                    }elseif($payment_option->code == 'kongapay'){
+                        $payment_option->title = 'Pay Now';
+                    }elseif($payment_option->code == 'mvodafone'){
+                        $payment_option->title = 'Vodafone M-PAiSA';
+                    }elseif($payment_option->code == 'mobbex'){
+                        $payment_option->title = __('Mobbex');
+                    }elseif($payment_option->code == 'offline_manual'){
+                        $json = json_decode($payment_option->credentials);
+                        $payment_option->title = $json->manule_payment_title;
+                    }
+                    $payment_option->title = __($payment_option->title);
                     unset($payment_option->credentials);
                 }
                 else{
@@ -110,16 +123,18 @@ class UserSubscriptionController extends BaseController
      * check if user has any active subscription.
      * Required Params-
      *  slug
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function checkActiveSubscriptionPlan($slug = '')
     {
         try{
             $user = Auth::user();
+            $now = Carbon::now()->toDateString();
             $userActiveSubscription = SubscriptionInvoicesUser::with(['plan'])
                                 ->whereNull('cancelled_at')
                                 ->where('user_id', $user->id)
+                                ->where('end_date', '>=', $now )
                                 ->orderBy('end_date', 'desc')->first();
             if( ($userActiveSubscription) && ($userActiveSubscription->plan->slug != $slug) ){
                 return $this->errorResponse('You cannot buy two subscriptions at the same time', 400);
@@ -138,14 +153,14 @@ class UserSubscriptionController extends BaseController
      *  payment_option_id
      *  transaction_id
      *  amount
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function purchaseSubscriptionPlan(Request $request, $slug = '')
     {
         try{
             $validator = Validator::make($request->all(), [
-                'amount'            => 'required|not_in:0',
+                // 'amount'            => 'required|not_in:0',
                 'transaction_id'    => 'required',
                 'payment_option_id' => 'required',
             ]);
@@ -193,12 +208,12 @@ class UserSubscriptionController extends BaseController
                 $subscription_invoice->start_date = $start_date;
                 $subscription_invoice->next_date = $next_date;
                 $subscription_invoice->end_date = $end_date;
-                $subscription_invoice->subscription_amount = $request->amount;
+                $subscription_invoice->subscription_amount = $subscription_plan->price;
                 $subscription_invoice->save();
                 $subscription_invoice_id = $subscription_invoice->id;
                 if($subscription_invoice_id){
                     $payment = new Payment;
-                    $payment->balance_transaction = $request->amount;
+                    $payment->balance_transaction = $subscription_plan->price;
                     $payment->transaction_id = $request->transaction_id;
                     $payment->user_subscription_invoice_id = $subscription_invoice_id;
                     $payment->date = Carbon::now()->format('Y-m-d');
@@ -240,7 +255,7 @@ class UserSubscriptionController extends BaseController
      * cancel user subscription.
      * Required Params-
      *  slug
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function cancelSubscriptionPlan($slug = '')

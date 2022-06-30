@@ -114,6 +114,7 @@
                     backdrop: 'static',
                     keyboard: false
                 });
+                $('#edit-loyalty-modal .dropify').dropify();
             },
             error: function(data) {
                 console.log('data2');

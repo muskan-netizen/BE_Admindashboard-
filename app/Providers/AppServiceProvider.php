@@ -11,7 +11,7 @@ use App\Models\Page;
 use App\Models\Client;
 use App\Models\SocialMedia;
 use Illuminate\Http\Request;
-use App\Models\{ClientPreference, PaymentOption};
+use App\Models\{ClientPreference, PaymentOption,WebStylingOption};
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
@@ -37,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.env') != 'local') {
             \URL::forceScheme('https');
         }
-        $this->connectDynamicDb($request);
+       $this->connectDynamicDb($request);
         Paginator::useBootstrap();
         $social_media_details = '';
         if(Schema::hasTable('social_media'))
@@ -48,11 +48,38 @@ class AppServiceProvider extends ServiceProvider
             $favicon_url = $client_preference_detail->favicon['proxy_url'] . '600/400' . $client_preference_detail->favicon['image_path'];
         }
         $client_head = Client::where(['id' => 1])->first();
-        $creds_arr = array();
-        $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
-        if($stripe_creds){
-            $creds_arr = json_decode($stripe_creds->credentials);
+
+        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo'];
+        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = $stripe_oxxo_publishable_key = '';
+        $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
+        if($payment_options){
+            foreach($payment_options as $option){
+                $creds = json_decode($option->credentials);
+                if($option->code == 'stripe'){
+                    $stripe_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
+                }
+                if($option->code == 'stripe_fpx'){
+                    $stripe_fpx_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
+                }
+                if($option->code == 'stripe_oxxo'){
+                    $stripe_oxxo_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
+                }
+                if($option->code == 'yoco'){
+                    $yoco_public_key = (isset($creds->public_key) && (!empty($creds->public_key))) ? $creds->public_key : '';
+                }
+                if($option->code == 'checkout'){
+                    $checkout_public_key = (isset($creds->public_key) && (!empty($creds->public_key))) ? $creds->public_key : '';
+                }
+                if($option->code == 'cashfree'){
+                    $cashfree_test_mode = ($option->test_mode == 0) ? false : true;
+                }
+                if($option->code == 'payphone'){
+                    $payphone_id = $creds->id??'';
+                    $payphone_token = $creds->token??'';
+                }
+            }
         }
+        
 
         $count = 0;
         if($client_preference_detail){
@@ -60,15 +87,29 @@ class AppServiceProvider extends ServiceProvider
             if($client_preference_detail->takeaway_check == 1){$count++;}
             if($client_preference_detail->delivery_check == 1){$count++;}
         }
-        $stripe_publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
-        view()->share('favicon', $favicon_url);
+
+        $last_mile_common_set = $this->checkIfLastMileDeliveryOn();
+
+        $client_payment_options = PaymentOption::where('status', 1)->pluck('code')->toArray();
+        // $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+
+
+        view()->share('last_mile_common_set', $last_mile_common_set);
+
         view()->share('favicon', $favicon_url);
         view()->share('client_head', $client_head);
         view()->share('mod_count', $count);
         view()->share('social_media_details', $social_media_details);
         view()->share('stripe_publishable_key', $stripe_publishable_key);
+        view()->share('stripe_fpx_publishable_key', $stripe_fpx_publishable_key);
+        view()->share('stripe_oxxo_publishable_key', $stripe_oxxo_publishable_key);
+        view()->share('yoco_public_key', $yoco_public_key);
+        view()->share('checkout_public_key', $checkout_public_key);
         view()->share('client_preference_detail', $client_preference_detail);
-       
+        view()->share('client_payment_options', $client_payment_options);
+        view()->share('cashfree_test_mode', $cashfree_test_mode);
+        view()->share('payphone_id', $payphone_id??'');
+        view()->share('payPhoneToken', $payphone_token??'');
     }
 
     public function connectDynamicDb($request)
@@ -79,6 +120,7 @@ class AppServiceProvider extends ServiceProvider
             $domain = str_replace(array('http://', '.test.com/login'), '', $domain);
             $subDomain = explode('.', $domain);
             $existRedis = Redis::get($domain);
+
             if ($domain != env('Main_Domain')) {
 
                 if (!$existRedis) {
@@ -131,7 +173,50 @@ class AppServiceProvider extends ServiceProvider
                         }
                     }
                 }
+
+
             }
         }
+    }
+
+    public function checkIfLastMileDeliveryOn()
+    {
+        // $preference = ClientPreference::first();
+        // if (isset($preference) && Schema::hasColumn('client_preferences', 'need_delivery_service') && Schema::hasColumn('client_preferences', 'delivery_service_key_url')  && Schema::hasColumn('client_preferences', 'delivery_service_key_code')  ) {
+        //     if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+        //     return $preference;
+        //     else
+        //     return false;
+        // }
+        // return false;
+
+        $preference = ClientPreference::first();
+        if( isset($preference) && Schema::hasColumn('client_preferences', 'business_type') && $preference->business_type == 'taxi'){
+            if ( Schema::hasColumn('client_preferences', 'need_dispacher_ride') && Schema::hasColumn('client_preferences', 'pickup_delivery_service_key')  && Schema::hasColumn('client_preferences', 'pickup_delivery_service_key_code')  ) {
+                if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
+                return $preference;
+                else
+                return false;
+            }
+            return false;
+        }elseif(  isset($preference)  && Schema::hasColumn('client_preferences', 'business_type') &&  $preference->business_type == 'laundry'){
+            if ( Schema::hasColumn('client_preferences', 'need_laundry_service') && Schema::hasColumn('client_preferences', 'laundry_service_key')  && Schema::hasColumn('client_preferences', 'laundry_service_key_code')  ) {
+                if($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
+                return $preference;
+                else
+                return false;
+            }
+            return false;
+
+        } else{
+            if (isset($preference) && Schema::hasColumn('client_preferences', 'need_delivery_service') && Schema::hasColumn('client_preferences', 'delivery_service_key_url')  && Schema::hasColumn('client_preferences', 'delivery_service_key_code')  ) {
+                if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+                return $preference;
+                else
+                return false;
+            }
+        }
+        return false;
+
     }
 }

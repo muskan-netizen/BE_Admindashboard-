@@ -40,12 +40,17 @@
                     @endif
                         @csrf
                         <div class="row mb-2">
+                            <div class="col-sm-12 text-right">
+                                <a class="btn btn-info waves-effect waves-light text-sm-right" href="{{route('client.index')}}"><< Back </a>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
                             <div class="col-md-4">
                                 <label>Upload Logo</label>
                                 <input type="file" accept="image/*" data-plugins="dropify" name="logo" data-default-file="{{isset($client->logo) ? $client->logo['proxy_url'].'400/400'.$client->logo['image_path'] : ''}}" />
                             </div>
                         </div>
-                        <div class=" row">
+                        <div class="row mb-2">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name" class="control-label">NAME</label>
@@ -184,19 +189,55 @@
                                     @endif
                                 </div>
                             </div>
+                            
+                            <div class="col-md-6">
+                                <label for="languages">Client Type</label>
+                                <select class="form-control" id="client_type" name="client_type">
+                                    @foreach($client_types as $key => $value)
+                                        <option value="{{$key}}">{{$value}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="languages">Business Type</label>
+                                <select class="form-control" id="business_type" name="business_type">
+                                    @foreach($business_types as $business)
+                                        <option value="{{$business->slug}}"> {{$business->title}} </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-info waves-effect waves-light">Submit</button>
                             </div>
                         </div>
                     </form>
+
+                   
+
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+    var loc = "{{route('client.index')}}";
+    $('#side-menu').find('a').each(function() {
+        if($(this).attr('href') == loc)
+        {  
+            $(this).toggleClass('active');
+            $(this).parent().toggleClass('menuitem-active');
+        }
+    });
+});
+</script>
 @endsection
 @section('script')
 <script src="{{asset('assets/libs/dropzone/dropzone.min.js')}}"></script>
 <script src="{{asset('assets/libs/dropify/dropify.min.js')}}"></script>
 <script src="{{asset('assets/js/pages/form-fileuploads.init.js')}}"></script>
+
 @endsection

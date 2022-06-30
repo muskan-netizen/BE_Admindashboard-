@@ -5,7 +5,7 @@ use DataTables;
 use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\LoyaltyCard;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use App\Exports\OrderLoyaltyExport;
@@ -17,8 +17,8 @@ class LoyaltyController extends Controller{
 
     public function index(Request $request){
         $loyalty_card_details = LoyaltyCard::get();
-        
-        // total_loyalty_spent 
+
+        // total_loyalty_spent
         $total_loyalty_spent = Order::orderBy('id','desc');
         if (Auth::user()->is_superadmin == 0) {
             $total_loyalty_spent = $total_loyalty_spent->whereHas('vendors.vendor.permissionToUser', function ($query) {
@@ -28,7 +28,7 @@ class LoyaltyController extends Controller{
         $total_loyalty_spent =$total_loyalty_spent->sum('loyalty_points_used');
 
 
-        // total_loyalty_earned 
+        // total_loyalty_earned
         $total_loyalty_earned = Order::orderBy('id','desc');
         if (Auth::user()->is_superadmin == 0) {
             $total_loyalty_earned = $total_loyalty_earned->whereHas('vendors.vendor.permissionToUser', function ($query) {
@@ -37,11 +37,11 @@ class LoyaltyController extends Controller{
         }
         $total_loyalty_earned =$total_loyalty_earned->sum('loyalty_points_earned');
 
-        
+
 
         $payment_options = PaymentOption::where('status', 1)->get();
 
-         // type_of_loyality_applied_count 
+         // type_of_loyality_applied_count
          $type_of_loyality_applied_count = Order::orderBy('id','desc');
          if (Auth::user()->is_superadmin == 0) {
              $type_of_loyality_applied_count = $type_of_loyality_applied_count->whereHas('vendors.vendor.permissionToUser', function ($query) {
@@ -49,8 +49,8 @@ class LoyaltyController extends Controller{
              });
          }
          $type_of_loyality_applied_count =$type_of_loyality_applied_count->distinct('loyalty_membership_id')->count('loyalty_membership_id');
- 
-        
+
+
 
         return view('backend.accounting.loyality',compact('loyalty_card_details', 'total_loyalty_earned','total_loyalty_spent','type_of_loyality_applied_count', 'payment_options'));
     }
@@ -73,38 +73,46 @@ class LoyaltyController extends Controller{
         }
 
         if (!empty($request->get('date_filter'))) {
-            $date_date_filter = explode('to', $request->get('date_filter'));
-            $to_date = $date_date_filter[1];
+            $date_date_filter = explode(' to ', $request->get('date_filter'));
+            $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
             $from_date = $date_date_filter[0];
-            $orders_query->between($from_date, $to_date);
+            $orders_query->between($from_date." 00:00:00", $to_date." 23:59:59");
         }
-        $orders = $orders_query->orderBy('id', 'desc')->get();
-        foreach ($orders as $order) {
-            $order->loyalty_membership = $order->loyaltyCard ? $order->loyaltyCard->name : '';
-            $order->loyalty_points_used = $order->loyalty_points_used ? $order->loyalty_points_used : '0.00';
-            $order->created_date = convertDateTimeInTimeZone($order->created_at, $timezone, 'Y-m-d h:i:s A');
-            $order->loyalty_points_earned = $order->loyalty_points_earned ? $order->loyalty_points_earned : '0.00';
+        if (!empty($request->get('payment_option'))) {
+            $orders_query->where('payment_option_id',$request->get('payment_option'));
         }
+        if (!empty($request->get('loyalty'))) {
+            $orders_query->where('loyalty_membership_id',$request->get('loyalty'));
+        }
+        $orders = $orders_query->orderBy('id', 'desc');
         return Datatables::of($orders)
+                ->addColumn('loyalty_membership', function($orders) {
+                    return $orders->loyaltyCard ? $orders->loyaltyCard->name : '';
+                })
+                ->addColumn('loyalty_points_used', function($orders) {
+                    return $orders->loyalty_points_used ? $orders->loyalty_points_used : '0.00';
+                })
+                ->addColumn('created_date', function($orders) use($timezone) {
+                        return dateTimeInUserTimeZone($orders->created_at, $timezone);
+                })
+                ->addColumn('loyalty_points_earned',function($orders){
+                    return $orders->loyalty_points_earned ? $orders->loyalty_points_earned : '0.00';
+                })
+                ->addColumn('payment_option_title',function($orders){
+                    return __($orders->paymentOption->title);
+                })
+                ->addColumn('payable_amount',function($orders){
+                    return decimal_format($orders->payable_amount,",");
+                })
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {
-                    $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                        if (Str::contains(Str::lower($row['order_number']), Str::lower($request->get('search')))){
-                            return true;
-                        }elseif(Str::contains(Str::lower($row['user']['name']), Str::lower($request->get('search')))){
-                            return true;
-                        }
-                        return false;
-                    });
-                }
-                if (!empty($request->get('payment_option'))) {
-                    $instance->collection = $instance->collection->filter(function ($row) use ($request){
-                        if (Str::contains(Str::lower($row['payment_option_id']), Str::lower($request->get('payment_option')))){
-                            return true;
-                        }
-                        return false;
-                    });
+                    $search = $request->get('search');
+                    $instance->where(function($query) use($search) {
+                        $query->whereHas('user', function($q) use($search){
+                            $q->where('name', 'LIKE', '%'.$search.'%');
+                        });
+                    })->orWhere('order_number', 'LIKE', '%'.$search.'%');
                 }
             })->make(true);
     }

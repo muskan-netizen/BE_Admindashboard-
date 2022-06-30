@@ -1,5 +1,6 @@
-@extends('layouts.store', ['title' => 'Address Book'])
+@extends('layouts.store', ['title' => ($client_preference_detail->address_is_car == 1 ? __('Car') : __('Address Book') )  ])
 @section('css')
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .main-menu .brand-logo {
         display: inline-block;
@@ -9,10 +10,7 @@
 </style>
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
-</header>
+
 <style type="text/css">
     .productVariants .firstChild{
         min-width: 150px;
@@ -53,6 +51,13 @@
         width: 100%;
         height: 100%;
     }
+    .address-input-group{
+        position: relative;
+    }
+    .address-input-group .pac-container{
+        top:35px!important;
+        left:0!important;
+    }
 </style>
 <section class="section-b-space">
     <div class="container">
@@ -76,12 +81,12 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row my-md-3">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
-                <div class="dashboard-left">
+                <div class="dashboard-left mb-3">
                     <div class="collection-mobile-back">
-                        <span class="filter-back">
+                        <span class="filter-back d-lg-none d-inline-block">
                             <i class="fa fa-angle-left" aria-hidden="true"></i>{{ __('Back') }}
                         </span>
                     </div>
@@ -92,35 +97,51 @@
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            <h2>{{ __('Address Book') }}</h2>
+                            @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
+                                <h2>{{ __('Cars') }}</h2>
+                                {{-- <p>{{ __('Here Are All Your Previous Cars') }}</p> --}}
+                            @else
+                                <h2>{{ __('Address Book') }}</h2>
+                            @endif
                         </div>
                         <div class="box-account box-info order-address">
                             <div class="row">
-                                <div class="col-xl-4 col-md-6 text-center mt-3">
+                                <div class="col-xl-4 col-md-6 text-center mt-md-2">
                                     <a class="outer-box border-dashed d-flex align-items-center justify-content-center add_edit_address_btn" href="javascript:void(0)" data-toggle="modal" data-target="#add_edit_address">
-                                        <i class="fa fa-plus-circle d-block mb-1" aria-hidden="true"></i>
-                                        <h6 class="m-0">{{ __('Add New Address') }}</h6>
+                                        <i class="fa fa-plus-circle d-block mr-1" aria-hidden="true"></i>
+                                        <h6 class="m-0">
+                                        @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
+                                            {{ __('Add New Cars') }}
+                                        @else
+                                            {{ __('Add New Address') }}
+                                        @endif
+                                        </h6>
                                     </a>
                                 </div>
                                 @foreach($useraddress as $add)
-                                    <div class="col-xl-4 col-md-6 mt-3">
-                                        <div class="outer-box d-flex align-items-center justify-content-between px-0">
+                                    <div class="col-xl-4 col-md-6 mt-2">
+                                        <div class="outer-box  px-0">
                                             <div class="address-type w-100">
                                                 <div class="default_address border-bottom mb-1 px-2">
                                                     <h6 class="mt-0 mb-2"><i class="fa fa-{{ ($add->type == 1 || $add->type == 3) ? 'home' : 'building' }} mr-1" aria-hidden="true"></i> {{ ($add->type == 1) ? __('Home') : (($add->type == 2) ? __('Office') : __('Others')) }}</h6>
                                                 </div>
                                                 <div class="px-2">
-                                                    <p class="mb-1">{{$add->address}}</p>
+                                                    <p class="mb-1">{{ ($add->house_number ?? false) ? $add->house_number."," : '' }} {{$add->address}}</p>
                                                     <p class="mb-1">{{$add->street}}</p>
                                                     <p class="mb-1">{{$add->city}}, {{$add->state}} {{$add->pincode}}</p>
                                                     <p class="mb-1">{{$add->country  ? $add->country : ''}}</p>
                                                 </div>
+                                                @if($add->latitude=='' || $add->longitude=='')
+                                                   <span class="badge badge-warning ml-2">Incomplete</span>
+                                                @endif
                                             </div>
-                                            <div class="address-btn d-flex align-items-center justify-content-end w-100 mt-4 px-2">
+                                            <div class="address-btn d-flex align-items-center justify-content-end w-100 mt-sm-4 px-2">
                                                 @if($add->is_primary == 1)
                                                     <a class="btn btn-solid disabled" href="#">{{ __('Primary') }}</a>
                                                 @else
+                                                    @if($add->latitude!='' || $add->longitude!='')
                                                     <a class="btn btn-solid" href="{{ route('setPrimaryAddress', $add->id) }}" class="mr-2">{{ __('Set As Primary') }}</a>
+                                                    @endif
                                                 @endif
                                                 <a class="btn btn-solid add_edit_address_btn" href="javascript:void(0)" data-toggle="modal" data-target="#add_edit_address" data-id="{{$add->id}}">{{ __('Edit') }}</a>
                                                 <a class="btn btn-solid delete_address_btn" href="javascript:void(0)" data-toggle="modal" data-target="#removeAddressConfirmation" data-id="{{$add->id}}">{{ __('Delete') }}</a>
@@ -140,13 +161,25 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="remove_addressLabel">{{ __('Delete Address') }}</h5>
+        <h5 class="modal-title" id="remove_addressLabel">
+            @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
+                {{ __('Delete Car') }}
+            @else
+            {{ __('Delete Address') }}
+            @endif
+        </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
       </div>
       <div class="modal-body">
-        <h6 class="m-0">{{ __('Do you really want to delete this address ?') }}</h6>
+        <h6 class="m-0">
+            @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
+                {{ __('Do you really want to delete this Car ?') }}
+            @else
+                {{ __('Do you really want to delete this address ?') }}
+            @endif
+        </h6>
       </div>
       <div class="modal-footer flex-nowrap justify-content-center align-items-center">
         <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{ __('Cancel') }}</button>
@@ -157,16 +190,16 @@
 </div>
 <script type="text/template" id="add_address_template">
     <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="addedit-addressLabel"><%= title %> Address</h5>
+        <h5 class="modal-title" id="addedit-addressLabel"><%= title %> {{(@$client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
     </div>
     <div class="modal-body">
         <% if(title == 'Edit') { %>
-            <form id="add_edit_address_form" method="post" action="{{route('address.update')}}/<%= address.id %>">
+            <form id="add_edit_address_form" method="post"  enctype="multipart/form-data" action="{{route('address.update')}}/<%= address.id %>">
         <% }else{ %>
-            <form id="add_edit_address_form" method="post" action="{{route('address.store')}}">
+            <form id="add_edit_address_form" method="post"  enctype="multipart/form-data" action="{{route('address.store')}}">
         <% } %>
         @csrf
         <div class="outer-box border-0 p-0">
@@ -177,24 +210,24 @@
                             <div class="col-12">
                                 <label for="type">{{ __('Address Type') }}</label>
                             </div>
-                            <div class="col-md-3">
-                                <div class="delivery_box pt-0 pl-0  pb-3">
-                                    <label class="radio m-0">{{ __('Home') }}  
+                            <div class="col-3">
+                                <div class="delivery_box pt-0 pl-0  pb-2">
+                                    <label class="radio m-0">{{ __('Home') }}
                                         <input type="radio" name="type" <%= (typeof address != 'undefined') ? ((address.type == 1) ? 'checked="checked"' : '') : 'checked="checked"' %> value="1">
                                         <span class="checkround"></span>
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                            <div class="delivery_box pt-0 pl-0  pb-3">
-                                <label class="radio m-0">{{ __('Office') }} 
+                            <div class="col-3">
+                            <div class="delivery_box pt-0 pl-0  pb-2">
+                                <label class="radio m-0">{{ __('Office') }}
                                     <input type="radio" name="type" <%= ((typeof address != 'undefined') && (address.type == 2)) ? 'checked="checked"' : '' %> value="2">
                                     <span class="checkround"></span>
                                 </label>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="delivery_box pt-0 pl-0  pb-3">
+                        <div class="col-3">
+                            <div class="delivery_box pt-0 pl-0  pb-2">
                                 <label class="radio m-0">{{ __('Others') }}
                                     <input type="radio" name="type" <%= ((typeof address != 'undefined') && (address.type == 3)) ? 'checked="checked"' : '' %> value="3">
                                     <span class="checkround"></span>
@@ -205,9 +238,10 @@
                         <input type="hidden" name="latitude" id="latitude" value="<%= (typeof address != 'undefined') ? address.latitude : '' %>">
                         <input type="hidden" name="longitude" id="longitude" value="<%= (typeof address != 'undefined') ? address.longitude : '' %>">
                         <div class="form-row">
+
                             <div class="col-md-12 mb-2">
                                 <label for="address">{{ __('Address') }}</label>
-                                <div class="input-group">
+                                <div class="input-group address-input-group">
                                     <input type="text" name="address" class="form-control" id="address" placeholder="{{ __('Address') }}" aria-label="Recipient's Address" aria-describedby="button-addon2" value="<%= (typeof address != 'undefined') ? address.address : '' %>" autocomplete="off" required="required">
                                     <div class="input-group-append">
                                     <button class="btn btn-outline-secondary showMapHeader" type="button" id="button-addon2">
@@ -217,48 +251,69 @@
                                 </div>
                                 <span class="text-danger" id="address_error"></span>
                             </div>
+                            {{-- <div class="col-md-12 mb-2">
+                                <label for="address">{{ __('image') }}</label>
+                                <div class="input-group address-input-group">
+                                    <input type="file" name="image" class="form-control" id="address" placeholder="{{ __('Address') }}" >
+
+                                </div>
+                                <span class="text-danger" id="address_error"></span>
+                            </div> --}}
                         </div>
                         <div class="form-row">
+                            <div class="col-md-6 mb-2">
+                                <label for="house_number">{{ __('House / Apartment/ Flat No.') }}</label>
+                                <input type="text" class="form-control" id="house_number" placeholder="{{ __('House / Apartment/ Flat number') }}" name="house_number" value="<%= ((typeof address != 'undefined') && (address.house_number != null)) ? address.house_number : '' %>">
+                                <span class="text-danger" id="house_number_error"></span>
+                            </div>
                             <div class="col-md-6 mb-2">
                                 <label for="street">{{ __('Street') }}</label>
                                 <input type="text" class="form-control" id="street" placeholder="{{ __('Street') }}" name="street" value="<%= ((typeof address != 'undefined') && (address.street != null)) ? address.street : '' %>">
                                 <span class="text-danger" id="street_error"></span>
                             </div>
+
+                        </div>
+                        <div class="form-row">
                             <div class="col-md-6 mb-2">
                                 <label for="city">{{ __('City') }}</label>
                                 <input type="text" class="form-control" id="city" name="city" placeholder="{{ __('City') }}" value="<%= ((typeof address != 'undefined') && (address.city != null)) ? address.city : '' %>" required="required">
                                 <span class="text-danger" id="city_error"></span>
                             </div>
-                        </div>
-                        <div class="form-row">
                             <div class="col-md-6 mb-2">
                                 <label for="state">{{ __('State') }}</label>
                                 <input type="text" class="form-control" id="state" name="state" placeholder="{{ __('State') }}" value="<%= ((typeof address != 'undefined') && (address.state != null)) ? address.state : '' %>" required="required">
                                 <span class="text-danger" id="state_error"></span>
                             </div>
+
+                        </div>
+                        <div class="form-row mb-0">
                             <div class="col-md-6 mb-2">
                                 <label for="country">{{ __('Country') }}</label>
                                 <select name="country" id="country" class="form-control" value="<%= ((typeof address != 'undefined') && (address.country_id != null)) ? address.country_id : '' %>" required="required">
+                                    <option value="">{{__('Select country')}}</option>
                                     @foreach($countries as $co)
                                         <option value="{{$co->id}}" <%= ((typeof address != 'undefined') && (address.country_id == {{$co->id}})) ? 'selected="selected"' : '' %>>{{$co->name}}</option>
                                     @endforeach
                                 </select>
                                 <span class="text-danger" id="country_error"></span>
                             </div>
-                        </div>
-                        <div class="form-row mb-0">
                             <div class="col-md-6 mb-2">
-                                <label for="pincode">{{ __('Pincode') }}</label>
-                                <input type="text" class="form-control" id="pincode" name="pincode" placeholder="{{ __('Pincode') }}" value="<%= ((typeof address != 'undefined') && (address.pincode != null)) ? address.pincode : ''%>" required="required">
+                                <label for="pincode">{{ getNomenclatureName('Zip Code', true) }}</label>
+                                <input type="text" class="form-control" id="pincode" name="pincode" placeholder="{{ getNomenclatureName('Zip Code', true) }}" value="<%= ((typeof address != 'undefined') && (address.pincode != null)) ? address.pincode : ''%>" required="required">
                                 <span class="text-danger" id="pincode_error"></span>
                             </div>
+                            <div class="col-md-12 mb-2">
+                                <label for="extra_instruction">{{ __('Extra Instructions') }}</label>
+                                <input type="text" class="form-control" id="extra_instruction" name="extra_instruction" placeholder="{{ __('Extra instruction for driver to follow..') }}" value="<%= ((typeof address != 'undefined') && (address.extra_instruction != null)) ? address.extra_instruction : ''%>">
+                                <span class="text-danger" id="extra_instruction_error"></span>
+                            </div>
                             <div class="col-md-12 mt-2">
-                                <button type="submit" class="btn btn-solid" id="<%= ((typeof address !== 'undefined') && (address !== false)) ? 'updateAddress' : 'saveAddress' %>">{{__('Save Address')}}</button>
+                                <button type="button" class="btn btn-solid" id="<%= ((typeof address !== 'undefined') && (address !== false)) ? 'updateAddress' : 'saveAddress' %>">{{(@$client_preference_detail->address_is_car == 1) ? __('Save Car') : __('Save Address') }}</button>
                                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
                             </div>
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
         </form>
@@ -267,7 +322,7 @@
 <div class="modal fade" id="add_edit_address" tabindex="-1" aria-labelledby="addedit-addressLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
-      
+
     </div>
   </div>
 </div>
@@ -283,8 +338,8 @@
       <div class="modal-body p-0">
         <div class="row">
             <div class="col-md-12">
-                <div id="address-map-container" style="height: 500px; min-width: 500px; width: 100%;">
-                    <div id="pick-address-map"></div>
+                <div id="address-map-container" class="w-100" style="height: 500px; min-width: 500px;">
+                    <div id="pick-address-map" class="h-100"></div>
                 </div>
                 <div class="pick_address p-2 mb-2 position-relative">
                     <div class="text-center">
@@ -299,12 +354,15 @@
 </div>
 @endsection
 @section('script')
+<script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript">
     var user_store_address_url = "{{ route('address.store') }}";
     var user_address_url = "{{ route('user.address', ':id') }}";
     var update_address_url = "{{ route('address.update', ':id') }}";
     var delete_address_url = "{{ route('deleteAddress', ':id') }}";
     var verify_information_url = "{{ route('verifyInformation', Auth::user()->id) }}";
+   
+
     var ajaxCall = 'ToCancelPrevReq';
     $('.verifyEmail').click(function(){
         verifyUser('email');
@@ -349,7 +407,27 @@
                 initialize();
             }
         });
+
     });
+
+    $(document).on("click", "#updateAddress,#saveAddress", function () {
+    
+        var latitude = $('#add_edit_address_form #latitude').val();
+        var longitude = $('#add_edit_address_form #longitude').val();
+        if(latitude!='' && longitude!='')
+        {
+            $("#add_edit_address_form").submit();
+        }else{
+            Swal.fire({
+                title: "Warning!",
+                text: "Please select address from suggessions or from map.",
+                icon: "warning",
+                button: "OK",
+            });
+            $(".showMapHeader").click();
+        }
+    });
+
     function verifyUser($type = 'email'){
         ajaxCall = $.ajax({
             type: "post",
@@ -357,7 +435,7 @@
             url: verify_information_url,
             data: {
                 "_token": "{{ csrf_token() }}",
-                "type": $type, 
+                "type": $type,
             },
             beforeSend : function() {
                 if(ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
@@ -369,6 +447,7 @@
             }
         });
     }
+
     /*$(document).on("click","#update_address",function() {
         let city = $('#add_new_address_form #city').val();
         let state = $('#add_new_address_form #state').val();
@@ -419,79 +498,123 @@
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;
         var lngs = document.getElementById('longitude').value;
+        if(lats==''){
+            lats="{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
+        }
+        if(lngs==''){
+            lngs="{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
+        }
 
         var myLatlng = new google.maps.LatLng(lats, lngs);
-            var mapProp = {
-                center:myLatlng,
-                zoom:13,
-                mapTypeId:google.maps.MapTypeId.ROADMAP
-              
-            };
-            var map=new google.maps.Map(document.getElementById("pick-address-map"), mapProp);
-                var marker = new google.maps.Marker({
-                  position: myLatlng,
-                  map: map,
-                  draggable:true  
-              });
-            // marker drag event
-            google.maps.event.addListener(marker,'drag',function(event) {
-                console.log(event.latLng.lat());
-                document.getElementById('latitude').value = event.latLng.lat();
-                document.getElementById('longitude').value = event.latLng.lng();
-            });
-            //marker drag event end
-            google.maps.event.addListener(marker,'dragend',function(event) {
-                document.getElementById('latitude').value = event.latLng.lat();
-                document.getElementById('longitude').value = event.latLng.lng();
-            });
+
+        var infowindow = new google.maps.InfoWindow();
+        var geocoder = new google.maps.Geocoder();
+        var mapProp = {
+            center:myLatlng,
+            zoom:13,
+            mapTypeId:google.maps.MapTypeId.ROADMAP
+
+        };
+        var map=new google.maps.Map(document.getElementById("pick-address-map"), mapProp);
+        var marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            draggable:true
+        });
+        // marker drag event
+        google.maps.event.addListener(marker, 'dragend', function() {
+                    geocoder.geocode({
+                    'latLng': marker.getPosition()
+                    }, function(results, status) {
+
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        if (results[0]) {
+                             document.getElementById('latitude').value = marker.getPosition().lat();
+                             document.getElementById('longitude').value = marker.getPosition().lng();
+                             document.getElementById('address').value= results[0].formatted_address;
+
+                            infowindow.setContent(results[0].formatted_address);
+
+                            infowindow.open(map, marker);
+                        }
+                    }
+                    });
+                });
+
+        // google.maps.event.addListener(marker,'drag',function(event) {
+        //     document.getElementById('latitude').value = event.latLng.lat();
+        //     document.getElementById('longitude').value = event.latLng.lng();
+        // });
+        // //marker drag event end
+        // google.maps.event.addListener(marker,'dragend',function(event) {
+        //     document.getElementById('latitude').value = event.latLng.lat();
+        //     document.getElementById('longitude').value = event.latLng.lng();
+        // });
         $('#pick_address').modal('show');
 
     });
 
+
     function initialize() {
-      var input = document.getElementById('address');
-      var autocomplete = new google.maps.places.Autocomplete(input);
-      google.maps.event.addListener(autocomplete, 'place_changed', function () {
-        var place = autocomplete.getPlace();
-        // console.log(place);
-        document.getElementById('longitude').value = place.geometry.location.lng();
-        document.getElementById('latitude').value = place.geometry.location.lat();
-        for(let i=1; i < place.address_components.length; i++){
-            let mapAddress = place.address_components[i];
-            if(mapAddress.long_name !=''){
-                let streetAddress = '';
-                if (mapAddress.types[0] =="street_number") {
-                    streetAddress += mapAddress.long_name;
-                }
-                if (mapAddress.types[0] =="route") {
-                    streetAddress += mapAddress.short_name;
-                }
-                if($('#street').length > 0){
-                    document.getElementById('street').value = streetAddress;
-                }
-                if (mapAddress.types[0] =="locality") {
-                    document.getElementById('city').value = mapAddress.long_name;
-                }
-                if(mapAddress.types[0] =="administrative_area_level_1"){
-                    document.getElementById('state').value = mapAddress.long_name;
-                }
-                if(mapAddress.types[0] =="postal_code"){
-                    document.getElementById('pincode').value = mapAddress.long_name;
-                }else{
-                    document.getElementById('pincode').value = '';
-                }
-                if(mapAddress.types[0] == "country"){
-                    var country = document.getElementById('country');
-                    for (let i = 0; i < country.options.length; i++) {
-                        if (country.options[i].text.toUpperCase() == mapAddress.long_name.toUpperCase()) {
-                            country.value = country.options[i].value;
-                            break;
+
+        // var myLatlng = new google.maps.LatLng(userLatitude, userLongitude);
+        // var mapProp = {
+        //     center:myLatlng,
+        //     zoom:13,
+        //     mapTypeId:google.maps.MapTypeId.ROADMAP
+
+        // };
+        // var addressMap=new google.maps.Map(document.getElementById("pick-address-map"), mapProp);
+        var input = document.getElementById('address');
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.bindTo('bounds', bindMap);
+
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var place = autocomplete.getPlace();
+            // console.log(place);
+            document.getElementById('longitude').value = place.geometry.location.lng();
+            document.getElementById('latitude').value = place.geometry.location.lat();
+            for(let i=1; i < place.address_components.length; i++){
+                let mapAddress = place.address_components[i];
+                if(mapAddress.long_name !=''){
+                    let streetAddress = '';
+                    if (mapAddress.types[0] =="street_number") {
+                        streetAddress += mapAddress.long_name;
+                    }
+                    if (mapAddress.types[0] =="route") {
+                        streetAddress += mapAddress.short_name;
+                    }
+                    if($('#street').length > 0){
+                        document.getElementById('street').value = streetAddress;
+                    }
+                    if (mapAddress.types[0] =="locality") {
+                        document.getElementById('city').value = mapAddress.long_name;
+                    }
+                    if(mapAddress.types[0] =="administrative_area_level_1"){
+                        document.getElementById('state').value = mapAddress.long_name;
+                    }
+                    if(mapAddress.types[0] =="postal_code"){
+                        document.getElementById('pincode').value = mapAddress.long_name;
+                    }else{
+                        document.getElementById('pincode').value = '';
+                    }
+                    if(mapAddress.types[0] == "country"){
+                        var country = document.getElementById('country');
+                        for (let i = 0; i < country.options.length; i++) {
+                            if (country.options[i].text.toUpperCase() == mapAddress.long_name.toUpperCase()) {
+                                country.value = country.options[i].value;
+                                break;
+                            }
                         }
                     }
                 }
             }
-        }
-      });
+        });
+
+        setTimeout(function(){
+            $(".pac-container").appendTo("#add_new_address_form .address-input-group");
+        }, 300);
+
     }
 </script>
 @endsection

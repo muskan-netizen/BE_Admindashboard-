@@ -30,12 +30,12 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">Celebrities</h4>
+                <h4 class="page-title">{{ __('Influencer') }}</h4>
             </div>
         </div>
         <div class="col-sm-6 text-right">
             <button class="btn btn-info waves-effect waves-light text-sm-right"
-                data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
             </button>
         </div>
     </div>
@@ -59,7 +59,7 @@
                                 @endif
                             </div>
                         </div>
-                        
+
                     </div>
 
                     <div class="table-responsive">
@@ -68,12 +68,12 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th class="descript">Description</th>
-                                    <th>Country</th>
+                                    <th>{{ __("Name") }}</th>
+                                    <th class="descript">{{ __("Description") }}</th>
+                                    <th>{{ __("Country") }}</th>
                                     <!-- <th>Brands</th> -->
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th>{{ __("Status") }}</th>
+                                    <th>{{ __("Action") }}</th>
                                 </tr>
                             </thead>
                             <tbody id="post_list">
@@ -81,13 +81,13 @@
 
                                 <tr data-row-id="{{$celeb->id}}">
                                     <!-- <td class="draggableTd"><span class="dragula-handle"></span></td> -->
-                                    <td> 
+                                    <td>
                                         <img class="rounded-circle" src="{{$celeb->avatar['proxy_url'].'60/60'.$celeb->avatar['image_path']}}" alt="{{$celeb->id}}" >
                                     </td>
                                     <td><a class="openEditModal text-capitalize" loyaltyID="{{$celeb->id}}" href="#">{{ $celeb->name }}</a> </td>
                                     <td class="descript"> <span>{{ $celeb->description }} </span></td>
                                     <td> {{ (!empty($celeb->country)) ? ucwords(strtolower($celeb->country->name)) : '' }} </td>
-                                    <!-- <td> 
+                                    <!-- <td>
                                         @if(!empty($celeb->brands))
                                             @foreach($celeb->brands as $kb => $brand)
                                                     <span class="badge bg-soft-warning text-warning">{{$brand->title}}</span>
@@ -96,20 +96,20 @@
                                             N/A
                                         @endif
                                     </td> -->
-                                    <td> 
+                                    <td>
                                         <input type="checkbox" bid="{{$celeb->id}}" id="activeCheck" data-plugin="switchery" name="validity_index" class="chk_box" data-color="#43bee1" {{($celeb->status == '1') ? 'checked' : ''}} >
                                      </td>
-                                    <td> 
+                                    <td>
                                         <div class="form-ul" style="width: 60px;">
                                             <div class="inner-div" style="float: left;">
-                                                <a class="action-icon openEditModal" loyaltyID="{{$celeb->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a> 
+                                                <a class="action-icon openEditModal" loyaltyID="{{$celeb->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a>
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('celebrity.destroy', $celeb->id) }}">
+                                                <form method="POST" action="{{ route('celebrity.destroy', $celeb->id) }}" id="deleteCelebrity">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="submit" onclick="return confirm('Are you sure? You want to delete the loyalty card.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> 
+                                                       <button type="button" id="deleteCelebrityButton" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
 
                                                     </div>
                                                 </form>
@@ -134,6 +134,25 @@
 @endsection
 
 @section('script')
+<script type="text/javascript">
+    $('#deleteCelebrityButton').click(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete the celebrity.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $("#deleteCelebrity").off("submit").submit();
+            }else{
+                return false;
+            }
+        });
+    });
+</script>
 
 @include('backend.celebrity.pagescript')
 

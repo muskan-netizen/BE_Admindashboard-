@@ -30,7 +30,7 @@ $timezone = Auth::user()->timezone;
                     </li>
                     <li class="nav-item"><a class="nav-link @if($status == 'Accepted') active @endif" id="processed-tab" 
                             href="{{route('backend.order.returns',['Accepted'])}}" role="tab" aria-selected="false"><i
-                                class="icofont icofont-man-in-glasses"></i>{{__('Active Requests')}}</a>
+                                class="icofont icofont-man-in-glasses"></i>{{__('Accepted Requests')}}</a>
                         <div class="material-border"></div>
                     </li>
                     <li class="nav-item"><a class="nav-link @if($status == 'Rejected') active @endif" id="rejected-tab" 
@@ -79,10 +79,10 @@ $timezone = Auth::user()->timezone;
                                                 </b>
                                             </td>
                                             <td class="">
-                                                <b class="text-black">${{$order->product->price??''}}</b>
+                                                <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                             </td>
-                                            <td>{{ convertDateTimeInTimeZone($order->order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
-                                            <td>{{ convertDateTimeInTimeZone($order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
+                                            <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
+                                            <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
                                         </tr>
                                         @endforeach
                                         @else
@@ -134,10 +134,10 @@ $timezone = Auth::user()->timezone;
                                                     </b>
                                                 </td>
                                                 <td class="">
-                                                    <b class="text-black">${{$order->product->price??''}}</b>
+                                                    <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                                 </td>
-                                                <td>{{ convertDateTimeInTimeZone($order->order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
-                                                <td>{{ convertDateTimeInTimeZone($order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
+                                                <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
+                                                <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
                                             </tr>
                                             @endforeach
                                         @else
@@ -189,10 +189,10 @@ $timezone = Auth::user()->timezone;
                                                     </b>
                                                 </td>
                                                 <td class="">
-                                                    <b class="text-black">${{$order->product->price??''}}</b>
+                                                    <b class="text-black">{{$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
                                                 </td>
-                                                <td>{{ convertDateTimeInTimeZone($order->order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
-                                                <td>{{ convertDateTimeInTimeZone($order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
+                                                <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
+                                                <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
                                             </tr>
                                             @endforeach
                                         @else

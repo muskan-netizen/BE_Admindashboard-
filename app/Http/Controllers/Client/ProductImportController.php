@@ -3,89 +3,103 @@
 namespace App\Http\Controllers\Client;
 use DB;
 use Image;
+use File;
+use Artisan;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Woocommerce;
 use Illuminate\Support\Str;
+use App\Models\VendorMedia;
 use Illuminate\Http\Request;
+use App\Models\ProductImage;
 use App\Models\ClientLanguage;
 use App\Models\ProductVariant;
 use App\Models\CategoryHistory;
-use App\Models\VendorMedia;
-use App\Models\ProductImage;
 use App\Models\ProductCategory;
+use App\Models\CsvProductImport;
 use App\Models\ProductTranslation;
+use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Category_translation;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Process\Process;
 
 class ProductImportController extends Controller{
     private $folderName = 'prods';
-    public function getProductImport(Request $request){
+
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/prods';
+    }
+
+    public function postWoocommerceDetail(Request $request){
         try {
+            $request->validate([
+                'domain_name' => 'required',
+                'consumer_key' => 'required',
+                'consumer_secret' => 'required',
+            ]);
+            $woocommerce_detail = Woocommerce::first();
+            $woocommerce = $woocommerce_detail ? $woocommerce_detail : new Woocommerce();
+            $woocommerce->url = $request->domain_name;
+            $woocommerce->consumer_key = $request->consumer_key;
+            $woocommerce->consumer_secret = $request->consumer_secret;
+            $woocommerce->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Woocommerce Detail Saved Successfully!'
+            ]);
+        } catch (Exception $e) {
+            
+        }
+    }
+    public function getProductImportViaWoocommerce(Request $request){
+        try {
+            $base_path = base_path();
             DB::beginTransaction();
             $user = Auth::user();
-            $response = Http::get('https://yogo.gd/wc-api/v3/products?filter%5Blimit%5D=5&consumer_key=ck_8abd4b1f9ba171e4b21db9a70bef6c711d6ba3f0&consumer_secret=cs_b17a5e26234bae2899e0926c8762247d1f03c684');
-            $response_data = $response->object();
-            $client_language = ClientLanguage::where('is_primary', 1)->first();
-            if (!$client_language) {
-                $client_language = ClientLanguage::where('is_active', 1)->first();
-            }
-            foreach ($response_data->products as  $product) {
-                pr('foreach start ');
-                $sku = Str::slug($product->title, '');
-                $url_slug = Str::slug($product->title, '_');
-                $category_id = 0;
-                $category_slug = $product->categories[0];
-                $category_detail = Category::where('slug', $category_slug)->first();
-                if($category_detail){
-                    $category_id = $category_detail->id;
-                }else{
-                    $new_category = Category::create([
-                        'status' => 1,
-                        'type_id' =>1,
-                        'is_core' => 1,
-                        'position' => 1,
-                        'parent_id' => 1,
-                        'is_visible' => 1,
-                        'can_add_products' => 1,
-                        'slug' => $category_slug,
-                        'client_code' => $user->code
+            $woocommerce_detail = Woocommerce::first();
+            $domain_name = $woocommerce_detail->url;
+            $consumer_key = $woocommerce_detail->consumer_key;
+            $consumer_secret = $woocommerce_detail->consumer_secret;
+            if($consumer_key && $consumer_secret){
+                $response = Http::get("$domain_name/wc-api/v3/products?filter%5Blimit%5D=800&consumer_key=$consumer_key&consumer_secret=$consumer_secret");
+                if($response->status() == 200){
+                    Storage::makeDirectory('app/public/json');
+                    $response_data = $response->json();
+                    $products = json_encode($response_data , true);
+                    $csv_product_import = new CsvProductImport;
+                    $fileName = md5(time()). '_datafile.json';
+                    $filePath = Storage::disk('public')->put($fileName, $products);
+                    $csv_product_import->vendor_id = $request->vendor_id;
+                    $csv_product_import->name = $fileName;
+                    $csv_product_import->path = '/storage/json/' . $fileName;
+                    $csv_product_import->status = 1;
+                    $csv_product_import->type = 1;
+                    $csv_product_import->raw_data = $products;
+                    $csv_product_import->save();
+                    DB::commit();
+                    shell_exec("nohup php $base_path/artisan command:productImportData > /dev/null 2>&1 &");
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Import Product Via Woocommerce Request Submitted Successfully!'
                     ]);
-                    Category_translation::create(['language_id' => 1, 'name' => $category_slug, 'category_id' => $new_category->id]);
-                    CategoryHistory::create(['action' => 'Add', 'update_id' => $user->id, 'updater_role' => 'Admin', 'client_code' => $user->code, 'category_id'=>$new_category->id]);
-                    $category_id = $new_category->id;
+                }else{
+                    $response_data = $response->json();
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $response_data['errors'][0]['message']
+                    ]);
                 }
-                $product_detail = Product::where('sku', $sku)->first();
-                if(!$product_detail){
-                    $image = Image::make($product->featured_src);
-                    $filePath = $this->folderName.'/' . Str::random(40);
-                    $path = Storage::disk('s3')->put($filePath, file_get_contents($product->featured_src), 'public');
-                    $new_product = new Product();
-                    $new_product->sku = $sku;
-                    $new_product->type_id = 1;
-                    $new_product->vendor_id = 10;
-                    $new_product->url_slug = $url_slug;
-                    $new_product->category_id = $category_id;
-                    $new_product->save();
-                    $vendor_media = new VendorMedia();
-                    $vendor_media->media_type = 1;
-                    $vendor_media->vendor_id = 10;
-                    $vendor_media->path = $filePath;
-                    $vendor_media->save();
-                    $product_image = new ProductImage();
-                    $product_image->is_default = 1;
-                    $product_image->media_id = $vendor_media->id;
-                    $product_image->product_id = $new_product->id;
-                    $product_image->save();
-                    ProductCategory::insert(['product_id' => $new_product->id, 'category_id' => $category_id]);
-                    ProductVariant::insert(['sku' => $new_product->sku, 'product_id' => $new_product->id, 'barcode' => $this->generateBarcodeNumber(), 'price' => $product['price']]);
-                    ProductTranslation::insert(['product_id' => $new_product->id,'language_id' => 1 , 'title' => $product->title, 'meta_description' => $product->description]);
-                }
-                pr('foreach end ');
+            }else{
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Consumer Secret is invalid.'
+                ]);
             }
-            DB::commit();
         } catch (Exception $e) {
             DB::rollback();
         }
