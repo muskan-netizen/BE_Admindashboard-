@@ -28,14 +28,14 @@
                         <table class="table table-striped w-100">
                             <thead>
                                 <tr>
-                                    <th class="border-bottom-0">{{ __("Notification Name") }}</th>
+                                    <th class="border-bottom-0">{{ __("sms Name") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($notification_templates as $notification_template)
-                                    <tr class="page-title active-page notification-page-detail" data-notification_template_id="{{$notification_template->id}}" data-show_url="{{route('cms.sms.show', ['id'=> $notification_template->id])}}">
+                                @forelse($sms_templates as $sms_template)
+                                    <tr class="page-title active-page sms-page-detail" data-sms_template_id="{{$sms_template->id}}" data-show_url="{{route('cms.sms.show', ['id'=> $sms_template->id])}}">
                                         <td>
-                                            <a class="text-body d-block" href="javascript:void(0)">{{$notification_template->label}}</a>
+                                            <a class="text-body d-block" href="javascript:void(0)">{{$sms_template->label}}</a>
                                         </td>
                                     </tr>
                                 @empty
@@ -46,7 +46,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-7 col-xl-6 mb-2 al_cms_notification">
+        <div class="col-md-7 col-xl-6 mb-2 al_cms_sms">
             <div class="card">
                 <div class="card-body p-3" id="edit_page_content">
                     <div class="row">
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <input type="hidden" id="notification_template_id" value="">
+                        <input type="hidden" id="sms_template_id" value="">
                         <div class="col-lg-12">
                             <div class="row">
                                 <div class="col-12 mb-2">
@@ -92,7 +92,7 @@
         $(document).on("click","#client_language",function() {
             $('tr.page-title:first').trigger('click');
         });
-        $(document).on("click",".notification-page-detail",function() {
+        $(document).on("click",".sms-page-detail",function() {
             $('#edit_page_content #content').val('');
             // $('#edit_page_content #content').summernote('destroy');
             let url = $(this).data('show_url');
@@ -100,7 +100,7 @@
             $.get(url,function(response) {
               if(response.status == 'Success'){
                 if(response.data){
-                    $('#edit_page_content #notification_template_id').val(response.data.id);
+                    $('#edit_page_content #sms_template_id').val(response.data.id);
                     if(response.data){
                         $('#edit_page_content #tags').html(response.data.tags);
                         $('#edit_page_content #subject').val(response.data.subject);
@@ -124,10 +124,10 @@
             let subject = $('#edit_page_content #subject').val();
             let content = $('#edit_page_content #content').val();
            // let content = CKEDITOR.instances.content.getData();
-            let email_template_id = $('#edit_page_content #notification_template_id').val();
+            let email_template_id = $('#edit_page_content #sms_template_id').val();
             var data = { subject: subject, content: content, email_template_id:email_template_id};
             $.post(update_url, data, function(response) {
-              $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+              $.smsApp.send("Success", response.message, "top-right", "#5ba035", "success");
               setTimeout(function() {
                     location.reload()
                 }, 2000);
