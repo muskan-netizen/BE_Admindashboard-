@@ -127,7 +127,7 @@
             let email_template_id = $('#edit_page_content #sms_template_id').val();
             var data = { subject: subject, content: content, email_template_id:email_template_id};
             $.post(update_url, data, function(response) {
-              $.smsApp.send("Success", response.message, "top-right", "#5ba035", "success");
+              $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
               setTimeout(function() {
                     location.reload()
                 }, 2000);

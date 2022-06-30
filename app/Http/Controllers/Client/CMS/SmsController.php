@@ -29,6 +29,6 @@ class SmsController extends Controller
         $sms_template->subject = $request->subject;
         $sms_template->content = $request->content;
         $sms_template->save();
-        return $this->successResponse($sms_template, 'sms Template Updated Successfully.');
+        return $this->successResponse($sms_template, 'Sms Template Updated Successfully.');
     }
 }
