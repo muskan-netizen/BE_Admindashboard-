@@ -1617,8 +1617,8 @@ class AuthController extends BaseController
                     return response()->json(['massage' => __('User not found!')], 200);
                 }
                 User::where('id', $user->id)->update([
-                    'email' => $user->email."_deleted",  
-                    'phone_number' => $user->phone_number."_deleted",  
+                    'email' => $user->email.'_'.$user->id."_D",  
+                    'phone_number' => $user->phone_number.'_'.$user->id."_D",  
                     'auth_token' =>'',  
                     'system_id' =>'',  
                     'remember_token' => '',  
