@@ -28,7 +28,7 @@
                         <table class="table table-striped w-100">
                             <thead>
                                 <tr>
-                                    <th class="border-bottom-0">{{ __("sms Name") }}</th>
+                                    <th class="border-bottom-0">{{ __("Template Name") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
