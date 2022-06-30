@@ -649,6 +649,10 @@ class CartController extends FrontController
     }
 
     public function getProductPrescription(Request $request){
+        if(!empty($request->prescriptionId) && $request->requestType == 'delete_prescription'){
+            CartProductPrescription::where('id', $request->prescriptionId)->delete();
+            return response()->json(['status' => 'success', 'message' => "Prescription remove Successfully"]);
+        }
         $productPrescription = CartProductPrescription::where('cart_id', $request->cart)->where('product_id', $request->product)->get()->toArray();
         return response()->json($productPrescription);
     }

@@ -65,6 +65,16 @@
     background-repeat: no-repeat;
     color: #FFF !important;
 }
+
+#save_prescription_form .modal-footer {
+display: block;
+}
+.al_body_template_two .show-prescription-doc {
+overflow: auto;
+white-space: nowrap;
+overflow-y: hidden;
+width: 100%;
+}
 .show-prescription-close {
     position: relative;
     display: inline-block;
@@ -79,19 +89,7 @@
     border-radius: 10px;
     cursor: pointer;
 }
-#save_prescription_form .modal-footer {
-    display: block;
-    margin-top: 10%;
-}
-.al_body_template_two .show-prescription-doc {
-    position: absolute;
-    bottom: -47px;
-    left: 16px;
-    height: 66px;
-    overflow: auto;
-    white-space: nowrap;
-    overflow-y: hidden;
-}
+
 .al_body_template_two .show-prescription-doc img{
     margin:2px;
 }
@@ -107,9 +105,7 @@
 
 @media (max-width:576px){
     .al_body_template_two .show-prescription-doc {
-    position: absolute;
-    bottom: -18px;
-    left: 16px;
+   width:100%;
 }  
 }
 </style>
