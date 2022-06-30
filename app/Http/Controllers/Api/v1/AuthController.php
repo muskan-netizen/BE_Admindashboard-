@@ -1616,16 +1616,17 @@ class AuthController extends BaseController
                 if(!$user){
                     return response()->json(['massage' => __('User not found!')], 200);
                 }
-                $user->email = $user->email."_deleted";
-                $user->phone_number = $user->phone_number."_deleted";
-                $user->auth_token = "";
-                $user->system_id = "";
-                $user->remember_token = "";
-                $user->facebook_auth_id = "";
-                $user->twitter_auth_id = "";
-                $user->google_auth_id = "";
-                $user->apple_auth_id = "";
-                $user->save();
+                User::where('id', $user->id)->update([
+                    'email' => $user->email."_deleted",  
+                    'phone_number' => $user->phone_number."_deleted",  
+                    'auth_token' =>'',  
+                    'system_id' =>'',  
+                    'remember_token' => '',  
+                    'facebook_auth_id' => '',  
+                    'twitter_auth_id' => '',  
+                    'google_auth_id' => '',  
+                    'apple_auth_id' => '' 
+                    ]);
                 $user->delete();
                 DB::commit(); //Commit transaction after all the operations
                 return response()->json(['massage' => __('User Deleted Successfully')], 200);
