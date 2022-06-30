@@ -1090,11 +1090,11 @@ class CartController extends FrontController
                         ->first();
 
                     $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
-                    $up_prods = $this->metaProduct($langId, $doller_compare, 'upSell', $product->upSell);
+                    $up_prods = $this->metaProduct($langId, $doller_compare, 'upSell', ($product->upSell ?? ''));
                     if($up_prods){
                         $upSell_products->push($up_prods);
                     }
-                    $cross_prods = $this->metaProduct($langId, $doller_compare, 'crossSell', $product->crossSell);
+                    $cross_prods = $this->metaProduct($langId, $doller_compare, 'crossSell', ($product->crossSell ?? ''));
                     if($cross_prods){
                         $crossSell_products->push($cross_prods);
                     }

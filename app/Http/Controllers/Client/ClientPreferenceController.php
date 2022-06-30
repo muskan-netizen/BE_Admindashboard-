@@ -47,7 +47,7 @@ class ClientPreferenceController extends BaseController{
 
         $tags = Tag::with('primary')->get();
         $slots = ClientSlot::get();
-        $accounting = ThirdPartyAccounting::where('code','xero')->first();
+       
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
                                                 'slots'=>$slots,
@@ -61,8 +61,8 @@ class ClientPreferenceController extends BaseController{
                                                 'file_types' => $file_types,
                                                 'vendor_registration_documents' => $vendor_registration_documents,
                                                 'driver_registration_documents' => $driver_registration_documents, 
-                                                'file_types_driver' => $file_types_driver,
-                                                'accounting' => $accounting
+                                                'file_types_driver' => $file_types_driver
+                                                
                                             ]);
     }
 
@@ -111,14 +111,14 @@ class ClientPreferenceController extends BaseController{
         }
         $verify_codes = array('passbase');
         $verify_options = VerificationOption::whereIn('code', $verify_codes)->get();
+        $accounting = ThirdPartyAccounting::where('code','xero')->first();
         //pr($category_kyc_documents->first()->toArray() ); //
         $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
                     ->where('client_languages.client_code', Auth::user()->code)
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
-                    
-        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting'));
     }
 
     public function referandearnUpdate(Request $request, $code){
@@ -210,7 +210,7 @@ class ClientPreferenceController extends BaseController{
             if($request->has('xero_status') && $request->xero_status == 'on')
             {
                 if( ((!$request->has('xero_client_id')) || ($request->xero_client_id == '')) || ((!$request->has('xero_secret_id')) || ($request->xero_secret_id == ''))){
-                    return redirect()->route('configure.index')->with('error', 'Invalid Xero Configuration Data');
+                    return redirect()->route('configure.customize')->with('error', 'Invalid Xero Configuration Data');
                 }   
             }
             $json_creds = json_encode(array(

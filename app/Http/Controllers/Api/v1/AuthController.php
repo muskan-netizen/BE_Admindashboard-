@@ -1609,4 +1609,32 @@ class AuthController extends BaseController
             return $data;
         }
     }
+    public function deleteUser(Request $request){
+        try {
+            DB::beginTransaction(); //Initiate transaction
+                $user = Auth::user();
+                if(!$user){
+                    return response()->json(['massage' => __('User not found!')], 200);
+                }
+                User::where('id', $user->id)->update([
+                    'email' => $user->email."_deleted",  
+                    'phone_number' => $user->phone_number."_deleted",  
+                    'auth_token' =>'',  
+                    'system_id' =>'',  
+                    'remember_token' => '',  
+                    'facebook_auth_id' => '',  
+                    'twitter_auth_id' => '',  
+                    'google_auth_id' => '',  
+                    'apple_auth_id' => '' 
+                    ]);
+                $user->delete();
+                DB::commit(); //Commit transaction after all the operations
+                return response()->json(['massage' => __('User Deleted Successfully')], 200);
+                //code...
+            } catch (Exception $e) {
+                DB::rollBack();
+                return response()->json(['massage' => __('Something went wrong!')], 400);
+               
+            }
+    }
 }
