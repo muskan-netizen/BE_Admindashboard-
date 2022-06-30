@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use Auth;
 use Image;
+use URL;
 use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner, Client, Category, Brand, Product, ClientLanguage, User, ClientCurrency, ClientPreference, Country, UserAddress, UserVerification,EmailTemplate, VerificationOption, WebStylingOption};
+use App\Models\{Currency, Banner, Client, Category, Cart, Brand, Product, ClientLanguage, User, ClientCurrency, ClientPreference, Country, UserAddress, UserVerification,EmailTemplate, VerificationOption, WebStylingOption};
 
 
 class UserController extends FrontController{
@@ -28,6 +29,14 @@ class UserController extends FrontController{
         $user = User::where('id', Auth::user()->id)->first();
         $preference = ClientPreference::select('verify_email', 'verify_phone','third_party_accounting')->where('id', '>', 0)->first();
         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+        if(Session::has('user_type')){
+            Session::forget('user_type');
+            $cart = Cart::latest()->limit(1)->get();
+            if(empty($cart[0]->user_id)){
+                $cart_detail = Cart::updateOrCreate(['id' => $cart[0]->id], ['user_id'=>Auth::user()->id]);
+                return redirect()->route('showCart');
+            }
+        }
         if($passbase_check && is_null($user->passbase_verification))
         {
             return redirect()->route('passbase.page');

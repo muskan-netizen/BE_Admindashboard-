@@ -119,11 +119,11 @@
                                     <span class="icon-vendor"></span>
                                     @php
                                         $vendormenu = getNomenclatureName('Vendors', true);
-                                        $vendormenulabel = ($vendormenu=="Vendors")?__('Vendors'):$vendormenu;
+                                        $vendormenulabel = ($vendormenu=="Vendors")?__('Vendors'):__($vendormenu);
 
                                     @endphp
                                         {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
-                                        <span>{{ $vendormenulabel }}</span>
+                                        <span>{{ __($vendormenulabel) }}</span>
                                     </a>
                                 </li>
                             @endif
@@ -166,7 +166,7 @@
                                                     $Vendors = getNomenclatureName('Vendors', true);
                                                     $VendorsTrans = ($Vendors=="Vendors")?__('Vendors'):$Vendors;
                                                 @endphp
-                                                    <a href="{{route('account.vendor')}}">{{ $VendorsTrans }}</a>
+                                                    <a href="{{route('account.vendor')}}">{{ __($VendorsTrans) }}</a>
                                                 </li>
                                             @endif
                                             @if(Auth::user()->is_superadmin == 1)
@@ -198,7 +198,7 @@
                                                 @endif
                                                 @if(in_array('subscription_plans_vendors',$allowed) || Auth::user()->is_superadmin == 1)
                                                     <li>
-                                                        <a href="{{route('subscription.plans.vendor')}}">{{ $VendorsTrans }}</a>
+                                                        <a href="{{route('subscription.plans.vendor')}}">{{ __($VendorsTrans) }}</a>
                                                     </li>
                                                 @endif
                                             </ul>
@@ -305,6 +305,11 @@
                                     @if(in_array('cms_notifications',$allowed) || Auth::user()->is_superadmin == 1)
                                         <li>
                                             <a href="{{route('cms.notifications')}}">{{ __('Notifications') }}</a>
+                                        </li>
+                                    @endif
+                                    @if(in_array('cms_sms',$allowed) || Auth::user()->is_superadmin == 1)
+                                        <li>
+                                            <a href="{{route('cms.sms')}}">{{ __('SMS') }}</a>
                                         </li>
                                     @endif
                                 </ul>
