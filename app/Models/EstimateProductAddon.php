@@ -17,9 +17,8 @@ class EstimateProductAddon extends Model
         return $this->belongsTo('App\Models\EstimateAddonSet', 'estimate_addon_id' );
     }
 
-
-    public function estimated_product_addon_option(){
-        return $this->belongsTo('App\Models\EstimateAddonOption', 'estimated_addon_option_id' );
+    public function estimate_product_addon_option(){
+        return $this->belongsTo('App\Models\EstimateAddonOption', 'estimate_addon_id' );
     }
 
     public function setoptions(){

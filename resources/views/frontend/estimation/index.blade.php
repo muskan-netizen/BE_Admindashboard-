@@ -707,7 +707,7 @@
 
                                                     <div class="checkbox-success d-flex mb-1">
                                                         <input type="hidden" id="fake_product_id" name="fake_product_id" value="<%= estimateAddOnData.id %>">
-                                                        <select class="pr-2 mb-0 flex-fill font-14 estimate_product_addon_option" name="addonOptionData[<%= key1 %>][]" required>
+                                                        <select class="pr-2 mb-0 flex-fill font-14 estimate_product_addon_option form-control" name="addonOptionData[<%= key1 %>][]" required>
                                                             <option value="">--Please Select--</option>
                                                             <% _.each(estimate_addon_set.option, function(option, key2){ %>
                                                             <option value="<%= option.id %>"><%= option.title %></option>

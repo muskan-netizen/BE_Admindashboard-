@@ -137,7 +137,9 @@ class ProductEstimationController extends Controller
          //$userProducts = EstimatedProduct::where('estimated_cart_id', $userCart->id )->get();
         // Search for similar products and addons. - By Ovi
         //foreach($request->product as $product){
-            $userProducts = $request->product;
+            // $userProducts = $request->product;
+            // \Log::info($request->product);
+            // return json_encode($request->product);
             $searchResult = $this->searchProductExpection($request->product, $langId);
         //}
 
@@ -187,13 +189,13 @@ class ProductEstimationController extends Controller
         //     // }
         //   }
         // }
-
+        return $this->successResponse($searchResult);
         // Return Vendor Count and Result.
-        if($searchResult->count()>0){
-            return $this->successResponse($searchResult);
-        }else{
-            return $this->errorResponse('Vendors Found','404');
-        }
+        // if($searchResult->count()>0){
+        //     return $this->successResponse($searchResult);
+        // }else{
+        //     return $this->errorResponse('Vendors Found','404');
+        // }
        
 
     }
@@ -233,13 +235,32 @@ class ProductEstimationController extends Controller
     //     return $this->errorResponse('Qrcode not found in System.','404');
     // }
 
+    public function getImage($value){
+        $values = array();
+        $img = 'default/default_image.png';
+        if(!empty($value)){
+          $img = $value;
+          $ex = checkImageExtension($img);
+              $values['proxy_url'] = \Config::get('app.IMG_URL1');
+              if (substr($img, 0, 7) == "http://" || substr($img, 0, 8) == "https://"){
+                  $values['image_path'] = \Config::get('app.IMG_URL2').'/'.$img;
+              } else {
+                  $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+              }
+              $values['image_fit'] = \Config::get('app.FIT_URl');
+              $values['original'] = $img;
+          return $values;
+        }
+        return $value;
+  
+      }
+
     public function searchProductExpection($userProducts, $langId)
     {
             // Make empty array for vendors, product keywords and adoon keywords
             $all_vendors = array();
             $keywords = array();
             $addonKeywords = array();
-           
             // Loop through cart products
             foreach($userProducts as $i=> $product)
             {
@@ -249,17 +270,12 @@ class ProductEstimationController extends Controller
                 // Save Product Name in $keywords, so that we can run search later
                 $keywords[] =  ($estimateProductTranslation) ? $estimateProductTranslation->name : '';
 
-                // Get All Addons of ($this) Specific Product
-                $estimatedProductAddons = EstimateProductAddon::where('estimate_product_id', $product['estimate_product_id'])->get();
-                \Log::info(json_encode($estimatedProductAddons[0]->estimated_product_addon_option));
-                dd('hi');
                 // Loop through these addons and save the ($title) for later search
-                foreach($estimatedProductAddons as $k=> $estimatedProductAddon){
-                    $addonKeywords[$estimateProductTranslation->name][] = $estimatedProductAddon->estimated_product_addon_option->title;
-                }
+                    foreach($product['estimate_products'] as $k=> $estimatedProductAddon){
+                        $addonKeywords[$estimateProductTranslation->name][] = $estimatedProductAddon['title'];
+                    }
             }
-            \Log::info(json_encode($addonKeywords));
-            dd('hi');
+      
             $pkeyCnt = count($keywords);
             $pkeys = '';
             foreach($keywords as $no => $name)
@@ -277,7 +293,7 @@ class ProductEstimationController extends Controller
             foreach($vendorsgb as $vpg)
             {
                 $products = array();
-                $vendors = DB::select("SELECT v.id as vid,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN ($pkeys) and is_live='1' and v.id='$vpg->vid' group by ps.title ");
+                $vendors = DB::select("SELECT v.id as vid,p.sku,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.id  as variant_id,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN ($pkeys) and is_live='1' and v.id='$vpg->vid' group by ps.title ");
                 foreach($vendors as $vp)
                 {
 
@@ -293,7 +309,9 @@ class ProductEstimationController extends Controller
                     }
 
                         $addons =array();
-                        //pr($addonKeywords[$vp->ptitle]);
+                        $addon_id = array();
+                        $option_id = array();
+                        $addon_price = array(); 
                         //Fetch Products Addon set
                         $addon = DB::select("SELECT paj.addon_id as aid,sa.title,ado.id as aoid from product_addons as paj join addon_sets as sa on sa.id=paj.addon_id join addon_options as ado on paj.addon_id=ado.addon_id join addon_option_translations as adot on ado.id=adot.addon_opt_id where sa.status='1' and product_id='$vp->pid' and adot.title IN ($addonsKeys) group by paj.addon_id ");
                         foreach($addon as $vpa)
@@ -312,6 +330,8 @@ class ProductEstimationController extends Controller
                                     'title' => $opts->title,
                                     'price' => $opts->price
                                 );
+                                array_push($option_id, $opts->aoid);
+                                array_push($addon_price, $opts->price??0);
                             }
 
                             $addons[] = array(
@@ -319,31 +339,38 @@ class ProductEstimationController extends Controller
                                 'addonName' => $vpa->title,
                                 'option' => $addoption,
                             );
-
+                            array_push($addon_id, $vpa->aid);
                         }
 
                     $products[] = array(
                         'title' => $vp->ptitle,    
-                        'pid' => $vp->pid,
-                        'price' => $vp->pprice,
-                        'needCnt'   => $pkeyCnt,
-                        'addon'=> $addons
-                        
+                        'product_id' => $vp->pid,
+                        'product_sku' => $vp->sku,
+                        'product_variant_id' => $vp->variant_id,
+                        'price' => $vp->pprice + array_sum($addon_price),
+                        'addon'=> $addons,
+                        'addonIds'=> $addon_id,
+                        'optionIds'=> $option_id,
+                        'match'   => (($pkeyCnt==count($option_id))?'C':'P')          
                     );
 
                 }
 
             $data[] = array(
-                'vid' => $vp->vid,
+                'id' => $vp->vid,
                 'address' => $vp->address,
                 'logo' => $this->getImage($vp->logo),    
                 'name' => $vp->vname,
+                'price' => $vp->pprice + array_sum($addon_price),
                 'product' => $products
             );
-
         }
-           //dd($data);
-            return $data;
+
+        // $data = usort($data, function ($a, $b) {
+        //     return ($a['price'] < $b['price']) ? -1 : 1;
+        //   });
+        // \Log::info(json_encode($data));
+        return $data;
     }
 
     // public function searchProductExpection($userProducts, $langId)
