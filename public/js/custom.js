@@ -4749,7 +4749,10 @@ $(document).ready(function () {
             break;
             case 42:
                 paymentViaDpo('', payment_option_id, ''); 
-            break;
+                break;
+            case 42:
+                paymentViaUPay('', payment_option_id, ''); 
+                break;
 
         }
     }
