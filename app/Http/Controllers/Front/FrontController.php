@@ -914,13 +914,16 @@ class FrontController extends Controller
                 $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
 
                 $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
+                \Log::info('sms:--//');
+                \Log::info($smsTemplates);
+                \Log::info('sms:--//');
                 if(!empty($smsTemplates)){
                     $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
                     $smsTemplates = str_replace("{amount}", $currSymbol . $order->payable_amount, $smsTemplates);
                     $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
-                    \Log::info('sms:');
+                    \Log::info('sms:--');
                     \Log::info($body);
-                    \Log::info('sms:');
+                    \Log::info('sms:--');
                 }else{
                     $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . $order->payable_amount . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
                 }
