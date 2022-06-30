@@ -15,12 +15,18 @@
 
     async function getChatRooms(){
         var html='';
-        axios.get(`https://chat.royoorders.com/api/room`)
+        axios.post(`https://chat.royoorders.com/api/room/fetchRoomByClient`, {
+            sub_domain: window.location.origin,
+            client_id:  1,
+            db_name:Auth.database_name,
+            user_id:  Auth.auth_id,   
+            type:'general',      
+        })
         .then(async response => {
-            // console.log(response.data);
-             if(response.status == 200) {
-                if(response.data.length > 0) {
-                   await response.data.forEach(function (room) {
+             console.log(response.data);
+             if(response.data.status) {
+                if(response.data.roomData.length > 0) {
+                   await response.data.roomData.forEach(function (room) {
                         html+= `<div id="room_${room._id}" data-id="${room._id}" data-roomName="${room.room_name}" class="chat-list-item d-flex align-items-start rounded bg-white fetchChat">`;
                         html+= `<div class="align-self-center mr-3">`;
                         html+= `<div class="rounded-circle bg-gray" style="width: 8px; height: 8px; opacity: 0;"></div>`;
@@ -31,10 +37,10 @@
                         html+= `</div>`
                         html+= `</div>`
                         html+= `<div class="media-body overflow-hidden">`
-                        html+= `<h5 class="text-truncate font-size-14 mb-1">#${room.room_name}</h5>`
+                        html+= `<h5 class="text-truncate font-size-14 mb-1">${room.room_name}</h5>`
+                        html+= `<div class="font-size-11">${room.created_date}</div>`
                         html+= `<p id="preview_message_${room._id}" class="text-truncate mb-0">..</p>`
                         html+= `</div>`
-                        html+= `<div class="font-size-11">${room.created_date}</div>`
                         html+= `</div>`;
 
                     });
@@ -87,6 +93,8 @@
                     scrollDown();
                 } else {
                     $('#chatHistory').html(``);
+                    $('#rightChat').show();
+                    $('#chatHistory').addClass('room_'+roomId);
                 }
 
              } else {

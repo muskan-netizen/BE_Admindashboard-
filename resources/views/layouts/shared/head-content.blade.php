@@ -117,12 +117,19 @@ if($theme && !empty($theme->map_key)){
 @endif
 @php 
 $mapKey = '1234';
+$socket_url = ''; 
+$admin_chat = '';
+$driver_chat = '';
+$customer_chat = '';
+$db ='';
 if(Auth::check()){
 	$cl_data = \App\Models\Client::where(['id' => 1])->first();
 	$socket_url = @$cl_data->socket_url;
 	$admin_chat = @$cl_data->admin_chat;
 	$driver_chat = @$cl_data->driver_chat;
 	$customer_chat = @$cl_data->customer_chat;
+	$db = @$cl_data->database_name;
+	$auth_id = Auth::user()->id;
 }
 
 @endphp
@@ -131,7 +138,13 @@ if(Auth::check()){
 	var admin_chat = "{!! $admin_chat !!}";
 	var driver_chat = "{!! $driver_chat !!}";
 	var customer_chat = "{!! $customer_chat !!}";
+	var auth = "{!! $auth_id !!}";
+	var db = "{!! $db !!}";
 	var socket = null;
+	var Auth = {
+		auth_id:auth,
+		database_name:db
+	}
 	var SocketConstants = {
     	Socket_url : sUrl,
 		admin_chat : admin_chat,
