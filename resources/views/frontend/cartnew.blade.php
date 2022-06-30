@@ -65,11 +65,32 @@
     background-repeat: no-repeat;
     color: #FFF !important;
 }
-
+.show-prescription-close {
+    position: relative;
+    display: inline-block;
+}
+.show-prescription-close i {
+    position: absolute;
+    right: -2px;
+    top: 0px;
+    font-size: 11px;
+    background: #eee;
+    padding: 1px 2px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+#save_prescription_form .modal-footer {
+    display: block;
+    margin-top: 10%;
+}
 .al_body_template_two .show-prescription-doc {
     position: absolute;
     bottom: -47px;
     left: 16px;
+    height: 66px;
+    overflow: auto;
+    white-space: nowrap;
+    overflow-y: hidden;
 }
 .al_body_template_two .show-prescription-doc img{
     margin:2px;
@@ -1477,7 +1498,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 </div>
 
 <div id="prescription_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{__('Add Prescription')}}</h4>
@@ -1497,10 +1518,12 @@ $client_preferences = \App\Models\ClientPreference::first();
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
+                            
                         </div>
-                        <div class="show-prescription-doc">     
-                        </div>
+                       
                     </div>
+                        <div class="show-prescription-doc">     
+                             </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitPrescriptionForm">{{__('Submit')}}</button>

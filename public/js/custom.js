@@ -3844,7 +3844,7 @@ $(document).ready(function () {
                 // show-prescription-doc
                 var showPrescriptionDoc = '';
                 $.each(response, function (key, res) {
-                    showPrescriptionDoc += '<img src="'+res.prescription.proxy_url+'50/50'+res.prescription.image_path+'" alt="product-img" height="60">'
+                    showPrescriptionDoc += '<div class="show-prescription-close"><i class="fa fa-times" aria-hidden="true"></i><img src="'+res.prescription.proxy_url+'50/50'+res.prescription.image_path+'" alt="product-img" height="60"></div>'
                 });
                 
                 $(".show-prescription-doc").html(showPrescriptionDoc);
