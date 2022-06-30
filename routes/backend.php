@@ -4,6 +4,7 @@ use App\Http\Controllers\Front\SearchController;
 use App\Http\Controllers\Client\CMS\PageController;
 use App\Http\Controllers\Client\CMS\EmailController;
 use App\Http\Controllers\Client\CMS\NotificationController;
+use App\Http\Controllers\Client\CMS\SmsController;
 use App\Http\Controllers\Client\SocialMediaController;
 use App\Http\Controllers\Client\VendorPayoutController;
 use App\Http\Controllers\Client\DownloadFileController;
@@ -58,6 +59,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('cms/notifications', [NotificationController::class, 'index'])->name('cms.notifications');
         Route::get('cms/notifications/{id}', [NotificationController::class, 'show'])->name('cms.notifications.show');
         Route::post('cms/notifications/update', [NotificationController::class, 'update'])->name('cms.notifications.update');
+        Route::get('cms/sms', [SmsController::class, 'index'])->name('cms.sms');
+        Route::get('cms/sms/{id}', [SmsController::class, 'show'])->name('cms.sms.show');
+        Route::post('cms/sms/update', [SmsController::class, 'update'])->name('cms.sms.update');
+
         Route::get('account/orders', [OrderController::class, 'index'])->name('account.orders');
         Route::get('account/promo-code', [PromoCodeController::class, 'index'])->name('account.promo.code');
         Route::post('woocommerce/save', [ProductImportController::class, 'postWoocommerceDetail'])->name('woocommerce.save');

@@ -7,6 +7,7 @@ use DB;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
+use App\Models\SmsTemplate;
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
@@ -1413,7 +1414,14 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
-                $body = __("Hi ") . $user->name . __(", Your order of amount ") . $currSymbol . decimal_format($order->payable_amount) . __(" for order number ") . $order->order_number . __(" has been placed successfully.");
+                $smsTemplates =  SmsTemplate::where('slug', 'order-place-Successfully')->first()->content;
+                if(!empty($smsTemplates)){
+                    $smsTemplates = str_replace("{user_name}", $user->name, $smsTemplates);
+                    $smsTemplates = str_replace("{amount}", $currSymbol . decimal_format($order->payable_amount), $smsTemplates);
+                    $body = str_replace("{order_number}", $order->order_number, $smsTemplates);
+                }else{
+                    $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . decimal_format($order->payable_amount) . " for order number " . $order->order_number . " has been placed successfully.";
+                }
                 if (!empty($prefer->sms_provider)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 }

@@ -307,6 +307,11 @@
                                             <a href="{{route('cms.notifications')}}">{{ __('Notifications') }}</a>
                                         </li>
                                     @endif
+                                    @if(in_array('cms_sms',$allowed) || Auth::user()->is_superadmin == 1)
+                                        <li>
+                                            <a href="{{route('cms.sms')}}">{{ __('SMS') }}</a>
+                                        </li>
+                                    @endif
                                 </ul>
                             </div>
                         </li>
