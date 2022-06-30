@@ -235,7 +235,6 @@ class CustomerAuthController extends FrontController
                 }
 
                 if(!empty($req->phone_number) && isset($preferences) && ($preferences->verify_phone == 0)){
-
                     $validator = $req->validate([
                         'phone_number' => 'string|min:8|max:15|unique:users'
                     ]);
@@ -1046,3 +1045,4 @@ class CustomerAuthController extends FrontController
 
 
 }
+
