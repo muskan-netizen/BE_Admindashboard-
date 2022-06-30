@@ -66,6 +66,14 @@
     color: #FFF !important;
 }
 
+.al_body_template_two .show-prescription-doc {
+    position: absolute;
+    bottom: -47px;
+    left: 16px;
+}
+.al_body_template_two .show-prescription-doc img{
+    margin:2px;
+}
 .al_body_template_one .vendor_slot_cart input {display: inline-block;width: 52%;}
 .al_body_template_one .vendor_slot_cart select {display: inline-block;width: 45%;}
 
@@ -73,6 +81,16 @@
 .grn_popop-total_amt label{  font-size: 12px !important;}
 
 .vendor_cart-check label {display: inline-block;}
+
+
+
+@media (max-width:576px){
+    .al_body_template_two .show-prescription-doc {
+    position: absolute;
+    bottom: -18px;
+    left: 16px;
+}  
+}
 </style>
 
 @endsection
@@ -327,9 +345,9 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 </div>
                                 <% if(cart_details.pharmacy_check == 1){ %>
                                     <% if(vendor_product.product.pharmacy_check == 1){ %>
-                                        <button type="button" class="btn btn-solid prescription_btn mt-2" data-product="<%= vendor_product.product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">Add Prescription</button>
-                                        <% if(cart_details.cart_product_prescription > 0){ %>
-                                            <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong><%= cart_details.cart_product_prescription %> Prescription Added</strong></h4>
+                                        <button type="button" class="btn btn-solid prescription_btn mt-2" data-cart="<%= vendor_product.cart_id %>" data-product="<%= vendor_product.product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">Add Prescription</button>
+                                        <% if(vendor_product.cart_product_prescription > 0){ %>
+                                            <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong><%= vendor_product.cart_product_prescription %> Prescription Added</strong></h4>
                                         <% } %>
                                     <% } %>
                                 <% } %>
@@ -1469,14 +1487,18 @@ $client_preferences = \App\Models\ClientPreference::first();
                 @csrf
                 <div class="modal-body" id="AddCardBox">
                     <div class="row">
-                        <div class="col-sm-6" id="imageInput">
+                        <div class="col-sm-6 position-relative" id="imageInput">
                             <input type="hidden" id="vendor_idd" name="vendor_idd" value="" />
                             <input type="hidden" id="product_id" name="product_id" value="" />
-                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" class="dropify" multiple />
-                            <p class="text-muted text-center mt-2 mb-0">{{__('Upload Prescription')}}</p>
+                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" class="dropify uploaded-prescription-img" multiple />
+                            <!-- <img id="uploaded-prescription" style="margin-top: 9px;display:none;" src="#"/> -->
+                            <div class="uploaded-prescription"></div>
+                            <p class="text-muted text-center mt-2 mb-0">{{__('Uploaded Prescription(s)')}}</p>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
+                        </div>
+                        <div class="show-prescription-doc">     
                         </div>
                     </div>
                 </div>
@@ -1485,6 +1507,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                 </div>
             </form>
         </div>
+        
     </div>
 </div>
 <div class="modal fade pick-address" id="pick_address" tabindex="-1" aria-labelledby="pick-addressLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -1718,6 +1741,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
     var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
     var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
+    var get_product_prescription = "{{url('get/product/prescription')}}";
     var cart_clear_stripe_oxxo_url = "{{url('payment/stripe_oxxo/clear')}}";
     var user_store_address_url = "{{route('address.store')}}";
     var product_faq_update_url = "{{ route('cart.productfaq') }}";
@@ -2084,6 +2108,43 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         $(this).focus();
         $(this).removeClass("is-invalid");
         $("#error-msg").hide();
+    });
+
+    // function readPrescriptionURL(input) {
+    //     if (input.files && input.files[0]) {
+    //         var reader = new FileReader();
+    //         $("#uploaded-prescription").css("display", "block");
+    //         reader.onload = function (e) {
+    //             $('#uploaded-prescription').attr('src', e.target.result).width(120).height(87);
+    //         };
+
+    //         reader.readAsDataURL(input.files[0]);
+    //     }
+    // }
+
+    $(function() {
+        // Multiple images preview in browser
+        var imagesPreview = function(input, placeToInsertImagePreview) {
+
+            if (input.files) {
+                var filesAmount = input.files.length;
+
+                for (i = 0; i < filesAmount; i++) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(event) {
+                        $($.parseHTML('<img>')).attr('src', event.target.result).width(120).height(87).css("margin", '2px').appendTo(placeToInsertImagePreview);
+                    }
+
+                    reader.readAsDataURL(input.files[i]);
+                }
+            }
+
+        };
+
+        $('.uploaded-prescription-img').on('change', function() {
+            imagesPreview(this, 'div.uploaded-prescription');
+        });
     });
 
     function assignPhoneInput() {
