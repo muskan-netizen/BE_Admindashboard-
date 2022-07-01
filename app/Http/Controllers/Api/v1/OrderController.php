@@ -470,7 +470,7 @@ class OrderController extends BaseController
                     }
                     $payable_amount = $payable_amount - $loyalty_amount_saved;
 
-                    $ex_gateways_wallet = [4,36]; // stripe,mycash
+                    $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
                     $wallet_amount_used = 0;
                     if ($user->balanceFloat > 0) {
                         $wallet = $user->wallet;
