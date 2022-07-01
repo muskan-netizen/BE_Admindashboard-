@@ -91,7 +91,7 @@ class WindcaveController extends FrontController
    
          $request->amt = $amt;
         }
-        $request->request->add(['amt'=>number_format($amt,2)]);
+        $request->request->add(['amt'=>getDollarCompareAmount($amt,$this->currency)]);
         return $time;
     }
 
@@ -100,7 +100,7 @@ class WindcaveController extends FrontController
         $order_number =  $this->orderNumber($request);
         $data = array(
             "type" => 'purchase',
-            "amount" => number_format($request->amt,2),
+            "amount" => getDollarCompareAmount($request->amt,$this->currency),
             "currency" => $this->currency,
             "merchantReference" => $order_number,
             "storeCard" => true,
@@ -116,12 +116,12 @@ class WindcaveController extends FrontController
 
     public function createHashApp(Request $request)
     {
-        $request->request->add(['from'=>$request->action,'amt'=>number_format($request->amount,2),'subsid'=>$request->subscription_id??'']);
+        $request->request->add(['from'=>$request->action,'amt'=>$request->amount,'subsid'=>$request->subscription_id??'']);
         $user = auth()->user();
         $order_number =  $this->orderNumber($request);
         $data = array(
             "type" => 'purchase',
-            "amount" => number_format($request->amt,2),
+            "amount" => getDollarCompareAmount($request->amt,$this->currency),
             "currency" => $this->currency,
             "merchantReference" => $order_number,
             "storeCard" => true,

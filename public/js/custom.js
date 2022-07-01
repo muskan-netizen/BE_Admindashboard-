@@ -511,7 +511,6 @@ $(document).ready(function () {
         var selected_option = $("input[name='subscription_payment_method']:checked");
         // var subscription_id = $('#subscription_payment_form #subscription_id').val();
         var payment_option_id = selected_option.data("payment_option_id");
-        console.log(payment_option_id);
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
             // $('#subscription_payment').modal('hide');
@@ -3815,11 +3814,77 @@ $(document).ready(function () {
         }, 8000);
     }
 
-    $(document).on('click', '.prescription_btn', function (e) {
-        $("#product_id").val($(this).data("product"));
-        $("#vendor_idd").val($(this).data("vendor_id"));
-        $('#prescription_form').modal('show');
+    $(document).on('click', '.prescription-doc-remove', function (e) {
+        var prescriptionId = $(this).data("prescription_id");
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: get_product_prescription,
+            dataType: 'json',
+            data: {prescriptionId:prescriptionId,requestType:'delete_prescription'},
+            beforeSend: function () {
+                $(".loader_box").show();
+            },
+            success: function (response) {
+                if (response.status == 'success') {
+                    $(".modal .close").click();
+                    location.reload();
+                }
+            },
+            complete: function () {
+                $('.loader_box').hide();
+            }
+        });
     });
+
+    $(document).on('click', '.prescription_btn', function (e) {
+        e.preventDefault();
+        $(".uploaded-prescription").html("");
+        $(".uploaded-prescription-img").val(null);
+        var cart = $(this).data("cart");
+        var product = $(this).data("product");
+        var vendor = $(this).data("vendor_id");
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: get_product_prescription,
+            dataType: 'json',
+            data: {cart:cart,product:product},
+            beforeSend: function () {
+                $(".loader_box").show();
+            },
+            success: function (response) {
+                $("#product_id").val(product);
+                $("#vendor_idd").val(vendor);
+
+                // show-prescription-doc
+                var showPrescriptionDoc = '';
+                $.each(response, function (key, res) {
+                    showPrescriptionDoc += '<div class="show-prescription-close"><i class="fa fa-times prescription-doc-remove" data-prescription_id="'+res.id+'" aria-hidden="true"></i><img src="'+res.prescription.proxy_url+'50/50'+res.prescription.image_path+'" alt="product-img" height="60"></div>'
+                });
+                
+                $(".show-prescription-doc").html(showPrescriptionDoc);
+                $('#prescription_form').modal('show');
+            },
+            complete: function () {
+                $('.loader_box').hide();
+            }
+        });
+    });    
 
     $(document).on('click', '.submitPrescriptionForm', function (e) {
         e.preventDefault();
@@ -4125,6 +4190,12 @@ $(document).ready(function () {
             break;
             case 40:
                 paymentViaUseRede('', payment_option_id, ''); 
+            break;
+            case 41:
+                payWithOpenPay('', payment_option_id, ''); 
+            break;
+            case 42:
+                paymentViaDpoSubscription('', payment_option_id, ''); 
             break;
         
         }
@@ -4523,6 +4594,25 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+            case '41':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    payWithOpenPay(address_id, payment_option_id, order);
+                }else{
+                    return false;
+                }
+            break;
+            case '42':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
+                if (order != '') {
+                    //payWithDpo
+                    payWithDpo(order);
+                }
+                else{
+                    return false;
+                }
+            break;
            
         
         }
@@ -4722,6 +4812,12 @@ $(document).ready(function () {
             break;
             case 40:
                 paymentViaUseRede('', payment_option_id, ''); 
+            break;
+            case 41:
+                payWithOpenPay('', payment_option_id, '');
+            break;
+            case 42:
+                paymentViaDpo('', payment_option_id, ''); 
             break;
 
         }

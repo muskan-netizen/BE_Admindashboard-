@@ -12,6 +12,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 {
@@ -19,7 +21,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     use \OwenIt\Auditing\Auditable;
     use HasWallet;
     use HasWalletFloat;
-
+    use SoftDeletes;
     /**
      * The attributes that are mass assignable.
      *
