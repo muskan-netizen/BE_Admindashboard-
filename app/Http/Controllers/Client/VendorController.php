@@ -636,7 +636,11 @@ class VendorController extends BaseController
         $product_categories = VendorCategory::with(['category', 'category.translation' => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
             ->where('category_translations.language_id', $langId);
-        }])->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
+        }])
+        ->whereHas('category', function($q) use($langId){
+            $q->whereNotNull('deleted_at')->orWhere('deleted_at', '!=', '');
+        })
+        ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
@@ -644,7 +648,7 @@ class VendorController extends BaseController
                 $p_categories->push($pc->category);
             }
             $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy_new($product_categories_build);
+            $product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
             foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
@@ -1616,7 +1620,11 @@ class VendorController extends BaseController
         $product_categories = VendorCategory::with(['category', 'category.translation' => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
             ->where('category_translations.language_id', $langId);
-        }])->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
+        }])
+        ->whereHas('category', function($q) use($langId){
+            $q->whereNotNull('deleted_at')->orWhere('deleted_at', '!=', '');
+        })
+        ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
@@ -1624,7 +1632,7 @@ class VendorController extends BaseController
                 $p_categories->push($pc->category);
             }
             $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy_new($product_categories_build);
+            $product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
             foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
