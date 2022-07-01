@@ -55,6 +55,10 @@
             <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
             <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude"/>
             <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude"/>
+
+            <input type="hidden" name="default_cab_vendor" value="" id="default_cab_vendor">
+            <input type="hidden" name="default_cab_vendor_id" value="" id="default_cab_vendor_id">
+            
             <input type="hidden" id="address-input" value=""/>
             <input type="hidden" id="address-latitude" value=""/>
             <input type="hidden" id="address-longitude" value=""/>

@@ -671,10 +671,14 @@ $(document).ready(function () {
         }
     });
 
+    $(document).on("change", "#schedule_datetime", function () {
+        cartHeader();
+    });  
+
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-
+        
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -764,6 +768,7 @@ $(document).ready(function () {
         $('.cross').hide();
         $('#schedule_datetime').val('');
         $('#tasknow').val('now');
+        cartHeader();
     });
 
     $(document).on("click", ".clproduct_cart_order_form", function(e) {
@@ -2098,8 +2103,9 @@ $(document).ready(function () {
     function cartHeader(address_id) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
+        
         $.ajax({
-            data: { address_id: address_id },
+            data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
             dataType: 'json',
             url: cart_product_url,
@@ -2154,6 +2160,11 @@ $(document).ready(function () {
                                     $("#order_placed_btn").removeAttr("disabled");
                                     $("#order_placed_btn").removeClass("d-none");
                                 }
+                                if(response.schedule_datetime!=null){
+                                    $("#schedule_datetime").val(response.schedule_datetime);
+                                    $("#taskschedule").click();
+                                }
+                                
                             }
                             cartTotalProductCount();
 
