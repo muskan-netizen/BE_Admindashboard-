@@ -400,7 +400,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('cancel-order/request/status/update', 'Client\OrderCancelRequestsController@updateStatus')->name('cancel-order.request.status.update');
 
         /**Chat resourses */
-        Route::resource('chat', 'Client\ChatController');
+        //Route::resource('chat', 'Client\ChatController');
+        Route::get('chat/{room_id?}', 'Client\ChatController@index')->name("chat.index");
+        Route::get('chat/user/{room_id?}', 'Client\ChatController@VendorUserChat')->name("chat.VendorUserChat");
+        Route::post('chat/startChat', 'Client\ChatController@startChat')->name('chat.startChat');
     });
 });
 

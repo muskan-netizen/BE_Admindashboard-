@@ -216,6 +216,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                         </a>
                                         <div id="update-single-status" class="my-2">
+                                            <a class=start_chat data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>">Start Chat</a>
                                                 <% if(vendor.order_status_option_id == 1) { %>
                                                     <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Accept') }}</button>
                                                     <!--<button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>-->
@@ -237,6 +238,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                 <% if((vendor.order_status_option_id == 1) || ((vendor.order_status_option_id != 6) && (vendor.order_status_option_id != 3))) { %>
                                                     <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>
                                                 <% } %>
+                                                
                                             </div>
                                     </div>
                                     </div>
@@ -487,6 +489,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 <!-- <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script> -->
 
 @endsection
+
+@section('script-bottom')
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{asset('assets/js/chat/vendor_chat.js')}}"></script>
+@endsection
 @section('script')
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
@@ -519,7 +526,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         //console.log('dasd');
         var type =  $("a.nav-link.active").data('rel');
         var search = $("#search_via_keyword").val();
-        init(type, "{{ route('orders.filter') }}", search, false);
+        
+        (type, "{{ route('orders.filter') }}", search, false);
 
     }
 
