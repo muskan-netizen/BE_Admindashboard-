@@ -1395,6 +1395,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                </div>
                @endif
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="is_static_dropoff" class="mr-2 mb-0">{{__('Static dropoff location')}}<small class="d-block pr-5">{{__('Enable to add the predefined list and this will reflect in the drop-off location.')}}</small></label>
+                  <span> <input type="checkbox" data-plugin="switchery" name="is_static_dropoff" id="is_static_dropoff" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_static_dropoff == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
                </div>
             </div>
          </form>

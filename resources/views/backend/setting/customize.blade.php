@@ -1135,6 +1135,12 @@
             </div>
          @endif
          <!-- Xero Accounting API Credentials Ends -->
+         
+         {{-- Added By harbans --}}
+         <!-- static_dropoff List -->
+         @if($preference->is_static_dropoff == '1') 
+         @endif
+         <!-- static_dropoff Ends -->
     </div>
     <!-- Miscellaneous End  -->
 
