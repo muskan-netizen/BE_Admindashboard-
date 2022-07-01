@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <script type="text/javascript" 
         src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -29,7 +30,7 @@
            
             $('#pay-button').on('click', function(event) {
                 event.preventDefault();
-                $("#pay-button").prop( "disabled", true);
+                document.getElementById("pay-button").disabled = true;
                 $('#device_session_id').value =deviceSessionId;
                 $('#payment-form').submit();
                // OpenPay.token.extractFormAndCreate('payment-form', sucess_callbak, error_callbak);                
@@ -140,9 +141,9 @@ a.button.disabled {
     margin-bottom: 35px;
     width: 800px;
 }
-.sctn-col {
+/* .sctn-col {
     width: 375px;
-}
+} */
 .sctn-col.l {
     width: 425px;
 }
@@ -205,14 +206,8 @@ a.button.disabled {
     margin: 10px 10px;
     width: 100%;
 }
-.pymnt-cntnt div.sctn-row div.sctn-col {
-    width: 45%;
-}
 .pymnt-cntnt div.sctn-row div.sctn-col.l {
     width: 45%;
-}
-.pymnt-cntnt div.sctn-row div.sctn-col input {
-    width: 303px;
 }
 .pymnt-cntnt div.sctn-row div.sctn-col.half {
     width: 155px;
@@ -257,7 +252,7 @@ a.button.disabled {
     font-weight: 400;
     margin-left: 20px;
     padding: 20px 0 0 40px;
-    width: 200px;
+    width:auto;
 }
 .card-expl {
     height: 80px;
@@ -272,24 +267,43 @@ a.button.disabled {
 }
 .card-expl div.debit {
     background-image: url("../../openpayImages/cards2.png");
-    margin-left: 20px;
-    width: 45%;
 }
 .card-expl div.credit {
     background-image: url("../../openpayImages/cards1.png");
     border-right: 1px solid #ccc;
-    margin-left: 30px;
-    width: 45%;
 }
 .card-expl h4 {
     font-weight: 400;
     margin: 0;
 }
+
+
+
+@media (max-width:576px){
+    .pymnt-cntnt div.sctn-row div.sctn-col.l{
+        width:100%;
+    }
+    .card-expl{
+        height:auto;
+    }
+.sctn-col label {
+    font-size: 17px;
+    line-height: 24px;
+    margin: 10px 0px;
+}
+.card-expl div.debit{
+    background-size:contain;
+}
+.pymnt-cntnt div.sctn-row div.sctn-col.half.l{
+    width:150px;
+    display:inline-block;
+}
+}
 </style>
 </head>
 <body>
     <div class="container">
-    <div class="row">
+        <div class="row">
             <div class="bkng-tb-cntnt">
                 <div class="pymnts">
                 @if(\Session::has('error'))
@@ -297,35 +311,35 @@ a.button.disabled {
                         <span>{!! \Session::get('error') !!}</span>
                     </div>
                 @endif
-                    <form action="{{route('payment.opnepay.createPayment')}}" method="POST" id="payment-form">
+                    <form action="{{$return_url}}" method="POST" id="payment-form">
                         <input type="hidden" name="token_id" id="token_id">
                         @csrf
                         <div class="pymnt-itm card active">
-                            <h2>Tarjeta de crédito o débito</h2>
+                            <h2>{{__('Credit or debit card')}} </h2>
                             <div class="pymnt-cntnt">
                                 <div class="card-expl">
-                                    <div class="credit"><h4>Tarjetas de crédito</h4></div>
-                                    <div class="debit"><h4>Tarjetas de débito</h4></div>
+                                    <div class="col-md-6 credit"><h4>{{__('Credit cards')}}Tarjetas de crédito</h4></div>
+                                    <div class="col-md-6 debit"><h4>{{__('Debit cards')}}</h4></div>
                                 </div>
-                                <div class="sctn-row">
-                                    <div class="sctn-col l">
-                                        <label>Nombre del titular</label><input type="text" placeholder="Como aparece en la tarjeta" name="holder_name" autocomplete="off" data-openpay-card="holder_name">
+                                <div class="sctn-row top">
+                                    <div class="col-md-6 sctn-col l">
+                                        <label>{{__('Name of owner')}}</label><input type="text" placeholder="{{__('Name of owner')}}" name="holder_name" autocomplete="off" data-openpay-card="holder_name">
                                     </div>
-                                    <div class="sctn-col">
-                                        <label>Número de tarjeta</label><input type="text" autocomplete="off" name="number" id="card_number" data-openpay-card="card_number"></div>
+                                    <div class="col-md-6 sctn-col">
+                                        <label>{{__('Card number')}}</label><input type="text" autocomplete="off" name="number" id="card_number" data-openpay-card="card_number"></div>
                                     </div>
                                     <div class="sctn-row">
-                                        <div class="sctn-col l">
-                                            <label>Fecha de expiración</label>
-                                            <div class="sctn-col half l"><input type="text" placeholder="Mes" name="expMonth" data-openpay-card="expiration_month"></div>
-                                            <div class="sctn-col half l"><input type="text" placeholder="Año" name="expYear" data-openpay-card="expiration_year"></div>
+                                        <div class="col-md-6 sctn-col l">
+                                            <label>{{__('Expiration date')}}</label>
+                                            <div class="sctn-col half l"><input type="text" placeholder="{{__('Month')}}" name="expMonth" data-openpay-card="expiration_month"></div>
+                                            <div class="sctn-col half l"><input type="text" placeholder="{{__('Year')}}" name="expYear" data-openpay-card="expiration_year"></div>
                                         </div>
-                                        <div class="sctn-col cvv"><label>Código de seguridad</label>
-                                            <div class="sctn-col half l"><input type="text" placeholder="3 dígitos" name="cvc" id="cvc" autocomplete="off" data-openpay-card="cvv2"></div>
+                                        <div class="col-md-6 sctn-col cvv"><label>{{__('Security code')}}</label>
+                                            <div class="sctn-col half l"><input type="text" placeholder="{{__('3 digits')}}" name="cvc" id="cvc" autocomplete="off" data-openpay-card="cvv2"></div>
                                         </div>
                                     </div>
-                                    <div class="row open_pay"><div class="col-md-12 openpay"><div class="logo">Transacciones realizadas vía:</div>
-                                    <div class="shield">Tus pagos se realizan de forma segura con encriptación de 256 bits</div></div>
+                                    <div class="open_pay"><div class="col-md-12 openpay my-3"><div class="logo">{{__('Transactions made via:')}}</div>
+                                    <div class="shield">{{__('Your payments are made securely with 256-bit encryption')}}</div></div>
                                 </div>
                                 @forelse($data as $key=>$value)
                                     <input type="hidden" name="{{$key}}" value="{{$value}}">
@@ -333,7 +347,8 @@ a.button.disabled {
                                 @endforelse
                                 <input type="hidden" name="device_session_id" id="device_session_id">
                                 <div class="row sctn-row">
-                                        <a class="button rght" id="pay-button">Pagar</a>
+                                        <!-- <a class="button rght" id="pay-button">Pagar</a> -->
+                                        <button type="button" class="btn btn-danger rght" id="pay-button">{{__('')}}Pagar</button>
                                 </div>
                             </div>
                         </div>

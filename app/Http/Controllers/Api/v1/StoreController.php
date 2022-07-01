@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Pagination\Paginator;
 use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, ProductVariantImage, UserWishlist};
 
 class StoreController extends BaseController{
@@ -1298,24 +1299,37 @@ class StoreController extends BaseController{
 			$vendor_categories = VendorCategory::with(['category.translation' => function($q) use($langId){
 				$q->where('category_translations.language_id', $langId)->groupBy('category_translations.category_id');
 			}])
-			->whereHas('category', function($query) {
-				$query->whereIn('type_id', [1]);
+			->whereHas('category', function($q) use($langId){
+				$q->whereNull('deleted_at')->orWhere('deleted_at', '');
 			})
 			->select('category_id')->where('vendor_id', $vendor_id)->where('status', 1)->paginate($limit, $page);
+
+			$p_categories = collect();
+			$product_categories_hierarchy = '';
 			
 			foreach ($vendor_categories as $vendor_category) {
-				$category_name = '';
-				if($vendor_category->category){
-					$category_name = $vendor_category->category->translation->first() ? $vendor_category->category->translation->first()->name : $vendor_category->category->slug;
-				}
-				$vendor_category->id = $vendor_category->category_id;
-				$vendor_category->name = $category_name;
-				$vendor_category->cat_image = $vendor_category->category->image ?? '';
-				$vendor_category->type_id = $vendor_category->category->type_id;
-				unset($vendor_category->category);
-				unset($vendor_category->category_id);
+				$p_categories->push($vendor_category->category);
+				// $category_name = '';
+				// if($vendor_category->category){
+				// 	$category_name = $vendor_category->category->translation->first() ? $vendor_category->category->translation->first()->name : $vendor_category->category->slug;
+				// }
+				// $vendor_category->id = $vendor_category->category_id;
+				// $vendor_category->name = $category_name;
+				// $vendor_category->cat_image = $vendor_category->category->image ?? '';
+				// $vendor_category->type_id = $vendor_category->category->type_id;
+				// unset($vendor_category->category);
+				// unset($vendor_category->category_id);
 			}
-            return $this->successResponse($vendor_categories, '', 200);
+			$product_categories_build = $this->buildTree(array_filter($p_categories->toArray()));
+			$product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
+			foreach($product_categories_hierarchy as $k => $cat){
+                $myArr = array(1,3,7,8,9);
+                if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
+                    unset($product_categories_hierarchy[$k]);
+                }
+            }
+            $data = new Paginator(array_values($product_categories_hierarchy), $limit, $page);
+			return $this->successResponse($data, '', 200);
     	} catch (Exception $e) {
     		return $this->errorResponse($e->getMessage(), $e->getCode());
     	}

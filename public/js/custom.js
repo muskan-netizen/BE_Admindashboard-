@@ -671,10 +671,14 @@ $(document).ready(function () {
         }
     });
 
+    $(document).on("change", "#schedule_datetime", function () {
+        cartHeader();
+    });  
+
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-
+        
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -764,6 +768,7 @@ $(document).ready(function () {
         $('.cross').hide();
         $('#schedule_datetime').val('');
         $('#tasknow').val('now');
+        cartHeader();
     });
 
     $(document).on("click", ".clproduct_cart_order_form", function(e) {
@@ -2098,8 +2103,9 @@ $(document).ready(function () {
     function cartHeader(address_id) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
+        
         $.ajax({
-            data: { address_id: address_id },
+            data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
             dataType: 'json',
             url: cart_product_url,
@@ -2154,6 +2160,11 @@ $(document).ready(function () {
                                     $("#order_placed_btn").removeAttr("disabled");
                                     $("#order_placed_btn").removeClass("d-none");
                                 }
+                                if(response.schedule_datetime!=null){
+                                    $("#schedule_datetime").val(response.schedule_datetime);
+                                    $("#taskschedule").click();
+                                }
+                                
                             }
                             cartTotalProductCount();
 
@@ -3814,6 +3825,36 @@ $(document).ready(function () {
         }, 8000);
     }
 
+    $(document).on('click', '.prescription-doc-remove', function (e) {
+        var prescriptionId = $(this).data("prescription_id");
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: get_product_prescription,
+            dataType: 'json',
+            data: {prescriptionId:prescriptionId,requestType:'delete_prescription'},
+            beforeSend: function () {
+                $(".loader_box").show();
+            },
+            success: function (response) {
+                if (response.status == 'success') {
+                    $(".modal .close").click();
+                    location.reload();
+                }
+            },
+            complete: function () {
+                $('.loader_box').hide();
+            }
+        });
+    });
+
     $(document).on('click', '.prescription_btn', function (e) {
         e.preventDefault();
         $(".uploaded-prescription").html("");
@@ -3844,7 +3885,7 @@ $(document).ready(function () {
                 // show-prescription-doc
                 var showPrescriptionDoc = '';
                 $.each(response, function (key, res) {
-                    showPrescriptionDoc += '<img src="'+res.prescription.proxy_url+'50/50'+res.prescription.image_path+'" alt="product-img" height="60">'
+                    showPrescriptionDoc += '<div class="show-prescription-close"><i class="fa fa-times prescription-doc-remove" data-prescription_id="'+res.id+'" aria-hidden="true"></i><img src="'+res.prescription.proxy_url+'50/50'+res.prescription.image_path+'" alt="product-img" height="60"></div>'
                 });
                 
                 $(".show-prescription-doc").html(showPrescriptionDoc);
@@ -4788,7 +4829,10 @@ $(document).ready(function () {
             break;
             case 42:
                 paymentViaDpo('', payment_option_id, ''); 
-            break;
+                break;
+            case 42:
+                paymentViaUPay('', payment_option_id, ''); 
+                break;
 
         }
     }

@@ -1149,7 +1149,7 @@ class OrderController extends FrontController
             }
             $payable_amount = $payable_amount - $loyalty_amount_saved;
 
-            $ex_gateways_wallet = [4,36,41]; // stripe,mycash
+            $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
             $wallet_amount_used = 0;
             if ($user) {
                 if ($user->balanceFloat > 0) {
@@ -1798,15 +1798,18 @@ class OrderController extends FrontController
             );
 
             if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
 
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
                 'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
@@ -1916,15 +1919,18 @@ class OrderController extends FrontController
             );
 
             if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
 
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
                 'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,
@@ -2080,9 +2086,11 @@ class OrderController extends FrontController
             }
 
             if ($customer->dial_code == "971") {
-                $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                $customerno = "0" . $customer->phone_number;
             } else {                
-                $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
 
 
@@ -2090,6 +2098,7 @@ class OrderController extends FrontController
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
                 'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
                 'recipient_phone' => $customerno ?? rand(111111, 11111),
                 'recipient_email' => $customer->email ?? null,

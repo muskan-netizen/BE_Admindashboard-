@@ -672,6 +672,50 @@
                             </div>
                             @endforeach
                         </div>
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center" style="display: {{$client_preference_detail->business_type == 'taxi' ? '' : 'none'}} !important;"> 
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Rides")}}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="rides_language_ids[]" value="{{$client_language->langId}}">                                    
+                                    <input type="text" name="rides_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Rides'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('rides_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center" style="display: {{$client_preference_detail->business_type == 'taxi' ? 'none' : ''}} !important;"> 
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Orders") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="orders_language_ids[]" value="{{$client_language->langId}}">                                    
+                                    <input type="text" name="orders_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Orders'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('orders_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
 
                     </div>
                 </div>
@@ -1091,6 +1135,12 @@
             </div>
          @endif
          <!-- Xero Accounting API Credentials Ends -->
+         
+         {{-- Added By harbans --}}
+         <!-- static_dropoff List -->
+         @if($preference->is_static_dropoff == '1') 
+         @endif
+         <!-- static_dropoff Ends -->
     </div>
     <!-- Miscellaneous End  -->
 

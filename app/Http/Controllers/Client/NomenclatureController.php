@@ -29,9 +29,11 @@ class NomenclatureController extends BaseController
         NomenClature::updateOrCreate(['label' => 'Fixed Fee'], ['label' => 'Fixed Fee']);        
         NomenClature::updateOrCreate(['label' => 'Royo Dispatcher'], ['label' => 'Royo Dispatcher']);
         NomenClature::updateOrCreate(['label' => 'Referral Code'], ['label' => 'Referral Code']);
-        $label_array = ['vendors','Loyalty Cards','Takeaway','Search','Wishlist','Dine-In','Delivery','Zip Code','Want To Tip','Fixed Fee','Royo Dispatcher', 'Referral Code'];
-        $name_array = ['names','loyalty_cards_names','takeaway_names','search_names','wishlist_names','dinein_names','delivery_names','zipCode_name','wantToTip_name','FixedFee_name','royo_dispatcher_names','referral_code_names'];
-        $lang_id_array = ['language_ids','loyalty_cards_language_ids','takeaway_language_ids','search_language_ids','wishlist_language_ids','dinein_language_ids','delivery_language_ids','zipCode_language_ids','wantToTip_language_ids','FixedFee_language_ids','royo_dispatcher_language_ids','referral_code_language_ids'];
+        NomenClature::updateOrCreate(['label' => 'Orders'], ['label' => 'Orders']);
+        NomenClature::updateOrCreate(['label' => 'Rides'], ['label' => 'Rides']);
+        $label_array = ['vendors','Loyalty Cards','Takeaway','Search','Wishlist','Dine-In','Delivery','Zip Code','Want To Tip','Fixed Fee','Royo Dispatcher', 'Referral Code', 'Orders', 'Rides'];
+        $name_array = ['names','loyalty_cards_names','takeaway_names','search_names','wishlist_names','dinein_names','delivery_names','zipCode_name','wantToTip_name','FixedFee_name','royo_dispatcher_names','referral_code_names', 'orders_names', 'rides_names'];
+        $lang_id_array = ['language_ids','loyalty_cards_language_ids','takeaway_language_ids','search_language_ids','wishlist_language_ids','dinein_language_ids','delivery_language_ids','zipCode_language_ids','wantToTip_language_ids','FixedFee_language_ids','royo_dispatcher_language_ids','referral_code_language_ids', 'orders_language_ids', 'rides_language_ids'];
         $newrequest = $request->toArray();  
         //pr($newrequest);     
         for($j=0;$j<count($label_array);$j++)
