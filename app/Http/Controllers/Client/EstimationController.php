@@ -278,4 +278,17 @@ class EstimationController extends BaseController{
         }
     }
 
+    public function deleteBarcode(Request $request)
+    {
+        try {
+
+            $codes = QrcodeImport::find($request->qrCode);
+            // $files = CsvQrcodeImport::get();
+            return view('backend.qrcode.index')->with(['codes' => $codes,'files'=>$files]);
+
+        } catch (Exception $e) {
+            return $this->errorResponse([], $e->getMessage());
+        }
+    }
+
 }

@@ -457,10 +457,10 @@ class OrderController extends BaseController
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
                 foreach ($product->addon as $ck => $addons) {
-                    $opt_price_in_currency = $addons->option->price;
-                    $opt_price_in_doller_compare = $addons->option->price;
+                    $opt_price_in_currency = $addons->option->price??0;
+                    $opt_price_in_doller_compare = $addons->option->price??0;
                     if ($clientCurrency) {
-                        $opt_price_in_currency = $addons->option->price / $divider;
+                        $opt_price_in_currency = $addons->option->price??0 / $divider;
                         $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                     }
                     $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
