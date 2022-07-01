@@ -44,7 +44,6 @@
 $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endphp
 <script>
-    console.log('showSubscriptionPlanPopUp', "{{$showSubscriptionPlanPopUp}}");
     @if($showSubscriptionPlanPopUp == 1)
         var setShowSubscriptionPlan = "showed";
     @endif
