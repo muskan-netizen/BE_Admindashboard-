@@ -293,6 +293,21 @@ class PickupDeliveryController extends FrontController{
             }
             $userid = Auth::user()->id;
             $langId = Auth::user()->language;
+
+            $user   = Auth::user();
+            if(!empty($user)){
+                $client_timezone = DB::table('clients')->first('timezone');
+                $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            }
+            
+            $schedule_datetime_del = '';
+            if(isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+            }else{
+                $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+            }
+    
+
             $category = Category::with(['tags','type'  => function($q){
                             $q->select('id', 'title as redirect_to');
                         },'childs.translation'  => function($q) use($langId){
@@ -305,7 +320,7 @@ class PickupDeliveryController extends FrontController{
                 return response()->json(['error' => 'No record found.'], 200);
             }
             $response['category'] = $category;
-            $response['listData'] = $this->listData($langId, $cid, $category->type->redirect_to, $userid,$request);
+            $response['listData'] = $this->listData($langId, $cid, $category->type->redirect_to, $userid,$request, $schedule_datetime_del);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -313,10 +328,10 @@ class PickupDeliveryController extends FrontController{
 
     }
 
-    public function listData($langId, $category_id, $type = '', $userid,$request){
+    public function listData($langId, $category_id, $type = '', $userid,$request, $schedule_datetime_del=''){
         if ($type == 'Pickup/Delivery') {
             $category_details = [];
-            $deliver_charge = $this->getDeliveryFeeDispatcher($request);
+            $deliver_charge = $this->getDeliveryFeeDispatcher($request, null, $schedule_datetime_del);
             $deliver_charge = $deliver_charge??0.00;
             $category_list = Category::where('parent_id', $category_id)->get();
             foreach ($category_list as $category) {

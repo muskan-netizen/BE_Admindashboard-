@@ -544,6 +544,13 @@ $(document).ready(function () {
             data.longitude = destination_location_longitudes[index];
             locations.push(data);
         });
+
+        let schedule_datetime = '';
+        let schedule_datetimeset = $('#schedule_date').val();
+        if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
+            schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
+        }
+
         var post_data = JSON.stringify(locations);
         let pickup_location = $('#pickup_location').val();
         let destination_location = $('#destination_location').val();
@@ -551,7 +558,7 @@ $(document).ready(function () {
             $('.location-list').hide();
             $('.cab-booking-main-loader').show();
             $.ajax({
-                data: {locations: post_data, schedule_date_delivery:$('#schedule_date').val()},
+                data: {locations: post_data, schedule_date_delivery:schedule_datetime},
                 type: "POST",
                 dataType: 'json',
                 url: autocomplete_urls,
@@ -562,14 +569,11 @@ $(document).ready(function () {
                         if(response.data.length != 0){
                             let vendors_template = _.template($('#vendors_template').html());
                             $("#vendor_main_div").append(vendors_template({results: response.data})).show();
-                            //console.log(response.data);
                             if(response.data.length == 1){
                                 $('.vendor-list').trigger('click');
-                                //getListOfCabs();
                                 $('.table-responsive').remove();
                             }else{
                                 $('.vendor-list').first().trigger('click');
-                                //getListOfCabs();
                             }
                         }else{
                             $("#vendor_main_div").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
@@ -688,14 +692,20 @@ $(document).ready(function () {
     // End Rider SOurce COde
     window.getListOfCabs = function getListOfCabs()
     {
-        var default_cab_vendor = $('a[data-vendor="'+$("#default_cab_vendor_id").val()+'"]');
-        default_cab_vendor.show();
+        $('a[data-vendor="'+$("#default_cab_vendor_id").val()+'"]').show();
         let vendor_id = $("#default_cab_vendor_id").val();
         var locations = [];
         var pickup_location_latitude = $('input[name="pickup_location_latitude[]"]').map(function(){return this.value;}).get();
         var pickup_location_longitude = $('input[name="pickup_location_longitude[]"]').map(function(){return this.value;}).get();
         var destination_location_latitudes = $('input[name="destination_location_latitude[]"]').map(function(){return this.value;}).get();
         var destination_location_longitudes = $('input[name="destination_location_longitude[]"]').map(function(){return this.value;}).get();
+
+        let schedule_datetime = '';
+        let schedule_datetimeset = $('#schedule_date').val();
+        if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
+            schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
+        }
+
         $(pickup_location_latitude).each(function(index, latitude) {
             var data = {};
             data.latitude = latitude;
@@ -711,7 +721,7 @@ $(document).ready(function () {
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations, schedule_date_delivery:$('#schedule_date').val()},
+            data: {locations:locations, schedule_date_delivery:schedule_datetime},
             url: get_vehicle_list+'/'+vendor_id+'/'+category_id,
             success: function(response) {
                 if(response.status == 'Success'){
@@ -873,10 +883,17 @@ $(document).ready(function () {
             data.longitude = destination_location_longitudes[index];
             locations.push(data);
         });
+
+        let schedule_datetime = '';
+        let schedule_datetimeset = $('#schedule_date').val();
+        if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
+            schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
+        }
+
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:$('#schedule_date').val()},
+            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime},
             url: get_product_detail+'/'+product_id,
             success: function(response) {
                 if(response.status == 'Success'){
@@ -1732,6 +1749,7 @@ function getScheduleDateTime(thisObj){
     $('.cab-detail-box').attr("style", "display: block !important");
     $('.scheduled-ride-list').attr("style", "display: none !important");
     //window.location.reload();
+    $('.cab-booking-main-loader').show();
     getListOfCabs();
 }
 
