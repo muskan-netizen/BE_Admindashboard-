@@ -7,7 +7,7 @@
 
 // // Add a connect listener
 socket.on('connect',async function() {
-    await getChatRooms();
+    //await getChatRooms();
     console.log('Client has connected to the server!');
 });
 // // Add a connect listener

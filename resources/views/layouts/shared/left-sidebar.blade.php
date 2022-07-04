@@ -238,24 +238,24 @@
                                
                             @endif
                             @if(@$clientData->socket_url)
-                            <li>
-                                <a href="#chat" data-toggle="collapse"> 
-                                <span class="mdi-message"></span>
-                                    <span> {{ __('Chat') }} </span>
-                                </a>
-                                <div class="collapse" id="chat">
-                                    <ul class="nav-second-level">
-                                        <li>
-                                            <a href="{{route('chat.index')}}">{{ __('User Chat') }}</a>
-                                        </li>
-                                    
-                                        {{-- <li>
-                                            <a href="{{route('report.productperformance')}}">{{ __("Product Performance Report") }}</a>
-                                        </li> --}}
-                                    </ul>
-                                </div>
-                            </li>
-                        @endif
+                                <li>
+                                    <a href="#chat" data-toggle="collapse"> 
+                                    <span class="mdi-message"></span>
+                                        <span> {{ __('Chat') }} </span>
+                                    </a>
+                                    <div class="collapse" id="chat">
+                                        <ul class="nav-second-level">
+                                            <li>
+                                                <a href="{{route('chat.index')}}">{{ __('User Chat') }}</a>
+                                            </li>
+                                        
+                                            {{-- <li>
+                                                <a href="{{route('report.productperformance')}}">{{ __("Product Performance Report") }}</a>
+                                            </li> --}}
+                                        </ul>
+                                    </div>
+                                </li>
+                            @endif
                         </ul>
                 </li>
                 @endif

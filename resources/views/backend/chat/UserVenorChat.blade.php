@@ -65,8 +65,8 @@
                         <div class="container">
                             <div class="chat-body row overflow-hidden shadow bg-light rounded">
 
-                                @include('backend.chat.vendorpart.left') 
-                                @include('backend.chat.vendorpart.right') 
+                                @include('backend.chat.uservendorpart.left') 
+                                @include('backend.chat.uservendorpart.right') 
                             </div>
                         </div>
                     
@@ -88,7 +88,7 @@
 @section('script-bottom')
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="{{asset('assets/js/chat/vendor_chat.js')}}"></script>
+<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script>
 
