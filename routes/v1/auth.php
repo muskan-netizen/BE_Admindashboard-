@@ -6,7 +6,7 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
         Route::get('logout', 'Api\v1\AuthController@logout');
         Route::post('sendToken', 'Api\v1\AuthController@sendToken');
         Route::post('verifyAccount', 'Api\v1\AuthController@verifyToken');
-      
+        Route::get('deleteUser', 'Api\v1\AuthController@deleteUser');
     });
     Route::group(['middleware' => ['dbCheck', 'apilogger']], function() {
         Route::post('login', 'Api\v1\AuthController@login');
@@ -30,7 +30,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
     });
     Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {            
-        
         Route::get('profile', 'Api\v1\ProfileController@profile');
         Route::get('getProfile', 'Api\v1\ProfileController@getProfile');
         Route::get('account', 'Api\v1\ProfileController@account');
@@ -68,6 +67,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('mystore/vendors', 'Api\v1\StoreController@getMyStoreVendors');
         Route::get('mystore/vendor/dashboard/{id}', 'Api\v1\StoreController@getMyStoreVendorDashboard');
         Route::get('mystore/vendor/orders/{id}', 'Api\v1\StoreController@getMyStoreVendorOrders');
+        Route::get('mystore/vendor/bagOrders/{qrcode}', 'Api\v1\StoreController@getMyStoreVendorBagOrders');
         Route::post('mystore/vendor/category', 'Api\v1\StoreController@VendorCategory');
         Route::post('mystore/product/add', 'Api\v1\StoreController@addProduct');
         Route::post('mystore/product/detail', 'Api\v1\StoreController@productDetail'); 

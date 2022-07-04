@@ -44,7 +44,6 @@
 $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endphp
 <script>
-    console.log('showSubscriptionPlanPopUp', "{{$showSubscriptionPlanPopUp}}");
     @if($showSubscriptionPlanPopUp == 1)
         var setShowSubscriptionPlan = "showed";
     @endif
@@ -259,7 +258,12 @@ if($showSubscriptionPlanPopUp == 1){
     var userede_before_payment = "{{route('payment.userede.beforePayment')}}";
     var userede_create_payment = "{{route('payment.userede.createPayment')}}";
 
+    /////////////openpay Payment Routes
+    var openpay_before_payment = "{{route('payment.opnepay.beforePayment')}}";
+    var opnepay_create_payment = "{{route('payment.opnepay.createPayment')}}";
+
     var client_primary_currency = "{{ session()->get('client_primary_currency') }}";
+    var default_country_code = "{{ session()->get('default_country_code') }}";
 
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";

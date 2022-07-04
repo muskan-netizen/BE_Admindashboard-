@@ -55,6 +55,10 @@
             <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
             <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude"/>
             <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude"/>
+
+            <input type="hidden" name="default_cab_vendor" value="" id="default_cab_vendor">
+            <input type="hidden" name="default_cab_vendor_id" value="" id="default_cab_vendor_id">
+            
             <input type="hidden" id="address-input" value=""/>
             <input type="hidden" id="address-latitude" value=""/>
             <input type="hidden" id="address-longitude" value=""/>
@@ -709,6 +713,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";
     var create_paytech_hash_url = "{{route('paytech.createHash')}}";
+    var create_dpo_tocken = "{{route('dpo.createTocken')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";

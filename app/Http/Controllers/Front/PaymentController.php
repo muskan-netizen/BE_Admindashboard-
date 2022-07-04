@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\{Order, User, Cart, ClientCurrency, CartProduct};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController, MyCashGatewayController,UseRedePaymentController};
+use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController, MyCashGatewayController,UseRedePaymentController,OpenpayPaymentController};
 
 class PaymentController extends FrontController{
 
@@ -227,6 +227,10 @@ class PaymentController extends FrontController{
     }
     public function postPaymentVia_userede(Request $request){
         $gateway = new UseRedePaymentController();
+        return $gateway->beforePayment($request);
+    }
+    public function postPaymentVia_openpay(Request $request){
+        $gateway = new OpenpayPaymentController();
         return $gateway->beforePayment($request);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 use DB;
 use Auth;
+use URL;
 use Session;
 use Password;
 use Carbon\Carbon;
@@ -110,6 +111,12 @@ class CustomerAuthController extends FrontController
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
+        
+        $urlPrevious = url()->previous();
+        $routePrevious = app('router')->getRoutes($urlPrevious)->match(app('request')->create($urlPrevious))->getName();
+        if($routePrevious == 'showCart'){
+            session()->put('user_type', 'geust');
+        }
 
         $privacy = Page::with(['translations' => function ($q) use($langId) {
             $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url

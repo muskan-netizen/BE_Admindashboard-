@@ -7,8 +7,7 @@
         <?php $ordertitle = 'Orders'; ?>
          <?php $hidereturn = 0; ?>
 @endswitch
-@php if($client_preference_detail->client_code == '67dcfd'){ $ordertitle = 'Orders'; } @endphp
-@extends('layouts.store', ['title' => __('My '.$ordertitle)])
+@extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
 @section('css')
     <style type="text/css">
         .main-menu .brand-logo {
@@ -141,10 +140,10 @@
                     <div class="dashboard-right">
                         <div class="dashboard">
                             <div class="page-title">
-                                <h2>{{ __($ordertitle) }}</h2>
+                                <h2>{{ __(getNomenclatureName($ordertitle, true)) }}</h2>
                             </div>
                             <div class="welcome-msg">
-                                <h5>{{ __('Here Are All Your Previous ' . $ordertitle) }}</h5>
+                                <h5>{{ __('Here Are All Your Previous ' . getNomenclatureName($ordertitle, true)) }}</h5>
                             </div>
                             <div class="col-md-12">
                                 <div class="row" id="orders_wrapper">
@@ -154,14 +153,14 @@
                                                 <a class="nav-link {{ Request::query('pageType') === null || Request::query('pageType') == 'activeOrders' ? 'active show' : '' }}"
                                                     id="active-orders-tab" data-toggle="tab" href="#active-orders" role="tab"
                                                     aria-selected="true"><i
-                                                        class="icofont icofont-ui-home"></i>{{ __('Active ' . $ordertitle) }}</a>
+                                                        class="icofont icofont-ui-home"></i>{{ __('Active ' . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') == 'pastOrders' ? 'active show' : '' }}"
                                                     id="past_order-tab" data-toggle="tab" href="#past_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Past ' . $ordertitle) }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Past ' . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                             @if (isset($hidereturn) && $hidereturn != 1)
@@ -177,7 +176,7 @@
                                                 <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
-                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . $ordertitle) }}</a>
+                                                        class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ' . getNomenclatureName($ordertitle, true)) }}</a>
                                                 <div class="material-border"></div>
                                             </li>
                                         </ul>
@@ -2022,6 +2021,7 @@
         var create_konga_hash_url = "{{route('kongapay.createHash')}}";
         var create_payphone_url = "{{route('payphone.createHash')}}";
         var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
+        var create_dpo_tocken = "{{route('dpo.createTocken')}}";
         var create_windcave_hash_url = "{{route('windcave.createHash')}}";
         var create_paytech_hash_url = "{{route('paytech.createHash')}}";
         var create_flutterwave_url = "{{route('flutterwave.createHash')}}";

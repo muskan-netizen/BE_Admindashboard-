@@ -850,16 +850,17 @@ class ProductController extends BaseController
     }
 
     public function importCsvQrcode(Request $request){
-       
+        $vendor_id = $request->vendor_id;
         $fileModel = new CsvQrcodeImport;
         if($request->file('qrcode_excel')) {
             $fileName = time().'_'.$request->file('qrcode_excel')->getClientOriginalName();
             $filePath = $request->file('qrcode_excel')->storeAs('csv_qrcodes', $fileName, 'public');
             $fileModel->name = $fileName;
+            $fileModel->vendor_id = $request->vendor_id;
             $fileModel->path = '/storage/' . $filePath;
             $fileModel->status = 1;
             $fileModel->save();
-            $data = Excel::import(new QrcodesImport($fileModel->id), $request->file('qrcode_excel'));
+            $data = Excel::import(new QrcodesImport($vendor_id,$fileModel->id), $request->file('qrcode_excel'));
 
             return response()->json([
                 'status' => 'success',

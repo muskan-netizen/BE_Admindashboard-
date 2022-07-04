@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, ProductVariantImage, UserWishlist};
+use Illuminate\Pagination\Paginator;
+use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, UserWishlist};
 
 class StoreController extends BaseController{
     use ApiResponser;
@@ -224,6 +225,150 @@ class StoreController extends BaseController{
             return $this->errorResponse('Server Error', $e->getCode());
     	}
 	}
+
+	public function clearBagOrders(Request $request, $qrcode){
+    	try {
+			$orderIds = OrderQrcodeLinks::where('code',$request->qr_code)->pluck('order_id');
+			if(!$orderIds)
+			{
+				return $this->error([],'No order is found.');
+			}
+		}catch(\Exception $e)
+		{
+			\Log::info($e->getMessage());
+		}
+	}
+
+	public function getMyStoreVendorBagOrders(Request $request, $qrcode){
+    	try {
+			$orderIds = OrderQrcodeLinks::where('code',$request->qr_code)->pluck('order_id');
+			if(!$orderIds)
+			{
+				return $this->error([],'No order is found.');
+			}
+
+    		$user = Auth::user();
+			$langId = $user->language;
+            $limit = $request->has('limit') ? $request->limit : 12;
+			$page = $request->has('page') ? $request->page : 1;
+			$type = $request->has('type') ? $request->type : '';
+			if($type == ''){
+				$this->errorResponse(__('Missing Required parameters'), 400);
+			}
+			$status_ids = [];
+			if($type == 'pending'){
+				$status_ids = [1];
+			}elseif($type == 'active'){
+				$status_ids = [2,4,5];
+			}elseif($type == 'cancelled'){
+				$status_ids = [3];
+			}elseif($type == 'completed'){
+				$status_ids = [6];
+			}
+			$order_list = Order::select('*')->with(['vendors', 'user', 'orderStatusVendor', 'products',
+            'products.product.categoryName' => function ($q) use ($langId) {
+                $q->select('category_id', 'name');
+                $q->where('language_id', $langId);
+            }])
+			->whereHas('vendors', function($query) use ($status_ids){
+				$query->whereIn('order_status_option_id', $status_ids);
+			})
+			->where(function ($q1) {
+				$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+				$q1->orWhere(function ($q2) {
+					$q2->whereIn('payment_option_id',  [1,38]);
+				});
+			})
+			->orderBy('id', 'DESC')->paginate($limit, $page);
+			foreach ($order_list as $order) {
+				$order_status = [];
+				$product_details = [];
+				$order_item_count = 0;
+				$order->user_name = $order->user->name;
+				$order->user_image = $order->user->image;
+				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+				$order->date_time = date("d-M-Y h:i A", strtotime($order->date_time));
+				// set payment option dynamic name
+				if($order->paymentOption->code == 'stripe'){
+					$order->paymentOption->title = __('Credit/Debit Card (Stripe)');
+				}elseif($order->paymentOption->code == 'kongapay'){
+					$order->paymentOption->code->title = 'Pay Now';
+				}elseif($order->paymentOption->code == 'mvodafone'){
+					$order->paymentOption->title = 'Vodafone M-PAiSA';
+				}
+				elseif($order->paymentOption->code == 'mobbex'){
+					$order->paymentOption->title = __('Mobbex');
+				}
+				elseif($order->paymentOption->code == 'offline_manual'){
+					$json = json_decode($order->paymentOption->credentials);
+					$order->paymentOption->title = $json->manule_payment_title;
+				}
+				$order->paymentOption->title = __($order->paymentOption->title);
+				
+				$order->payment_option_title = __($order->paymentOption->title);
+				foreach ($order->vendors as $vendor) {
+					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->orderBy('id', 'DESC')->first();
+					if($vendor_order_status){
+						$order_status_option_id = $vendor_order_status->order_status_option_id;
+						$current_status = OrderStatusOption::select('id','title')->find($order_status_option_id);
+						if($order_status_option_id == 2){
+							$upcoming_status = OrderStatusOption::select('id','title')->where('id', '>', 3)->first();
+						}elseif ($order_status_option_id == 3) {
+							$upcoming_status = null;
+						}elseif ($order_status_option_id == 6) {
+							$upcoming_status = null;
+						}else{
+							$upcoming_status = OrderStatusOption::select('id','title')->where('id', '>', $order_status_option_id)->first();
+						}
+						$order->order_status = [
+							'current_status' => $current_status,
+							'upcoming_status' => $upcoming_status,
+						];
+					}
+				}
+				foreach ($order->products as $product) {
+    				$order_item_count += $product->quantity;
+    				if($product->vendor_id){
+	    				$product_details[]= array(
+	    					'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
+	    					'price' => $product->price,
+	    					'qty' => $product->quantity,
+							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
+							'product_id' => $product->product_id,
+							'title' => $product->product_name,
+							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:'',
+	    				);
+    				}
+				}
+				if(!empty($order->scheduled_date_time)){
+					$order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
+				}
+				$luxury_option_name = '';
+				if($order->luxury_option_id > 0){
+					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+					if($luxury_option->title == 'takeaway'){
+						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+					}elseif($luxury_option->title == 'dine_in'){
+						$luxury_option_name = __('Dine-In');
+					}else{
+						$luxury_option_name = __('Delivery');
+					}
+				}
+				$order->luxury_option_name = $luxury_option_name;
+				$order->product_details = $product_details;
+				$order->item_count = $order_item_count;
+
+				
+				unset($order->user);
+				unset($order->products);
+				unset($order->paymentOption);
+				unset($order->payment_option_id);
+			}
+            return $this->successResponse($order_list, '', 200);
+    	} catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+    	}
+    }
 
 	public function getMyStoreVendorOrders(Request $request, $vendor_id){
     	try {
@@ -1298,24 +1443,37 @@ class StoreController extends BaseController{
 			$vendor_categories = VendorCategory::with(['category.translation' => function($q) use($langId){
 				$q->where('category_translations.language_id', $langId)->groupBy('category_translations.category_id');
 			}])
-			->whereHas('category', function($query) {
-				$query->whereIn('type_id', [1]);
+			->whereHas('category', function($q) use($langId){
+				$q->whereNull('deleted_at')->orWhere('deleted_at', '');
 			})
 			->select('category_id')->where('vendor_id', $vendor_id)->where('status', 1)->paginate($limit, $page);
+
+			$p_categories = collect();
+			$product_categories_hierarchy = '';
 			
 			foreach ($vendor_categories as $vendor_category) {
-				$category_name = '';
-				if($vendor_category->category){
-					$category_name = $vendor_category->category->translation->first() ? $vendor_category->category->translation->first()->name : $vendor_category->category->slug;
-				}
-				$vendor_category->id = $vendor_category->category_id;
-				$vendor_category->name = $category_name;
-				$vendor_category->cat_image = $vendor_category->category->image ?? '';
-				$vendor_category->type_id = $vendor_category->category->type_id;
-				unset($vendor_category->category);
-				unset($vendor_category->category_id);
+				$p_categories->push($vendor_category->category);
+				// $category_name = '';
+				// if($vendor_category->category){
+				// 	$category_name = $vendor_category->category->translation->first() ? $vendor_category->category->translation->first()->name : $vendor_category->category->slug;
+				// }
+				// $vendor_category->id = $vendor_category->category_id;
+				// $vendor_category->name = $category_name;
+				// $vendor_category->cat_image = $vendor_category->category->image ?? '';
+				// $vendor_category->type_id = $vendor_category->category->type_id;
+				// unset($vendor_category->category);
+				// unset($vendor_category->category_id);
 			}
-            return $this->successResponse($vendor_categories, '', 200);
+			$product_categories_build = $this->buildTree(array_filter($p_categories->toArray()));
+			$product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
+			foreach($product_categories_hierarchy as $k => $cat){
+                $myArr = array(1,3,7,8,9);
+                if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
+                    unset($product_categories_hierarchy[$k]);
+                }
+            }
+            $data = new Paginator(array_values($product_categories_hierarchy), $limit, $page);
+			return $this->successResponse($data, '', 200);
     	} catch (Exception $e) {
     		return $this->errorResponse($e->getMessage(), $e->getCode());
     	}

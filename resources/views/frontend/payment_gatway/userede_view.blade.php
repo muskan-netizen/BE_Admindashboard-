@@ -129,6 +129,13 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label>{{__('Card Type')}}: </label>
+                        <select class="form-control" id="cc-exp-month" name="cart_type" required>
+                            <option value="creditCard">{{__('Credit Card')}}</option>
+                            <option value="debitCard">{{__('Debit Card')}}</option>
+                        </select>
+                </div>
                 @forelse($data as $key=>$value)
                 <input type="hidden" name="{{$key}}" value="{{$value}}">
                 @empty

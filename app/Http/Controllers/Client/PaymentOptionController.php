@@ -31,10 +31,10 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede');
-    
-        $payout_codes = array('cash', 'stripe', 'pagarme');
+        $payment_codes = array('cod', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
+
+        $payout_codes = array('cash', 'stripe', 'pagarme');
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
 
        
@@ -568,6 +568,38 @@ class PaymentOptionController extends BaseController
                                 'userede_Rede_token' => $request->userede_Rede_token
                             ));
                             break;    
+                        case 'openpay':
+                            $validatedData = $request->validate([
+                                'openpay_merchant_id' => 'required',
+                                'openpay_private_key' => 'required',
+                                'openpay_public_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'openpay_merchant_id' => $request->openpay_merchant_id,
+                                'openpay_private_key' => $request->openpay_private_key,
+                                'openpay_public_key' => $request->openpay_public_key
+                            ));
+                            break;
+                        case 'dpo':
+                            $validatedData = $request->validate([
+                                'company_token' => 'required',
+                                'service_type' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'company_token' => $request->company_token,
+                                'service_type' => $request->service_type
+                            ));
+                            break;
+                        case 'upay':
+                            $validatedData = $request->validate([
+                                'uuid_key' => 'required',
+                                'aes_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'uuid_key' => $request->uuid_key,
+                                'aes_key' => $request->aes_key
+                            ));
+                            break;     
 
                     }
                 }

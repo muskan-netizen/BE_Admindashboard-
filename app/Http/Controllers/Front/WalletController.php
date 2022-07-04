@@ -109,7 +109,7 @@ class WalletController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function paymentOptions(Request $request, $domain = ''){
-        $ex_codes = ['cod'];
+        $ex_codes = ['cod','offline_manual'];
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereNotIn('code', $ex_codes)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {
             if( (!empty($payment_option->credentials)) ){

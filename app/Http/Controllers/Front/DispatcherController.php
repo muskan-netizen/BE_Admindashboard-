@@ -30,24 +30,21 @@ class DispatcherController extends FrontController
                  if(isset($request->check_qr) && isset($request->qr_code))
                  {
                      $code = QrcodeImport::where('code',$request->qr_code)->first();
-                     if(isset($code->code))
+                     if(!isset($code->code))
                      {
                         return response()->json([
-                            'status' => '1',
-                            'message' => 'Found'
+                            'status' => '0',
+                            'message' => 'Not Found'
                         ]);
                      }
-                     return response()->json([
-                        'status' => '0',
-                        'message' => 'No'
-                    ]);
                  }
-                 if($request->check_qr=='0' && isset($request->qr_code))
+                 
+                 if($request->check_qr=='5' && isset($request->qr_code))
                  {
                     $order = Order::where('order_number',$request->order_number)->first();
                     $code = QrcodeImport::where('code',$request->qr_code)->first();
                     if($code){
-                        $qrcodes = OrderQrcodeLinks::updateOrCreate(['order_id' => $order->id], ['order_id'=>$order->id,'order_number'=>$order->order_number,'qrcode_id'=>$code->id,'code'=>$code->code]);
+                        $qrcodes = OrderQrcodeLinks::updateOrCreate(['order_id' => $order->id,'qrcode_id'=>$code->id], ['order_id'=>$order->id,'order_number'=>$order->order_number,'qrcode_id'=>$code->id,'code'=>$code->code]);
                     }
                  }
 
@@ -119,6 +116,7 @@ class DispatcherController extends FrontController
                }
 
         } catch (Exception $e) {
+            \Log::info('hi rollback');
             DB::rollback();
             return $this->errorResponse($e->getMessage(), $e->getCode());
 
