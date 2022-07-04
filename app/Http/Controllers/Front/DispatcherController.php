@@ -10,7 +10,7 @@ use Auth;
 use Session;
 use DB;
 use App\Http\Traits\ApiResponser;
-use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate,ProductVariantSet, QrcodeImport};
+use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport};
 
 class DispatcherController extends FrontController
 {
@@ -41,6 +41,14 @@ class DispatcherController extends FrontController
                         'status' => '0',
                         'message' => 'No'
                     ]);
+                 }
+                 if($request->check_qr=='0' && isset($request->qr_code))
+                 {
+                    $order = Order::where('order_number',$request->order_number)->first();
+                    $code = QrcodeImport::where('code',$request->qr_code)->first();
+                    if($code){
+                        $qrcodes = OrderQrcodeLinks::updateOrCreate(['order_id' => $order->id], ['order_id'=>$order->id,'order_number'=>$order->order_number,'qrcode_id'=>$code->id,'code'=>$code->code]);
+                    }
                  }
 
 
