@@ -1,8 +1,27 @@
 <script>
 $(document).ready(function(){
     StaticLocationDatatable();
+    var Default_latitude = "30.7333";
+    var Default_longitude = "76.7794";
+    @if(!empty($client_preference_detail->Default_latitude))
+        Default_latitude = "{{$client_preference_detail->Default_latitude}}";
+    @endif
+    @if(!empty($client_preference_detail->Default_longitude))
+        Default_longitude = "{{$client_preference_detail->Default_longitude}}";
+    @endif
+    var bindLatlng, bindmapProp, bindMap = '';
+    function bindLatestCoords(userLatitude, userLongitude){
+        bindLatlng = new google.maps.LatLng(userLatitude, userLongitude);
+        bindmapProp = {
+            center:bindLatlng,
+            zoom:13,
+            mapTypeId:google.maps.MapTypeId.ROADMAP
+        };
+        bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
+    }
+    bindLatestCoords(Default_latitude, Default_longitude);
+
     function StaticLocationDatatable(){
-        console.log('StaticLocationDatatable work');
         $('#static_dropoff_datatable').DataTable({
             "responsive": true,
             "scrollX": true,
@@ -63,7 +82,6 @@ $(document).ready(function(){
                     $('#add_static_dropoff_modal').modal('show');
                     $("#location_title").val(response.data.title);
                     initialize();
-                    console.log(response.data.id);
                     $("#static-address").val(response.data.address);
                     $("#static_latitude").val(response.data.latitude);
                     $("#static_longitude").val(response.data.longitude);
@@ -115,7 +133,7 @@ $(document).ready(function(){
     function initialize() {
         var input = document.getElementById('static-address');
         var autocomplete = new google.maps.places.Autocomplete(input);
-        //autocomplete.bindTo('bounds', bindMap);
+        autocomplete.bindTo('bounds', bindMap);
 
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             var place = autocomplete.getPlace();
