@@ -89,7 +89,11 @@ class StaticDropoffController extends BaseController{
                 ]
             );
             DB::commit();
-            return $this->successResponse($StaticDropoffLocation, 'Vendor Registration Document Added Successfully.');
+            $mgs = __('Location added successfully');
+            if(!empty($request->static_address_id)){
+                $mgs = __('Location updated successfully');
+            }
+            return $this->successResponse($StaticDropoffLocation, $mgs);
         } catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse([], $e->getMessage());
