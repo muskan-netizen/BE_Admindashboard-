@@ -208,10 +208,10 @@
                     </div>
                     @endif
 
-
+                @if(Auth::user()->is_superadmin == 1)
                     <div class="row">
                         <div class="col-md-12">
-                            <h4 class="mb-2 "> <span class="">{{ __("Taxes") }}</span></h4>
+                            <h4 class="mb-2 "> <span class="">{{ __("Commission") }} & {{ __("Taxes") }}</span>   ({{ __("Visible For Admin") }})</span></h4>
                         </div>
                     </div>
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
@@ -281,6 +281,23 @@
                         </select>
                     </div>
 
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('On Markup Price'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="markup_fee_tax" class="form-control" data-color="#43bee1" @if($vendor->markup_fee_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                
+                    
+                    <div class="form-group w-100" style="display:{{$vendor->markup_fee_tax == 0 ? 'none!important' : 'block'}}" id="markup_fee_tax_id">
+                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
+                        <select class="form-control" name="markup_fee_tax_id">
+                            <option value="">{{__('Select any')}}</option>
+                            @foreach(taxRates() as $row)
+                                <option value="{{$row->id}}" {{$vendor->markup_fee_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
 
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
@@ -937,6 +954,14 @@ $( document ).ready(function() {
             $("#fixed_fee_tax_id").css("display", "block");
         } else {
             $("#fixed_fee_tax_id").css("display", "none");
+        }
+    })
+
+    $("input[name='markup_fee_tax']").change(function() {
+        if($(this).prop('checked')){
+            $("#markup_fee_tax_id").css("display", "block");
+        } else {
+            $("#markup_fee_tax_id").css("display", "none");
         }
     })
 

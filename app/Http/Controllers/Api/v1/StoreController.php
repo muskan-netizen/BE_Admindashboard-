@@ -226,13 +226,18 @@ class StoreController extends BaseController{
     	}
 	}
 
-	public function clearBagOrders(Request $request, $qrcode){
+	public function clearBagOrders(Request $request,$qrcode,$order_number=''){
     	try {
-			$orderIds = OrderQrcodeLinks::where('code',$request->qr_code)->pluck('order_id');
-			if(!$orderIds)
-			{
-				return $this->error([],'No order is found.');
+			$orderIds = OrderQrcodeLinks::where('code',$qrcode);
+			if($order_number){
+				$orderIds = $orderIds->where('order_id',$order_number);
 			}
+			if(empty($orderIds->get()->toArray()))
+			{
+				return $this->errorResponse(__('No order is found.'), 400);
+			}
+			$orderIds->delete();
+			return $this->successResponse(__('Order is removed.'));
 		}catch(\Exception $e)
 		{
 			\Log::info($e->getMessage());
@@ -241,12 +246,12 @@ class StoreController extends BaseController{
 
 	public function getMyStoreVendorBagOrders(Request $request, $qrcode){
     	try {
-			$orderIds = OrderQrcodeLinks::where('code',$request->qr_code)->pluck('order_id');
-			if(!$orderIds)
+			$orderIds = OrderQrcodeLinks::where('code',$request->qr_code??$qrcode)->pluck('order_id')->toArray();
+			if(empty($orderIds))
 			{
-				return $this->error([],'No order is found.');
+				return $this->errorResponse(__('No order is found.'), 400);
 			}
-
+			//dd($orderIds);
     		$user = Auth::user();
 			$langId = $user->language;
             $limit = $request->has('limit') ? $request->limit : 12;
@@ -278,8 +283,9 @@ class StoreController extends BaseController{
 				$q1->orWhere(function ($q2) {
 					$q2->whereIn('payment_option_id',  [1,38]);
 				});
-			})
+			})->whereIn('id',$orderIds)
 			->orderBy('id', 'DESC')->paginate($limit, $page);
+			//dd($order_list);
 			foreach ($order_list as $order) {
 				$order_status = [];
 				$product_details = [];

@@ -38,7 +38,7 @@ class DispatcherController extends FrontController
                         ]);
                      }
                  }
-                 
+                //  \Log::info('hi');
                  if($request->check_qr=='5' && isset($request->qr_code))
                  {
                     $order = Order::where('order_number',$request->order_number)->first();

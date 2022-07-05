@@ -20,7 +20,7 @@ use App\Models\CaregoryKycDoc;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
 use Log;
-use App\Http\Controllers\Front\FrontController;
+use App\Http\Controllers\Front\{FrontController, PickupDeliveryController};
 use App\Models\ClientCurrency;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 
@@ -61,6 +61,12 @@ class PayphoneController extends FrontController
          $request->amt = $amt;
          $time = $request->order_number;
          Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'cart','date'=>date('Y-m-d'),'user_id'=>auth()->id(),'payment_from'=>$request->device??'web']);
+   
+        }elseif($request->from == 'pickup_delivery')
+        {
+         $request->amt = $amt;
+         $time = $request->order_number;
+         Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'pickup_delivery','date'=>date('Y-m-d'),'user_id'=>auth()->id(),'payment_from'=>$request->device??'web']);
    
         }elseif($request->from == 'wallet')
         {
@@ -154,9 +160,66 @@ class PayphoneController extends FrontController
             return $this->completeOrderTip($request,$payment);
         }elseif($payment->type=='subscription'){
             return $this->completeOrderSubs($request,$payment);
-        }
+        }elseif($payment->type=='pickup_delivery'){
+          return $this->completeOrderPickup($request,$payment);
+      }
    }
 
+
+   public function completeOrderPickup(Request $request,$payment)
+   {
+        $order = Order::where('order_number',$request->clientTransactionId)->first();
+        if(isset($request->clientTransactionId) && $request->id>0)
+          {
+          if ($order) {
+              $order->payment_status = 1;
+              $order->save();
+              $payment_exists = Payment::where('transaction_id', $request->clientTransactionId)->first();
+              if (!$payment_exists) {
+                  $payment = new Payment();
+                  $payment->date = date('Y-m-d');
+                  $payment->type = 'pickup_delivery';
+                  $payment->order_id = $order->id;
+                  $payment->payment_option_id = 32;
+                  $payment->user_id = $order->user_id;
+                  $payment->transaction_id = $request->id;
+                  $payment->balance_transaction = $order->payable_amount;
+                  $payment->save();
+              }
+                
+              $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 32, 'amount' => $order->payable_amount, 'transaction_id' => $request->id]);
+              
+              $plaseOrderForPickup = new PickupDeliveryController();
+              $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+
+              if($payment->payment_from=='app')
+              {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=payphone'.'&status=200&order='.$order->order_number;
+                return Redirect::to($returnUrl); 
+              }else{
+                return Redirect::to(route('front.booking.details',$order->order_number));
+              }
+          }
+      }else{
+      //Failed transaction case
+
+          $data = Payment::where('transaction_id',$request->clientTransactionId)->first();
+          $data->delete();
+
+          if($payment->payment_from=='app')
+          {
+            $returnUrl = route('payment.gateway.return.response').'/?gateway=payphone'.'&status=00&transaction_id='.$request->id.'&action=wallet';
+            return Redirect::to($returnUrl); 
+          }else{
+            return Redirect::to(route('user.wallet'))->with('error',$request->message);
+          }
+
+
+
+      }
+
+
+   }
 
    public function completeOrderCart(Request $request,$payment)
     {
