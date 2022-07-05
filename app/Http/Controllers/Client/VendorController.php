@@ -638,7 +638,7 @@ class VendorController extends BaseController
             ->where('category_translations.language_id', $langId);
         }])
         ->whereHas('category', function($q) use($langId){
-            $q->whereNotNull('deleted_at')->orWhere('deleted_at', '!=', '');
+            $q->whereNull('deleted_at')->orWhere('deleted_at', '');
         })
         ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
         $p_categories = collect();
@@ -1622,7 +1622,7 @@ class VendorController extends BaseController
             ->where('category_translations.language_id', $langId);
         }])
         ->whereHas('category', function($q) use($langId){
-            $q->whereNotNull('deleted_at')->orWhere('deleted_at', '!=', '');
+            $q->whereNull('deleted_at')->orWhere('deleted_at', '');
         })
         ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
         $p_categories = collect();
