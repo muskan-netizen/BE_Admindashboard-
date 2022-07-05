@@ -401,10 +401,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         /**Chat resourses */
         //Route::resource('chat', 'Client\ChatController');
-      //  Route::get('chat/{room_id?}', 'Client\ChatController@index')->name("chat.index");
+        Route::get('chat/all/{room_id?}', 'Client\ChatController@index')->name("chat.index");
         Route::get('chat/user/{room_id?}', 'Client\ChatController@VendorUserChat')->name("chat.VendorUserChat");
         Route::post('chat/startChat', 'Client\ChatController@startChat')->name('chat.startChat');
         Route::get('chat/vendor/{room_id?}', 'Client\ChatController@UservendorChat')->name("chat.UservendorChat");
+        Route::post('chat/joinChatRoom', 'Client\ChatController@JoinRoom')->name('chat.joinChatRoom');
+        Route::post('chat/sendMessage', 'Client\ChatController@sendMessage')->name('chat.sendMessage');
     });
 });
 

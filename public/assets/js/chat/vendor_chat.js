@@ -14,6 +14,46 @@
         await startChat(vendor_order_id,vendor_id,order_id);
     });
 
+    $(document).on('click','.fetchChat',async function(){
+        var roomId = $(this).attr('data-id');
+        var roomName = $(this).attr('data-roomName');
+       
+        if(!roomId){
+            return;
+            $('#chatHistory').removeClass('room_'+roomId);
+        }
+        $('#roomName').html(roomName);
+        await getALLchat(roomId);
+    });
+
+    $(document).on('click','.join_room',async function(){
+        var room_id = $(this).attr('data-id');
+        // var vendor_id = $(this).attr('data-vendor_id');
+        // var order_id = $(this).attr('data-order_id');
+       
+        if(!room_id){
+            return;
+            
+        }
+        //$('#order_list_order').show();
+        await JoinRoom(room_id);
+    });
+
+    $(document).on('click','.send_message',async function(){
+        var room_id = $(this).attr('data-id');
+         var message = $('#message_box').val();
+        // var vendor_id = $(this).attr('data-vendor_id');
+        // var order_id = $(this).attr('data-order_id');
+       
+        if(!room_id || !message){
+            return;
+            
+        }
+        //$('#order_list_order').show();
+        await sendMessage(message,room_id);
+    });
+
+
     async function startChat(vendor_order_id,vendor_id,order_id){
 
         axios.post(`/client/chat/startChat`, {
@@ -79,10 +119,13 @@
                     });
                     $('#rightChat').show();
                     $('#chatHistory').addClass('room_'+roomId);
+                    $('.join_room').attr('data-id',roomId);
+                    $('.send_message').attr('data-id',roomId);
                     await $('#chatHistory').html(html);
                     scrollDown();
                 } else {
                     $('#chatHistory').html(``);
+                    $('.send_message').attr('data-id','');
                     $('#rightChat').show();
                     $('#chatHistory').addClass('room_'+roomId);
                 }
@@ -131,4 +174,59 @@
     function scrollDown(){
         var messageBody = document.querySelector('.chatitem');
         messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+    }
+
+
+    async function JoinRoom(room_id) {
+        axios.post(`/client/chat/joinChatRoom`, {
+            sub_domain: window.location.origin,
+            client_id:  1,
+            db_name:Auth.database_name,
+            user_id:  Auth.auth_id,   
+            type:'vendor_to_user',
+            room_id:room_id
+            //vendor_order_id:vendor_order_id,
+            //vendor_id:vendor_id,
+            //order_id:order_id      
+        })
+        .then(async response => {
+             console.log(response.data.status);
+             if(response.data.status) {
+                socket.emit('save-message', { room: room_id, nickname: 'test', message: 'Join this room', created_date: new Date() });
+             }
+             
+        })
+        .catch(e => {
+            Swal.fire(
+                'Something went wrong, try again later!',                                    
+                'error'
+            )
+        })
+    
+    }
+
+    function sendMessage(message,room_id){
+
+        axios.post(`/client/chat/sendMessage`, {
+            sub_domain: window.location.origin,
+            client_id:  1,
+            db_name:Auth.database_name,
+            user_id:  Auth.auth_id,   
+            message:message,
+            room_id:room_id 
+        })
+        .then(async response => {
+             console.log(response.data.status);
+             if(response.data.status) {
+                socket.emit('save-message', response.data)
+             }
+             
+        })
+        .catch(e => {
+            Swal.fire(
+                'Something went wrong, try again later!',                                    
+                'error'
+            )
+        })
+          
     }

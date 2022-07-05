@@ -149,12 +149,143 @@ class ChatController extends BaseController
         } else {
             $chatroom = [];
         }
-        echo "<pre>";
-        print_r($chatroom);
-        die;
+        // echo "<pre>";
+        // print_r($chatroom);
+        // die;
         //}
         // echo "review";
         return view('backend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+
+    }
+
+    public function joinSocketRoom($data,$user,$type,$userType){
+        $clientData = $this->client_data;
+        $server_name = $_SERVER['REMOTE_ADDR'];
+        // echo "<pre>";
+        // // print_r($clientData->toArray());
+        // print_r($user);
+        // //print_r($data);
+        // die;
+        $response =   Http::post($clientData->socket_url.'/api/chat/joinRoomByID', [
+            'sub_domain' =>$server_name,
+            'room_id' =>$data['room_id'],
+            //'room_name' =>$data->name,
+            'user_type' =>$userType,
+            'type'=>$type,
+            //'db_name'=>$clientData->database_name,
+            //'client_id'=>$clientData->id,
+            'user_id'=>$user->id,
+            //'vendor_id'=>$data,
+            'email'=>$user->email,
+            'dipslay_image'=>$user->image
+        ]);
+
+        $statusCode = $response->getStatusCode();
+        if($statusCode == 200) {
+            $roomData = $response['roomData'];
+            $roomUser = $response['RoomUser'];
+            $message = $response['message'];
+             // echo "<pre>";
+        // // print_r($clientData->toArray());
+        // print_r($user);
+        // //print_r($data);
+        // die;
+            //print_r($roomData);
+            return ['status' => $response['status'],'roomUser' =>$roomUser ,'roomData' => $roomData , 'message' => __($message)];
+        } else {
+
+            return ['status' => false, 'message' => __('Something went wrong!!!')];
+        }
+    }
+
+    public function sendSocketMessage($data,$user,$to_message,$userType,$from_message){
+        $clientData = $this->client_data;
+        $server_name = $_SERVER['REMOTE_ADDR'];
+        // echo "<pre>";
+        // // print_r($clientData->toArray());
+        // print_r($user);
+        // //print_r($data);
+        // die;
+        $response =   Http::post($clientData->socket_url.'/api/chat/sendMessage', [
+            'sub_domain' =>$server_name,
+            'room_id' =>$data['room_id'],
+            'user_type' =>$userType,
+            'to_message'=>$to_message,
+            'from_message'=>$from_message,
+            'user_id'=>$user->id,
+            'email'=>$user->email,
+            'dipslay_image'=>$user->image
+        ]);
+
+        $statusCode = $response->getStatusCode();
+        if($statusCode == 200) {
+            $roomData = $response['roomData'];
+            $roomUser = $response['RoomUser'];
+            $message = $response['message'];
+          
+            return ['status' => $response['status'],'roomUser' =>$roomUser ,'roomData' => $roomData , 'message' => __($message)];
+        } else {
+
+            return ['status' => false, 'message' => __('Something went wrong!!!')];
+        }
+    }
+
+    public function JoinRoom(Request $request){
+        $user = Auth::user();
+        $data = $request->all();
+       // if ($user->is_superadmin == 0) {
+        //$vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
+        //$this->client_data['vendor_id'] = $vendor_id;
+        $roomData = $this->joinSocketRoom($data,$user,'vendor_to_user','vendor');
+        // if($roomData['status']){
+        //     $chatroom = $roomData['roomData'];
+        // } else {
+        //     $chatroom = [];
+        // }
+        // echo "<pre>";
+        // print_r($chatroom);
+        // die;
+        //}
+        // echo "review";
+        if($roomData['status']) {
+            //$roomData = $roomData['roomData'];
+            //print_r($roomData);
+            return $roomData;
+        } else {
+
+            return $roomData;
+        }
+        //return view('backend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+
+    }
+
+
+    public function sendMessage(Request $request){
+        $user = Auth::user();
+        $data = $request->all();
+       // if ($user->is_superadmin == 0) {
+        //$vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
+        //$this->client_data['vendor_id'] = $vendor_id;
+        $messageData = $this->sendSocketMessage($data,$user,'to_user','vendor','from_vendor');
+        // if($roomData['status']){
+        //     $chatroom = $roomData['roomData'];
+        // } else {
+        //     $chatroom = [];
+        // }
+        // echo "<pre>";
+        // print_r($chatroom);
+        // die;
+        //}
+        // echo "review";
+        if($messageData['status']) {
+            //$roomData = $roomData['roomData'];
+            //print_r($roomData);
+            return $messageData;
+        } else {
+
+            return $messageData;
+        }
+        //return view('backend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
 
     }
 
