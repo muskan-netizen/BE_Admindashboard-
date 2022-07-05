@@ -209,7 +209,7 @@ class UserController extends BaseController
     //     return Validator::make($data, [
     //         'name' => ['required', 'string', 'min:3', 'max:50'],
     //         'email' => ['required', 'email', 'max:50', Rule::unique('users')],
-    //         'phone_number' =>  ['required', 'min:8', 'max:15', Rule::unique('users')->where(function ($query) use ($full_number) {
+    //         'phone_number' =>  ['required', 'min:7', 'max:15', Rule::unique('users')->where(function ($query) use ($full_number) {
     //          $query->where('phone_number', $full_number);
     //         })],
     //         'password' => ['required', 'string', 'min:6', 'max:50'],
@@ -443,7 +443,7 @@ class UserController extends BaseController
         $client = Client::where('code', $user->code)->firstOrFail();
         $rules = array(
             'name' => 'required|string|max:50',
-            'phone_number' => 'required|min:8|max:15',
+            'phone_number' => 'required|min:7|max:15',
             'company_name' => 'required',
             'company_address' => 'required',
             'country_id' => 'required',

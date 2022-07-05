@@ -282,7 +282,7 @@ class AuthController extends BaseController
             $rules['email'] = 'required|email|unique:users';
         }
         if($preferences->verify_phone == 1){
-            $rules['phone_number'] = 'required|string|min:8|max:15|unique:users';
+            $rules['phone_number'] = 'required|string|min:7|max:15|unique:users';
         }
         foreach ($user_registration_documents as $user_registration_document) {
             if($user_registration_document->is_required == 1){
@@ -311,7 +311,7 @@ class AuthController extends BaseController
             if(!empty($signReq->phone_number) && ($preferences->verify_phone == 0)){
 
                 $validator = Validator::make($signReq->all(), [
-                    'phone_number' => 'string|min:8|max:15|unique:users'
+                    'phone_number' => 'string|min:7|max:15|unique:users'
                 ]);
             }
         }
