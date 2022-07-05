@@ -61,6 +61,6 @@ class UseRedePaymentController  extends BaseController
             $params = $params . '&order_number=' . $request->order_number;
         }
         return $this->successResponse(url('http://192.168.99.124:8000/payment/userede/page'.$params));
-        return $this->successResponse(url($request->serverUrl.'/payment/userede/page'.$params)); 
+        //return $this->successResponse(url($request->serverUrl.'payment/userede/page'.$params)); 
     }
 }
