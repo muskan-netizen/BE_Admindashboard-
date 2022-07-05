@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController, MyCashGatewayController,OpenpayPaymentController};
+use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController, MyCashGatewayController,OpenpayPaymentController,UseRedePaymentController};
 use App\Http\Controllers\Front\DpoController;
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
@@ -240,7 +240,10 @@ class PaymentOptionController extends BaseController{
         $gateway = new OpenpayPaymentController();
         return $gateway->beforePayment($request);
     }
-
+    public function postPaymentVia_userede(Request $request){
+        $gateway = new UseRedePaymentController();
+        return $gateway->beforePayment($request);
+    }
     public function postPaymentVia_paypal(Request $request){
         try{
             $paypal_creds = PaymentOption::select('credentials')->where('code', 'paypal')->where('status', 1)->first();

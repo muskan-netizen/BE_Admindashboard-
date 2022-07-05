@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use Log;
 use Auth;
+use DB;
 use Rede;
 use Session;
 use Omnipay\Omnipay;
@@ -257,14 +258,14 @@ class UseRedePaymentController extends FrontController
         $user = Auth::user();
         if ($transaction->getReturnCode() == '00') {
             Session::forget('userede_data');
-            $payment_form  = $request->payment_from;
+            $payment_from  = $request->payment_from;
             $transactionId = $transaction->getTid();
             $amount        = $request->amount;
             $user_id       = $user->id;
             $order_number  = $request->order_number;
             $returnUrl = url('payment/gateway/returnResponse');
             $returnUrlParams = '?status=200&gateway=userede&action=' . $payment_from;
-            if($payment_form == 'cart'){
+            if($payment_from == 'cart'){
                 $cart_id  = $request->cart_id;
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                 if ($order) {
@@ -310,18 +311,18 @@ class UseRedePaymentController extends FrontController
                     //   $this->successMail();
                 }
                 $returnUrlParams = $returnUrlParams . '&order=' .  $order_number;
-            } elseif($payment_form == 'wallet'){
+            } elseif($payment_from == 'wallet'){
                 $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
                 $walletController = new WalletController();
                 $walletController->creditWallet($request);
             }
-            elseif($payment_form == 'tip'){
+            elseif($payment_from == 'tip'){
                 $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                 $orderController = new OrderController();
                 $orderController->tipAfterOrder($request);
                 $returnUrlParams = $returnUrlParams . '&order=' .  $order_number;
             }
-            elseif($payment_form == 'subscription'){
+            elseif($payment_from == 'subscription'){
                 $subscription_id = $request->subscription_id;
                 $request->request->add(['user_id' => $user_id, 'payment_option_id' => 25, 'amount' => $amount, 'transaction_id' => $transactionId]);
                 $subscriptionController = new UserSubscriptionController();

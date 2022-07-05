@@ -8,7 +8,8 @@
 	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback'); 
 	Route::match(['get','post'],'payment/paytab/return','Front\PaytabController@returnBack')->name('payment.paytab.return'); 
 	Route::get('/debug-sentry', function () {
-		throw new Exception('My first Sentry error!');
+		echo \Hash::make('dispatcher@765');
+		//throw new Exception('My first Sentry error!');
 	});
 
 
