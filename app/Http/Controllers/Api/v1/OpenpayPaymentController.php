@@ -36,6 +36,9 @@ class OpenpayPaymentController  extends BaseController
         if(($action == 'cart') || ($action == 'tip' || $action == 'pickup_delivery')){
             $params = $params . '&order_number=' . $request->order_number;
         }
+        if($action == 'subscription'){
+            $params = $params . '&subscription_id=' . $request->subscription_id;
+        }
         return $this->successResponse(url($request->serverUrl.'payment/opnepay/page'.$params)); 
     }
 }
