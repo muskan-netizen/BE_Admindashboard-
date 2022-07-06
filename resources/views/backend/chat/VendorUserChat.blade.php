@@ -42,7 +42,9 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         }
-
+        /* .left-message{
+            float: left;
+        } */
 
     </style>
 @endsection
@@ -90,7 +92,7 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/vendor_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
-<script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script>
+{{-- <script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script> --}}
 
 
 <script>

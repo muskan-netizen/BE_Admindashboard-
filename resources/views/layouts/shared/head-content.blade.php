@@ -121,6 +121,7 @@ $socket_url = '';
 $admin_chat = '';
 $driver_chat = '';
 $customer_chat = '';
+$auth_id = '';
 $db ='';
 if(Auth::check()){
 	$cl_data = \App\Models\Client::where(['id' => 1])->first();
@@ -129,7 +130,7 @@ if(Auth::check()){
 	$driver_chat = @$cl_data->driver_chat;
 	$customer_chat = @$cl_data->customer_chat;
 	$db = @$cl_data->database_name;
-	$auth_id = Auth::user()->id;
+	$auth_id = @Auth::user()->id;
 }
 
 @endphp

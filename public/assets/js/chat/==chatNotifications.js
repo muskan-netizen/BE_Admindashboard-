@@ -11,7 +11,7 @@
 socket.on('new-message',function(data) {
     //newMessage(data)
     //alert();
-    notify(data,true);
+   // notify(data,true);
     console.log('Received a message from the server!',data);
 });
 // // Add a disconnect listener
@@ -60,8 +60,8 @@ function askNotificationPermission() {
 }
 
 function notify (data, checker) {
-    console.log(data.message);
-	if (checker && checkNotificationPromise()) { 
-		return new Notification('RoyoChat', { body: data.message.nickname+': '+data.message.message });
-	}
+    console.log(data);
+	// if (checker && checkNotificationPromise()) { 
+	// 	return new Notification('RoyoChat', { body: data.message.chatData.email+': '+data.message.chatData.message });
+	// }
 }

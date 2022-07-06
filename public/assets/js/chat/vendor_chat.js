@@ -19,8 +19,9 @@
         var roomName = $(this).attr('data-roomName');
        
         if(!roomId){
-            return;
             $('#chatHistory').removeClass('room_'+roomId);
+            return;
+            
         }
         $('#roomName').html(roomName);
         await getALLchat(roomId);
@@ -99,12 +100,19 @@
             if(response.status == 200) {
                 if(response.data.length > 0) {
                    await response.data.forEach(function (data) {
-                        html+= `<div class="d-flex justify-content-between">
-                                <div style="flex: 1 1 0%;"></div>
+                    var className= 'left-message';
+                    var flex = '';
+                    if( Auth.auth_id == data.from_user_id && data.from_message == "from_vendor") {
+                         className= 'right-message';
+                         flex = '<div style="flex: 110%;"></div>';
+                    }
+                    
+                        html+= `<div class="d-flex justify-content-between ${className}">
+                                ${flex}
                                 <div class="text-right mb-4">
                                     <div class="conversation-list d-inline-block bg-light px-3 py-2" style="border-radius: 12px;">
                                         <div class="ctext-wrap">
-                                            <div class="conversation-name text-left text-primary mb-1" style="font-weight: 600;">${data.nickname}</div>
+                                            <div class="conversation-name text-left text-primary mb-1" style="font-weight: 600;">${data.email}</div>
                                             <p class="text-left">${data.message}</p>
                                             <p class="chat-time mb-0">
                                                 <svg width="12" height="12" class="prefix__MuiSvgIcon-root prefix__jss80 prefix__MuiSvgIcon-fontSizeLarge" viewBox="0 0 24 24" aria-hidden="true">
@@ -125,7 +133,8 @@
                     scrollDown();
                 } else {
                     $('#chatHistory').html(``);
-                    $('.send_message').attr('data-id','');
+                    $('.join_room').attr('data-id',roomId);
+                    $('.send_message').attr('data-id',roomId);
                     $('#rightChat').show();
                     $('#chatHistory').addClass('room_'+roomId);
                 }
@@ -142,18 +151,24 @@
 
 
     async function newMessage(message){
-        var data = message.message;
+        console.log(message);
+        var data = message.message.chatData;
         if(data.message ==  undefined || data.message ==  'undefined'){
             return;
         }
         var html='';
-       
+        var className= 'left-message';
+        var flex = '';
+        if( Auth.auth_id == data.from_user_id && data.from_message == "from_vendor") {
+             className= 'right-message';
+             flex = '<div style="flex: 110%;"></div>';
+        }
         html = `<div class="d-flex justify-content-between">
-                <div style="flex: 1 1 0%;"></div>
+                ${flex}
                 <div class="text-right mb-4">
                     <div class="conversation-list d-inline-block bg-light px-3 py-2" style="border-radius: 12px;">
                         <div class="ctext-wrap">
-                            <div class="conversation-name text-left text-primary mb-1" style="font-weight: 600;">${data.nickname}</div>
+                            <div class="conversation-name text-left text-primary mb-1" style="font-weight: 600;">${data.email}</div>
                             <p class="text-left">${data.message}</p>
                             <p class="chat-time mb-0">
                                 <svg width="12" height="12" class="prefix__MuiSvgIcon-root prefix__jss80 prefix__MuiSvgIcon-fontSizeLarge" viewBox="0 0 24 24" aria-hidden="true">
@@ -170,6 +185,8 @@
 
                   
     }
+
+    
 
     function scrollDown(){
         var messageBody = document.querySelector('.chatitem');
@@ -205,20 +222,60 @@
     
     }
 
-    function sendMessage(message,room_id){
+    // function sendMessage(message,room_id){
 
-        axios.post(`/client/chat/sendMessage`, {
-            sub_domain: window.location.origin,
-            client_id:  1,
-            db_name:Auth.database_name,
-            user_id:  Auth.auth_id,   
-            message:message,
-            room_id:room_id 
+    //     axios.post(`/client/chat/sendMessage`, {
+    //         sub_domain: window.location.origin,
+    //         client_id:  1,
+    //         db_name:Auth.database_name,
+    //         user_id:  Auth.auth_id,   
+    //         message:message,
+    //         room_id:room_id ,
+    //         chattype:'vendor_to_user',
+    //         from:'vendor',
+    //     })
+    //     .then(async response => {
+    //          console.log(response.data.status);
+    //          if(response.data.status) {
+    //             socket.emit('save-message', response.data)
+    //             $('#message_box').val('');
+    //          }
+             
+    //     })
+    //     .catch(e => {
+    //         Swal.fire(
+    //             'Something went wrong, try again later!',                                    
+    //             'error'
+    //         )
+    //     })
+          
+    // }
+
+
+    function sendMessage(message,room_id){
+        // if($data['from'] == 'vendor') {
+        //     $messageData = $this->sendSocketMessage($data,$user,'to_user','vendor','from_vendor','vendor_to_user');
+        // } else {
+        //     $messageData = $this->sendSocketMessage($data,$user,'to_vendor','user','from_user','vendor_to_user');
+        // }
+        axios.post(`https://chat.royoorders.com/api/chat/sendMessageJoin`, {
+            'room_id' : room_id,
+            'message': message,
+            'user_type': 'vendor',
+            'to_message': 'to_user',
+            'from_message': 'from_vendor',
+            'user_id': Auth.auth_id,
+            'email': 'k@k.com',
+            //'display_image': $user->image,
+            'sub_domain' : window.location.host,
+            //'room_name' =>$data->name,
+            'chat_type': 'vendor_to_user',
         })
         .then(async response => {
              console.log(response.data.status);
              if(response.data.status) {
                 socket.emit('save-message', response.data)
+                $('#message_box').val('');
              }
              
         })

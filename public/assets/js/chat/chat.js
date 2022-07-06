@@ -109,7 +109,7 @@
 
 
     async function newMessage(message){
-        var data = message.message;
+        var data = message.chatData;
         if(data.message ==  undefined || data.message ==  'undefined'){
             return;
         }
@@ -120,7 +120,7 @@
                 <div class="text-right mb-4">
                     <div class="conversation-list d-inline-block bg-light px-3 py-2" style="border-radius: 12px;">
                         <div class="ctext-wrap">
-                            <div class="conversation-name text-left text-primary mb-1" style="font-weight: 600;">${data.nickname}</div>
+                            <div class="conversation-name text-left text-primary mb-1" style="font-weight: 600;">${data.email}</div>
                             <p class="text-left">${data.message}</p>
                             <p class="chat-time mb-0">
                                 <svg width="12" height="12" class="prefix__MuiSvgIcon-root prefix__jss80 prefix__MuiSvgIcon-fontSizeLarge" viewBox="0 0 24 24" aria-hidden="true">
