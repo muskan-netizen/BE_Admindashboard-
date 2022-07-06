@@ -55,12 +55,10 @@ class PickupDeliveryController extends FrontController{
 
         if(count($order) > 0) {
             if($response->status() == 200){
-                if(($response['agent_location'] == '') && ($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))){
-                    $order['dispatcher_status'] = __('Hold on! We are looking for drivers nearby!');
-                 } else {
+                if(($response['agent_location'] != '') && ($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))){
+                    //$order['dispatcher_status'] = __('Hold on! We are looking for drivers nearby!');
                     $order['dispatcher_status'] = __('Your driver has been assigned!');
                  }
-              
                 // dd($order->dispatcher_status);
                 $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order['order_id'] ,'vendor_id' =>$order['vendor_id'] ])->latest()->first();
                 $order['dispatcher_status_type']=  $type ?  $type->type :1;
