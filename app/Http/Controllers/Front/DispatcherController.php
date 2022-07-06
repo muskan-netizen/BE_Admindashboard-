@@ -33,9 +33,9 @@ class DispatcherController extends FrontController
                      if(!isset($code->code))
                      {
                         return response()->json([
-                            'status' => '0',
-                            'message' => 'Not Found'
-                        ]);
+                                'status' => '0',
+                                'message' => 'Not Found'
+                            ]);
                      }
                  }
                 
@@ -44,7 +44,7 @@ class DispatcherController extends FrontController
                  if($request->check_qr=='5' && isset($request->qr_code))
                  {
                     $order = Order::where('order_number',$request->order_number)->first();
-                    $code = QrcodeImport::where('code',$request->qr_code)->first();
+                    $code = QrcodeImport::with('vendorDetail')->where('code',$request->qr_code)->first();
                     if($code){
                         $qrcodes = OrderQrcodeLinks::updateOrCreate(['order_id' => $order->id,'qrcode_id'=>$code->id], ['order_id'=>$order->id,'order_number'=>$order->order_number,'qrcode_id'=>$code->id,'code'=>$code->code]);
                     }
@@ -106,14 +106,11 @@ class DispatcherController extends FrontController
                 $update_tr = OrderVendor::where('web_hook_code',$web_hook_code)->update(['dispatch_traking_url' =>  $request->dispatch_traking_url]);
             }
             OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
-            // \log::info('---1---');
-            // \log::info($update);
-            // \log::info('----2--');
-            \Log::info('response order');
-             $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??Null];
+
+             $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??[]];
             DB::commit();
                     $message = "Order status updated.";
-                    return $this->successResponse(json_encode($data)??[], $message);
+                    return $this->successResponse($data??[], $message);
 
             }else{
                 DB::rollback();
