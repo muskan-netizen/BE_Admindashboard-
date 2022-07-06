@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Front;
 
 use Log;
-use Auth;
 use DB;
+use Auth;
 use Rede;
 use Session;
 use Omnipay\Omnipay;
@@ -266,7 +266,8 @@ class UseRedePaymentController extends FrontController
             $returnUrl = url('payment/gateway/returnResponse');
             $returnUrlParams = '?status=200&gateway=userede&action=' . $payment_from;
             if($payment_from == 'cart'){
-                $cart_id  = $request->cart_id;
+                $cart = Cart::select('id')->where('status', '0')->where('user_id', $user_id)->first();
+                $cart_id  = $cart->id;
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                 if ($order) {
                     $order->payment_status = 1;
