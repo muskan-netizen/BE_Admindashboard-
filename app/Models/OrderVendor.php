@@ -68,7 +68,7 @@ class OrderVendor extends Model{
 		switch ($dispatcher_status_option) {
 			case 1:
 				if ($type == '1') {
-					$title = __('Your driver has been assigned!');
+					$title = __('Hold on! We are looking for drivers nearby!');
 				}
 			break;
 			case 2:
@@ -77,17 +77,11 @@ class OrderVendor extends Model{
 				}
 			break;
 			case 3:
-				
 				if ($type == '1') {
-					
 					$title = __('Driver heading to the pickup location');
-					
 				} else {
-					
 					$title = __('Driver heading to dropoff location');
-					
 				}
-				
 			break;
 			case 4:
 				if ($type == '1') {
@@ -95,20 +89,17 @@ class OrderVendor extends Model{
 				}else{
 					$title = __('Driver arrived at dropoff location');
 				}
-				
 			break;
 			case 5:
 				if ($type == '1') {
 					$title = __('Your driver has reached to your pickup location!');
 				}else{
-					
 					$title = __('You have arrived at your destination!');
-					
 				}
 				
 			break;
 			default:
-			$title = __("Hold on! We are looking for drivers nearby!");
+				$title = __("Hold on! We are looking for drivers nearby!");
 		   }
 		// switch ($title) {
 		// 	case "Created":
