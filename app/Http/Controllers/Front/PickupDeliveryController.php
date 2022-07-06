@@ -49,16 +49,45 @@ class PickupDeliveryController extends FrontController{
 
     public function getOrderTrackingDetails(Request $request, $domain = ''){
 
-        $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first();
-       // pr($order->toArray());
-        $response = Http::get($request->new_dispatch_traking_url);
-        if($response->status() == 200 && isset($order) && !empty($order)){
-           $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
-           $order->dispatcher_status_type=  $type ?  $type->type :1;
-           $response = $response->json();
-           $response['order_details'] = $order->toArray();
-           return $this->successResponse($response);
+       $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
+   
+       $response = Http::get($request->new_dispatch_traking_url);
+
+        if(count($order) > 0) {
+            if($response->status() == 200){
+                if(($response['agent_location'] == '') && ($order['dispatcher_status'] === __('Hold on! We are looking for drivers nearby!'))){
+                    $order['dispatcher_status'] = __('Hold on! We are looking for drivers nearby!');
+                 } else {
+                    $order['dispatcher_status'] = __('Your driver has been assigned!');
+                 }
+              
+                // dd($order->dispatcher_status);
+                $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order['order_id'] ,'vendor_id' =>$order['vendor_id'] ])->latest()->first();
+                $order['dispatcher_status_type']=  $type ?  $type->type :1;
+                $response = $response->json();
+                $response['order_details'] = $order;
+                return $this->successResponse($response);
+            } else {
+
+                $response = [];
+                $response['order_details'] = [];
+                $response['status'] = $response->status();
+                return $this->successResponse($response);
+
+            }
+        } else {
+            if($response->status() == 200){
+                $response = $response->json();
+                $response['order_details'] = [];
+                return $this->successResponse($response);
+            } else {
+                $response = [];
+                $response['order_details'] = [];
+                $response['status'] = $response->status();
+                return $this->successResponse($response);
+            }
         }
+        
     }
 
     public function postVendorListByCategoryId(Request $request, $domain = '',$category_id = 0){
