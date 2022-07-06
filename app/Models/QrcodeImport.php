@@ -14,5 +14,9 @@ class QrcodeImport extends Model
     public function qrcode(){
         return $this->belongsTo('App\Models\AssignQrcodesToOrder');
      }
+
+     public function vendorDetail(){
+        return $this->hasOne('App\Models\Vendor','id','vendor_id');
+     }
  
 }

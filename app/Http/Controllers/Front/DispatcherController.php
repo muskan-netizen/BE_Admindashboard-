@@ -29,7 +29,7 @@ class DispatcherController extends FrontController
                  //Checking Bag QrCode imported in order panel only if qrcheck parameter is came from dispatcher
                  if(isset($request->check_qr) && isset($request->qr_code))
                  {
-                     $code = QrcodeImport::where('code',$request->qr_code)->first();
+                     $code = QrcodeImport::with('vendorDetail')->where('code',$request->qr_code)->first();
                      if(!isset($code->code))
                      {
                         return response()->json([
@@ -38,6 +38,8 @@ class DispatcherController extends FrontController
                         ]);
                      }
                  }
+                
+
                 //  \Log::info('hi');
                  if($request->check_qr=='5' && isset($request->qr_code))
                  {
@@ -104,10 +106,14 @@ class DispatcherController extends FrontController
                 $update_tr = OrderVendor::where('web_hook_code',$web_hook_code)->update(['dispatch_traking_url' =>  $request->dispatch_traking_url]);
             }
             OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
-
-                    DB::commit();
+            // \log::info('---1---');
+            // \log::info($update);
+            // \log::info('----2--');
+            \Log::info('response order');
+             $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??Null];
+            DB::commit();
                     $message = "Order status updated.";
-                    return $this->successResponse($update, $message);
+                    return $this->successResponse(json_encode($data)??[], $message);
 
             }else{
                 DB::rollback();
@@ -116,7 +122,6 @@ class DispatcherController extends FrontController
                }
 
         } catch (Exception $e) {
-            \Log::info('hi rollback');
             DB::rollback();
             return $this->errorResponse($e->getMessage(), $e->getCode());
 
