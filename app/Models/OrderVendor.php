@@ -61,19 +61,19 @@ class OrderVendor extends Model{
 
 		switch ($title) {
 			case "Created":
-			  $title = "Hold on! We are looking for drivers nearby!";
+			  $title = __("Hold on! We are looking for drivers nearby!");
 			  break;
 			case "Assigned":
-			  $title = "Your driver has been assigned!";
+			  $title = __("Your driver has been assigned!");
 			  break;
 			case "Started":
-			  $title = "Your driver is moving to you!";
+			  $title = __("Your driver is moving to you!");
 			  break;
 			case "Arrived":
-			  $title = "Your driver has reached to your pickup location!";
+			  $title = __("Your driver has reached to your pickup location!");
 			  break;
 			case "Completed":
-			  $title = "You have arrived at your destination!";
+			  $title = __("You have arrived at your destination!");
 			  break;  
 			default:
 			$title = $title;
