@@ -24,7 +24,7 @@ class Order extends Model implements Auditable
     }
     public function user()
     {
-        return $this->hasOne('App\Models\User', 'id', 'user_id');
+        return $this->hasOne('App\Models\User', 'id', 'user_id')->withTrashed();
     }
     public function address()
     {
