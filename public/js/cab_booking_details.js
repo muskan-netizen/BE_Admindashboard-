@@ -78,13 +78,13 @@ function getOrderDriverDetails(dispatch_traking_url,order_id,product_image) {
             var order_status_new = response.data.order_details.dispatcher_status;
                 
             showroute(alltask,agent_location,map,product_image);
+            $("#dispatcher_status_show").html(response.data.order_details.dispatcher_status);
             if(response.data.agent_location != null){
                 $('#searching_main_div').remove();
                 $('#driver_details_main_div').show();
                 $('#driver_name').html(response.data.order.name).show();
                 $('#driver_image').attr('src', response.data.agent_image).show();
                 $('#driver_phone_number').html(response.data.order.phone_number).show();
-                $("#dispatcher_status_show").html(response.data.order_details.dispatcher_status);
                 var avgrating = response.data.avgrating;
                 var fillStar = '';
                 for (let i = 1; i <= avgrating; i++) {

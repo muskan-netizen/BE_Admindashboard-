@@ -7,24 +7,15 @@ use App\Helpers\Easebuzz;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Redirect;
-use App\Models\{PaymentOption,Country,ClientCurrency,ClientLanguage,SubscriptionPlansUser, Order, Cart, CartAddon, CartProduct, User,  Payment,  CartCoupon, CartProductPrescription, UserVendor, Transaction,Client};
-use App\Http\Controllers\Api\v1\{BaseController, OrderController, WalletController, UserSubscriptionController};
-use Openpay\Data\Openpay as Openpay;
+use App\Models\{ClientCurrency};
+use App\Http\Controllers\Api\v1\{BaseController};
 class UseRedePaymentController  extends BaseController
 {
     use ApiResponser;
-
-    public $openpay_merchant_id;
-    public $openpay_private_key;
-    public $openpay_public_key;
-    public $environment;
-    public $openpay;
-
-    
     public function beforePayment(Request $request) 
     {   
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-       $currency =  (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+        $currency =  (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
         if($currency != "BRL"  ){
             return response()->json([
                 'status' => 'error',
@@ -38,6 +29,10 @@ class UseRedePaymentController  extends BaseController
         if(($action == 'cart') || ($action == 'tip' || $action == 'pickup_delivery')){
             $params = $params . '&order_number=' . $request->order_number;
         }
+        if($action == 'subscription'){
+            $params = $params . '&subscription_id=' . $request->subscription_id;
+        }
+      
         //return $this->successResponse(url('http://192.168.99.124:8000/payment/userede/page'.$params));
         return $this->successResponse(url($request->serverUrl.'payment/userede/page'.$params)); 
     }
