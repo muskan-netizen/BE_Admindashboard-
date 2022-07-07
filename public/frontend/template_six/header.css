@@ -1,0 +1,107 @@
+/*================== header css ====================*/
+.googleMapModal .mapInPopup{overflow: hidden;border-radius: 10px 10px 0 0;}
+.alSpaMenuCard{height: 0;z-index: 9999;width: 0;position: fixed;background-color: #0C0C0C;-webkit-transition: .3s;transition: .3s;overflow: hidden;left: 0;right: 0;margin: auto;
+    top: 50%;
+    transform: translate(0, -50%);}
+button.alMenuClose {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: #84571E;
+    height: 50px;
+    width: 50px;
+    border-radius: 50px;
+    font-size: 50px;
+    line-height: 53px;
+    color: #fff;
+    padding: 0;
+    border: 0;
+}
+.close.text-danger{color:#84571E !important; }
+.alSpaMenuCard.active{height: 100vh;width: 100%;}
+.alSpaMenuCard ul {
+    text-align: center;   
+}
+.alMobileLocations {
+    margin-top: -120px;
+    position: relative;
+}
+.alSpaMenuCard.active ul li a{font-size: 24px;}
+.alSpaMenuCard ul li{margin-bottom: 15px;}
+.alSpaMenuCard ul li a{color: #fff;-webkit-transition: 0.5s;transition: 0.5s;font-size: 24px;}
+.alSpaMenuCard ul li a:hover{color: #84571E; padding-left: 15px;}
+.alspalogo{
+    position: relative;
+    left: 0;
+    top: 0
+}
+.darkLogo{
+    display: none
+}
+.header .navbar:before{
+    background: linear-gradient(180deg, #0C0C0C 0%, rgba(0, 0, 0, 0) 100%);
+    opacity: 0.7;
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 100%
+}
+.alFindSec{
+    background-color: #fff;
+    border-radius: 30px;
+    padding: 5px 5px 5px 30px;
+    box-shadow: 0 1px 7px rgba(62,62,76,.2)
+}
+.alFindSec span{
+    font-size: 14px;
+    font-weight: 400;
+    color: #0C0C0C;
+    opacity: .5;
+    padding-right: 30px;
+    position: relative;
+    cursor: pointer;
+    font-family: 'MontserratRegular';
+}
+.alNumber input.inputNumbers{
+	font-family: 'MontserratRegular';
+}
+.alLocation span:before{
+    border: solid black;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    position: absolute;
+    content: "";
+    right: 10px;
+    top: 2px
+}
+.alFindSec span.minus, .alFindSec span.plus{
+    font-size: 20px
+}
+.alFindGo .btn{
+    background-color: #CAAE73;
+    padding: 0;
+    height: 40px;
+    width: 40px;
+    border-radius: 30px;
+    color: #fff;
+}
+.alFindGo .btn:hover{
+	background-color: #84571E;
+}
+.darkHeader .darkLogo{
+    display: block
+}
+.darkHeader .lightLogo{
+    display: none
+}
+.darkHeader.header .navbar:before{
+    background:#fff;
+    opacity: 1;
+    box-shadow: 0 1px 7px rgba(62,62,76,.2)
+}
+.darkHeader .rightHead ul li a svg path,.darkHeader .rightHead ul li a svg{
+    fill: #000
+}

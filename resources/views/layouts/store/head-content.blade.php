@@ -44,7 +44,6 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/homepage.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/footer.css')}}">
-@endif
 
 @elseif(isset($set_template)  && $set_template->template_id == 6)
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/homepage.css')}}">

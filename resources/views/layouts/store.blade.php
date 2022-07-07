@@ -32,6 +32,8 @@ if(isset($set_template))
     $body_class = "al_body_template_four";
   elseif($set_template->template_id == 5)
     $body_class = "al_body_template_five";
+  elseif($set_template->template_id == 6)
+    $body_class = "al_body_template_six";
 }
 @endphp
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
