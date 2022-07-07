@@ -381,7 +381,7 @@ if (Session::has('toaster')) {
 
 
 @yield('script-bottom')
-<script  src="{{asset('assets/js/chat/chatNotifications.js')}}"></script>
+{{-- <script  src="{{asset('assets/js/chat/chatNotifications.js')}}"></script> --}}
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
 <script>

@@ -177,7 +177,7 @@ class ChatController extends BaseController
             'user_id'=>$user->id,
             //'vendor_id'=>$data,
             'email'=>$user->email,
-            'dipslay_image'=>$user->image
+            'display_image'=>$user->image
         ]);
 
         $statusCode = $response->getStatusCode();
@@ -198,7 +198,7 @@ class ChatController extends BaseController
         }
     }
 
-    public function sendSocketMessage($data,$user,$to_message,$userType,$from_message){
+    public function sendSocketMessage($data,$user,$to_message,$userType,$from_message,$chat_type){
         $clientData = $this->client_data;
         $server_name = $_SERVER['REMOTE_ADDR'];
         // echo "<pre>";
@@ -206,24 +206,31 @@ class ChatController extends BaseController
         // print_r($user);
         // //print_r($data);
         // die;
-        $response =   Http::post($clientData->socket_url.'/api/chat/sendMessage', [
+        $response =   Http::post($clientData->socket_url.'/api/chat/sendMessageJoin', [
             'sub_domain' =>$server_name,
             'room_id' =>$data['room_id'],
+            'message' =>$data['message'],
             'user_type' =>$userType,
             'to_message'=>$to_message,
             'from_message'=>$from_message,
             'user_id'=>$user->id,
             'email'=>$user->email,
-            'dipslay_image'=>$user->image
+            'display_image'=>$user->image,
+
+            'sub_domain' =>$server_name,
+            'room_id' =>$data['room_id'],
+            //'room_name' =>$data->name,
+            'chat_type' =>$chat_type,
+           
         ]);
 
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
-            $roomData = $response['roomData'];
-            $roomUser = $response['RoomUser'];
+            $chatData = $response['chatData'];
+            //$roomUser = $response['RoomUser'];
             $message = $response['message'];
           
-            return ['status' => $response['status'],'roomUser' =>$roomUser ,'roomData' => $roomData , 'message' => __($message)];
+            return ['status' => $response['status'] ,'chatData' => $chatData , 'message' => __($message)];
         } else {
 
             return ['status' => false, 'message' => __('Something went wrong!!!')];
@@ -266,7 +273,12 @@ class ChatController extends BaseController
        // if ($user->is_superadmin == 0) {
         //$vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
         //$this->client_data['vendor_id'] = $vendor_id;
-        $messageData = $this->sendSocketMessage($data,$user,'to_user','vendor','from_vendor');
+        if($data['from'] == 'vendor') {
+            $messageData = $this->sendSocketMessage($data,$user,'to_user','vendor','from_vendor','vendor_to_user');
+        } else {
+            $messageData = $this->sendSocketMessage($data,$user,'to_vendor','user','from_user','vendor_to_user');
+        }
+        
         // if($roomData['status']){
         //     $chatroom = $roomData['roomData'];
         // } else {

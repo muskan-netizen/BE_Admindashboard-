@@ -11,40 +11,15 @@
     <link href="{{ asset('assets/libs/bootstrap-touchspin/bootstrap-touchspin.min.css') }}" rel="stylesheet"
         type="text/css" />
     <link href="{{ asset('assets/libs/nestable2/nestable2.min.css') }}" rel="stylesheet" type="text/css" />
-    <style>
-        .error {
-            color: red;
-        }
-        .chat-list-item {
-        cursor: pointer;
-        padding: 14px 16px;
-        }
-        .mdi-circle:before {
-        content: "󰝥";
-        }
-        .chat-box-wrapper {
-            max-height: 538px;
-            overflow-y: scroll;
-        }
-        .chat-input-section {
-            background-color: #fff;
-            display: block;
-            z-index: 1;
-            position: relative;
-        }
-        .mdi-set,
-        .mdi:before {
-        display: inline-block;
-        font: normal normal normal 24px/1 Material Design Icons;
-        font-size: inherit;
-        text-rendering: auto;
-        line-height: inherit;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        }
 
+    <style>
+      
 
     </style>
+
+@section('customcss')
+<link href="{{ asset('assets/libs/chat/chat.css') }}" rel="stylesheet" type="text/css" />
+
 @endsection
 @section('content')
     <div class="container-fluid">
@@ -62,13 +37,13 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body position-relative">
-                        <div class="container">
+                        
                             <div class="chat-body row overflow-hidden shadow bg-light rounded">
 
                                 @include('backend.chat.vendorpart.left') 
                                 @include('backend.chat.vendorpart.right') 
                             </div>
-                        </div>
+                        
                     
                     </div>
                 </div>
@@ -90,7 +65,7 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/vendor_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
-<script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script>
+{{-- <script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script> --}}
 
 
 <script>
