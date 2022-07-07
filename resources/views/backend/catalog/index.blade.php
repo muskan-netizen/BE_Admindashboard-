@@ -2,6 +2,128 @@
 @section('css')
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 <link href="{{asset('assets/libs/nestable2/nestable2.min.css')}}" rel="stylesheet" type="text/css" />
+
+<style>
+    .select-category-lang label { font-size: 12px;}.select-category-lang select { height: 36px;}
+    .modal-category-list {
+        height: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .modal-category-list .col-sm{
+        width: auto;
+        max-width: 25%;
+        min-width: 25%;
+    }
+    .category-modal-right {
+        height: 100%;
+        max-height: 650px;
+        min-height: 650px;
+        overflow-x: auto;
+        overflow-y: scroll;
+        border: 1px solid#eeeeeeab;
+    }
+    /*for custom  scrollbar css */
+    .category-modal-right::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #F5F5F5;
+}
+
+.category-modal-right::-webkit-scrollbar
+{
+	width: 12px;
+	background-color: #F5F5F5;
+}
+
+.category-modal-right::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #D62929;
+}
+/*------end here*/
+    #edit-category-form .modal-dialog.modal-dialog-centered.modal-md {
+        max-width: 800px;
+    }
+    .Category-select_option select {
+    border: none;
+    padding-left: 0px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6c757d;
+}
+.modal-category-list .select-category label:before{
+    clip-path: polygon(0 0,0 50%,35% 0);
+    font-size: 22px;
+    padding: 2px 2px;
+}
+.modal-category-list .select-category label::after{
+    display:none;
+} 
+.modal-category-list .form-check-input:checked~label .category-img::after {
+    opacity: 1;
+}
+.modal-category-list .select-category label .category-img{position: relative;}
+.modal-category-list .select-category label .category-img:after{
+    background: rgb(0 0 0 / 31%);
+    background-image: none!important;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    content: "";
+    position: absolute;
+}
+.category-icon-image .dropify-wrapper{
+    height:70px;
+}
+.modal-category-list .select-category .modal-category-btm-title h6{
+    text-align:left;
+    font-size: 14px;
+    margin:0px;
+    padding:2px 0px;
+}
+.modal-category-list .select-category .modal-category-btm-title p{
+    font-size:12px; 
+}
+.modal-category-list .select-category .modal-category-btm-title p i {
+    font-size: 13px;
+}
+.modal-category-list .edit-cart-text input {
+    font-size: 10px;
+    border: 1px solid#eee;
+    padding: 4px 10px;
+    box-shadow: 1px 3px 4px #eee;
+    border-radius: 8px;
+    color: #9b9494;
+    font-weight: 100;
+}
+/* .modal-category-list .edit-cart-text input::placeholder{
+    font-size:12px;
+} */
+
+
+
+    /* .modal-category-list::-webkit-scrollbar {
+        width: 1em;
+    }
+    
+    .modal-category-list::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    }
+    
+    .modal-category-list::-webkit-scrollbar-thumb {
+        background-color: darkgrey;
+        outline: 1px solid slategrey;
+    } */
+</style>
 @endsection
 @section('content')
 <div class="container-fluid">
