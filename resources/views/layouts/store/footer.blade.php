@@ -94,6 +94,8 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+
+
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {
@@ -158,6 +160,23 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     });
 </script>
 @endif
+<!-- /** socket_accept */ -->
+<script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+@if((!empty(Auth::user())))
+<script>
+    createSocketConnection();
+    async function createSocketConnection(){
+
+        socket = new io(SocketConstants.Socket_url);
+        await socket.connect(); 
+        console.log(socket);
+        console.log(SocketConstants.Socket_url);
+    }
+  
+</script>
+@endif
+<!-- /**socket_accept end */ -->
+
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
 <script type="text/javascript">

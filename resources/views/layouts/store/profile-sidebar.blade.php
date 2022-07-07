@@ -28,7 +28,7 @@ $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
                     <div class="collapse" id="chat">
                         <ul class="nav-second-level">
                             <li>
-                                <a href="{{route('chat.UservendorChat')}}">{{ __('Vendor Chat') }}</a>
+                                <a href="{{route('userChat.UservendorChat')}}">{{ __('Vendor Chat') }}</a>
                             </li>
                         
                             {{-- <li>

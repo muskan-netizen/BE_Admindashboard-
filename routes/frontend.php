@@ -526,4 +526,6 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	//Passbase
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
 	Route::match(['get','post'],'passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
+	Route::get('user/chat/vendor/{room_id?}', 'Front\ChatController@UservendorChat')->name("userChat.UservendorChat");
+
 });
