@@ -1358,11 +1358,12 @@ class OrderController extends FrontController
 
         $notification_content = NotificationTemplate::where('id', 4)->first();
         if ($notification_content) {
+            $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
             $data = [
                 "registration_ids" => $devices,
                 "notification" => [
                     'title' => $notification_content->subject,
-                    'body'  => $notification_content->content,
+                    'body'  => $body_content,
                     'sound' => "notification.wav",
                     "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                     'click_action' => route('order.index'),

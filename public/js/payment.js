@@ -997,9 +997,50 @@ $(document).ready(function() {
             data.order_number = $("#order_number").val();
         }
         data.amount = total_amount;
-        data.payment_option_id =12;
+        data.payment_option_id =43;
         data._token = $('input[name=_token]').val();
-        $.redirect(simplify_before_payment, data);
+        $.redirect(upay_before_payment, data); 
+    }
+//////////////////////////////////////UPay Payment Gateway////////////////////////////////////
+
+    window.paymentViaConekta = function paymentViaConekta(address_id,order){
+        let total_amount = 0;
+        let tip = 0;
+        let tipElement = $("#cart_tip_amount");
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let cart_id = $("#cart_total_payable_amount").data("cart_id");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        let walletElement = $("input[name='wallet_amount']");
+        let ajaxData = [];
+        let data = [];
+        
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            tip = tipElement.val();
+            data.tip = tip;
+            data.address_id = address_id;
+            data.payment_from = 'cart';
+            data.cart_id = cart_id;
+            data.order_number = order.order_number;
+
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            data.payment_from ='wallet';
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            // ajaxData = $("#subscription_payment_form").serializeArray();
+            data.subscription_id = subscription_id.val();
+            data.payment_from ='subscription';
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            data.payment_from ='tip';
+            data.order_number = $("#order_number").val();
+        }
+        data.amount = total_amount;
+        data.payment_option_id =44;
+        data._token = $('input[name=_token]').val();
+        $.redirect(conekta_before_payment, data);
     }
 
 ///////////////////////////Checkout payment Gateway //////////////////////////////
@@ -1323,10 +1364,15 @@ $(document).ready(function() {
         let subscriptionElement = $("input[name='subscription_amount']");
         let subscriptionId = $("input[name='subscription_id']");
         let tipElement = $("#cart_tip_amount");
+        let cabElement = $("#pickup_now");
         let payment_from = '';
         if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
             payment_from = 'cart';
+            var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+        } else if (cabElement.length > 0) {
+            total_amount = cabElement.data('amount');
+            payment_from = 'pickup_delivery';
             var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
         } else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
@@ -1348,45 +1394,12 @@ $(document).ready(function() {
             url: create_payphone_url,
             data: rowData,
             success: function(resp) {
-
-                payphone.Button({
-                    //token obtenido desde la consola de developer
-                    token:resp.token,
-        
-                            //PARÁMETROS DE CONFIGURACIÓN
-                            btnHorizontal: true,
-                            btnCard: true,
-        
-                            createOrder: function(actions){
-                                //Se ingresan los datos de la transaccion ej. monto, impuestos, etc
-                                return actions.prepare({
-        
-                                amount: resp.amount,
-                                amountWithoutTax: resp.amount,
-                                currency: "USD",
-                                clientTransactionId: resp.orderNo
-                                });
-        
-                                },
-                                onComplete: function(model, actions)
-                                {
-                                            //Se confirma el pago realizado
-                                            actions.confirm({
-                                            id: model.id,
-                                            clientTxId: model.clientTxId
-                                            }).then(function(value){
-                                            //EN ESTA SECCIÓN SE RECIBE LA RESPUESTA Y SE MUESTRA AL USUARIO
-                                            if (value.transactionStatus == "Approved"){
-                                                //alert("Pago " + value.transactionId + " recibido, estado " + value.transactionStatus );
-                                              var resUrl = resp.returnUrl+'?id='+value.transactionId+'&clientTransactionId='+resp.orderNo+'&status='+value.transactionStatus;
-                                              window.location.href= resUrl;
-                                            }
-                                        }).catch(function(err){
-                                        console.log(err);
-                                        });
-                                }
-                    }).render("#pp-button");
-
+                if(resp.paymentId){
+                    window.location.href= resp.payWithCard;
+                }else{
+                    alert(resp.message);
+                    window.location.reload();
+                }
           },
           error: function(error) {
               console.log(error);
