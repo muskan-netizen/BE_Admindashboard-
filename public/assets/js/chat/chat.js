@@ -61,6 +61,85 @@
         })
     }
 
+    // async function getALLchat(roomId){
+    //     var html='';
+    //     axios.get(`https://chat.royoorders.com/api/chat/${roomId}`)
+    //     .then(async response => {
+    //         console.log(response);
+    //         if(response.status == 200) {
+    //             if(response.data.length > 0) {
+    //                await response.data.forEach(function (data) {
+    //                     html+= `<div class="d-flex justify-content-between">
+    //                             <div style="flex: 1 1 0%;"></div>
+    //                             <div class="text-right mb-4">
+    //                                 <div class="conversation-list d-inline-block bg-light px-3 py-2" style="border-radius: 12px;">
+    //                                     <div class="ctext-wrap">
+    //                                         <div class="conversation-name text-left text-primary mb-1" style="font-weight: 600;">${data.nickname}</div>
+    //                                         <p class="text-left">${data.message}</p>
+    //                                         <p class="chat-time mb-0">
+    //                                             <svg width="12" height="12" class="prefix__MuiSvgIcon-root prefix__jss80 prefix__MuiSvgIcon-fontSizeLarge" viewBox="0 0 24 24" aria-hidden="true">
+    //                                                 <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
+    //                                                 <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path>
+    //                                             </svg> ${data.created_date}</p>
+    //                                     </div>
+    //                                 </div>
+    //                             </div>
+    //                         </div>`;
+
+    //                 });
+    //                 $('#rightChat').show();
+    //                 $('#chatHistory').addClass('room_'+roomId);
+    //                 await $('#chatHistory').html(html);
+    //                 scrollDown();
+    //             } else {
+    //                 $('#chatHistory').html(``);
+    //                 $('#rightChat').show();
+    //                 $('#chatHistory').addClass('room_'+roomId);
+    //             }
+
+    //          } else {
+    //             $('#chatHistory').html(``);
+    //          }
+    //     })
+    //     .catch(e => {
+        
+    //     })
+    // }
+
+
+
+    // async function newMessage(message){
+    //     var data = message.chatData;
+    //     if(data.message ==  undefined || data.message ==  'undefined'){
+    //         return;
+    //     }
+    //     var html='';
+       
+    //     html = `<div class="d-flex justify-content-between">
+    //             <div style="flex: 1 1 0%;"></div>
+    //             <div class="text-right mb-4">
+    //                 <div class="conversation-list d-inline-block bg-light px-3 py-2" style="border-radius: 12px;">
+    //                     <div class="ctext-wrap">
+    //                         <div class="conversation-name text-left text-primary mb-1" style="font-weight: 600;">${data.email}</div>
+    //                         <p class="text-left">${data.message}</p>
+    //                         <p class="chat-time mb-0">
+    //                             <svg width="12" height="12" class="prefix__MuiSvgIcon-root prefix__jss80 prefix__MuiSvgIcon-fontSizeLarge" viewBox="0 0 24 24" aria-hidden="true">
+    //                                 <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
+    //                                 <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path>
+    //                             </svg> ${data.created_date}</p>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         </div>`;
+    //         await $('.room_'+data.room).append(html);
+    //         await $('#preview_message_'+data.room).html(data.message);
+    //         scrollDown();
+
+                  
+    // }
+
+
+
     async function getALLchat(roomId){
         var html='';
         axios.get(`https://chat.royoorders.com/api/chat/${roomId}`)
@@ -69,18 +148,35 @@
             if(response.status == 200) {
                 if(response.data.length > 0) {
                    await response.data.forEach(function (data) {
-                        html+= `<div class="d-flex justify-content-between">
-                                <div style="flex: 1 1 0%;"></div>
-                                <div class="text-right mb-4">
-                                    <div class="conversation-list d-inline-block bg-light px-3 py-2" style="border-radius: 12px;">
+                    var className= 'left-message';
+                    var flex = '';
+                    if( Auth.auth_id == data.from_user_id && data.from_message == "from_vendor") {
+                         className= 'right-message';
+                         //flex = '<div style="flex: 110%;"></div>';
+                    }
+                    // <div class="conversation-name text-left text-primary mr-4" style="font-weight: 600;">${data.email}</div>
+                    // <p class="chat-time m-0 p-0" >
+                    //                             <svg width="12" height="12" class="prefix__MuiSvgIcon-root prefix__jss80 prefix__MuiSvgIcon-fontSizeLarge" viewBox="0 0 24 24" aria-hidden="true">
+                    //                                 <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
+                    //                                 <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path>
+                    //                             </svg> ${data.created_date}</p>
+
+                        html+= `<div class=" ${className}">
+                                ${flex}
+                                <div class="mb-4">
+                                    <div class="conversation-list d-inline-block px-3 py-2" style="border-radius: 12px;">
                                         <div class="ctext-wrap">
-                                            <div class="conversation-name text-left text-primary mb-1" style="font-weight: 600;">${data.nickname}</div>
-                                            <p class="text-left">${data.message}</p>
-                                            <p class="chat-time mb-0">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="conversation-name text-left text-primary mr-4" style="font-weight: 600;">Yog Raj</div>
+                                                <p class="chat-time m-0 p-0" >
                                                 <svg width="12" height="12" class="prefix__MuiSvgIcon-root prefix__jss80 prefix__MuiSvgIcon-fontSizeLarge" viewBox="0 0 24 24" aria-hidden="true">
                                                     <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
                                                     <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path>
-                                                </svg> ${data.created_date}</p>
+                                                </svg> 4:30am, Today</p>
+                                            </div>
+                                            
+                                            <p class="text-left">${data.message}</p>
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -89,10 +185,14 @@
                     });
                     $('#rightChat').show();
                     $('#chatHistory').addClass('room_'+roomId);
+                    $('.join_room').attr('data-id',roomId);
+                    $('.send_message').attr('data-id',roomId);
                     await $('#chatHistory').html(html);
                     scrollDown();
                 } else {
                     $('#chatHistory').html(``);
+                    $('.join_room').attr('data-id',roomId);
+                    $('.send_message').attr('data-id',roomId);
                     $('#rightChat').show();
                     $('#chatHistory').addClass('room_'+roomId);
                 }
@@ -109,14 +209,20 @@
 
 
     async function newMessage(message){
-        var data = message.chatData;
+        console.log(message);
+        var data = message.message.chatData;
         if(data.message ==  undefined || data.message ==  'undefined'){
             return;
         }
         var html='';
-       
+        var className= 'left-message';
+        var flex = '';
+        if( Auth.auth_id == data.from_user_id && data.from_message == "from_vendor") {
+             className= 'right-message';
+            //  flex = '<div style="flex: 110%;"></div>';
+        }
         html = `<div class="d-flex justify-content-between">
-                <div style="flex: 1 1 0%;"></div>
+                ${flex}
                 <div class="text-right mb-4">
                     <div class="conversation-list d-inline-block bg-light px-3 py-2" style="border-radius: 12px;">
                         <div class="ctext-wrap">
@@ -137,6 +243,7 @@
 
                   
     }
+
 
     function scrollDown(){
         var messageBody = document.querySelector('.chatitem');

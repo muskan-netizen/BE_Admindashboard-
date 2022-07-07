@@ -11,40 +11,11 @@
     <link href="{{ asset('assets/libs/bootstrap-touchspin/bootstrap-touchspin.min.css') }}" rel="stylesheet"
         type="text/css" />
     <link href="{{ asset('assets/libs/nestable2/nestable2.min.css') }}" rel="stylesheet" type="text/css" />
-    <style>
-        .error {
-            color: red;
-        }
-        .chat-list-item {
-        cursor: pointer;
-        padding: 14px 16px;
-        }
-        .mdi-circle:before {
-        content: "󰝥";
-        }
-        .chat-box-wrapper {
-            max-height: 538px;
-            overflow-y: scroll;
-        }
-        .chat-input-section {
-            background-color: #fff;
-            display: block;
-            z-index: 1;
-            position: relative;
-        }
-        .mdi-set,
-        .mdi:before {
-        display: inline-block;
-        font: normal normal normal 24px/1 Material Design Icons;
-        font-size: inherit;
-        text-rendering: auto;
-        line-height: inherit;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        }
 
+@endsection
+@section('customcss')
+<link href="{{ asset('assets/libs/chat/userchat.css') }}" rel="stylesheet" type="text/css" />
 
-    </style>
 @endsection
 @section('content')
 <section class="section-b-space">
@@ -100,8 +71,8 @@
                                     <div class="container">
                                         <div class="chat-body row overflow-hidden shadow bg-light rounded">
 
-                                            @include('backend.chat.uservendorpart.left') 
-                                            @include('backend.chat.uservendorpart.right') 
+                                            @include('frontend.chat.uservendorpart.left') 
+                                            @include('frontend.chat.uservendorpart.right') 
                                         </div>
                                     </div>
                                 

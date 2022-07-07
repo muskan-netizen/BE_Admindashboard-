@@ -11,7 +11,7 @@
     <link href="{{ asset('assets/libs/bootstrap-touchspin/bootstrap-touchspin.min.css') }}" rel="stylesheet"
         type="text/css" />
     <link href="{{ asset('assets/libs/nestable2/nestable2.min.css') }}" rel="stylesheet" type="text/css" />
-    <style>
+    {{-- <style>
         .error {
             color: red;
         }
@@ -44,7 +44,11 @@
         }
 
 
-    </style>
+    </style> --}}
+@endsection
+@section('customcss')
+<link href="{{ asset('assets/libs/chat/chat.css') }}" rel="stylesheet" type="text/css" />
+
 @endsection
 @section('content')
     <div class="container-fluid">
