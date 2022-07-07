@@ -46,6 +46,11 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/footer.css')}}">
 @endif
 
+@elseif(isset($set_template)  && $set_template->template_id == 6)
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/homepage.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/footer.css')}}">
+@endif
 @yield('css-links')
 <style type="text/css">
     body{font-size:16px;position:initial}.site-header{width:100%;top:0;left:0;background:#fff;position:fixed;-webkit-transition:all .5s ease-in-out;-moz-transition:all .5s ease-in-out;-ms-transition:all .5s ease-in-out;-o-transition:all .5s ease-in-out;transition:all .5s ease-in-out;z-index:11}.top-header.site-topbar{background:var(--top-header-color);padding:5px 0;display:list-item}
