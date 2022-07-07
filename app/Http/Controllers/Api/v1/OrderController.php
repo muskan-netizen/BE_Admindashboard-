@@ -2570,6 +2570,7 @@ class OrderController extends BaseController
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
             $notification_content = NotificationTemplate::where('id', 4)->first();
+            $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
             if ($notification_content) {
                 if($header_code == ''){
                     $header_code = Client::orderBy('id', 'asc')->first()->code;
@@ -2585,7 +2586,7 @@ class OrderController extends BaseController
                     "registration_ids" => $devices,
                     "notification" => [
                         'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
+                        'body'  => $body_content,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => $redirect_URL,
