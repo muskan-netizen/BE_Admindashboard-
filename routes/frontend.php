@@ -8,7 +8,8 @@
 	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback'); 
 	Route::match(['get','post'],'payment/paytab/return','Front\PaytabController@returnBack')->name('payment.paytab.return'); 
 	Route::get('/debug-sentry', function () {
-		throw new Exception('My first Sentry error!');
+		echo \Hash::make('dispatcher@765');
+		//throw new Exception('My first Sentry error!');
 	});
 
 
@@ -171,6 +172,13 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/paytab/page','Front\PaytabController@beforePayment')->name('payment.paytab.beforePayment');
 	Route::post('payment/paytab','Front\PaytabController@createPayment')->name('payment.paytab.createPayment');
 
+	//UPay
+	Route::match(['get','post'],'payment/upay/page','Front\UPayController@beforePayment')->name('payment.upay.beforePayment');
+	Route::match(['get','post'],'payment/upay','Front\ConektaController@afterPayment')->name('payment.upay.afterPayment');
+	//Conekta
+	Route::match(['get','post'],'payment/conekta/page','Front\ConektaController@beforePayment')->name('payment.conekta.beforePayment');
+	Route::match(['get','post'],'payment/conekta','Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
+
 	//Coinbase
 	Route::match(['get','post'],'payment/coinbase/page','Front\CoinbaseController@beforePayment')->name('payment.coinbase.beforePayment');
 	Route::post('payment/coinbase','Front\CoinbaseController@createPayment')->name('payment.coinbase.createPayment');
@@ -292,6 +300,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/userede/page','Front\UseRedePaymentController@beforePayment')->name('payment.userede.beforePayment');
 	Route::match(['get','post'],'/payment/userede/respons', 'Front\UseRedePaymentController@responsUs')->name('payment.userede.responsUs');
 	Route::post('/payment/userede/payment_init', 'Front\UseRedePaymentController@paymentInit')->name('payment.userede.createPayment');
+	Route::post('/payment/userede/payment_init_app', 'Front\UseRedePaymentController@paymentInitApp')->name('payment.userede.createPaymentApp');
 
 	// OpenpayPaymentController payment test
 	Route::match(['get','post'],'payment/opnepay/page','Front\OpenpayPaymentController@beforePayment')->name('payment.opnepay.beforePayment');

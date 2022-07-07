@@ -56,7 +56,8 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '40', 'path' => '', 'code' => 'userede', 'title' => 'Userede', 'off_site' => '1', 'status' => '0'),
         array('id' => '41', 'path' => '', 'code' => 'openpay', 'title' => 'Open-pay', 'off_site' => '1', 'status' => '0'),
         array('id' => '42', 'path' => '', 'code' => 'dpo', 'title' => 'Direct Pay Online', 'off_site' => '1', 'status' => '0'),
-        array('id' => '43', 'path' => '', 'code' => 'upay', 'title' => 'UnionBank Payments and Collecti ons Solution', 'off_site' => '1', 'status' => '0')
+        array('id' => '43', 'path' => '', 'code' => 'upay', 'title' => 'UnionBank Payments and Collections Solution', 'off_site' => '1', 'status' => '0'),
+        array('id' => '44', 'path' => 'conekta/conekta-php', 'code' => 'conekta', 'title' => 'Conekta', 'off_site' => '1', 'status' => '0')
       );
 
       if($option_count == 0)
@@ -85,8 +86,6 @@ class PaymentOptionSeeder extends Seeder
               }
           }
       }
-
-
 
     }
 }
