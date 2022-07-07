@@ -238,7 +238,11 @@ if($showSubscriptionPlanPopUp == 1){
 
 //////////////Braintree payment Routes
     var braintree_before_payment = "{{route('payment.braintree.beforePayment')}}";
-    var braintree_create_payment = "{{route('payment.braintree.createPayment')}}"; 
+    var braintree_create_payment = "{{route('payment.braintree.createPayment')}}";
+//////////////UPay payment Routes
+    var upay_before_payment = "{{route('payment.upay.beforePayment')}}";
+//////////////Conekta payment Routes
+    var conekta_before_payment = "{{route('payment.conekta.beforePayment')}}";  
 
 //////////////Ozow payment Routes
     var ozow_before_payment = "{{route('payment.ozow.beforePayment')}}";
