@@ -65,7 +65,6 @@ class OrderVendor extends Model{
 		if($dispatcheeStatus){
 			$type = $dispatcheeStatus->type;
 			$dispatcher_status_option = $dispatcheeStatus->dispatcher_status_option_id;
-		
 			switch ($dispatcher_status_option) {
 				case 1:
 					if ($type == '1') {
@@ -97,33 +96,11 @@ class OrderVendor extends Model{
 					}else{
 						$title = __('You have arrived at your destination!');
 					}
-					
 				break;
 				default:
 					$title = __("Hold on! We are looking for drivers nearby!");
 			   }
 		}
-		
-		// switch ($title) {
-		// 	case "Created":
-		// 	  $title = __("Hold on! We are looking for drivers nearby!");
-		// 	  break;
-		// 	case "Assigned":
-		// 	  $title = __("Your driver has been assigned!");
-		// 	  break;
-		// 	case "Started":
-		// 	  $title = __("Your driver is moving to you!");
-		// 	  break;
-		// 	case "Arrived":
-		// 	  $title = __("Your driver has reached to your pickup location!");
-		// 	  break;
-		// 	case "Completed":
-		// 	  $title = __("You have arrived at your destination!");
-		// 	  break;  
-		// 	default:
-		// 	$title = $title;
-		//   }
-
         return ucfirst($title);
     }
 	
