@@ -119,8 +119,9 @@ class LalaMovesController extends Controller
         $order = Order::find($order_id);
         $customer = User::find($user_id);
         if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
-            $date = date('Y-m-d',strtotime($order->scheduled_date_time));
-            $time = date('H:i:s',strtotime($order->scheduled_date_time));
+            $schTime = convertDateTimeInClientTimeZone($order->scheduled_date_time);
+            $date = date('Y-m-d',strtotime($schTime));
+            $time = date('H:i:s',strtotime($schTime));
             $scheduledAt = $date.'T'.$time.'Z';
         }
         $cus_address = UserAddress::find($order->address_id);
@@ -173,8 +174,9 @@ class LalaMovesController extends Controller
         $customer = User::find($user_id);
         $scheduledAt = null;
         if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
-            $date = date('Y-m-d',strtotime($order->scheduled_date_time));
-            $time = date('H:i:s',strtotime($order->scheduled_date_time));
+            $schTime = convertDateTimeInClientTimeZone($order->scheduled_date_time);
+            $date = date('Y-m-d',strtotime($schTime));
+            $time = date('H:i:s',strtotime($schTime));
             $scheduledAt = $date.'T'.$time.'Z';
         }
         $noRef = '';

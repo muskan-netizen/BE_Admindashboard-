@@ -1231,14 +1231,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   @endif
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Toggle Tips')}}<small class="d-block pr-5">Manage the option to Tip before the Order.</small></label>
+                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Pre Order Tips')}}<small class="d-block pr-5">Manage the option to Tip before the Order.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
                      </span>
                      </div>
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Toggle Tips')}}<small class="d-block pr-5">Manage the option to Tip after the Order.</small></label>
+                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Post Order Tips')}}<small class="d-block pr-5">Manage the option to Tip after the Order.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="tip_after_order" id="tip_after_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_after_order == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1402,6 +1402,16 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </span>
                   </div>
                </div>
+               @if($client_preference_detail->business_type == 'laundry')
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="is_scan_qrcode_bag" class="mr-2 mb-0">{{__('Scan Bag QR code')}}<small class="d-block pr-5">{{__('Enable to scan bag QR code for orders.')}}</small></label>
+                  <span> <input type="checkbox" data-plugin="switchery" name="is_scan_qrcode_bag" id="is_scan_qrcode_bag" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_scan_qrcode_bag == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+               @endif
+
                </div>
             </div>
          </form>
