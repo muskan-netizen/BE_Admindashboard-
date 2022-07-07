@@ -243,8 +243,25 @@
                                         @endif
                                     @endforeach
                                 </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="term_and_condition" class="form-check-input @error('term_and_condition') is-invalid @enderror" id="html">
+                                    <label for="html" class="mr-3">{{ __('I accept the') }}
+                                        <a href="{{ $terms ? route('extrapage', $terms->slug) : '#' }}"
+                                            target="_blank">{{ __('Terms And Conditions') }} </a>
+                                        {{ __('and have read the') }}
+                                        <a href="{{ $privacy ? route('extrapage', $privacy->slug) : '#' }}"
+                                            target="_blank">
+                                            {{ __('Privacy Policy') }}.
+                                        </a>
+                                    </label>
+                                    @if($errors->first('term_and_condition'))
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('term_and_condition') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
                                 <div class="row form-group mb-0 align-items-center">
-                                    <div class="col-12 checkbox-input">
+                                    <!-- <div class="col-12 checkbox-input">
                                         <input type="checkbox" id="html" name="term_and_condition"
                                             class="form-control @error('term_and_condition') is-invalid @enderror">
 
@@ -267,7 +284,7 @@
 
 
 
-                                    </div>
+                                    </div> -->
                                     <div class="col-md-6 hide position-absolute">
                                         <label for="">Referral Code</label>
                                         <input type="text" class="form-control" id="refferal_code"
@@ -352,6 +369,9 @@
                 console.log(footer_height);
                 $('article#content-wrap').css('padding-bottom',footer_height);
             }, 500);
+            setTimeout(function(){
+                $("#phone").val({{ old('phone_number') }});
+            }, 2500);
         });
         var input = document.querySelector("#phone");
         window.intlTelInput(input, {
@@ -360,6 +380,7 @@
             utilsScript: "{{ asset('assets/js/utils.js') }}",
             initialCountry: "{{ Session::get('default_country_code', 'US') }}",
         });
+
         $(document).ready(function() {
             $("#phone").keypress(function(e) {
                 if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
