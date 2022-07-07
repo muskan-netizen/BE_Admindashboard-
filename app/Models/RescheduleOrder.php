@@ -10,7 +10,7 @@ class RescheduleOrder extends Model
     use HasFactory;
 
     public function user(){
-        return $this->belongsTo('App\Models\User', 'reschedule_by');
+        return $this->belongsTo('App\Models\User', 'reschedule_by')->withTrashed();
     }
 
     public function order(){
