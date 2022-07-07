@@ -31,7 +31,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
         
-        $payment_codes = array('cod', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay');
+        $payment_codes = array('cod', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
         $payout_codes = array('cash', 'stripe', 'pagarme');
@@ -598,6 +598,16 @@ class PaymentOptionController extends BaseController
                             $json_creds = json_encode(array(
                                 'uuid_key' => $request->uuid_key,
                                 'aes_key' => $request->aes_key
+                            ));
+                            break;
+                        case 'conekta':
+                            $validatedData = $request->validate([
+                                'public_key' => 'required',
+                                'private_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'public_key' => $request->public_key,
+                                'private_key' => $request->private_key
                             ));
                             break;     
 
