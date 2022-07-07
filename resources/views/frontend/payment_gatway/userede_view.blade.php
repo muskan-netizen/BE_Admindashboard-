@@ -77,7 +77,7 @@
     @endif
     <div class="row">
         <div class="offset-lg-3 col-lg-6">
-            <form id="pagarme-payment-form" action="{{route('payment.userede.createPayment')}}" method="POST">
+            <form id="pagarme-payment-form" action="{{$return_url}}" method="POST">
             @csrf
                 <div class="form-group">
                     <label>{{__('Card Holder Name')}}: </label>

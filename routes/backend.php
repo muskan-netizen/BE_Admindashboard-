@@ -22,6 +22,7 @@ use App\Http\Controllers\Client\ClientSlotController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
 use App\Http\Controllers\Client\ProductFaqController;
 use App\Http\Controllers\Client\EstimationController;
+use App\Http\Controllers\Client\StaticDropoffController;
 
 Route::get('email-test', function () {
     $details['email'] = 'testmail@yopmail.com';
@@ -398,6 +399,11 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('cancel-order/requests', 'Client\OrderCancelRequestsController@index')->name('cancel-order.requests');
         Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');
         Route::post('cancel-order/request/status/update', 'Client\OrderCancelRequestsController@updateStatus')->name('cancel-order.request.status.update');
+        //static dropoff edit
+        Route::get('static-dropoff/index', 'Client\StaticDropoffController@index')->name('static-dropoff.index');
+        Route::post('static-dropoff/save', 'Client\StaticDropoffController@store')->name('static-dropoff.create');
+        Route::get('static-dropoff/edit', 'Client\StaticDropoffController@edit')->name('static-dropoff.edit');
+        Route::delete('static-dropoff/destroy/{id}', 'Client\StaticDropoffController@delete')->name('static-dropoff.destroy');
     });
 });
 

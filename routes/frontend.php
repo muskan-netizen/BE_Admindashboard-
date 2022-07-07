@@ -8,7 +8,8 @@
 	Route::any('payment/paytab/callback','Front\PaytabController@callback')->name('payment.paytab.callback'); 
 	Route::match(['get','post'],'payment/paytab/return','Front\PaytabController@returnBack')->name('payment.paytab.return'); 
 	Route::get('/debug-sentry', function () {
-		throw new Exception('My first Sentry error!');
+		echo \Hash::make('dispatcher@765');
+		//throw new Exception('My first Sentry error!');
 	});
 
 
@@ -299,6 +300,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/userede/page','Front\UseRedePaymentController@beforePayment')->name('payment.userede.beforePayment');
 	Route::match(['get','post'],'/payment/userede/respons', 'Front\UseRedePaymentController@responsUs')->name('payment.userede.responsUs');
 	Route::post('/payment/userede/payment_init', 'Front\UseRedePaymentController@paymentInit')->name('payment.userede.createPayment');
+	Route::post('/payment/userede/payment_init_app', 'Front\UseRedePaymentController@paymentInitApp')->name('payment.userede.createPaymentApp');
 
 	// OpenpayPaymentController payment test
 	Route::match(['get','post'],'payment/opnepay/page','Front\OpenpayPaymentController@beforePayment')->name('payment.opnepay.beforePayment');

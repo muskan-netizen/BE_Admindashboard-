@@ -57,27 +57,69 @@ class OrderVendor extends Model{
 	# get dispatcher status title 
 	public function getDispatcherStatusAttribute($value)
     {
-		$title = DispatcherStatusOption::where('id',$value)->value('title');
-
-		switch ($title) {
-			case "Created":
-			  $title = "Hold on! We are looking for drivers nearby!";
-			  break;
-			case "Assigned":
-			  $title = "Your driver has been assigned!";
-			  break;
-			case "Started":
-			  $title = "Your driver is moving to you!";
-			  break;
-			case "Arrived":
-			  $title = "Your driver has reached to your pickup location!";
-			  break;
-			case "Completed":
-			  $title = "You have arrived at your destination!";
-			  break;  
+		//$title = DispatcherStatusOption::where('id',$value)->value('title');
+		$dispatcheeStatus =	VendorOrderDispatcherStatus::where(['dispatcher_id' => null,
+					'order_id' =>  $this->order_id,
+					'vendor_id' =>  $this->vendor_id,
+		])->orderBy('id', 'desc')->first();
+		$type = $dispatcheeStatus->type;
+		$dispatcher_status_option = $dispatcheeStatus->dispatcher_status_option_id;
+	
+		switch ($dispatcher_status_option) {
+			case 1:
+				if ($type == '1') {
+					$title = __('Hold on! We are looking for drivers nearby!');
+				}
+			break;
+			case 2:
+				if ($type == '1') {
+					$title = __('Your driver has been assigned!');
+				}
+			break;
+			case 3:
+				if ($type == '1') {
+					$title = __('Driver heading to the pickup location');
+				} else {
+					$title = __('Driver heading to dropoff location');
+				}
+			break;
+			case 4:
+				if ($type == '1') {
+					$title = __('Driver arrived at pickup location');
+				}else{
+					$title = __('Driver arrived at dropoff location');
+				}
+			break;
+			case 5:
+				if ($type == '1') {
+					$title = __('Your driver has reached to your pickup location!');
+				}else{
+					$title = __('You have arrived at your destination!');
+				}
+				
+			break;
 			default:
-			$title = $title;
-		  }
+				$title = __("Hold on! We are looking for drivers nearby!");
+		   }
+		// switch ($title) {
+		// 	case "Created":
+		// 	  $title = __("Hold on! We are looking for drivers nearby!");
+		// 	  break;
+		// 	case "Assigned":
+		// 	  $title = __("Your driver has been assigned!");
+		// 	  break;
+		// 	case "Started":
+		// 	  $title = __("Your driver is moving to you!");
+		// 	  break;
+		// 	case "Arrived":
+		// 	  $title = __("Your driver has reached to your pickup location!");
+		// 	  break;
+		// 	case "Completed":
+		// 	  $title = __("You have arrived at your destination!");
+		// 	  break;  
+		// 	default:
+		// 	$title = $title;
+		//   }
 
         return ucfirst($title);
     }
