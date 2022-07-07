@@ -119,7 +119,7 @@
                                             value="{{ old('countryData') ? old('countryData') : Session::get('default_country_code', 'US') }}">
                                             @error('phone_number')
                                             <span class="invalid-feedback" role="alert" style="display:block">
-                                                <strong>{{ $message }}</strong>
+                                                <strong>{{ __($message) }}</strong>
                                             </span>
                                         @enderror
                                     </div>
@@ -132,7 +132,7 @@
                                             placeholder="{{ __('Email') }}" name="email" value="{{ old('email') }}">
                                         @error('email')
                                             <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
+                                                <strong>{{ __($message) }}</strong>
                                             </span>
                                         @enderror
                                     </div>
@@ -148,7 +148,7 @@
                                                 style="right:20px"></span>
                                             @error('password')
                                                 <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $errors->first('password') }}</strong>
+                                                    <strong>{{ __($errors->first('password')) }}</strong>
                                                 </span>
                                             @enderror
                                         </div>
@@ -333,13 +333,13 @@
                     this.element(element); // triggers validation
                 },
                 messages : {
-                    name: 'Please enter your name',
+                    name: "{{ __('Please enter your name')}}",
                     phone_number: {
-                        required: "Please enter your phone",
-                        number: "Please enter a numerical value"
+                        required: "{{ __('Please enter your phone')}}",
+                        number: "{{ __('Please enter a numerical value')}}"
                     },
-                    email: "The email should be in the format: abc@domain.tld",
-                    password: 'Please enter your password',
+                    email: "{{ __('The email should be in the format:')}} abc@domain.tld",
+                    password: "{{ __('Please enter your password')}}",
                 }
             });
         });
