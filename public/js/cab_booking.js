@@ -273,6 +273,8 @@ $(document).ready(function () {
                     }
                     else if(payment_option_id == 10){
                         paymentViaRazorpay('', response.data, 'pickup_delivery');
+                    }else if(payment_option_id == 32){
+                        payphoneButton(response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{
