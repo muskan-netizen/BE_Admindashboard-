@@ -4208,6 +4208,12 @@ $(document).ready(function () {
             case 42:
                 paymentViaDpoSubscription('', payment_option_id, ''); 
             break;
+             case 43:
+                paymentViaUPay('', payment_option_id, ''); 
+            break;
+             case 44:
+                paymentViaConekta('', payment_option_id, ''); 
+            break;
         
         }
 
@@ -4624,6 +4630,28 @@ $(document).ready(function () {
                     return false;
                 }
             break;
+            case '43':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
+                if (order != '') {
+                    //payWithDpo
+                    paymentViaUPay(order);
+                }
+                else{
+                    return false;
+                }
+            break;
+            case '44':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
+                if (order != '') {
+                    //payWithDpo
+                    paymentViaConekta(order);
+                }
+                else{
+                    return false;
+                }
+            break;
            
         
         }
@@ -4830,8 +4858,11 @@ $(document).ready(function () {
             case 42:
                 paymentViaDpo('', payment_option_id, ''); 
                 break;
-            case 42:
+            case 43:
                 paymentViaUPay('', payment_option_id, ''); 
+                break;
+             case 44:
+                paymentViaConekta('', payment_option_id, ''); 
                 break;
 
         }
