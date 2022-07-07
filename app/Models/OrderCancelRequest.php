@@ -22,7 +22,7 @@ class OrderCancelRequest extends Model
     }
 
     public function updated_by_user(){
-        return $this->belongsTo('App\Models\User', 'updated_by', 'id');
+        return $this->belongsTo('App\Models\User', 'updated_by', 'id')->withTrashed();
     }
 
     public function getStatusAttribute($value){

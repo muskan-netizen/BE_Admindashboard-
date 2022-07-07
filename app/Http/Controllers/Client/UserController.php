@@ -628,6 +628,7 @@ class UserController extends BaseController
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
             $notification_content = NotificationTemplate::where('id', 4)->first();
+            
             if ($notification_content) {
                 if($header_code == ''){
                     $header_code = Client::orderBy('id', 'asc')->first()->code;
@@ -635,6 +636,7 @@ class UserController extends BaseController
                 $code = $header_code;
                 $client = Client::where('code', $code)->first();
                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
+                $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $headers = [
                     'Authorization: key=' . $from,
                     'Content-Type: application/json',
@@ -643,7 +645,7 @@ class UserController extends BaseController
                     "registration_ids" => $devices,
                     "notification" => [
                         'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
+                        'body'  => $body_content,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => $redirect_URL,
