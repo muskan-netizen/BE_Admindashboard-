@@ -148,6 +148,17 @@ class PayphoneController extends FrontController
     return view('frontend.payment_gatway.payphone_view', compact('url'));
    }
 
+   public function refundWalletAmount(Request $request)
+   {
+    $order = Order::where('user_id',auth()->id())->latest()->first();
+    $user = auth()->user();
+            $wallet = $user->wallet;
+            if(isset($order->wallet_amount_used)){
+              $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+            }
+          return  redirect()->back();
+   }
+
 
    public function successPage(Request $request)
    {   
@@ -163,17 +174,6 @@ class PayphoneController extends FrontController
         }elseif($payment->type=='pickup_delivery'){
           return $this->completeOrderPickup($request,$payment);
       }
-   }
-
-   public function refundWalletAmount(Request $request)
-   {
-    $order = Order::where('order_number',$request->order_number)->first();
-    $user = auth()->user();
-            $wallet = $user->wallet;
-            if(isset($order->wallet_amount_used)){
-              $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
-            }
-            redirect()->back();
    }
 
 

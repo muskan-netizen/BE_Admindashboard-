@@ -256,7 +256,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
 	Route::get('payment/payphone/success', 'Front\PayphoneController@successPage')->name('payphone.success');
 	Route::any('payment/payphone/api/{url?}/{token?}', 'Front\PayphoneController@webViewPay')->name('payphone.webview');
-
+	Route::any('payment/payphone/refundWalletAmount', 'Front\PayphoneController@refundWalletAmount')->name('payphone.refund');
+	
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
 	Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
@@ -415,6 +416,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('stripe/make', 'Front\PaymentController@makePayment')->name('stripe.makePayment');
 	Route::post('inquiryMode/store', 'Front\ProductInquiryController@store')->name('inquiryMode.store');
 	Route::get('viewcart', 'Front\CartController@showCart')->name('showCart');
+	Route::get('cartNew', 'Front\CartController@showCartNew')->name('showCartNew');
 	Route::get('checkSlotOrders', 'Front\CartController@checkSlotOrders')->name('checkSlotOrders'); //Added by Ovi
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');

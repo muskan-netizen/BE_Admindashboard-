@@ -1398,6 +1398,9 @@ $(document).ready(function() {
                     window.location.href= resp.payWithCard;
                 }else{
                     alert(resp.message);
+                    if(payment_from == 'cart'){
+                        window.location.href=payphone_refund_wallet;
+                    }
                     window.location.reload();
                 }
           },
