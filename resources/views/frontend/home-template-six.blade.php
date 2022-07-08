@@ -1,3 +1,4 @@
+
 @extends('layouts.store', ['title' => __('Home')])
 @section('css-links')
 {{--<link href="{{asset('css/aos.css')}}" rel="stylesheet">--}}
@@ -13,68 +14,71 @@
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
-<section class="home-slider-wrapper pt-md-3 pb-0">
-	<section class="section-b-space_  p-0 ratio_asos banner_shimmer">
-		<div class="container shimmer_effect">
-				<div class="row">
-					<div class="col-12 cards">
-						<div class="cardbanner loading"></div>
-					</div>
-				</div>
-			</div>
-	</section>
-	<div class="container">
-		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
-			<div class="carousel-inner">
-				@foreach($banners as $key => $banner)
-					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
-					<div class="carousel-item @if($key == 0) active @endif">
-					 <a class="banner-img-outer" href="{{$url??'#'}}">
-                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
-					</a>
-					</div>
-				@endforeach
-
-			</div>
-			<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
-				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">Previous</span>
-			</a>
-			<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
-			</a>
-		</div>
-
-		<div id="myMobileCarousel" class="carousel slide al_mobile_banner mb-2" data-ride="carousel" style="display:none;">
-			<div class="carousel-inner">
-
-				@foreach($mobile_banners as $key => $banner)
-					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
-					<div class="carousel-item @if($key == 0) active @endif">
-					 <a class="banner-img-outer" href="{{$url??'#'}}">
-                        <link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}">
-					</a>
-					</div>
-				@endforeach
-
-			</div>
-			<a class="carousel-control-prev" href="#myMobileCarousel" role="button" data-slide="prev">
-				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">Previous</span>
-			</a>
-			<a class="carousel-control-next" href="#myMobileCarousel" role="button" data-slide="next">
-				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
-			</a>
-		</div>
-
-	</div>
+<section class="p-0 small-slider al_desktop_banner">
+    <div class="slide-1 home-slider mb-sm-2 ">
+        @foreach($banners as $banner)
+        @php
+        $url = '';
+        if($banner->link == 'category'){
+        if($banner->category != null){
+        $url = route('categoryDetail', $banner->category->slug);
+        }
+        }
+        else if($banner->link == 'vendor'){
+        if($banner->vendor != null){
+        $url = route('vendorDetail', $banner->vendor->slug);
+        }
+        }
+        @endphp
+        <div>
+            @if($url)
+            <a href="{{$url}}">
+                @endif
+                <div class="home text-center">
+                    <link rel="preload" as="image" href="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" />
+                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
+                </div>
+                @if($url)
+            </a>
+            @endif
+        </div>
+        @endforeach
+    </div>
 </section>
-
- @endif
+@endif
+@if(count($banners))
+<section class="p-0 small-slider al_mobile_banner" style="display:none;">
+    <div class="slide-1 home-slider mb-sm-2">
+        @foreach($banners as $banner)
+        @php
+        $url = '';
+        if($banner->link == 'category'){
+        if($banner->category != null){
+        $url = route('categoryDetail', $banner->category->slug);
+        }
+        }
+        else if($banner->link == 'vendor'){
+        if($banner->vendor != null){
+        $url = route('vendorDetail', $banner->vendor->slug);
+        }
+        }
+        @endphp
+        <div>
+            @if($url)
+            <a href="{{$url}}">
+                @endif
+                <div class="home text-center">
+                    <link rel="preload" as="image" href="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" />
+                    <img src="{{$banner->image['image_fit'] . '1920/550' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
+                </div>
+                @if($url)
+            </a>
+            @endif
+        </div>
+        @endforeach
+    </div>
+</section>
+@endif
 
 <!-- Shimmer Efferct Start -->
  <section class="section-b-space_  p-0 ratio_asos">
@@ -631,4 +635,126 @@
        }
     }
 </script>
+
+
+    <script type="text/javascript">
+        $(document).on('ready', function() {
+
+          if ( $('.product__slider-main').length ) {
+            var $slider = $('.product__slider-main')
+                .on('init', function(slick) {
+                    $('.product__slider-main').fadeIn(1000);
+                })
+                .slick({
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: true,
+                    autoplay: false,
+                    lazyLoad: 'ondemand',
+                    autoplaySpeed: 3000,
+                    inifinte: false,
+                    asNavFor: '.product__slider-thmb'
+                });
+
+                var $slider2 = $('.product__slider-thmb')
+                        .on('init', function(slick) {
+                            $('.product__slider-thmb').fadeIn(1000);
+                        })
+                        .slick({
+                            slidesToShow: 5,
+                            slidesToScroll: 1,
+                            lazyLoad: 'ondemand',
+                            asNavFor: '.product__slider-main',
+                            dots: true,
+                            centerMode: false,
+                            focusOnSelect: true,
+                            inifinte: false
+                        });
+
+             //remove active class from all thumbnail slides
+             $('.product__slider-thmb .slick-slide').removeClass('slick-active');
+
+             //set active class to first thumbnail slides
+             $('.product__slider-thmb .slick-slide').eq(0).addClass('slick-active');
+
+             // On before slide change match active thumbnail to current slide
+             $('.product__slider-main').on('beforeChange', function (event, slick, currentSlide, nextSlide) {
+              var mySlideNumber = nextSlide;
+              $('.product__slider-thmb .slick-slide').removeClass('slick-active');
+              $('.product__slider-thmb .slick-slide').eq(mySlideNumber).addClass('slick-active');
+            });
+
+
+              // init slider
+            require(['js-sliderWithProgressbar'], function(slider) {
+
+                $('.product__slider-main').each(function() {
+
+                    me.slider = new slider($(this), options, sliderOptions, previewSliderOptions);
+
+                    // stop slider
+                    //me.slider.stop();
+
+                    // start slider
+                    //me.slider.start(index);
+
+                    // get reference to slick slider
+                    //me.slider.getSlick();
+
+                });
+            });
+              var options = {
+                progressbarSelector    : '.bJS_progressbar'
+                , slideSelector        : '.bJS_slider'
+                , previewSlideSelector : '.bJS_previewSlider'
+                , progressInterval     : ''
+                    // add your own progressbar animation function to sync it i.e. with a video
+                    // function will be called if the current preview slider item (".b_previewItem") has the data-customprogressbar="true" property set
+                , onCustomProgressbar : function($slide, $progressbar) {}
+            }
+
+                // slick slider options
+                // see: https://kenwheeler.github.io/slick/
+            var sliderOptions = {
+                slidesToShow   : 1,
+                slidesToScroll : 1,
+                arrows         : false,
+                fade           : true,
+                autoplay       : true
+            }
+
+                // slick slider options
+                // see: https://kenwheeler.github.io/slick/
+            var previewSliderOptions = {
+                slidesToShow   : 1,
+                slidesToScroll : 1,
+                dots           : false,
+                focusOnSelect  : true,
+                centerMode     : true
+            }
+            }
+
+        });
+    </script>
+    <script>
+        $(document).ready(function(){
+            $(".alHamBurgerIcon").click(function(){
+               $(".alSpaMenuCard").addClass("active");
+            });
+            $(".alMenuClose").click(function(){
+                $(".alSpaMenuCard").removeClass("active");
+            });
+        });
+
+        $(window).scroll(function() {    
+            var scroll = $(window).scrollTop();
+
+            if (scroll >= 100) {
+                $(".header").addClass("darkHeader");
+            } else {
+                $(".header").removeClass("darkHeader");
+            }
+        });
+    </script>
+    
 @endsection

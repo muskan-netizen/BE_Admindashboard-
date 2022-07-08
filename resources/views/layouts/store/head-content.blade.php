@@ -46,9 +46,11 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/footer.css')}}">
 
 @elseif(isset($set_template)  && $set_template->template_id == 6)
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/homepage.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/header.css')}}">
-<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/footer.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick-theme.min.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick.min.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/homepage.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/header/header.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/footer/footer.css')}}">
 @endif
 @yield('css-links')
 <style type="text/css">
