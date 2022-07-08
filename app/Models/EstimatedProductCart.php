@@ -14,7 +14,7 @@ class EstimatedProductCart extends Model
     }
 
     public function estimated_cart_user(){
-        return $this->belongsTo('App\Models\User', 'user_id' );
+        return $this->belongsTo('App\Models\User', 'user_id' )->withTrashed();
     }
 
     public function estimated_cart_currency(){
