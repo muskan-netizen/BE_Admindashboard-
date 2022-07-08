@@ -1026,6 +1026,24 @@
                         </div>
                     </div>
                     @endif
+                    @if ( (strtolower($opt->code) == 'conekta') )
+                    <div class="mt-2" id="conekta_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="company_token" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="public_key" id="public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="service_type" class="mr-3">{{ __("Private Key") }}</label>
+                                    <input type="password" name="private_key" id="private_key" class="form-control" value="{{$private_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                 </div>
             </div>

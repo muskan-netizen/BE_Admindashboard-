@@ -595,8 +595,8 @@
                                  <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Subscription Discount') }}</span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                                            <span class="ellips">- {{ __('Subscription Discount') }}</span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -606,8 +606,8 @@
                                 <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Loyalty Amount') }} </span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                                            <span class="ellips">- {{ __('Loyalty Amount') }} </span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -617,8 +617,8 @@
                                 <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Wallet Amount') }} </span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
+                                            <span class="ellips">- {{ __('Wallet Amount') }} </span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
                                         </h6>
                                     </div>
                                 </li>

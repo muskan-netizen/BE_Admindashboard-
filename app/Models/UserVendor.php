@@ -11,7 +11,7 @@ class UserVendor extends Model
 
 
     public function user(){
-        return $this->belongsTo('App\Models\User', 'user_id', 'id')->select('id','email','name','image','phone_number');
+        return $this->belongsTo('App\Models\User', 'user_id', 'id')->select('id','email','name','image','phone_number')->withTrashed();
      }
 
 }

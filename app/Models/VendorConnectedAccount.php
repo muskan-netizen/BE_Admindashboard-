@@ -14,7 +14,7 @@ class VendorConnectedAccount extends Model
 	}
 
     public function user(){
-	    return $this->hasOne('App\Models\User' , 'id', 'requested_by'); 
+	    return $this->hasOne('App\Models\User' , 'id', 'requested_by')->withTrashed(); 
 	}
 
     public function payoutOption(){

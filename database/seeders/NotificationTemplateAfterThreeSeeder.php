@@ -15,7 +15,7 @@ class NotificationTemplateAfterThreeSeeder extends Seeder
      */
     public function run()
     {
-        NotificationTemplate::updateOrCreate(['id' => 4],['label' => "New Order Received (Owner)", 'slug' => 'new-order-received', 'subject' => "New Order Received", 'content' => "You have received a new order", 'tags' => ""]);
+        NotificationTemplate::updateOrCreate(['id' => 4],['label' => "New Order Received (Owner)", 'slug' => 'new-order-received', 'subject' => "New Order Received", 'content' => "You have received a new order", 'tags' => "{order_id}"]);
         NotificationTemplate::updateOrCreate(['id' => 5],['label' => "Order Accepted (Customer)", 'slug' => 'order-accepted', 'subject' => "Order Accepted", 'content' => "Your order ({order_id}) has been accepted", 'tags' => "{order_id}"]);
         NotificationTemplate::updateOrCreate(['id' => 6],['label' => "Order Rejected (Customer)", 'slug' => 'order-rejected', 'subject' => "Order Rejected", 'content' => "Your order ({order_id}) has been rejected", 'tags' => "{order_id}"]);
         NotificationTemplate::updateOrCreate(['id' => 7],['label' => "Order Processing (Customer)", 'slug' => 'order-processing', 'subject' => "Order Processed", 'content' => "Your order ({order_id}) has been processed", 'tags' => "{order_id}"]);
