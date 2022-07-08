@@ -3,7 +3,7 @@
 }
 .chat-list-item {
 cursor: pointer;
-padding: 14px 16px;
+padding: 14px 8px;
 }
 .mdi-circle:before {
 content: "󰝥";
@@ -34,12 +34,11 @@ line-height: inherit;
 
 .search-icon {position: absolute;z-index: 4;font-size: 20px;line-height: 38px;left: 10px;top: 10px;}
 .chat-list-item span {position: absolute;right: 0;top: 0px;font-size: 11px;word-wrap: break-word;color: #5e5c5c;}
-.chat-list-item h6{display: inline-block;font-size: 16px;font-weight: 600 !important;}
-.outer_search input{padding-left: 30px;}.orderChatMessage {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    color: #777;
+.chat-list-item h6{display: inline-block;font-size: 16px;font-weight: 600 !important;color: #343a40;margin-bottom: 0px !important;}
+.outer_search input{padding-left: 30px;}.orderChatMessage {white-space: nowrap;text-overflow: ellipsis;overflow: hidden;color: #777;font-size: 14px;
+}
+.alPhoneNumberDetails ul li span {
+    font-size: 13px;
 }
 .orderNumber {background-color: #6eccf14d;color: #43BEE1;text-align: center;border-radius: 3px;}
 .messages-box .list-group:nth-child(even) {background: #5ddaff24;border-bottom: 1px solid#0000002b;}
@@ -48,12 +47,37 @@ line-height: inherit;
 .alOrderDetailsBox .alOrderDetails span, .alOrderDetailsBox .alOrderDetails, .conversationText p.chatUserName {color: #43BEE1;font-weight: 600;}
 .alUserName {font-weight: 600;font-size: 16px;}
 .alPhoneNumber {font-size: 12px;color: #43BEE1;font-weight: 600;}
-.alOrderDetailsBox p {color: #777;}.alOrderDetailsBox p span {color: #000;font-weight: 600;}
+.alOrderDetailsBox p {color: #777;font-size: 13px;}.alOrderDetailsBox p span {color: #000;font-weight: 600;}
+.conversation-list .ctext-wrap p.chat-time{font-size: 12px;}
 .chat-input-section .col-auto a:nth-child(1) {display: none;}
 .chat-list-item:hover {background: #a4cbe74a;}
 .conversationText {
     width: 100% !important;
     position: relative !important;
+}
+.conversation-list {
+    width: 100%;
+}
+.left-message .conversation-list .ctext-wrap {
+    text-align: left;
+    float: left;
+    background: #eee;
+}
+.right-message .conversation-list .ctext-wrap {
+    text-align: right;
+    float: right;
+    background: #5ddaff24;
+}
+.conversation-list .ctext-wrap {
+    background: #f1f3fa;
+    border-radius: 3px;
+    display: inline-block;
+    padding: 12px;
+    position: relative;
+}
+.conversation-list .ctext-wrap p {
+    margin: 0;
+    padding-top: 3px;
 }
 .ctext-wrap {
     background-color: #E7F6FC;
@@ -95,7 +119,7 @@ line-height: inherit;
     height: 100vh;
     background: #969ea312;
     padding-right: 0px !important;
-    padding: 20px !important;
+    padding: 0px 10px !important;
 }
 .right-message .conversation-list .ctext-wrap::before{
     border: solid transparent;

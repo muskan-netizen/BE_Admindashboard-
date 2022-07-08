@@ -52,6 +52,7 @@ $admin_chat = '';
 $driver_chat = '';
 $customer_chat = '';
 $db ='';
+$auth_id='';
 if(Auth::check()){
 	$cl_data = \App\Models\Client::first();
 	$socket_url = @$cl_data->socket_url;

@@ -4,9 +4,9 @@
 	</div> --}}
 	<div class="conversation-head row py-3 px-3 mb-2">
 		<div class="col-5 alOrderDetailsBox pr-0">
-			<p class="alOrderDetails m-0">Order <span>#7878745</span></p>
-			<p class="alVendorDetails m-0">Vendor <span>Food Hub (Cheese Avenue, Texas)</span></p>
-			<p class="alAmountDetails m-0">Order Amount <span>$100</span></p>
+			<p class="alOrderDetails m-0">Order #<span id="order_num"></span></p>
+			<p class="alVendorDetails m-0">Vendor <span id="vendor_name">Food Hub (Cheese Avenue, Texas)</span></p>
+			<p class="alAmountDetails m-0">Order Amount <span id="order_vendor_price">$100</span></p>
 		</div>
 		<div class="col-7 pl-0">
 			<div class="d-flex align-items-center justify-content-between">

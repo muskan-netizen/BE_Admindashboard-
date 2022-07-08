@@ -2,7 +2,7 @@
 {{-- <div class="container">
 	<div class="chat-body row overflow-hidden shadow bg-light rounded"> --}}
 		<div class="col-4 px-0">
-			<div class="chat-list-container flex-column d-flex pr-4">
+			<div class="chat-list-container flex-column d-flex">
 				<div class="py-2">
 					<p class="h5 mb-0 py-1 chats-title">Chats</p>
 				</div>
@@ -10,19 +10,24 @@
 					@foreach ($chatrooms as $chatroom)
 		
 					<div id="chatRooms" class="list-group rounded-0">
-						<div id="room_{{ $chatroom['_id']}}" data-id="{{$chatroom['_id']}}" data-roomName="{{$chatroom['room_name']}}" class="chat-list-item d-flex align-items-start rounded bg-white fetchChat">
-							<div class="align-self-center mr-3">
+						<div id="room_{{ $chatroom['_id']}}" data-id="{{$chatroom['_id']}}" data-roomName="{{$chatroom['room_name']}}" class="chat-list-item d-flex align-items-start rounded fetchChat">
+							{{-- <div class="align-self-center mr-3">
 								<div class="rounded-circle bg-gray" style="width: 8px; height: 8px; opacity: 0;"></div>
-							</div>
-						<div class="align-self-center mr-3">
-							<div class="overflow-hidden rounded-circle">
+							</div> --}}
+						<div class="align-self-center col-md-3">
+							<div class="overflow-hidden">
+								<p class="orderNumber m-0 mb-1">sadasd##</p>
 								<svg width="32" height="32" viewBox="0 0 1651 1651" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="1651" height="1651" rx="14" fill="white"></rect><path d="M495.286 1098.96L497.967 1070.86L478.04 1050.88C408.572 981.233 368 891.771 368 795.344C368 585.371 565.306 402 826 402C1086.69 402 1284 585.371 1284 795.344C1284 1005.32 1086.69 1188.69 826 1188.69V1248.69L825.913 1188.69C779.837 1188.75 733.952 1182.77 689.432 1170.9L667.26 1164.98L646.8 1175.37C620.731 1188.61 562.74 1213.98 467.32 1235.35C480.554 1191.83 490.95 1144.39 495.286 1098.96Z" stroke="url(#paint0_linear)" stroke-width="120"></path><defs><linearGradient id="paint0_linear" x1="662.312" y1="397.956" x2="416.164" y2="1678.7" gradientUnits="userSpaceOnUse"><stop stop-color="#7514FB"></stop><stop offset="0.624243" stop-color="#F26D41"></stop><stop offset="1" stop-color="#F43B4B"></stop></linearGradient></defs></svg>
 							</div>
 						</div>
-						<div class="media-body overflow-hidden">
-							<h5 class="text-truncate font-size-14 mb-1">{{ $chatroom['room_name'] }}</h5>
-							<div class="font-size-11">{{$chatroom['created_date']}}</div>
-							<p id="preview_message_{{$chatroom['_id']}}" class="text-truncate mb-0">..</p>
+						<div class="col-md-9 position-relative">
+							<div class="alNameTime">
+								{{-- <h6 class="text-truncate font-size-14 mb-1">{{ $chatroom['room_name'] }}</h6> --}}
+								<h6 class="mb-1 mt-0">00774556</h6>
+								<span>4:30am, Today</span>
+								{{-- <div class="font-size-11">{{$chatroom['created_date']}}</div> --}}
+								<p id="preview_message_{{$chatroom['_id']}}" class="orderChatMessage mb-0">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consequuntur vero cum laudantium atque, </p>
+							</div>
 						</div>
 					</div>
 					@endforeach

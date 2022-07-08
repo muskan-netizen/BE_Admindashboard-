@@ -61,7 +61,7 @@
     </script>
 @endsection
 @section('script-bottom')
-
+<script src="https://momentjs.com/downloads/moment.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/vendor_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>

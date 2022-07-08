@@ -17,6 +17,7 @@ $admin_chat = '';
 $driver_chat = '';
 $customer_chat = '';
 $db ='';
+$auth_id ='';
 if(Auth::check()){
 	$cl_data = \App\Models\Client::first();
 	$socket_url = @$cl_data->socket_url;
@@ -25,6 +26,8 @@ if(Auth::check()){
 	$customer_chat = @$cl_data->customer_chat;
 	$db = @$cl_data->database_name;
 	$auth_id = Auth::user()->id;
+  $authData = json_encode(@Auth::user()->toArray());
+
 }
 
 
@@ -61,10 +64,13 @@ if(isset($set_template))
 	var customer_chat = "{!! $customer_chat !!}";
 	var auth = "{!! $auth_id !!}";
 	var db = "{!! $db !!}";
+  var authData =  `<?php  echo $authData  ?>`;
+
 	var socket = null;
 	var Auth = {
 		auth_id:auth,
-		database_name:db
+		database_name:db,
+    authData:authData
 	}
 	var SocketConstants = {
     	Socket_url : sUrl,

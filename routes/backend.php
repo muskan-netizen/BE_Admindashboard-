@@ -408,6 +408,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('chat/vendor/{room_id?}', 'Client\ChatController@UservendorChat')->name("chat.UservendorChat");
         Route::post('chat/joinChatRoom', 'Client\ChatController@JoinRoom')->name('chat.joinChatRoom');
         Route::post('chat/sendMessage', 'Client\ChatController@sendMessage')->name('chat.sendMessage');
+
+        Route::post('chat/fetchOrderDetail', 'Client\ChatController@fetchOrderDetail')->name('chat.fetchOrderDetail');
         //static dropoff edit
         Route::get('static-dropoff/index', 'Client\StaticDropoffController@index')->name('static-dropoff.index');
         Route::post('static-dropoff/save', 'Client\StaticDropoffController@store')->name('static-dropoff.create');

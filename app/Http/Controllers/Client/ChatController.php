@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
+use App\Http\Traits\ChatTrait;
 use App\Http\Traits\GlobalFunction;
 use Illuminate\Support\Facades\Http;
 
@@ -19,6 +20,7 @@ use App\Models\{Client, Order, UserVendor, ClientPreference, LoyaltyCard,OrderPr
 class ChatController extends BaseController
 {
     use GlobalFunction;
+    use ChatTrait;
     /**
      * Display a listing of the country resource.
      *
@@ -46,80 +48,59 @@ class ChatController extends BaseController
     public function getChatRoom($vendor_id,$type){
         $clientData = $this->client_data;
         $server_name = $_SERVER['REMOTE_ADDR'];
-        // echo "<pre>";
-        // print_r($vendor_id->toArray());
-        // die;
         $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByVendor', [
             'vendor_id' => $vendor_id, 
-            //'room_name' => $room_name,
-            // 'order_vendor_id'=>$order_vendor_id,
-            // 'order_id'=>$order_id,
-            // 'vendor_id'=>$vendor_id,
             'sub_domain' =>$server_name,
-            // 'vendor_user_id' =>$data['user_id'],
-            // 'order_user_id' =>$orderby_user_id,
             'type'=>$type,
             'db_name'=>$clientData->database_name,
             'client_id'=>$clientData->id
         ]);
-        //echo "<pre>";
        
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
             $roomData = $response['roomData'];
-            //print_r($roomData);
             return ['status' => true, 'roomData' => $roomData , 'message' => __('Room list !!!')];
         } else {
 
             return ['status' => false, 'message' => __('Something went wrong!!!')];
         }
-        //die;
 
     }
 
     public function getChatRoomForUser($order_user_id,$type){
         $clientData = $this->client_data;
         $server_name = $_SERVER['REMOTE_ADDR'];
-        // echo "<pre>";
-        // print_r($vendor_id->toArray());
-        // die;
         $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByUserId', [
             'order_user_id' => $order_user_id, 
-            //'room_name' => $room_name,
-            // 'order_vendor_id'=>$order_vendor_id,
-            // 'order_id'=>$order_id,
-            // 'vendor_id'=>$vendor_id,
             'sub_domain' =>$server_name,
-            // 'vendor_user_id' =>$data['user_id'],
-            // 'order_user_id' =>$orderby_user_id,
             'type'=>$type,
             'db_name'=>$clientData->database_name,
             'client_id'=>$clientData->id
         ]);
-        //echo "<pre>";
+        
        
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
             $roomData = $response['roomData'];
-            //print_r($roomData);
+           
             return ['status' => true, 'roomData' => $roomData , 'message' => __('Room list !!!')];
         } else {
 
             return ['status' => false, 'message' => __('Something went wrong!!!')];
         }
-        //die;
+    
 
     }
 
     public function index(Request $request){
-        // echo "review";
+       
         return view('backend.chat.index',$this->client_data);
 
     }
 
     public function VendorUserChat(Request $request){
         $user = Auth::user();
-       // if ($user->is_superadmin == 0) {
+      
         $vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
         $this->client_data['vendor_id'] = $vendor_id;
         $roomData = $this->getChatRoom($vendor_id,'vendor_to_user');
@@ -128,11 +109,6 @@ class ChatController extends BaseController
         } else {
             $chatroom = [];
         }
-        // echo "<pre>";
-        // print_r($this->client_data);
-        // die;
-        //}
-        // echo "review";
         return view('backend.chat.VendorUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
 
     }
@@ -140,20 +116,13 @@ class ChatController extends BaseController
 
     public function UservendorChat(Request $request){
         $user = Auth::user();
-       // if ($user->is_superadmin == 0) {
-        //$vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
-        //$this->client_data['vendor_id'] = $vendor_id;
+      
         $roomData = $this->getChatRoomForUser($user->id,'vendor_to_user');
         if($roomData['status']){
             $chatroom = $roomData['roomData'];
         } else {
             $chatroom = [];
         }
-        // echo "<pre>";
-        // print_r($chatroom);
-        // die;
-        //}
-        // echo "review";
         return view('backend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
 
     }
@@ -161,21 +130,13 @@ class ChatController extends BaseController
     public function joinSocketRoom($data,$user,$type,$userType){
         $clientData = $this->client_data;
         $server_name = $_SERVER['REMOTE_ADDR'];
-        // echo "<pre>";
-        // // print_r($clientData->toArray());
-        // print_r($user);
-        // //print_r($data);
-        // die;
+      
         $response =   Http::post($clientData->socket_url.'/api/chat/joinRoomByID', [
             'sub_domain' =>$server_name,
             'room_id' =>$data['room_id'],
-            //'room_name' =>$data->name,
             'user_type' =>$userType,
             'type'=>$type,
-            //'db_name'=>$clientData->database_name,
-            //'client_id'=>$clientData->id,
             'user_id'=>$user->id,
-            //'vendor_id'=>$data,
             'email'=>$user->email,
             'display_image'=>$user->image
         ]);
@@ -185,12 +146,6 @@ class ChatController extends BaseController
             $roomData = $response['roomData'];
             $roomUser = $response['RoomUser'];
             $message = $response['message'];
-             // echo "<pre>";
-        // // print_r($clientData->toArray());
-        // print_r($user);
-        // //print_r($data);
-        // die;
-            //print_r($roomData);
             return ['status' => $response['status'],'roomUser' =>$roomUser ,'roomData' => $roomData , 'message' => __($message)];
         } else {
 
@@ -240,29 +195,13 @@ class ChatController extends BaseController
     public function JoinRoom(Request $request){
         $user = Auth::user();
         $data = $request->all();
-       // if ($user->is_superadmin == 0) {
-        //$vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
-        //$this->client_data['vendor_id'] = $vendor_id;
         $roomData = $this->joinSocketRoom($data,$user,'vendor_to_user','vendor');
-        // if($roomData['status']){
-        //     $chatroom = $roomData['roomData'];
-        // } else {
-        //     $chatroom = [];
-        // }
-        // echo "<pre>";
-        // print_r($chatroom);
-        // die;
-        //}
-        // echo "review";
         if($roomData['status']) {
-            //$roomData = $roomData['roomData'];
-            //print_r($roomData);
             return $roomData;
         } else {
 
             return $roomData;
         }
-        //return view('backend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
 
     }
 
@@ -270,34 +209,18 @@ class ChatController extends BaseController
     public function sendMessage(Request $request){
         $user = Auth::user();
         $data = $request->all();
-       // if ($user->is_superadmin == 0) {
-        //$vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
-        //$this->client_data['vendor_id'] = $vendor_id;
         if($data['from'] == 'vendor') {
             $messageData = $this->sendSocketMessage($data,$user,'to_user','vendor','from_vendor','vendor_to_user');
         } else {
             $messageData = $this->sendSocketMessage($data,$user,'to_vendor','user','from_user','vendor_to_user');
         }
         
-        // if($roomData['status']){
-        //     $chatroom = $roomData['roomData'];
-        // } else {
-        //     $chatroom = [];
-        // }
-        // echo "<pre>";
-        // print_r($chatroom);
-        // die;
-        //}
-        // echo "review";
         if($messageData['status']) {
-            //$roomData = $roomData['roomData'];
-            //print_r($roomData);
             return $messageData;
         } else {
 
             return $messageData;
         }
-        //return view('backend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
 
     }
 
@@ -438,7 +361,18 @@ class ChatController extends BaseController
         
         }
 
-        //print_r($order);
+    }
+
+    public function fetchOrderDetail(Request $request){
+        try {
+            $orderData = $this->OrderVendorDetail($request);
+            return response()->json(['status' => true, 'orderData' => $orderData , 'message' => __('Data fetched !!!')]);
+            
+            //code...
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'orderData' => [] , 'message' => __('No Data found !!!')]);
+        }
+            
     }
 
 

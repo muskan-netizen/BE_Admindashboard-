@@ -10,7 +10,7 @@
 					@foreach ($chatrooms as $chatroom)
 		
 					<div id="chatRooms" class="list-group rounded-0">
-						<div id="room_{{ $chatroom['_id']}}" data-id="{{$chatroom['_id']}}" data-roomName="{{$chatroom['room_name']}}" class="chat-list-item d-flex align-items-start rounded bg-white fetchChat">
+						<div id="room_{{ $chatroom['_id']}}" data-id="{{$chatroom['_id']}}" data-OrderID="{{ $chatroom['order_id'] }}" data-OrdervendorID="{{ $chatroom['order_vendor_id'] }}" data-roomName="{{$chatroom['room_name']}}" class="chat-list-item d-flex align-items-start rounded bg-white fetchChat">
 							<div class="align-self-center mr-3">
 								<div class="rounded-circle bg-gray" style="width: 8px; height: 8px; opacity: 0;"></div>
 							</div>

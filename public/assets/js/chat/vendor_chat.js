@@ -18,13 +18,16 @@
         var roomId = $(this).attr('data-id');
         var roomName = $(this).attr('data-roomName');
         var roomIDn = $(this).attr('data-roomID');
+        var OrdervendorID = $(this).attr('data-ordervendorid');
+        var order_id = $(this).attr('data-orderid');
        
-        if(!roomId){
+        if(!roomId && !OrdervendorID && !order_id){
             $('#chatHistory').removeClass('room_'+roomId);
             return;
             
         }
         $('#roomName').html(roomIDn);
+        await fetchOderVendorDetails(OrdervendorID,order_id);
         await getALLchat(roomId);
     });
 
@@ -92,6 +95,36 @@
             )
         })
     }
+    function convertDateTime(cdate){
+        return cdate.toDateString() +' '+ cdate.toLocaleTimeString();
+    }
+    async function fetchOderVendorDetails(order_vendor_id,order_id){
+        axios.post(`/client/chat/fetchOrderDetail`, {
+            order_vendor_id: order_vendor_id,
+            order_id:order_id
+        })
+        .then(async response => {
+            if(response.data.status) {
+                if(response.data.orderData != undefined) {
+                    var data = response.data.orderData;
+                    Chat.orderData.order_number  =  (data.order_number != undefined ) ? data.order_number : '';
+                    Chat.orderData.payable_amount = (data.vendors[0].payable_amount != undefined ) ? data.vendors[0].payable_amount : '';
+                    Chat.orderData.vendor_name = (data.vendors[0].vendor.name != undefined ) ? data.vendors[0].vendor.name : '';
+                    $('#order_num').html(Chat.orderData.order_number);
+                    $('#vendor_name').html(Chat.orderData.vendor_name);
+                    $('#order_vendor_price').html(Chat.orderData.payable_amount);
+                }
+                
+            }
+             
+        })
+        .catch(e => {
+            Swal.fire(
+                'Something went wrong, try again later!',                                    
+                'error'
+            )
+        })
+    }
 
     async function getALLchat(roomId){
         var html='';
@@ -103,6 +136,10 @@
                    await response.data.forEach(function (data) {
                     var className= 'left-message';
                     var flex = '';
+                    var cdate = new Date(data.created_date);
+                    //cdate.toDateString();
+                    //moment(1382086394000).format("DD-MM-YYYY h:mm:ss");
+
                     if( Auth.auth_id == data.from_user_id && data.from_message == "from_vendor") {
                          className= 'right-message';
                          //flex = '<div style="flex: 110%;"></div>';
@@ -120,12 +157,12 @@
                                     <div class="conversation-list d-inline-block px-3 py-2" style="border-radius: 12px;">
                                         <div class="ctext-wrap">
                                             <div class="d-flex align-items-center justify-content-between">
-                                                <div class="conversation-name text-left text-primary mr-4" style="font-weight: 600;">Yog Raj</div>
+                                                <div class="conversation-name text-left text-primary mr-4" style="font-weight: 600;">${data.username}</div>
                                                 <p class="chat-time m-0 p-0" >
                                                 <svg width="12" height="12" class="prefix__MuiSvgIcon-root prefix__jss80 prefix__MuiSvgIcon-fontSizeLarge" viewBox="0 0 24 24" aria-hidden="true">
                                                     <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
                                                     <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path>
-                                                </svg> 4:30am, Today</p>
+                                                </svg> ${ convertDateTime(cdate)}</p>
                                             </div>
                                             
                                             <p class="text-left">${data.message}</p>
@@ -170,22 +207,27 @@
         var html='';
         var className= 'left-message';
         var flex = '';
+        var cdate = new Date(data.created_date);
         if( Auth.auth_id == data.from_user_id && data.from_message == "from_vendor") {
              className= 'right-message';
             //  flex = '<div style="flex: 110%;"></div>';
         }
-        html = `<div class="d-flex justify-content-between">
+            html = `<div class=" ${className}">
                 ${flex}
-                <div class="text-right mb-4">
-                    <div class="conversation-list d-inline-block bg-light px-3 py-2" style="border-radius: 12px;">
+                <div class="mb-4">
+                    <div class="conversation-list d-inline-block px-3 py-2" style="border-radius: 12px;">
                         <div class="ctext-wrap">
-                            <div class="conversation-name text-left text-primary mb-1" style="font-weight: 600;">${data.email}</div>
-                            <p class="text-left">${data.message}</p>
-                            <p class="chat-time mb-0">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="conversation-name text-left text-primary mr-4" style="font-weight: 600;">${data.username}</div>
+                                <p class="chat-time m-0 p-0" >
                                 <svg width="12" height="12" class="prefix__MuiSvgIcon-root prefix__jss80 prefix__MuiSvgIcon-fontSizeLarge" viewBox="0 0 24 24" aria-hidden="true">
                                     <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
                                     <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path>
-                                </svg> ${data.created_date}</p>
+                                </svg> ${ convertDateTime(cdate)}</p>
+                            </div>
+                            
+                            <p class="text-left">${data.message}</p>
+                            
                         </div>
                     </div>
                 </div>
@@ -269,6 +311,7 @@
         // } else {
         //     $messageData = $this->sendSocketMessage($data,$user,'to_vendor','user','from_user','vendor_to_user');
         // }
+        var authDataParseData = JSON.parse(authData);
         axios.post(`https://chat.royoorders.com/api/chat/sendMessageJoin`, {
             'room_id' : room_id,
             'message': message,
@@ -276,8 +319,9 @@
             'to_message': 'to_user',
             'from_message': 'from_vendor',
             'user_id': Auth.auth_id,
-            'email': 'k@k.com',
-            //'display_image': $user->image,
+            'email': authDataParseData.email,
+            'username': authDataParseData.name+" (Vendor)",
+            'display_image': 'https://i.picsum.photos/id/237/200/300.jpg?hmac=TmmQSbShHz9CdQm0NkEjx1Dyh_Y984R9LpNrpvH2D_U',
             'sub_domain' : window.location.host,
             //'room_name' =>$data->name,
             'chat_type': 'vendor_to_user',
