@@ -159,7 +159,6 @@ class PayphoneController extends FrontController
           return  redirect()->back();
    }
 
-
    public function successPage(Request $request)
    {   
        $payment = Payment::where('transaction_id',$request->clientTransactionId)->first();
