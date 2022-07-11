@@ -12,7 +12,6 @@
   <script type="text/javascript" src="{{asset('js/card.js')}}"></script>
   <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
    
-
 <script type="text/javascript">
         $(document).ready(function() {
             number = document.querySelector('#card_number');
