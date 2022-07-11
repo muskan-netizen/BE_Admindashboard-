@@ -709,6 +709,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
+    var create_dpo_tocken_url = "{{route('dpo.createTocken')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";
