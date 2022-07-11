@@ -3,14 +3,14 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <script type="text/javascript" 
-        src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-  <script type="text/javascript" 
-        src="https://openpay.s3.amazonaws.com/openpay.v1.min.js"></script>
-<script type='text/javascript' 
-  src="https://openpay.s3.amazonaws.com/openpay-data.v1.min.js"></script>
-  <script type="text/javascript" src="{{asset('js/card.js')}}"></script>
-  <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
+    <script type="text/javascript" 
+    src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script type="text/javascript" 
+    src="https://openpay.s3.amazonaws.com/openpay.v1.min.js"></script>
+    <script type='text/javascript' 
+    src="https://openpay.s3.amazonaws.com/openpay-data.v1.min.js"></script>
+    <script type="text/javascript" src="{{asset('js/card.js')}}"></script>
+    <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
    
 <script type="text/javascript">
         $(document).ready(function() {
@@ -317,7 +317,7 @@ a.button.disabled {
                             <h2>{{__('Credit or debit card')}} </h2>
                             <div class="pymnt-cntnt">
                                 <div class="card-expl">
-                                    <div class="col-md-6 credit"><h4>{{__('Credit cards')}}Tarjetas de crÃ©dito</h4></div>
+                                    <div class="col-md-6 credit"><h4>{{__('Credit cards')}}Tarjetas de crédito</h4></div>
                                     <div class="col-md-6 debit"><h4>{{__('Debit cards')}}</h4></div>
                                 </div>
                                 <div class="sctn-row top">
