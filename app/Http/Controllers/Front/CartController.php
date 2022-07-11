@@ -35,6 +35,11 @@ class CartController extends FrontController
 
     public function showCart(Request $request, $domain = '')
     {
+
+    //    $add = $this->getCartProductss($request);
+    //    dd(json_decode($add));
+
+
         if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
                 $order = Order::where('order_number', $request->order)->first();
@@ -143,106 +148,6 @@ class CartController extends FrontController
         return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy'))->with($data,$client_preference_detail,$client_detail);
        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
-    }
-
-    public function showCartNew(Request $request, $domain = '')
-    {
-        if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
-            if($request->has('order')){
-                $order = Order::where('order_number', $request->order)->first();
-                if($order){
-                    if($request->status == 0){
-                        return redirect()->route('showCart')->with('error', 'Your order has been cancelled');
-                    }
-                    elseif($request->status == 200){
-                        return redirect()->route('order.success', $order->id);
-                    }
-                }
-            }
-            return redirect()->route('showCart');
-        }
-
-        $cartData = [];
-        $user = Auth::user();
-        $countries = Country::get();
-        $langId = Session::get('customerLanguage');
-        $fixedFee = $this->fixedFee($langId);
-        $guest_user = true;
-        if ($user) {
-            $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
-            $addresses = UserAddress::where('user_id', $user->id)->where('status',1)->get();
-            $guest_user = false;
-        } else {
-            $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
-            $addresses = collect();
-        }
-        if ($cart) {
-            $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        }
-        $navCategories = $this->categoryNav($langId);
-
-        $subscription_features = array();
-        $user_subscription = null;
-        if ($user) {
-            $now = Carbon::now()->toDateTimeString();
-            $user_subscription = SubscriptionInvoicesUser::with('features')
-                ->select('id', 'user_id', 'subscription_id')
-                ->where('user_id', $user->id)
-                ->where('end_date', '>', $now)
-                ->orderBy('end_date', 'desc')->first();
-            if ($user_subscription) {
-                foreach ($user_subscription->features as $feature) {
-                    $subscription_features[] = $feature->feature_id;
-                }
-            }
-        }
-        $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
-        // $vendorSlotDate=VendorSlotDate::where('specific_date',date('Y-m-d'))->get();
-        $vendorWeeklySlotDay=array();
-        $vendorId=0;
-        if(!empty($cartData[0])){
-            $vendorId=$cartData[0]->vendor_id;
-            $vendorWeeklySlotDay=VendorSlot::select('start_time','end_time','day')->join('slot_days','slot_days.slot_id','=','vendor_slots.id')->where(['vendor_slots.vendor_id'=>$vendorId])->get()->toArray();
-        }
-
-        $data = array(
-            'navCategories'=>$navCategories,
-            'cartData'=>$cartData,
-            'vendorId'=>$vendorId,
-            'vendorWeeklySlotDay'=>$vendorWeeklySlotDay,
-            'addresses'=>$addresses,
-            'countries'=>$countries,
-            'subscription_features'=>$subscription_features,
-            'guest_user'=>$guest_user,
-            'action'=>$action,
-            'fixedFee'=>$fixedFee
-        );
-        $client_preference_detail = ClientPreference::first();
-        $client_detail = Client::first();
-        // dd($client_detail);
-        $public_key_yoco=PaymentOption::where('code','yoco')->first();
-        if($public_key_yoco){
-
-            $public_key_yoco= $public_key_yoco->credentials??'';
-            $public_key_yoco= json_decode($public_key_yoco);
-            $public_key_yoco= $public_key_yoco->public_key??'';
-        }
-
-        $privacy = Page::with(['translations' => function ($q) use($langId) {
-            $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
-        }])->whereHas('translations', function ($q) use($langId) {
-            $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
-        })->first();
-
-        $terms = Page::with(['translations' => function ($q) use($langId) {
-            $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
-        }])->whereHas('translations', function ($q) use($langId) {
-            $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
-        })->first();
-
-        $ageVerify= VerificationOption::where('code','yoti')->first();
-
-        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy'))->with($data,$client_preference_detail,$client_detail);
     }
 
     public function postCartRequestFromEstimation(Request $request)
