@@ -35,7 +35,7 @@
                                         placeholder="Search...">
                                 </div>
                                 <div class="form-group mx-sm-3">
-                                    <label for="status-select" class="mr-2">Sort By</label>
+                                    <label for="status-select" class="mr-2">{{__('Sort By')}}</label>
                                     <select class="custom-select" id="status-select">
                                         <option selected="">All</option>
                                         <option value="1">Hot</option>

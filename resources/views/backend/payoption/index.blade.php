@@ -1032,13 +1032,31 @@
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="company_token" class="mr-3">{{ __("Public Key") }}</label>
-                                    <input type="text" name="public_key" id="public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
+                                    <input type="text" name="conekta_public_key" id="conekta_public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="service_type" class="mr-3">{{ __("Private Key") }}</label>
-                                    <input type="password" name="private_key" id="private_key" class="form-control" value="{{$private_key}}" @if($opt->status == 1) required @endif>
+                                    <input type="password" name="conekta_private_key" id="conekta_private_key" class="form-control" value="{{$private_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'telr') )
+                    <div class="mt-2" id="telr_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="telr_merchant_id" class="mr-3">{{ __("Merchant ID") }}</label>
+                                    <input type="text" name="telr_merchant_id" id="telr_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="telr_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="telr_api_key" id="telr_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

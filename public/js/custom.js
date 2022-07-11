@@ -4208,11 +4208,14 @@ $(document).ready(function () {
             case 42:
                 paymentViaDpoSubscription('', payment_option_id, ''); 
             break;
-             case 43:
+            case 43:
                 paymentViaUPay('', payment_option_id, ''); 
             break;
-             case 44:
+            case 44:
                 paymentViaConekta('', payment_option_id, ''); 
+            break;
+            case 45:
+                paymentViaTelr('', payment_option_id, ''); 
             break;
         
         }
@@ -4634,7 +4637,6 @@ $(document).ready(function () {
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 console.log('order', order);
                 if (order != '') {
-                    //payWithDpo
                     paymentViaUPay(order);
                 }
                 else{
@@ -4645,8 +4647,17 @@ $(document).ready(function () {
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 console.log('order', order);
                 if (order != '') {
-                    //payWithDpo
                     paymentViaConekta(order);
+                }
+                else{
+                    return false;
+                }
+            break;
+            case '45':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
+                if (order != '') {
+                    paymentViaTelr(order);
                 }
                 else{
                     return false;
@@ -4861,8 +4872,11 @@ $(document).ready(function () {
             case 43:
                 paymentViaUPay('', payment_option_id, ''); 
                 break;
-             case 44:
+            case 44:
                 paymentViaConekta('', payment_option_id, ''); 
+                break;
+            case 45:
+                paymentViaTelr('', payment_option_id, ''); 
                 break;
 
         }
