@@ -178,6 +178,9 @@ Route::group(['middleware' => ['domain']], function () {
 	//Conekta
 	Route::match(['get','post'],'payment/conekta/page','Front\ConektaController@beforePayment')->name('payment.conekta.beforePayment');
 	Route::match(['get','post'],'payment/conekta','Front\ConektaController@afterPayment')->name('payment.conekta.afterPayment');
+	//Telr
+	Route::match(['get','post'],'payment/telr/page','Front\TelrController@beforePayment')->name('payment.telr.beforePayment');
+	Route::match(['get','post'],'payment/telr/{status}','Front\TelrController@afterPayment')->name('payment.telr.afterPayment');
 
 	//Coinbase
 	Route::match(['get','post'],'payment/coinbase/page','Front\CoinbaseController@beforePayment')->name('payment.coinbase.beforePayment');

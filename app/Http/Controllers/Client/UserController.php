@@ -87,6 +87,13 @@ class UserController extends BaseController
             ->addColumn('image_url', function($users) {
                 return $users->image['proxy_url'] . '40/40' . $users->image['image_path'];
             })
+            ->addColumn('user_type', function($users) {
+                if (!empty($users->is_admin) && $users->is_admin == 1) {
+                    return 'Vendor';
+                } else {
+                    return 'Customer';
+                }
+            })
             ->addColumn('login_type', function($users) {
                 if (!empty($users->facebook_auth_id)) {
                     return 'Facebook';

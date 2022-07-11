@@ -91,10 +91,26 @@
                                 {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
                                 <div class="row">
                                     <form id="themeIcon-form" method="post" enctype="multipart/form-data">
+                                    @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                                        @php
+                                            $NomenclatureName  = getNomenclatureName($vendor_typ_value, true);
+                                            $iconFiledName     = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+                                        @endphp
                                         <div class="col-md-4 mb-3">
                                             <div class="mb-0">
+                                                <label> {{$NomenclatureName. __(" Icon") }} </label>
+                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->$iconFiledName ? $client_preferences->$iconFiledName['proxy_url'].'600/400'.$client_preferences->$iconFiledName['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="{{$iconFiledName }}" class="dropify ss_form_submit" id="image" />
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong></strong>
+                                                </span>
+                                                <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                        <!-- <div class="col-md-4 mb-3">
+                                            <div class="mb-0">
                                                 <label>{{ __("Delivery Icon") }}</label>
-                                                <input type="file" accept="image/*" data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
+                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong></strong>
                                                 </span>
@@ -122,7 +138,7 @@
                                                 </span>
                                                 <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 34x26</label>
                                             </div>
-                                        </div>
+                                        </div> -->
 
                                     </form>
                                 </div>
