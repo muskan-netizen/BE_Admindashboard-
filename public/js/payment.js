@@ -1267,12 +1267,17 @@ $(document).ready(function() {
         let subscriptionElement = $("input[name='subscription_amount']");
         let subscriptionId = $("input[name='subscription_id']");
         let tipElement = $("#cart_tip_amount");
+        let cabElement = $("#pickup_now");
         let payment_from = '';
         if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
             payment_from = 'cart';
             var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
-        } else if (path.indexOf("wallet") !== -1) {
+        }else if (cabElement.length > 0) {
+            total_amount = cabElement.data('amount');
+            payment_from = 'pickup_delivery';
+            var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+        }else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
             payment_from = 'wallet';
             var rowData = 'amt='+total_amount+'&from='+payment_from;
@@ -1286,7 +1291,6 @@ $(document).ready(function() {
             payment_from = 'tip';
             var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
         }
-        console.log('create_dpo_tocken_url', create_dpo_tocken_url);
         $.ajax({
             type: "POST",
             dataType: 'json',
