@@ -1849,7 +1849,7 @@ class CartController extends FrontController
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $client_timezone = DB::table('clients')->first('timezone');
-        $user->timezone = $client_timezone->timezone ?? $user->timezone;
+        $timezone = (!empty($user->timezone))?$user->timezone:$client_timezone->timezone;
         $address_id = 0;
         $schedule_datetime_del = '';
         if ($user) {
@@ -1868,7 +1868,7 @@ class CartController extends FrontController
         if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
             $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
         }else{
-            $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+            $schedule_datetime_del = Carbon::now()->timezone($timezone)->format('Y-m-d H:i:s');
         }
 
         

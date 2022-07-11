@@ -32,13 +32,13 @@
                                     <input type="search" class="form-control" id="inputPassword2" placeholder="Search...">
                                 </div>
                                 <div class="form-group mx-sm-3">
-                                    <label for="status-select" class="mr-2">Sort By</label>
+                                    <label for="status-select" class="mr-2">{{__('Sort By')}}</label>
                                     <select class="custom-select" id="status-select">
-                                        <option selected="">All</option>
-                                        <option value="1">Name</option>
-                                        <option value="2">Post</option>
-                                        <option value="3">Followers</option>
-                                        <option value="4">Followings</option>
+                                        <option selected="">{{__('All')}}</option>
+                                        <option value="1">{{__('Name')}}</option>
+                                        <option value="2">{{__('Post')}}</option>
+                                        <option value="3">{{__('Followers')}}</option>
+                                        <option value="4">{{__('Followings')}}</option>
                                     </select>
                                 </div>
                             </form>

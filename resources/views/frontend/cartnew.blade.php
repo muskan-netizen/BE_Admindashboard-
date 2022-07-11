@@ -305,7 +305,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                 <% if( (product.isDeliverable != undefined) && (product.isDeliverable == 0) ) { %>
                     <div class="col-12">
                         <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> Products for this vendor are not deliverable at your area. Please change address or remove product.
+                            <i class="fa fa-exclamation-circle"></i> {{ __('Products for this vendor are not deliverable at your area. Please change address or remove product.')}}
                         </div>
                     </div>
                 <% } %>
@@ -338,11 +338,11 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 <% }); %>
                             </div>
                             <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2">
-                                <span class="alFourTempTitle">Price</span>
+                                <span class="alFourTempTitle">{{ __('Price')}}</span>
                                 <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></div>
                             </div>
                             <div class="col-6 col-md-2 text-left order-md-4">
-                                <span class="alFourTempTitle">Total</span>
+                                <span class="alFourTempTitle">{{ __('Total')}}</span>
                                 <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_price) %></div>
                             </div>
                             <div class="col-10 col-md-4 text-md-center order-md-3">
