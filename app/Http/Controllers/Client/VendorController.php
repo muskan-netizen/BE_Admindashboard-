@@ -758,8 +758,8 @@ class VendorController extends BaseController
             $datatable->addColumn('product_name', function ($product) use ($request) {
                 $edit_url = route('product.edit', $product->id);
                 $action =  '<a href="'.$edit_url .'"
-                target="_blank" title="'.(($product->global_product_id)?' Global Item':'').'">'.Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30).(($product->global_product_id)?' (Global)':'').'</a>';
-                
+                target="_blank" title="'.(($product->global_product_id)?' Global Item':'').'">'.($product->primary->title??'N/A').(($product->global_product_id)?' (Global)':'').'</a>';
+                // Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30)
                 return $action;
             })
             ->addColumn('product_category', function ($product) use ($request) {

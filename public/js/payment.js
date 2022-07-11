@@ -1364,10 +1364,15 @@ $(document).ready(function() {
         let subscriptionElement = $("input[name='subscription_amount']");
         let subscriptionId = $("input[name='subscription_id']");
         let tipElement = $("#cart_tip_amount");
+        let cabElement = $("#pickup_now");
         let payment_from = '';
         if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
             payment_from = 'cart';
+            var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+        } else if (cabElement.length > 0) {
+            total_amount = cabElement.data('amount');
+            payment_from = 'pickup_delivery';
             var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
         } else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
@@ -1389,45 +1394,12 @@ $(document).ready(function() {
             url: create_payphone_url,
             data: rowData,
             success: function(resp) {
-
-                payphone.Button({
-                    //token obtenido desde la consola de developer
-                    token:resp.token,
-        
-                            //PARÁMETROS DE CONFIGURACIÓN
-                            btnHorizontal: true,
-                            btnCard: true,
-        
-                            createOrder: function(actions){
-                                //Se ingresan los datos de la transaccion ej. monto, impuestos, etc
-                                return actions.prepare({
-        
-                                amount: resp.amount,
-                                amountWithoutTax: resp.amount,
-                                currency: "USD",
-                                clientTransactionId: resp.orderNo
-                                });
-        
-                                },
-                                onComplete: function(model, actions)
-                                {
-                                            //Se confirma el pago realizado
-                                            actions.confirm({
-                                            id: model.id,
-                                            clientTxId: model.clientTxId
-                                            }).then(function(value){
-                                            //EN ESTA SECCIÓN SE RECIBE LA RESPUESTA Y SE MUESTRA AL USUARIO
-                                            if (value.transactionStatus == "Approved"){
-                                                //alert("Pago " + value.transactionId + " recibido, estado " + value.transactionStatus );
-                                              var resUrl = resp.returnUrl+'?id='+value.transactionId+'&clientTransactionId='+resp.orderNo+'&status='+value.transactionStatus;
-                                              window.location.href= resUrl;
-                                            }
-                                        }).catch(function(err){
-                                        console.log(err);
-                                        });
-                                }
-                    }).render("#pp-button");
-
+                if(resp.paymentId){
+                    window.location.href= resp.payWithCard;
+                }else{
+                    alert(resp.message);
+                    window.location.reload();
+                }
           },
           error: function(error) {
               console.log(error);
