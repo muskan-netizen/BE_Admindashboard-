@@ -157,24 +157,39 @@ if(session()->has('applocale')){
                 <!-- alFindSec start -->
                 <div class="alFindSec d-none d-lg-block">
                     <ul class="p-0 m-0 d-flex align-items-center justify-content-between">
-                        <li class="border-right mr-4 pr-3">
+                         @if(isset($preference))
+                            @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
+                            <li class="border-right mr-4 pr-3">
+                                <div class="alLocation homepage-address" href="#edit-address" data-toggle="modal" >
+                                     <!-- data-toggle="modal" data-target="#googleMapModal" -->
+                                    <span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span>
+                                </div>
+                            </li>
+                            <!-- <div class="location-bar d-inline-flex align-items-center position-relative mr-3" href="#edit-address" data-toggle="modal">
+                                <span class="al_icons_mapPin mr-2"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_544_2)"><path d="M6.83602 0C3.70982 0 1.1665 2.54332 1.1665 5.66952C1.1665 6.95948 1.58924 8.17433 2.38902 9.18275C3.4246 10.4884 6.43607 13.5886 6.56374 13.7199L6.83598 14L7.10826 13.72C7.23601 13.5886 10.2484 10.4877 11.2841 9.18161C12.0832 8.17399 12.5055 6.95956 12.5055 5.66952C12.5055 2.54332 9.96222 0 6.83602 0ZM10.689 8.7097C9.85524 9.76111 7.6161 12.1 6.83602 12.909C6.05602 12.1 3.81767 9.76183 2.98409 8.7108C2.29189 7.83799 1.926 6.78635 1.926 5.66952C1.926 2.96211 4.12861 0.759495 6.83602 0.759495C9.54339 0.759495 11.746 2.96211 11.746 5.66952C11.746 6.78643 11.3805 7.83772 10.689 8.7097Z" fill=""/><path d="M6.83645 2.25098C4.98594 2.25098 3.48047 3.75645 3.48047 5.60696C3.48047 7.45747 4.98598 8.96294 6.83645 8.96294C8.68692 8.96294 10.1924 7.45743 10.1924 5.60696C10.1924 3.75649 8.68696 2.25098 6.83645 2.25098ZM6.83645 8.20344C5.40473 8.20344 4.23996 7.03864 4.23996 5.60696C4.23996 4.17523 5.40476 3.01047 6.83645 3.01047C8.26814 3.01047 9.4329 4.17527 9.43294 5.60696C9.43294 7.03868 8.26817 8.20344 6.83645 8.20344Z" fill=""/></g><defs><clipPath id="clip0_544_2"><rect width="14" height="14" fill="white"/></clipPath></defs></svg></span>
+                                <h2 class="homepage-address"><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
+                            </div> -->
+                            @endif
+                        @endif
+                        <!-- <li class="border-right mr-4 pr-3">
                             <div class="alLocation" data-toggle="modal" data-target="#googleMapModal">
-                                <span> Please select a location </span>
+                                <span>{{__('Please select a location')}} </span>
                             </div>
-                        </li>
+                        </li> -->
                         <li class="border-right mr-4 pr-3">
                             <div class="alChooseDate">
+                                <!-- <input type="date" name="booking_date"> -->
                                 <span> Choose date </span>
                             </div>
 
                         </li>
-                        <li class="mr-4 pr-3">
+                        <!-- <li class="mr-4 pr-3">
                             <div class="alNumber">
                                 <span class="minus p-0"> - </span>
                                 <input step="0.1" class="inputNumbers" type="text" value="1" placeholder="1"  style="width: 50px;border: none;background-color: transparent;text-align: center;opacity: .5;">
                                 <span class="minus p-0"> + </span>
                             </div>
-                        </li>
+                        </li> -->
                         <li class="pr-0">
                             <div class="alFindGo">
                                 <button class="btn">Go</button>
@@ -193,11 +208,15 @@ if(session()->has('applocale')){
                     </li><!-- alUserIcon end -->
 
                     <!-- alShoppingBag start -->
+                    @if($client_preference_detail) 
+                    @if($client_preference_detail->cart_enable==1)
                     <li class="alShoppingBag mx-4 dropdown">
-                        <a href="#" class="alShopIcon">
-                            <span class="navbar-tool-label">4</span>
+                        <a href="#" class="alShopIcon" href="{{route('showCart')}}">
+                            <span class="navbar-tool-label" id="cart_qty_span"> $</span>
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_160_410)"><path d="M16 4H14C14 1.79 12.21 0 10 0C7.79 0 6 1.79 6 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H16C17.1 20 18 19.1 18 18V6C18 4.9 17.1 4 16 4ZM10 2C11.1 2 12 2.9 12 4H8C8 2.9 8.9 2 10 2ZM16 18H4V6H6V8C6 8.55 6.45 9 7 9C7.55 9 8 8.55 8 8V6H12V8C12 8.55 12.45 9 13 9C13.55 9 14 8.55 14 8V6H16V18Z" fill="white"/></g><defs><clipPath id="clip0_160_410"><rect width="20" height="20" fill="white"/></clipPath></defs></svg>
                         </a>
+                        <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script>
+                                        <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul>
                         <!-- alShoppingList start -->
                         <div class="alShoppingList d-none">
                             <div class="widget widget-cart px-3 pt-2 pb-3" style="width: 20rem">
@@ -258,6 +277,7 @@ if(session()->has('applocale')){
                         </div><!-- alShoppingList end -->
 
                     </li><!-- alShoppingBag end -->
+                    @endif @endif
 
                     <!-- alMenuIcon start -->
                     <li class="alMenuIcon">

@@ -289,3 +289,26 @@ $applocale = session()->get('applocale');
         </div>
     </div>
 </div>
+
+@section('js-script')
+<script>
+        $(document).ready(function(){
+            $(".alHamBurgerIcon").click(function(){
+               $(".alSpaMenuCard").addClass("active");
+            });
+            $(".alMenuClose").click(function(){
+                $(".alSpaMenuCard").removeClass("active");
+            });
+        });
+
+        $(window).scroll(function() {    
+            var scroll = $(window).scrollTop();
+
+            if (scroll >= 100) {
+                $(".header").addClass("darkHeader");
+            } else {
+                $(".header").removeClass("darkHeader");
+            }
+        });
+    </script>
+@endsection
