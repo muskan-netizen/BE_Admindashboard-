@@ -10,25 +10,44 @@
 					@foreach ($chatrooms as $chatroom)
 		
 					<div id="chatRooms" class="list-group rounded-0">
-						<div id="room_{{ $chatroom['_id']}}" data-id="{{$chatroom['_id']}}" data-roomName="{{$chatroom['room_name']}}" class="chat-list-item d-flex align-items-start rounded fetchChat">
+						<div id="room_{{ $chatroom['_id']}}" data-OrderID="{{ $chatroom['order_id'] }}" data-OrdervendorID="{{ $chatroom['order_vendor_id'] }}" data-roomID="{{$chatroom['room_id']}}" data-id="{{$chatroom['_id']}}" data-roomName="{{$chatroom['room_name']}}" class="chat-list-item d-flex align-items-start rounded fetchChat">
 							{{-- <div class="align-self-center mr-3">
 								<div class="rounded-circle bg-gray" style="width: 8px; height: 8px; opacity: 0;"></div>
 							</div> --}}
-						<div class="align-self-center col-md-3">
-							<div class="overflow-hidden">
-								<p class="orderNumber m-0 mb-1">sadasd##</p>
-								<svg width="32" height="32" viewBox="0 0 1651 1651" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="1651" height="1651" rx="14" fill="white"></rect><path d="M495.286 1098.96L497.967 1070.86L478.04 1050.88C408.572 981.233 368 891.771 368 795.344C368 585.371 565.306 402 826 402C1086.69 402 1284 585.371 1284 795.344C1284 1005.32 1086.69 1188.69 826 1188.69V1248.69L825.913 1188.69C779.837 1188.75 733.952 1182.77 689.432 1170.9L667.26 1164.98L646.8 1175.37C620.731 1188.61 562.74 1213.98 467.32 1235.35C480.554 1191.83 490.95 1144.39 495.286 1098.96Z" stroke="url(#paint0_linear)" stroke-width="120"></path><defs><linearGradient id="paint0_linear" x1="662.312" y1="397.956" x2="416.164" y2="1678.7" gradientUnits="userSpaceOnUse"><stop stop-color="#7514FB"></stop><stop offset="0.624243" stop-color="#F26D41"></stop><stop offset="1" stop-color="#F43B4B"></stop></linearGradient></defs></svg>
+							<div class="align-self-center col-md-3">
+								<div class="user_show">
+									<p class="orderNumber m-0 mb-2">#{{ $chatroom['room_id'] }}</p>
+									@if(count($chatroom['user_Data']) > 0)
+										@foreach ($chatroom['user_Data'] as $user )
+										<a class="user_data_left" href="javascript:void(0)" >
+											<img class="rounded-circle userImg" src="{{@$user['display_image']}}">
+											{{-- <span class="d-block p-2">{{@$user['user_name']}}</span> --}}
+										</a>
+										@endforeach
+									@endif
+									{{-- <img class="rounded-circle userImg" src="images/avatar-5.jpg">
+									<img class="rounded-circle userImg" src="images/avatar-5.jpg"> --}}
+									{{-- <svg width="32" height="32" viewBox="0 0 1651 1651" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="1651" height="1651" rx="14" fill="white"></rect><path d="M495.286 1098.96L497.967 1070.86L478.04 1050.88C408.572 981.233 368 891.771 368 795.344C368 585.371 565.306 402 826 402C1086.69 402 1284 585.371 1284 795.344C1284 1005.32 1086.69 1188.69 826 1188.69V1248.69L825.913 1188.69C779.837 1188.75 733.952 1182.77 689.432 1170.9L667.26 1164.98L646.8 1175.37C620.731 1188.61 562.74 1213.98 467.32 1235.35C480.554 1191.83 490.95 1144.39 495.286 1098.96Z" stroke="url(#paint0_linear)" stroke-width="120"></path><defs><linearGradient id="paint0_linear" x1="662.312" y1="397.956" x2="416.164" y2="1678.7" gradientUnits="userSpaceOnUse"><stop stop-color="#7514FB"></stop><stop offset="0.624243" stop-color="#F26D41"></stop><stop offset="1" stop-color="#F43B4B"></stop></linearGradient></defs></svg> --}}
+								</div>
 							</div>
-						</div>
-						<div class="col-md-9 position-relative">
-							<div class="alNameTime">
-								{{-- <h6 class="text-truncate font-size-14 mb-1">{{ $chatroom['room_name'] }}</h6> --}}
-								<h6 class="mb-1 mt-0">00774556</h6>
-								<span>4:30am, Today</span>
-								{{-- <div class="font-size-11">{{$chatroom['created_date']}}</div> --}}
-								<p id="preview_message_{{$chatroom['_id']}}" class="orderChatMessage mb-0">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consequuntur vero cum laudantium atque, </p>
+							<div class="col-md-9 position-relative">
+								<div class="alNameTime last_message">
+									@if(count($chatroom['chat_Data']) > 0)
+										<h6 id="preview_message_name_{{$chatroom['_id']}}" class="mb-1 mt-0">{{ @$chatroom['chat_Data'][0]['username'] }}</h6>
+										{{-- <div class="w-100 d-flex mt-2">
+											<img style="margin-right: 10px" class="rounded-circle userImg" src="images/avatar-5.jpg">
+											<img class="rounded-circle userImg" src="images/avatar-5.jpg">
+										</div> --}}
+										@php
+										$date = date_create($chatroom['chat_Data'][0]['created_date']);
+										$new_date = date_format($date, 'l F jS Y H:i:s');
+										@endphp
+										<span id="preview_message_time_{{$chatroom['_id']}}">{{ $new_date }}</span>
+										
+									@endif
+									<p id="preview_message_{{$chatroom['_id']}}" class="orderChatMessage mb-0">{{@$chatroom['chat_Data'][0]['message']}} </p>
+								</div>
 							</div>
-						</div>
 					</div>
 					@endforeach
 						

@@ -29,6 +29,7 @@
         $('#roomName').html(roomIDn);
         await fetchOderVendorDetails(OrdervendorID,order_id);
         await getALLchat(roomId);
+        await getAllUser(roomId);
     });
 
     $(document).on('click','.join_room',async function(){
@@ -112,7 +113,7 @@
                     Chat.orderData.vendor_name = (data.vendors[0].vendor.name != undefined ) ? data.vendors[0].vendor.name : '';
                     $('#order_num').html(Chat.orderData.order_number);
                     $('#vendor_name').html(Chat.orderData.vendor_name);
-                    $('#order_vendor_price').html(Chat.orderData.payable_amount);
+                    $('#order_vendor_price').html(NumberFormatHelper.formatPrice(Chat.orderData.payable_amount));
                 }
                 
             }
@@ -196,6 +197,37 @@
         })
     }
 
+    async function getAllUser(roomId){
+        var html='';
+        axios.get(`https://chat.royoorders.com/api/chat/getRoomUser/${roomId}`)
+        .then(async response => {
+            console.log(response);
+            if(response.status == 200) {
+                if(response.data.userData.length > 0) {
+                   await response.data.userData.forEach(function (data) {
+                     html+= `<div class="alPhoneNumberDetails">
+                            <ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
+                                <li class="mr-xl-2"><img class="rounded-circle userImg" src="https://i.picsum.photos/id/237/200/300.jpg?hmac=TmmQSbShHz9CdQm0NkEjx1Dyh_Y984R9LpNrpvH2D_U"></li>
+                                <li><span class="alUserName">${data.user_name}  (${data.user_type}) </span><p class="m-0 alPhoneNumber">${data.phone_num}</p></li>
+                            </ul>
+                        </div>`;
+
+                    });
+                 $('.user_data').html(html);
+                } else {
+                 $('.user_data').html('');
+                }
+
+             } else {
+                $('.user_data').html('');
+             }
+        })
+        .catch(e => {
+            $('.user_data').html('');
+        })
+    }
+
+
 
 
     async function newMessage(message){
@@ -234,6 +266,8 @@
             </div>`;
             await $('.room_'+data.room).append(html);
             await $('#preview_message_'+data.room).html(data.message);
+            await $('#preview_message_name_'+data.room).html(data.username);
+            await $('#preview_message_time_'+data.room).html(convertDateTime(cdate));
             scrollDown();
 
                   

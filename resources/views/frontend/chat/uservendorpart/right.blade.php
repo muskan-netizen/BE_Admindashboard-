@@ -4,13 +4,13 @@
 	</div> --}}
 	<div class="conversation-head row py-3 px-3 mb-2">
 		<div class="col-5 alOrderDetailsBox pr-0">
-			<p class="alOrderDetails m-0">Order <span>#7878745</span></p>
-			<p class="alVendorDetails m-0">Vendor <span>Food Hub (Cheese Avenue, Texas)</span></p>
-			<p class="alAmountDetails m-0">Order Amount <span>$100</span></p>
+			<p class="alOrderDetails m-0">Order #<span id="order_num"></span></p>
+			<p class="alVendorDetails m-0">Vendor <span id="vendor_name">Food Hub (Cheese Avenue, Texas)</span></p>
+			<p class="alAmountDetails m-0">Order Amount <span id="order_vendor_price">$100</span></p>
 		</div>
 		<div class="col-7 pl-0">
-			<div class="d-flex align-items-center justify-content-between">
-				<div class="alPhoneNumberDetails">
+			<div class="d-flex align-items-center justify-content-between user_data">
+				{{-- <div class="alPhoneNumberDetails">
 					<ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
 						<li class="mr-xl-2"><img class="rounded-circle userImg" src="images/avatar-5.jpg"></li>
 						<li><span class="alUserName"> Admin </span><p class="m-0 alPhoneNumber">+1 225252525</p></li>
@@ -27,7 +27,7 @@
 						<li class="mr-xl-2"><img class="rounded-circle userImg" src="images/avatar-5.jpg"></li>
 						<li><span class="alUserName">Meo </span><p class="m-0 alPhoneNumber">+1 225252525</p></li>
 					</ul>
-				</div>
+				</div> --}}
 			</div>
 		</div>
 		

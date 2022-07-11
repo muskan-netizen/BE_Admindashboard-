@@ -16,6 +16,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 .accounting_upload .btn.btn-info{
     border-radius : 10px!important;
 }
+.start_chat{
+    float: right;
+    margin: -15px;
+    padding: 0px 132px 0px 0px ;   
+}
 </style>
 
 <script type="text/template" id="order_page_template">
@@ -55,9 +60,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 <div class="row  <%= ve ==0 ? 'mt-0' : 'mt-2'%>" id="single-order-div<%= k %><%= ve %>">
                                     <div class="col-12 order-hover-btn">
 
-
+                                        
 
                                        <div class="order_detail order_detail_data align-items-top pb-1 mb-0 card-box no-gutters h-100">
+                                        <a class=start_chat data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>">Start Chat</a>
                                         <a href="<%= vendor.vendor_detail_url %>" class="row">
                                             <% if(order.scheduled_date_time || (order.luxury_option_name != '')) { %>
                                             <div class="col-sm-12">
@@ -216,7 +222,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                         </a>
                                         <div id="update-single-status" class="my-2">
-                                            <a class=start_chat data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>">Start Chat</a>
+                                            {{-- <a class=start_chat data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>">Start Chat</a> --}}
                                                 <% if(vendor.order_status_option_id == 1) { %>
                                                     <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Accept') }}</button>
                                                     <!--<button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>-->

@@ -11,6 +11,8 @@ content: "󰝥";
 .chat-box-wrapper {
     max-height: 538px;
     overflow-y: scroll;
+    /* background:url(./assets/libs/chat/images/bg.jpg); */
+    background-size: cover;
 }
 .chat-input-section {
     background-color: #fff;
@@ -46,7 +48,7 @@ line-height: inherit;
 .messages-box .list-group:nth-child(odd) {background: #fff;border-bottom: 1px solid#0000002b;}
 .conversation-head {border-bottom: 1px solid #E7F6FC;}
 .alOrderDetailsBox .alOrderDetails span, .alOrderDetailsBox .alOrderDetails, .conversationText p.chatUserName {color: #43BEE1;font-weight: 600;}
-.alUserName {font-weight: 600;font-size: 16px;}
+.alUserName {font-weight: 600;font-size: 16px;text-transform: capitalize;}
 .alPhoneNumber {font-size: 12px;color: #43BEE1;font-weight: 600;}
 .alOrderDetailsBox p {color: #777;}.alOrderDetailsBox p span {color: #000;font-weight: 600;}
 .chat-input-section .col-auto a:nth-child(1) {display: none;}
@@ -111,6 +113,27 @@ line-height: inherit;
     bottom: -11px;
     left: 0; 
 }
+.alPhoneNumberDetails li img {
+    width: 50px;
+    height: 50px;
+}
+.alPhoneNumberDetails ul li {
+    list-style: none;
+}
+.user_data_left img {
+    width: 50px;
+    height: 50px;
+}
+.user_data_left span {
+    position: inherit;
+}
+.user_show a {
+    display: inline-block;
+    width: 30px;
+    float: left;
+}
+
+
 
 
 

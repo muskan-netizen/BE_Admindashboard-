@@ -18,6 +18,7 @@ $driver_chat = '';
 $customer_chat = '';
 $db ='';
 $auth_id ='';
+$authData ='';
 if(Auth::check()){
 	$cl_data = \App\Models\Client::first();
 	$socket_url = @$cl_data->socket_url;
@@ -71,6 +72,11 @@ if(isset($set_template))
 		auth_id:auth,
 		database_name:db,
     authData:authData
+	}
+  var Chat = {
+		orderData:{
+			
+		}
 	}
 	var SocketConstants = {
     	Socket_url : sUrl,

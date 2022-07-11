@@ -55,7 +55,9 @@ class ChatController extends BaseController
             'db_name'=>$clientData->database_name,
             'client_id'=>$clientData->id
         ]);
-       
+        // echo "<pre>";
+        // print_r($response['roomData']);
+        // die;
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
             $roomData = $response['roomData'];
@@ -78,7 +80,9 @@ class ChatController extends BaseController
             'client_id'=>$clientData->id
         ]);
         
-       
+        // echo "<pre>";
+        // print_r($response['roomData']);
+        // die;
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
             $roomData = $response['roomData'];
@@ -138,6 +142,8 @@ class ChatController extends BaseController
             'type'=>$type,
             'user_id'=>$user->id,
             'email'=>$user->email,
+            'user_name'=>$user->name,
+            'phone_num'=>'+'.$user->dial_code.' '.$user->phone_number,
             'display_image'=>$user->image
         ]);
 

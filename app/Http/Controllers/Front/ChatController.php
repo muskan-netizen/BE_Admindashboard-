@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Traits\GlobalFunction;
 use Illuminate\Support\Facades\Http;
+use App\Http\Traits\ChatTrait;
+
 
 
 use App\Models\{Client, Order, UserVendor, ClientPreference, LoyaltyCard,OrderProductRating};
@@ -19,6 +21,8 @@ use App\Models\{Client, Order, UserVendor, ClientPreference, LoyaltyCard,OrderPr
 class ChatController extends FrontController
 {
     use GlobalFunction;
+    use ChatTrait;
+
     /**
      * Display a listing of the country resource.
      *
@@ -97,7 +101,9 @@ class ChatController extends FrontController
             'client_id'=>$clientData->id
         ]);
         //echo "<pre>";
-       
+        // echo "<pre>";
+        // print_r($response['roomData']);
+        // die;
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
             $roomData = $response['roomData'];
@@ -181,6 +187,8 @@ class ChatController extends FrontController
             'user_id'=>$user->id,
             //'vendor_id'=>$data,
             'email'=>$user->email,
+            'user_name'=>$user->name,
+            'phone_num'=>'+'.$user->dial_code.' '.$user->phone_number,
             'dipslay_image'=>$user->image
         ]);
 
@@ -444,6 +452,19 @@ class ChatController extends FrontController
         }
 
         //print_r($order);
+        
+    }
+
+    public function fetchOrderDetail(Request $request){
+        try {
+            $orderData = $this->OrderVendorDetail($request);
+            return response()->json(['status' => true, 'orderData' => $orderData , 'message' => __('Data fetched !!!')]);
+            
+            //code...
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'orderData' => [] , 'message' => __('No Data found !!!')]);
+        }
+            
     }
 
 

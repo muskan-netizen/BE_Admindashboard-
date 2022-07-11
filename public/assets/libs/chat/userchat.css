@@ -45,7 +45,7 @@ line-height: inherit;
 .messages-box .list-group:nth-child(odd) {background: #fff;border-bottom: 1px solid#0000002b;}
 .conversation-head {border-bottom: 1px solid #E7F6FC;}
 .alOrderDetailsBox .alOrderDetails span, .alOrderDetailsBox .alOrderDetails, .conversationText p.chatUserName {color: #43BEE1;font-weight: 600;}
-.alUserName {font-weight: 600;font-size: 16px;}
+.alUserName {font-weight: 600;font-size: 16px;text-transform: capitalize;}
 .alPhoneNumber {font-size: 12px;color: #43BEE1;font-weight: 600;}
 .alOrderDetailsBox p {color: #777;font-size: 13px;}.alOrderDetailsBox p span {color: #000;font-weight: 600;}
 .conversation-list .ctext-wrap p.chat-time{font-size: 12px;}
@@ -134,6 +134,25 @@ line-height: inherit;
     border-left-color: #E7F6FC;
     bottom: -11px;
     left: 0; 
+}
+.alPhoneNumberDetails li img {
+    width: 50px;
+    height: 50px;
+}
+.alPhoneNumberDetails ul li {
+    list-style: none;
+}
+.user_data_left img {
+    width: 30px;
+    height: 30px;
+}
+.user_data_left span {
+    position: inherit;
+}
+.user_show a {
+    display: inline-block;
+    width: 20px;
+    float: left;
 }
 
 

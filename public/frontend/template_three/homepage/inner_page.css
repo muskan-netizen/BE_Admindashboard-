@@ -469,5 +469,9 @@ body[dir="rtl"] .pl-md-3.pl-2 {
 
 
 
-
+.start_chat{
+    float: right;
+    margin: -15px;
+    padding: 0px 132px 0px 0px ;   
+}
 
