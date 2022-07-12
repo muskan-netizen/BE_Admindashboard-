@@ -312,7 +312,7 @@ class OrderController extends BaseController
         foreach ($orders as $key => $order) {
             // $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, h:i A');
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
-            $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
+            $scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
 
             $total_other_taxes=0.00;
             foreach(explode(":",$order->total_other_taxes) as $row){
@@ -342,7 +342,7 @@ class OrderController extends BaseController
                     // $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : convertDateTimeInTimeZone($vendor->created_at, $user->timezone, 'h:i A');
                     $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
                     //$order->converted_scheduled_date_time = $order->scheduled_date_time;
-                    $order->converted_scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
+                    $order->converted_scheduled_date_time = $scheduled_date_time;
                 }
 
                 $vendor->product_total_count = $product_total_count;
@@ -363,6 +363,8 @@ class OrderController extends BaseController
             if ($order->vendors->count() == 0) {
                 $orders->forget($key);
             }
+            $order->scheduled_date_time = $scheduled_date_time;
+            
         }
         $admincurrency = ClientCurrency::getAdminCurrencySymbol();
 
@@ -1672,10 +1674,8 @@ class OrderController extends BaseController
 
         if($scheduleTime != ''){
             $datetime = Carbon::parse($scheduleTime)->addMinutes($minutes);
-            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }else{
             $datetime = Carbon::parse($order_vendor_created_at)->addMinutes($minutes);
-            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }
         if(Carbon::parse($datetime)->isToday()){
             if($time_format == '12'){
@@ -1683,8 +1683,9 @@ class OrderController extends BaseController
             }else{
                 $time_format = 'HH:mm';
             }
-            $datetime = Carbon::parse($datetime)->isoFormat($time_format);
+            // $datetime = Carbon::parse($datetime)->isoFormat($time_format);
         }
+        $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         return $datetime;
     }
 

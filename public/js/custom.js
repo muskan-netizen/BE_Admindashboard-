@@ -672,7 +672,7 @@ $(document).ready(function () {
     });
 
     $(document).on("change", "#schedule_datetime", function () {
-        cartHeader();
+        //cartHeader();
     });  
 
     $(document).on("change", ".schedule_datetime", function () {
