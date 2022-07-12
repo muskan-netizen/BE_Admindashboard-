@@ -100,7 +100,9 @@ class CustomerAuthController extends FrontController
         if($set_template->template_id == 4)
         {
             $login_page = "template_four.account.loginnew";
-        }else{
+        }elseif($set_template->template_id == 6){
+            $login_page = "template_six.account.loginnew";
+        } else{
             $login_page = "account.loginnew";
         }
         return view('frontend.'.$login_page)->with(['navCategories' => $navCategories]);
@@ -111,7 +113,7 @@ class CustomerAuthController extends FrontController
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
-        
+
         $urlPrevious = url()->previous();
         $routePrevious = app('router')->getRoutes($urlPrevious)->match(app('request')->create($urlPrevious))->getName();
         if($routePrevious == 'showCart'){
@@ -135,6 +137,8 @@ class CustomerAuthController extends FrontController
         if($set_template->template_id == 4)
         {
             $register_page = "template_four.account.registernew";
+        }elseif($set_template->template_id == 6){
+            $register_page = "template_six.account.registernew";
         }else{
             $register_page = "account.registernew";
         }

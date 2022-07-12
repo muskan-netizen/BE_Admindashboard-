@@ -47,13 +47,13 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     @if($showSubscriptionPlanPopUp == 1)
         var setShowSubscriptionPlan = "showed";
     @endif
-    
+
 </script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.cookie.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('assets/js/constants.js')}}"></script>
-<script defer type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script> 
+<script defer type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
@@ -90,7 +90,9 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @if(isset($set_template)  && $set_template->template_id == 1)
 <script defer type="text/javascript" src="{{asset('front-assets/js/custom-template-one.js')}}"></script>
 @endif
+//sectionHarbans
 @yield('js-script')
+//sectionHarbansEnd
 @if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
@@ -174,7 +176,7 @@ $(document).ready(function() {
 <!-- End googletagmanager -->
 @php
 if($showSubscriptionPlanPopUp == 1){
-    setcookie('show-subscription-plan','showed',0); 
+    setcookie('show-subscription-plan','showed',0);
 }
 @endphp
 
@@ -242,7 +244,7 @@ if($showSubscriptionPlanPopUp == 1){
 //////////////UPay payment Routes
     var upay_before_payment = "{{route('payment.upay.beforePayment')}}";
 //////////////Conekta payment Routes
-    var conekta_before_payment = "{{route('payment.conekta.beforePayment')}}";  
+    var conekta_before_payment = "{{route('payment.conekta.beforePayment')}}";
 
 //////////////Ozow payment Routes
     var ozow_before_payment = "{{route('payment.ozow.beforePayment')}}";
