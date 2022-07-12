@@ -39,7 +39,7 @@ if(isset($set_template))
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
 <article id="page-container">
   <article id="content-wrap">
-  @if(isset($set_template)  && $set_template->template_id == 3)
+  @if(isset($set_template)  && ($set_template->template_id == 3 || $set_template->template_id == 6 || $set_template->template_id == 1 ))
     <article class="al_new_wrapper_design">
   @endif
     <header>
@@ -63,7 +63,7 @@ if(isset($set_template))
 
     @if(isset($set_template)  && $set_template->template_id == 4)
     @include('frontend.template_four.layouts.vendor_type')
-    @endif 
+    @endif
 
     @yield('content')
     @if(isset($set_template)  && $set_template->template_id == 1)
@@ -77,7 +77,7 @@ if(isset($set_template))
     @elseif(isset($set_template)  && $set_template->template_id == 5)
     @include('layouts.store/footer-content-template-five')
     @elseif(isset($set_template)  && $set_template->template_id == 6)
-    @include('layouts.store/footer-content-template-five')
+    @include('layouts.store/footer-content-template-six')
     @else
     @include('layouts.store/footer-content-template-one')
     @endif
