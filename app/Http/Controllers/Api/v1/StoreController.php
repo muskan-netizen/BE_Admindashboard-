@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Api\v1;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Validator;
+use GuzzleHttp\Client as GCLIENT;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
-use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, UserWishlist};
+use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist};
 
 class StoreController extends BaseController{
     use ApiResponser;
@@ -1617,5 +1618,165 @@ class StoreController extends BaseController{
         }
         return $result;
     }
+
+
+	 /**
+     * Post Route
+     * Save Rescheduled Order
+     */
+    public function rescheduleOrder(Request $request)
+    {
+	try{
+        $order_id = $request->order_id;
+        $order = Order::find($order_id);
+        $vendor_id = $request->vendor_id;
+        $vendor = Vendor::where('id', $vendor_id)->first();
+        $user = Auth::user();
+        $currency_id = $request->currency_id;
+        $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+        $schedule_pickup_compare = Carbon::parse($order->schedule_pickup);
+        $schedule_dropoff_compare = Carbon::parse($order->schedule_dropoff);
+        // $pickup_schedule_datetime_compare = Carbon::parse($request->pickup_schedule_datetime);
+        // $dropoff_schedule_datetime_compare = Carbon::parse($request->dropoff_schedule_datetime);
+        $pickup_schedule_datetime_compare  = date('Y-m-d');
+        $dropoff_schedule_datetime_compare = date('Y-m-d');
+        
+        // If the rescheduling of pickup and dropoff is done on current dates.
+        if($dropoff_schedule_datetime_compare == $schedule_dropoff_compare->format('Y-m-d') && $pickup_schedule_datetime_compare == $schedule_pickup_compare->format('Y-m-d')){
+            $totalCharges = $vendor->pickup_cancelling_charges+$vendor->rescheduling_charges;
+            if($user->balanceFloat >= $totalCharges){
+                $this->chargeForPickupRescheduling($user, $vendor, $order);
+                $this->chargeForDropoffRescheduling($user, $vendor, $order);
+            }else{
+				return $this->errorResponse('Insufficient wallet balance, required rescheduling charges are '.$clientCurrency->currency->symbol.$totalCharges.'. Please recharge your wallet.','400');
+            }
+           
+        }
+        // If the rescheduling is done on the day of pickup, then a rescheduling fee will apply.
+        elseif($pickup_schedule_datetime_compare == $schedule_pickup_compare->format('Y-m-d')){ 
+            if($vendor->pickup_cancelling_charges > 0){
+                $result = $this->chargeForPickupRescheduling($user, $vendor, $order);
+                if($result == false){
+					return $this->errorResponse('Insufficient wallet balance, required rescheduling charges are '.$clientCurrency->currency->symbol.$vendor->pickup_cancelling_charges.'. Please recharge your wallet.','400');
+                }
+            }
+           
+        }
+        // If the rescheduling is done on the day of delivery, then a rescheduling fee will apply.
+        elseif($dropoff_schedule_datetime_compare == $schedule_dropoff_compare->format('Y-m-d')){ 
+            if($vendor->pickup_cancelling_charges > 0){
+                $result = $this->chargeForDropoffRescheduling($user, $vendor, $order);
+                if($result == false){
+					return $this->errorResponse('Insufficient wallet balance, required rescheduling charges are '.$clientCurrency->currency->symbol.$vendor->rescheduling_charges.'. Please recharge your wallet.','400');
+                }
+            }   
+        }
+        
+
+        $schedule_pickup_slot = explode(" - ", $request->schedule_pickup_slot); 
+        $pickup_schedule_datetime = Carbon::createFromFormat('Y-m-d H:i:s',  $request->pickup_schedule_datetime .' '. $schedule_pickup_slot[0].':00');
+
+        $schedule_dropoff_slot = explode(" - ", $request->schedule_dropoff_slot); 
+        $dropoff_schedule_datetime = Carbon::createFromFormat('Y-m-d H:i:s',  $request->dropoff_schedule_datetime .' '. $schedule_dropoff_slot[0].':00');
+
+        $rescheduleOrder = new RescheduleOrder();
+        $rescheduleOrder->reschedule_by = $user->id;
+        $rescheduleOrder->order_id = $order_id;
+        $rescheduleOrder->vendor_id = $vendor_id;
+        $rescheduleOrder->prev_schedule_pickup = $order->schedule_pickup;
+        $rescheduleOrder->prev_schedule_dropoff = $order->schedule_dropoff;
+        $rescheduleOrder->prev_scheduled_slot = $order->scheduled_slot;
+        $rescheduleOrder->prev_dropoff_scheduled_slot = $order->dropoff_scheduled_slot;
+        $rescheduleOrder->new_schedule_pickup = Carbon::parse($pickup_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $rescheduleOrder->new_schedule_dropoff = Carbon::parse($dropoff_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $rescheduleOrder->new_scheduled_slot = $request->schedule_pickup_slot;
+        $rescheduleOrder->new_dropoff_scheduled_slot = $request->schedule_dropoff_slot;
+        $rescheduleOrder->save();
+
+        $order->schedule_pickup  =  Carbon::parse($pickup_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $order->schedule_dropoff =  Carbon::parse($dropoff_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $order->scheduled_slot   =  $request->schedule_pickup_slot;
+        $order->dropoff_scheduled_slot = $request->schedule_dropoff_slot;
+        $order->save();
+
+       // Send Rescheduling Request to Dispatcher
+        $orderVendor = OrderVendor::where('order_id', $order->id)->first();
+       
+        $postdata =  [
+            'order_unique_id' => substr($orderVendor->dispatch_traking_url, strrpos($orderVendor->dispatch_traking_url, '/') + 1),  // To get order unique id after slash (/).
+            'order_number' => $orderVendor->orderDetail->order_number,
+            'schedule_pickup' => $orderVendor->orderDetail->schedule_pickup,
+            'schedule_dropoff' => $orderVendor->orderDetail->schedule_dropoff,
+        ];
+        
+        // Call API Here
+        $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
+        
+        $client = new GCLIENT([
+            'headers' => [
+                'personaltoken' => $dispatch_domain_laundry->laundry_service_key,
+                'shortcode' => $dispatch_domain_laundry->laundry_service_key_code,
+                'content-type' => 'application/json'
+            ]
+        ]);
+
+        $url = $dispatch_domain_laundry->laundry_service_key_url;
+        $res = $client->post(
+            $url . '/api/order/reschedule',
+            ['form_params' => ($postdata)]
+        );
+
+        $response = json_decode($res->getBody(), true);
+		if($response['status'] == 'success'){
+				return $this->successResponse([], 'Success', 200);
+			}else{
+				return $this->errorResponse('Something went wrong!','400');
+			}
+
+		}catch(\Exception $e)
+		{
+			return $this->errorResponse($e->getMessage(),'400');
+		}
+    }
+
+    public function chargeForPickupRescheduling($user, $vendor, $order)
+    {
+        if ($user) {
+            if ($user->balanceFloat > 0) {
+                $wallet = $user->wallet;
+                $wallet_amount_used = $user->balanceFloat;
+                $payable_amount_for_pickup     = $vendor->pickup_cancelling_charges;
+                if ($wallet_amount_used >= $payable_amount_for_pickup) {
+                    if ($wallet_amount_used > 0) {
+                        $wallet->withdrawFloat($payable_amount_for_pickup, ['Wallet has been <b>debited</b> for rescheduling the order on pickup day under order number <b>' . $order->order_number . '</b>']);
+                        return true;
+                    }
+                }
+            }else{
+                return false;
+            }
+        }
+    }
+
+    public function chargeForDropoffRescheduling($user, $vendor, $order)
+    {
+        if ($user) {
+            if ($user->balanceFloat > 0) {
+                $wallet = $user->wallet;
+                $wallet_amount_used = $user->balanceFloat;
+                $payable_amount     = $vendor->rescheduling_charges;
+                if ($wallet_amount_used >= $payable_amount) {
+                    if ($wallet_amount_used > 0) {
+                        $wallet->withdrawFloat($payable_amount, ['Wallet has been <b>debited</b> for rescheduling the order on dropoff day under order number <b>' . $order->order_number . '</b>']);
+                        return true;
+                    }
+                }
+            }else{
+                return false;
+            }
+        }
+    }
+
+	
 
 }

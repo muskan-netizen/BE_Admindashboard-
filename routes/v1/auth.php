@@ -69,6 +69,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('mystore/vendor/orders/{id}', 'Api\v1\StoreController@getMyStoreVendorOrders');
         Route::get('mystore/vendor/bagOrders/{qrcode?}', 'Api\v1\StoreController@getMyStoreVendorBagOrders');
         Route::get('mystore/vendor/clearBagOrders/{qrcode?}/{order_number?}', 'Api\v1\StoreController@clearBagOrders');
+	    Route::post('mystore/vendor/rescheduleOrder', 'Api\v1\StoreController@rescheduleOrder'); 
         Route::post('mystore/vendor/category', 'Api\v1\StoreController@VendorCategory');
         Route::post('mystore/product/add', 'Api\v1\StoreController@addProduct');
         Route::post('mystore/product/detail', 'Api\v1\StoreController@productDetail'); 
