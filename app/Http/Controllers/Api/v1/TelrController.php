@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api\v1;
+namespace App\Http\Controllers\Api\v1; 
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Log, Auth;
 
-class ConektaGatewayController extends Controller
+class TelrController extends Controller
 {
-    public function conektaPurchase(Request $request)
+    public function telrPurchase(Request $request)
     {
         $user = Auth::user();
         $amount = $request->amount;
@@ -17,7 +17,7 @@ class ConektaGatewayController extends Controller
         if(($action == 'cart') || ($action == 'tip')){
             $params = $params . '&order_number=' . $request->order_number;
         }
-        // return $this->successResponse(url('payment/conekta/page'.$params)); 
-        return $this->successResponse(url($request->serverUrl.'payment/conekta/page'.$params)); 
+        // return $this->successResponse(url('payment/telr/page'.$params)); 
+        return $this->successResponse(url($request->serverUrl.'payment/telr/page'.$params)); 
     }
 }
