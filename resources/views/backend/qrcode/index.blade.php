@@ -34,9 +34,9 @@
             </div>
         </div>
         <div class="col-sm-6 text-right">
-            <button class="btn btn-info waves-effect waves-light text-sm-right"
+            {{-- <button class="btn btn-info waves-effect waves-light text-sm-right"
                 data-toggle="modal" data-target=".importQrcodeBtn"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import QrCode') }}
-            </button>
+            </button> --}}
         </div>
     </div>
     <!-- end page title -->
@@ -67,18 +67,29 @@
                             <thead>
                                 <tr>
                                     <th>{{ __("Code") }}</th>
-                                    {{-- <th>{{__("Image")}}</th>
-                                    <th>{{__("Action")}}</th> --}}
+                                     <th>{{__("Vendor")}}</th>
+                                   {{-- <th>{{__("Action")}}</th> --}}
                                 </tr>
                             </thead>
                             <tbody id="post_list">
-                                @foreach ($codes as $item)
+                                @forelse ($codes as $item)
                                            <tr>
                                             <td>
                                                 {{$item->code}}
                                             </td>
+                                            <td>
+                                                {{@$item->vendorDetail->name}}
+                                            </td>
                                            </tr>
-                                       @endforeach
+
+                                           @empty
+                                           <tr>
+                                            <td colspan="5" class="text-center">
+                                               No record found.
+                                            </td>
+                                           </tr>
+
+                                       @endforelse
                             </tbody>
                         </table>
                     </div>

@@ -474,7 +474,7 @@
                                 </a>
                                 @endif
                                
-
+                            @if($client_preference_detail->business_type == 'laundry')
                                 <div class="col-md-4 text-right mb-2">
                                     <button class="btn btn-info button" id="import_global"
                                         type="button">{{ __('Import Global Product') }}</button>
@@ -484,6 +484,7 @@
                                     <button class="btn btn-info button" id="import_bagqrcode"
                                         type="button">{{ __('Import Bag Qrcode') }}</button>
                                 </div>
+                            @endif
 
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
@@ -757,14 +758,19 @@
 
                         <div class="col-md-12 text-center">
 
+                            <div class="col-md-4 text-right mb-2">
+                                <button class="btn btn-info button"
+                                    type="button"> <a href="{{ route('estimations.barcode',$vendor->id) }}">{{ __('View Bag Qrcode') }}</a></button>
+                            </div>
+
                             <div id="import_csv" class="row align-items-center mb-3">
                                 
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_qrcode">
                                         @csrf
-                                        <a
-                                            href="{{ url('file-download' . '/sample_qrcode.csv') }}">{{ __('Download Sample file here!') }}</a>
-                               
+
+                                        <a href="{{ url('file-download' . '/sample_qrcode.csv') }}">{{ __('Download Sample file here!') }}</a>
+                                        <input type="hidden" value="{{ $vendor->id }}" name="vendor_id" />
                                         <input type="file" accept=".csv" onchange="submitQrcodeImportForm()"
                                             data-plugins="dropify" name="qrcode_excel" class="dropify" />
                                     </form>

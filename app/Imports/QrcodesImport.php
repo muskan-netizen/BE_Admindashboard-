@@ -52,7 +52,7 @@ class QrcodesImport implements ToCollection{
 
                         $insert_vendor_details = array(
                             'code' => $da[0],
-                           // 'vendor_id'=>$this->vendor_id
+                            'vendor_id'=>$this->vendor_id??Null
                         );
 
                         if(QrcodeImport::where('code', $da[0])->exists()){
