@@ -191,6 +191,7 @@
                                                                     <th>#</th>
                                                                     <th>{{ __('Image')}}</th>
                                                                     <th>{{ __('Name')}}</th>
+                                                                    <th>{{ __('User Type')}}</th>
                                                                     <th>{{ __('Login Type') }}</th>
                                                                     <th>{{ __('Signup Date')}}</th>
                                                                     <th>{{ __('Last Login') }}</th>
@@ -234,6 +235,7 @@
                                                                     <th>#</th>
                                                                     <th>{{ __('Image')}}</th>
                                                                     <th>{{ __('Name')}}</th>
+                                                                    <th>{{ __('User Type')}}</th>
                                                                     <th>{{ __('Login Type') }}</th>
                                                                     <th>{{ __('Signup Date')}}</th>
                                                                     <th>{{ __('Last Login') }}</th>
@@ -394,6 +396,12 @@
                                 }
                                 return "<a href='" + full.edit_url + "'>" + full.name + "</a>"+ improtId;
                             }
+                        },
+                        {
+                            data: 'user_type',
+                            name: 'user_type',
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             data: 'login_type',
