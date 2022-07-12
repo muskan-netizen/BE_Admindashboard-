@@ -44,7 +44,27 @@ class ChatController extends BaseController
 
         
     }
-    
+    public function getAllChatRoom($type){
+        $clientData = $this->client_data;
+        $server_name = $_SERVER['REMOTE_ADDR'];
+        $response =   Http::post($clientData->socket_url.'/api/room/fetchAllRoom', [
+            //'vendor_id' => $vendor_id, 
+            'sub_domain' =>$server_name,
+            'type'=>$type,
+            'db_name'=>$clientData->database_name,
+            'client_id'=>$clientData->id
+        ]);
+
+        $statusCode = $response->getStatusCode();
+        if($statusCode == 200) {
+            $roomData = $response['roomData'];
+            return ['status' => true, 'roomData' => $roomData , 'message' => __('Room list !!!')];
+        } else {
+
+            return ['status' => false, 'message' => __('Something went wrong!!!')];
+        }
+
+    }
     public function getChatRoom($vendor_id,$type){
         $clientData = $this->client_data;
         $server_name = $_SERVER['REMOTE_ADDR'];
@@ -97,28 +117,46 @@ class ChatController extends BaseController
     }
 
     public function index(Request $request){
-       
-        return view('backend.chat.index',$this->client_data);
-
-    }
-
-    public function VendorUserChat(Request $request){
         $user = Auth::user();
-      
-        $vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
-        $this->client_data['vendor_id'] = $vendor_id;
-        $roomData = $this->getChatRoom($vendor_id,'vendor_to_user');
+        if ($user->is_superadmin != 1) {
+            abort(404);
+        }
+        
+        $roomData = $this->getAllChatRoom('vendor_to_user');
         if($roomData['status']){
             $chatroom = $roomData['roomData'];
         } else {
             $chatroom = [];
         }
-        return view('backend.chat.VendorUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+        return view('backend.chat.index',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+
+    }
+
+    public function VendorUserChat(Request $request){
+        $user = Auth::user();
+        if($user->is_superadmin == 1){
+            $roomData = $this->getAllChatRoom('vendor_to_user');
+            $view = "index";
+        } else {
+            $vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
+            $this->client_data['vendor_id'] = $vendor_id;
+            $roomData = $this->getChatRoom($vendor_id,'vendor_to_user');
+            $view = "VendorUserChat";
+        }
+
+        
+
+        if($roomData['status']){
+            $chatroom = $roomData['roomData'];
+        } else {
+            $chatroom = [];
+        }
+        return view('backend.chat.'.$view,$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
 
     }
 
 
-    public function UservendorChat(Request $request){
+    public function UserVendorChat(Request $request){
         $user = Auth::user();
       
         $roomData = $this->getChatRoomForUser($user->id,'vendor_to_user');

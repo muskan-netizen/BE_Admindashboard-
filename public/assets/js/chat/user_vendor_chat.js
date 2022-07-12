@@ -206,7 +206,7 @@
                                 <div class="conversation-list d-inline-block px-3 py-2" style="border-radius: 12px;">
                                     <div class="ctext-wrap">
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <div class="conversation-name text-left text-primary mr-4" style="font-weight: 600;">${data.username}</div>
+                                            <div class="conversation-name text-left text-primary mr-4" style="font-weight: 600;">${data.username} (${data.user_type})</div>
                                             <p class="chat-time m-0 p-0" >
                                             <svg width="12" height="12" class="prefix__MuiSvgIcon-root prefix__jss80 prefix__MuiSvgIcon-fontSizeLarge" viewBox="0 0 24 24" aria-hidden="true">
                                                 <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
@@ -284,7 +284,7 @@
                      html+= `<div class="alPhoneNumberDetails">
                             <ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
                                 <li class="mr-xl-2"><img class="rounded-circle userImg" src="https://i.picsum.photos/id/237/200/300.jpg?hmac=TmmQSbShHz9CdQm0NkEjx1Dyh_Y984R9LpNrpvH2D_U"></li>
-                                <li><span class="alUserName">${data.user_name}  (${data.user_type}) </span><p class="m-0 alPhoneNumber">${data.phone_num}</p></li>
+                                <li><span class="alUserName">${data.username}  (${data.user_type}) </span><p class="m-0 alPhoneNumber">${data.phone_num}</p></li>
                             </ul>
                         </div>`;
 
@@ -325,7 +325,7 @@
                     <div class="conversation-list d-inline-block px-3 py-2" style="border-radius: 12px;">
                         <div class="ctext-wrap">
                             <div class="d-flex align-items-center justify-content-between">
-                                <div class="conversation-name text-left text-primary mr-4" style="font-weight: 600;">${data.username}</div>
+                                <div class="conversation-name text-left text-primary mr-4" style="font-weight: 600;">${data.username} (${data.user_type})</div>
                                 <p class="chat-time m-0 p-0" >
                                 <svg width="12" height="12" class="prefix__MuiSvgIcon-root prefix__jss80 prefix__MuiSvgIcon-fontSizeLarge" viewBox="0 0 24 24" aria-hidden="true">
                                     <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
@@ -394,7 +394,7 @@
         //     $messageData = $this->sendSocketMessage($data,$user,'to_vendor','user','from_user','vendor_to_user');
         // }
         var authDataParseData = JSON.parse(authData);
-
+        var dImage = authDataParseData.image.image_fit+'500/500'+authDataParseData.image.image_path;
         axios.post(`https://chat.royoorders.com/api/chat/sendMessageJoin`, {
             'room_id' : room_id,
             'message': message,
@@ -404,8 +404,10 @@
             'user_id': Auth.auth_id,
             'email': authDataParseData.email,
             'username': authDataParseData.name,
-            'display_image': 'https://i.picsum.photos/id/237/200/300.jpg?hmac=TmmQSbShHz9CdQm0NkEjx1Dyh_Y984R9LpNrpvH2D_U',
+            //'display_image': 'https://i.picsum.photos/id/237/200/300.jpg?hmac=TmmQSbShHz9CdQm0NkEjx1Dyh_Y984R9LpNrpvH2D_U',
             'sub_domain' : window.location.host,
+            'phone_num': '+'+authDataParseData.dial_code+ ' ' +authDataParseData.phone_number,
+            'display_image': dImage,
             //'room_name' =>$data->name,
             'chat_type': 'vendor_to_user',
         })

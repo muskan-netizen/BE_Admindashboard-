@@ -145,6 +145,7 @@ class AuthController extends BaseController
             Cart::where('unique_identifier', $loginReq->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
         }
         $checkSystemUser = $this->checkCookies($user->id);
+        $data['id'] = $user->id;
         $data['name'] = $user->name;
         $data['email'] = $user->email;
         $data['auth_token'] =  $token;
@@ -991,6 +992,7 @@ class AuthController extends BaseController
                 Cart::where('unique_identifier', $req->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
             }
             $checkSystemUser = $this->checkCookies($user->id);
+            $data['id'] = $user->id;
             $data['name'] = $user->name;
             $data['email'] = $user->email;
             $data['auth_token'] =  $token;
@@ -1214,6 +1216,7 @@ class AuthController extends BaseController
                     Cart::where('unique_identifier', $request->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
                 }
                 $checkSystemUser = $this->checkCookies($user->id);
+                $data['id'] = $user->id;
                 $data['name'] = $user->name;
                 $data['email'] = $user->email;
                 $data['auth_token'] =  $token;

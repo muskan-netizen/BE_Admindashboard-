@@ -48,7 +48,6 @@
 @endsection
 @section('customcss')
 <link href="{{ asset('assets/libs/chat/chat.css') }}" rel="stylesheet" type="text/css" />
-
 @endsection
 @section('content')
     <div class="container-fluid">

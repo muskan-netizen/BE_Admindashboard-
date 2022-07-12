@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace App\Http\Controllers\Api\v1;
 
 use DB;
 use Auth;
@@ -9,20 +9,18 @@ use DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Front\FrontController;
+use App\Http\Controllers\Api\v1\BaseController;
+use App\Http\Traits\ChatTrait;
 use App\Http\Traits\GlobalFunction;
 use Illuminate\Support\Facades\Http;
-use App\Http\Traits\ChatTrait;
-
 
 
 use App\Models\{Client, Order, UserVendor, ClientPreference, LoyaltyCard,OrderProductRating};
 
-class ChatController extends FrontController
+class ChatController extends BaseController
 {
     use GlobalFunction;
     use ChatTrait;
-
     /**
      * Display a listing of the country resource.
      *
@@ -31,7 +29,7 @@ class ChatController extends FrontController
     public $client_data;
     public function __construct()
     {
-        $this->middleware('auth');
+        
         $this->middleware(function ($request, $next) {
             $this->id = Auth::user()->id;
             $data = Client::find(1);
@@ -42,14 +40,10 @@ class ChatController extends FrontController
     
             return $next($request);
         });
-        
-
-        
     }
-    
-    public function getChatRoom($vendor_id,$type){
+    public function getChatRoom($vendor_id,$type,$sub_domain){
         $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $sub_domain;
         $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByVendor', [
             'vendor_id' => $vendor_id, 
             'sub_domain' =>$server_name,
@@ -57,7 +51,6 @@ class ChatController extends FrontController
             'db_name'=>$clientData->database_name,
             'client_id'=>$clientData->id
         ]);
-       
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
             $roomData = $response['roomData'];
@@ -69,9 +62,9 @@ class ChatController extends FrontController
 
     }
 
-    public function getChatRoomForUser($order_user_id,$type){
+    public function getChatRoomForUser($order_user_id,$type,$sub_domain){
         $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $sub_domain;
         $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByUserId', [
             'order_user_id' => $order_user_id, 
             'sub_domain' =>$server_name,
@@ -79,213 +72,54 @@ class ChatController extends FrontController
             'db_name'=>$clientData->database_name,
             'client_id'=>$clientData->id
         ]);
+        
+        // echo "<pre>";
+        // print_r($response['roomData']);
+        // die;
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
             $roomData = $response['roomData'];
-            //print_r($roomData);
+           
             return ['status' => true, 'roomData' => $roomData , 'message' => __('Room list !!!')];
         } else {
 
             return ['status' => false, 'message' => __('Something went wrong!!!')];
         }
-        //die;
+    
 
     }
-
-    public function index(Request $request){
-        // echo "review";
-        return view('frontend.chat.index',$this->client_data);
-
-    }
-
-    public function VendorUserChat(Request $request){
+    public function vendorUserChatRoom(Request $request){
         $user = Auth::user();
+        $data = $request->all();
+        $sub_domain = $data['sub_domain'];
         $vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
         $this->client_data['vendor_id'] = $vendor_id;
-        $roomData = $this->getChatRoom($vendor_id,'vendor_to_user');
+        $roomData = $this->getChatRoom($vendor_id,'vendor_to_user',$sub_domain);
         if($roomData['status']){
             $chatroom = $roomData['roomData'];
         } else {
             $chatroom = [];
         }
-        return view('backend.chat.VendorUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+        return response()->json([ 'chatrooms'=>$chatroom , 'status' => true, 'message' => __('list fetched!!!')]);
 
     }
 
 
-    public function UservendorChat(Request $request){
-        $langId = Session::get('customerLanguage');
-        $navCategories = $this->categoryNav($langId);
+    public function userVendorChatRoom(Request $request){
         $user = Auth::user();
-        $roomData = $this->getChatRoomForUser($user->id,'vendor_to_user');
+        $data = $request->all();
+        $sub_domain = $data['sub_domain'];
+        $roomData = $this->getChatRoomForUser($user->id,'vendor_to_user',$sub_domain);
         if($roomData['status']){
             $chatroom = $roomData['roomData'];
         } else {
             $chatroom = [];
         }
-        return view('frontend.chat.UserVenorChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom,
-        'navCategories' => $navCategories
-    ]);
+
+    
+        return response()->json([ 'chatrooms'=>$chatroom , 'status' => true, 'message' => __('list fetched!!!')]);
 
     }
-
-    public function joinSocketRoom($data,$user,$type,$userType){
-        $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
-        $response =   Http::post($clientData->socket_url.'/api/chat/joinRoomByID', [
-            'sub_domain' =>$server_name,
-            'room_id' =>$data['room_id'],
-            'user_type' =>$userType,
-            'type'=>$type,
-            'user_id'=>$user->id,
-            'email'=>$user->email,
-            'user_name'=>$user->name,
-            'phone_num'=>'+'.$user->dial_code.' '.$user->phone_number,
-            'dipslay_image'=>$user->image
-        ]);
-
-        $statusCode = $response->getStatusCode();
-        if($statusCode == 200) {
-            $roomData = $response['roomData'];
-            $roomUser = $response['RoomUser'];
-            $message = $response['message'];
-            return ['status' => $response['status'],'roomUser' =>$roomUser ,'roomData' => $roomData , 'message' => __($message)];
-        } else {
-
-            return ['status' => false, 'message' => __('Something went wrong!!!')];
-        }
-    }
-
-
-    public function sendSocketMessage($data,$user,$to_message,$userType,$from_message,$chat_type){
-        $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
-        $response =   Http::post($clientData->socket_url.'/api/chat/sendMessageJoin', [
-            'sub_domain' =>$server_name,
-            'room_id' =>$data['room_id'],
-            'message' =>$data['message'],
-            'user_type' =>$userType,
-            'to_message'=>$to_message,
-            'from_message'=>$from_message,
-            'user_id'=>$user->id,
-            'email'=>$user->email,
-            'display_image'=>$user->image,
-
-            'sub_domain' =>$server_name,
-            'room_id' =>$data['room_id'],
-            //'room_name' =>$data->name,
-            'chat_type' =>$chat_type,
-           
-        ]);
-
-        $statusCode = $response->getStatusCode();
-        if($statusCode == 200) {
-            $chatData = $response['chatData'];
-            //$roomUser = $response['RoomUser'];
-            $message = $response['message'];
-          
-            return ['status' => $response['status'] ,'chatData' => $chatData , 'message' => __($message)];
-        } else {
-
-            return ['status' => false, 'message' => __('Something went wrong!!!')];
-        }
-    }
-
-
-    public function JoinRoom(Request $request){
-        $user = Auth::user();
-        $data = $request->all();
-        $roomData = $this->joinSocketRoom($data,$user,'vendor_to_user','vendor');
-        if($roomData['status']) {
-            return $roomData;
-        } else {
-
-            return $roomData;
-        }
-
-    }
-
-
-    public function sendMessage(Request $request){
-        $user = Auth::user();
-        $data = $request->all();
-        if($data['from'] == 'vendor') {
-            $messageData = $this->sendSocketMessage($data,$user,'to_user','vendor','from_vendor','vendor_to_user');
-        } else {
-            $messageData = $this->sendSocketMessage($data,$user,'to_vendor','user','from_user','vendor_to_user');
-        }
-        if($messageData['status']) {
-            return $messageData;
-        } else {
-
-            return $messageData;
-        }
-
-    }
-
-    /**
-     * Show the form for creating a new country resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-    }
-
-    /**
-     * Store a newly created country resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-
-    }
-
-    /**
-     * Display the specified country resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request,$domain = '',$product_sku)
-    {
-       
-    }
-
-    /**
-     * Show the form for editing the specified country resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Request $request)
-    {
-    }
-
-    /**
-     * Update the specified country resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request)
-    {
-        }
-
-    /**
-     * Remove the specified country resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request,$domain = '',$review_id)
-    {
-       
-    }
-
 
     /**
      * start Chat.
@@ -296,12 +130,14 @@ class ChatController extends FrontController
     public function startChat(Request $request)
     {
         $data = $request->all();
+
         $vendor_id = $data['vendor_id'];
         $vendor_order_id = $data['vendor_order_id'];
         $order_id = $data['order_id'];
        
-        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
+        $langId = 1;
         $server_name = $_SERVER['REMOTE_ADDR'];
+        
         $order = Order::with(array(
             'vendors' => function ($query) use ($vendor_id) {
                 $query->where('vendor_id', $vendor_id);
@@ -342,7 +178,7 @@ class ChatController extends FrontController
                 'order_vendor_id'=>$order_vendor_id,
                 'order_id'=>$order_id,
                 'vendor_id'=>$vendor_id,
-                'sub_domain' =>$server_name,
+                'sub_domain' =>$data['sub_domain'],
                 'vendor_user_id' =>$data['user_id'],
                 'order_user_id' =>$orderby_user_id,
                 'type'=>$data['type'],
@@ -358,10 +194,10 @@ class ChatController extends FrontController
                 return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
             }
         
+        } else {
+            return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
         }
 
-        //print_r($order);
-        
     }
 
     public function fetchOrderDetail(Request $request){

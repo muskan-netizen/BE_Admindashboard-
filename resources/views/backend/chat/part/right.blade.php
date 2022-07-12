@@ -1,6 +1,37 @@
 <div class="col-8 px-0 flex-column bg-white rounded-lg" id="rightChat" style="display: none;">
-	<div class="px-4 py-4" style="border-bottom: 1px solid rgb(238, 238, 238);">
+	{{-- <div class="px-4 py-4" style="border-bottom: 1px solid rgb(238, 238, 238);">
 		<h2 id="roomName" class="font-size-15 mb-0"></h2>
+	</div> --}}
+	<div class="conversation-head row py-3 px-3 mb-2">
+		<div class="col-5 alOrderDetailsBox pr-0">
+			<p class="alOrderDetails m-0">Order #<span id="order_num"></span></p>
+			<p class="alVendorDetails m-0">Vendor <span id="vendor_name">Food Hub (Cheese Avenue, Texas)</span></p>
+			<p class="alAmountDetails m-0">Order Amount <span id="order_vendor_price">$100</span></p>
+		</div>
+		<div class="col-7 pl-0">
+			<div class="d-flex align-items-center justify-content-between user_data">
+				{{-- <div class="alPhoneNumberDetails">
+					<ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
+						<li class="mr-xl-2"><img class="rounded-circle userImg" src="images/avatar-5.jpg"></li>
+						<li><span class="alUserName"> Admin </span><p class="m-0 alPhoneNumber">+1 225252525</p></li>
+					</ul>
+				</div>
+				<div class="alPhoneNumberDetails">
+					<ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
+						<li class="mr-xl-2"><img class="rounded-circle userImg" src="images/avatar-5.jpg"></li>
+						<li><span class="alUserName">John </span><p class="m-0 alPhoneNumber">+1 225252525</p></li>
+					</ul>
+				</div>
+				<div class="alPhoneNumberDetails">
+					<ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
+						<li class="mr-xl-2"><img class="rounded-circle userImg" src="images/avatar-5.jpg"></li>
+						<li><span class="alUserName">Meo </span><p class="m-0 alPhoneNumber">+1 225252525</p></li>
+					</ul>
+				</div> --}}
+			</div>
+		</div>
+		
+	
 	</div>
 	<div class="chat-box-wrapper position-relative d-flex chatitem">
 		<div id="chatHistory" class="px-4 pt-3 chat-box col-12 ">
@@ -102,15 +133,20 @@
 		<form class="row">
 			<div class="col">
 				<div class="position-relative">
-					<input type="text" placeholder="Enter Message..." class="form-control chat-input" value="">
+					<input id="message_box" type="text" placeholder="Enter Message..." class="form-control chat-input" value="">
 				</div>
 			</div>
 			<div class="col-auto">
-				<button type="submit" class="btn btn-primary btn-rounded chat-send w-md"><span class="d-none d-sm-inline-block mr-2">Send</span>
+				<a href="javascript:void(0)"  class="btn btn-primary btn-rounded chat-send w-md join_room" data-id=""><span class="d-none d-sm-inline-block mr-2">Join</span>
 					<svg width="13" height="13" viewBox="0 0 24 24" tabindex="-1">
 						<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="white"></path>
 					</svg>
-				</button>
+				</a>
+				<a type="submit" href="javascript:void(0)"  data-id="" class="btn btn-primary btn-rounded chat-send w-md send_message"><span class="d-none d-sm-inline-block mr-2">Send</span>
+					<svg width="13" height="13" viewBox="0 0 24 24" tabindex="-1">
+						<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="white"></path>
+					</svg>
+				</a>
 			</div>
 		</form>
 	</div>
