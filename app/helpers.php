@@ -900,19 +900,50 @@ if (!function_exists('getServiceTypesCategory')) {
      */
     function getServiceTypesCategory($vendorType) {
         //echo $vendorType; exit();
-        $types =   Type::query();
-        if($vendorType =="delivery" || $vendorType =="dine_in" || $vendorType =="takeaway"){
-            $types =  $types->where('service_type','products_service');
-        }elseif($vendorType =="rental" ){
-            $types =  $types->where('service_type','rental_service');
-        }elseif($vendorType =="pick_drop" ){
-            $types =  $types->where('service_type','pick_drop_service');
-        }elseif($vendorType =="on_demand" ){
-            $types =  $types->where('service_type','on_demand_service');
-        }elseif($vendorType =="laundry" ){
-            $types =  $types->where('service_type','laundry_service');
+        try {
+            $types =   Type::query();
+            if($vendorType =="delivery" || $vendorType =="dine_in" || $vendorType =="takeaway"){
+                $types =  $types->where('service_type','products_service');
+            }elseif($vendorType =="rental" ){
+                $types =  $types->where('service_type','rental_service');
+            }elseif($vendorType =="pick_drop" ){
+                $types =  $types->where('service_type','pick_drop_service');
+            }elseif($vendorType =="on_demand" ){
+                $types =  $types->where('service_type','on_demand_service');
+            }elseif($vendorType =="laundry" ){
+                $types =  $types->where('service_type','laundry_service');
+            }
+            $types_id = $types->pluck('id')->toArray();
+            return $types_id ;
+        } catch (\Throwable $th) {
+           return [];
         }
-        $types_id = $types->pluck('id');
-        return $types_id ;
+       
+    }
+}
+
+if (!function_exists('getCategoryTypes')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getCategoryTypes() {
+        $client_preference = ClientPreference::select('business_type')->first();
+        switch($client_preference->business_type){
+            case "taxi":
+                $typeArray =['pick_drop'];
+            break;
+            case "food_grocery_ecommerce":
+                $typeArray =['delivery','dinein','takeaway'];
+            break;
+            case "home_service":
+                $typeArray =['on_demand'];
+            break;
+            case "laundry":
+                $typeArray =['laundry'];
+            break;
+            default:
+            $typeArray =['delivery','dinein','takeaway','rental','pick_drop','on_demand','laundry'];
+        }
+        return $typeArray;
     }
 }

@@ -100,15 +100,18 @@ class FrontController extends Controller
         $preferences = Session::get('preferences');
         // get selected vendor type 
         $vendorType  = Session::get('vendorType');
+        //pr($vendorType);
         //$categoryTypes = [];
         // set category layout by on behalf of vendor type
         $categoryTypes = getServiceTypesCategory($vendorType);
-        //pr($categoryTypes);
+       // pr($categoryTypes);
         $primary     = ClientLanguage::orderBy('is_primary','desc')->first();
+       // DB::enableQueryLog();
         $categories  = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-                                ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id', 'cts.name','categories.type_id')
-                                ->whereIn('categories.type_id',$categoryTypes)
+                                ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id','cts.name','categories.type_id')
+                                ->whereIn('categories.type_id',$categoryTypes )
                                 ->orderBy('position')->distinct('categories.slug');
+        //dd(DB::getQueryLog());
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;
@@ -150,6 +153,7 @@ class FrontController extends Controller
                                 ->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')
                                 ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
+
         if ($categories) {
             $categories = $this->buildTree($categories); 
         }
@@ -266,9 +270,10 @@ class FrontController extends Controller
 
     public function productList($vendorIds, $langId, $currency = 'USD', $where = '')
     {
+        $type = Session::get('vendorType');
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         $multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
-        $products = Product::with([
+        $products = Product::byProductCategoryServiceType($type)->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },

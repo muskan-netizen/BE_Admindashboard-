@@ -187,12 +187,15 @@
 
             <div class="col-md-6">
                 <div class="row">
+                @php
+                    $typeArray = getCategoryTypes();
+                @endphp
                    @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                         @php
                             $clientVendorTypes = $vendor_typ_key.'_check';
                             $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
                         @endphp
-                        @if($client_preferences->$clientVendorTypes == 1)
+                        @if(($client_preferences->$clientVendorTypes == 1) && (in_array($vendor_typ_key, $typeArray)) )
                         <div class="col-md-12">
                             <div class="form-group d-flex justify-content-between">
                                 <label for="{{$VendorTypesName}}" class="mr-3 mb-0">{{getDynamicTypeName($vendor_typ_value)}}</label>

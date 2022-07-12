@@ -718,7 +718,7 @@ class UserhomeController extends FrontController
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type)
     {
-        $products = Product::with([
+        $products = Product::byProductCategoryServiceType($type)->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },

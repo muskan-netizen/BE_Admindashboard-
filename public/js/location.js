@@ -434,7 +434,7 @@ $(document).ready(function () {
         let selected_address = $("#address-input").val();
         // return 0;
         let selected_place_id = $("#address-place-id").val();
-        $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
+        $(".homepage-address span").text(selected_address).attr({"title": selected_address, "data-original-title": selected_address });
         $("#edit-address").modal('hide');
         let ajaxDataSet = { type: vendor_type };
         if ((latitude) && (longitude) && (selected_address)) {
@@ -443,6 +443,7 @@ $(document).ready(function () {
             ajaxDataSet.selectedAddress = selected_address;
             ajaxDataSet.selectedPlaceId = selected_place_id;
         }
+       
         ajaxDataSet.slug = item ;
         $.ajax({
             data: ajaxDataSet,
@@ -552,7 +553,7 @@ $(document).ready(function () {
                                 if (response.data.new_products.length > 0) {
                                     $('.render_full_new_products').removeClass('d-none');
                                 } else {
-                                    $('.render_full_new_products1').addClass('d-none');
+                                    $('.render_full_new_products').addClass('d-none');
                                 }
                                 $(".product-4-new_products").slick({
                                     dots: false,

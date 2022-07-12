@@ -155,23 +155,7 @@
             </form>
             @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
             @php
-           
-            switch($client_preference_detail->business_type){
-                case "taxi":
-                    $typeArray =['pick_drop'];
-                break;
-                case "food_grocery_ecommerce":
-                    $typeArray =['delivery','dinein','takeaway'];
-                break;
-                case "home_service":
-                    $typeArray =['on_demand'];
-                break;
-                case "laundry":
-                    $typeArray =['laundry'];
-                break;
-                default:
-                $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','laundry'];
-            }
+                $typeArray = getCategoryTypes();
             @endphp
             <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
                 @csrf
