@@ -154,6 +154,25 @@
                 </div>
             </form>
             @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+            @php
+           
+            switch($client_preference_detail->business_type){
+                case "taxi":
+                    $typeArray =['pick_drop'];
+                break;
+                case "food_grocery_ecommerce":
+                    $typeArray =['delivery','dinein','takeaway'];
+                break;
+                case "home_service":
+                    $typeArray =['on_demand'];
+                break;
+                case "laundry":
+                    $typeArray =['laundry'];
+                break;
+                default:
+                $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','laundry'];
+            }
+            @endphp
             <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
@@ -168,12 +187,14 @@
                             @php
                                 $VendorTypesName = $vendor_typ_key.'_check';
                             @endphp
-                            <div class="col-md-12">
-                                <div class="form-group d-flex justify-content-between">
-                                    <label for="{{$VendorTypesName}}" class="mr-3 mb-0">{{getDynamicTypeName($vendor_typ_value)}}</label>
-                                    <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
+                            @if(in_array($vendor_typ_key, $typeArray)) 
+                                <div class="col-md-12">
+                                    <div class="form-group d-flex justify-content-between">
+                                        <label for="{{$VendorTypesName}}" class="mr-3 mb-0">{{getDynamicTypeName($vendor_typ_value)}}</label>
+                                        <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
+                                    </div>
                                 </div>
-                            </div>
+                            @endif    
                         @endforeach
                         <!-- <div class="col-md-12">
                             <div class="form-group d-flex justify-content-between">
