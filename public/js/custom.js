@@ -2063,6 +2063,7 @@ $(document).ready(function () {
                 cart_qty_total += $(this).data('qty');
             }
         });
+        console.log(cart_qty_total);
         if (cart_qty_total > 0) {
             $('#cart_qty_span, .cart_qty_cls').html(cart_qty_total).show();
         } else {
