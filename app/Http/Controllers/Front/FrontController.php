@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, SmsTemplate, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
+use App\Models\{Client, Category, Product,Type, SmsTemplate, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
 
 class FrontController extends Controller
 {
@@ -97,10 +97,18 @@ class FrontController extends Controller
     }
     public function categoryNav($lang_id)
     {
-       $preferences = Session::get('preferences');
-       $primary = ClientLanguage::orderBy('is_primary','desc')->first();
-       $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-       ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id', 'cts.name')->orderBy('position')->distinct('categories.slug');
+        $preferences = Session::get('preferences');
+        // get selected vendor type 
+        $vendorType  = Session::get('vendorType');
+        //$categoryTypes = [];
+        // set category layout by on behalf of vendor type
+        $categoryTypes = getServiceTypesCategory($vendorType);
+        //pr($categoryTypes);
+        $primary     = ClientLanguage::orderBy('is_primary','desc')->first();
+        $categories  = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
+                                ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id', 'cts.name','categories.type_id')
+                                ->whereIn('categories.type_id',$categoryTypes)
+                                ->orderBy('position')->distinct('categories.slug');
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;

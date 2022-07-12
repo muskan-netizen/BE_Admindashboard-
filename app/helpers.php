@@ -12,7 +12,7 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
-use App\Models\{VendorSlot, ClientCurrency, Order};
+use App\Models\{VendorSlot, ClientCurrency, Order,Type};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
@@ -892,5 +892,27 @@ function decimal_format($number,$format="")
 if (!function_exists('taxRates')) {
     function taxRates(){
         return App\Models\TaxRate::all();
+    }
+}
+if (!function_exists('getServiceTypesCategory')) {
+    /**
+     * config('constants.ServiceTypes')
+     */
+    function getServiceTypesCategory($vendorType) {
+        //echo $vendorType; exit();
+        $types =   Type::query();
+        if($vendorType =="delivery" || $vendorType =="dine_in" || $vendorType =="takeaway"){
+            $types =  $types->where('service_type','products_service');
+        }elseif($vendorType =="rental" ){
+            $types =  $types->where('service_type','rental_service');
+        }elseif($vendorType =="pick_drop" ){
+            $types =  $types->where('service_type','pick_drop_service');
+        }elseif($vendorType =="on_demand" ){
+            $types =  $types->where('service_type','on_demand_service');
+        }elseif($vendorType =="laundry" ){
+            $types =  $types->where('service_type','laundry_service');
+        }
+        $types_id = $types->pluck('id');
+        return $types_id ;
     }
 }
