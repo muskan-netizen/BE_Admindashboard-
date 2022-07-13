@@ -296,7 +296,7 @@
                                                             }
                                                         @endphp
                                                         @if( ($min_select != '') || ($max_select != '') )
-                                                            <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
+                                                            <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
                                                         @endif
                                                     </h4>
 

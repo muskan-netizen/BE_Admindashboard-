@@ -1002,6 +1002,7 @@
                 $('#latlongs').val(event.overlay.getPath().getArray());
                 // console.log(map.getZoom());
                 $('#zoom_level').val(map.getZoom());
+                alert(map.getZoom());
             } else {
                 alert('You can draw only one zone at a time');
                 event.overlay.setMap(null);
@@ -1172,7 +1173,7 @@
             myPolygon.setMap(Editmap);
 
             google.maps.event.addListener(myPolygon, "mouseup", function(event) {
-
+                $('#zoom_level_edit').val(Editmap.getZoom());
                 document.getElementById("latlongs_edit").value = myPolygon.getPath().getArray();
             });
         }

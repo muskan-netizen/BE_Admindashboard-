@@ -141,7 +141,7 @@ $timezone = Auth::user()->timezone;
                                                             <span>{{__('Not In Stock')}}</span>
                                                         @endif
                                                     @else
-                                                        <span class="text-danger">This product no longer exists</span>
+                                                        <span class="text-danger">{{__('This product no longer exists')}}</span>
                                                     @endif
                                                 </td>
                                                 <td><a href="{{ route('removeWishlist', $wish['product']['sku']) }}" class="icon me-3"><i class="ti-close"></i> </a></td>

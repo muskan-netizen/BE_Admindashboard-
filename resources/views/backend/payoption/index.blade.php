@@ -1049,7 +1049,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="telr_merchant_id" class="mr-3">{{ __("Merchant ID") }}</label>
+                                    <label for="telr_merchant_id" class="mr-3">{{ __("Store ID") }}</label>
                                     <input type="text" name="telr_merchant_id" id="telr_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
