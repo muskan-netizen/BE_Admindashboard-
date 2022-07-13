@@ -1683,7 +1683,6 @@ class OrderController extends BaseController
             }else{
                 $time_format = 'HH:mm';
             }
-            // $datetime = Carbon::parse($datetime)->isoFormat($time_format);
         }
         $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         return $datetime;

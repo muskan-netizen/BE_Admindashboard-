@@ -825,10 +825,8 @@ class FrontController extends Controller
 
         if($scheduleTime != ''){
             $datetime = Carbon::parse($scheduleTime)->addMinutes($minutes);
-            //$datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }else{
             $datetime = Carbon::parse($order_vendor_created_at)->addMinutes($minutes);
-            //$datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }
         if(Carbon::parse($datetime)->isToday()){
             if($time_format == '12'){
@@ -836,7 +834,6 @@ class FrontController extends Controller
             }else{
                 $time_format = 'HH:mm';
             }
-            //$datetime = Carbon::parse($datetime)->isoFormat($time_format);
         }
         $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         return $datetime;
