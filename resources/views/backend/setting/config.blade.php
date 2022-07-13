@@ -1165,13 +1165,265 @@ $sms_crendential = json_decode($preference->sms_credentials);
    </div>
 
    <div class="row">
-      <div class="col-md-12 show-custom-mods">
+      {{-- <div class="col-md-12 show-custom-mods">
          <div class="card-box ">
             <div class="d-flex align-items-center justify-content-between mb-3">
                <h4 class="header-title text-uppercase mb-0">{{ __("Custom Mods") }}</h4>
                <button class="btn btn-info d-block show-custom-mods-btn" type="submit"> {{ __("Show Custom Mods") }} </button>
             </div>
          </div>
+      </div> --}}
+      <div class="col-md-12">
+         <!-- Custom Mods start -->
+         <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+            @csrf
+            <div class="card-box h-100 h-100">
+               <div class="d-flex align-items-center justify-content-between mb-3">
+                  <h4 class="header-title text-uppercase mb-0">{{ __("Custom Mods") }}</h4>
+                  <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+               </div>
+               <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
+
+               <div class="row align-items-start">
+                  @if($client_preference_detail->business_type != 'taxi')  
+
+                     @if($client_preference_detail->business_type != 'laundry')
+                     <div class="col-md-4">
+                        <div class="form-group d-flex justify-content-between mb-3">
+                           <label for="celebrity_check" class="mr-2 mb-0"> {{ __("Influencer Mod") }} <small class="d-block pr-5">Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products.</small></label>
+                          <span> <input type="checkbox" data-plugin="switchery" name="celebrity_check" id="celebrity_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->celebrity_check == '1')) checked='checked' @endif></span>
+                        </div>
+                     </div>
+                     <div class="col-md-4">
+                        <div class="form-group d-flex justify-content-between mb-3">
+                           <label for="pharmacy_check" class="mr-2 mb-0">{{ __('Pharmacy Mod') }} <small class="d-block pr-5">Offer restricted products like medicines which require prescription. Customer will have the option to add prescription on the cart page.</small></label>
+                           <span><input type="checkbox" data-plugin="switchery" name="pharmacy_check" id="pharmacy_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->pharmacy_check == '1')) checked='checked' @endif></span>
+                        </div>
+                     </div>
+                     <div class="col-md-4">
+                        <div class="form-group d-flex justify-content-between mb-3">
+                           <label for="enquire_mode" class="mr-2 mb-0">{{ __("Inquiry Mod") }}<small class="d-block pr-5">Set products to be only available for Inquiry and hide the price.</small></label>
+                           <span><input type="checkbox" data-plugin="switchery" name="enquire_mode" id="	enquire_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enquire_mode == '1')) checked='checked' @endif></span>
+                        </div>
+                     </div>
+                     @endif
+                  {{-- <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->off_scheduling_at_cart == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div> --}}
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="isolate_single_vendor_order" class="mr-2 mb-0">{{__('Isolate Single Vendor Order')}} <small class="d-block pr-5">{{__('Only allow customers to place order from one vendor at a time.')}}</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="isolate_single_vendor_order" id="isolate_single_vendor_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->isolate_single_vendor_order == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">Enable the option to create Subscriptions for Customers and Vendors.</small></label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+                  @elseif($client_preference_detail->subscription_tab_taxi == 1)
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}<small class="d-block pr-5">Enable the option to create Subscriptions for Customers and Vendors.</small></label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+                  @endif
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Pre Order Tips')}}<small class="d-block pr-5">Manage the option to Tip before the Order.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Post Order Tips')}}<small class="d-block pr-5">Manage the option to Tip after the Order.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="tip_after_order" id="tip_after_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_after_order == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="auto_implement_5_percent_tip" class="mr-2 mb-0">{{__('Auto Implement Tip 5% ')}}<small class="d-block pr-5">{{__('Enable to apply auto implement 5 percent tip.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="auto_implement_5_percent_tip" id="auto_implement_5_percent_tip" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->auto_implement_5_percent_tip == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
+                  {{-- <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="delay_order" id="delay_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delay_order == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div> --}}
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="product_order_form" class="mr-2 mb-0">{{__('Product Order Form')}}<small class="d-block pr-5">{{__('Add a Product Order form. Create Dynamic questions per product.')}}</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="product_order_form" id="product_order_form" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->product_order_form == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="gifting" class="mr-2 mb-0">{{__('Gifting')}}<small class="d-block pr-5">Enable option to mark an Order to be gift wrapped.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="gifting" id="gifting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->gifting == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="gifting" class="mr-2 mb-0">{{ __("Subscription Tab") }}<small class="d-block pr-5">Enable subscription tab for taxi/cab.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="subscription_tab_taxi" id="subscription_tab_taxi" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_tab_taxi == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="gifting" class="mr-2 mb-0">{{__('Pickup Delivery Service Area')}}<small class="d-block pr-5">Option to show Pickup Delivery Vendors based on First location restricted to Service Areas only</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="pickup_delivery_service_area" id="pickup_delivery_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->pickup_delivery_service_area == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="gifting" class="mr-2 mb-0">{{__('Minumum Order/Increment')}}<small class="d-block pr-5"> Set the minimum order and minimum increment per product.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="minimum_order_batch" id="minimum_order_batch" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->minimum_order_batch == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="gifting" class="mr-2 mb-0">{{__('Static Delivery fee')}}<small class="d-block pr-5">Set a static Delivery Price per vendor based on Minimum Order Value.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="static_delivey_fee" id="static_delivey_fee" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->static_delivey_fee == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  @if($client_preference_detail->business_type == 'laundry')
+                     <div class="col-md-4">
+                        <div class="form-group d-flex justify-content-between mb-3">
+                           <label for="get_estimations" class="mr-2 mb-0">{{__('Get Estimations')}}<small class="d-block pr-5">Enable to create product catalog to get estimations based on Auto String Matching or Bidding across Vendors.</small></label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="get_estimations" id="get_estimations" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->get_estimations == '1')) checked='checked' @endif>
+                           </span>
+                        </div>
+                     </div>
+
+                     <div class="col-md-4" @if($client_preference_detail->get_estimations == 0 ) style="display:none;" @endif id="estimation_in_category" >
+                        <div class="form-group d-flex justify-content-between mb-3">
+                           <label for="get_estimations" class="mr-2 mb-0">{{__('Enable Estimation Link in Header Category')}}<small class="d-block pr-5">Enable or disable get estimation section in categories on the header.</small></label>
+                          <span> <input type="checkbox" data-plugin="switchery" name="view_get_estimation_in_category" id="view_get_estimation_in_category" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->view_get_estimation_in_category == '1')) checked='checked' @endif>
+                           </span>
+                        </div>
+                     </div>
+
+                  @endif
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="max_safety_mod" class="mr-2 mb-0">{{__('Max Safety')}}<small class="d-block pr-5">Enable to give max safety option to vendors.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="max_safety_mod" id="max_safety_mod" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->max_safety_mod == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4 d-none">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="address_is_car" class="mr-2 mb-0">{{__('Car Mode')}}<small class="d-block pr-5">{{__('Enable to change addres into car details.')}}</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="address_is_car" id="address_is_car" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->address_is_car == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="hide_order_address" class="mr-2 mb-0">{{__('Hide customer details')}}<small class="d-block pr-5">{{__('Enable to hide customer details from order.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="hide_order_address" id="address_is_car" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->hide_order_address == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
+                 <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('User Place Order Documents')}}<small class="d-block pr-5">{{__('Enable to require documents at the time of placing on order.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="category_kyc_documents" id="category_kyc_documents" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->category_kyc_documents == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
+
+                 <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="show_qr_on_footer" class="mr-2 mb-0">{{__('Return Request')}}<small class="d-block pr-5">{{__('Enable to show return request functionality for vendors.')}}</small></label>
+                     <span> <input type="checkbox" data-plugin="switchery" name="vendor_return_request" id="vendor_return_request" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->vendor_return_request == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Xero Integration')}}<small class="d-block pr-5">{{__('Enable to use xero integration for accounting.')}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="third_party_accounting" id="third_party_accounting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->third_party_accounting == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Hide Order Preparation Time')}}<small class="d-block pr-5">{{__('Enable to hide order preparation time.')}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="hide_order_prepare_time" id="hide_order_prepare_time" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->hide_order_prepare_time == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Order Cancellation By User')}}<small class="d-block pr-5">{{__('Enable to give permission to user for cancelling order.')}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_cancel_order_user" id="is_cancel_order_user" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_cancel_order_user == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Need Inventory?')}}<small class="d-block pr-5">{{__('Enable to give permission to panel for inventory.')}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="enable_inventory_service" id="enable_inventory_service" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enable_inventory_service == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+
+               @if(isset($preference) && $preference->business_type == "taxi")
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="book_for_friend" class="mr-2 mb-0">{{__('Book for a Friend')}}<small class="d-block pr-5">{{__('Enable to add book for a friend functionality for customers.')}}</small></label>
+                  <span> <input type="checkbox" data-plugin="switchery" name="book_for_friend" id="book_for_friend" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->book_for_friend == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+               @endif
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="is_static_dropoff" class="mr-2 mb-0">{{__('Static dropoff location')}}<small class="d-block pr-5">{{__('Enable to add the predefined list and this will reflect in the drop-off location.')}}</small></label>
+                  <span> <input type="checkbox" data-plugin="switchery" name="is_static_dropoff" id="is_static_dropoff" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_static_dropoff == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+               @if($client_preference_detail->business_type == 'laundry')
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="is_scan_qrcode_bag" class="mr-2 mb-0">{{__('Scan Bag QR code')}}<small class="d-block pr-5">{{__('Enable to scan bag QR code for orders.')}}</small></label>
+                  <span> <input type="checkbox" data-plugin="switchery" name="is_scan_qrcode_bag" id="is_scan_qrcode_bag" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_scan_qrcode_bag == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+               @endif
+
+               </div>
+            </div>
+         </form>
+         <!-- Custom Mods end -->
       </div>
    </div>
 
