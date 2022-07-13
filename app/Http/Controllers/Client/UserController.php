@@ -268,6 +268,7 @@ class UserController extends BaseController
         $user->phone_number = $phone;
         $user->is_email_verified = ($request->has('is_email_verified') && $request->is_email_verified == 'on') ? 1 : 0;
         $user->is_phone_verified = ($request->has('is_phone_verified') && $request->is_phone_verified == 'on') ? 1 : 0;
+        $user->status = 1;
         if ($request->hasFile('image')) {    /* upload logo file */
             $file = $request->file('image');
             $user->image = Storage::disk('s3')->put('/profile', $file, 'public');
