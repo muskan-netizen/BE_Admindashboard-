@@ -66,6 +66,10 @@ class ClientPreferenceController extends BaseController{
                                             ]);
     }
 
+    public function customModVerification(Request $request){
+        pr($request->all());die;
+    }
+
     public function getCustomizePage(ClientPreference $clientPreference){
         $curArray = [];
         $cli_langs = [];
