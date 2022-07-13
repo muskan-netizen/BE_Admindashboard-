@@ -1330,7 +1330,9 @@ class CartController extends BaseController
                     );
                     $response = json_decode($res->getBody(), true);
                     if ($response && $response['message'] == 'success') {
-                        return $response['total'];
+                        //return $response['total'];
+                        $response_array[] = array('delivery_fee' => $response['total'], 'total_duration' => $response['total_duration']);
+                        return $response_array;
                     }
                 }
             }
@@ -1536,6 +1538,7 @@ class CartController extends BaseController
     {
         $option = array();
         $delivery_count = 0;
+        $delivery_duration = 0;
         try {
             if($vendorData->vendor_id)
             {
@@ -1544,15 +1547,16 @@ class CartController extends BaseController
         if($preferences->static_delivey_fee != 1)
         {
             //Dispatcher Delivery changes code
-            $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
-            if (!empty($deliver_charge)){
-                $deliver_charge = number_format($deliver_charge, 2, '.', '');
+            $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del);
+            if (!empty($deliver_response_array[0])){
+                $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
+                $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
                 $option[] = array(
                     'type'=>'D',
                     'courier_name'=>__('Dispatcher'),
                     'rate' => $deliver_charge,
                     'courier_company_id' => 0,
-                    'etd' => 0,
+                    'etd' => $delivery_duration,
                     'etd_hours' => 0,
                     'estimated_delivery_days' => 0,
                     'code' => 'D_0'
