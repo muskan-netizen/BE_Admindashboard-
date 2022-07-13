@@ -1195,6 +1195,13 @@
                                 </span>
                             </div>
                         </div>
+                        <div class="col-lg-6 my-2" id="slots_with_service_area_div">
+                            <div class="form-group d-flex justify-content-between mb-3">
+                                <label for="slots_with_service_area" class="mr-2 mb-0">{{__('Slots with service area')}}<small class="d-block pr-5">Enable or disable slots with service area feature.</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery" name="slots_with_service_area" id="slots_with_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->slots_with_service_area == '1')) checked='checked' @endif>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>

@@ -1346,6 +1346,7 @@
                                 slot_dine_in: data.slot_dine_in,
                                 slot_takeaway: data.slot_takeaway,
                                 slot_delivery: data.slot_delivery,
+                                service_area: data.service_area,
                             });
                         });
                         successCallback(events);
@@ -1389,6 +1390,9 @@
                 }
                 if(ev.event.extendedProps.slot_dine_in == 0){
                     $("#edit_dine_in").prop("checked", false);
+                }
+                if(ev.event.extendedProps.service_area > 0){
+                    $("#edit_slot_service_area option[value='"+ev.event.extendedProps.service_area+"']").attr("selected", true);
                 }
 
                 $('#edit_slot_date').flatpickr({

@@ -1031,6 +1031,18 @@ class UserhomeController extends FrontController
                         });
                     }
                 }
+                if (($preferences->slots_with_service_area == 1) && ($latitude) && ($longitude)) {
+                    if (!empty($latitude) && !empty($longitude)) {
+                        $vendors = $vendors->where(function($query) use ($latitude, $longitude) {
+                            $query->whereHas('slot.serviceArea', function ($q) use ($latitude, $longitude) {
+                                $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                            })
+                            ->orWhereHas('slotDate.serviceArea', function ($q) use ($latitude, $longitude) {
+                                $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                            });
+                        });
+                    }
+                }
             }
             $vendors = $vendors->where('status', 1)->inRandomOrder();
             $vendor_set = clone $vendors;

@@ -419,6 +419,7 @@ class ClientPreferenceController extends BaseController{
             $preference->scheduling_with_slots = ($request->has('scheduling_with_slots') && $request->scheduling_with_slots == 'on') ? 1 : 0; //Added by ovi
             $preference->same_day_delivery_for_schedule = ($request->has('same_day_delivery_for_schedule') && $request->same_day_delivery_for_schedule == 'on') ? 1 : 0;  //Added by ovi
             $preference->same_day_orders_for_rescheduing = ($request->has('same_day_orders_for_rescheduing') && $request->same_day_orders_for_rescheduing == 'on') ? 1 : 0; //Added by ovi
+            $preference->slots_with_service_area = ($request->has('slots_with_service_area') && $request->slots_with_service_area == 'on') ? 1 : 0;
         }
         $preference->concise_signup = (!empty($request->concise_signup) && $request->concise_signup == 'on')? 1 : 0;
         $preference->save();

@@ -234,6 +234,18 @@ class FrontController extends Controller
                 });
             }
         }
+        if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
+            if (!empty($latitude) && !empty($longitude)) {
+                $serviceAreaVendors = $serviceAreaVendors->where(function($query) use ($latitude, $longitude) {
+                    $query->whereHas('slot.serviceArea', function ($q) use ($latitude, $longitude) {
+                        $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                    })
+                    ->orWhereHas('slotDate.serviceArea', function ($q) use ($latitude, $longitude) {
+                        $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                    });
+                });
+            }
+        }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
 
 

@@ -119,6 +119,20 @@
                             </div>
                         </div> -->
                     </div>
+                    @if($client_preferences->slots_with_service_area == 1)
+                    <div class="row">
+                        <div class="col-md-12" >
+                            <div class="form-group">
+                                <label class="control-label">{{ __("Service Area") }}</label>
+                                <select class="selectize-select form-control" name="slot_service_area" id="add_slot_service_area">
+                                    @foreach($areas as $area)
+                                        <option value="{{$area->id}}">{{$area->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     <div class="row mt-2">
                         <div class="col-12 d-sm-flex justify-content-between">
                             <button type="button" class="btn btn-light mr-1" data-dismiss="modal">{{ __('Close') }}</button>
@@ -256,7 +270,20 @@
                             <input name="edit_type_id" type="hidden" id="edit_type_id" value="">
                         </div>
                     </div>
-
+                    @if($client_preferences->slots_with_service_area == 1)
+                    <div class="row">
+                        <div class="col-md-12" >
+                            <div class="form-group">
+                                <label class="control-label">{{ __("Service Area") }}</label>
+                                <select class="selectize-select form-control" name="edit_slot_service_area" id="edit_slot_service_area">
+                                    @foreach($areas as $area)
+                                        <option value="{{$area->id}}">{{$area->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     <div class="row mt-2">
                         <div class="col-12 mb-2">
                             <button type="button" class="btn btn-danger w-100" id="deleteSlotBtn">{{ __("Delete Slot") }}</button>
