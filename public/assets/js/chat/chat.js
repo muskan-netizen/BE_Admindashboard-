@@ -141,7 +141,7 @@
                     //cdate.toDateString();
                     //moment(1382086394000).format("DD-MM-YYYY h:mm:ss");
 
-                    if( Auth.auth_id == data.from_user_id && data.from_message == "from_admin") {
+                    if( Auth.auth_id == data.auth_user_id && data.from_message == "from_admin") {
                          className= 'right-message';
                          //flex = '<div style="flex: 110%;"></div>';
                     }
@@ -240,7 +240,7 @@
         var className= 'left-message';
         var flex = '';
         var cdate = new Date(data.created_date);
-        if( Auth.auth_id == data.from_user_id && data.from_message == "from_admin") {
+        if( Auth.auth_id == data.auth_user_id && data.from_message == "from_admin") {
              className= 'right-message';
             //  flex = '<div style="flex: 110%;"></div>';
         }

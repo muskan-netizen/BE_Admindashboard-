@@ -127,6 +127,7 @@ $auth_id = '';
 $db ='';
 $image_url = '';
 $user_name = '';
+$authData = '';
 if(Auth::check()){
 	// echo "<pre>";
 	// print_r(json_encode(Auth::user()));

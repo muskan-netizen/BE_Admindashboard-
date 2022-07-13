@@ -16,10 +16,20 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 .accounting_upload .btn.btn-info{
     border-radius : 10px!important;
 }
-.start_chat{
-    float: right;
-    margin: -15px;
-    padding: 0px 132px 0px 0px ;   
+.alBtnsOnOrders{position: absolute;left: 10px;padding: 0;
+    bottom: 10px;
+    margin: 0;}
+.alBtnsOnOrders li{list-style: none;margin-right: 3px;}
+.alBtnsOnOrders .start_chat {
+    color: #43bee1;
+    height: 30px;
+    width: 30px;
+    display: inline-block;
+    min-width: auto;
+    line-height: 26px;
+    z-index: 999;
+    background-color: transparent;
+    border: 1px solid;
 }
 </style>
 
@@ -63,7 +73,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         
 
                                        <div class="order_detail order_detail_data align-items-top pb-1 mb-0 card-box no-gutters h-100">
-                                        <a class=start_chat data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>">Start Chat</a>
+                                        <ul class="alBtnsOnOrders d-flex justify-content-end">
+                                            <li>
+                                                <a data-toggle="tooltip" data-placement="top" title="Start Chat" class="start_chat btn-info" data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
+                                                    <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                                                  </svg></a>
+                                            </li>
+                                        </ul>
+                                        
                                         <a href="<%= vendor.vendor_detail_url %>" class="row">
                                             <% if(order.scheduled_date_time || (order.luxury_option_name != '')) { %>
                                             <div class="col-sm-12">

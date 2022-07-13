@@ -46,7 +46,7 @@ class ChatController extends BaseController
     }
     public function getAllChatRoom($type){
         $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
         $response =   Http::post($clientData->socket_url.'/api/room/fetchAllRoom', [
             //'vendor_id' => $vendor_id, 
             'sub_domain' =>$server_name,
@@ -67,7 +67,7 @@ class ChatController extends BaseController
     }
     public function getChatRoom($vendor_id,$type){
         $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
         $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByVendor', [
             'vendor_id' => $vendor_id, 
             'sub_domain' =>$server_name,
@@ -91,7 +91,7 @@ class ChatController extends BaseController
 
     public function getChatRoomForUser($order_user_id,$type){
         $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
         $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByUserId', [
             'order_user_id' => $order_user_id, 
             'sub_domain' =>$server_name,
@@ -140,6 +140,8 @@ class ChatController extends BaseController
         } else {
             $vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
             $this->client_data['vendor_id'] = $vendor_id;
+        //     pr($vendor_id);
+        // die;
             $roomData = $this->getChatRoom($vendor_id,'vendor_to_user');
             $view = "VendorUserChat";
         }
@@ -171,7 +173,7 @@ class ChatController extends BaseController
 
     public function joinSocketRoom($data,$user,$type,$userType){
         $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
       
         $response =   Http::post($clientData->socket_url.'/api/chat/joinRoomByID', [
             'sub_domain' =>$server_name,
@@ -199,7 +201,7 @@ class ChatController extends BaseController
 
     public function sendSocketMessage($data,$user,$to_message,$userType,$from_message,$chat_type){
         $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
         // echo "<pre>";
         // // print_r($clientData->toArray());
         // print_r($user);
@@ -346,7 +348,7 @@ class ChatController extends BaseController
         $order_id = $data['order_id'];
        
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
         $order = Order::with(array(
             'vendors' => function ($query) use ($vendor_id) {
                 $query->where('vendor_id', $vendor_id);

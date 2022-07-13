@@ -246,7 +246,7 @@
                                     <div class="collapse" id="chat">
                                         <ul class="nav-second-level">
                                             <li>
-                                                <a href="{{route('chat.VendorUserChat')}}">{{ __('User Chat') }}</a>
+                                                <a href="{{route('chat.VendorUserChat')}}">{{ __('User/Vendor') }}</a>
                                             </li>
                                         
                                             {{-- <li>

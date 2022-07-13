@@ -136,7 +136,7 @@ class ChatController extends BaseController
         $order_id = $data['order_id'];
        
         $langId = 1;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
         
         $order = Order::with(array(
             'vendors' => function ($query) use ($vendor_id) {

@@ -1,14 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Front;
-
-use DB;
 use Auth;
 use Session;
-use DataTables;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Traits\GlobalFunction;
 use Illuminate\Support\Facades\Http;
@@ -16,7 +11,7 @@ use App\Http\Traits\ChatTrait;
 
 
 
-use App\Models\{Client, Order, UserVendor, ClientPreference, LoyaltyCard,OrderProductRating};
+use App\Models\{Client, Order, UserVendor};
 
 class ChatController extends FrontController
 {
@@ -49,7 +44,7 @@ class ChatController extends FrontController
     
     public function getChatRoom($vendor_id,$type){
         $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
         $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByVendor', [
             'vendor_id' => $vendor_id, 
             'sub_domain' =>$server_name,
@@ -71,7 +66,7 @@ class ChatController extends FrontController
 
     public function getChatRoomForUser($order_user_id,$type){
         $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
         $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByUserId', [
             'order_user_id' => $order_user_id, 
             'sub_domain' =>$server_name,
@@ -82,18 +77,15 @@ class ChatController extends FrontController
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
             $roomData = $response['roomData'];
-            //print_r($roomData);
             return ['status' => true, 'roomData' => $roomData , 'message' => __('Room list !!!')];
         } else {
 
             return ['status' => false, 'message' => __('Something went wrong!!!')];
         }
-        //die;
 
     }
 
     public function index(Request $request){
-        // echo "review";
         return view('frontend.chat.index',$this->client_data);
 
     }
@@ -131,7 +123,7 @@ class ChatController extends FrontController
 
     public function joinSocketRoom($data,$user,$type,$userType){
         $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
         $response =   Http::post($clientData->socket_url.'/api/chat/joinRoomByID', [
             'sub_domain' =>$server_name,
             'room_id' =>$data['room_id'],
@@ -159,7 +151,7 @@ class ChatController extends FrontController
 
     public function sendSocketMessage($data,$user,$to_message,$userType,$from_message,$chat_type){
         $clientData = $this->client_data;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
         $response =   Http::post($clientData->socket_url.'/api/chat/sendMessageJoin', [
             'sub_domain' =>$server_name,
             'room_id' =>$data['room_id'],
@@ -170,10 +162,6 @@ class ChatController extends FrontController
             'user_id'=>$user->id,
             'email'=>$user->email,
             'display_image'=>$user->image,
-
-            'sub_domain' =>$server_name,
-            'room_id' =>$data['room_id'],
-            //'room_name' =>$data->name,
             'chat_type' =>$chat_type,
            
         ]);
@@ -301,7 +289,7 @@ class ChatController extends FrontController
         $order_id = $data['order_id'];
        
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
-        $server_name = $_SERVER['REMOTE_ADDR'];
+        $server_name = $_SERVER['SERVER_NAME'];
         $order = Order::with(array(
             'vendors' => function ($query) use ($vendor_id) {
                 $query->where('vendor_id', $vendor_id);
@@ -335,7 +323,6 @@ class ChatController extends FrontController
             $order_id = $order->id;
             $vendor_id = $vendor_id;
             $orderby_user_id = $order->user_id;
-            //$response = $client->request('Post', 'https://chat.royoorders.com/api/room', ['body' => [
             $response =   Http::post($socket_url.'/api/room/createRoom', [
                 'room_id' => $room_id, 
                 'room_name' => $room_name,
@@ -360,7 +347,6 @@ class ChatController extends FrontController
         
         }
 
-        //print_r($order);
         
     }
 

@@ -539,6 +539,6 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('user/chat/userVendor/{room_id?}', 'Front\ChatController@UservendorChat')->name("userChat.UservendorChat");
 
 	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
-
+	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');
 
 });
