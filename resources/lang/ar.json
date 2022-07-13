@@ -400,6 +400,15 @@
   "Min Select": "الحد الأدنى للاختيار",
   "Minimum Amount": " :المبلغ الأدنى",
   "Minimum Points to reach this level *": "* الحد الأدنى من النقاط للوصول إلى هذا المستوى",
+  "Selections Allowed" : "الاختيارات المسموح بها",
+  "Minimum" :"الحد الأدنى",
+  "Maximum" :"أقصى",
+  "And" : "و",
+  "In Stock" : "في الأوراق المالية",
+  "This product no longer exists" : "هذا المنتج لم يعد موجودا",
+  "Subscriber  can get up to 15 Free delivery for orders higher than 3000" : "يمكن للمشترك الحصول على ما يصل إلى 15 توصيل مجاني للطلبات التي تزيد عن 3000",
+  "Free Delivery" : "توصيل مجاني",
+  "Monthly - Plan" : "خطة شهرية",
   "Minimum Points": "الحد الأدنى من النقاط",
   "Mobile": "متحرك",
   "Monday": "الإثنين",
@@ -778,6 +787,7 @@
   "The term and condition must be accepted.": ".يجب قبول الشروط والأحكام",
   "There are no stores available in your area currently.": ".لا يوجد متجر متاح في منطقتك حاليا",
   "This Change Will Remove All Your Cart Products. Do You Really Want To Continue ?": ".سيؤدي هذا التغيير إلى إزالة جميع منتجات عربة التسوق الخاصة بك. هل تريد حقًا المتابعة",
+  "You can only buy products for single vendor. Do you want to remove all your cart products to continue ?" : ".سيؤدي هذا التغيير إلى إزالة جميع منتجات عربة التسوق الخاصة بك. هل تريد حقًا المتابعة",
   "Thursday": "الخميس",
   "Time Format": "صيغة الوقت",
   "Time Zone": "المنطقة الزمنية",
@@ -1027,5 +1037,8 @@
   "Please enter your password" : "من فضلك أدخل رقمك السري",
   "Please enter your phone" : "الرجاء إدخال هاتفك",
   "Specific instructions" : "تعليمات محددة",
-  "Do you want to add any instructions?" : "هل تريد إضافة أي تعليمات؟"
+  "Do you want to add any instructions?" : "هل تريد إضافة أي تعليمات؟",
+  "Order scheduled for" : "ترتيب مجدول ل",
+  "Expected Delivery by" : "يتوقع التسليم عن طريق",
+  "Service Fee" : "رسوم الخدمة"
 }

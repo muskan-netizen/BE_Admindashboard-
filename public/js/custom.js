@@ -670,10 +670,7 @@ $(document).ready(function () {
             cartHeader($(this).val());
         }
     });
-
-    $(document).on("change", "#schedule_datetime", function () {
-        cartHeader();
-    });  
+ 
 
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
@@ -4637,7 +4634,7 @@ $(document).ready(function () {
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 console.log('order', order);
                 if (order != '') {
-                    paymentViaUPay(order);
+                    paymentViaUPay(address_id, order);
                 }
                 else{
                     return false;
@@ -4647,7 +4644,7 @@ $(document).ready(function () {
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 console.log('order', order);
                 if (order != '') {
-                    paymentViaConekta(order);
+                    paymentViaConekta(address_id, order);
                 }
                 else{
                     return false;
@@ -4657,7 +4654,7 @@ $(document).ready(function () {
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 console.log('order', order);
                 if (order != '') {
-                    paymentViaTelr(order);
+                    paymentViaTelr(address_id, order);
                 }
                 else{
                     return false;
