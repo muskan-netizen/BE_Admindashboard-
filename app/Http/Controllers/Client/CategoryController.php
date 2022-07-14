@@ -209,6 +209,15 @@ class CategoryController extends BaseController
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
 
+    public function getCategoryTranslation(Request $request){
+        $trans = [];
+        if(!empty($request->categoryId) && !empty($request->languageId)){
+            $trans = Category_translation::where('category_id', $request->categoryId)->where('language_id', $request->languageId)->first();
+            return response()->json(array('status' => 'success', 'data' => $trans));
+        }
+        return response()->json(array('status' => 'error', 'data' => $trans));
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -220,26 +229,27 @@ class CategoryController extends BaseController
     {
         $rules = array(
             'slug' => 'required|string|max:30|unique:categories,slug,' . $id,
-            'name.0' => 'required|string|max:60',
+            'cat_lang.name' => 'required|string|max:60',
         );
         $validation  = Validator::make($request->all(), $rules)->validate();
         $category = Category::where('id', $id)->first();
         $save = $this->save($request, $category, 'true');
         if ($save > 0) {
-            if ($request->has('language_id')) {
-                foreach ($request->language_id as $key => $value) {
-                    $trans = Category_translation::where('category_id', $save)->where('language_id', $value)->first();
-                    if (!$trans) {
-                        $trans = new Category_translation();
-                        $trans->category_id = $save;
-                        $trans->language_id = $value;
-                    }
-                    $trans->name = $request->name[$key];
-                    $trans->meta_title = $request->meta_title[$key];
-                    $trans->meta_description = $request->meta_description[$key];
-                    $trans->meta_keywords = $request->meta_keywords[$key];
-                    $trans->save();
+            if (!empty($request->cat_lang['language_id'])) {
+                $languageId = $request->cat_lang['language_id'];
+                $trans = Category_translation::where('category_id', $save)->where('language_id', $languageId)->first();
+                if (!$trans) {
+                    $trans = new Category_translation();
+                    $trans->category_id = $save;
+                    $trans->language_id = $languageId;
                 }
+                $trans->name = $request->cat_lang['name'];
+                $trans->meta_title = $request->cat_lang['meta_title'];
+                $trans->meta_description = $request->cat_lang['meta_description'];
+                $trans->meta_keywords = $request->cat_lang['meta_keywords'];
+                $trans->save();                
+                    $trans->save();
+                $trans->save();                
             }
             $hs = new CategoryHistory();
             $hs->action = 'Update';

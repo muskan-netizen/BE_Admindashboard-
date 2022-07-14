@@ -3,6 +3,7 @@
 <div class="col-md-12">
     <div class="row border-bottom">
         <div class="col-md-3">
+            @csrf
             <div class="form-group" id="slugInputEdit">
                 {!! Form::label('title', __('URL Slug'),['class' => 'control-label']) !!}
                 {!! Form::text('slug', $category->slug, ['class'=>'form-control','id' => 'slug', 'onkeypress' => "return alphaNumeric(event)"]) !!}
@@ -79,36 +80,46 @@
     <div class="row border-bottom pt-1">
         <div class="px-2 ">
             <div class="mb-1 Category-select_option">
-                <select class="form-control w-auto" id="client_language">
+                <select class="form-control w-auto" id="client-cat-language">
                     @foreach($category->translationSetUnique as $trans)
-                        <option value="{{ $trans->langName }}">{{ $trans->langName.' Language' }}</option>
+                        <option value="{{ $trans->language_id }}">{{ $trans->langName.' Language' }}</option>
                     @endforeach
+                    @if(count($langIds) != count($existlangs))
+                        @foreach($languages as $langs)
+                            @if(!in_array($langs->langId, $existlangs) && in_array($langs->langId, $langIds))
+                                <option value="{{ $langs->langId }}">{{ $langs->langName.' Language' }}</option>
+                            @endif
+                        @endforeach
+                    @endif
                 </select>
             </div>
             <div class="row rowYK">
+                @foreach($category->translationSetUnique as $trans)
                 <div class="col-md-6">
                     <div class="form-group" id="nameInputEdit">
                         <label for="title" class="control-label">Name</label>
-                            <input class="form-control" required="required" name="name[]" type="text" value="Restaurant">
+                            <input class="form-control" required="required" name="cat_lang[name]" id="cat-lang-name" type="text" value="{{$trans->name}}">
                             <span class="invalid-feedback" role="alert"><strong></strong></span>
                     </div>
                     <div class="form-group">
                         <label for="title" class="control-label">Meta Description</label>
-                        <textarea class="form-control" rows="3" name="meta_description[]" cols="50"></textarea>
+                        <textarea class="form-control" rows="3" name="cat_lang[meta_description]" id="cat-lang-meta-description" cols="50">{{$trans->meta_description}}</textarea>
                     </div>
                 </div>
-                <input name="language_id[]" type="hidden" value="1">
-                <input name="trans_id[]" type="hidden" value="3">
+                <input type="hidden" id="category_id" value="{{$category->id}}">
+                <input name="cat_lang[language_id]" id="cat-lang-language-id" type="hidden" value="{{$trans->langId}}">
+                <input name="cat_lang[trans_id]" id="cat-lang-trans-id" type="hidden" value="{{$trans->id}}">
                 <div class="col-md-6">
                     <div class="form-group" id="meta_titleInput">
                         <label for="title" class="control-label">Meta Title</label>
-                        <input class="form-control" name="meta_title[]" type="text" value="Restaurant">
+                        <input class="form-control" name="cat_lang[meta_title]" id="cat-lang-meta-title" type="text" value="{{$trans->meta_title}}">
                     </div>
                     <div class="form-group">
                         <label for="title" class="control-label">Meta Keywords</label>
-                        <textarea class="form-control" rows="3" name="meta_keywords[]" cols="50"></textarea>
+                        <textarea class="form-control" rows="3" name="cat_lang[meta_keywords]" id="cat-lang-meta-keywords" cols="50">{{$trans->meta_keywords}}</textarea>
                     </div>
                 </div>
+                @endforeach
             </div>
         </div>
     </div>
@@ -127,18 +138,17 @@
                     </div>
                     <div class="form-check form-check-info modal-category-btm-title p-2">
                         <h6 for="customradio5">{{$type->title}}</h6>
-                        <p class="add-cat-text text-left">Lorem ipsum... <i class="mdi mdi-square-edit-outline pr-2"></i></p>
-                        <p class="edit-cart-text text-left mt-2"><input type="text" class="w-100" placeholder="Category Discription" value="bbb,nbnmb mnbmnb mnbmnbmn"></p>
+                        <p class="add-cat-text text-left">Lorem ipsum... </p>
                     </div>
                 </label>
             </div>
         </div>
         @endforeach
     </div>
-    <div class="row">
+    <div class="row additional-fields-div" style="display:none">
         <div class="px-3 py-2 mb-3">
             <div class="row rowYK">
-                <h4 class="col-md-12"> Additional Fields</h4>
+                <h4 class="col-md-12">Additional Fields</h4>
                 <div class="col-md-6">
                     <div style="{{($category->type_id != 1) ? 'display:none;' : ''}}" id="editProductHide">
                         <div class="form-group">

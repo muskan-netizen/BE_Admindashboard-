@@ -146,6 +146,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::delete('app-styling/deleteTutorials/{id}', 'Client\AppStylingController@deleteTutorials')->name('styling.deleteTutorials');
         Route::resource('category', 'Client\CategoryController');
         Route::post('categoryOrder', 'Client\CategoryController@updateOrder')->name('category.order');
+        Route::post('category/translation', 'Client\CategoryController@getCategoryTranslation');
         Route::get('category/delete/{id}', 'Client\CategoryController@destroy');
         Route::resource('variant', 'Client\VariantController');
         Route::post('variant/order', 'Client\VariantController@updateOrders')->name('variant.order');

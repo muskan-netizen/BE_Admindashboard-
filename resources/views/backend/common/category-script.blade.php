@@ -107,13 +107,16 @@
         $('#warning_page_main_div').hide();
         $('#template_type_main_div').hide();
         $('#warning_page_design_main_div').hide();
+        $(".additional-fields-div").css("display", "none");
         if (id == '1') {
+            $(".additional-fields-div").css("display", "block");
             $("#" + for1 + "-category-form #" + for1 + "ProductHide").show();
             $("#" + for1 + "-category-form #" + for1 + "DispatcherHide").hide();
         } else if (id == '2') {
             $("#" + for1 + "-category-form #" + for1 + "ProductHide").hide();
             $("#" + for1 + "-category-form #" + for1 + "DispatcherHide").show();
         } else if (id == '3') {
+            $(".additional-fields-div").css("display", "block");
             $("#" + for1 + "-category-form #" + for1 + "ProductHide").show();
             $("#" + for1 + "-category-form #" + for1 + "DispatcherHide").hide();
         } else if (id == '7') {
@@ -125,6 +128,45 @@
             $("#" + for1 + "-category-form #" + for1 + "ProductHide").hide();
             $("#" + for1 + "-category-form #" + for1 + "DispatcherHide").hide();
         }
+    });
+    $(document).on('change', '#client-cat-language', function() {
+        var languageId = $(this).val();
+        var categoryId = $('#category_id').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: "{{url('client/category/translation')}}",
+            data: {"languageId":languageId, "categoryId":categoryId},
+            success: function(response) {
+                if(response.status == "success"){
+                    var data = response.data
+                    $('#cat-lang-name').val('');
+                    $('#cat-lang-meta-description').val('');
+                    $('#cat-lang-language-id').val('');
+                    $('#cat-lang-trans-id').val('');
+                    $('#cat-lang-meta-title').val('');
+                    $('#cat-lang-meta-keywords').val('');
+                    if(data != null){
+                        $('#cat-lang-name').val(data.name);
+                        $('#cat-lang-meta-description').val(data.meta_description);
+                        $('#cat-lang-language-id').val(data.language_id);
+                        $('#cat-lang-trans-id').val(data.id);
+                        $('#cat-lang-meta-title').val(data.meta_title);
+                        $('#cat-lang-meta-keywords').val(data.meta_keywords);
+                    }
+                }
+            },
+            error: function(response) {
+                
+            }
+        });
     });
     $(document).on('change', '#warningPageSelectBox', function() {
         if ($('input[name="type_id"]:checked').val() == '7') {
