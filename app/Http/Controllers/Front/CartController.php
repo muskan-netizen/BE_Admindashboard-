@@ -1262,6 +1262,7 @@ class CartController extends FrontController
                     }
                 }
                 if($vendorData->vendor->$action == 0){
+                    dd($vendorData->vendor->toArray());
                     $vendorData->is_vendor_closed = 1;
                     $delivery_status = 0;
                 }

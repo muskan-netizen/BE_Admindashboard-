@@ -4,7 +4,8 @@
     }elseif($action == 'dine_in'){
         $label = 'Dine-In';
     }else{
-        $label = 'Delivery';
+        $label = getNomenclatureName($action, true);
+        //$label = 'Delivery';
     }
 @endphp
 <div class="row  mb-sm-3 mb-1">
