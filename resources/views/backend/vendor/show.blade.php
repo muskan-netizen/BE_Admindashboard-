@@ -1002,7 +1002,6 @@
                 $('#latlongs').val(event.overlay.getPath().getArray());
                 // console.log(map.getZoom());
                 $('#zoom_level').val(map.getZoom());
-                alert(map.getZoom());
             } else {
                 alert('You can draw only one zone at a time');
                 event.overlay.setMap(null);
