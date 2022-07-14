@@ -328,3 +328,5 @@ body .footer-theme .sub-title .contact-list i {margin-right: 5px;font-size: 14px
     .dark.al_body_template_three .top-banner-content h4 {margin: 20px 0px;}
     
     }
+
+    body[dir="rtl"] .footer-theme .sub-title li {padding: 0;margin-bottom: 0; text-align: right!important;}

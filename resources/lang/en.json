@@ -769,7 +769,8 @@
     "currency": "currency",
     "French": "French",
     "Out of Stock": "Out of Stock",
-    "No result found": "No result found",
+    "No Result Found": "No Result Found",
+    "No Result found": "No Result found",
     "No Product Found": "No Product Found",
     "Add an item to begin": "Add an item to begin",
     "pick & Delivery dashboard": "pick & Delivery dashboard",
@@ -1044,6 +1045,12 @@
     "In Stock" : "In Stock",
     "This product no longer exists" : "This product no longer exists",
     "Subscriber can get up to 15 Free delivery for orders higher than 3000" : "Subscriber can get up to 15 Free delivery for orders higher than 3000",
+    "This change will remove all your cart products. Do you really want to continue ?" : "This change will remove all your cart products. Do you really want to continue ?",
     "Monthly - Plan" : "Monthly - Plan",
-    "Free Delivery" : "Free Delivery"
+    "Free Delivery" : "Free Delivery",
+    "Quick Links" : "Quick Links",
+    "Keep In Touch" : "Keep In Touch",
+    "Details Not Available" : "Details Not Available",
+    "Ratings & Reviews" : "Ratings & Reviews",
+    "Please Select" : "Please Select"
  }

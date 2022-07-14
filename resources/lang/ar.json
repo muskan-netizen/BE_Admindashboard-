@@ -438,6 +438,7 @@
   "No Return Requests": "لا توجد طلبات إرجاع",
   "No record found.": ".لا يوجد سجيل موجود",
   "No result found": "غير موجود",
+  "No Result Found": "غير موجود",
   "No result found. Please try a new search": "لم يتم العثور على نتيجة. الرجاء اجراء بحث جديد",
   "Nomenclature": "مصطلحات",
   "Not Available": "غير متوفر",
@@ -521,7 +522,7 @@
   "Pincode": "الرمز السري",
   "Zip Code": "الرمز البريدي",
   "Pitons": "مسامير التعليق",
-  "Place Order": "تقديم الطلب",
+  "Place Order": "نفذ الطلب",
   "Placed": "تم وضعها",
   "Plan": "خطة",
   "Plans": "الخطط",
@@ -786,7 +787,7 @@
   "The state field is required.": "مطلوب أدخل الولاية ",
   "The term and condition must be accepted.": ".يجب قبول الشروط والأحكام",
   "There are no stores available in your area currently.": ".لا يوجد متجر متاح في منطقتك حاليا",
-  "This Change Will Remove All Your Cart Products. Do You Really Want To Continue ?": ".سيؤدي هذا التغيير إلى إزالة جميع منتجات عربة التسوق الخاصة بك. هل تريد حقًا المتابعة",
+  "This change will remove all your cart products. Do you really want to continue ?": ".سيؤدي هذا التغيير إلى إزالة جميع منتجات عربة التسوق الخاصة بك. هل تريد حقًا المتابعة",
   "You can only buy products for single vendor. Do you want to remove all your cart products to continue ?" : ".سيؤدي هذا التغيير إلى إزالة جميع منتجات عربة التسوق الخاصة بك. هل تريد حقًا المتابعة",
   "Thursday": "الخميس",
   "Time Format": "صيغة الوقت",
@@ -1040,5 +1041,10 @@
   "Do you want to add any instructions?" : "هل تريد إضافة أي تعليمات؟",
   "Order scheduled for" : "ترتيب مجدول ل",
   "Expected Delivery by" : "يتوقع التسليم عن طريق",
-  "Service Fee" : "رسوم الخدمة"
+  "Service Fee" : "رسوم الخدمة",
+  "Quick Links" : "روابط سريعة",
+  "Keep In Touch" : "أبق على اتصال",
+  "Details Not Available" : "التفاصيل غير متوفرة",
+  "Ratings & Reviews" : "التقييمات والمراجعات",
+  "Please Select" : "الرجاء التحديد"
 }
