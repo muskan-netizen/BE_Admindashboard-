@@ -770,6 +770,7 @@ class FrontController extends Controller
 
     // Find distance between two lat long points
     function calulateDistanceLineOfSight($lat1, $lon1, $lat2, $lon2, $unit) {
+        dd($lat1.'##'.$lon1);
         if (($lat1 == $lat2) && ($lon1 == $lon2)) {
           return 0;
         }

@@ -15,6 +15,7 @@ class AddDeliveryDurationCartDeliveryFeeTable extends Migration
     {
         Schema::table('cart_vendor_delivery_fee', function (Blueprint $table) {
             $table->tinyInteger('delivery_duration')->nullable()->after('delivery_fee');
+            $table->decimal('delivery_distance', 16, 2)->nullable()->after('delivery_duration');
         });
     }
 
