@@ -1632,11 +1632,10 @@ class StoreController extends BaseController{
 		$request->pickup_schedule_datetime = $request->pickup_reschdule_date??'';
 
 		$request->schedule_dropoff_slot = $request->drop_reschdule_slot??'';
-		$request->schedule_dropoff_datetime = $request->drop_reschdule_date??'';
+		$request->dropoff_schedule_datetime = $request->drop_reschdule_date??'';
 
         $order_id = $request->order_id;
         $order = Order::find($order_id);
-
         $vendor_id = $request->vendor_id;
         $vendor = Vendor::where('id', $vendor_id)->first();
         $user = Auth::user();
@@ -1644,7 +1643,6 @@ class StoreController extends BaseController{
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         $schedule_pickup_compare = Carbon::parse($order->schedule_pickup??'');
         $schedule_dropoff_compare = Carbon::parse($order->schedule_dropoff??'');
-
         // $pickup_schedule_datetime_compare = Carbon::parse($request->pickup_schedule_datetime);
         // $dropoff_schedule_datetime_compare = Carbon::parse($request->dropoff_schedule_datetime);
         $pickup_schedule_datetime_compare  = date('Y-m-d');
@@ -1686,6 +1684,7 @@ class StoreController extends BaseController{
         	$schedule_pickup_slot = explode(" - ", $request->schedule_pickup_slot); 
         	$pickup_schedule_datetime = Carbon::createFromFormat('Y-m-d H:i:s',  $request->pickup_schedule_datetime .' '. $schedule_pickup_slot[0].':00');
 		}
+		
 		$dropoff_schedule_datetime =null;
 		if($request->schedule_dropoff_slot){
 			$schedule_dropoff_slot = explode(" - ", $request->schedule_dropoff_slot); 
@@ -1716,15 +1715,15 @@ class StoreController extends BaseController{
 		}
         $order->save();
 
-       // Send Rescheduling Request to Dispatcher
+       // Send Rescheduling Request to Dispatcher if order is already accepted
         $orderVendor = OrderVendor::where('order_id', $order->id)->first();
-       
-        $postdata =  [
-            'order_unique_id' => substr($orderVendor->dispatch_traking_url, strrpos($orderVendor->dispatch_traking_url, '/') + 1),  // To get order unique id after slash (/).
-            'order_number' => $orderVendor->orderDetail->order_number,
-            'schedule_pickup' => $orderVendor->orderDetail->schedule_pickup??null,
-            'schedule_dropoff' => $orderVendor->orderDetail->schedule_dropoff??null,
-        ];
+       if(!empty($orderVendor->dispatch_traking_url)){
+			$postdata =  [
+				'order_unique_id'=>substr($orderVendor->dispatch_traking_url, strrpos($orderVendor->dispatch_traking_url, '/') + 1),  // To get order unique id after slash (/).
+				'order_number'=>$orderVendor->orderDetail->order_number,
+				'schedule_pickup' =>(($pickup_schedule_datetime)?$orderVendor->orderDetail->schedule_pickup:null),
+				'schedule_dropoff' =>(($dropoff_schedule_datetime)?$orderVendor->orderDetail->schedule_dropoff:null),
+			];
         
         // Call API Here
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
@@ -1742,8 +1741,12 @@ class StoreController extends BaseController{
             $url . '/api/order/reschedule',
             ['form_params' => ($postdata)]
         );
-
         $response = json_decode($res->getBody(), true);
+	
+	}else{
+        $response['status'] = 'success';
+	}
+
 		if($response['status'] == 'success'){
 				return $this->successResponse([], 'Order reschedule is done', 200);
 			}else{
