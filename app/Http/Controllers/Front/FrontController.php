@@ -100,8 +100,6 @@ class FrontController extends Controller
         $preferences = Session::get('preferences');
         // get selected vendor type 
         $vendorType  = Session::get('vendorType');
-        //pr($vendorType);
-        //$categoryTypes = [];
         // set category layout by on behalf of vendor type
         $categoryTypes = getServiceTypesCategory($vendorType);
        // pr($categoryTypes);
@@ -122,8 +120,11 @@ class FrontController extends Controller
                     $celebrity_check = 1;
                     $include_categories[] = 5; // type 5 for celebrity
                 }
-                $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
-
+                if(isset($_REQUEST['request_from']) && ($_REQUEST['request_from'] == 1) ){
+                    $vendors = $this->getServiceAreaVendors();
+                } else {
+                    $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
+                }
                 $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
                     ->where(function ($q1) use ($vendors , $include_categories) {
                         $q1->whereIn('vct.vendor_id', $vendors)
