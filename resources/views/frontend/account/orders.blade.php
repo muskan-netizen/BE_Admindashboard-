@@ -339,8 +339,10 @@
                                                                                                     is a gift.</span>
                                                                                             </div>
                                                                                         @endif
-                                                                                        <a class="start_chat chat-icon btn btn-solid" data-vendor_order_id="{{$vendor->id}}" data-vendor_id="{{$vendor->vendor_id}}" data-orderid="" data-order_id="{{$order->id}}">{{__('Chat')}}</a>
-                                                                                       
+                                                                                        <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="{{$vendor->id}}" data-vendor_id="{{$vendor->vendor_id}}" data-orderid="" data-order_id="{{$order->id}}">{{__('Chat')}}</a>
+                                                                                        @if(isset($vendor->driver_chat) && ($vendor->driver_chat == 1) && ($vendor->dispatch_traking_url != ''))
+                                                                                        <a class="start_chat_driver chat-icon btn btn-solid" data-driver_details_api="{{$vendor->dispatch_traking_url}}" data-vendor_order_id="{{$vendor->id}}" data-vendor_id="{{$vendor->vendor_id}}" data-orderid="" data-order_id="{{$order->id}}">{{__('Driver Chat')}}</a>
+                                                                                        @endif
                                                                                     </div>
                                                                                 @endif
                                                                                 <span class="left_arrow pulse"></span>

@@ -12,8 +12,12 @@
 				</div>
 				<div class="messages-box flex flex-1">
 					@foreach ($chatrooms as $chatroom)
-						<div id="chatRooms" class=" list-group rounded-0">
-							<div id="room_{{ $chatroom['_id']}}" data-OrderID="{{ $chatroom['order_id'] }}" data-OrdervendorID="{{ $chatroom['order_vendor_id'] }}" data-id="{{$chatroom['_id']}}" data-roomID="{{$chatroom['room_id']}}" data-roomName="{{$chatroom['room_name']}}" class="chat-list-item d-flex align-items-start rounded fetchChat">
+						@php
+							$date = date_create($chatroom['chat_Data'][0]['created_date']);
+							$timestamp = $date->getTimestamp();
+						@endphp
+						<div id="chatRooms_{{ $chatroom['_id']}}" data-timestamp="{{ $timestamp }}" class="list-group rounded-0">
+							<div id="room_{{ $chatroom['_id']}}"   data-OrderID="{{ $chatroom['order_id'] }}" data-OrdervendorID="{{ $chatroom['order_vendor_id'] }}" data-id="{{$chatroom['_id']}}" data-roomID="{{$chatroom['room_id']}}" data-roomName="{{$chatroom['room_name']}}" class="chat-list-item d-flex align-items-start rounded fetchChat">
 								{{-- <div class="align-self-center mr-3">
 									<div class="rounded-circle bg-gray" style="width: 8px; height: 8px; opacity: 0;"></div>
 								</div> --}}
