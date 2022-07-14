@@ -201,6 +201,15 @@ if (!function_exists('convertDateTimeInTimeZone')) {
     }
 }
 
+if (!function_exists('convertDateTimeInClientTimeZone')) {
+    function convertDateTimeInClientTimeZone($date,$format = 'Y-m-d H:i:s'){
+        $date = Carbon::parse($date, 'UTC');
+        $clientTimezone = ClientData::find(1);
+        $date->setTimezone($clientTimezone->timezone);
+        return $date->format($format);
+    }
+}
+
 
 if (!function_exists('getClientPreferenceDetail')) {
     function getClientPreferenceDetail()

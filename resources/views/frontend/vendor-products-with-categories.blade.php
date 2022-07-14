@@ -94,9 +94,9 @@
                                                         <i class="icon-time"></i>
                                                         @if ($vendor->is_vendor_closed == 0 && $vendor->show_slot == 0)
                                                             {{ $vendor->opening_time }} – {{ $vendor->closing_time }}
-                                                            <span class="badge badge-success">Open</span>
+                                                            <span class="badge badge-success">{{ __('Open') }}</span>
                                                         @elseif($vendor->is_vendor_closed == 0 && $vendor->show_slot == 1)
-                                                            24 x 7 <span class="badge badge-success">Open</span>
+                                                            24 x 7 <span class="badge badge-success">{{ __('Open') }}</span>
                                                         @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
                                                             <span class="badge badge-danger">{{ __('Closed') }}</span>
                                                             {{ __('We are not accepting orders right now. You can schedule this for ') . $checkSlot }}.
@@ -595,8 +595,8 @@
                                  <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Subscription Discount') }}</span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
+                                            <span class="ellips">- {{ __('Subscription Discount') }}</span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_subscription_discount %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -606,8 +606,8 @@
                                 <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Loyalty Amount') }} </span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
+                                            <span class="ellips">- {{ __('Loyalty Amount') }} </span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.loyalty_amount %></span>
                                         </h6>
                                     </div>
                                 </li>
@@ -617,8 +617,8 @@
                                 <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Wallet Amount') }} </span>
-                                            <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
+                                            <span class="ellips">- {{ __('Wallet Amount') }} </span>
+                                            - <span>{{ Session::get('currencySymbol') }}<%= cart_details.wallet_amount_used %></span>
                                         </h6>
                                     </div>
                                 </li>

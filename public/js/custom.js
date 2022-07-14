@@ -670,10 +670,7 @@ $(document).ready(function () {
             cartHeader($(this).val());
         }
     });
-
-    $(document).on("change", "#schedule_datetime", function () {
-        cartHeader();
-    });  
+ 
 
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
@@ -4208,11 +4205,14 @@ $(document).ready(function () {
             case 42:
                 paymentViaDpoSubscription('', payment_option_id, ''); 
             break;
-             case 43:
+            case 43:
                 paymentViaUPay('', payment_option_id, ''); 
             break;
-             case 44:
+            case 44:
                 paymentViaConekta('', payment_option_id, ''); 
+            break;
+            case 45:
+                paymentViaTelr('', payment_option_id, ''); 
             break;
         
         }
@@ -4634,8 +4634,7 @@ $(document).ready(function () {
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 console.log('order', order);
                 if (order != '') {
-                    //payWithDpo
-                    paymentViaUPay(order);
+                    paymentViaUPay(address_id, order);
                 }
                 else{
                     return false;
@@ -4645,8 +4644,17 @@ $(document).ready(function () {
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 console.log('order', order);
                 if (order != '') {
-                    //payWithDpo
-                    paymentViaConekta(order);
+                    paymentViaConekta(address_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
+            case '45':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
+                if (order != '') {
+                    paymentViaTelr(address_id, order);
                 }
                 else{
                     return false;
@@ -4861,8 +4869,11 @@ $(document).ready(function () {
             case 43:
                 paymentViaUPay('', payment_option_id, ''); 
                 break;
-             case 44:
+            case 44:
                 paymentViaConekta('', payment_option_id, ''); 
+                break;
+            case 45:
+                paymentViaTelr('', payment_option_id, ''); 
                 break;
 
         }

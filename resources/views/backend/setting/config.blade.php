@@ -1165,6 +1165,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
    </div>
 
    <div class="row">
+      {{-- <div class="col-md-12 show-custom-mods">
+         <div class="card-box ">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+               <h4 class="header-title text-uppercase mb-0">{{ __("Custom Mods") }}</h4>
+               <button class="btn btn-info d-block show-custom-mods-btn" type="submit"> {{ __("Show Custom Mods") }} </button>
+            </div>
+         </div>
+      </div> --}}
       <div class="col-md-12">
          <!-- Custom Mods start -->
          <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -1231,14 +1239,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   @endif
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Toggle Tips')}}<small class="d-block pr-5">Manage the option to Tip before the Order.</small></label>
+                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Pre Order Tips')}}<small class="d-block pr-5">Manage the option to Tip before the Order.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
                      </span>
                      </div>
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Toggle Tips')}}<small class="d-block pr-5">Manage the option to Tip after the Order.</small></label>
+                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Post Order Tips')}}<small class="d-block pr-5">Manage the option to Tip after the Order.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="tip_after_order" id="tip_after_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_after_order == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1402,10 +1410,20 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </span>
                   </div>
                </div>
+               @if($client_preference_detail->business_type == 'laundry')
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="is_scan_qrcode_bag" class="mr-2 mb-0">{{__('Scan Bag QR code')}}<small class="d-block pr-5">{{__('Enable to scan bag QR code for orders.')}}</small></label>
+                  <span> <input type="checkbox" data-plugin="switchery" name="is_scan_qrcode_bag" id="is_scan_qrcode_bag" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_scan_qrcode_bag == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
+               @endif
+
                </div>
             </div>
          </form>
-         <!-- Custom Mods start -->
+         <!-- Custom Mods end -->
       </div>
    </div>
 
@@ -1589,6 +1607,31 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div>
       </div>
    </div>
+   <div id="custom-mode-verfication-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-bs-backdrop="static" style="display: none;">
+      <div class="modal-dialog">
+         <div class="modal-content">
+            <div class="modal-header border-bottom">
+               <h4 class="modal-title">{{ __("Custom Mods Verification") }}</h4>
+               <button type="button" class="close remove-modal-open" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <div class="row">
+                  <form id="task_form" action="#" method="POST" style="width: 100%">
+                     <div class="col-md-12">
+                        <div class="form-group mb-2">
+                           <label for="verification_code">{{__('Verification Code')}}</label>
+                           <input type="password" name="verification_code" id="verification_code" placeholder="Enter Verification Code" class="form-control" value="">
+                        </div>
+                     </div>
+                  </form>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button type="submit" class="btn btn-info waves-effect waves-light  remove-modal-open verification-code-sbt">{{ __("Submit") }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
 
 
    <div id="add_driver_registration_document_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
@@ -1747,6 +1790,32 @@ $sms_crendential = json_decode($preference->sms_credentials);
          }
       });
 
+      $(document).on('click', '.show-custom-mods-btn', function(e) {
+         $('#custom-mode-verfication-modal').modal('show');
+      });
+      $(document).on('click', '.verification-code-sbt', function(e) {
+         var varificationCode = $('#verification_code').val();
+         if(varificationCode != ''){
+            $.ajax({
+               type: "POST",
+               dataType: 'json',
+               url: "{{ route('custom.mod.verification') }}",
+               data: {
+                  _token: "{{ csrf_token() }}",
+                  varificationCode: varificationCode
+               },
+               success: function(response) {
+                  // if (response.status == "Success") {
+                  //    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  //    setTimeout(function() {
+                  //       location.reload()
+                  //    }, 2000);
+                  // }
+               }
+            });
+         }
+      });
+      
       $(document).on('click', '.submitSaveSlot', function(e) {
          var slot_id = $("#add_slot_modal input[name=slot_id]").val();
          if (slot_id) {
