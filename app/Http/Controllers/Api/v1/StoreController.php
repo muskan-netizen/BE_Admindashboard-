@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
 use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist};
 
+
 class StoreController extends BaseController{
     use ApiResponser;
 	private $folderName = 'prods';
@@ -1624,18 +1625,26 @@ class StoreController extends BaseController{
      * Post Route
      * Save Rescheduled Order
      */
-    public function rescheduleOrder(Request $request)
+    public function rescheduleOrder(Request $request, $domain='')
     {
 	try{
+		$request->schedule_pickup_slot = $request->pickup_reschdule_slot??'';
+		$request->pickup_schedule_datetime = $request->pickup_reschdule_date??'';
+
+		$request->schedule_dropoff_slot = $request->drop_reschdule_slot??'';
+		$request->schedule_dropoff_datetime = $request->drop_reschdule_date??'';
+
         $order_id = $request->order_id;
         $order = Order::find($order_id);
+
         $vendor_id = $request->vendor_id;
         $vendor = Vendor::where('id', $vendor_id)->first();
         $user = Auth::user();
         $currency_id = $request->currency_id;
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-        $schedule_pickup_compare = Carbon::parse($order->schedule_pickup);
-        $schedule_dropoff_compare = Carbon::parse($order->schedule_dropoff);
+        $schedule_pickup_compare = Carbon::parse($order->schedule_pickup??'');
+        $schedule_dropoff_compare = Carbon::parse($order->schedule_dropoff??'');
+
         // $pickup_schedule_datetime_compare = Carbon::parse($request->pickup_schedule_datetime);
         // $dropoff_schedule_datetime_compare = Carbon::parse($request->dropoff_schedule_datetime);
         $pickup_schedule_datetime_compare  = date('Y-m-d');
@@ -1671,13 +1680,17 @@ class StoreController extends BaseController{
                 }
             }   
         }
-        
 
-        $schedule_pickup_slot = explode(" - ", $request->schedule_pickup_slot); 
-        $pickup_schedule_datetime = Carbon::createFromFormat('Y-m-d H:i:s',  $request->pickup_schedule_datetime .' '. $schedule_pickup_slot[0].':00');
-
-        $schedule_dropoff_slot = explode(" - ", $request->schedule_dropoff_slot); 
-        $dropoff_schedule_datetime = Carbon::createFromFormat('Y-m-d H:i:s',  $request->dropoff_schedule_datetime .' '. $schedule_dropoff_slot[0].':00');
+		$pickup_schedule_datetime =null;
+		if($request->schedule_pickup_slot){
+        	$schedule_pickup_slot = explode(" - ", $request->schedule_pickup_slot); 
+        	$pickup_schedule_datetime = Carbon::createFromFormat('Y-m-d H:i:s',  $request->pickup_schedule_datetime .' '. $schedule_pickup_slot[0].':00');
+		}
+		$dropoff_schedule_datetime =null;
+		if($request->schedule_dropoff_slot){
+			$schedule_dropoff_slot = explode(" - ", $request->schedule_dropoff_slot); 
+			$dropoff_schedule_datetime = Carbon::createFromFormat('Y-m-d H:i:s',  $request->dropoff_schedule_datetime .' '. $schedule_dropoff_slot[0].':00');
+		}
 
         $rescheduleOrder = new RescheduleOrder();
         $rescheduleOrder->reschedule_by = $user->id;
@@ -1687,16 +1700,20 @@ class StoreController extends BaseController{
         $rescheduleOrder->prev_schedule_dropoff = $order->schedule_dropoff;
         $rescheduleOrder->prev_scheduled_slot = $order->scheduled_slot;
         $rescheduleOrder->prev_dropoff_scheduled_slot = $order->dropoff_scheduled_slot;
-        $rescheduleOrder->new_schedule_pickup = Carbon::parse($pickup_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-        $rescheduleOrder->new_schedule_dropoff = Carbon::parse($dropoff_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-        $rescheduleOrder->new_scheduled_slot = $request->schedule_pickup_slot;
-        $rescheduleOrder->new_dropoff_scheduled_slot = $request->schedule_dropoff_slot;
+        $rescheduleOrder->new_schedule_pickup = (($pickup_schedule_datetime)?Carbon::parse($pickup_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s'):Null);
+        $rescheduleOrder->new_schedule_dropoff = (($dropoff_schedule_datetime)?Carbon::parse($dropoff_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s'):NULL);
+        $rescheduleOrder->new_scheduled_slot = $request->schedule_pickup_slot??NUll;
+        $rescheduleOrder->new_dropoff_scheduled_slot = $request->schedule_dropoff_slot??Null;
         $rescheduleOrder->save();
 
-        $order->schedule_pickup  =  Carbon::parse($pickup_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-        $order->schedule_dropoff =  Carbon::parse($dropoff_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-        $order->scheduled_slot   =  $request->schedule_pickup_slot;
-        $order->dropoff_scheduled_slot = $request->schedule_dropoff_slot;
+		if($request->schedule_pickup_slot){
+        	$order->schedule_pickup  =  Carbon::parse($pickup_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+        	$order->scheduled_slot   =  $request->schedule_pickup_slot;
+		}
+		if($request->schedule_dropoff_slot){
+        	$order->dropoff_scheduled_slot = $request->schedule_dropoff_slot;
+			$order->schedule_dropoff =  Carbon::parse($dropoff_schedule_datetime, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+		}
         $order->save();
 
        // Send Rescheduling Request to Dispatcher
@@ -1705,13 +1722,13 @@ class StoreController extends BaseController{
         $postdata =  [
             'order_unique_id' => substr($orderVendor->dispatch_traking_url, strrpos($orderVendor->dispatch_traking_url, '/') + 1),  // To get order unique id after slash (/).
             'order_number' => $orderVendor->orderDetail->order_number,
-            'schedule_pickup' => $orderVendor->orderDetail->schedule_pickup,
-            'schedule_dropoff' => $orderVendor->orderDetail->schedule_dropoff,
+            'schedule_pickup' => $orderVendor->orderDetail->schedule_pickup??null,
+            'schedule_dropoff' => $orderVendor->orderDetail->schedule_dropoff??null,
         ];
         
         // Call API Here
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
-        
+       
         $client = new GCLIENT([
             'headers' => [
                 'personaltoken' => $dispatch_domain_laundry->laundry_service_key,
@@ -1728,7 +1745,7 @@ class StoreController extends BaseController{
 
         $response = json_decode($res->getBody(), true);
 		if($response['status'] == 'success'){
-				return $this->successResponse([], 'Success', 200);
+				return $this->successResponse([], 'Order reschedule is done', 200);
 			}else{
 				return $this->errorResponse('Something went wrong!','400');
 			}
@@ -1738,6 +1755,18 @@ class StoreController extends BaseController{
 			return $this->errorResponse($e->getMessage(),'400');
 		}
     }
+
+
+	 # get prefereance if laundry in config
+     public function getDispatchLaundryDomain()
+     {
+         $preference = ClientPreference::first();
+         if ($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url)) {
+             return $preference;
+         } else {
+             return false;
+         }
+     }
 
     public function chargeForPickupRescheduling($user, $vendor, $order)
     {
