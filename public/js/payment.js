@@ -1079,7 +1079,7 @@ $(document).ready(function() {
             data.order_number = $("#order_number").val();
         }
         data.amount = total_amount;
-        data.payment_option_id =44;
+        data.payment_option_id =45;
         data._token = $('input[name=_token]').val();
         $.redirect(telr_before_payment, data);
     }

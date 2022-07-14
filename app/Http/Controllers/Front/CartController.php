@@ -212,6 +212,10 @@ class CartController extends FrontController
     {
         // Get Logged in user
        $user = Auth::user();
+
+       $client_timezone = DB::table('clients')->first('timezone');
+       $timezone = (!empty($user->timezone))?$user->timezone:$client_timezone->timezone;
+
        $schedule_datetime = $request->schedule_datetime;
        $schedule_slot     = $request->schedule_slot;
        $vendor_id         = $request->vendor_id;
@@ -227,7 +231,7 @@ class CartController extends FrontController
             $order = Order::where('id', $orderVendor->order_id)->where('scheduled_slot', $schedule_slot)->first();
             if($order){
                 $schedule_pickup = Carbon::parse($order->scheduled_date_time);
-                $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $user->timezone, 'Y-m-d');
+                $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
                 if($schedule_pickup_final == $schedule_datetime){
                     // Increment orderCount and return this count to front end for validation
                     $orderCount++;
@@ -1849,7 +1853,7 @@ class CartController extends FrontController
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $client_timezone = DB::table('clients')->first('timezone');
-        $timezone = (!empty($user->timezone))?$user->timezone:$client_timezone->timezone;
+        $timezone = $client_timezone->timezone ?? $user->timezone;
         $address_id = 0;
         $schedule_datetime_del = '';
         if ($user) {
