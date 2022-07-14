@@ -1,4 +1,4 @@
-$(document).ready(function () { 
+$(document).ready(function () {
     var footer_height = $('.footer-light').height();
     var header_height = $('.site-header').height();
     var window_height = $(window).height();
@@ -38,7 +38,7 @@ $(document).ready(function () {
 });
 
 $(function () {
-    document.ajax_loading = false; 
+    document.ajax_loading = false;
     $.hasAjaxRunning = function () {
         return document.ajax_loading;
     };
@@ -63,7 +63,7 @@ $(window).scroll(function () {
                 $('.scrollspy-menu li').eq(i).addClass('active');
             }
         });
-        
+
     } else {
         $('.scrollspy-menu li.active').removeClass('active');
         $('.scrollspy-menu li:first').addClass('active');
@@ -409,12 +409,12 @@ $(document).ready(function () {
               },
             },
           };
-          
+
           // Create an instance of the idealBank Element
           var idealBank = elements.create('idealBank', options);
           // Add an instance of the idealBank Element into
           // the `ideal-bank-element` <div>
-          idealBank.mount('#ideal-bank-element'); 
+          idealBank.mount('#ideal-bank-element');
     }
 
     function stripeFPXInitialize() {
@@ -444,7 +444,7 @@ $(document).ready(function () {
     if ($("#fpx-bank-element").length > 0) {
         stripeFPXInitialize();
     }
- 
+
     if ($("#ideal-bank-element").length > 0) {
         stripeIdealInitialize();
     }
@@ -673,12 +673,12 @@ $(document).ready(function () {
 
     $(document).on("change", "#schedule_datetime", function () {
         cartHeader();
-    });  
+    });
 
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-        
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -703,7 +703,7 @@ $(document).ready(function () {
     $(document).on("change", ".pickup_schedule_datetime", function() {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-        $('#loaderforjs').show();    
+        $('#loaderforjs').show();
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -712,18 +712,18 @@ $(document).ready(function () {
             success: function(response) {
                 if (response.status == "Success") {
                     $('#schedule_pickup_slot').html(response.data);
-                    $('#loaderforjs').hide();  
+                    $('#loaderforjs').hide();
                 }else{
                     success_error_alert('error', response.message, ".cart_response");
                    $('#schedule_pickup_slot').html(response.data);
-                   $('#loaderforjs').hide();  
+                   $('#loaderforjs').hide();
                 }
             },
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 success_error_alert('error', response.message, ".cart_response");
                 $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                $('#loaderforjs').hide();  
+                $('#loaderforjs').hide();
             }
         });
     });
@@ -731,7 +731,7 @@ $(document).ready(function () {
     $(document).on("change", ".dropoff_schedule_datetime", function() {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-        $('#loaderfordrop').show();    
+        $('#loaderfordrop').show();
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -740,18 +740,18 @@ $(document).ready(function () {
             success: function(response) {
                 if (response.status == "Success") {
                     $('#schedule_dropoff_slot').html(response.data);
-                    $('#loaderfordrop').hide();  
+                    $('#loaderfordrop').hide();
                 }else{
                     success_error_alert('error', response.message, ".cart_response");
                    $('#schedule_dropoff_slot').html(response.data);
-                   $('#loaderfordrop').hide();  
+                   $('#loaderfordrop').hide();
                 }
             },
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 success_error_alert('error', response.message, ".cart_response");
                 $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                $('#loaderfordrop').hide();  
+                $('#loaderfordrop').hide();
             }
         });
     });
@@ -810,18 +810,18 @@ $(document).ready(function () {
         $('#proceed_to_pay_loader').show();
         e.preventDefault();
         var input='';
-     
+
         $(this).attr("disabled", true);
         var form = document.getElementById('category_kyc_form_in_cart');
         var formData = new FormData(form);
         var data_uri = post_category_kyc_document;
-       
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
         });
-       
+
         $.ajax({
             type: "post",
             headers: {
@@ -840,7 +840,7 @@ $(document).ready(function () {
                     $('#category_kycform_submit').attr("disabled", false);
                     $(".show_all_error.invalid-feedback").show();
                     $(".show_all_error.invalid-feedback").text(response.message);
-                   
+
                 }
                 return response;
             },
@@ -886,7 +886,7 @@ $(document).ready(function () {
             success_error_alert('error', 'Product order form is required! kindly fill the details.', ".cart_response");
             return false;
         }
-        //$("input[name='category_kyc_ids']").length > 0 || 
+        //$("input[name='category_kyc_ids']").length > 0 ||
         if( ($("input[name='without_category_kyc']").val() !=1 ) ){
             success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
             return false;
@@ -926,8 +926,8 @@ $(document).ready(function () {
             var task_type = 'schedule';
             var schedule_dt = $("#pickup_schedule_datetime").val();
             var schedule_dt_dropoff = $("#dropoff_schedule_datetime").val();
-            var slot = $("#schedule_pickup_slot").val(); 
-            var slot_dropoff = $("#schedule_dropoff_slot").val(); 
+            var slot = $("#schedule_pickup_slot").val();
+            var slot_dropoff = $("#schedule_dropoff_slot").val();
             var checkSlot  = $('#checkPickUpSlot').val();
             var checkDropoffSlot  = $('#checkDropoffSlot').val();
         }else{
@@ -940,14 +940,14 @@ $(document).ready(function () {
         if (task_type == 'schedule') {
             if(slot){
                 var stime = 'T'+slot.split(" - ",1);
-                var schedule_dtck = toTimestamp(schedule_dt+' '+slot.split(" - ",1));              
-                var schedule_dt = schedule_dt+stime;              
+                var schedule_dtck = toTimestamp(schedule_dt+' '+slot.split(" - ",1));
+                var schedule_dt = schedule_dt+stime;
             }
-            
+
             if(business_type == 'laundry' && scheduling_with_slots == 1){
                 var schedule_dt_dropoff_time = 'T'+slot_dropoff.split(" - ",1);
-                var schedule_dt_dropoffck = toTimestamp(schedule_dt_dropoff+' '+slot_dropoff.split(" - ",1));  
-                var schedule_dt_dropoff = schedule_dt_dropoff+schedule_dt_dropoff_time;  
+                var schedule_dt_dropoffck = toTimestamp(schedule_dt_dropoff+' '+slot_dropoff.split(" - ",1));
+                var schedule_dt_dropoff = schedule_dt_dropoff+schedule_dt_dropoff_time;
 
 
                 if(schedule_dtck > schedule_dt_dropoffck)
@@ -958,7 +958,7 @@ $(document).ready(function () {
                 }
 
             }
-            
+
             if (schedule_dt == '') {
                 success_error_alert('error', error_Schedule_date_is_required, ".cart_response");
                 return false;
@@ -987,7 +987,7 @@ $(document).ready(function () {
         let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
         let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
         let comment_for_vendor = $("input[name='comment_for_vendor']").val(); //commnet for vendor
-      
+
         if(business_type == 'laundry' && scheduling_with_slots == 1){
             var schedule_pickup = schedule_dt;
             var schedule_dropoff = schedule_dt_dropoff;
@@ -1026,7 +1026,7 @@ $(document).ready(function () {
                 url: update_cart_schedule,
                 data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address},
                 success: function (response) {
-                    
+
 
                     if(response.status == "passbase_submitted"){
                         Swal.fire({
@@ -1181,7 +1181,7 @@ $(document).ready(function () {
                         if(stripe_ideal_publishable_key != ''){
                             stripeIdealInitialize();
                         }
-                        
+
                     }
                 }
             },
@@ -1220,10 +1220,10 @@ $(document).ready(function () {
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
         // let payment_option_id = paymentAjaxData.payment_option_id;
-        
+
         paymentAjaxData.payment_method_id = result.paymentMethod.id;
         // paymentAjaxData.payment_option_id = payment_option_id;
-        
+
         if (path.indexOf("cart") !== -1) {
             payment_form = 'cart';
             total_amount = cartElement.val();
@@ -1341,7 +1341,7 @@ $(document).ready(function () {
             // }
             // ajaxData.payment_form = payment_form;
             // ajaxData.total_amount = total_amount;
-            
+
             // The card action has been handled
             // The PaymentIntent can be confirmed again on the server
             fetch('/payment/payment_init', {
@@ -1634,7 +1634,7 @@ $(document).ready(function () {
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
         if(business_type == 'laundry' && scheduling_with_slots == 1){
-            var schedule_dropoff_slot = $("#schedule_dropoff_slot").val(); 
+            var schedule_dropoff_slot = $("#schedule_dropoff_slot").val();
         }else{
             var schedule_dropoff_slot = null;
         }
@@ -1707,7 +1707,7 @@ $(document).ready(function () {
             return false;
         }
         var orderResponse = '';
-        
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1742,13 +1742,13 @@ $(document).ready(function () {
         });
         return orderResponse;
     }
-    $(document).on("click", ".proceed_to_pay", function () {   
+    $(document).on("click", ".proceed_to_pay", function () {
         let payment_option_id = $("#cart_payment_form input[name='cart_payment_method']:checked").val();
         if(payment_option_id == undefined){
             success_error_alert('error', 'Please select payment option', ".payment_response");
             return false;
         }
-        
+
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
          $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -1757,7 +1757,7 @@ $(document).ready(function () {
         if($("#other_taxes_string").val()!=null){
             other_taxes_string=$("#other_taxes_string").val();
         }
-        
+
         let address_id = $("input:radio[name='address_id']:checked").val();
 
         if ((vendor_type == 'delivery') && ((address_id == '') || (address_id < 1) || ($("input[name='address_id']").length < 1))) {
@@ -1921,7 +1921,7 @@ $(document).ready(function () {
         let cart_product_ids = $("input[name='cart_product_ids[]']").map(function(){return $(this).val();}).get();;
         let amount = $(this).attr('data-amount');
         let cart_id = $(this).attr('data-cart_id');
-        let vendor_id = $(this).attr('data-vendor_id');    
+        let vendor_id = $(this).attr('data-vendor_id');
         $(".invalid-feedback.manual_promocode").html("");
         $.ajax({
             type: "POST",
@@ -2065,8 +2065,10 @@ $(document).ready(function () {
         });
         console.log(cart_qty_total);
         if (cart_qty_total > 0) {
+            $("#cart_qty_span").addClass("bg-cart-header");
             $('#cart_qty_span, .cart_qty_cls').html(cart_qty_total).show();
         } else {
+            $("#cart_qty_span").removeClass("bg-cart-header");
             $('#cart_qty_span, .cart_qty_cls').html(cart_qty_total).hide();
         }
     }
@@ -2104,7 +2106,7 @@ $(document).ready(function () {
     function cartHeader(address_id) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
-        
+
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2165,7 +2167,7 @@ $(document).ready(function () {
                                     $("#schedule_datetime").val(response.schedule_datetime);
                                     $("#taskschedule").click();
                                 }
-                                
+
                             }
                             cartTotalProductCount();
 
@@ -2411,8 +2413,8 @@ $(document).ready(function () {
                 tip = 0;
             }
             var wallet_amount_used_fixed=parseFloat($('#wallet_amount_used_fixed').text());
-            
-            
+
+
             if(isNaN(wallet_amount_used_fixed) || wallet_amount_used_fixed== null){
                 wallet_amount_used_fixed=0;
             }
@@ -2439,7 +2441,7 @@ $(document).ready(function () {
             $("#custom_tip_amount").focus();
             $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable+other_taxes).toFixed(parseInt(digit_count)));
         }
-    
+
         //$("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     }
 
@@ -2461,17 +2463,17 @@ $(document).ready(function () {
         var total_subscription_discount =initialize_values($('#total_subscription_discount').text());
         //var fixed_fee_amount            =initialize_values($('#fixed_fee_amount').val());
         var tip                         =initialize_values($(this).val());
-        
-        
+
+
         var amount_elem = $("#cart_payable_amount_original");
         var currency = amount_elem.attr('data-curr');
         var amount_payable =initialize_values(amount_elem.val());
         var payable_amount=0;
-        
+
         $("#cart_tip_amount").val(tip.toFixed(parseInt(digit_count)));
         // $("#cart_total_payable_amount").html(currency + (amount_payable+other_taxes).toFixed(parseInt(digit_count)));
         // $("input[name='cart_total_payable_amount']").val((amount_payable+other_taxes).toFixed(parseInt(digit_count)));
-        
+
         if(wallet_amount_available>0){
             if(wallet_amount_available >= wallet_amount_used_fixed+tip){
                 /* Paid amount is less then available wallet amount*/
@@ -2480,7 +2482,7 @@ $(document).ready(function () {
                 /* Paid amount is greater then available wallet amount*/
                 $("#wallet_amount_used").text(" - "+currency+ " "+wallet_amount_available.toFixed(parseInt(digit_count)));
                 payable_amount=((gross_amount + tip)  - (total_subscription_discount+wallet_amount_available+loyalty_amount));
-                
+
                 $("#cart_total_payable_amount").html( currency +   payable_amount.toFixed(parseInt(digit_count)));
                 $("input[name='cart_total_payable_amount']").val(  payable_amount.toFixed(parseInt(digit_count)));
             }
@@ -2508,7 +2510,7 @@ $(document).ready(function () {
             }
         }
 
-       
+
     });
     $(document).on('click', '.qty-minus', function () {
         let base_price = $(this).data('base_price');
@@ -2861,7 +2863,7 @@ $(document).ready(function () {
                     $("#estimate_product_addon_modal .modal-content").html('');
                     let estimate_addon_template = _.template($('#estimate_addon_template').html());
                     $("#estimate_product_addon_modal .modal-content").append(estimate_addon_template({ estimateAddOnData: response.data }));
-                    $("#estimate_product_addon_modal").modal('show');                  
+                    $("#estimate_product_addon_modal").modal('show');
                 } else {
                     alert(response.message);
                 }
@@ -3552,14 +3554,14 @@ $(document).ready(function () {
     });
 
     $(document).on('change', '.vendor_schedule_datetime, .vendor_schedule_slot', function () {
-        
+
         var task_type = 'schedule';
-        
+
         let schedule_type = $(this).data("schedule_type");
         let cart_product_id = $(this).data("cart_product_id");
         let vendor_id = $(this).data("vendor_id");
-               
-        
+
+
 
         if(schedule_type == 'date'){
             var schedule_dt = $(this).val();
@@ -3888,7 +3890,7 @@ $(document).ready(function () {
                 $.each(response, function (key, res) {
                     showPrescriptionDoc += '<div class="show-prescription-close"><i class="fa fa-times prescription-doc-remove" data-prescription_id="'+res.id+'" aria-hidden="true"></i><img src="'+res.prescription.proxy_url+'50/50'+res.prescription.image_path+'" alt="product-img" height="60"></div>'
                 });
-                
+
                 $(".show-prescription-doc").html(showPrescriptionDoc);
                 $('#prescription_form').modal('show');
             },
@@ -3896,7 +3898,7 @@ $(document).ready(function () {
                 $('.loader_box').hide();
             }
         });
-    });    
+    });
 
     $(document).on('click', '.submitPrescriptionForm', function (e) {
         e.preventDefault();
@@ -4024,7 +4026,7 @@ $(document).ready(function () {
     function subscriptionPaymentOPtions(payment_option_id)
     {
         switch (payment_option_id) {
-        
+
             case 3:
                 paymentViaPaypal('', payment_option_id);
             break;
@@ -4073,7 +4075,7 @@ $(document).ready(function () {
             break;
 
             case 8:
-                    
+
                     inline.createToken().then(function (result) {
                         if (result.error) {
                             $('#yoco_card_error').html(result.error.message);
@@ -4093,7 +4095,7 @@ $(document).ready(function () {
                             button: "OK",
                         });
                     });
-            
+
             break;
 
             case 9:
@@ -4189,7 +4191,7 @@ $(document).ready(function () {
             break;
 
             case 36:
-                    paymentViaMyCash('', payment_option_id, ''); 
+                    paymentViaMyCash('', payment_option_id, '');
             break;
 
             case 37:
@@ -4198,24 +4200,24 @@ $(document).ready(function () {
             break;
 
             case 39:
-                paymentViaStripeIdeal('', payment_option_id, ''); 
+                paymentViaStripeIdeal('', payment_option_id, '');
             break;
             case 40:
-                paymentViaUseRede('', payment_option_id, ''); 
+                paymentViaUseRede('', payment_option_id, '');
             break;
             case 41:
-                payWithOpenPay('', payment_option_id, ''); 
+                payWithOpenPay('', payment_option_id, '');
             break;
             case 42:
-                paymentViaDpoSubscription('', payment_option_id, ''); 
+                paymentViaDpoSubscription('', payment_option_id, '');
             break;
              case 43:
-                paymentViaUPay('', payment_option_id, ''); 
+                paymentViaUPay('', payment_option_id, '');
             break;
              case 44:
-                paymentViaConekta('', payment_option_id, ''); 
+                paymentViaConekta('', payment_option_id, '');
             break;
-        
+
         }
 
     }
@@ -4239,7 +4241,7 @@ $(document).ready(function () {
                             paymentAjaxData.address_id = address_id;
                             paymentAjaxData.order_number = order.order_number;
                             paymentAjaxData.payment_option_id = payment_option_id;
-                            
+
                             // localStorage.setItem('order_number', order.order_number);
                             // localStorage.setItem('payment_option', payment_option_id);
                             var three_d_secure = result.source.card.three_d_secure;
@@ -4319,7 +4321,7 @@ $(document).ready(function () {
                             button: "OK",
                         });
                     });
-            
+
             break;
 
             case '9':
@@ -4402,7 +4404,7 @@ $(document).ready(function () {
             case '20': //Kongapay
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
-                    
+
                     payWithKPG(order);
                 }
                 else {
@@ -4441,7 +4443,7 @@ $(document).ready(function () {
                     }
             break;
 
-            case '24':  
+            case '24':
                     var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                     if (order != '') {
                         paymentViaCashfree(address_id, payment_option_id, order);
@@ -4471,7 +4473,7 @@ $(document).ready(function () {
                     return false;
                 }
 
-                
+
             break;
 
             case '27':
@@ -4482,7 +4484,7 @@ $(document).ready(function () {
                     return false;
                 }
 
-                
+
             break;
 
             case '28':
@@ -4495,7 +4497,7 @@ $(document).ready(function () {
                     return false;
                 }
 
-                
+
             break;
 
             case '29':
@@ -4503,7 +4505,7 @@ $(document).ready(function () {
                 if (order != '') {
                     //Mvodafone
                     payWithMvodafone(order);
-                    
+
                 }
                 else{
                     return false;
@@ -4653,8 +4655,8 @@ $(document).ready(function () {
                     return false;
                 }
             break;
-           
-        
+
+
         }
 
     }
@@ -4712,7 +4714,7 @@ $(document).ready(function () {
             break;
 
             case 7:
-            
+
             break;
 
             case 8:
@@ -4735,7 +4737,7 @@ $(document).ready(function () {
                 });
 
             });
-        
+
             break;
 
             case 9:
@@ -4755,7 +4757,7 @@ $(document).ready(function () {
             break;
 
             case 13:
-                    paymentViaSquare('', '');   
+                    paymentViaSquare('', '');
             break;
 
             case 14:
@@ -4794,7 +4796,7 @@ $(document).ready(function () {
                     paymentViaEasyPaisaPay('');
             break;
 
-            case 24:  
+            case 24:
                     paymentViaCashfree('', payment_option_id, '');
             break;
 
@@ -4803,15 +4805,15 @@ $(document).ready(function () {
             break;
 
             case 26:
-                    paymentViaToyyibPay('', payment_option_id, '');        
+                    paymentViaToyyibPay('', payment_option_id, '');
             break;
 
             case 27:
-                    paymentViaPaytab('', payment_option_id, '');  
+                    paymentViaPaytab('', payment_option_id, '');
             break;
 
             case 28:
-                    payWithVNpay('', payment_option_id, '');                        
+                    payWithVNpay('', payment_option_id, '');
             break;
 
             case 29:
@@ -4827,43 +4829,43 @@ $(document).ready(function () {
             break;
 
             case 33:
-                    paymentViaBraintree('', payment_option_id, ''); 
+                    paymentViaBraintree('', payment_option_id, '');
             break;
 
             case 34:
-                    payWithWindcave('', payment_option_id, ''); 
+                    payWithWindcave('', payment_option_id, '');
             break;
 
             case 35:
-                    payWithPaytech('', payment_option_id, ''); 
+                    payWithPaytech('', payment_option_id, '');
             break;
 
             case 36:
-                    paymentViaMyCash('', payment_option_id, ''); 
+                    paymentViaMyCash('', payment_option_id, '');
             break;
 
             case 37:
                     stripeOXXOInitialize();
-                    paymentViaStripeOXXO('', payment_option_id, ''); 
+                    paymentViaStripeOXXO('', payment_option_id, '');
             break;
 
             case 39:
-                paymentViaStripeIdeal('', payment_option_id, ''); 
+                paymentViaStripeIdeal('', payment_option_id, '');
             break;
             case 40:
-                paymentViaUseRede('', payment_option_id, ''); 
+                paymentViaUseRede('', payment_option_id, '');
             break;
             case 41:
                 payWithOpenPay('', payment_option_id, '');
             break;
             case 42:
-                paymentViaDpo('', payment_option_id, ''); 
+                paymentViaDpo('', payment_option_id, '');
                 break;
             case 43:
-                paymentViaUPay('', payment_option_id, ''); 
+                paymentViaUPay('', payment_option_id, '');
                 break;
              case 44:
-                paymentViaConekta('', payment_option_id, ''); 
+                paymentViaConekta('', payment_option_id, '');
                 break;
 
         }

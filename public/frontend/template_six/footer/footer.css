@@ -1,5 +1,6 @@
 
 /*============== footer css ===================*/
+.al_QRcode svg{margin-bottom: 10px;}
 .al_footer_template_six{background-color: #0C0C0C;}
 footer#footer{position: absolute;bottom: 0;width: 100%;}
 article#page-container{position: relative;min-height: 100vh;overflow: hidden;}
@@ -17,6 +18,28 @@ footer#footer .social-links li a:hover i{-webkit-transform: scale(1);transform: 
 .al_footer_template_six ul li a:hover{color: var(--top-header-color)}
 .al_footer_template_six ul li{margin-bottom: 10px;}
 .al_footer_template_six ul.social-links li span{display: none;}
+
+/* ============ dark theme css ============================= */
+.dark.al_body_template_six .alSixMainMenu .slick-slide,
+.dark .alFindSec,
+.dark .form-control,
+.dark.al_body_template_six .vendors .product-card-box{background-color: #232323;}
+
+.dark.al_body_template_six .vendors .brand-ing,
+.dark.al_body_template_six .vendors .suppliers-img-outer,
+.dark.al_body_template_six .vendors .img-outer-box{background-color: #0C0C0C;}
+
+.dark .new-tag,
+.dark .alFindSec span,
+.dark .alTesimonialsFrom{color: #eee;}
+.dark .alChooseDate span:before,
+.dark .alLocation span:before{border-color: #eee;}
+.dark .site-header, .dark .site-header.fixed-bar{background-color: #0C0C0C;}
+
+.dark .site-header.fixed-bar .rightHead ul li a svg path,
+.dark .site-header .rightHead ul li a svg path,
+.dark .site-header .rightHead ul li a svg,
+.dark .site-header.fixed-bar .rightHead ul li a svg{fill: #fff;}
 
 @media(max-width: 991px){
 .alSpaListSlider .slick-list.draggable{padding-left: 0 !important;}

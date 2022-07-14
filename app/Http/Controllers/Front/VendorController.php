@@ -153,14 +153,14 @@ class VendorController extends FrontController
             }
         }
         // dd($listData);
-        
+
         if($listData->count() == $inqury_count){
             $show_range = 0;
         }
         else{
             $show_range = 1;
         }
-        $range_products = Product::with('tags')->join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get(); 
+        $range_products = Product::with('tags')->join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
 
         if($vendor->vendor_templete_id == 2){
             $page = 'categories';
@@ -191,10 +191,10 @@ class VendorController extends FrontController
             //         if(!in_array($vendor->id, $vendors)){
             //             $listData =collect();
             //             return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
-                       
+
             //         }
             //     }
-                
+
             // }else{
             //     // abort(404);
             // }
@@ -286,7 +286,7 @@ class VendorController extends FrontController
                 $inqury_count++;
             }
         }
-        if($listData->count() == $inqury_count){ 
+        if($listData->count() == $inqury_count){
             $show_range = 0;
         }
         else{
@@ -312,8 +312,8 @@ class VendorController extends FrontController
                 $vendors = $vendors;
                 else
                 $vendors = $vendors->toArray();
-                if(!in_array($vendor->id, $vendors)){ 
-                    $listData = collect();  
+                if(!in_array($vendor->id, $vendors)){
+                    $listData = collect();
                     return view('frontend/vendor-'.$page)->with(['vendor' => $vendor, 'show_range' => $show_range, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products, 'vendor_category' => $slug2]);
 
                 //    return view('frontend.vendor-not-in-location')->with(['vendor' => $vendor, 'show_range' => $show_range, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products, 'vendor_category' => $slug2]);
@@ -324,7 +324,7 @@ class VendorController extends FrontController
             }
         }
 
-       
+
 
         return view('frontend/vendor-'.$page)->with(['vendor' => $vendor, 'show_range' => $show_range, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products, 'vendor_category' => $slug2]);
     }
@@ -498,7 +498,7 @@ class VendorController extends FrontController
                     // }
                 }
             }
-            $listData = $products; 
+            $listData = $products;
             return $listData;
         }
     }
@@ -509,7 +509,7 @@ class VendorController extends FrontController
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $variant_id = ($request->has('variant')) ? $request->variant : 0;
         $AddonData = Product::with([
-                'media.image', 
+                'media.image',
                 'translation' => function($q) use($langId){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                 },
@@ -599,7 +599,7 @@ class VendorController extends FrontController
                 $productIds = $new_pIds;
             }
         }
-        $order_type = $request->has('order_type') ? $request->order_type : '';  
+        $order_type = $request->has('order_type') ? $request->order_type : '';
         $products = Product::with(['media.image', 'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
@@ -614,7 +614,7 @@ class VendorController extends FrontController
                             // }elseif(!empty($order_type) && $order_type == 'high_to_low'){
                             //     $q->orderBy('price', 'desc');
                             // }
-                            
+
                         },'category.categoryDetail.translation' => function($q) use($langId){
                             $q->where('category_translations.language_id', $langId);
                         },
@@ -646,7 +646,7 @@ class VendorController extends FrontController
         }elseif (!empty($order_type) && $order_type == 'low_to_high') {
             $products = $products->orderBy('product_variants.price', 'asc');
         }elseif (!empty($order_type) && $order_type == 'high_to_low') {
-            $products = $products->orderBy('product_variants.price', 'desc'); 
+            $products = $products->orderBy('product_variants.price', 'desc');
         }elseif (!empty($order_type) && $order_type == 'newly_added') {
             $products = $products->orderBy('products.id', 'desc');
         }elseif (!empty($order_type) && $order_type == 'a_to_z') {
@@ -719,7 +719,7 @@ class VendorController extends FrontController
                 array_push($vendorCategory, $child->category->id);
             }
         }
-        
+
         // Check vendor service area on hyperlocal
         $check_service_area = false;
         $vendors = [];
@@ -727,7 +727,7 @@ class VendorController extends FrontController
             $check_service_area = true;
             $vendors = $this->getServiceAreaVendors();
         }
-        
+
         $vendor_categories = collect(); // final data
         if( !$check_service_area || ( $check_service_area && in_array($vid, $vendors) ) ){
 
@@ -760,7 +760,7 @@ class VendorController extends FrontController
             ])->select('products.id', 'products.sku','products.title', 'products.url_slug','products.weight_unit','products.category_id', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
             ->join('product_translations', 'product_translations.product_id', '=', 'products.id');
-        
+
             if($keyword){
                 $products->where(function ($q) use ($keyword, $langId) {
                     $q->where(function ($q1) use ($keyword) {
@@ -790,7 +790,7 @@ class VendorController extends FrontController
             }elseif (!empty($order_type) && $order_type == 'low_to_high') {
                 $products = $products->orderBy('product_variants.price', 'asc');
             }elseif (!empty($order_type) && $order_type == 'high_to_low') {
-                $products = $products->orderBy('product_variants.price', 'desc'); 
+                $products = $products->orderBy('product_variants.price', 'desc');
             }elseif (!empty($order_type) && $order_type == 'newly_added') {
                 $products = $products->orderBy('products.id', 'desc');
             }elseif (!empty($order_type) && $order_type == 'a_to_z') {
@@ -805,7 +805,7 @@ class VendorController extends FrontController
             ->groupBy('products.id')
             ->where('vendor_id', $vid)->get();
 
-            
+
             $category_list = [];
             if($products->isNotEmpty()){
                 foreach($products as $k => $value) {
@@ -817,7 +817,7 @@ class VendorController extends FrontController
                                 $v->is_free = false;
                             }
                             $v->multiplier = $clientCurrency->doller_compare;
-                        } 
+                        }
                     }
 
 

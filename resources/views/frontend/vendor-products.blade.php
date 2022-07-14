@@ -157,7 +157,7 @@
                             </span> -->
                         </h5>
                             <div class="offer-slider al">
-                                
+
                                 @foreach($newProducts as $newProds)
 
                                     @foreach($newProds as $new)
@@ -217,7 +217,7 @@
                                 </div>
                                 @endforeach
                             @endforeach
-                            
+
                         </div>
                     </div>
                     @endif
@@ -362,6 +362,11 @@
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
+    @if(!empty($vendor->banner))
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+    @endif
     $('.js-range-slider').ionRangeSlider({
         type: 'double',
         grid: false,

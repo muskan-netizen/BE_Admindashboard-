@@ -838,7 +838,7 @@
 </script>
 <script type="text/javascript">
    $(document).on('ready', function() {
-
+      alert('sadf');
      if ( $('.product__slider-main').length ) {
        var $slider = $('.product__slider-main')
            .on('init', function(slick) {
@@ -937,12 +937,14 @@
 </script>
 <script>
    $(document).ready(function(){
-       $(".alHamBurgerIcon").click(function(){
+      $("body").addClass("homeHeader");
+      $(".alHamBurgerIcon").click(function(){
           $(".alSpaMenuCard").addClass("active");
        });
        $(".alMenuClose").click(function(){
            $(".alSpaMenuCard").removeClass("active");
        });
+
    });
 
    $(window).scroll(function() {

@@ -237,5 +237,13 @@
     </div>
 </section>
 @endsection
-@section('script')
+
+@section('js-script')
+@if(!empty($vendor->banner))
+<script>
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+</script>
+@endif
 @endsection

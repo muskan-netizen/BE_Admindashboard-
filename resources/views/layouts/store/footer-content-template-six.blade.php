@@ -455,6 +455,26 @@ $applocale = session()->get('applocale');
    </div>
 </div>
 
+<!-- <div class="alSwitch">
+   <div id="dark_mode_switch" data-mode="false" class="time-circle">
+   <div class="sun"></div>
+   <div class="moon">
+      <div></div>
+      <div></div>
+      <div></div>
+   </div>
+   <div class="stars">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+   </div>
+   <div class="water"></div>
+   </div>
+</div> -->
 <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
 <script>
     $(document).ready(function(){
@@ -527,28 +547,29 @@ $applocale = session()->get('applocale');
       autoplaySpeed: 2000,
     });
 
-    $('.slider').slick({
-          dots: false,
-          infinite: true,
-          speed: 500,
-          slidesToShow: 8,
-          slidesToScroll: 1,
-          autoplay: false,
-          autoplaySpeed: 2000,
-          arrows: true,
-          responsive: [{
+      $('.slider').slick({
+            dots: false,
+            infinite: true,
+            speed: 500,
+            slidesToShow: 8,
+            slidesToScroll: 1,
+            autoplay: false,
+            autoplaySpeed: 2000,
+            arrows: true,
+            responsive: [{
             breakpoint: 1400,
             settings: {
-              slidesToShow: 6,
+               slidesToShow: 6,
             }
-          },
-          {
-             breakpoint: 1199,
-             settings: {
-                slidesToShow: 4,
-             }
-          }]
+            },
+            {
+               breakpoint: 1199,
+               settings: {
+                  slidesToShow: 4,
+               }
+            }]
       });
+
   });
 </script>
 <script>

@@ -90,9 +90,9 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @if(isset($set_template)  && $set_template->template_id == 1)
 <script defer type="text/javascript" src="{{asset('front-assets/js/custom-template-one.js')}}"></script>
 @endif
-//sectionHarbans
+
 @yield('js-script')
-//sectionHarbansEnd
+
 @if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
