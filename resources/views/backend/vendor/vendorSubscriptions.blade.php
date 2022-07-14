@@ -85,13 +85,13 @@
                         </div>
                     </div>
                     <div class="p-2">
-                        <h3 class="heading mt-0 mb-2"><b>{{ $plan->title }}</b></h3>
+                        <h3 class="heading mt-0 mb-2"><b>{{ __($plan->title) }}</b></h3>
                         <div class="pricing-content">
-                            <p>{{ $plan->description }}</p>
+                            <p>{{ __($plan->description) }}</p>
                         </div>
                         <ul class="mb-3 pl-1" style="list-style:none">
                             @foreach($plan->features as $feature)
-                                <li><i class="fa fa-check"></i> {{ $feature }}</li>
+                                <li><i class="fa fa-check"></i> {{ __($feature) }}</li>
                             @endforeach
                         </ul>
                     </div>

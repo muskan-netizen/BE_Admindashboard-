@@ -38,7 +38,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '22', 'path' => 'ccavenue/pay', 'code' => 'ccavenue', 'title' => 'CCAvenue', 'off_site' => '1', 'status' => '0'), 
         array('id' => '23', 'path' => 'easypaisa/pay', 'code' => 'easypaisa', 'title' => 'Easypaisa', 'off_site' => '1', 'status' => '0'),
         array('id' => '24', 'path' => 'cashfree', 'code' => 'cashfree', 'title' => 'Cashfree', 'off_site' => '1', 'status' => '0'),
-        array('id' => '25', 'path' => 'easebuzz', 'code' => 'easebuzz', 'title' => 'PAYMENT GATEWAY - EASEBUZZ', 'off_site' => '1', 'status' => '0'),
+        array('id' => '25', 'path' => 'easebuzz', 'code' => 'easebuzz', 'title' => 'Easypaisa', 'off_site' => '1', 'status' => '0'),
         array('id' => '26', 'path' => 'tarsoft/toyyibpay', 'code' => 'toyyibpay', 'title' => 'Toyyibpay', 'off_site' => '1', 'status' => '0'),
         array('id' => '27', 'path' => '', 'code' => 'paytab', 'title' => 'PayTab', 'off_site' => '1', 'status' => '0'),
         array('id' => '28', 'path' => 'vnpay', 'code' => 'vnpay', 'title' => 'VNPay', 'off_site' => '1', 'status' => '0'),
@@ -57,7 +57,8 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '41', 'path' => '', 'code' => 'openpay', 'title' => 'Open-pay', 'off_site' => '1', 'status' => '0'),
         array('id' => '42', 'path' => '', 'code' => 'dpo', 'title' => 'Direct Pay Online', 'off_site' => '1', 'status' => '0'),
         array('id' => '43', 'path' => '', 'code' => 'upay', 'title' => 'UnionBank Payments and Collections Solution', 'off_site' => '1', 'status' => '0'),
-        array('id' => '44', 'path' => 'conekta/conekta-php', 'code' => 'conekta', 'title' => 'Conekta', 'off_site' => '1', 'status' => '0')
+        array('id' => '44', 'path' => 'conekta/conekta-php', 'code' => 'conekta', 'title' => 'Conekta', 'off_site' => '1', 'status' => '0'),
+        array('id' => '45', 'path' => 'laravel_payment/telr', 'code' => 'telr', 'title' => 'Telr', 'off_site' => '1', 'status' => '0'),
       );
 
       if($option_count == 0)
