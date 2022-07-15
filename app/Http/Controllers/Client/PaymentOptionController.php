@@ -577,7 +577,8 @@ class PaymentOptionController extends BaseController
                             $json_creds = json_encode(array(
                                 'openpay_merchant_id' => $request->openpay_merchant_id,
                                 'openpay_private_key' => $request->openpay_private_key,
-                                'openpay_public_key' => $request->openpay_public_key
+                                'openpay_public_key' => $request->openpay_public_key,
+                                'openpay_verification_key' => $request->openpay_verification_key
                             ));
                             break;
                         case 'dpo':
