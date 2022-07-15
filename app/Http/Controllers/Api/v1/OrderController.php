@@ -201,6 +201,7 @@ class OrderController extends BaseController
                     }
                     $opt_quantity_price = 0;
                     $total_container_charges = 0;
+                    $fixed_fee_amount = 0.00;
                     $vendor_total_container_charges = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $delivery_fee = 0;
@@ -240,7 +241,7 @@ class OrderController extends BaseController
                             $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price + $price_container_charges;
                             $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                             $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
-                            $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges;
+                            $payable_amount = $payable_amount + $quantity_price + $vendor_total_container_charges + $fixed_fee_amount;
                             $product_payable_amount = 0;
                             $opt_quantity_price = 0;
                             if (!empty($vendor_cart_product->addon)) {
@@ -430,6 +431,9 @@ class OrderController extends BaseController
                             if (($vendor_info->commission_fixed_per_order) != null && $vendor_payable_amount > 0) {
                                 $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                             }
+                            if($vendor_info->fixed_fee_amount > 0){
+                                $fixed_fee_amount = $fixed_fee_amount + $vendor_info->fixed_fee_amount;
+                            }
                         }
                         $order_vendor->save();
                         $order_status = new VendorOrderStatus();
@@ -468,8 +472,7 @@ class OrderController extends BaseController
                             $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                         }
                     }
-                    $payable_amount = $payable_amount - $loyalty_amount_saved;
-
+                    $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved;
                     $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
                     $wallet_amount_used = 0;
                     if ($user->balanceFloat > 0) {
@@ -503,8 +506,8 @@ class OrderController extends BaseController
                     $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
-                    $order->payable_amount = $payable_amount+$total_fixed_fee_amount;
-                    $order->fixed_fee_amount = $total_fixed_fee_amount;
+                    $order->payable_amount = $payable_amount;
+                    $order->fixed_fee_amount = $fixed_fee_amount;
                     $order->total_container_charges = $total_container_charges;
                     if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                         $order->payment_status = 1;
@@ -2596,6 +2599,7 @@ class OrderController extends BaseController
                         'title' => $notification_content->subject,
                         'body'  => $notification_content->content,
                         'data' => $orderData,
+                        'order_id' => $orderData->id,
                         'type' => "order_created"
                     ],
                     "priority" => "high"
