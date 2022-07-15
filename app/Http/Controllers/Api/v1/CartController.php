@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
-use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption}; 
+use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption}; 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
 //use App\Http\Traits\MpesaStkpush;
@@ -681,7 +681,9 @@ class CartController extends BaseController
 
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
                     if(isset($prod->product) && !empty($prod->product)){
-
+                        if($prod->product->pharmacy_check == 1){
+                            $prod->product->uploaded_prescriptions = CartProductPrescription::where('cart_id', $cartID)->where('product_id', $prod->product->id)->count();
+                        }
                         if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
                             $quantity_check = productvariantQuantity($prod->variant_id);
                             if($quantity_check < $prod->quantity ){
@@ -1258,6 +1260,24 @@ class CartController extends BaseController
             $cart->off_scheduling_at_cart =  $preferences->off_scheduling_at_cart;
         }
         return $cart;
+    }
+
+    public function uploadPrescriptions(Request $request){
+        print_r($request->all());die;
+        $user = Auth::user();
+        $user_id = $user->id;
+        if ($user) {
+            $cart = Cart::select('id')->where('status', '0')->where('user_id', $user_id)->first();
+            foreach ($request->prescriptions as $prescription) {
+                $cart_product_prescription = new CartProductPrescription();
+                $cart_product_prescription->cart_id = $cart->id;
+                $cart_product_prescription->vendor_id = $request->vendor_idd;
+                $cart_product_prescription->product_id = $request->product_id;
+                $cart_product_prescription->prescription = Storage::disk('s3')->put('prescription', $prescription, 'public');
+                $cart_product_prescription->save();
+            }
+        }
+        return response()->json(['status' => 'success', 'message' => "Uploaded Successfully"]);
     }
 
     public function checkScheduleSlots(Request $request)
