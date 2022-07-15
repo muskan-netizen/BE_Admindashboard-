@@ -1650,8 +1650,11 @@ class OrderController extends BaseController
                         $q1->orWhere(function ($q2) {
                             $q2->whereIn('payment_option_id', [1,38]);
                         });
-                    })
-                    ->where('user_id', $user->id)->where('id', $order_id)->select('*', 'id as total_discount_calculate')
+                    });
+                    if(!$user->is_admin){
+                        $order = $order->where('user_id', $user->id);
+                    }
+                    $order = $order->where('id', $order_id)->select('*', 'id as total_discount_calculate')
                     ->first();
             }
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
