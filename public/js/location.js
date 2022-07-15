@@ -908,6 +908,16 @@ $(document).ready(function () {
         success: async function (response) {
             nav_click_vendor_mode = 0;
             if (response.status == "Success") {
+
+                var data = response.data;
+                // console.log(data);
+                // return 0;
+                if((data.navCategories).length > 0 && vendor_type == "pick_drop"){
+                    var category = data.navCategories[0].slug;
+                    window.location.href = category_page_url.replace(":id", category);
+                    return;
+                }
+
                 if($('.menu-slider').hasClass('slick-initialized')){
                     $('.menu-slider').slick('destroy');
                 }
