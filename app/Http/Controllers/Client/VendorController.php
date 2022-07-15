@@ -1084,6 +1084,7 @@ class VendorController extends BaseController
         $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
         $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
         $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
+        $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
         if($request->has('slot_minutes')){
             $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;
         }

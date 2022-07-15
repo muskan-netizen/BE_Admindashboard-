@@ -6,7 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{ClientPreference, VendorSlotDate, Vendor, VendorSlot, SlotDay, ServiceArea};
+use App\Models\{ClientPreference, VendorSlotDate, Vendor, VendorSlot, SlotDay, ServiceArea, VendorSlotServiceArea, VendorSlotDateServiceArea};
 
 class VendorSlotController extends BaseController
 {
@@ -34,8 +34,12 @@ class VendorSlotController extends BaseController
             $slot->dine_in      = $dine_in;
             $slot->takeaway     = $takeaway;
             $slot->delivery     = $delivery;
-            $slot->service_area_id = $request->slot_service_area;
+            // $slot->service_area_id = $request->slot_service_area;
             $slot->save();
+
+            if($request->has('slot_service_area')){
+                $slot->syncGeos()->sync($request->slot_service_area);
+            }
 
             foreach ($request->week_day as $key => $value) {
                 $slotData['slot_id']    = $slot->id;
@@ -43,17 +47,31 @@ class VendorSlotController extends BaseController
                 SlotDay::insert($slotData);  
             }
         }else{
-            $slotData['vendor_id']          = $vendor->id;
-            $slotData['start_time']         = $request->start_time;
-            $slotData['end_time']           = $request->end_time;
-            $slotData['specific_date']      = $request->slot_date;
-            $slotData['dine_in']            = $dine_in;
-            $slotData['takeaway']           = $takeaway;
-            $slotData['delivery']           = $delivery;
-            $slotData['service_area_id']    = $request->slot_service_area;
-            $slotData['working_today']      = 1;
+            // $slotData['vendor_id']          = $vendor->id;
+            // $slotData['start_time']         = $request->start_time;
+            // $slotData['end_time']           = $request->end_time;
+            // $slotData['specific_date']      = $request->slot_date;
+            // $slotData['dine_in']            = $dine_in;
+            // $slotData['takeaway']           = $takeaway;
+            // $slotData['delivery']           = $delivery;
+            // $slotData['service_area_id']    = $request->slot_service_area;
+            // $slotData['working_today']      = 1;
 
-            VendorSlotDate::insert($slotData);
+            // $slot_date = VendorSlotDate::insert($slotData);
+
+            $slotDate = new VendorSlotDate();
+            $slotDate->vendor_id          = $vendor->id;
+            $slotDate->start_time         = $request->start_time;
+            $slotDate->end_time           = $request->end_time;
+            $slotDate->specific_date      = $request->slot_date;
+            $slotDate->dine_in            = $dine_in;
+            $slotDate->takeaway           = $takeaway;
+            $slotDate->delivery           = $delivery;
+            $slotDate->working_today      = 1;
+            $slotDate->save();
+            if($request->has('slot_service_area')){
+                $slotDate->syncGeos()->sync($request->slot_service_area);
+            }
         }
         return redirect()->back()->with('success', 'Slot saved successfully!');
 
@@ -97,9 +115,13 @@ class VendorSlotController extends BaseController
                     $dateSlot->dine_in          = $dine_in;
                     $dateSlot->takeaway         = $takeaway;
                     $dateSlot->delivery         = $delivery;
-                    $dateSlot->service_area_id  = $request->edit_slot_service_area;
+                    // $dateSlot->service_area_id  = $request->edit_slot_service_area;
                     $dateSlot->working_today    = 1;
                     $dateSlot->save();
+
+                    if($request->has('edit_slot_service_area')){
+                        $dateSlot->syncGeos()->sync($request->edit_slot_service_area);
+                    }
 
                     return redirect()->back()->with('success', 'Slot saved successfully!');
                 }
@@ -111,8 +133,12 @@ class VendorSlotController extends BaseController
             $slot->dine_in      = $dine_in;
             $slot->takeaway     = $takeaway;
             $slot->delivery     = $delivery;
-            $slot->service_area_id  = $request->edit_slot_service_area;
+            // $slot->service_area_id  = $request->edit_slot_service_area;
             $slot->save();
+
+            if($request->has('edit_slot_service_area')){
+                $slot->syncGeos()->sync($request->edit_slot_service_area);
+            }
 
             $slotDay->slot_id =  $slot->id;
             $slotDay->day = $request->edit_day;
@@ -139,8 +165,12 @@ class VendorSlotController extends BaseController
                     $slot->dine_in      = $dine_in;
                     $slot->takeaway     = $takeaway;
                     $slot->delivery     = $delivery;
-                    $slot->service_area_id  = $request->edit_slot_service_area;
+                    // $slot->service_area_id  = $request->edit_slot_service_area;
                     $slot->save();
+
+                    if($request->has('edit_slot_service_area')){
+                        $slot->syncGeos()->sync($request->edit_slot_service_area);
+                    }
 
                     $sday = new SlotDay();
                     $sday->slot_id =  $slot->id;
@@ -157,8 +187,12 @@ class VendorSlotController extends BaseController
             $dateSlot->takeaway         = $takeaway;
             $dateSlot->delivery         = $delivery;
             $dateSlot->working_today    = 1;
-            $dateSlot->service_area_id  = $request->edit_slot_service_area;
+            // $dateSlot->service_area_id  = $request->edit_slot_service_area;
             $dateSlot->save();
+
+            if($request->has('edit_slot_service_area')){
+                $dateSlot->syncGeos()->sync($request->edit_slot_service_area);
+            }
 
         }
         return redirect()->back()->with('success', 'Slot saved successfully!');
@@ -183,12 +217,16 @@ class VendorSlotController extends BaseController
                     'working_today' => 0
                 ]);
             }else{
-                $dateSlot = VendorSlotDate::where('id', $request->slot_id)->delete();
+                $dateSlot = VendorSlotDate::find($request->slot_id);
+                $dateSlot->syncGeos()->detach();
+                $dateSlot->delete();
             }
         } else {
             $slotDay = SlotDay::where('slot_id', $request->slot_id)->get();
             if($slotDay->count() == 1){
-                $vendorSlot = VendorSlot::where('id', $request->slot_id)->delete();
+                $vendorSlot = VendorSlot::find($request->slot_id);
+                $vendorSlot->syncGeos()->detach();
+                $vendorSlot->delete();
             }
             $slot_day = SlotDay::where('id', $request->slot_day_id)->delete();
         }
@@ -230,9 +268,9 @@ class VendorSlotController extends BaseController
         }
 
         $lst = count($date) - 1;
-        $slot = VendorSlot::join('slot_days', 'slot_days.slot_id', 'vendor_slots.id')->where('vendor_id', $id)->orderBy('slot_days.day', 'asc')->get();
+        $slot = VendorSlot::select('vendor_slots.*', 'slot_days.id as slot_day_id', 'slot_days.slot_id', 'slot_days.day')->with(['geos'])->join('slot_days', 'slot_days.slot_id', 'vendor_slots.id')->where('vendor_id', $id)->orderBy('slot_days.day', 'asc')->get();
         
-        $slotDate = VendorSlotDate::whereBetween('specific_date', [$date[0], $date[$lst]])->orderBy('specific_date','asc')->get();
+        $slotDate = VendorSlotDate::with(['geos'])->whereBetween('specific_date', [$date[0], $date[$lst]])->orderBy('specific_date','asc')->get();
 
         $showData = array();
         $count = 0;
@@ -267,7 +305,7 @@ class VendorSlotController extends BaseController
                         $showData[$count]['slot_dine_in'] = ($dinein_check == 1 && $v->dine_in == 1 && $vendor->dine_in == 1) ? 1 : 0;
                         $showData[$count]['slot_takeaway'] = ($takeaway_check == 1 && $v->takeaway == 1 && $vendor->takeaway == 1) ? 1 : 0;
                         $showData[$count]['slot_delivery'] = ($delivery_check == 1 && $v->delivery == 1 && $vendor->delivery == 1) ? 1 : 0;
-                        $showData[$count]['service_area'] = $v->service_area_id;
+                        $showData[$count]['service_area'] = $v->geos->pluck('service_area_id')->toArray();
                         $count++;
                     }
                 }
@@ -287,12 +325,12 @@ class VendorSlotController extends BaseController
                         $showData[$count]['end'] = $date[$key].'T'.$v->end_time;
                         $showData[$count]['type'] = 'day';
                         $showData[$count]['color'] = ($v->working_today == 0) ? '#43bee1' : '';
-                        $showData[$count]['type_id'] = $v->id;
+                        $showData[$count]['type_id'] = $v->slot_day_id;
                         $showData[$count]['slot_id'] = $v->slot_id;
                         $showData[$count]['slot_dine_in'] = ($dinein_check == 1 && $v->dine_in == 1 && $vendor->dine_in == 1) ? 1 : 0;
                         $showData[$count]['slot_takeaway'] = ($takeaway_check == 1 && $v->takeaway == 1 && $vendor->takeaway == 1) ? 1 : 0;
                         $showData[$count]['slot_delivery'] = ($delivery_check == 1 && $v->delivery == 1 && $vendor->delivery == 1) ? 1 : 0;
-                        $showData[$count]['service_area'] = $v->service_area_id;
+                        $showData[$count]['service_area'] = $v->geos->pluck('service_area_id')->toArray();
                         $count++;
                     }
                 }

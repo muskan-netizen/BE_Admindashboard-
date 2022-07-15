@@ -341,6 +341,8 @@
                                                             </td>
 
                                                             <td>
+                                                                <input type="checkbox" data-plugin="switchery" name="status_for_slot" class="form-control" data-color="#43bee1" @if($geo->is_active_for_vendor_slot == 1) checked @endif {{ ($vendor->cron_for_service_area == 1) ? 'disabled' : '' }}>
+
                                                                 <button type="button" class="btn btn-primary-outline action-icon editAreaBtn" area_id="{{$geo->id}}"><i class="mdi mdi-square-edit-outline"></i></button>
 
                                                                 <form action="{{route('vendor.serviceArea.delete', $vendor->id)}}" method="POST" class="action-icon">
@@ -1391,9 +1393,10 @@
                 if(ev.event.extendedProps.slot_dine_in == 0){
                     $("#edit_dine_in").prop("checked", false);
                 }
-                if(ev.event.extendedProps.service_area > 0){
-                    $("#edit_slot_service_area option[value='"+ev.event.extendedProps.service_area+"']").attr("selected", true);
-                }
+                
+                // display selected service areas 
+                var service_areas = ev.event.extendedProps.service_area;
+                $("#edit_slot_service_area").val(service_areas).trigger('change');
 
                 $('#edit_slot_date').flatpickr({
                     minDate: "today",

@@ -13,7 +13,11 @@ class VendorSlotDate extends Model
     	return $this->where('vendor_id',$vendor_id)->delete();
     }
 
-    public function serviceArea(){
-        return $this->hasMany('App\Models\ServiceArea', 'id', 'service_area_id')->select('vendor_id', 'geo_array', 'name');
-     }
+    public function geos(){
+        return $this->hasMany('App\Models\VendorSlotDateServiceArea', 'vendor_slot_date_id', 'id');
+    }
+
+    public function syncGeos(){
+        return $this->belongsToMany('App\Models\VendorSlotDateServiceArea', 'vendor_slot_date_service_areas', 'vendor_slot_date_id', 'service_area_id');
+    }
 }

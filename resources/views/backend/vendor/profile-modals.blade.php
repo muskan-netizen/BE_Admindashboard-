@@ -124,11 +124,16 @@
                         <div class="col-md-12" >
                             <div class="form-group">
                                 <label class="control-label">{{ __("Service Area") }}</label>
-                                <select class="selectize-select form-control" name="slot_service_area" id="add_slot_service_area">
+                                <select class="form-control select2-multiple" name="slot_service_area[]" id="add_slot_service_area" data-toggle="select2" multiple="multiple" placeholder="Select Service Area...">
                                     @foreach($areas as $area)
                                         <option value="{{$area->id}}">{{$area->name}}</option>
                                     @endforeach
                                 </select>
+                                {{-- <select class="selectize-select form-control" name="slot_service_area" id="add_slot_service_area">
+                                    @foreach($areas as $area)
+                                        <option value="{{$area->id}}">{{$area->name}}</option>
+                                    @endforeach
+                                </select> --}}
                             </div>
                         </div>
                     </div>
@@ -275,11 +280,16 @@
                         <div class="col-md-12" >
                             <div class="form-group">
                                 <label class="control-label">{{ __("Service Area") }}</label>
-                                <select class="selectize-select form-control" name="edit_slot_service_area" id="edit_slot_service_area">
+                                <select class="form-control select2-multiple" name="edit_slot_service_area[]" id="edit_slot_service_area" data-toggle="select2" multiple="multiple" placeholder="Select Service Area...">
                                     @foreach($areas as $area)
                                         <option value="{{$area->id}}">{{$area->name}}</option>
                                     @endforeach
                                 </select>
+                                {{-- <select class="selectize-select form-control" name="edit_slot_service_area" id="edit_slot_service_area">
+                                    @foreach($areas as $area)
+                                        <option value="{{$area->id}}">{{$area->name}}</option>
+                                    @endforeach
+                                </select> --}}
                             </div>
                         </div>
                     </div>
