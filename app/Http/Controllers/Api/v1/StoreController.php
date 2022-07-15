@@ -251,7 +251,7 @@ class StoreController extends BaseController{
 			$orderIds = OrderQrcodeLinks::where('code',$request->qr_code??$qrcode)->pluck('order_id')->toArray();
 			if(empty($orderIds))
 			{
-				return $this->errorResponse(__('No order is found.'), 400);
+				return $this->successResponse([], '', 200);
 			}
 			//dd($orderIds);
     		$user = Auth::user();
