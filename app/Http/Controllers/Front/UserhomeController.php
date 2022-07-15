@@ -262,6 +262,7 @@ class UserhomeController extends FrontController
     }
     public function index(Request $request, $domain='')
     {
+       
         try {
             $home = array();
             $vendor_ids = array();

@@ -206,6 +206,7 @@ $(document).ready(function () {
     
     //$(".navigation-tab-item").click(function() {
     $(document).on('click','.navigation-tab-item > a',function() {
+       
         //$(".navigation-tab-item").removeClass("active");
         $('.vendor_mods').find('.nav-link').removeClass('active');
         $(this).addClass("active");

@@ -48,6 +48,9 @@ $(function () {
     $(document).ajaxStop(function () {
         document.ajax_loading = false;
     });
+    $(document).ajaxComplete(function () {
+        document.ajax_loading = false;
+    });
 });
 
 $(window).scroll(function () {

@@ -18,7 +18,7 @@
     </div>
     @endif
 </div>
-@if($action != 'delivery')
+@if($action != 'delivery' && $action != 'on_demand' )
     @if(isset($vendor_details['vendor_address']))
         <div>
             <input type="hidden" id="latitude" value="{{ $vendor_details['vendor_address']->latitude }}">

@@ -2403,6 +2403,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
                     // Disable the place order button
                     $('#order_placed_btn').attr("disabled", true);
                 }else{
+                    console.log('order_placed_btn 2406');
                     // Enable the place order button
                     $('#order_placed_btn').attr("disabled", false);
                 }
