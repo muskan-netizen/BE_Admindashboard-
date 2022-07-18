@@ -40,11 +40,19 @@ $(document).ready(function () {
         window.location.replace("https://google.com");
     });
 
+    if($.cookie('age_restriction') == 1 && ($.cookie('show_subscription_plan') == undefined || $.cookie('show_subscription_plan') == 0)){
+        if(setShowSubscriptionPlan == 'showed'){
+            $("#show-subscription-plan-mdl").modal("show");
+            $.cookie('show_subscription_plan', 1);
+        }
+    }
+
     $(".age_restriction_yes").click(function () {
         $.cookie('age_restriction', 1);
         $('#age_restriction').modal('hide');
         if(setShowSubscriptionPlan == 'showed'){
             $("#show-subscription-plan-mdl").modal("show");
+            $.cookie('show_subscription_plan', 1);
         }
     });
 
@@ -210,20 +218,19 @@ $(document).ready(function () {
         let longitude = "";
         let type = "";
         var id = $(this).find('.nav-link').attr('id');
-         type = $(this).find('.nav-link').attr('VendorType');
         if($("#address-latitude").length > 0){
             latitude = $("#address-latitude").val();
         }
         if($("#address-longitude").length > 0){
             longitude = $("#address-longitude").val();
         }
-        // if(id == "dinein_tab"){
-        //     type = "dine_in";
-        // }else if(id == "takeaway_tab"){
-        //     type = "takeaway";
-        // }else{
-        //     type = "delivery";
-        // }
+        if(id == "dinein_tab"){
+            type = "dine_in";
+        }else if(id == "takeaway_tab"){
+            type = "takeaway";
+        }else{
+            type = "delivery";
+        }
         if(!$.hasAjaxRunning()){
             vendorType(latitude, longitude, type);
         }

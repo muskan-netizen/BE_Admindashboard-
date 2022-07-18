@@ -103,6 +103,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('hardDeleteEverything', 'Client\ManageContentController@hardDeleteEverything')->name('config.hardDeleteEverything');
         Route::get('customize', 'Client\ClientPreferenceController@getCustomizePage')->name('configure.customize')->middleware('onlysuperadmin');
         Route::post('configUpdate/{code}', 'Client\ClientPreferenceController@update')->name('configure.update');
+
+        Route::post('custom/mod/verification', 'Client\ClientPreferenceController@customModVerification')->name('custom.mod.verification');
+
         Route::post('referandearnUpdate/{code}', 'Client\ClientPreferenceController@referandearnUpdate')->name('referandearn.update');
         Route::post('updateDomain/{code}', 'Client\ClientPreferenceController@postUpdateDomain')->name('client.updateDomain');
         Route::resource('banner', 'Client\BannerController')->middleware('onlysuperadmin');
