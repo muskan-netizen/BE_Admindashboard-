@@ -341,7 +341,9 @@
                                                             </td>
 
                                                             <td>
-                                                                <input type="checkbox" data-plugin="switchery" name="status_for_slot" class="form-control" data-color="#43bee1" @if($geo->is_active_for_vendor_slot == 1) checked @endif {{ ($vendor->cron_for_service_area == 1) ? 'disabled' : '' }}>
+                                                                @if($client_preference_detail->slots_with_service_area == '1')
+                                                                    <input type="checkbox" data-plugin="switchery" name="is_active_for_vendor_slot" class="form-control is_active_for_vendor_slot" data-color="#43bee1" data-aid="{{$geo->id}}" @if($geo->is_active_for_vendor_slot == 1) checked @endif {{ ($vendor->cron_for_service_area == 1) ? 'disabled' : '' }}>
+                                                                @endif
 
                                                                 <button type="button" class="btn btn-primary-outline action-icon editAreaBtn" area_id="{{$geo->id}}"><i class="mdi mdi-square-edit-outline"></i></button>
 
@@ -1493,6 +1495,35 @@
     $(function() {
         $('#save').click(function() {
             //iterate polygon latlongs?
+        });
+    });
+
+    $(document).on('change', '.is_active_for_vendor_slot', function(){
+        var statusVal = 0;
+        if($(this).is(':checked')){
+            statusVal = 1;
+        }
+        var aid = $(this).attr('data-aid');
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{{url('client/vendor/updateAreaStatusForSlot')}}" + '/' + aid,
+            data: {
+                _token: CSRF_TOKEN,
+                vid: "{{ $vendor->id }}",
+                status: statusVal
+            },
+            success: function(response) {
+                if (response.status == 'Success') {
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                } else {
+                    $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+                }
+            },
+            error: function(errors){
+                var error = errors.responseJSON;
+                $.NotificationApp.send("Error", error.message, "top-right", "#ab0535", "error");
+            }
         });
     });
 </script>

@@ -696,7 +696,7 @@ class OrderController extends FrontController
            
             $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code')->first();
+            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area')->first();
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
@@ -715,6 +715,7 @@ class OrderController extends FrontController
                     return $this->errorResponse('Transaction has already been done', 400);
                 }
             }
+
             $loyalty_amount_saved = 0;
             $redeem_points_per_primary_currency = '';
             $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -793,9 +794,9 @@ class OrderController extends FrontController
             }
 
             /* Get all products blongs to cart */
-            $cart_products = CartProduct::select('*')->with(['vendor', 'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
+            $cart_products = CartProduct::select('*')->with(['vendor', 'vendor.slot.geos.serviceArea', 'vendor.slotDate.geos.serviceArea',  'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                 $query->where('cart_id', $cart->id);
-            }, 'coupon.promo', 'product.addon'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+            }, 'coupon.promo', 'product.addon'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
             
             /* Initialize empty data */
             $total_amount = 0;
@@ -826,7 +827,30 @@ class OrderController extends FrontController
 
 
             /* Loop through evey cart product to get desired data for order */
-            foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+            foreach ($cart_products as $ven_key => $vendor_cart_products) {
+                $vendor_id = $vendor_cart_products->vendor_id;
+                if($action == 'takeaway'){
+                    $latitude = Session::get('latitude') ?? '';
+                    $longitude = Session::get('longitude') ?? '';
+    
+                    if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($preferences->slots_with_service_area == 1) && ($latitude) && ($longitude)) {
+                        if (!empty($latitude) && !empty($longitude)) {
+                            $serviceArea = $vendor_cart_products->vendor->where(function($query) use ($latitude, $longitude) {
+                                $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                })
+                                ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                });
+                            })->where('id', $vendor_id)->get();
+
+                            if($serviceArea->isEmpty()){
+                                return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
+                            }
+                        }
+                    }
+                }
+
                 $vendor_ids[] = $vendor_id;
                 $delivery_fee = 0;
                 $deliver_charge = $ptaxable_amount =$delivery_fee_charges = 0.00;

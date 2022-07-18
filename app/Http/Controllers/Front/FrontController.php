@@ -232,18 +232,17 @@ class FrontController extends Controller
                     $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                 });
-            }
-        }
-        if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
-            if (!empty($latitude) && !empty($longitude)) {
-                $serviceAreaVendors = $serviceAreaVendors->where(function($query) use ($latitude, $longitude) {
-                    $query->whereHas('slot.serviceArea', function ($q) use ($latitude, $longitude) {
-                        $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                    })
-                    ->orWhereHas('slotDate.serviceArea', function ($q) use ($latitude, $longitude) {
-                        $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+
+                if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
+                    $serviceAreaVendors = $serviceAreaVendors->where(function($query) use ($latitude, $longitude) {
+                        $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                        })
+                        ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                        });
                     });
-                });
+                }
             }
         }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();

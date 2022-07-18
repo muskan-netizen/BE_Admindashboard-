@@ -80,10 +80,10 @@ class ServiceAreaActiveForVendorSlot extends Command
                                 ->orWhereHas('slotDate.geos');
                             });
 
-                            $vendors = $vendors->where('takeaway', 1)->where('status', 1)->get();
+                            $vendors = $vendors->where('takeaway', 1)->where('cron_for_service_area', 1)->where('status', 1)->get();
 
-                            $active_service_areas = array();
                             foreach($vendors as $vendor){
+                                $active_service_areas = array();
                                 if($vendor->slotDate->isNotEmpty()){
                                     foreach($vendor->slotDate as $slotDate){
                                         $service_area_ids = $slotDate->geos->pluck('service_area_id')->toArray();
@@ -96,13 +96,10 @@ class ServiceAreaActiveForVendorSlot extends Command
                                         array_push($active_service_areas , ...$service_area_ids);
                                     }
                                 }
+                                $active_service_areas = array_unique($active_service_areas);
+                                ServiceArea::whereIn('id', $active_service_areas)->where('vendor_id', $vendor->id)->update(['is_active_for_vendor_slot' => 1]);
+                                ServiceArea::whereNotIn('id', $active_service_areas)->where('vendor_id', $vendor->id)->update(['is_active_for_vendor_slot' => 0]);
                             }
-                            $active_service_areas = array_unique($active_service_areas);
-                            ServiceArea::whereIn('id', $active_service_areas)->update(['is_active_for_vendor_slot' => 1]);
-                            ServiceArea::whereNotIn('id', $active_service_areas)->update(['is_active_for_vendor_slot' => 0]);
-
-                            // dd($active_service_areas);
-                            // dd($vendors->toArray());
                         }
                     }
                 }

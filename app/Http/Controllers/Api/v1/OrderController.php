@@ -186,7 +186,7 @@ class OrderController extends BaseController
                   
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-                    $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+                    $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
                     
@@ -203,7 +203,27 @@ class OrderController extends BaseController
                     $total_container_charges = 0;
                     $fixed_fee_amount = 0.00;
                     $vendor_total_container_charges = 0;
-                    foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                    foreach ($cart_products as $ven_key => $vendor_cart_products) {
+                        $vendor_id = $vendor_cart_products->vendor_id;
+                        if($action == 'takeaway'){
+                            if ((isset($client_preference->is_hyperlocal)) && ($client_preference->is_hyperlocal == 1) && ($client_preference->slots_with_service_area == 1) && ($latitude) && ($longitude)) {
+                                if (!empty($latitude) && !empty($longitude)) {
+                                    $serviceArea = $vendor_cart_products->vendor->where(function($query) use ($latitude, $longitude) {
+                                        $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                        })
+                                        ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                        });
+                                    })->where('id', $vendor_id)->get();
+
+                                    if($serviceArea->isEmpty()){
+                                        return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
+                                    }
+                                }
+                            }
+                        }
+
                         $delivery_fee = 0;
                         $deliver_charge = $delivery_fee_charges = 0.00;
                         $delivery_count = 0;
