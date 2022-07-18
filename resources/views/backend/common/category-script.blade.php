@@ -21,7 +21,7 @@
         });
     }
     $(".openCategoryModal").click(function(e) {
-        alert('ghk');
+        alert('ghk'); 
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -107,16 +107,19 @@
         $('#warning_page_main_div').hide();
         $('#template_type_main_div').hide();
         $('#warning_page_design_main_div').hide();
-        $(".additional-fields-div").css("display", "none");
+        $("#additional-fields-dv").css("display", "none");
+        $(".cat-banners").css("display", "none");
+        $("#" + for1 + "-category-form #" + for1 + "ProductHide").hide();
+        $("#" + for1 + "-category-form #" + for1 + "DispatcherHide").hide();
         if (id == '1') {
-            $(".additional-fields-div").css("display", "block");
+            $("#additional-fields-dv").css("display", "block");
             $("#" + for1 + "-category-form #" + for1 + "ProductHide").show();
             $("#" + for1 + "-category-form #" + for1 + "DispatcherHide").hide();
         } else if (id == '2') {
             $("#" + for1 + "-category-form #" + for1 + "ProductHide").hide();
             $("#" + for1 + "-category-form #" + for1 + "DispatcherHide").show();
         } else if (id == '3') {
-            $(".additional-fields-div").css("display", "block");
+            $("#additional-fields-dv").css("display", "block");
             $("#" + for1 + "-category-form #" + for1 + "ProductHide").show();
             $("#" + for1 + "-category-form #" + for1 + "DispatcherHide").hide();
         } else if (id == '7') {
@@ -124,7 +127,9 @@
             $('#template_type_main_div').show();
             $('#warning_page_design_main_div').show();
             $("#" + for1 + "-category-form #" + for1 + "DispatcherHide").hide();
-        } else {
+        } if (id == '10') {
+            $("#additional-fields-dv").css("display", "block");
+            $(".cat-banners").css("display", "block");
             $("#" + for1 + "-category-form #" + for1 + "ProductHide").hide();
             $("#" + for1 + "-category-form #" + for1 + "DispatcherHide").hide();
         }

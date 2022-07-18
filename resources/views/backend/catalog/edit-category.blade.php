@@ -134,7 +134,7 @@
                 <input class="form-check-input type-select" for="edit" type="radio" id="type_id_{{$type->id}}" name="type_id" @if($category->type_id == $type->id) checked @endif value="{{$type->id}}">
                 <label for="type_id_{{$type->id}}" class="card-body p-0 mb-0">
                     <div class="category-img">
-                        <img src="{{url('images/'.$type->image)}}" alt="">
+                        <img style="height:208px;" src="{{url('images/'.$type->image)}}" alt="">
                     </div>
                     <div class="form-check form-check-info modal-category-btm-title p-2">
                         <h6 for="customradio5">{{$type->title}}</h6>
@@ -145,12 +145,12 @@
         </div>
         @endforeach
     </div>
-    <div class="row additional-fields-div" style="display:none">
+    <div class="row" id="additional-fields-dv" style="display:none">
         <div class="px-3 py-2 mb-3">
             <div class="row rowYK">
-                <h4 class="col-md-12">Additional Fields</h4>
-                <div class="col-md-6">
-                    <div style="{{($category->type_id != 1) ? 'display:none;' : ''}}" id="editProductHide">
+                <h4 class="col-md-12">{{ __("Additional Fields") }}</h4>
+                <div class="col-md-12">
+                    <div class="row w-100" style="{{($category->type_id != 1) ? 'display:none;' : ''}}" id="editProductHide">
                         <div class="form-group">
                             {!! Form::label('title', __('Can Add Products'),['class' => 'control-label']) !!}
                             <div>
@@ -161,6 +161,35 @@
                                 @endif
                             </div>
                         </div>
+                    </div>
+                    <div style="{{($category->type_id != 1) ? 'display:none;' : ''}}" class="border-bottom cat-banners pt-1">
+                        <div class="row w-100">
+                            <div class="col">
+                                <label>{{ __("Banner 1") }}</label>
+                                <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify" data-default-file="" />
+                                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
+                            </div>
+                            <div class="col">
+                                <label>{{ __("Banner 2") }}</label>
+                                <input type="file" accept="image/*" data-plugins="dropify" name="icon_two" class="dropify" data-default-file="" />
+                                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
+                            </div>
+                            <div class="col">
+                                <label>{{ __("Banner 3") }}</label>
+                                <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="" />
+                                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
+                            </div>            
+                            <div class="col">
+                                <label>{{ __("Banner 4") }}</label>
+                                <input type="file" accept="image/*" data-plugins="dropify" name="icon_two" class="dropify" data-default-file="" />
+                                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
+                            </div> 
+                            <div class="col">
+                                <label>{{ __("Banner 5") }}</label>
+                                <input type="file" accept="image/*" data-plugins="dropify" name="icon_two" class="dropify" data-default-file="" />
+                                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
+                            </div>
+                        </div>      
                     </div>
                 </div>
             </div>
