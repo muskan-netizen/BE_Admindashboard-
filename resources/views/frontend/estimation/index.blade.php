@@ -531,7 +531,7 @@
                                                                                         aria-hidden="true"></i>
                                                                                 </span>
                                                                             </div>
-                                                                            <div class="customizable-text">customizable
+                                                                            <div class="customizable-text">{{ _('customizable')}}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -670,14 +670,14 @@
                                                     <%
                                                         var min_select = '';
                                                         if(estimate_addon_set.min_select > 0){
-                                                            min_select = 'Minimum ' + estimate_addon_set.min_select;
+                                                            min_select = "{{ __('Minimum')}} " + estimate_addon_set.min_select;
                                                         }
                                                         var max_select = '';
                                                         if(estimate_addon_set.max_select > 0){
-                                                            max_select = 'Maximum ' + estimate_addon_set.max_select;
+                                                            max_select = "{{ __('Maximum')}} " + estimate_addon_set.max_select;
                                                         }
                                                         if( (min_select != '') && (max_select != '') ){
-                                                            min_select = min_select + ' and ';
+                                                            min_select = min_select + " {{ __('and')}} ";
                                                         }
                                                     %>
                                                     <% if( (min_select != '') || (max_select != '') ) { %>

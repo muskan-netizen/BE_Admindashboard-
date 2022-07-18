@@ -152,7 +152,7 @@ class VendorController extends FrontController
                 $inqury_count++;
             }
         }
-        // dd($listData);
+        //dd($listData->toArray());
         
         if($listData->count() == $inqury_count){
             $show_range = 0;
@@ -342,8 +342,9 @@ class VendorController extends FrontController
             foreach($products as $key => $product ){
                 $vendor_categories[] = $product->category_id;
             }
-            $categoryData = Category::select('id', 'icon', 'slug', 'type_id', 'image')
-                ->whereIn('id', $vendor_categories);
+            $categoryData = Category::select('id', 'icon', 'slug', 'type_id', 'image')->with(['translation' => function($q) use($langId){
+                $q->where('category_translations.language_id', $langId);
+            }])->whereIn('id', $vendor_categories);
             $categoryData = $categoryData->paginate($pagiNate);
             foreach ($categoryData as $key => $value) {
                 $value->translation_name = ($value->translation->first()) ? $value->translation->first()->name : 'NA';
