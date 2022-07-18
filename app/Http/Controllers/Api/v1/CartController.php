@@ -1214,6 +1214,9 @@ class CartController extends BaseController
         } else {
             $cart->total_payable_amount = ($total_paying  + $total_tax) - ($total_disc_amount + $loyalty_amount_saved); 
         }
+        if($cart->total_fixed_fee_amount){
+            $cart->total_payable_amount = $cart->total_payable_amount +$cart->total_fixed_fee_amount;
+        }
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {
@@ -1235,14 +1238,14 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
-        $cal_tip_value_total = ($cart->total_payable_amount - $cart->total_tax) + $cart->total_fixed_fee_amount;  
+        $cal_tip_value_total = ($cart->total_payable_amount - $cart->total_tax);  
         $cart->tip = array(
             ['label' => '5%', 'value' => decimal_format(0.05 * $cal_tip_value_total)],
             ['label' => '10%', 'value' => decimal_format(0.1 * $cal_tip_value_total)],
             ['label' => '15%', 'value' => decimal_format(0.15 * $cal_tip_value_total)]
         );
 
-        $cart->total_payable_amount= number_format((float)$cart->total_payable_amount +=$cart->total_fixed_fee_amount, 2, '.', '');
+        $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;
         $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
