@@ -155,6 +155,9 @@ line-height: inherit;
     float: left;
 }
 
+.hidden {
+    display: none;
+}
 
 
 

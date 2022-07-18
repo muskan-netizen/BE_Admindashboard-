@@ -7,23 +7,25 @@
 					<p class="h5 mb-0 py-1 chats-title">Chats</p>
 				</div> --}}
 				<div class="mb-2 outer_search position-relative">
-					<input type="text" class="form-control" placeholder="Search here for chats..">
+					<input id="outer_search" type="text" class="form-control" placeholder="Search here for chats..">
 					<span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path></svg></span>
 				</div>
-				<div class="messages-box flex flex-1">
-					@foreach ($chatrooms as $chatroom)
-						<div id="chatRooms" class="list-group rounded-0">
-							<div id="room_{{ $chatroom['_id']}}" data-OrderID="{{ $chatroom['order_id'] }}" data-OrdervendorID="{{ $chatroom['order_vendor_id'] }}" data-id="{{$chatroom['_id']}}" data-roomID="{{$chatroom['room_id']}}" data-roomName="{{$chatroom['room_name']}}" class="chat-list-item d-flex align-items-start rounded fetchChat">
+				<div class="messages-box flex flex-1 sortDiv">
+					@php $layercount = count($chatrooms); @endphp
+					@foreach ($chatrooms as $key => $chatroom)
+					@php $zIndex = $layercount - 1 - $key;@endphp
+
+						<script>
+							var converted_date =  "{{ $chatroom['updated_date'] }}";
+							var vData = new Date('{{ $chatroom['updated_date'] }}').toDateString().slice(0, 10) + ' ' + new Date('{{ $chatroom['updated_date'] }}').toLocaleTimeString().slice(0, 10);
+		               		@php $vData = "<script>document.write(vData)</script>"@endphp 
+						</script>
+						<div id="chatRooms_{{ $chatroom['_id']}}" data-text="{{ $chatroom['room_id'] }}" data-sort="{{ $zIndex }}" data-timestamp="{{$vData}}" class="list-group rounded-0 chatRoomsDivs">
+							<div id="room_{{ $chatroom['_id']}}"  data-OrderID="{{ $chatroom['order_id'] }}" data-OrdervendorID="{{ $chatroom['order_vendor_id'] }}" data-id="{{$chatroom['_id']}}" data-roomID="{{$chatroom['room_id']}}" data-roomName="{{$chatroom['room_name']}}" class="chat-list-item d-flex align-items-start rounded fetchChat">
 								{{-- <div class="align-self-center mr-3">
 									<div class="rounded-circle bg-gray" style="width: 8px; height: 8px; opacity: 0;"></div>
 								</div> --}}
-								<?php 
-
-								// echo "<pre>";
-								// 	print_r($chatroom['user_Data']);
-								
-?>
-								<div class="align-self-center col-md-3">
+						    <div class="align-self-center col-md-3">
 									<div class="user_show">
 										<p class="orderNumber m-0 mb-2">#{{ $chatroom['room_id'] }}</p>
 										@if(count($chatroom['user_Data']) > 0)
@@ -51,7 +53,7 @@
 											$date = date_create($chatroom['chat_Data'][0]['created_date']);
 											$new_date = date_format($date, 'l F jS Y H:i:s');
 											@endphp
-											<span id="preview_message_time_{{$chatroom['_id']}}">{{ $new_date }}</span>
+											<span id="preview_message_time_{{$chatroom['_id']}}"><?php echo $vData;?></span>
 											
 										@endif
 										<p id="preview_message_{{$chatroom['_id']}}" class="orderChatMessage mb-0">{{@$chatroom['chat_Data'][0]['message']}} </p>

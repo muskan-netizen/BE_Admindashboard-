@@ -132,7 +132,9 @@ line-height: inherit;
     width: 30px;
     float: left;
 }
-
+.hidden {
+    display: none;
+}
 
 
 

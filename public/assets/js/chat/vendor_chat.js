@@ -14,6 +14,18 @@
         await startChat(vendor_order_id,vendor_id,order_id);
     });
 
+    var input = document.getElementById("message_box");
+
+    // Execute a function when the user presses a key on the keyboard
+    input.addEventListener("keypress", function(event) {
+        // If the user presses the "Enter" key on the keyboard
+        if (event.key === "Enter") {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            document.getElementById("send_message").click();
+        }
+    });
     $(document).on('click','.fetchChat',async function(){
         var roomId = $(this).attr('data-id');
         var roomName = $(this).attr('data-roomName');
@@ -59,6 +71,15 @@
         await sendMessage(message,room_id);
     });
 
+    $(document).on('keyup','#outer_search',function() {
+        var n = $(this).val(); //convert value to lowercase for case-insensitive comparison
+        $(".chatRoomsDivs").each( function(){
+           var $this = $(this);
+           var value = $this.attr( "data-text" ); //convert attribute value to lowercase
+           $this.toggleClass( "hidden", !value.includes( n ) );
+        })
+      });
+
 
     async function startChat(vendor_order_id,vendor_id,order_id){
 
@@ -99,6 +120,12 @@
     function convertDateTime(cdate){
         return cdate.toDateString() +' '+ cdate.toLocaleTimeString();
     }
+    function convertDateTimeStamp(cdate){
+        var currentTimeStamp = new Date(cdate);
+        return currentTimeStamp
+        // console.log(currentTimeStamp);
+        // return cdate.toDateString() +' '+ cdate.toLocaleTimeString();
+    }
     async function fetchOderVendorDetails(order_vendor_id,order_id){
         axios.post(`/client/chat/fetchOrderDetail`, {
             order_vendor_id: order_vendor_id,
@@ -129,7 +156,7 @@
 
     async function getALLchat(roomId){
         var html='';
-        axios.get(`https://chat.royoorders.com/api/chat/${roomId}`)
+        axios.get(`${SocketConstants.Socket_url}/api/chat/${roomId}`)
         .then(async response => {
             console.log(response);
             if(response.status == 200) {
@@ -199,7 +226,7 @@
 
     async function getAllUser(roomId){
         var html='';
-        axios.get(`https://chat.royoorders.com/api/chat/getRoomUser/${roomId}`)
+        axios.get(`${SocketConstants.Socket_url}/api/chat/getRoomUser/${roomId}`)
         .then(async response => {
             console.log(response);
             if(response.status == 200) {
@@ -207,7 +234,7 @@
                    await response.data.userData.forEach(function (data) {
                      html+= `<div class="alPhoneNumberDetails">
                             <ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
-                                <li class="mr-xl-2"><img class="rounded-circle userImg" src="https://i.picsum.photos/id/237/200/300.jpg?hmac=TmmQSbShHz9CdQm0NkEjx1Dyh_Y984R9LpNrpvH2D_U"></li>
+                                <li class="mr-xl-2"><img class="rounded-circle userImg" src="${data.display_image}"></li>
                                 <li><span class="alUserName">${data.username}  (${data.user_type}) </span><p class="m-0 alPhoneNumber">${data.phone_num}</p></li>
                             </ul>
                         </div>`;
@@ -233,6 +260,8 @@
     async function newMessage(message){
         console.log(message);
         var data = message.message.chatData;
+        var roomData = message.message.roomData;
+        
         if(data.message ==  undefined || data.message ==  'undefined'){
             return;
         }
@@ -244,6 +273,8 @@
              className= 'right-message';
             //  flex = '<div style="flex: 110%;"></div>';
         }
+        console.log('dd',message.message.roomData);
+        var updateDate =  roomData?.updated_date;
             html = `<div class=" ${className}">
                 ${flex}
                 <div class="mb-4">
@@ -268,6 +299,14 @@
             await $('#preview_message_'+data.room).html(data.message);
             await $('#preview_message_name_'+data.room).html(data.username);
             await $('#preview_message_time_'+data.room).html(convertDateTime(cdate));
+            // console.log('updateDate');
+            // console.log(updateDate);
+            // console.log(roomData);
+            await $('#chatRooms_'+data.room).attr('data-timestamp',convertDateTimeStamp(updateDate));
+            var length =  $('.chatRoomsDivs').first().attr('data-sort');
+            //await $('#time_stamp_'+data.room).html(updateDate);
+            await $('#chatRooms_'+data.room).attr('data-sort',parseInt(length)+parseInt(1));
+            sortChatBox();
             scrollDown();
 
                   
@@ -276,6 +315,7 @@
     
 
     function scrollDown(){
+        console.log('scrollDown');
         var messageBody = document.querySelector('.chatitem');
         messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
     }
@@ -347,7 +387,7 @@
         // }
         var authDataParseData = JSON.parse(authData);
         var dImage = authDataParseData.image.image_fit+'500/500'+authDataParseData.image.image_path;
-        axios.post(`https://chat.royoorders.com/api/chat/sendMessageJoin`, {
+        axios.post(`${SocketConstants.Socket_url}/api/chat/sendMessageJoin`, {
             'room_id' : room_id,
             'message': message,
             'user_type': 'vendor',
@@ -383,10 +423,69 @@
           
     }
 
-    function sortChatBox(){
-        var $wrapper = $('.testWrapper');
-        $wrapper.find('.test').sort(function (a, b) {
-            return +a.dataset.name - +b.dataset.name;
-        })
-        .appendTo( $wrapper );
+
+
+
+    jQuery.fn.sortBy = function() {  
+        var selectors = arguments;
+    
+        this.sort(function(a, b) {
+            // run through each selector, and return first non-zero match
+            for(var i = 0; i < selectors.length; i++) {
+                var selector = selectors[i];
+    
+                var first = $(selector, a).text();
+                var second = $(selector, b).text();
+    
+    
+                var isNumeric = Number(first) && Number(second);
+                if(isNumeric) {
+                    var diff = first - second;
+                    if(diff != 0) {
+                        return diff;
+                    }
+                }
+                else if(first != second) {
+                    return first < second ? -1 : 1;
+                }
+            }
+    
+            return 0;
+        });
+    
+        this.appendTo(this.parent());
+    
+        return this;
+    };
+
+
+
+    async function sortChatBox(){
+      
+        var $wrap = $('.sortDiv');
+        $wrap.find('.chatRoomsDivs').sort(function(a, b) 
+            {
+                return +b.dataset.sort -
+                    +a.dataset.sort;
+            })
+            .appendTo($wrap);
+
+    }
+
+
+    function search() {
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("myUL");
+        li = ul.getElementsByTagName("li");
+        for (i = 0; i < li.length; i++) {
+            a = li[i].getElementsByTagName("a")[0];
+            txtValue = a.textContent || a.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
     }
