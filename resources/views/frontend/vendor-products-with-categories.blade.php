@@ -686,7 +686,7 @@
                                         <div class="customizable-text">customizable</div>
                                     <% } %>
                                 <% }else{ %>
-                                    <span class="text-danger">Out of stock</span>
+                                    <span class="text-danger">{{ __('Out of stock')}}</span>
                                 <% } %>
                             </script>
     <script type="text/template" id="addon_template">
@@ -731,7 +731,7 @@
                                                             }
                                                         %>
                                                         <% if( (min_select != '') || (max_select != '') ) { %>
-                                                            <small><%=min_select + max_select %> Selections allowed</small>
+                                                            <small><%=min_select + max_select %> {{ __('Selections Allowed')}}</small>
                                                         <% } %>
                                                     </div>
                                                     <div class="productAddonSetOptions" data-min="<%= addon.min_select %>" data-max="<%= addon.max_select %>" data-addonset-title="<%= addon.title %>">

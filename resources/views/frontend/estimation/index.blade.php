@@ -681,7 +681,7 @@
                                                         }
                                                     %>
                                                     <% if( (min_select != '') || (max_select != '') ) { %>
-                                                        <small><%=min_select + max_select %> Selections allowed</small>
+                                                        <small><%=min_select + max_select %> {{ __('Selections Allowed')}}</small>
                                                     <% } %>
                                                 </div>
                                               
