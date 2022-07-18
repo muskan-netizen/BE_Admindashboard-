@@ -332,6 +332,7 @@ class ChatController extends FrontController
                 'sub_domain' =>$server_name,
                 'vendor_user_id' =>$data['user_id'],
                 'order_user_id' =>$orderby_user_id,
+                'agent_id'=>$data['agent_id'],
                 'type'=>$data['type'],
                 'db_name'=>$data['db_name'],
                 'client_id'=>$data['client_id']

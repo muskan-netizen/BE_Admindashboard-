@@ -213,5 +213,22 @@ class ChatController extends BaseController
     }
 
 
+    public function userAgentChatRoom(Request $request){
+        $user = Auth::user();
+        $data = $request->all();
+        $sub_domain = $data['sub_domain'];
+        $roomData = $this->getChatRoomForUser($user->id,'agent_to_user',$sub_domain);
+        if($roomData['status']){
+            $chatroom = $roomData['roomData'];
+        } else {
+            $chatroom = [];
+        }
+
+    
+        return response()->json([ 'chatrooms'=>$chatroom , 'status' => true, 'message' => __('list fetched!!!')]);
+
+    }
+
+
 }
 
