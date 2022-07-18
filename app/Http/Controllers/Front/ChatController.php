@@ -42,27 +42,7 @@ class ChatController extends FrontController
         
     }
     
-    public function getChatRoom($vendor_id,$type){
-        $clientData = $this->client_data;
-        $server_name = $_SERVER['SERVER_NAME'];
-        $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByVendor', [
-            'vendor_id' => $vendor_id, 
-            'sub_domain' =>$server_name,
-            'type'=>$type,
-            'db_name'=>$clientData->database_name,
-            'client_id'=>$clientData->id
-        ]);
-       
-        $statusCode = $response->getStatusCode();
-        if($statusCode == 200) {
-            $roomData = $response['roomData'];
-            return ['status' => true, 'roomData' => $roomData , 'message' => __('Room list !!!')];
-        } else {
-
-            return ['status' => false, 'message' => __('Something went wrong!!!')];
-        }
-
-    }
+   
 
     public function getChatRoomForUser($order_user_id,$type){
         $clientData = $this->client_data;
@@ -89,18 +69,19 @@ class ChatController extends FrontController
         return view('frontend.chat.index',$this->client_data);
 
     }
-
-    public function VendorUserChat(Request $request){
+    public function UserAgentChat(Request $request){
         $user = Auth::user();
-        $vendor_id = UserVendor::where('user_id',$user->id)->pluck('vendor_id');
-        $this->client_data['vendor_id'] = $vendor_id;
-        $roomData = $this->getChatRoom($vendor_id,'vendor_to_user');
+        if ($user->is_superadmin != 1) {
+            abort(404);
+        }
+        
+        $roomData = $this->getChatRoomForUser('agent_to_user','agent_to_user');
         if($roomData['status']){
             $chatroom = $roomData['roomData'];
         } else {
             $chatroom = [];
         }
-        return view('backend.chat.VendorUserChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+        return view('backend.chat.agent',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
 
     }
 
@@ -212,70 +193,6 @@ class ChatController extends FrontController
     }
 
     /**
-     * Show the form for creating a new country resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-    }
-
-    /**
-     * Store a newly created country resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-
-    }
-
-    /**
-     * Display the specified country resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request,$domain = '',$product_sku)
-    {
-       
-    }
-
-    /**
-     * Show the form for editing the specified country resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Request $request)
-    {
-    }
-
-    /**
-     * Update the specified country resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request)
-    {
-        }
-
-    /**
-     * Remove the specified country resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request,$domain = '',$review_id)
-    {
-       
-    }
-
-
-    /**
      * start Chat.
      *
      * @param  int  $id
@@ -362,6 +279,29 @@ class ChatController extends FrontController
         }
             
     }
+
+    public function getAllChatRoomAgent($type){
+        $clientData = $this->client_data;
+        $server_name = $_SERVER['SERVER_NAME'];
+        $response =   Http::post($clientData->socket_url.'/api/room/fetchAllRoom', [
+            //'vendor_id' => $vendor_id, 
+            'sub_domain' =>$server_name,
+            'type'=>$type,
+            'db_name'=>$clientData->database_name,
+            'client_id'=>$clientData->id
+        ]);
+
+        $statusCode = $response->getStatusCode();
+        if($statusCode == 200) {
+            $roomData = $response['roomData'];
+            return ['status' => true, 'roomData' => $roomData , 'message' => __('Room list !!!')];
+        } else {
+
+            return ['status' => false, 'message' => __('Something went wrong!!!')];
+        }
+
+    }
+
 
 
 }
