@@ -129,20 +129,14 @@ class WebStylingController extends BaseController{
             if($request->has('favicon')){
                 $client_preferences->favicon = Storage::disk('s3')->put('favicon', $request->favicon, 'public');
             }
-            // if($request->has('deliveryIcon')){
-            //     $client_preferences->deliveryicon = Storage::disk('s3')->put('deliveryIcon', $request->deliveryIcon, 'public');
-            // }
-            // if($request->has('takewayIcon')){
-            //     $client_preferences->takewayicon = Storage::disk('s3')->put('takewayIcon', $request->takewayIcon, 'public');
-            // }
-            // if($request->has('dineinIcon')){
-            //     $client_preferences->dineinicon = Storage::disk('s3')->put('dineinIcon', $request->dineinIcon, 'public');
-            // }
-            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
-                $iconFiledName     = config('constants.VendorTypesIcon.'.$vendor_typ_key);
-                if($request->has($iconFiledName)){
-                    $client_preferences->$iconFiledName = Storage::disk('s3')->put($iconFiledName, $request->$iconFiledName, 'public');
-                }
+            if($request->has('deliveryIcon')){
+                $client_preferences->deliveryicon = Storage::disk('s3')->put('deliveryIcon', $request->deliveryIcon, 'public');
+            }
+            if($request->has('takewayIcon')){
+                $client_preferences->takewayicon = Storage::disk('s3')->put('takewayIcon', $request->takewayIcon, 'public');
+            }
+            if($request->has('dineinIcon')){
+                $client_preferences->dineinicon = Storage::disk('s3')->put('dineinIcon', $request->dineinIcon, 'public');
             }
             
 

@@ -1280,7 +1280,7 @@ class CartController extends FrontController
 
 
                
-                $total_payable_amount = $total_payable_amount + $payable_amount + $vendorData->vendor->fixed_fee_amount; 
+                $total_payable_amount = $total_payable_amount + $payable_amount; 
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
@@ -1316,7 +1316,11 @@ class CartController extends FrontController
                 $total_discount_amount = $total_discount_amount + $total_subscription_discount;
                 $cart->total_subscription_discount = decimal_format($total_subscription_discount);
             }
-            $total_payable_amount = $total_payable_amount - $total_discount_amount;
+            $fixedFeeAmount=0.00;
+            if(isset($vendorData->vendor->fixed_fee_amount)){
+                $fixedFeeAmount=$vendorData->vendor->fixed_fee_amount;
+            }
+            $total_payable_amount = $total_payable_amount - $total_discount_amount+$fixedFeeAmount;
             if ($loyalty_amount_saved > 0) {
                 if ($loyalty_amount_saved > $total_payable_amount) {
                     $loyalty_amount_saved =  $total_payable_amount;

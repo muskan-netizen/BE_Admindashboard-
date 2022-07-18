@@ -534,7 +534,23 @@ class OpenpayPaymentController extends FrontController
                 break;
             
             case 'verification':
+                Log::info('Verification Webhook works');
                 Log::info($request->all());
+                
+                $openpay = PaymentOption::select('credentials', 'test_mode')->where('code', 'openpay')->first();
+                $creds_arr = json_decode($openpay->credentials);
+                $openpay_merchant_id = (isset($creds_arr->openpay_merchant_id)) ? $creds_arr->openpay_merchant_id : '';
+                $openpay_private_key = (isset($creds_arr->openpay_private_key)) ? $creds_arr->openpay_private_key : '';
+                $openpay_public_key = (isset($creds_arr->openpay_public_key)) ? $creds_arr->openpay_public_key : '';
+                $openpay_verification_key = (isset($creds_arr->openpay_verification_key)) ? $creds_arr->openpay_verification_key : '';
+                $json = $request->verification_code;
+                    $cred = array(
+                        'openpay_merchant_id'=>$openpay_merchant_id,
+                        'openpay_private_key'=>$openpay_private_key,
+                        'openpay_public_key'=>$openpay_public_key,
+                        'openpay_verification_key'=>$request->verification_code
+                    );
+                PaymentOption::where('code', 'openpay')->update(['credentials'=>json_encode($cred)]);
                 break;
             case 'charge.failed':
                     Log::info($request->all());
