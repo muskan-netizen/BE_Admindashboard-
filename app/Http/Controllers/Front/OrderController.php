@@ -813,6 +813,7 @@ class OrderController extends FrontController
             $vendor_ids = [];
             $total_service_fee = 0;
             $total_delivery_fee = 0;
+            $fixed_fee_amount = 0.00;
             $total_subscription_discount = 0;
             $total_container_charges = 0;
             $vendor_total_container_charges = 0;
@@ -1121,6 +1122,9 @@ class OrderController extends FrontController
                     if (($vendor_info->commission_fixed_per_order) != null && $actual_amount > 0) {
                         $OrderVendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                     }
+                    if($vendor_info->fixed_fee_amount > 0){
+                        $fixed_fee_amount = $fixed_fee_amount + $vendor_info->fixed_fee_amount;
+                    }
                 }
                 $OrderVendor->save();
                 $order_status = new VendorOrderStatus();
@@ -1164,8 +1168,7 @@ class OrderController extends FrontController
                     $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                 }
             }
-            $payable_amount = $payable_amount - $loyalty_amount_saved;
-
+            $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
             $wallet_amount_used = 0;
             if ($user) {
@@ -1214,6 +1217,7 @@ class OrderController extends FrontController
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
             $order->payable_amount = $payable_amount;
+            $order->fixed_fee_amount = $fixed_fee_amount;
             $order->total_container_charges = $total_container_charges;
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status = 1;
@@ -1390,6 +1394,7 @@ class OrderController extends FrontController
                     'title' => $notification_content->subject,
                     'body'  => $notification_content->content,
                     'data' => $orderData,
+                    'order_id' => $orderData->id,
                     'type' => "order_created"
                 ],
                 "priority" => "high"
