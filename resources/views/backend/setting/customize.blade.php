@@ -154,6 +154,9 @@
                 </div>
             </form>
             @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+            @php
+                $typeArray = getCategoryTypes();
+            @endphp
             <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
@@ -164,13 +167,20 @@
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
                     <div class="row align-items-start">
-                        <div class="col-md-12">
-                            <div class="form-group d-flex justify-content-between">
-                                <label for="dinein_check" class="mr-3 mb-0">{{getDynamicTypeName('Dine-In')}}</label>
-                                <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
+                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                            @php
+                                $VendorTypesName = $vendor_typ_key.'_check';
+                            @endphp
+                            @if(in_array($vendor_typ_key, $typeArray)) 
+                                <div class="col-md-12">
+                                    <div class="form-group d-flex justify-content-between">
+                                        <label for="{{$VendorTypesName}}" class="mr-3 mb-0">{{getDynamicTypeName($vendor_typ_value)}}</label>
+                                        <input type="checkbox" data-plugin="switchery" name="{{$VendorTypesName}}" id="{{$VendorTypesName}}" class="form-control vendorTypeChange" data-color="#43bee1" @if((isset($preference) && $preference->$VendorTypesName == '1')) checked='checked' @endif>
+                                    </div>
+                                </div>
+                            @endif    
+                        @endforeach
+                        <!-- <div class="col-md-12">
                             <div class="form-group d-flex justify-content-between">
                                 <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
                                 <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
@@ -181,7 +191,7 @@
                                 <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
                                 <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
                             </div>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </form>

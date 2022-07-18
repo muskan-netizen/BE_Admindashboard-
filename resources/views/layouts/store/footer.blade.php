@@ -44,16 +44,17 @@
 $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endphp
 <script>
+      var setShowSubscriptionPlan = "";
     @if($showSubscriptionPlanPopUp == 1)
-        var setShowSubscriptionPlan = "showed";
+         setShowSubscriptionPlan = "showed";
     @endif
-    
+
 </script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.cookie.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('assets/js/constants.js')}}"></script>
-<script defer type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script> 
+<script defer type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
@@ -193,7 +194,7 @@ $(document).ready(function() {
 <!-- End googletagmanager -->
 @php
 if($showSubscriptionPlanPopUp == 1){
-    setcookie('show-subscription-plan','showed',0); 
+    setcookie('show-subscription-plan','showed',0);
 }
 @endphp
 
@@ -216,6 +217,7 @@ if($showSubscriptionPlanPopUp == 1){
     else
     var home_page_url = "{{ route('userHome') }}";
 
+    var category_page_url = "{{ route('categoryDetail', ':id') }}";
     var home_page_url_template_one = "{{ route('indexTemplateOne') }}";
     let home_page_url2 = home_page_url.concat("/");
     var add_to_whishlist_url = "{{ route('addWishlist') }}";

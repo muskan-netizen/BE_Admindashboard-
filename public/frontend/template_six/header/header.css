@@ -1,0 +1,212 @@
+@font-face{
+    font-family: 'FontsFreeNetMontserratSemiBold';
+    src: url('../../../assets/fonts/FontsFreeNetMontserratSemiBold.eot');
+    src: url('../../../assets/fonts/FontsFreeNetMontserratSemiBold.eot') format('embedded-opentype'),
+         url('../../../assets/fonts/FontsFreeNetMontserratSemiBold.woff2') format('woff2'),
+         url('../../../assets/fonts/FontsFreeNetMontserratSemiBold.woff') format('woff'),
+         url('../../../assets/fonts/FontsFreeNetMontserratSemiBold.ttf') format('truetype'),
+         url('../../../assets/fonts/FontsFreeNetMontserratSemiBold.svg#FontsFreeNetMontserratSemiBold') format('svg');
+}
+@font-face{
+    font-family: 'MontserratRegular';
+    src: url('../../../assets/fonts/MontserratRegular.eot');
+    src: url('../../../assets/fonts/MontserratRegular.eot') format('embedded-opentype'),
+         url('../../../assets/fonts/MontserratRegular.woff2') format('woff2'),
+         url('../../../assets/fonts/MontserratRegular.woff') format('woff'),
+         url('../../../assets/fonts/MontserratRegular.ttf') format('truetype'),
+         url('../../../assets/fonts/MontserratRegular.svg#MontserratRegular') format('svg');
+}
+::-webkit-scrollbar{width: 6px;}
+::-webkit-scrollbar-track{  background: #f1f1f1; }
+::-webkit-scrollbar-thumb{  background: #CAAE73; }
+::-webkit-scrollbar-thumb:hover{  background: #555; }
+body{margin: 0;background-color: #fff;font-family: 'MontserratRegular' !important;overflow-x: hidden;}
+
+/*================== common css ==============*/
+a:hover{text-decoration: none;color: var(--top-header-color);}li{list-style: none}
+.alBodyText{font-size: 14px;color: #B6B6B6;line-height: 24px;}
+.alLgFontSize{font-size: 47px;font-weight: 600;color: #0C0C0C;line-height: 57px;font-family: 'FontsFreeNetMontserratSemiBold';}
+/*================== header css ====================*/
+a.alShopIcon{
+    position: relative;
+}
+span#cart_qty_span{
+    position: absolute;
+    background-color: var(--top-header-color);
+    height: 20px;
+    width: 20px;
+    font-size: 12px;
+    border-radius: 10px;
+    top: -14px;
+    right: -10px;
+    text-align: center;
+    line-height: 22px;
+    color: #fff;
+}
+.googleMapModal .mapInPopup{overflow: hidden;border-radius: 10px 10px 0 0;}
+.onhover-dropdown:hover .onhover-show-div{
+    display: block;
+    border-radius: 10px !important;
+    overflow: hidden;
+}
+.alUserIcon .onhover-show-div li{
+    display: block;
+    border-bottom: 1px solid #eee;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.alUserIcon .onhover-show-div li a{}
+.alSpaMenuCard{height: 0;z-index: 9999;width: 0;position: fixed;background-color: #0C0C0C;-webkit-transition: .3s;transition: .3s;overflow: hidden;left: 0;right: 0;margin: auto;
+    top: 50%;-webkit-transform: translate(0, -50%);
+    transform: translate(0, -50%);}
+button.alMenuClose{
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: transparent;
+    height: 50px;
+    width: 50px;
+    border-radius: 50px;
+    font-size: 50px;
+    line-height: 53px;
+    color: #fff;
+    padding: 0;
+    border: 0;
+}
+.close.text-danger{color:#84571E !important; }
+.alSpaMenuCard.active{height: 100vh;width: 100%;}
+.alSpaMenuCard ul{
+    text-align: center;
+}
+.alMobileLocations{
+    margin-top: -120px;
+    position: relative;
+}
+.alSpaMenuCard .onhover-dropdown .onhover-show-div{
+    background-color: #000;
+    padding: 15px;
+    box-shadow: 0 1px 2px 0 var(--top-header-color);
+}
+.alSpaMenuCard .onhover-dropdown:before{
+    right: -30px;
+    top: -10px;
+    font-size: 30px;
+}
+.alSpaMenuCard span.cart_qty_cls{top: -20px;}
+.alSpaMenuCard.active ul li a{font-size: 18px;text-transform: capitalize;}
+
+.alSpaMenuCard ul li{margin-bottom: 15px;}
+.alSpaMenuCard ul li a{color: #fff;-webkit-transition: 0.5s;transition: 0.5s;font-size: 24px;}
+.alSpaMenuCard ul li a:hover{color: #84571E; padding-left: 15px;}
+.alSpaMenuCard ul li.change-language a:hover{padding-left: 0;}
+.alSpaMenuCard ul li.change-currency a:hover{padding-left: 0;}
+.delivery_address  button.close{
+    z-index: 9;
+    position: relative;
+}
+.alFindSec{
+    background-color: #fff;
+    border-radius: 30px;
+    padding: 5px 5px 5px 30px;
+    box-shadow: 0 1px 7px rgba(62,62,76,.2)
+}
+.alFindSec span{
+    font-size: 14px;
+    font-weight: 400;
+    color: #0C0C0C;
+    opacity: .5;
+    padding-right: 30px;
+    position: relative;
+    cursor: pointer;
+    font-family: 'MontserratRegular';
+}
+.alNumber input.inputNumbers{
+	font-family: 'MontserratRegular';
+}
+div#formatsSection{
+    position: relative;
+}
+.alChooseDate span{
+    position: absolute;
+    top: 8px;
+    width: 100%;
+}
+.alChooseDate .form-control{
+    border-radius: 0;border:none;
+}
+.alSpaMenuCard ul{margin: 0 auto;}
+.alSpaMenuCard ul li{display: block;}
+.alChooseDate span:before,
+.alLocation span:before{
+    border: solid black;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    position: absolute;
+    content: "";
+    right: 10px;
+    top: 2px
+}
+.alFindGo .btn{
+    background-color: #CAAE73;
+    padding: 0;
+    height: 40px;
+    width: 40px;
+    border-radius: 30px;
+    color: #fff;
+}
+.alFindGo .btn:hover{
+	background-color: #84571E;
+}
+.site-header .nav.navbar{position: relative;}
+.site-header::before{
+    background: linear-gradient(180deg, #0C0C0C 0%, rgba(0, 0, 0, 0) 100%);
+    opacity: 0.7;
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 100px;
+}
+.site-header.fixed-bar:before{
+    background:#fff;
+    opacity: 1;
+    box-shadow: 0 1px 7px rgba(62,62,76,.2)
+}
+.site-header.fixed-bar .rightHead ul li a svg path,
+.site-header.fixed-bar .rightHead ul li a svg{
+    fill: #000
+}
+#address-map-container #address-map{  width: 100%;    height: 100%;}
+#address-map-container{
+    width: 100%;
+    height: 300px;
+}
+.address-input-field{
+    border: 1px solid #777;
+    border-radius: 10px;
+    overflow: hidden;
+    padding-left: 10px;
+}
+
+/*===================== add to cart css ===================*/
+.alShoppingList{border-color: #fff;background-color: #fff;box-shadow: 0 0.25rem 0.5625rem -0.0625rem rgb(0 0 0 / 3%), 0 0.275rem 1.25rem -0.0625rem rgb(0 0 0 / 5%);left: auto;right: 0;
+padding-top: 0.5rem;top: 100%;position: absolute;z-index: 1000;display: none;min-width: 10rem;padding: 0.5rem 0;margin: 0;font-size: 1rem;color: #4b566b;
+text-align: left;list-style: none;background-clip: padding-box;border: 1px solid #e3e9ef;border-radius: 0.3125rem}
+.alShoppingList:hover{-webkit-animation: fade-in .25s ease-in-out;animation: fade-in .25s ease-in-out}
+.alShoppingBag:hover .alShoppingList{display: block;-webkit-animation: slide-up .25s ease-in-out;animation: slide-up .25s ease-in-out}
+.widget-cart-item{position: relative}
+.widget-cart-item .btn-close{position: absolute;top: 50%;left: 0;height: auto;padding: 0;transform: translateY(-50%);
+transition: visibility .25s ease-in-out,
+opacity .25s ease-in-out;background: none;font-size: 1.5rem;font-weight: 300;visibility: hidden;opacity: 0;border:0}
+.widget-cart-item:hover>.d-flex{transform: translateX(1.125rem)}.widget-cart-item>.d-flex{transition: all .25s ease-in-out}
+.widget-product-title{margin-bottom: 0.25rem;font-size: .875rem;font-weight: 500}.widget-product-title>a{color: #373f50}.widget-product-meta{font-size: .875rem}
+.text-accent{color: #84571E !important}.text-muted{color: #7d879c !important}
+.widget-cart-item:hover .btn-close{visibility: visible;opacity: 1}
+.simplebar-content{overflow: hidden scroll;width: inherit;height: inherit;max-width: inherit;max-height: inherit}
+.simplebar-wrapper{direction: inherit;box-sizing: border-box!important;position: relative;display: block;height: 100%;width: auto;max-width: 100%;max-height: 100%;
+scrollbar-width: none;-ms-overflow-style: none}
+a.view-cart {
+    font-size: 14px;
+}

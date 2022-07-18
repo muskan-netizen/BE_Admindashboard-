@@ -4,7 +4,8 @@
     }elseif($action == 'dine_in'){
         $label = 'Dine-In';
     }else{
-        $label = 'Delivery';
+        $label = getNomenclatureName($action, true);
+        //$label = 'Delivery';
     }
 @endphp
 <div class="row  mb-sm-3 mb-1">
@@ -17,7 +18,7 @@
     </div>
     @endif
 </div>
-@if($action != 'delivery')
+@if($action != 'delivery' && $action != 'on_demand' )
     @if(isset($vendor_details['vendor_address']))
         <div>
             <input type="hidden" id="latitude" value="{{ $vendor_details['vendor_address']->latitude }}">
@@ -64,7 +65,7 @@
                         @if($address->is_primary)
                         <input type="radio" name="address_id" value="{{$address->id}}" checked="checked">
                         @else
-                        <input type="radio" name="address_id" value="{{$address->id}}" {{$k == 0? 'checked="checked""' : '' }}>
+                        <input type="radio" name="address_id" value="{{$address->id}}" {{$k == 0? 'checked="checked"' : '' }}>
                         @endif
                         <span class="checkround"></span>
                     </label>

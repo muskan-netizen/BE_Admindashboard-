@@ -1,0 +1,39 @@
+
+/*============== footer css ===================*/
+.al_footer_template_six{background-color: #0C0C0C;}
+footer#footer{position: absolute;bottom: 0;width: 100%;}
+article#page-container{position: relative;min-height: 100vh;overflow: hidden;}
+.al_footer_template_six .sub-footer{background-color: transparent;}
+.al_footer_template_six .footer-end{border-top: 1px solid #B6B6B6;}
+.al_footer_template_six  .footer-theme .sub-title .contact-list li{padding: 0;}
+.al_footer_template_six  .footer-theme .sub-title li a:before{display: none;}
+body .footer-theme .sub-title h4,
+.footer-title h4{font-weight: 600;font-size: 24px;color: #fff;text-transform: capitalize;}
+.footerFsm{font-weight: 600;font-size: 14px;color: #B6B6B6;}
+.bottomFooter .footerFsm{font-weight: 400;color: #B6B6B6;}
+footer#footer .social-links li{display: inline-block;margin-right: 10px}
+footer#footer .social-links li a i{-webkit-transform: scale(.8);transform: scale(.8);font-size: 30px;-webkit-transition: 0.3s;transition: 0.3s;color: var(--top-header-color);}
+footer#footer .social-links li a:hover i{-webkit-transform: scale(1);transform: scale(1);}
+.al_footer_template_six ul li a:hover{color: var(--top-header-color)}
+.al_footer_template_six ul li{margin-bottom: 10px;}
+.al_footer_template_six ul.social-links li span{display: none;}
+
+@media(max-width: 991px){
+.alSpaListSlider .slick-list.draggable{padding-left: 0 !important;}
+.alLgHeroHeading{font-size: 47px;line-height: 57px;}
+.heroArea .alCustomBtn{width: 100%;}
+.alBodyText,
+.alHeroText{font-family: 'MontserratRegular';}
+.alTesimonialsText,
+.alLgFontSize{font-size: 30px;line-height: normal;}
+.alTesimonialsTitle{font-size: 20px;line-height: normal;}
+.alTesimonialsUsername{font-size: 16px;line-height: normal;}
+.testimonials .slick-arrow{display: none !important;}
+.alSpaMenuCard.active ul li a{font-size: 18px;}
+}
+@media(max-width: 767px){
+.alMobileLocations{
+    margin-top: -80px;
+}
+.oneYearsMembership img{width: 100%}
+}

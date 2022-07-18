@@ -48,6 +48,9 @@ $(function () {
     $(document).ajaxStop(function () {
         document.ajax_loading = false;
     });
+    $(document).ajaxComplete(function () {
+        document.ajax_loading = false;
+    });
 });
 
 $(window).scroll(function () {
@@ -2060,6 +2063,7 @@ $(document).ready(function () {
                 cart_qty_total += $(this).data('qty');
             }
         });
+        console.log(cart_qty_total);
         if (cart_qty_total > 0) {
             $('#cart_qty_span, .cart_qty_cls').html(cart_qty_total).show();
         } else {
@@ -2144,7 +2148,7 @@ $(document).ready(function () {
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
 
-                                if (vendor_type != 'delivery') {
+                                if (vendor_type != 'delivery' &&  vendor_type !='on_demand') {
                                     var latitude = $('#latitude').val();
                                     var longitude = $('#longitude').val();
                                     displayMapLocation(latitude, longitude, 'vendor-address-map');
