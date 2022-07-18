@@ -2151,7 +2151,7 @@ $(document).ready(function () {
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
 
-                                if (vendor_type != 'delivery') {
+                                if (vendor_type != 'delivery' &&  vendor_type !='on_demand') {
                                     var latitude = $('#latitude').val();
                                     var longitude = $('#longitude').val();
                                     displayMapLocation(latitude, longitude, 'vendor-address-map');
