@@ -42,6 +42,11 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0{color
 .grid-row.grid-4-4 {    grid-template-columns: repeat(2,1fr);    grid-gap: 40px;}
 .al_body_template_three .shimmer_effect .grid-row .cards:nth-child(3),
 .al_body_template_three .shimmer_effect .grid-row .cards:nth-child(4){display: none;}
+
+/*-----arbic language responsive issue----*/
+body[dir="rtl"].al_body_template_three .al_new_cart{margin:10px;}
+
+
 }
 @media (max-width: 991px){
 .al_mobile_menu{display:block}
