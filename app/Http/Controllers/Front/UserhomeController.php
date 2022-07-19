@@ -281,15 +281,21 @@ class UserhomeController extends FrontController
             $clientPreferences = ClientPreference::first();
             $count = 0;
             if ($clientPreferences) {
-                if ($clientPreferences->dinein_check == 1) {
-                    $count++;
+                foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                    $clientVendorTypes = $vendor_typ_key.'_check';
+                    if($clientPreferences->$clientVendorTypes == 1){
+                        $count++;
+                    }
                 }
-                if ($clientPreferences->takeaway_check == 1) {
-                    $count++;
-                }
-                if ($clientPreferences->delivery_check == 1) {
-                    $count++;
-                }
+                // if ($clientPreferences->dinein_check == 1) {
+                //     $count++;
+                // }
+                // if ($clientPreferences->takeaway_check == 1) {
+                //     $count++;
+                // }
+                // if ($clientPreferences->delivery_check == 1) {
+                //     $count++;
+                // }
             }
             // if ($preferences) {
             //     if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
