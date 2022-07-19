@@ -746,8 +746,13 @@ class OrderController extends FrontController
             /* Get Client Address */
             if (($request->has('address_id')) && ($request->address_id > 0)) {
                 $order->address_id = $request->address_id;
+                $cus_address = UserAddress::find($request->address_id);
+                $latitude = $cus_address->latitude ?? Session::get('latitude');
+                $longitude = $cus_address->longitude ?? Session::get('longitude');
             }else{
                 $order->address_id = $cart->address_id??null;
+                $latitude = Session::get('latitude');
+                $longitude = Session::get('longitude');
             }
 
             /* Uodating client other details in order object */
@@ -808,6 +813,7 @@ class OrderController extends FrontController
             $vendor_ids = [];
             $total_service_fee = 0;
             $total_delivery_fee = 0;
+            $fixed_fee_amount = 0.00;
             $total_subscription_discount = 0;
             $total_container_charges = 0;
             $vendor_total_container_charges = 0;
@@ -828,6 +834,8 @@ class OrderController extends FrontController
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
                 $delivery_fee = 0;
+                $delivery_duration = 0;
+                $delivery_distance = 0;
                 $deliver_charge = $ptaxable_amount =$delivery_fee_charges = 0.00;
                 $delivery_count = 0;
                 $vendor_payable_amount = 0;
@@ -890,8 +898,11 @@ class OrderController extends FrontController
                             $OrderVendor->courier_id = $deliver_fee_data->courier_id??0;
 
 
-                            if($deliver_fee_data)
-                            $delivery_fee  = $deliver_fee_data->delivery_fee??0.00;
+                            if($deliver_fee_data):
+                                $delivery_fee       = $deliver_fee_data->delivery_fee??0.00;
+                                $delivery_duration  = $deliver_fee_data->delivery_duration??0;
+                                $delivery_distance  = $deliver_fee_data->delivery_distance??0.00;
+                            endif;
 
                             if (!empty($delivery_fee) && $delivery_count == 0) {
                                 $total_delivery_fee+=$delivery_fee;
@@ -901,13 +912,20 @@ class OrderController extends FrontController
                                 $delivery_fee_charges = $delivery_fee;
 
                                 if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                                    $latitude = Session::get('latitude');
-                                    $longitude = Session::get('longitude');
+                                    if($order->address_id)
                                     $vendor_cart_product->vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor_cart_product->vendor, $preferences);
                                     $OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
                                     $timeofLineOfSightDistance = ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) ? $vendor_cart_product->vendor->timeofLineOfSightDistance : 0;
-                                    if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
+                                    if ($delivery_duration > 0) {
+                                        $OrderVendor->user_to_vendor_time = intval($delivery_duration);
+                                    }
+                                    else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
                                         $OrderVendor->user_to_vendor_time = intval($timeofLineOfSightDistance) - intval($OrderVendor->order_pre_time);
+                                    }
+                                }else{
+                                    $OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
+                                    if ($delivery_duration > 0) {
+                                        $OrderVendor->user_to_vendor_time = intval($delivery_duration);
                                     }
                                 }
                             }
@@ -1104,6 +1122,9 @@ class OrderController extends FrontController
                     if (($vendor_info->commission_fixed_per_order) != null && $actual_amount > 0) {
                         $OrderVendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                     }
+                    if($vendor_info->fixed_fee_amount > 0){
+                        $fixed_fee_amount = $fixed_fee_amount + $vendor_info->fixed_fee_amount;
+                    }
                 }
                 $OrderVendor->save();
                 $order_status = new VendorOrderStatus();
@@ -1147,8 +1168,7 @@ class OrderController extends FrontController
                     $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                 }
             }
-            $payable_amount = $payable_amount - $loyalty_amount_saved;
-
+            $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
             $wallet_amount_used = 0;
             if ($user) {
@@ -1197,6 +1217,7 @@ class OrderController extends FrontController
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
             $order->payable_amount = $payable_amount;
+            $order->fixed_fee_amount = $fixed_fee_amount;
             $order->total_container_charges = $total_container_charges;
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status = 1;
@@ -1373,6 +1394,7 @@ class OrderController extends FrontController
                     'title' => $notification_content->subject,
                     'body'  => $notification_content->content,
                     'data' => $orderData,
+                    'order_id' => $orderData->id,
                     'type' => "order_created"
                 ],
                 "priority" => "high"
