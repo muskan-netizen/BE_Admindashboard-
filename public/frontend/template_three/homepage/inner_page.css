@@ -469,7 +469,8 @@ body[dir="rtl"].al_body_template_three .order_detail_data .progress-order {left:
 body[dir="rtl"].al_body_template_three .cart-main-box-inside .shopping-cart li .ellips {text-align: right;}
 body[dir="rtl"].al_body_template_three .product-detail a h5 {text-align: right;}
 body[dir="rtl"].al_body_template_three .vendor-products-wrapper .scrollspy-menu li a {text-align: right;}
-
+body[dir="rtl"].al_body_template_three .main-menu .menu-right .icon-nav .onhover-div .show-div.shopping-cart {padding: 0; min-width: 270px;right: unset;left: 0;}
+body[dir="rtl"].al_body_template_three .main-menu .menu-right .icon-nav .onhover-div .show-div.shopping-cart .buttons {text-align: right;}
 
 
 
