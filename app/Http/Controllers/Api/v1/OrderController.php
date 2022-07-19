@@ -276,8 +276,11 @@ class OrderController extends BaseController
                                     $order_vendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type??'D';
                                     $order_vendor->courier_id = $deliver_fee_data->courier_id??0;
 
-                                    if($deliver_fee_data)
-                                    $delivery_fee  = $deliver_fee_data->delivery_fee??0.00;
+                                    if($deliver_fee_data):
+                                        $delivery_fee  = $deliver_fee_data->delivery_fee??0.00;
+                                        $delivery_duration  = $deliver_fee_data->delivery_duration??0;
+                                        $delivery_distance  = $deliver_fee_data->delivery_distance??0.00;
+                                    endif;
 
                                     if (!empty($delivery_fee) && $delivery_count == 0) {
                                         $delivery_count = 1;
@@ -288,7 +291,11 @@ class OrderController extends BaseController
                                         $longitude = $request->header('longitude');
                                         $vendor_cart_product->vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor_cart_product->vendor, $client_preference);
                                         $order_vendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
-                                        if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
+                                        
+                                        if ($delivery_duration > 0) {
+                                            $order_vendor->user_to_vendor_time = intval($delivery_duration);
+                                        }
+                                        else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
                                             Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
                                             Log::info($order_vendor->order_pre_time);
                                             if($order_vendor->order_pre_time)
