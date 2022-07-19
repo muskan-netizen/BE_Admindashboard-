@@ -417,14 +417,20 @@ class BaseController extends Controller{
                 });
 
                 if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
-                    $serviceAreaVendors = $serviceAreaVendors->where(function($query) use ($latitude, $longitude) {
-                        $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
-                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
-                        })
-                        ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
-                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                    $slot_vendors = clone $serviceAreaVendors;
+                    $data = $slot_vendors->get();
+                    foreach ($data as $key => $value) {
+                        $serviceAreaVendors = $serviceAreaVendors->when(($value->show_slot == 0), function($query) use ($latitude, $longitude) {
+                            return $query->where(function($query1) use ($latitude, $longitude) {
+                                $query1->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                })
+                                ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                });
+                            });
                         });
-                    });
+                    }
                 }
             }
         }

@@ -119,7 +119,7 @@
                             </div>
                         </div> -->
                     </div>
-                    @if($client_preferences->slots_with_service_area == 1)
+                    @if(($client_preference_detail->slots_with_service_area == 1) && ($vendor->show_slot == 0))
                     <div class="row">
                         <div class="col-md-12" >
                             <div class="form-group">
@@ -129,11 +129,6 @@
                                         <option value="{{$area->id}}">{{$area->name}}</option>
                                     @endforeach
                                 </select>
-                                {{-- <select class="selectize-select form-control" name="slot_service_area" id="add_slot_service_area">
-                                    @foreach($areas as $area)
-                                        <option value="{{$area->id}}">{{$area->name}}</option>
-                                    @endforeach
-                                </select> --}}
                             </div>
                         </div>
                     </div>
@@ -275,7 +270,7 @@
                             <input name="edit_type_id" type="hidden" id="edit_type_id" value="">
                         </div>
                     </div>
-                    @if($client_preferences->slots_with_service_area == 1)
+                    @if(($client_preference_detail->slots_with_service_area == 1) && ($vendor->show_slot == 0))
                     <div class="row">
                         <div class="col-md-12" >
                             <div class="form-group">
@@ -285,11 +280,6 @@
                                         <option value="{{$area->id}}">{{$area->name}}</option>
                                     @endforeach
                                 </select>
-                                {{-- <select class="selectize-select form-control" name="edit_slot_service_area" id="edit_slot_service_area">
-                                    @foreach($areas as $area)
-                                        <option value="{{$area->id}}">{{$area->name}}</option>
-                                    @endforeach
-                                </select> --}}
                             </div>
                         </div>
                     </div>

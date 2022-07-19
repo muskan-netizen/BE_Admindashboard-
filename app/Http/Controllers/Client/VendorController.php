@@ -1080,7 +1080,7 @@ class VendorController extends BaseController
         $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
         $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
         $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
-        $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
+        // $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
         if($request->has('slot_minutes')){
             $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;
         }
@@ -1164,6 +1164,38 @@ class VendorController extends BaseController
             return $this->successResponse($vendor,__("Vendor update successfully!"));
         }
         return redirect()->back()->with('success', $msg . ' updated successfully!');
+    }
+
+    /**
+     * Update vendor cron job status.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\ServiceArea  $serviceArea
+     * @return \Illuminate\Http\Response
+     */
+    public function updateCronStatusForServiceArea(Request $request, $domain = '', $id){
+        try{
+            $rules = array(
+                'status' => 'required'
+            );
+            $messages = array(
+                'status.required' => 'Status is required'
+            );
+            $validation  = Validator::make($request->all(), $rules, $messages);
+
+            if ($validation->fails()) {
+                foreach ($validation->errors()->toArray() as $error_key => $error_value) {
+                    return $this->errorResponse(__($error_value[0]), 422);
+                }
+            }
+            $vendor = Vendor::where('id', $id)->firstOrFail();
+            $vendor->cron_for_service_area = $request->status;
+            $vendor->save();
+            return $this->successResponse('', __('Vendor updated successfully!'));
+        }
+        catch(\Exception $ex){
+            return $this->errorResponse($ex->getMessage(), 422);
+        }
     }
 
     public function updateAhoyLocation(Request $request, $domain = '',  $id)

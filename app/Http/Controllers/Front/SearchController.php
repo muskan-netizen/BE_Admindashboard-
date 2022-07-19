@@ -22,7 +22,7 @@ class SearchController extends FrontController{
         $vendorType = Session::get('vendorType');
         $allowed_vendors = $this->getServiceAreaVendors();
        
-        $vendors = Vendor::select('id', 'name', 'logo','slug');
+        $vendors = Vendor::select('id', 'name', 'logo','slug', 'show_slot');
         if (count($allowed_vendors) > 0) {
             $vendors = $vendors->whereIn('id', $allowed_vendors);
         }
@@ -43,17 +43,22 @@ class SearchController extends FrontController{
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                     });
                 }
-            }
-            if (($preferences->slots_with_service_area == 1) && ($latitude) && ($longitude) ) {
-                if (!empty($latitude) && !empty($longitude)) {
-                    $vendors = $vendors->where(function($query) use ($latitude, $longitude) {
-                        $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
-                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
-                        })
-                        ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
-                            $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+
+                if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
+                    $slot_vendors = clone $vendors;
+                    $data = $slot_vendors->get();
+                    foreach ($data as $key => $value) {
+                        $vendors = $vendors->when(($value->show_slot == 0), function($query) use ($latitude, $longitude) {
+                            return $query->where(function($query1) use ($latitude, $longitude) {
+                                $query1->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                })
+                                ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                });
+                            });
                         });
-                    });
+                    }
                 }
             }
         }

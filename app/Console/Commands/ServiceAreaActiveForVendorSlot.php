@@ -80,7 +80,7 @@ class ServiceAreaActiveForVendorSlot extends Command
                                 ->orWhereHas('slotDate.geos');
                             });
 
-                            $vendors = $vendors->where('takeaway', 1)->where('cron_for_service_area', 1)->where('status', 1)->get();
+                            $vendors = $vendors->where('show_slot', 0)->where('cron_for_service_area', 1)->where('status', 1)->get();
 
                             foreach($vendors as $vendor){
                                 $active_service_areas = array();

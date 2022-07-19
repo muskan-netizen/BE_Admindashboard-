@@ -323,6 +323,14 @@
                                             <button class="btn btn-info openServiceModal"> {{ __('Add Service Area') }}</button>
                                         </div>
                                     </div>
+                                    @if(($client_preference_detail->slots_with_service_area == 1) && ($vendor->show_slot == 0))
+                                        <div class="row">
+                                            <div class="col-sm-4 mb-2 d-flex align-items-center justify-content-between">
+                                                {!! Form::label('title', __('Auto Assign Service Area As Per Slots'),['class' => 'control-label font-weight-bold']) !!}
+                                                <input type="checkbox" data-plugin="switchery" name="cron_for_service_area" id="cron_for_service_area" class="form-control" data-color="#43bee1" @if($vendor->cron_for_service_area == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                                            </div>
+                                        </div>
+                                    @endif
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="table-responsive mb-3" style="height: 330px; overflow-y: auto;">
@@ -337,11 +345,11 @@
                                                         @foreach($areas as $geo)
                                                         <tr>
                                                             <td class="table-user">
-                                                                <a href="javascript:void(0);" class="text-body font-weight-semibold">{{$geo->name}}</a>
+                                                                <a href="javascript:void(0);" class="text-body">{{$geo->name}}</a>
                                                             </td>
 
                                                             <td>
-                                                                @if($client_preference_detail->slots_with_service_area == '1')
+                                                                @if(($client_preference_detail->slots_with_service_area == 1) && ($vendor->show_slot == 0))
                                                                     <input type="checkbox" data-plugin="switchery" name="is_active_for_vendor_slot" class="form-control is_active_for_vendor_slot" data-color="#43bee1" data-aid="{{$geo->id}}" @if($geo->is_active_for_vendor_slot == 1) checked @endif {{ ($vendor->cron_for_service_area == 1) ? 'disabled' : '' }}>
                                                                 @endif
 
@@ -1495,6 +1503,33 @@
     $(function() {
         $('#save').click(function() {
             //iterate polygon latlongs?
+        });
+    });
+
+    $(document).on('change', '#cron_for_service_area', function(){
+        var statusVal = 0;
+        if($(this).is(':checked')){
+            statusVal = 1;
+        }
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{{route('vendor.serviceArea.cron.update', $vendor->id)}}",
+            data: {
+                _token: CSRF_TOKEN,
+                status: statusVal
+            },
+            success: function(response) {
+                if (response.status == 'Success') {
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                } else {
+                    $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+                }
+            },
+            error: function(errors){
+                var error = errors.responseJSON;
+                $.NotificationApp.send("Error", error.message, "top-right", "#ab0535", "error");
+            }
         });
     });
 
