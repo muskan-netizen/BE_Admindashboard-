@@ -20,8 +20,8 @@ $applocale = session()->get('applocale');
 </div>
 @endif
 @if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify'))
-<footer id="footer" class="footer-light al_footer_template_six pt-5">
-   <section class="section-b-space pb-3">
+<footer id="footer" class="footer-light al_footer_template_six">
+   <section class="section-b-space pt-5 pb-3">
       <div class="container">
          <div class="row footer-theme partition-f py-lg-3 py-2">
             @if($client_preference_detail->show_contact_us == 1)
@@ -455,7 +455,7 @@ $applocale = session()->get('applocale');
    </div>
 </div>
 
-<!-- <div class="alSwitch">
+<div class="alSwitch">
    <div id="dark_mode_switch" data-mode="false" class="time-circle">
    <div class="sun"></div>
    <div class="moon">
@@ -474,112 +474,10 @@ $applocale = session()->get('applocale');
    </div>
    <div class="water"></div>
    </div>
-</div> -->
-<script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
+</div>
+
+
 <script>
-    $(document).ready(function(){
-     $('.alSpaListSlider').slick({
-      arrows: false,
-      dots: false,
-      slidesToShow: 5,
-      infinite: false,
-      responsive: [{
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-        }
 
-      }, {
-        breakpoint: 800,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-          infinite: true,
-
-        }
-      },  {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          infinite: true,
-          autoplay: true,
-          autoplaySpeed: 2000,
-          centerMode: true,
-        }
-      }]
-    });
-
-    $('.alSLslider').slick({
-      arrows: false,
-      dots: false,
-      slidesToShow: 5,
-      slidesToScroll: 1,
-      infinite: true,
-      centerMode: true,
-      autoplay: true,
-      autoplaySpeed: 2000,
-      responsive: [
-      {
-        breakpoint: 1400,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-        }
-
-      },{
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        }
-      }]
-    });
-
-    $('.clientsFeedBackSlider').slick({
-      arrows: true,
-      dots: true,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      infinite: true,
-      autoplay: true,
-      autoplaySpeed: 2000,
-    });
-
-      $('.slider').slick({
-            dots: false,
-            infinite: true,
-            speed: 500,
-            slidesToShow: 8,
-            slidesToScroll: 1,
-            autoplay: false,
-            autoplaySpeed: 2000,
-            arrows: true,
-            responsive: [{
-            breakpoint: 1400,
-            settings: {
-               slidesToShow: 6,
-            }
-            },
-            {
-               breakpoint: 1199,
-               settings: {
-                  slidesToShow: 4,
-               }
-            }]
-      });
-
-  });
-</script>
-<script>
-   $(document).ready(function(){
-       $(".alHamBurgerIcon").click(function(){
-          $(".alSpaMenuCard").addClass("active");
-       });
-       $(".alMenuClose").click(function(){
-           $(".alSpaMenuCard").removeClass("active");
-       });
-   });
 </script>
 

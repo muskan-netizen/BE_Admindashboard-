@@ -819,7 +819,7 @@ body_event.on("click", ".theme-layout-version", function () {
                         $('<div class="sidebar-btn dark-light-btn" id="dark-light-btn-toggle"><div class="dark-light"><div class="theme-layout-version">Light</div></div></div>').appendTo($("body"));
                     }
                     else{
-                        $('<div class="sidebar-btn dark-light-btn" id="dark-light-btn-toggle"><div class="dark-light"><div class="theme-layout-version">Light</div></div></div>').appendTo($("body"));
+                        $('<div class="sidebar-btn dark-light-btn" id="dark-light-btn-toggle"><div class="dark-light"><div class="theme-layout-version">Dark</div></div></div>').appendTo($("body"));
                     }
                     $("#dark-light-btn-toggle").removeClass('d-none');
                 }

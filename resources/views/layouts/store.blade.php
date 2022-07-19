@@ -9,6 +9,7 @@ $set_common_business_type = $client_preference_detail->business_type??'';
   @include('layouts.store.title-meta')
   @include('layouts.store.head-content', ["demo" => "creative"])
 </head>
+@yield('cssnew')
 @php
 $dark_mode = '';
 if($client_preference_detail->show_dark_mode == 1){

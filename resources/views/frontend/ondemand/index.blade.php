@@ -393,7 +393,7 @@ use Illuminate\Support\Arr;
                                                     </div>
                                                 </div>
                                                 @endif
-                                                @endforeach                                                
+                                                @endforeach
                                             </div>
                                             <P id="message_of_time{{$cart_data->id}}"></P>
                                         </div>

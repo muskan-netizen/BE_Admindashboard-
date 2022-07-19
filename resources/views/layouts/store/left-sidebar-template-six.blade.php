@@ -21,8 +21,6 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 ->orderBy('order_by', 'ASC')
 ->get();
 @endphp
-@section('css')
-@endsection
 @if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify'))
 <header id="al_new_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
    @include('layouts.store/topbar-template-six')
@@ -167,7 +165,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
       }
       %>
 
-   <li class="al_main_category"  >
+   <li class="al_main_category">
        <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category[0]) && $category->slug == $cate[0]['slug'] ? 'current_category' : ''}}">
            @if($client_preference_detail->show_icons==1)
            <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}}">

@@ -46,16 +46,17 @@
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_five/footer.css')}}">
 
 @elseif(isset($set_template)  && $set_template->template_id == 6)
-  @if(Route::currentRouteName() == "userHome")
-  <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/homepage.css')}}">
-  @else
-  <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/inner_page.css')}}">
-  @endif
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick-theme.min.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/css/slick.min.css')}}">
-
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/footer/footer.css')}}">
+
+@if(Route::currentRouteName() == "userHome")
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/homepage.css')}}">
+@else
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/inner_page.css')}}">
+@endif
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_six/homepage/style-rtl.css')}}">
 @endif
 @yield('css-links')
 <style type="text/css">

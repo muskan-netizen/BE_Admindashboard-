@@ -20,26 +20,99 @@ footer#footer .social-links li a:hover i{-webkit-transform: scale(1);transform: 
 .al_footer_template_six ul.social-links li span{display: none;}
 
 /* ============ dark theme css ============================= */
+
+/*============== dark background-color ========== */
 .dark.al_body_template_six .alSixMainMenu .slick-slide,
 .dark .alFindSec,
 .dark .form-control,
+.dark .vendor_products_tr:hover,
 .dark.al_body_template_six .vendors .product-card-box{background-color: #232323;}
 
+
+/*============== dark background-color most dark ================== */
+.dark.al_body_template_six .suppliers-img-outer,
+.dark .card-box,
+.dark .number input,
+.dark .site-header, .dark .site-header.fixed-bar,
 .dark.al_body_template_six .vendors .brand-ing,
 .dark.al_body_template_six .vendors .suppliers-img-outer,
+.dark .outer-box,
 .dark.al_body_template_six .vendors .img-outer-box{background-color: #0C0C0C;}
 
+
+
+/*============== dark text color ========== */
 .dark .new-tag,
 .dark .alFindSec span,
+.dark .radio,
+.dark .number input,
+.dark .dashboard-right p,
 .dark .alTesimonialsFrom{color: #eee;}
+
+/*============== dark border color ========== */
+.dark .outer-box,
 .dark .alChooseDate span:before,
 .dark .alLocation span:before{border-color: #eee;}
-.dark .site-header, .dark .site-header.fixed-bar{background-color: #0C0C0C;}
 
+/*============== dark text color white ========== */
 .dark .site-header.fixed-bar .rightHead ul li a svg path,
 .dark .site-header .rightHead ul li a svg path,
 .dark .site-header .rightHead ul li a svg,
 .dark .site-header.fixed-bar .rightHead ul li a svg{fill: #fff;}
+
+/*============== dark text theme color ========== */
+.dark .dashboard-left .block-content ul li:hover a,
+.dark .dashboard-left .block-content ul li.active a{color: var(--theme-deafult);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @media(max-width: 991px){
 .alSpaListSlider .slick-list.draggable{padding-left: 0 !important;}

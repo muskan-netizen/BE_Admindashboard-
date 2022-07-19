@@ -75,7 +75,7 @@
                     </div>
             </div>
         </div>
-        <div class="container">
+        <div class="container homepageSix">
             <div class="row mb-sm-5 mb-2">
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
