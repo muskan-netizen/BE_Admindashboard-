@@ -154,9 +154,9 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                @php
-                                    $typeArray = getCategoryTypes();
-                                @endphp
+                                    @php
+                                        $typeArray = getCategoryTypes();
+                                    @endphp
                                     @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
                                         @php
                                             $clientVendorTypes = $vendor_typ_key.'_check';
@@ -201,8 +201,8 @@
                                                 </div>
                                             @endif
                                             </div>
-                                        </div> -->
-                                    </div>
+                                        </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
