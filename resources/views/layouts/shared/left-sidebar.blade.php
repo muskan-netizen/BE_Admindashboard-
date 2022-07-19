@@ -248,7 +248,11 @@
                                             <li>
                                                 <a href="{{route('chat.VendorUserChat')}}">{{ __('User/Vendor') }}</a>
                                             </li>
-                                        
+                                            @if(Auth::user()->is_superadmin == 1)
+                                                <li>
+                                                    <a href="{{route('chat.userAgentChatRoom')}}">{{ __('User/Agent') }}</a>
+                                                </li>
+                                                @endif
                                             {{-- <li>
                                                 <a href="{{route('report.productperformance')}}">{{ __("Product Performance Report") }}</a>
                                             </li> --}}

@@ -421,7 +421,7 @@
             'room_id' : room_id,
             'message': message,
             'user_type': 'user',
-            'to_message': 'to_vendor',
+            'to_message': 'to_agent',
             'from_message': 'from_user',
             'user_id': Auth.auth_id,
             'email': authDataParseData.email,
@@ -431,7 +431,7 @@
             'phone_num': '+'+authDataParseData.dial_code+ ' ' +authDataParseData.phone_number,
             'display_image': dImage,
             //'room_name' =>$data->name,
-            'chat_type': 'vendor_to_user',
+            'chat_type': 'agent_to_user',
         })
         .then(async response => {
              console.log(response.data.status);
