@@ -321,6 +321,8 @@ class OrderController extends BaseController
             $order->total_other_taxes_amount = $total_other_taxes;
 
             foreach ($order->vendors as $vendor) {
+                $vendor->isAlert = false;
+                $vendor->alertMessage = "";
                 if(isset($vendor) && !empty($vendor->vendor_id))
                 $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);
                 else
@@ -333,6 +335,11 @@ class OrderController extends BaseController
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
+                    if($product->quantity > $product->product->variant[0]->quantity)
+                    {
+                        $vendor->isAlert = true;
+                        $vendor->alertMessage = __("You are low on stock");
+                    }
                 }
 
                 if ($vendor->delivery_fee > 0) {

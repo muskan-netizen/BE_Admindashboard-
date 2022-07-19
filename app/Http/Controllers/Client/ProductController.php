@@ -173,7 +173,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $id)->firstOrFail();
+        $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $id)->firstOrFail();
         //dd($product->global_product_id);
         $type = Type::all();
         $countries = Country::all();
@@ -218,6 +218,9 @@ class ProductController extends BaseController
 
         foreach ($product->crossSell as $key => $value) {
             $crossSell_ids[] = $value->cross_product_id;
+        }
+        foreach($product->variantSets as $key=>$value){
+            $existOptions[] = $value->variant_option_id;
         }
 
         foreach ($product->celebrities as $key => $value) {
