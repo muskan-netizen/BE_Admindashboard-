@@ -66,7 +66,7 @@
                                             <div class="product-detail">
                                                 <div class="inner_spacing">
                                                     <a href="{{$data['redirect_url']}}">
-                                                        <h3>{{$data['name']}}</h3>
+                                                        <h3>{{__($data['name'])}}</h3>
                                                     </a>
                                                 </div>
                                             </div>
@@ -75,7 +75,7 @@
                                     @endforeach
                                     @else
                                     <div class="col-xl-12 col-12 mt-4">
-                                        <h5 class="text-center">No Product Found</h5>
+                                        <h5 class="text-center">{{__('No Product Found')}}</h5>
                                     </div>
                                     @endif
                                 </div>
