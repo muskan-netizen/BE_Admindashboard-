@@ -71,17 +71,16 @@ class ChatController extends FrontController
     }
     public function UserAgentChat(Request $request){
         $user = Auth::user();
-        if ($user->is_superadmin != 1) {
-            abort(404);
-        }
-        
-        $roomData = $this->getChatRoomForUser('agent_to_user','agent_to_user');
+        $langId = Session::get('customerLanguage');
+        $navCategories = $this->categoryNav($langId);
+        $roomData = $this->getChatRoomForUser($user->id,'agent_to_user');
         if($roomData['status']){
             $chatroom = $roomData['roomData'];
         } else {
             $chatroom = [];
         }
-        return view('backend.chat.agent',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom]);
+        return view('frontend.chat.UserAgentChat',$this->client_data)->with([ 'data' => $this->client_data,'chatrooms'=>$chatroom,'navCategories' => $navCategories
+    ]);
 
     }
 

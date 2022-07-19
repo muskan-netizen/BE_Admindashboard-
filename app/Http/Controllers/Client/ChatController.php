@@ -132,14 +132,15 @@ class ChatController extends BaseController
 
     }
 
-    public function agentUserChat(Request $request){
+    public function userAgentChatRoom(Request $request){
+        $user = Auth::user();
         if ($user->is_superadmin != 1) {
             abort(404);
         }
-        $user = Auth::user();
+       
       
         $roomData = $this->getAllChatRoom('agent_to_user');
-        $view = "agentUser";
+        $view = "AgentUserChat";
        if($roomData['status']){
             $chatroom = $roomData['roomData'];
         } else {
