@@ -580,9 +580,9 @@ class CartController extends BaseController
             $address_id = ($address) ? $address->id : 0;
         }
         if($type != 'delivery'){
-            $user = Auth::user();
-            $latitude = $user->latitude ?? '';
-            $longitude = $user->longitude ?? '';
+            $loggedin_user = Auth::user();
+            $latitude = $loggedin_user->latitude ?? '';
+            $longitude = $loggedin_user->longitude ?? '';
         }else{
             $latitude = ($address) ? $address->latitude : '';
             $longitude = ($address) ? $address->longitude : '';
