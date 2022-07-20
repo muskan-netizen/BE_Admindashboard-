@@ -2,7 +2,8 @@
 
 Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], function () {
     Route::get('country-list', 'Api\v1\AuthController@countries');
-    Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() { //, 'apilogger'
+   // Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {
+    Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() { //, 'apilog
         Route::get('logout', 'Api\v1\AuthController@logout');
         Route::post('sendToken', 'Api\v1\AuthController@sendToken');
         Route::post('verifyAccount', 'Api\v1\AuthController@verifyToken');
