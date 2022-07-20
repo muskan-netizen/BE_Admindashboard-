@@ -118,7 +118,6 @@ if($theme && !empty($theme->map_key)){
 @endif
 @yield('customcss')
 @php 
-$mapKey = '1234';
 $socket_url = ''; 
 $admin_chat = '';
 $driver_chat = '';

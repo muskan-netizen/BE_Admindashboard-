@@ -1043,9 +1043,12 @@ class CartController extends FrontController
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;
+                        $deliveryDuration = 0;
+                        $deliveryDistance = 0;
                         $code = (($code)?$code:$cart->shipping_delivery_type);
                         if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
                             $deliveries = $this->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del);
+                            
                             if (isset($deliveries[0])) {
                                 $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                 if (count($deliveries)>1) {
@@ -1066,22 +1069,30 @@ class CartController extends FrontController
                                     });
                                     foreach ($new as $rate) {
                                         $deliveryCharges = $rate['rate'];
+                                        $deliveryDuration = $rate['duration'];
+                                        $deliveryDistance = $rate['distance'];
                                     }
                                     if ($deliveryCharges) {
                                         $deliveryCharges = $rate['rate'];
+                                        $deliveryDuration = $rate['duration'];
+                                        $deliveryDistance = $rate['distance'];
                                     } else {
                                         $deliveryCharges = $deliveries[0]['rate'];
+                                        $deliveryDuration = $deliveries[0]['duration'];
+                                        $deliveryDistance = $deliveries[0]['distance'];
                                         $code = $deliveries[0]['code'];
                                     }
                                 } else {
-                                    $deliveryCharges = $deliveries[0]['rate'];
+                                    $deliveryCharges  = $deliveries[0]['rate'];
+                                    $deliveryDuration = $deliveries[0]['duration'];
+                                    $deliveryDistance = $deliveries[0]['distance'];
                                     $code = $deliveries[0]['code'];
                                 }
                             }
 
                             if (isset($deliveryCharges) && !empty($deliveryCharges)) {
                                 $dtype = explode('_', $code);
-                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id], ['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id], ['delivery_fee' => $deliveryCharges, 'delivery_duration' => $deliveryDuration, 'delivery_distance' => $deliveryDistance,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
                             }
                         }//End Check last time stone
                     }
@@ -1945,16 +1956,20 @@ class CartController extends FrontController
             if($preferences->static_delivey_fee != 1)
             {
 
-                //Dispatcher Delivery changes code
-                $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del);
-                if (!empty($deliver_charge)){
-                    $deliver_charge = decimal_format($deliver_charge);
+                //Dispatcher Delivery changes and estimated delivery duration code
+                $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del);
+                if (!empty($deliver_response_array[0])){
+                    $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
+                    $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
+                    $delivery_distance = (!empty($deliver_response_array[0]['total_distance']))?number_format($deliver_response_array[0]['total_distance'], 0, '.', ''):'0.00';
                     $option[] = array(
                         'type'=>'D',
                         'courier_name'=>__('Dispatcher'),
                         'rate' => $deliver_charge,
                         'courier_company_id' => 0,
                         'etd' => 0,
+                        'duration' => $delivery_duration,
+                        'distance' => $delivery_distance,
                         'etd_hours' => 0,
                         'estimated_delivery_days' => 0,
                         'code' => 'D_0'
@@ -2116,7 +2131,8 @@ class CartController extends FrontController
                     $response = json_decode($res->getBody(), true);
                     
                     if ($response && $response['message'] == 'success') {
-                        return $response['total'];
+                        $response_array[] = array('delivery_fee' => $response['total'], 'total_duration' => $response['total_duration'], 'total_distance' => $response['total_distance']);
+                        return $response_array;
                     }
                 }
             }

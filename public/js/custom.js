@@ -3738,7 +3738,7 @@ $(document).ready(function () {
         if ((quan + batch_count) > str && hasInv == "1") {
             Swal.fire({
                 // title: "Warning!",
-                text: "Quantity is not available in stock",
+                text: maximumquantitylert,
                 icon: "warning",
                 button: "OK",
             });
@@ -3775,7 +3775,7 @@ $(document).ready(function () {
         if (i - batch_count < minimum_order_count) {
             Swal.fire({
                 // title: "Warning!",
-                text: "Minimum Quantity count is " + minimum_order_count,
+                text: minimumquantitylert+" " + minimum_order_count,
                 icon: "warning",
                 button: "OK",
             });
@@ -3791,7 +3791,7 @@ $(document).ready(function () {
         if (parseInt(quan) > parseInt(str)) {
             Swal.fire({
                 // title: "Warning!",
-                text: "Quantity is not available in stock",
+                text: maximumquantitylert,
                 icon: "warning",
                 button: "OK",
             });

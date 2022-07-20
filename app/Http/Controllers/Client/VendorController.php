@@ -650,6 +650,8 @@ class VendorController extends BaseController
             $q->whereNull('deleted_at')->orWhere('deleted_at', '');
         })
         ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
+        
+
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
@@ -691,6 +693,7 @@ class VendorController extends BaseController
         $checkShip = ($ship_creds->status) ?? 0;
         $checkAhoyShip = ($ahoys->status) ?? 0;
         $taxRates=TaxRate::all();
+
         return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'taxRates'=>$taxRates]);
     }
     // vendor product datatable
@@ -1634,6 +1637,7 @@ class VendorController extends BaseController
             $q->whereNull('deleted_at')->orWhere('deleted_at', '');
         })
         ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
+        
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
@@ -1643,7 +1647,7 @@ class VendorController extends BaseController
             $product_categories_build = $this->buildTree($p_categories->toArray());
             $product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
             foreach($product_categories_hierarchy as $k => $cat){
-                $myArr = array(1,3,7,8,9);
+                $myArr = array(1,3,7,8,9,10);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
                     unset($product_categories_hierarchy[$k]);
                 }

@@ -88,6 +88,7 @@ class TypeSeeder extends Seeder
                 'title' => 'Laundry',
                 'image' => 'laundry.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                
             ],
             [
                 'id' => 10,

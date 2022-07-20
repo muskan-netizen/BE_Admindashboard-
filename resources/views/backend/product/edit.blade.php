@@ -243,7 +243,7 @@
                     </div>
                     @endif
                     <div class="row mb-2">
-                        @if(!in_array($product->category->categoryDetail->type_id,[8,9]))
+                        @if(!in_array($product->category->categoryDetail->type_id,[8,9,10]))
                         <div class="col-sm-4">
                             {!! Form::label('title', __('Track Inventory')) !!} <br>
                             <input type="checkbox" bid="" id="has_inventory" data-plugin="switchery" name="has_inventory" class="chk_box" data-color="#43bee1" {{$product->has_inventory == 1 ? 'checked' : ''}}>
@@ -252,7 +252,7 @@
 
                         <div class="col-sm-8 check_inventory ">
                             <div class="row">
-                                @if($product->category->categoryDetail->type_id != 8)
+                                @if($product->category->categoryDetail->type_id != 8 && $product->category->categoryDetail->type_id != 10)
                                 @if($product->has_variant == 0)
                                 <div class="col-sm-4">
                                     {!! Form::label('title', __('Quantity'),['class' => 'control-label']) !!}
@@ -276,6 +276,37 @@
                             </div>
                         </div>
                     </div>
+                    @if($product->category->categoryDetail->type_id == 10)
+                        <div class="row mb-2">
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Minimum Duration'), ['class' => 'control-label']) !!}
+                                {!!Form::input('number','minimum_duration', $product->minimum_duration, ['min' => '0','class'=>'form-control', 'id' => 'minimum_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Additional Increments'), ['class' => 'control-label']) !!}
+                                {!! Form::input('number','additional_increments', $product->additional_increments, ['min' => '0','class'=>'form-control', 'id' => 'additional_increments', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 mb-2">
+                                {!! Form::label('title', __('Buffer time Duration'), ['class' => 'control-label']) !!}
+                               
+                                {!! Form::input('number','buffer_time_duration', $product->buffer_time_duration, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-sm-3">
+                                {!! Form::label('title', __('Fix Check-in time'),['class' => 'control-label']) !!} <br />
+                                <input type="checkbox" bid="" id="is_fix_check_in_time" data-plugin="switchery" name="is_fix_check_in_time" class="chk_box" data-color="#43bee1" @if($product->is_fix_check_in_time == 1) checked @endif>
+                            </div>
+                            <div class="col-4 mb-2 check_in_time @if($product->is_fix_check_in_time != 1) d-none @endif">
+                                {!! Form::label('title', __('Check in time'), ['class' => 'control-label']) !!}
+                                {!! Form::text('check_in_time', $product->check_in_time, ['class'=>'form-control', 'id' => 'range-datepicker', 'placeholder' => '00:00']) !!}
+                            </div>
+                           
+                        </div>
+                    @endif
 
                 </div>
                 @endif
@@ -725,7 +756,7 @@
                             </select>
                         </div>
                     </div> -->
-
+                    
                 </div>
 
                 <div class="card-box">
@@ -976,12 +1007,15 @@
 <!-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> -->
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
+
 <script>
     CKEDITOR.replace('body_html');
     CKEDITOR.config.height = 150;
 </script>
 
 <script type="text/javascript">
+
+    
     $('#requiredShipping').change(function() {
         var val = $(this).prop('checked');
         if (val == true) {
@@ -1539,4 +1573,5 @@
     </script>
 
 <!-- end product faq -->
+<script src="{{ asset('assets/js/backend/product/edit_product.js')}}"></script>
 @endsection
