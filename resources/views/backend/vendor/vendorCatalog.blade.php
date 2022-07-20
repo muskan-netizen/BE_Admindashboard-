@@ -480,10 +480,10 @@
                                         type="button">{{ __('Import Global Product') }}</button>
                                 </div>
                                 
-                                <div class="col-md-4 text-right mb-2">
+                                {{-- <div class="col-md-4 text-right mb-2">
                                     <button class="btn btn-info button" id="import_bagqrcode"
                                         type="button">{{ __('Import Bag Qrcode') }}</button>
-                                </div>
+                                </div> --}}
                             @endif
 
                                 <div class="col-md-12">

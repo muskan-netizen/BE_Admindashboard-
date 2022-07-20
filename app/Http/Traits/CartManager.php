@@ -34,12 +34,17 @@ trait cartManager{
     $countries = Country::get();
     $this->language = session()->get('customerLanguage')??'1';
     $this->currencyId = session()->get('customerCurrency');
-    $this->customerCurrency = ClientCurrency::where('currency_id', $this->currencyId)->first();;
+    $this->customerCurrency = ClientCurrency::where('currency_id', $this->currencyId)->first();
+    if($this->user)
+    {
+        $this->user_allAddresses = UserAddress::where('user_id', $this->user->id)->where('status',1)->get();
+    }
+    $this->preferences = ClientPreference::with(['client_detail:id,code,country_id'])->first();
   }
 
 
 
-  public function getCartProductss(Request $request)
+  public function getCartProductsNew(Request $request)
     {
         $this->config();
         Session()->forget('vendorType');
@@ -80,7 +85,6 @@ trait cartManager{
   {
      /*Getting User Address */
      if($user){
-          $user_allAddresses = UserAddress::where('user_id', $user)->where('status',1)->get();
           if($address_id > 0){
               $address = UserAddress::where('user_id', $user)->where('id', $address_id)->first();
           }else{
@@ -102,6 +106,25 @@ trait cartManager{
 
   }
 
+  public function getVendorServiceArea($address_id,$vendorData)
+  {
+    $serviceArea = null;
+    if($address_id > 0){
+    $address = UserAddress::where('user_id', $this->user->id)->where('id', $address_id)->first();
+            $latitude = $address->latitude;
+            $longitude = $address->longitude;
+            if (!empty($latitude) && !empty($longitude)) {
+                
+                $serviceArea = $vendorData->vendor->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                    $query->select('vendor_id')
+                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+                })->where('id', $vendorData->vendor_id)->get();
+            }
+        }
+        return $serviceArea;
+
+  }
+
   public function getTaxes()
   {
       /* Getting All Taxes available and making TaxRate array according to requirement */
@@ -114,10 +137,40 @@ trait cartManager{
   }
 
 
+  public function userSubscription($userId)
+  {
+    $now = Carbon::now()->toDateTimeString();
+    $user_subscription = SubscriptionInvoicesUser::with('features')
+        ->select('id', 'user_id', 'subscription_id')
+        ->where('user_id', $userId)
+        ->where('end_date', '>', $now)
+        ->orderBy('end_date', 'desc')->first();
+    return $user_subscription;
+  }
+
+  public function calCulateSubscriptionDiscount($userId,$deliveryCharges=0,$payable_amount=0)
+  {
+    $user_subscription = $this->userSubscription($userId);
+    $subscription_discount = 0;
+    if ($user_subscription) {
+        foreach ($user_subscription->features as $feature) {
+            if ($feature->feature_id == 1) {
+                $subscription_discount = $subscription_discount + $deliveryCharges;
+            }
+            elseif ($feature->feature_id == 2) {
+                $off_percentage_discount = ($feature->percent_value * $payable_amount / 100);
+                $subscription_discount = $subscription_discount + $off_percentage_discount;
+            }
+        }
+    }
+    return $subscription_discount;
+
+  }
+
+
   public function getOrderLoyalityAmount($user)
   {
     $customerCurrency = $this->customerCurrency;
-
     $loyalty_amount_saved = 0;
     $redeem_points_per_primary_currency = '';
     $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -150,15 +203,16 @@ trait cartManager{
        * Get Cart Items
        *
        */
-      public function getCarts($cart, $address_id=0 , $code = 'D',$schedule_datetime_del='')
+      public function getCartsNew($cart, $address_id=0 , $code = 'D',$schedule_datetime_del='')
       {
+        $this->config();
         $address = [];
         $category_array = [];
         $cart_id = $cart->id;
         $user = $this->user;
         $langId = $this->language;
         $curId = $this->currencyId;
-        $preferences = ClientPreference::with(['client_detail:id,code,country_id'])->first();
+        $preferences = $this->preferences;
         $countries = Country::get();
         $cart->pharmacy_check = $preferences->pharmacy_check;
         $customerCurrency = $this->customerCurrency;
@@ -169,8 +223,9 @@ trait cartManager{
         $upSell_products = collect();
         $crossSell_products = collect();
         $couponGetAmount=0;
+
         //Get User Address Details
-        $address = $this->getUserAddress($user->id,1);
+        $address = $this->getUserAddress($user->id,$address_id);
 
         /* Getting User Lat Long */
         $latitude = ($address) ? $address->latitude : '';
@@ -225,14 +280,10 @@ trait cartManager{
           //Get earn and used loyalty amount 
           $loyalty_amount_saved = $this->getOrderLoyalityAmount($user);
 
-            $now = Carbon::now()->toDateTimeString();
-            $user_subscription = SubscriptionInvoicesUser::with('features')
-                ->select('id', 'user_id', 'subscription_id')
-                ->where('user_id', $user->id)
-                ->where('end_date', '>', $now)
-                ->orderBy('end_date', 'desc')->first();
-          //dd($user_subscription);
-            $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
+          //d Get user subscription
+          $user_subscription = $this->userSubscription($user->id);
+
+          $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
         }
         $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = 0.00;
         /* If cart have data then getting total and other variable set */
@@ -310,19 +361,12 @@ trait cartManager{
                     }
                 }
                 else {
-                    
                     if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-                        if($address_id > 0){
-
-                            if (!empty($latitude) && !empty($longitude)) {
-                                $serviceArea = $vendorData->vendor->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-                                    $query->select('vendor_id')
-                                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
-                                })->where('id', $vendorData->vendor_id)->get();
-                            }
-                        }
+                        //Get VendorService Area
+                        $serviceArea = $this->getVendorServiceArea($address_id,$vendorData);
                     }
                 }
+                //dd($serviceArea);
                 Session()->put('vid','');
                 //get Coupon Discount for product case
                 $coupon_product_ids = [];
@@ -645,19 +689,8 @@ trait cartManager{
                 }
 
                 // calculate subscription discount
-                if ($user_subscription) {
-                    foreach ($user_subscription->features as $feature) {
-                        if ($feature->feature_id == 1) {
-                            $subscription_discount = $subscription_discount + $deliveryCharges;
-                        }
-                        elseif ($feature->feature_id == 2) {
-                            $off_percentage_discount = ($feature->percent_value * $payable_amount / 100);
-                            $subscription_discount = $subscription_discount + $off_percentage_discount;
-                        }
-                    }
-                }
-
-              //  dd($subscription_discount);
+                $subscription_discount = $this->calCulateSubscriptionDiscount($user->id,$deliveryCharges,$payable_amount);
+               
                 // add total delivery fee 
                 if($vendorData->vendor->delivery_charges_tax_id)
                 $all_vendor_deliver_charges +=  $deliveryCharges;
@@ -960,7 +993,7 @@ trait cartManager{
             $cart->wallet_amount_available = decimal_format($wallet_amount_available);
             $cart->taxRates=$taxRates;
             $cart->action = $action;
-            //$cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
+            $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $this->user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;

@@ -34,9 +34,9 @@
             </div>
         </div>
         <div class="col-sm-6 text-right">
-            {{-- <button class="btn btn-info waves-effect waves-light text-sm-right"
+            <button class="btn btn-info waves-effect waves-light text-sm-right"
                 data-toggle="modal" data-target=".importQrcodeBtn"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import QrCode') }}
-            </button> --}}
+            </button>
         </div>
     </div>
     <!-- end page title -->
