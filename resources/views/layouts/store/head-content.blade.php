@@ -9,16 +9,7 @@
 <link rel="stylesheet" type="text/css" href="{{asset('css/sweetalert2.min.css')}}">
 
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom-template-one.css')}}">--}}
-@if(isset($set_template) && $set_template->template_id ==3)
-<style>
-.top-header{
- height: 100px !important;
-}
-.navbar-expand-lg {
-    height: 100% !important;
-}
-</style>
-@endif
+
 <link defer type="text/css" rel="stylesheet" media="all" href="{{asset('front-assets/css/icons-style.css')}}">
 <link defer type="text/css" href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
 <link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">
