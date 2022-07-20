@@ -163,13 +163,13 @@
                         </div>
                     </div>
                     <div style="{{($category->type_id != 1) ? 'display:none;' : ''}}" class="border-bottom cat-banners pt-1">
-                        <div class="row w-100">
-                            <div class="col">
-                                <label>{{ __("Banner 1") }}</label>
+                        <div class="row w-100 cat-banner-apnd">
+                            <div class="col-sm-2 cat-banner-fst">
+                                <label>{{ __("Banner") }}</label>
                                 <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify" data-default-file="" />
                                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
                             </div>
-                            <div class="col">
+                            <!-- <div class="col">
                                 <label>{{ __("Banner 2") }}</label>
                                 <input type="file" accept="image/*" data-plugins="dropify" name="icon_two" class="dropify" data-default-file="" />
                                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
@@ -188,8 +188,8 @@
                                 <label>{{ __("Banner 5") }}</label>
                                 <input type="file" accept="image/*" data-plugins="dropify" name="icon_two" class="dropify" data-default-file="" />
                                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
-                            </div>
-                        </div>      
+                            </div> -->
+                        </div>       
                     </div>
                 </div>
             </div>
