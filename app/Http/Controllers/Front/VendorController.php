@@ -168,7 +168,12 @@ class VendorController extends FrontController
             $page = 'products-with-categories';
             $products = Product::select('averageRating')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
             $vendor->vendorRating = $this->vendorRating($products);
-        }else{
+        }elseif($vendor->vendor_templete_id == 6){
+            $page = 'products-with-categories-extended';
+            $products = Product::select('averageRating')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
+            $vendor->vendorRating = $this->vendorRating($products);
+        }
+        else{
             $page = 'products';
         }
 
@@ -211,8 +216,7 @@ class VendorController extends FrontController
         $product_tag_ids = Product::where('vendor_id', $vendor->id)->where('is_live', 1)->pluck('id')->toArray();
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
-
-         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
+         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';vendor-products-with-categories-extended
         return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed]);
     }
 

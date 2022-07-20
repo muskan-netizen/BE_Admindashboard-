@@ -172,7 +172,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                <img class="blur-up lazyload" data-icon_two="<%=icon_two_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""  onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
            </div>
            @endif
-           <%=category.name %>
+           <span class="alCategoryName"><%=category.name %></span>
        </a>
        <% if(category.children){%>
        <ul class="al_main_category_list">

@@ -348,7 +348,7 @@ $applocale = session()->get('applocale');
                         <script type="text/template" id="header_cart_template">
                            <div class='alShoppingList'>
                               <div class='widget widget-cart px-3 pt-2 pb-0' style="width: 20rem">
-                                 <div class='simplebar-wrapper' style="height: 15rem">
+                                 <div class='simplebar-wrapper' style="">
                                        <div class='simplebar-content' style="padding: 0;">
                                           <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%>
                                           <li class='widget-cart-item pb-2 border-bottom' id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>">

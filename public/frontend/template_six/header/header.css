@@ -137,6 +137,7 @@ font-size: 30px;
 z-index: 9;
 position: relative;
 }
+
 .alFindSec{
 background-color: #fff;
 border-radius: 30px;
@@ -228,16 +229,16 @@ padding-top: 0.5rem;top: 100%;position: absolute;z-index: 1000;display: none;min
 text-align: left;list-style: none;background-clip: padding-box;border: 1px solid #e3e9ef;border-radius: 0.3125rem}
 .alShoppingList:hover{-webkit-animation: fade-in .25s ease-in-out;animation: fade-in .25s ease-in-out}
 .alShoppingBag:hover .alShoppingList{display: block;-webkit-animation: slide-up .25s ease-in-out;animation: slide-up .25s ease-in-out}
-.widget-cart-item{position: relative;width: 100%;}
+.widget-cart-item{position: relative;width: 100%;padding-top: 10px;}
 .widget-cart-item .btn-close{position: absolute;top: 50%;left: 0;height: auto;padding: 0;transform: translateY(-50%);
 transition: visibility .25s ease-in-out,
 opacity .25s ease-in-out;background: none;font-size: 1.5rem;font-weight: 300;visibility: hidden;opacity: 0;border:0}
 .widget-cart-item:hover>.d-flex{transform: translateX(1.125rem)}.widget-cart-item>.d-flex{transition: all .25s ease-in-out}
-.widget-product-title{margin-bottom: 0.25rem;font-size: .875rem;font-weight: 500}.widget-product-title>a{color: #373f50}.widget-product-meta{font-size: .875rem}
+.widget-product-title{margin-bottom: 0.25rem;font-size: .875rem;font-weight: 500;text-overflow: ellipsis;white-space: nowrap;overflow: hidden;max-width: 190px;}.widget-product-title>a{color: #373f50}.widget-product-meta{font-size: .875rem}
 .text-accent{color: #84571E !important}.text-muted{color: #7d879c !important}
 .widget-cart-item:hover .btn-close{visibility: visible;opacity: 1}
 .simplebar-content{overflow: hidden scroll;width: inherit;height: inherit;max-width: inherit;max-height: inherit}
-.simplebar-wrapper{direction: inherit;box-sizing: border-box!important;position: relative;display: block;height: 100%;width: auto;max-width: 100%;max-height: 100%;
+.simplebar-wrapper{direction: inherit;box-sizing: border-box!important;position: relative;display: block;height: 100%;width: auto;max-width: 100%;max-height: 150px;
 scrollbar-width: none;-ms-overflow-style: none}
 a.view-cart{
     font-size: 14px;

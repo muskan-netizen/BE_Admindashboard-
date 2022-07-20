@@ -163,7 +163,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
 @if ($selected_template == 6)
-<script async src="{{asset('frontend/template_six/homepage/spa_slider_custom.js}}"></script>
+<script async src="{{asset('frontend/template_six/homepage/spa_slider_custom.js')}}"></script>
 @endif
 <script type="text/javascript">
 window.dataLayer = window.dataLayer || [];

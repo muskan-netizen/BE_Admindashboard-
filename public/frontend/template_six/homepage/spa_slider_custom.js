@@ -7,13 +7,23 @@ $(document).ready(function() {
         $(".alSpaMenuCard").removeClass("active");
     });
 
-
     $(".regular").slick({
-            dots: true,
-            infinite: false,
-            slidesToShow: 1,
-            slidesToScroll: 1,
-      });
+      dots: true,
+      infinite: true,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      fade: true,
+      asNavFor: '.regular-nav'
+    });
+
+    $('.regular-nav').slick({
+       slidesToShow: 5,
+       slidesToScroll: 1,
+       asNavFor: '.regular',
+       dots: true,
+       autoplay: false,
+       focusOnSelect: true
+    });
 
     $('.alSpaListSlider').slick({
       arrows: false,
@@ -48,13 +58,36 @@ $(document).ready(function() {
       }]
     });
 
-    $('.alSLslider').slick({
-      arrows: false,
+    $('.menu-slider').slick({
+      arrows: true,
       dots: false,
       slidesToShow: 5,
       slidesToScroll: 1,
       infinite: true,
-      centerMode: true,
+      autoplay: true,
+      autoplaySpeed: 2000,
+      responsive: [
+      {
+        breakpoint: 1400,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        }
+
+      },{
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        }
+      }]
+    });
+    $('.Spasslider').slick({
+      arrows: true,
+      dots: false,
+      slidesToShow: 5,
+      slidesToScroll: 1,
+      infinite: true,
       autoplay: true,
       autoplaySpeed: 2000,
       responsive: [

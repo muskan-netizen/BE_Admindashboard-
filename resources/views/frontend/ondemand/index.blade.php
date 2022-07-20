@@ -83,7 +83,7 @@ use Illuminate\Support\Arr;
                                                             @endphp
 
                                                             <div class="row classes_wrapper no-gutters align-items-center" href="#">
-                                                                <div class="col-md-9 col-sm-8 pr-md-2">
+                                                                <div class="col-md-9 col-sm-8 pr-md-2 alSixHomeServiceSteps">
                                                                     <h5 class="mb-1"><b>{!! (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku !!}</b></h5>
                                                                     <p class="mb-1">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
                                                                     <div class="d-flex align-items-center justify-content-between">
@@ -177,7 +177,7 @@ use Illuminate\Support\Arr;
                                                 @foreach($listData as $key => $data)
                                                 {{-- new product design  --}}
                                                 <div class="row classes_wrapper no-gutters align-items-center" href="#">
-                                                    <div class="col-md-9 col-sm-8 pr-md-2">
+                                                    <div class="col-md-9 col-sm-8 pr-md-2 alSixHomeServiceSteps">
                                                         <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
                                                         <p class="mb-1">{!! $data->translation_description !!}</p>
                                                     </div>
@@ -491,21 +491,21 @@ use Illuminate\Support\Arr;
 
                                 <script type="text/template" id="header_cart_template_ondemand">
                                         <% _.each(cart_details.products, function(product, key){%>
-                                            <li>
+                                            <li class="alVendorName">
                                                 <h6 class="d-flex align-items-center justify-content-between"> <%= product.vendor.name %> </h6>
                                             </li>
 
                                             <% if( (product.isDeliverable != undefined) && (product.isDeliverable == 0) ) { %>
-                                                <li class="border_0">
-                                                    <th colspan="7">
-                                                        <div class="text-danger">
-                                                            Products for this vendor are not deliverable at your area. Please change address or remove product.
-                                                        </div>
-                                                    </th>
-                                                </li>
-                                                <% } %>
+                                            <li class="border_0">
+                                                <th colspan="7">
+                                                    <div class="text-danger">
+                                                        Products for this vendor are not deliverable at your area. Please change address or remove product.
+                                                    </div>
+                                                </th>
+                                            </li>
+                                            <% } %>
                                             <% _.each(product.vendor_products, function(vendor_product, vp){%>
-                                                <li id="cart_product_<%= vendor_product.id %>" data-qty="<%= vendor_product.quantity %>">
+                                                <li class="alVendorProductDetails" id="cart_product_<%= vendor_product.id %>" data-qty="<%= vendor_product.quantity %>">
                                                         <div class='media-body'>
                                                             <h6 class="d-flex align-items-center justify-content-between">
                                                                 <span class="ellips"><%= vendor_product.quantity %>x <%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></span>
@@ -522,12 +522,12 @@ use Illuminate\Support\Arr;
 
                                                 <% if(vendor_product.addon.length != 0) { %>
                                                     <div class="row align-items-md-center">
-                                                        <div class="col-12">
+                                                        <div class="col-12 alVendorProductDetails">
                                                             <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                                         </div>
                                                     </div>
                                                     <% _.each(vendor_product.addon, function(addon, ad){%>
-                                                    <div class="row">
+                                                    <div class="row alVendorProductDetails">
                                                         <div class="col-md-3 col-sm-4 items-details text-left">
                                                             <p class="p-0 m-0"><%= addon.option.title %></p>
                                                         </div>
@@ -552,7 +552,7 @@ use Illuminate\Support\Arr;
                                         <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
 
                                         <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('DATE & TIME')}} </h5>
-                                        <li>
+                                        <li class="alVendorProductDetails">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Date')}}</span>
@@ -561,7 +561,7 @@ use Illuminate\Support\Arr;
                                             </div>
                                         </li>
 
-                                        <li>
+                                        <li class="alVendorProductDetails">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Start Time')}}</span>
@@ -573,7 +573,7 @@ use Illuminate\Support\Arr;
                                         @endforeach
 
                                         <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('PRICE DETAILS')}} </h5>
-                                        <li>
+                                        <li class="alVendorProductTotals">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Price')}}</span>
@@ -582,7 +582,7 @@ use Illuminate\Support\Arr;
                                             </div>
                                         </li>
 
-                                        <li>
+                                        <li class="alVendorProductTotals">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Tax')}}</span>
@@ -592,7 +592,7 @@ use Illuminate\Support\Arr;
                                         </li>
 
                                         <% if(cart_details.loyalty_amount > 0) { %>
-                                        <li>
+                                        <li class="alVendorProductTotals">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Loyalty Amount')}} </span>
@@ -602,7 +602,7 @@ use Illuminate\Support\Arr;
                                         </li>
                                         <% } %>
 
-                                        <li>
+                                        <li class="alVendorProductTotals">
                                             <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Total')}}</span>
@@ -612,7 +612,7 @@ use Illuminate\Support\Arr;
                                         </li>
 
                                  </script>
-                                 <ul class="show-div shopping-cart" id="header_cart_main_ul_ondemand">
+                                 <ul class="show-div shopping-cart d-none" id="header_cart_main_ul_ondemand">
                                  </ul>
 
 

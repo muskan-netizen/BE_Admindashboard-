@@ -805,7 +805,7 @@
                                                         <div class="circle-core"></div>
                                                     </div>
                                                 </div>
-                                                <div class="show-div shopping-cart flex-fill w-100"
+                                                <div
                                                     id="header_cart_main_ul_ondemand"></div>
                                             </div>
                                         </div>
@@ -821,6 +821,7 @@
     </section>
     <script type="text/template" id="header_cart_template_ondemand">
         <ul class="pl-2 pr-2 pb-2 pt-0 ">
+            <div class="dcpj" >
                                 <% _.each(cart_details.products, function(product, key){%>
                                     <li class="p-0">
                                         <h6 class="d-flex justify-content-center badge badge-light font-14"><b><%= product.vendor.name %></b></h6>
@@ -944,6 +945,7 @@
                                     <span>{{ Session::get('currencySymbol') }}<%= cart_details.total_payable_amount %></span>
                                 </div>
                                 <a class="checkout-btn text-center d-block" href="{{ route('showCart') }}">{{ __('Checkout') }}</a>
+                                </div>
                             </script>
     <script type="text/template" id="empty_cart_template">
         <div class="row">
@@ -1404,6 +1406,7 @@
                         var cart_html = $('.vendor-products-wrapper #header_cart_main_ul_ondemand').html();
                         $('.vendor-products-wrapper').html(response.html);
                         $('.vendor-products-wrapper #header_cart_main_ul_ondemand').html(cart_html);
+                        $('#header_cart_main_ul_ondemand').removeClass('d-none');
                         addReadMoreLink();
                     }
                 }
