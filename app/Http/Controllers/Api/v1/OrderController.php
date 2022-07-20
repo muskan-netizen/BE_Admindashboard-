@@ -233,8 +233,8 @@ class OrderController extends BaseController
 
                             if ((isset($client_preference->is_hyperlocal)) && ($client_preference->is_hyperlocal == 1) && ($latitude) && ($longitude)){
                                 if (!empty($latitude) && !empty($longitude)) {
-                                    if(($client_preference->slots_with_service_area == 1) && ($vendor_cart_products->vendor->show_slot == 0)){
-                                        $serviceArea = $vendor_cart_products->vendor->where(function($query) use ($latitude, $longitude) {
+                                    if(($client_preference->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
+                                        $serviceArea = $vendor_cart_product->vendor->where(function($query) use ($latitude, $longitude) {
                                             $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
                                                 $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
                                             })
