@@ -85,16 +85,17 @@ class TypeSeeder extends Seeder
                 'id' => 9,
                 'service_type' => 'laundry_service',
                 'sequence' => 8,
-                'title' => 'Rental Service',
-                'image' => 'rental.png',
+                'title' => 'Laundry',
+                'image' => 'laundry.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                
             ],
             [
                 'id' => 10,
                 'service_type' => 'rental_service',
                 'sequence' => 9,
-                'title' => 'Laundry',
-                'image' => 'laundry.png',
+                'title' => 'Rental Service',
+                'image' => 'rental.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
             ]
         );

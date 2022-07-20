@@ -250,7 +250,7 @@ class ProductController extends BaseController
 
         
         $set_product_tags = ProductTag::where('product_id',$product->id)->pluck('tag_id')->toArray();
-        
+        //pr($product->variant->toArray());exit();
         return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags,'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids]);
     }
 
@@ -354,6 +354,11 @@ class ProductController extends BaseController
             if(isset($product->category) && in_array($product->category->categoryDetail->type_id,[8,9]))
             $product->sell_when_out_of_stock = 1;
         }
+        $product->minimum_duration = $request->minimum_duration??null;
+        $product->additional_increments = $request->additional_increments??null;
+        $product->buffer_time_duration = $request->buffer_time_duration??null;
+        $product->check_in_time = $request->check_in_time??null;
+        $product->is_fix_check_in_time = ($request->has('is_fix_check_in_time') && $request->is_fix_check_in_time == 'on') ? 1 : 0;
         $product->save();
 
         if ($product->id > 0) {
