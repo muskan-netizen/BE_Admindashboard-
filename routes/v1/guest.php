@@ -5,7 +5,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('vendor-sync-inventory', 'Api\v1\VendorController@vendorSyncInventory')->middleware('ConnectDbFromInventory');
 
-    Route::group(['middleware' => ['dbCheck', 'checkAuth']], function() {
+
+  
+   Route::group(['middleware' => ['dbCheck', 'checkAuth']], function() { //apilogger
 
 
         Route::group(['prefix' => 'estimation'], function () {
@@ -84,7 +86,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
 
     });
-    Route::group(['middleware' => ['dbCheck','systemAuth']], function() {
+
+    Route::group(['middleware' => ['dbCheck','systemAuth']], function() { //apilogger
         Route::get('cart/empty', 'Api\v1\CartController@emptyCart');
         Route::get('coupons/{id?}', 'Api\v1\CouponController@list');
         Route::post('cart/remove', 'Api\v1\CartController@removeItem');
