@@ -58,14 +58,13 @@ $(document).ready(function() {
       }]
     });
 
-    $('.menu-slider').slick({
+    $('.spaMenu-slider').slick({
       arrows: true,
-      dots: false,
-      slidesToShow: 5,
+      dots: true,
+      slidesToShow: 6,
       slidesToScroll: 1,
-      infinite: true,
-      autoplay: true,
-      autoplaySpeed: 2000,
+      centerMode: true,
+      centerPadding: '100px',
       responsive: [
       {
         breakpoint: 1400,
@@ -117,7 +116,7 @@ $(document).ready(function() {
       autoplaySpeed: 2000,
     });
 
-    $('.slider').slick({
+    $('.alSLslider').slick({
             dots: false,
             infinite: true,
             speed: 500,

@@ -1,4 +1,5 @@
 /* ============ inner page ========================= */
+#cart_main_page .card-box{background-color: transparent;box-shadow:none;}
 #social-links li{margin-right: 20px;}
 .homepageSix{max-width: 1400px;margin: 0 auto;}
 .breadcrumb-section.bg-transparent{display: none;}
@@ -148,7 +149,7 @@ span.pagingInfo{position:absolute;top:-80px;right:35px;color:#fff}ol.breadcrumb{
 .class_img img{width: 100%;}
 .product-order{border-radius: 10px;box-shadow: 0 1px 7px rgb(62 62 76 / 12%);}
 .product-order .total-sec{
-    background-color: var(--top-header-color);
+    background-color: var(--theme-deafult);
     padding: 10px !important;border-radius: 10px 10px 0 0;
 }
 .service-img.mb-3{
@@ -286,7 +287,7 @@ div#step-2-ondemand{
 .service-data h4{
     margin: -2px 0 0 0;
     padding: 12px 20px;
-    background-color: var(--top-header-color);
+    background-color: var(--theme-deafult);
     border-radius: 10px 10px 0 0;
     color: #fff;
     font-weight: 100;

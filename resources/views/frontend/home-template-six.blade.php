@@ -271,7 +271,7 @@
 <section class="alSixMainMenu p-0">
    @if(count($navCategories))
    <div class="menu-navigation_al">
-   <div class="container-fluid">
+   <div class="container">
       <div class="row">
          <div class="col-12">
             <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >

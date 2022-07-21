@@ -22,6 +22,7 @@ footer#footer .social-links li a:hover i{-webkit-transform: scale(1);transform: 
 /* ============ dark theme css ============================= */
 
 /*============== dark background-color ========== */
+body.al_body_template_six.dark,
 .dark.al_body_template_six .alSixMainMenu .slick-slide,
 .dark .alFindSec,
 .dark .form-control,

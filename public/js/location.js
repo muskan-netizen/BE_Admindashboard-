@@ -367,7 +367,7 @@ $(document).ready(function () {
             },
             complete:function(data){
                 // Hide image container
-            //    $(".shimmer_effect").hide();
+                $(".shimmer_effect").hide();
                 $(".home-slider, .home-banner-slider").show();
             //    $("#our_vendor_main_div").show();
             }
