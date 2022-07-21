@@ -589,7 +589,7 @@ class PickupDeliveryController extends BaseController{
                 $dynamic = uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
-                $call_back_url = "http://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
+                $call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic;
                 $tasks = array();
                 $meta_data = '';
                 $team_tag = $unique."_".$vendor;

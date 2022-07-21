@@ -211,7 +211,6 @@
     var total1 = 0;
     var user_store_address_url = "{{url('user/store')}}";
     $(document).ready(function() {
-        alert('hi');
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
