@@ -45,7 +45,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '29', 'path' => '', 'code' => 'mvodafone', 'title' => 'Mpesa Vodafone', 'off_site' => '1', 'status' => '0'),
         array('id' => '30', 'path' => '', 'code' => 'flutterwave', 'title' => 'Flutter Wave', 'off_site' => '0', 'status' => '0'),
         array('id' => '31', 'path' => '', 'code' => 'payu', 'title' => 'PayU', 'off_site' => '1', 'status' => '0'),
-        array('id' => '32', 'path' => '', 'code' => 'payphone', 'title' => 'payPhone', 'off_site' => '0', 'status' => '0'),
+        array('id' => '32', 'path' => '', 'code' => 'payphone', 'title' => 'PayPhone', 'off_site' => '0', 'status' => '0'),
         array('id' => '33', 'path' => 'braintree/braintree_php', 'code' => 'braintree', 'title' => 'Braintree', 'off_site' => '1', 'status' => '0'),
         array('id' => '34', 'path' => 'windcave', 'code' => 'windcave', 'title' => 'Windcave', 'off_site' => '1', 'status' => '0'),
         array('id' => '35', 'path' => 'paytech', 'code' => 'paytech', 'title' => 'PayTech', 'off_site' => '1', 'status' => '0'),
