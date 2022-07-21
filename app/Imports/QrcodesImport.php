@@ -12,7 +12,8 @@ use App\Models\{Client, CsvQrcodeImport, QrcodeImport};
 class QrcodesImport implements ToCollection{
     private $folderName = 'qrcode';
 
-    public function  __construct($csv_product_import_id){
+    public function  __construct($vendor_id,$csv_product_import_id){
+        $this->vendor_id= $vendor_id;
         $this->csv_product_import_id = $csv_product_import_id;
 
         // $code = Client::orderBy('id','asc')->value('code');
@@ -20,6 +21,7 @@ class QrcodesImport implements ToCollection{
     }
     public function collection(Collection $rows){
         try {
+
             $i = 0;
             $data = array();
             $error = array();
@@ -50,7 +52,8 @@ class QrcodesImport implements ToCollection{
                     foreach ($data as $da) {
 
                         $insert_vendor_details = array(
-                            'code' => $da[0]
+                            'code' => $da[0],
+                            //'vendor_id'=>$this->vendor_id??Null
                         );
 
                         if(QrcodeImport::where('code', $da[0])->exists()){

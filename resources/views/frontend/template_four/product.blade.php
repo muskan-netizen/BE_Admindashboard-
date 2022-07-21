@@ -26,7 +26,6 @@
 @endsection
 
 @section('content')
-
 @if(!empty($category))
 @include('frontend.included_files.products_breadcrumb')
 @endif
@@ -38,7 +37,9 @@
       Some text inside the toast body
     </div>
   </div> -->
-
+@php
+$checkSlot = findSlot('',$product->vendor->id,'');
+@endphp
 <section class="section-b-space FiveTemplate alSingleProducts">
     <div class="collection-wrapper al">
         <div class="container">
@@ -255,7 +256,7 @@
                                                             $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                             ?>
                                                             <label class="radio d-inline-block txt-14 mr-2">{{$optn->title}}
-                                                                <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
+                                                                <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}} data-cartCheck="{{(($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($optn->quantity <= $product_quantity_in_cart && $product->has_inventory) || ($optn->quantity < $product->minimum_order_count)) ? 1 : 0}}">
                                                                 <span class="checkround"></span>
                                                             </label>
                                                             @endforeach
@@ -379,9 +380,6 @@
                                         </table>--}}
                                     </div>
                                     @endif
-                                    @php
-                                    $checkSlot = findSlot('',$product->vendor->id,'');
-                                    @endphp
                                     <div class="product-buttons">
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                         @if($is_inwishlist_btn && $is_available)
@@ -401,8 +399,8 @@
 
 
                                         @endphp
-                                        @if($is_available == 1 && $product->variant[0]->quantity >= $product->minimum_order_count)
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}"><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
+                                        @if($is_available == 1 )
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory) || ($product->variant[0]->quantity < $product->minimum_order_count)) ? 'btn-disabled' : '' }}" ><i class="ti-shopping-cart"></i> {{__('Add To Cart')}}</a>
                                         @endif
 
                                             @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
@@ -737,6 +735,8 @@
 @endsection
 @section('script')
 <script>
+    var maximumquantitylert = "{{__('Quantity is not available in stock')}}";
+    var minimumquantitylert = "{{__('Minimum Quantity count is')}}";
     $(document).on('click', '.submitInquiryForm', function(e) {
         e.preventDefault();
         var formData = new FormData(document.getElementById("inquiry-form"));
@@ -825,6 +825,12 @@
     var add_to_cart_url = "{{ route('addToCart') }}";
     $('.changeVariant').click(function() {
         updatePrice();
+        $('.addToCart').removeClass('btn-disabled');
+        var check = $(this).attr('data-cartCheck');
+        if(check == 1 ||check == '1')
+        {
+            $('.addToCart').addClass('btn-disabled');
+        }
     });
     function updatePrice()
     {

@@ -17,6 +17,7 @@
                         <span
                             class="badge badge-info ml-2 my-1">{{ __($luxury_option_name) }}</span>
                     @endif
+
                     @if (!empty($order->scheduled_date_time))
                         <span class="badge badge-success ml-2">Scheduled</span>
                         <span class="ml-2 text-right">
@@ -63,7 +64,7 @@
                                 <?php
                                   $vendor_id = $order->vendors->first()->vendor_id;
                                   $duration = \App\Models\Vendor::where('id',$vendor_id)->select('slot_minutes')->first();
-                                  if($client_preference_detail->same_day_orders_for_rescheduing == 1 && $client_preferences->business_type == 'laundry'){
+                                  if($clientPreference->same_day_orders_for_rescheduing == 1 && $clientPreference->business_type == 'laundry'){
                                         $pickupDate = date('Y-m-d');
                                         $slotsForPickup  = (object)showSlot(date('Y-m-d'),$vendor_id,'delivery',$duration->slot_minutes,1);
                                         $dropoffDate = date('Y-m-d');

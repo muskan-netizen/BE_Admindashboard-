@@ -748,8 +748,13 @@ class OrderController extends FrontController
             /* Get Client Address */
             if (($request->has('address_id')) && ($request->address_id > 0)) {
                 $order->address_id = $request->address_id;
+                $cus_address = UserAddress::find($request->address_id);
+                $latitude = $cus_address->latitude ?? Session::get('latitude');
+                $longitude = $cus_address->longitude ?? Session::get('longitude');
             }else{
                 $order->address_id = $cart->address_id??null;
+                $latitude = Session::get('latitude');
+                $longitude = Session::get('longitude');
             }
 
             /* Uodating client other details in order object */
@@ -831,6 +836,8 @@ class OrderController extends FrontController
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
                 $delivery_fee = 0;
+                $delivery_duration = 0;
+                $delivery_distance = 0;
                 $deliver_charge = $ptaxable_amount =$delivery_fee_charges = 0.00;
                 $delivery_count = 0;
                 $vendor_payable_amount = 0;
@@ -893,8 +900,11 @@ class OrderController extends FrontController
                             $OrderVendor->courier_id = $deliver_fee_data->courier_id??0;
 
 
-                            if($deliver_fee_data)
-                            $delivery_fee  = $deliver_fee_data->delivery_fee??0.00;
+                            if($deliver_fee_data):
+                                $delivery_fee       = $deliver_fee_data->delivery_fee??0.00;
+                                $delivery_duration  = $deliver_fee_data->delivery_duration??0;
+                                $delivery_distance  = $deliver_fee_data->delivery_distance??0.00;
+                            endif;
 
                             if (!empty($delivery_fee) && $delivery_count == 0) {
                                 $total_delivery_fee+=$delivery_fee;
@@ -904,13 +914,20 @@ class OrderController extends FrontController
                                 $delivery_fee_charges = $delivery_fee;
 
                                 if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                                    $latitude = Session::get('latitude');
-                                    $longitude = Session::get('longitude');
+                                    if($order->address_id)
                                     $vendor_cart_product->vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor_cart_product->vendor, $preferences);
                                     $OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
                                     $timeofLineOfSightDistance = ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) ? $vendor_cart_product->vendor->timeofLineOfSightDistance : 0;
-                                    if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
+                                    if ($delivery_duration > 0) {
+                                        $OrderVendor->user_to_vendor_time = intval($delivery_duration);
+                                    }
+                                    else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
                                         $OrderVendor->user_to_vendor_time = intval($timeofLineOfSightDistance) - intval($OrderVendor->order_pre_time);
+                                    }
+                                }else{
+                                    $OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
+                                    if ($delivery_duration > 0) {
+                                        $OrderVendor->user_to_vendor_time = intval($delivery_duration);
                                     }
                                 }
                             }
@@ -984,7 +1001,7 @@ class OrderController extends FrontController
                         
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
                             $opt_quantity_price = 0;
-                            $opt_price_in_currency = $addon->option->price;
+                            $opt_price_in_currency = $addon->option->price??0;
                             $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                             $opt_quantity_price = $opt_price_in_doller_compare * $order_product->quantity;
                             $total_amount = $total_amount + $opt_quantity_price;
@@ -1009,7 +1026,7 @@ class OrderController extends FrontController
                             $orderAddon = new OrderProductAddon;
                             $orderAddon->addon_id = $cart_addon->addon_id;
                             $orderAddon->option_id = $cart_addon->option_id;
-                            $addon_amount=AddonOption::find($cart_addon->option_id)->price;
+                            $addon_amount=AddonOption::find($cart_addon->option_id)->price??0;
                             $orderAddon->order_product_id = $order_product->id;
                             $orderAddon->save();
                         }

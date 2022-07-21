@@ -182,7 +182,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('tag/update', [TagController::class, 'update'])->name('tag.update');
         Route::post('tag/delete', [TagController::class, 'destroy'])->name('tag.delete');
 
-        Route::get('estimations/barcode', [EstimationController::class, 'barcode'])->name('estimations.barcode');
+        Route::get('estimations/barcode/{vendor?}', [EstimationController::class, 'barcode'])->name('estimations.barcode');
         Route::resource('estimations', 'Client\EstimationController');
         Route::resource('estimationsAddon', 'Client\EstimationAddonController');
 

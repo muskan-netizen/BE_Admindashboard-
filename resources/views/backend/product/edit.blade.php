@@ -592,16 +592,16 @@
                         <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Taxes") }}</h5>
                         </div>
                     </div>
-                    
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                   
+                    {{-- <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Container Charges'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="container_charges_tax" class="form-control" data-color="#43bee1" @if($product->container_charges_tax == 1) checked @endif>
-                    </div>
+                    </div> --}}
                 
 
-                    
-                    <div class="form-group w-100" style="display:{{$product->container_charges_tax == 0 ? 'none!important' : 'block'}}" id="container_charges_tax_id">
-                     {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
+                    @if($product->vendor->need_container_charges)
+                    <div class="form-group w-100" id="container_charges_tax_id">
+                     {!! Form::label('title',__('On Container Charges') .' '. __('Taxes Available'),['class' => 'control-label']) !!}
                         <select class="form-control" name="container_charges_tax_id">
                             <option value="">{{__('Select any')}}</option>
                             @foreach(taxRates() as $row)
@@ -609,7 +609,7 @@
                             @endforeach
                         </select>
                     </div> 
-                    
+                    @endif
 
                     @if($configData->delay_order == 1 || $product->delay_order_hrs > 0 || $product->delay_order_min > 0)
                     @if(in_array($configData->business_type,['laundry']))
