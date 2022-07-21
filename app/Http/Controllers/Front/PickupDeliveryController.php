@@ -842,7 +842,8 @@ class PickupDeliveryController extends FrontController{
                     'customer_dial_code' => $customer->dial_code ?? null,
                     'type'=>$type,
                     'friend_name'=>$friendName,
-                    'friend_phone_number'=>$friendPhoneNumber
+                    'friend_phone_number'=>$friendPhoneNumber,
+                    'vendor_id' => $vendor
                 ];
                 // dd($postdata);
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);

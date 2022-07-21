@@ -1845,7 +1845,8 @@ class OrderController extends FrontController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1866,7 +1867,7 @@ class OrderController extends FrontController
             $res = $client->post(
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
-            );
+            );Log::info(json_encode($postdata));
             $response = json_decode($res->getBody(), true);
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
@@ -1965,7 +1966,8 @@ class OrderController extends FrontController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1986,7 +1988,7 @@ class OrderController extends FrontController
             $res = $client->post(
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
-            );
+            );Log::info(json_encode($postdata));
             $response = json_decode($res->getBody(), true);
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
@@ -2135,7 +2137,8 @@ class OrderController extends FrontController
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'request_type'=> $rtype,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2157,7 +2160,7 @@ class OrderController extends FrontController
                 $url . '/api/task/create',
                 ['form_params' => ($postdata
                 )]
-            );
+            );Log::info(json_encode($postdata));
             $response = json_decode($res->getBody(), true);
 
             if ($response && $response['task_id'] > 0) {

@@ -634,7 +634,8 @@ class PickupDeliveryController extends BaseController{
                             'images_array' => $request->images_array??null,
                             'type'=>$type,
                             'friend_name'=>$friendName,
-                            'friend_phone_number'=>$friendPhoneNumber
+                            'friend_phone_number'=>$friendPhoneNumber,
+                            'vendor_id' => $vendor
                         ];
 
 
