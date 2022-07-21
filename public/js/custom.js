@@ -2097,7 +2097,7 @@ $(document).ready(function () {
         //     }
         // );
     }
-    function cartHeader(address_id) {
+    function cartHeader(address_id) {   
         $(".shopping-cart").html("");
         $(".spinner-box").show();
         
@@ -3734,7 +3734,7 @@ $(document).ready(function () {
         if ((quan + batch_count) > str && hasInv == "1") {
             Swal.fire({
                 // title: "Warning!",
-                text: maximumquantitylert,
+                text: "Quantity is not available in stock",
                 icon: "warning",
                 button: "OK",
             });
@@ -3771,7 +3771,7 @@ $(document).ready(function () {
         if (i - batch_count < minimum_order_count) {
             Swal.fire({
                 // title: "Warning!",
-                text: minimumquantitylert+" " + minimum_order_count,
+                text: "Minimum Quantity count is " + minimum_order_count,
                 icon: "warning",
                 button: "OK",
             });
@@ -3787,7 +3787,7 @@ $(document).ready(function () {
         if (parseInt(quan) > parseInt(str)) {
             Swal.fire({
                 // title: "Warning!",
-                text: maximumquantitylert,
+                text: "Quantity is not available in stock",
                 icon: "warning",
                 button: "OK",
             });

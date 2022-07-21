@@ -9,6 +9,9 @@ class Variant extends Model
 {
   protected $fillable = ['title', 'type', 'position', 'status'];
 
+  protected $appends = ['price'];
+
+
   public function translation(){
     return $this->hasMany('App\Models\VariantTranslation')->join('languages', 'variant_translations.language_id', 'languages.id')->select('variant_translations.id', 'variant_translations.title', 'variant_translations.variant_id', 'variant_translations.language_id', 'languages.name');
   }
@@ -42,5 +45,10 @@ class Variant extends Model
   public function category(){
     return $this->belongsToMany(Category::class, 'variant_categories', 'variant_id', 'category_id');
   }
+
+  public function getPriceAttribute()
+    {
+      return  $this->attributes['price'] +  $this->attributes['markup_price'];
+    }
 
 }

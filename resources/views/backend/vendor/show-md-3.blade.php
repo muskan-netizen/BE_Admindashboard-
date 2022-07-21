@@ -148,6 +148,12 @@
                         {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="need_container_charges" class="form-control" data-color="#43bee1" @if($vendor->need_container_charges == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    @if(Auth::user()->is_superadmin == 1)
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Add Markup Price?'),['class' => 'control-label']) !!}({{ __("Visible For Admin") }})
+                        <input type="checkbox" data-plugin="switchery" name="add_markup_price" class="form-control" data-color="#43bee1" @if($vendor->add_markup_price == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    @endif
                     @if(Auth::user()->is_superadmin == 1 || $client_preference_detail->vendor_return_request == 1)
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}

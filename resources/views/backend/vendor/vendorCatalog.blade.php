@@ -632,6 +632,7 @@
                                   @endif
                                   <option value="for_live">{{__('Draft/Published')}}</option>
                                   <option value="for_tax">{{__('Tax Category')}}</option>
+                                  <option value="for_markup">{{__('Markup Price')}}</option>
                                   <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock')}}</option>
                                   <option value="delete">{{__('Delete')}}</option>
                              </select>
@@ -648,6 +649,10 @@
                                  <input type="checkbox" id="is_new" data-plugin="switchery" name="is_new"
                                      class="chk_box" data-color="#43bee1">
                              </div>
+                             <div class="col-md-6 justify-content-between mb-2" id="for_markup" style="display:none;">
+                                {!! Form::label('title', __('Markup Price'), ['class' => 'control-label']) !!}
+                                <input type="number" id="markup_price"  name="markup_price" class="form-control">
+                            </div>
                                <div class="col-md-6 justify-content-between mb-2"   id="for_featured" style="display:none;">
                                  {!! Form::label('title', __('Featured'), ['class' => 'control-label']) !!}
                                  <input type="checkbox" id="is_featured" data-plugin="switchery" name="is_featured"
@@ -859,6 +864,7 @@
             $("#for_last_mile").css("display", "none");
             $("#for_live").css("display", "none");
             $("#for_tax").css("display", "none");
+            $("#for_markup").css("display", "none");
             $("#for_sell_when_out_of_stock").css("display", "none");
             $("#"+ actionfor).css("display", "block");
         });
@@ -905,6 +911,7 @@
             var is_new = $('#is_new').prop('checked');
             var is_featured = $('#is_featured').prop('checked');
             var is_live = $('#is_live').val();
+            var markup_price = $('#markup_price').val();
             var tax_category = $('#tax_category_for').val();
             var action_for = $('#action_for').val();
             var last_mile = $('#last_mile').prop('checked');
@@ -925,7 +932,7 @@
             $.ajax({
                 type: "post",
                 url: '{{route("product.update.action")}}',
-                data: {_token: CSRF_TOKEN,action_for:action_for,sell_when_out_of_stock:sell_when_out_of_stock,last_mile:last_mile, is_new: is_new, is_featured: is_featured, is_live: is_live, tax_category: tax_category, product_id: product_id},
+                data: {_token: CSRF_TOKEN,action_for:action_for,sell_when_out_of_stock:sell_when_out_of_stock,last_mile:last_mile, is_new: is_new, is_featured: is_featured, is_live: is_live, tax_category: tax_category,markup_price:markup_price, product_id: product_id},
                  success: function(resp) {
                     if (resp.status == 'success') {
                         $.NotificationApp.send("Success", resp.message, "top-right", "#5ba035",
