@@ -1846,7 +1846,9 @@ class OrderController extends FrontController
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'is_restricted' => $order_vendor->is_restricted,
-                'vendor_id' => $vendor_details->id
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1967,7 +1969,9 @@ class OrderController extends FrontController
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'is_restricted' => $order_vendor->is_restricted,
-                'vendor_id' => $vendor_details->id
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2138,7 +2142,9 @@ class OrderController extends FrontController
                 'task' => $tasks,
                 'request_type'=> $rtype,
                 'is_restricted' => $order_vendor->is_restricted,
-                'vendor_id' => $vendor_details->id
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
             {
