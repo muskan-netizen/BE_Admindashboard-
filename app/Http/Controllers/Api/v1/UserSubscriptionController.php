@@ -108,6 +108,8 @@ class UserSubscriptionController extends BaseController
                         $payment_option->title = __('Digicel MyCash');
                     }elseif($payment_option->code == 'windcave'){
                         $payment_option->title = __('Windcave (Debit/Credit card)');
+                    }elseif($payment_option->code == 'stripe_ideal'){
+                        $payment_option->title = __('iDEAL');
                     }
                     $payment_option->title = __($payment_option->title);
                     unset($payment_option->credentials);

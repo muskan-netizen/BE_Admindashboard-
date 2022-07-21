@@ -26,7 +26,7 @@ class OpenpayPaymentController  extends BaseController
         if($countryCode != "MX" && $countryCode !="CO" && $countryCode !="PE" ){
             return response()->json([
                 'status' => 'error',
-                'message' =>__('Something went wrong!Please try again.')
+                'message' =>__('Country code must be Mexico,Colombia,Peru.')
             ]);
         }
         $user = Auth::user();

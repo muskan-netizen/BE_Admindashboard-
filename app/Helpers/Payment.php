@@ -26,7 +26,7 @@ class Payment{
         $result = self::_payment($params, $merchant_key, $salt, $env);
         return  $result;
         // echo "initiate_payment";
-        // pr($result);
+        // pr($result); die;
         self::_paymentResponse((object)$result);
     }
 
@@ -98,7 +98,7 @@ class Payment{
     */
     public static function _payment($params, $merchant_key, $salt, $env){
 
-        //pr($merchant_key);
+        //echo 'key -: '.$merchant_key .'--- salt : '.$salt.'---Env : '.$env.'<br>';
         $postedArray = '';
         $URL = '';
 
@@ -113,6 +113,7 @@ class Payment{
 
         // remove white space, htmlentities(converts characters to HTML entities), prepared $postedArray.
         $postedArray = self::_removeSpaceAndPreparePostArray($params);
+        //pr($postedArray);dd('3');
 
         // empty validation
         $empty_validation = self::_emptyValidation($postedArray, $salt);
@@ -143,9 +144,11 @@ class Payment{
 
         // get URL based on enviroment like ($env = 'test' or $env = 'prod')
         $URL = self::_getURL($env);
+        //pr($params); die;
 
         // process to start pay
         $pay_result = self::_pay($postedArray, $salt, $URL);
+        //dd($pay_result);
         return $pay_result;
     }
 
@@ -224,6 +227,9 @@ class Payment{
             'country' => trim( htmlentities($params['country'], ENT_QUOTES) ),
             'zipcode' => trim( htmlentities($params['zipcode'], ENT_QUOTES) )
         );
+        if(!empty($params['sub_merchant_id'])){
+            $temp_array['sub_merchant_id'] = trim( htmlentities($params['sub_merchant_id'], ENT_QUOTES) );
+        }
         return $temp_array;
     }
 
@@ -478,20 +484,27 @@ class Payment{
     */
     public static function _pay($params_array, $salt_key, $url){
         $hash_key = '';
+        // dd($params_array);
+        // echo '------';
 
         // generate hash key and push into params array.
         $hash_key = self::_getHashKey($params_array, $salt_key);
         $params_array['hash'] = $hash_key;
-       // pr( $params_array);
+        // pr( $params_array);
+        // echo '------'; die;
         // call curl_call() for initiate pay link
         $curl_result = self::_curlCall( $url.'payment/initiateLink', http_build_query($params_array) );
 
         $accesskey = ($curl_result->status === 1) ? $curl_result->data : null;
 
+        //  pr($params_array);
+        //  pr($url);
+        //  pr($curl_result);die;
         if( empty($accesskey) ){
             return $curl_result;
         }else{
             $curl_result->data = $url.'pay/'.$accesskey;
+          
             return $curl_result;
         }
     }
