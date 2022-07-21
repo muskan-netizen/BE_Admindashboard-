@@ -838,7 +838,7 @@ class CartController extends BaseController
 
                             $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address);
                             $deliveryDuration = 0;
-                            
+                            $deliveryDistance = 0;
                             if(isset($deliveries[0]))
                             {
                                 
@@ -849,20 +849,24 @@ class CartController extends BaseController
                                      foreach($new as $rate){
                                          $deliveryCharges = $rate['rate'];
                                          $deliveryDuration = $rate['duration'];
+                                         $deliveryDistance = $rate['distance'];
                                      }
                                      if($deliveryCharges)
                                      {
                                          $deliveryCharges = $rate['rate'];
                                          $deliveryDuration = $rate['duration'];
+                                         $deliveryDistance = $rate['distance'];
                                      }else{
                                          $deliveryCharges = $deliveries[0]['rate'];
                                          $deliveryDuration = $deliveries[0]['duration'];
+                                         $deliveryDistance = $deliveries[0]['distance'];
                                          $code = $deliveries[0]['code'];
                                      }
  
                                  }else{
                                      $deliveryCharges = $deliveries[0]['rate'];
                                      $deliveryDuration = $deliveries[0]['duration'];
+                                     $deliveryDistance = $deliveries[0]['distance'];
                                      $code = $deliveries[0]['code'];
                                  }
 
@@ -874,7 +878,7 @@ class CartController extends BaseController
  
                         if(isset($deliveryCharges) && !empty($deliveryCharges)){
                                 $dtype = explode('_',$code);
-                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges, 'delivery_duration' => $deliveryDuration,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
+                                CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges, 'delivery_duration' => $deliveryDuration, 'delivery_distance' => $deliveryDistance,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
                         }
                         
                      
@@ -1589,10 +1593,11 @@ class CartController extends BaseController
         if($preferences->static_delivey_fee != 1)
         {
             //Dispatcher Delivery changes code
-            $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $schedule_datetime_del);
+            $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
             if (!empty($deliver_response_array[0])){
                 $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format($deliver_response_array[0]['delivery_fee'], 2, '.', ''):'0.00';
                 $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
+                $delivery_distance = (!empty($deliver_response_array[0]['total_distance']))?number_format($deliver_response_array[0]['total_distance'], 0, '.', ''):'0.00';
                 $option[] = array(
                     'type'=>'D',
                     'courier_name'=>__('Dispatcher'),
@@ -1600,6 +1605,7 @@ class CartController extends BaseController
                     'courier_company_id' => 0,
                     'etd' => 0,
                     'duration' => $delivery_duration,
+                    'distance' => $delivery_distance,
                     'etd_hours' => 0,
                     'estimated_delivery_days' => 0,
                     'code' => 'D_0'
