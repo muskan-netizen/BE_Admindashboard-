@@ -32,6 +32,7 @@ body.al_body_template_six.light{visibility: visible;}
 body.al_body_template_six{
     margin-top: 90px;
 }
+body.al_body_template_six .menu-slider .slick-track{max-width:100%!important;width:100%!important;display:unset;justify-content:center;margin: 0 auto!important}
 body.al_body_template_six.homeHeader{
     margin-top: 0;
 }
