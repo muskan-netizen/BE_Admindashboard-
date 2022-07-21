@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['demo' => 'creative', 'title' => getNomenclatureName('Ratings & Reviews', True)])
+@extends('layouts.vertical', ['demo' => 'creative', 'title' => __(getNomenclatureName('Ratings & Reviews', True))])
 @section('css')
     <link href="{{ asset('assets/libs/dropzone/dropzone.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/dropify/dropify.min.css') }}" rel="stylesheet" type="text/css" />
@@ -29,7 +29,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">{{ getNomenclatureName('Ratings & Reviews', true) }}</h4>
+                    <h4 class="page-title">{{ __(getNomenclatureName('Ratings & Reviews', true)) }}</h4>
                 </div>
             </div>
         </div>

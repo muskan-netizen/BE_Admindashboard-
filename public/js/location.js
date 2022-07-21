@@ -40,11 +40,19 @@ $(document).ready(function () {
         window.location.replace("https://google.com");
     });
 
+    if($.cookie('age_restriction') == 1 && ($.cookie('show_subscription_plan') == undefined || $.cookie('show_subscription_plan') == 0)){
+        if(setShowSubscriptionPlan == 'showed'){
+            $("#show-subscription-plan-mdl").modal("show");
+            $.cookie('show_subscription_plan', 1);
+        }
+    }
+
     $(".age_restriction_yes").click(function () {
         $.cookie('age_restriction', 1);
         $('#age_restriction').modal('hide');
         if(setShowSubscriptionPlan == 'showed'){
             $("#show-subscription-plan-mdl").modal("show");
+            $.cookie('show_subscription_plan', 1);
         }
     });
 

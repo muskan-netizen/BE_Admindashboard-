@@ -110,6 +110,7 @@
                 $openpay_merchant_id = (isset($creds->openpay_merchant_id)) ? $creds->openpay_merchant_id : '';
                 $openpay_private_key = (isset($creds->openpay_private_key)) ? $creds->openpay_private_key : '';
                 $openpay_public_key = (isset($creds->openpay_public_key)) ? $creds->openpay_public_key : '';
+                $openpay_verification_key = (isset($creds->openpay_verification_key)) ? $creds->openpay_verification_key : '';
                 
                 $company_token = (isset($creds->company_token)) ? $creds->company_token : '';
                 $service_type = (isset($creds->service_type)) ? $creds->service_type : '';
@@ -969,6 +970,13 @@
                     </h6>    
                     <div class="row">
                             <div class="col-12">
+                                <div class="col-12">
+                                    <div class="form-group mb-2">
+                                        <label for="openpay_verification_key" class="mr-3">{{ __("Webhook Verification") }}</label>
+                                        <input type="text" name="openpay_verification_key" id="openpay_verification_key" class="form-control" value="{{$openpay_verification_key}}" >
+                                    </div>
+                                </div>
+
                                 <div class="form-group mb-2">
                                     <label for="openpay_merchant_id" class="mr-3">{{ __("Merchant Id") }}</label>
                                     <input type="text" name="openpay_merchant_id" id="openpay_merchant_id" class="form-control" value="{{$openpay_merchant_id}}" @if($opt->status == 1) required @endif>
@@ -1032,13 +1040,31 @@
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="company_token" class="mr-3">{{ __("Public Key") }}</label>
-                                    <input type="text" name="public_key" id="public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
+                                    <input type="text" name="conekta_public_key" id="conekta_public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="service_type" class="mr-3">{{ __("Private Key") }}</label>
-                                    <input type="password" name="private_key" id="private_key" class="form-control" value="{{$private_key}}" @if($opt->status == 1) required @endif>
+                                    <input type="password" name="conekta_private_key" id="conekta_private_key" class="form-control" value="{{$private_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'telr') )
+                    <div class="mt-2" id="telr_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="telr_merchant_id" class="mr-3">{{ __("Store ID") }}</label>
+                                    <input type="text" name="telr_merchant_id" id="telr_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="telr_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="telr_api_key" id="telr_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

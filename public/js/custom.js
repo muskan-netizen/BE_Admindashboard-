@@ -683,9 +683,6 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on("change", "#schedule_datetime", function () {
-        cartHeader();
-    });
 
     $(document).on("change", ".schedule_datetime", function () {
         var schedule_dt = $(this).val();
@@ -2383,17 +2380,33 @@ $(document).ready(function () {
             url: update_qty_url,
             data: { "quantity": quantity, "cartproduct_id": cartproduct_id },
             success: function (response) {
-                // console.log(response);
-                var latest_price = parseInt(base_price) * parseInt(quantity);
-                $('#product_total_amount_' + cartproduct_id).html('$' + latest_price);
-                // return false;
-                cartHeader();
+                if(response.status == "error")
+                {
+                    Swal.fire({
+                        title: "Warning!",
+                        text: response.message,
+                        icon: "warning",
+                        button: "OK",
+                    });
+                    if ($(".fa-spinner.fa-pulse").length > 0) {
+                        $(".qty-minus .fa").removeAttr("class").addClass("fa fa-minus");
+                        $(".qty-plus .fa").removeAttr("class").addClass("fa fa-plus");
+                    }
+                    $('#quantity_'+cartproduct_id).val(response.quantity);
+
+                }else{
+                    var latest_price = parseInt(base_price) * parseInt(quantity);
+                    $('#product_total_amount_' + cartproduct_id).html('$' + latest_price);
+                    // return false;
+                    cartHeader();
+                }
             },
             error: function (err) {
                 if ($(".number .fa-spinner fa-pulse").length > 0) {
                     $(".number .qty-minus .fa").removeAttr("class").addClass("fa fa-minus");
                     $(".number .qty-plus .fa").removeAttr("class").addClass("fa fa-plus");
                 }
+
             }
         });
     }
@@ -3753,7 +3766,7 @@ $(document).ready(function () {
         if ((quan + batch_count) > str && hasInv == "1") {
             Swal.fire({
                 // title: "Warning!",
-                text: "Quantity is not available in stock",
+                text: maximumquantitylert,
                 icon: "warning",
                 button: "OK",
             });
@@ -3790,7 +3803,7 @@ $(document).ready(function () {
         if (i - batch_count < minimum_order_count) {
             Swal.fire({
                 // title: "Warning!",
-                text: "Minimum Quantity count is " + minimum_order_count,
+                text: minimumquantitylert+" " + minimum_order_count,
                 icon: "warning",
                 button: "OK",
             });
@@ -3806,7 +3819,7 @@ $(document).ready(function () {
         if (parseInt(quan) > parseInt(str)) {
             Swal.fire({
                 // title: "Warning!",
-                text: "Quantity is not available in stock",
+                text: maximumquantitylert,
                 icon: "warning",
                 button: "OK",
             });
@@ -4224,11 +4237,14 @@ $(document).ready(function () {
             case 42:
                 paymentViaDpoSubscription('', payment_option_id, '');
             break;
-             case 43:
+            case 43:
                 paymentViaUPay('', payment_option_id, '');
             break;
-             case 44:
+            case 44:
                 paymentViaConekta('', payment_option_id, '');
+            break;
+            case 45:
+                paymentViaTelr('', payment_option_id, '');
             break;
 
         }
@@ -4650,8 +4666,7 @@ $(document).ready(function () {
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 console.log('order', order);
                 if (order != '') {
-                    //payWithDpo
-                    paymentViaUPay(order);
+                    paymentViaUPay(address_id, order);
                 }
                 else{
                     return false;
@@ -4661,8 +4676,17 @@ $(document).ready(function () {
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 console.log('order', order);
                 if (order != '') {
-                    //payWithDpo
-                    paymentViaConekta(order);
+                    paymentViaConekta(address_id, order);
+                }
+                else{
+                    return false;
+                }
+            break;
+            case '45':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                console.log('order', order);
+                if (order != '') {
+                    paymentViaTelr(address_id, order);
                 }
                 else{
                     return false;
@@ -4877,8 +4901,11 @@ $(document).ready(function () {
             case 43:
                 paymentViaUPay('', payment_option_id, '');
                 break;
-             case 44:
+            case 44:
                 paymentViaConekta('', payment_option_id, '');
+                break;
+            case 45:
+                paymentViaTelr('', payment_option_id, '');
                 break;
 
         }

@@ -8,7 +8,7 @@ use Log, Auth;
 
 class ConektaGatewayController extends Controller
 {
-    public function upayPurchase(Request $request)
+    public function conektaPurchase(Request $request)
     {
         $user = Auth::user();
         $amount = $request->amount;

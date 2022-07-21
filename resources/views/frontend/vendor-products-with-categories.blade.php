@@ -12,321 +12,6 @@
     <!-- section start -->
     <section class="section-b-space ratio_asos">
         <div class="collection-wrapper">
-
-        @if ($selected_template == 6)
-        <!-- section hero start -->
-        <section class="heroArea" id="heroMembershipPage">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="slider regular">
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                    </div>
-
-
-                    <div class="slider regular-nav">
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                    </div>
-                 </div>
-            </div>
-
-        </section>
-        <!-- section hero end -->
-
-        <!-- single products content start -->
-        <section class="singleProductContent pb-5">
-        	<div class="container">
-        		<div class="row">
-	        		<!-- breadcrumb start -->
-	        		<nav class="col-12 p-0" aria-label="breadcrumb">
-					  <ol class="breadcrumb p-0">
-					    <li class="breadcrumb-item pr-3"><a href="#">Home</a></li>
-					    <li class="breadcrumb-item active pl-4" aria-current="page">Library</li>
-					  </ol>
-					</nav><!-- breadcrumb end -->
-					<div class="col-12 p-0">
-						<div class="row">
-							<div class="col-md-7 p-0">
-								<div class="alSpaListHead text-center text-lg-left col-12 mb-4">
-			                        <p class="alLgFontSize pr-5">Mercure Norton Grange Hotel and Spa</p>
-			                        <p class="alShareLink alBodyText d-flex align-items-center"><a href="#"> 24 - 26 Sheikh Zyed Road, Busines Bay CF240DD
-                                        <span class="ml-3"><img src="{{asset('frontend/template_six/spaimages/share.svg')  }}"></span></a></p>
-			                    </div>
-							</div>
-							<div class="col-md-5 p-0">
-								<div class="alSpaListHead text-center text-lg-left col-12 mt-3">
-			                        <ul class="d-flex align-items-center">
-		                        		<li class="d-flex align-items-center"><img class="mr-2" src="{{asset('frontend/template_six/spaimages/Star.svg')  }}"> 8.0 Very Good</li>
-		                        		<li class="border-left ml-3 pl-3"><a href="#">92 customers reviews</a></li>
-		                        	</ul>
-			                    </div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col-md-6">
-						<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. Quis hendrerit dolor magna eget est lorem. Sed faucibus turpis in eu. Mattis vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor. Elementum facilisis leo vel fringilla est. Nunc non blandit massa enim nec dui nunc mattis. Ac placerat vestibulum lectus mauris ultrices. Sagittis purus sit amet volutpat consequat.
-						</p>
-					</div>
-					<div class="col-md-6">
-						<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. Quis hendrerit dolor magna eget est lorem. Sed faucibus turpis in eu. Mattis vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor. Elementum facilisis leo vel fringilla est. Nunc non blandit massa enim nec dui nunc mattis. Ac placerat vestibulum lectus mauris ultrices. Sagittis purus sit amet volutpat consequat. <a class="readMore" href="#"><u> Read more </u></a></p>
-					</div>
-				</div>
-
-				<!-- Spa and hotel facilities start -->
-				<div class="row py-5 border-bottom">
-					<div class="col-lg-12 hotelFacilities">
-						<h3 class="mb-4">Spa and hotel facilities </h3>
-						<ul class="p-0 m-0 d-flex align-items-center">
-							<li class="mr-4">
-								<img class="mr-2" src="{{asset('frontend/template_six/spaimages/pool.svg') }}">
-								<span>Pool</span>
-							</li>
-							<li class="mr-4">
-								<img class="mr-2" src="{{asset('frontend/template_six/spaimages/hot_tub.svg') }}">
-								<span>Hot Tub</span>
-							</li>
-							<li class="mr-4">
-								<img class="mr-2" src="{{asset('frontend/template_six/spaimages/spa.svg') }}">
-								<span>Sauna</span>
-							</li>
-							<li class="mr-4">
-								<img class="mr-2" src="{{asset('frontend/template_six/spaimages/thermostat.svg') }}">
-								<span>Steam room</span>
-							</li>
-							<li class="mr-4">
-								<img class="mr-2" src="{{asset('frontend/template_six/spaimages/king_bed.svg') }}">
-								<span>Relax room</span>
-							</li>
-							<li class="mr-4">
-								<img class="mr-2" src="{{asset('frontend/template_six/spaimages/fitness_center.svg') }}">
-								<span>Gym</span>
-							</li>
-							<li class="mr-0">
-								<a href="#"><u>View all facilities</u></a>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<!-- Spa and hotel facilities end -->
-        	</div>
-        </section><!-- single products content end -->
-
-        <!-- chooseYourOffer start -->
-        <section class="chooseYourOffer mb-5">
-        	<div class="container">
-        		<div class="row">
-        			<div class="col-md-6 offset-md-3">
-        				<div class="viewAllProductSec">
-        					<div class="card mb-3">
-        						<div class="card-body">
-        							<div class="d-flex align-items-center justify-content-between border-bottom">
-        								<p class="m-0 productTitle">One night simple hotel break</p>
-        								<ul class="m-0 p-0 d-flex align-items-center">
-        									<li>From</li>
-        									<li class="ml-2"><span class="productsPrice">AED 166.00</span><br> <sup>per person (min. 2)</sup></li>
-        								</ul>
-        							</div>
-        							<ul class="productDetails pl-0 pr-lg-5 m-0 position-relative">
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">One night bed and breakfast</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Use of the leisure facilities</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Bottle of sparkling wine</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Robe, towel and slippers provided</p>
-			                            </li>
-			                        </ul>
-			                        <ul class="p-0 m-0 productBookingBtns position-relative d-flex align-items-center justify-content-between">
-			                        	<li><a href="#"><img src="{{asset('frontend/template_six/spaimages/flash_on.svg') }}"> Instant book</a></li>
-			                        	<li class="d-flex align-items-center"><button class="alProductBtns mr-2">More details and book</button> <button class="alProductBtns outlineBtn">Buy as a gift</button></li>
-			                        </ul>
-
-        						</div>
-        					</div>
-        					<div class="card mb-3">
-        						<div class="card-body">
-        							<div class="d-flex align-items-center justify-content-between border-bottom">
-        								<p class="m-0 productTitle">One night simple hotel break</p>
-        								<ul class="m-0 p-0 d-flex align-items-center">
-        									<li>From</li>
-        									<li class="ml-2"><span class="productsPrice">AED 166.00</span><br> <sup>per person (min. 2)</sup></li>
-        								</ul>
-        							</div>
-        							<ul class="productDetails pl-0 pr-lg-5 m-0 position-relative">
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">One night bed and breakfast</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Use of the leisure facilities</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Bottle of sparkling wine</p>
-			                            </li>
-			                            <li class="position-relative px-3 py-2">
-			                                <p class="m-0">Robe, towel and slippers provided</p>
-			                            </li>
-			                        </ul>
-			                        <ul class="p-0 m-0 productBookingBtns position-relative d-flex align-items-center justify-content-between">
-			                        	<li><a href="#"><img src="{{asset('frontend/template_six/spaimages/flash_on.svg') }}"> Instant book</a></li>
-			                        	<li class="d-flex align-items-center"><button class="alProductBtns mr-2">More details and book</button> <button class="alProductBtns outlineBtn">Buy as a gift</button></li>
-			                        </ul>
-
-        						</div>
-        					</div>
-        				</div>
-        			</div>
-        		</div>
-        	</div>
-        </section><!-- chooseYourOffer start -->
-
-        <!-- Why people visit here start -->
-        <section class="whyPeopleVisit py-5">
-        	<div class="container">
-        		<div class="row">
-        			<div class="col-md-12">
-        				<div class="alSpaListHead text-center text-lg-left col-12 mb-5">
-	                        <p class="alLgFontSize">Why people visit here</p>
-	                    </div>
-        			</div>
-
-        			<div class="col-md-6">
-        				<div class="whyPeopleVisitDetails mb-4">
-	        				<p>Hotel Spa Venue</p>
-	        				<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. </p>
-        				</div>
-        				<div class="whyPeopleVisitDetails mb-4">
-	        				<p>Hotel Spa Venue</p>
-	        				<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. </p>
-        				</div>
-        			</div>
-        			<div class="col-md-6">
-        				<div class="whyPeopleVisitDetails mb-4">
-	        				<p>Hotel Spa Venue</p>
-	        				<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. </p>
-        				</div>
-        			</div>
-        		</div>
-        	</div>
-        </section>
-        <!-- Why people visit here end -->
-
-        <!-- More spas nearby start -->
-        <section class="moreSpasNearby py-5">
-        	<div class="container">
-        		<div class="row">
-        			<div class="col-md-12">
-        				<div class="alSpaListHead text-center text-lg-left col-12 mb-5">
-	                        <p class="alLgFontSize">More spas nearby</p>
-	                        <p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt dolore magna aliqua.</p>
-	                    </div>
-        			</div>
-        		</div>
-        	</div>
-        	<div class="container-fluid">
-        		<div class="row">
-        			<div class="googleMapArea col-md-12 p-0">
-        				<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13720.904154980397!2d76.81441854999998!3d30.71204525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1657101273720!5m2!1sen!2sin" width="100%" height="550" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        			</div>
-        		</div>
-        	</div>
-        </section>
-        <!-- More spas nearby end -->
-
-        <!-- sections SpasRelated start -->
-        <section class="SpasRelated py-5">
-            <div class="container">
-                <div class="row">
-                    <!-- alSpaListSlider start -->
-                    <div class="Spasslider w-100" id="Spasslider">
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-                        <div>
-                        	<div class="SpasRelatedItems mx-2">
-                        		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
-                        		<div class="SpasRelatedDetails p-2">
-	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
-	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
-                        		</div>
-                        	</div>
-                        </div>
-
-                    </div><!-- alSpaListSlider start -->
-                </div>
-            </div>
-        </section>
-        <!-- sections navItemsSliders end -->
-        @endif
             <div class="container">
                 <div class="row">
                     <div class="col-12">
@@ -409,9 +94,9 @@
                                                         <i class="icon-time"></i>
                                                         @if ($vendor->is_vendor_closed == 0 && $vendor->show_slot == 0)
                                                             {{ $vendor->opening_time }} – {{ $vendor->closing_time }}
-                                                            <span class="badge badge-success">Open</span>
+                                                            <span class="badge badge-success">{{ __('Open') }}</span>
                                                         @elseif($vendor->is_vendor_closed == 0 && $vendor->show_slot == 1)
-                                                            24 x 7 <span class="badge badge-success">Open</span>
+                                                            24 x 7 <span class="badge badge-success">{{ __('Open') }}</span>
                                                         @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
                                                             <span class="badge badge-danger">{{ __('Closed') }}</span>
                                                             {{ __('We are not accepting orders right now. You can schedule this for ') . $checkSlot }}.
@@ -461,7 +146,7 @@
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
-                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation_one->name??'' }}({{ $data->products_count }})</a>
+                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation[0]->name??'' }}({{ $data->products_count }})</a>
                                                     </li>
                                                 @empty
                                                 @endforelse
@@ -874,13 +559,13 @@
                                         <% } %>
 
                                     <% }); %>
-                                    <% if(product.delivery_fee_charges > 0) { %>
+                                    <% if(cart_details.delivery_charges > 0) { %>
                                         <div class="row justify-content-between">
                                             <div class="col-md-6 col-sm-6 text-left">
-                                                <h6 class="m-0 font-14"><b>{{ __('Delivery fee') }}</b></h6>
+                                                <h6 class="m-0 font-14">{{ __('Delivery fee') }}</h6>
                                             </div>
                                             <div class="col-md-6 col-sm-6 text-right">
-                                                <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.delivery_fee_charges) %></div>
+                                                <div class="font-14 mr-xl-2">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.delivery_charges) %></div>
                                             </div>
                                         </div>
                                     <% } %>
@@ -891,7 +576,7 @@
                                 <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Price') }}</span>
+                                            <span class="ellips">{{ __('Total') }}</span>
                                             <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.gross_amount) %></span>
                                         </h6>
                                     </div>
@@ -949,7 +634,7 @@
         <div class="row">
                                     <div class="col-12 text-center pb-3">
                                         <img class="w-50 pt-3 pb-1" src="{{ asset('front-assets/images/ic_emptycart.svg') }}" alt="">
-                                        <h5>Your cart is empty<br/>{{ __('Add an item to begin') }}</h5>
+                                        <h5>{{ __('Your cart is empty') }}<br/>{{ __('Add an item to begin') }}</h5>
                                     </div>
                                 </div>
                             </script>
@@ -1001,7 +686,7 @@
                                         <div class="customizable-text">customizable</div>
                                     <% } %>
                                 <% }else{ %>
-                                    <span class="text-danger">Out of stock</span>
+                                    <span class="text-danger">{{ __('Out of stock')}}</span>
                                 <% } %>
                             </script>
     <script type="text/template" id="addon_template">
@@ -1035,18 +720,18 @@
                                                         <%
                                                             var min_select = '';
                                                             if(addon.min_select > 0){
-                                                                min_select = 'Minimum ' + addon.min_select;
+                                                                min_select = "{{ __('Minimum')}} " + addon.min_select;
                                                             }
                                                             var max_select = '';
                                                             if(addon.max_select > 0){
-                                                                max_select = 'Maximum ' + addon.max_select;
+                                                                max_select = "{{ __('Maximum')}} " + addon.max_select;
                                                             }
                                                             if( (min_select != '') && (max_select != '') ){
-                                                                min_select = min_select + ' and ';
+                                                                min_select = min_select + " {{ __('and')}} ";
                                                             }
                                                         %>
                                                         <% if( (min_select != '') || (max_select != '') ) { %>
-                                                            <small><%=min_select + max_select %> Selections allowed</small>
+                                                            <small><%=min_select + max_select %> {{ __('Selections Allowed')}}</small>
                                                         <% } %>
                                                     </div>
                                                     <div class="productAddonSetOptions" data-min="<%= addon.min_select %>" data-max="<%= addon.max_select %>" data-addonset-title="<%= addon.title %>">

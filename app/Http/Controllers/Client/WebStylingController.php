@@ -139,6 +139,7 @@ class WebStylingController extends BaseController{
             if($request->has('dineinIcon')){
                 $client_preferences->dineinicon = Storage::disk('s3')->put('dineinIcon', $request->dineinIcon, 'public');
             }
+            
 
             $client_preferences->web_color = $request->primary_color;
             $client_preferences->cart_enable = $request->cart_enable == 'on' ? 1 : 0;

@@ -91,10 +91,11 @@
                                 {{-- <h3 class="header-title">{{ __("Change Theme Icon") }}</h3> --}}
                                 <div class="row">
                                     <form id="themeIcon-form" method="post" enctype="multipart/form-data">
+                                   
                                         <div class="col-md-4 mb-3">
                                             <div class="mb-0">
                                                 <label>{{ __("Delivery Icon") }}</label>
-                                                <input type="file" accept="image/*" data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
+                                                <input type="file" accept="image/*"  data-default-file="{{$client_preferences->deliveryicon ? $client_preferences->deliveryicon['proxy_url'].'600/400'.$client_preferences->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" data-plugins="dropify" name="deliveryIcon" class="dropify ss_form_submit" id="image" />
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong></strong>
                                                 </span>

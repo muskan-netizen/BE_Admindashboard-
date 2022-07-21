@@ -248,6 +248,8 @@ if($showSubscriptionPlanPopUp == 1){
     var upay_before_payment = "{{route('payment.upay.beforePayment')}}";
 //////////////Conekta payment Routes
     var conekta_before_payment = "{{route('payment.conekta.beforePayment')}}";
+//////////////Telr payment Routes
+    var telr_before_payment = "{{route('payment.telr.beforePayment')}}";
 
 //////////////Ozow payment Routes
     var ozow_before_payment = "{{route('payment.ozow.beforePayment')}}";

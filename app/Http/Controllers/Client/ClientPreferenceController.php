@@ -66,6 +66,10 @@ class ClientPreferenceController extends BaseController{
                                             ]);
     }
 
+    public function customModVerification(Request $request){
+        pr($request->all());die;
+    }
+
     public function getCustomizePage(ClientPreference $clientPreference){
         $curArray = [];
         $cli_langs = [];
@@ -246,11 +250,10 @@ class ClientPreferenceController extends BaseController{
         }
         if($request->has('verify_vendor_type') && $request->verify_vendor_type == '1')
         {
-            if((!$request->has('dinein_check') && !$request->dinein_check == 'on')
-                && (!$request->has('takeaway_check') && !$request->dinein_check == 'on')
-                && (!$request->has('delivery_check') && !$request->dinein_check == 'on')){
-                    return redirect()->route('configure.customize')->with('error', 'One Option must be acitve');
+            if((!$request->has('dinein_check') && !$request->dinein_check == 'on') && (!$request->has('takeaway_check') && !$request->dinein_check == 'on') && (!$request->has('delivery_check') && !$request->dinein_check == 'on')){
+                return redirect()->route('configure.customize')->with('error', 'One Option must be acitve');
             }
+            
             $preference->dinein_check = ($request->has('dinein_check') && $request->dinein_check == 'on') ? 1 : 0;
             $preference->takeaway_check = ($request->has('takeaway_check') && $request->takeaway_check == 'on') ? 1 : 0;
             $preference->delivery_check = ($request->has('delivery_check') && $request->delivery_check == 'on') ? 1 : 0;

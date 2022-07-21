@@ -586,7 +586,6 @@ class PickupDeliveryController extends BaseController{
                     $request->scheduled_date_time = $request->schedule_time;
                     $request->order_time = $request->schedule_time;
                 }
-
                 $dynamic = uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();

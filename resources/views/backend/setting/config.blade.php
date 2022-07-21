@@ -1165,6 +1165,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
    </div>
 
    <div class="row">
+      {{-- <div class="col-md-12 show-custom-mods">
+         <div class="card-box ">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+               <h4 class="header-title text-uppercase mb-0">{{ __("Custom Mods") }}</h4>
+               <button class="btn btn-info d-block show-custom-mods-btn" type="submit"> {{ __("Show Custom Mods") }} </button>
+            </div>
+         </div>
+      </div> --}}
       <div class="col-md-12">
          <!-- Custom Mods start -->
          <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -1415,7 +1423,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </div>
             </div>
          </form>
-         <!-- Custom Mods start -->
+         <!-- Custom Mods end -->
       </div>
    </div>
 
@@ -1599,6 +1607,31 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div>
       </div>
    </div>
+   <div id="custom-mode-verfication-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-bs-backdrop="static" style="display: none;">
+      <div class="modal-dialog">
+         <div class="modal-content">
+            <div class="modal-header border-bottom">
+               <h4 class="modal-title">{{ __("Custom Mods Verification") }}</h4>
+               <button type="button" class="close remove-modal-open" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <div class="row">
+                  <form id="task_form" action="#" method="POST" style="width: 100%">
+                     <div class="col-md-12">
+                        <div class="form-group mb-2">
+                           <label for="verification_code">{{__('Verification Code')}}</label>
+                           <input type="password" name="verification_code" id="verification_code" placeholder="Enter Verification Code" class="form-control" value="">
+                        </div>
+                     </div>
+                  </form>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button type="submit" class="btn btn-info waves-effect waves-light  remove-modal-open verification-code-sbt">{{ __("Submit") }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
 
 
    <div id="add_driver_registration_document_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
@@ -1757,6 +1790,32 @@ $sms_crendential = json_decode($preference->sms_credentials);
          }
       });
 
+      $(document).on('click', '.show-custom-mods-btn', function(e) {
+         $('#custom-mode-verfication-modal').modal('show');
+      });
+      $(document).on('click', '.verification-code-sbt', function(e) {
+         var varificationCode = $('#verification_code').val();
+         if(varificationCode != ''){
+            $.ajax({
+               type: "POST",
+               dataType: 'json',
+               url: "{{ route('custom.mod.verification') }}",
+               data: {
+                  _token: "{{ csrf_token() }}",
+                  varificationCode: varificationCode
+               },
+               success: function(response) {
+                  // if (response.status == "Success") {
+                  //    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  //    setTimeout(function() {
+                  //       location.reload()
+                  //    }, 2000);
+                  // }
+               }
+            });
+         }
+      });
+      
       $(document).on('click', '.submitSaveSlot', function(e) {
          var slot_id = $("#add_slot_modal input[name=slot_id]").val();
          if (slot_id) {

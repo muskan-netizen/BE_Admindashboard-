@@ -296,7 +296,7 @@
                                                             }
                                                         @endphp
                                                         @if( ($min_select != '') || ($max_select != '') )
-                                                            <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
+                                                            <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
                                                         @endif
                                                     </h4>
 
@@ -334,7 +334,7 @@
                                                                 }
                                                             @endphp
                                                             @if( ($min_select != '') || ($max_select != '') )
-                                                                <small>({{$min_select.$max_select}} Selections allowed)</small>
+                                                                <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
                                                             @endif
                                                         </h4>
                                                     </td>
@@ -727,6 +727,8 @@
 @endsection
 @section('script')
 <script>
+    var maximumquantitylert = "{{__('Quantity is not available in stock')}}";
+    var minimumquantitylert = "{{__('Minimum Quantity count is')}}";
     $(document).on('click', '.submitInquiryForm', function(e) {
         e.preventDefault();
         var formData = new FormData(document.getElementById("inquiry-form"));

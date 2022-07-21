@@ -297,6 +297,15 @@ class PaystackGatewayController extends FrontController
                     $request->request->add(['payment_option_id' => 5, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
                     $res = $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
+                } elseif($request->action == 'pickup_delivery'){
+                    $request->request->add(['payment_option_id' => 5, 'amount' => $amount,'order_number' => $request->order_number, 'transaction_id' => $transactionId]);
+                     // pr($request->all());
+                    $plaseOrderForPickup = new PickupDeliveryController();
+                    $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+                 // pr($request->reload_route);
+                  
+                    // $returnUrl = $request->reload_route;
+                    // return Redirect::to(url($returnUrl))->with('success', __('Transaction has been completed successfully'));
                 }
                 return Redirect::to($url);
             } else {

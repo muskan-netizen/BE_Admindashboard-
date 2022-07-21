@@ -197,7 +197,7 @@ padding-top: 10px;
 .product-order .show-div.shopping-cart li.alVendorProductDetails{-webkit-transition: 0.5s;transition: 0.5s;}
 .product-order .show-div.shopping-cart li.alVendorProductDetails:hover .media-body{padding-right: 30px;-webkit-transition: 0.5s;transition: 0.5s;}
 .product-order .show-div.shopping-cart li.alVendorProductDetails:hover .close-circle .action-icon{right:0;-webkit-transition: 0.5s;transition: 0.5s;}
-.classes_wrapper p.mb-1{
+.classes_wrapper .alSixHomeServiceSteps p.mb-1{
 max-height: 100px;
 overflow-y: scroll;
 position: relative;
@@ -251,7 +251,6 @@ box-shadow: none;
 .step.active .step-icon{background: var(--theme-deafult);}
 .indicator-line{width: 100%;height: 2px;background: #c2c2c2;flex: 1;}
 .step-indicator .step-icon-order img{height: 30px;width: 30px;}
-
 .home-serivces  .step-indicator{display: block;
 padding: 0;
 background-color: #eee;
@@ -260,7 +259,10 @@ margin: 50px auto 0;
 max-width: 630px;
 width: 100%;}
 .home-serivces .step{display:inline-block; position: relative;z-index: 1;padding-right: 70px;}
-.home-serivces .step p{margin: 0;display: inline-block;}
+.home-serivces .step p{margin: 0;display: inline-block;position: relative;
+bottom: 0;
+display: inline-block;
+width: auto;}
 .home-serivces .step-icon{
     background-color: #777;
     height: 50px;
@@ -277,6 +279,9 @@ width: 100%;}
     border-radius: 50px;
     padding-right: 70px;
     color: #fff;
+}
+.cart-box-outer .row.price_head{
+    overflow: hidden;
 }
 .home-serivces #step-2-ondemand{
     border-radius: 10px;

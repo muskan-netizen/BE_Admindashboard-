@@ -71,6 +71,12 @@ class DpoController extends FrontController
          $time = $request->order_number;
          Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'cart','date'=>date('Y-m-d')]);
    
+        }elseif($request->from == 'pickup_delivery')
+        {
+         $request->amt = $amt;
+         $time = $request->order_number;
+         Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$amt,'type'=>'pickup_delivery','date'=>date('Y-m-d'),'user_id'=>auth()->id(),'payment_from'=>$request->device??'web']);
+   
         }elseif($request->from == 'wallet')
         {
          $time = ($request->transaction_id)??'W_'.time();
@@ -101,6 +107,7 @@ class DpoController extends FrontController
         $redirectUrl = $url->to('/payment/dpo/redirect/?order_no='.$order_number);
         $user = User::where('auth_token', $request->auth_token)->first();
         $total_amount = $this->getDollarCompareAmount($request->amt);
+        $total_amount = round($total_amount);
         $name = explode(' ',$user->name);
         $customerFirstName = $name[0];
         $customerLastName = !empty($name[1])? $name[1] : '';
@@ -149,6 +156,7 @@ class DpoController extends FrontController
         $user = Auth::user();
         $redirectUrl = $request->serverUrl.'payment/dpo/redirect/?order_no='.$order_number.'&payment_via=app&status=200&utoken='.$user->auth_token;
         $total_amount = $this->getDollarCompareAmount($request->amt);
+        $total_amount = round($total_amount);
         $name = explode(' ',$user->name);
         $customerFirstName = $name[0];
         $customerLastName = !empty($name[1])? $name[1] : '';
@@ -235,14 +243,16 @@ class DpoController extends FrontController
         $request->request->add(['status'=>'0000']);
         $payment = Payment::where('transaction_id',$request->order_no)->first();
         if($payment->type=='cart'){
-           return $this->completeOrderCart($request,$payment);
-         }elseif($payment->type=='wallet'){
-             return $this->completeOrderWallet($request,$payment);
-         }elseif($payment->type=='tip'){
-             return $this->completeOrderTip($request,$payment);
-         }elseif($payment->type=='subscription'){
-             return $this->completeOrderSubs($request,$payment);
-         }
+            return $this->completeOrderCart($request,$payment);
+        }elseif($payment->type=='wallet'){
+            return $this->completeOrderWallet($request,$payment);
+        }elseif($payment->type=='tip'){
+            return $this->completeOrderTip($request,$payment);
+        }elseif($payment->type=='subscription'){
+            return $this->completeOrderSubs($request,$payment);
+        }elseif($payment->type=='pickup_delivery'){
+            return $this->completeOrderPickup($request,$payment);
+        }
     }
 
     public function failPage(Request $request)
@@ -256,14 +266,51 @@ class DpoController extends FrontController
         $request->request->add(['status'=>'101']);
         $payment = Payment::where('transaction_id',$request->order_no)->first();
         if($payment->type=='cart'){
-           return $this->completeOrderCart($request,$payment);
-         }elseif($payment->type=='wallet'){
-             return $this->completeOrderWallet($request,$payment);
-         }elseif($payment->type=='tip'){
-             return $this->completeOrderTip($request,$payment);
-         }elseif($payment->type=='subscription'){
-             return $this->completeOrderSubs($request,$payment);
-         }
+            return $this->completeOrderCart($request,$payment);
+        }elseif($payment->type=='wallet'){
+            return $this->completeOrderWallet($request,$payment);
+        }elseif($payment->type=='tip'){
+            return $this->completeOrderTip($request,$payment);
+        }elseif($payment->type=='subscription'){
+            return $this->completeOrderSubs($request,$payment);
+        }elseif($payment->type=='pickup_delivery'){
+            return $this->completeOrderPickup($request,$payment);
+        }
+    }
+
+    public function completeOrderPickup(Request $request,$payment)
+    {
+        $order = Order::where('order_number',$request->order_no)->first();
+        if(isset($request->order_no) && isset($request->TransID))
+        {
+            if ($order) {
+                $order->payment_status = 1;
+                $order->save();
+                $payment_exists = Payment::where('transaction_id', $request->order_no)->first();
+                if (!$payment_exists) {
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->type = 'pickup_delivery';
+                    $payment->order_id = $order->id;
+                    $payment->payment_option_id = 32;
+                    $payment->user_id = $order->user_id;
+                    $payment->transaction_id = $request->TransID;
+                    $payment->balance_transaction = $order->payable_amount;
+                    $payment->save();
+                }
+                
+                $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 32, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
+                $plaseOrderForPickup = new PickupDeliveryController();
+                $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+                return Redirect::to(route('front.booking.details',$order->order_number));
+            }
+        }else{
+            //Failed transaction case
+            $data = Payment::where('transaction_id',$request->order_no)->first();
+            $data->delete();
+
+            return Redirect::to(route('user.wallet'))->with('error',$request->message);
+        }
     }
 
 

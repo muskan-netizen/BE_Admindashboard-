@@ -83,7 +83,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                      <i class="fa fa-angle-down" aria-hidden="true"></i>
                   </div>
                </div>
-               @endif @endif --}}@if($mod_count > 1)
+               @endif @endif --}}
+               @if($mod_count > 1)
                <ul class="nav nav-tabs navigation-tab nav-material tab-icons mx-auto order-0 mb-2 mb-lg-0 vendor_mods" id="top-tab" role="tablist">
                   @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                   <li class="navigation-tab-item" role="presentation">
@@ -98,7 +99,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                   <li class="navigation-tab-item" role="presentation">
                      @php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
                      <a class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">{{$Takeaway}}</a>
-                  </li>@endif
+                  </li>
+                  @endif
                   <div class="navigation-tab-overlay"></div>
                </ul>
                @endif

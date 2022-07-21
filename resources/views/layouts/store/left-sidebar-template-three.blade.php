@@ -152,7 +152,8 @@ $pages = \App\Models\Page::with([
                             <div class="al_count_tabs_new_design d-none d-sm-block"  >
                                 @if($mod_count > 1)
                                 <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods" id="top-tab" role="tablist">
-                                    @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
+                                
+                                @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                                     <li class="navigation-tab-item pr-lg-3" role="presentation">
                                         <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
                                             <span class="al_tabsIcons"><img src="{{$client_preference_detail->deliveryicon ? $client_preference_detail->deliveryicon['proxy_url'].'36/26'.$client_preference_detail->deliveryicon['image_path'] : asset('images/al_custom3.png')}}" alt=""></span>
@@ -175,6 +176,7 @@ $pages = \App\Models\Page::with([
                                         </a>
                                     </li>
                                     @endif
+
                                     <div class="navigation-tab-overlay_alnew_design"></div>
                                 </ul>
                                 @endif

@@ -496,14 +496,14 @@ use Illuminate\Support\Arr;
                                             </li>
 
                                             <% if( (product.isDeliverable != undefined) && (product.isDeliverable == 0) ) { %>
-                                            <li class="border_0">
-                                                <th colspan="7">
-                                                    <div class="text-danger">
-                                                        Products for this vendor are not deliverable at your area. Please change address or remove product.
-                                                    </div>
-                                                </th>
-                                            </li>
-                                            <% } %>
+                                                <li class="border_0">
+                                                    <th colspan="7">
+                                                        <div class="text-danger">
+                                                        {{__('Products for this vendor are not deliverable at your area. Please change address or remove product.')}}
+                                                        </div>
+                                                    </th>
+                                                </li>
+                                                <% } %>
                                             <% _.each(product.vendor_products, function(vendor_product, vp){%>
                                                 <li class="alVendorProductDetails" id="cart_product_<%= vendor_product.id %>" data-qty="<%= vendor_product.quantity %>">
                                                         <div class='media-body'>

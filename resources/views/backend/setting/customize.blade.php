@@ -27,6 +27,19 @@
         </div>
     </div>
     @endif
+    @if (\Session::has('error'))
+    <div class="row mb-2 mt-2">
+        <div class="col-sm-12">
+            <div class="text-sm-left">
+                
+                <div class="alert alert-danger">
+                    <span>{!! \Session::get('error') !!}</span>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    @endif
 
 <!-- New Customize Page -->
 
@@ -405,6 +418,166 @@
                         <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Delivery") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="delivery_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="delivery_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Delivery'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('delivery_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Dine-In") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="dinein_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="dinein_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Dine-In'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('dinein_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                       
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Takeaway") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="takeaway_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Takeaway'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('takeaway_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                         <!-- add extra vendor types  add by harbans-->
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Rentals") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="rentals_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="rentals_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Rentals'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('rentals_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Pick & Drop") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="pick_drop_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="pick_drop_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Pick & Drop'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('pick_drop_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("On Demand Services") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="on_demand_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="on_demand_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('On Demand Services'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('on_demand_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Laundry") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="laundry_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="laundry_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Laundry'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('laundry_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <!-- end vendor types  add by harbans-->
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Vendors") }}</label>
                                 </div>
                             </div>
@@ -449,28 +622,6 @@
                         <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
-                                    <label for="custom_domain">{{ __("Takeaway") }}</label>
-                                </div>
-                            </div>
-                            @foreach($client_languages as $k => $client_language)
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
-                                    <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="takeaway_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Takeaway'))}}">
-                                    @if($k == 0)
-                                        @if($errors->has('takeaway_names.0'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ __("The primary language name field is required.") }}</strong>
-                                            </span>
-                                        @endif
-                                    @endif
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Search") }}</label>
                                 </div>
                             </div>
@@ -503,50 +654,6 @@
                                     <input type="text" name="wishlist_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Wishlist'))}}">
                                     @if($k == 0)
                                         @if($errors->has('wishlist_names.0'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ __("The primary language name field is required.") }}</strong>
-                                            </span>
-                                        @endif
-                                    @endif
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
-                                    <label for="custom_domain">{{ __("Dine-In") }}</label>
-                                </div>
-                            </div>
-                            @foreach($client_languages as $k => $client_language)
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
-                                    <input type="hidden" name="dinein_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="dinein_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Dine-In'))}}">
-                                    @if($k == 0)
-                                        @if($errors->has('dinein_names.0'))
-                                            <span class="text-danger" role="alert">
-                                                <strong>{{ __("The primary language name field is required.") }}</strong>
-                                            </span>
-                                        @endif
-                                    @endif
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
-                                    <label for="custom_domain">{{ __("Delivery") }}</label>
-                                </div>
-                            </div>
-                            @foreach($client_languages as $k => $client_language)
-                            <div class="col-sm-2">
-                                <div class="form-group mb-0">
-                                    <input type="hidden" name="delivery_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="delivery_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Delivery'))}}">
-                                    @if($k == 0)
-                                        @if($errors->has('delivery_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -1943,7 +2050,7 @@ $(document).ready(function(){
     });
 
      //category kyc form submit document
-     $(document).on('click', '.submitcategoryKycDocument', function(e) {
+    $(document).on('click', '.submitcategoryKycDocument', function(e) {
         var category_kyc_document_id = $("#add_category_kyc_document_modal input[name=category_kyc_document_id]").val();
         if (category_kyc_document_id) {
             var post_url = "{{ route('categorykyc.document.update') }}";
