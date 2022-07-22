@@ -11,6 +11,7 @@ $set_common_business_type = $client_preference_detail->business_type??'';
 </head>
 @yield('customcss')
 
+@yield('cssnew')
 @php
 $socket_url = ''; 
 $admin_chat = '';

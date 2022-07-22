@@ -1,15 +1,207 @@
 @extends('layouts.store', ['title' => __('Home')])
 @section('css-links')
-{{--
-<link href="{{asset('css/aos.css')}}" rel="stylesheet">
---}}
 @endsection
-@section('css')
+@section('cssnew')
+<style>
+.menu-slider .slick-slide{margin:0 10px;}
+</style>
 @endsection
 @section('content')
 <!-- shimmer_effect start -->
+<section class="section-b-space_  p-0 ratio_asos alHomeServiceShimmer">
+	<div class="container_al mb-3 shimmer_effect">
+		<div class="row">
+			<div class="col-12 cards">
+				<div class="headerLoding loading"></div>
+            <div class="cardbanner loading"></div>
+			</div>
+		</div>
+	</div>
+   <div class="container mb-3 shimmer_effect alcardCatagory">
+		<div class="row">
+			<div class="col-2 cards">
+				<div class="cardCatagory loading"></div>
+			</div>
+         <div class="col-2 cards">
+				<div class="cardCatagory loading"></div>
+			</div>
+         <div class="col-2 cards">
+				<div class="cardCatagory loading"></div>
+			</div>
+         <div class="col-2 cards">
+				<div class="cardCatagory loading"></div>
+			</div>
+         <div class="col-2 cards">
+				<div class="cardCatagory loading"></div>
+			</div>
+         <div class="col-2 cards">
+				<div class="cardCatagory loading"></div>
+			</div>
+
+		</div>
+	</div>
+	<div class="container mb-5 shimmer_effect">
+      <div class="row">
+         <div class="col-12">
+         <div class="card_title mb-4 maintitle loading"></div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-12" style="padding:0 60px;">
+            <div class="grid-row grid-4-4">
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-12" style="padding:0 60px;">
+            <div class="grid-row grid-4-4">
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-12" style="padding:0 60px;">
+            <div class="grid-row grid-4-4">
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+               <div class="cards">
+                  <div class="card_image loading"></div>
+                  <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                  </div>
+                  <div class="card_content loading mt-0 w-75"></div>
+                  <div class="card_content loading mt-0 w-50"></div>
+                  <div class="card_line loading"></div>
+                  <div class="card_price loading"></div>
+               </div>
+            </div>
+         </div>
+      </div>
+	</div>
+
+
+	</div>
+</section>
 <!-- shimmer_effect end -->
-<!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
 <section class="p-0 small-slider al_desktop_banner">
@@ -80,10 +272,10 @@
 <section class="alSixMainMenu p-0">
    @if(count($navCategories))
    <div class="menu-navigation_al">
-   <div class="container-fluid">
+   <div class="container-fulid">
       <div class="row">
          <div class="col-12">
-            <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
+            <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider" >
                @foreach($navCategories as $cate)
                @if($cate['name'])
                <li class="al_main_category">
@@ -93,7 +285,7 @@
                         <img class="blur-up lazyload" data-icon_two="{{!is_null($cate['icon_two']) ? $cate['icon_two']['image_fit'].'200/200'.$cate['icon_two']['image_path'] : $cate['icon']['image_fit'].'200/200'.$cate['icon']['image_path']}}" data-icon="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt="" onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
                      </div>
                      @endif
-                     {{$cate['name']}}
+                     <span class="alCategoryName">{{$cate['name']}}</span>
                   </a>
                   @if(!empty($cate['children']))
                   <ul class="al_main_category_list">
@@ -120,244 +312,7 @@
    </div>
    @endif
 </section>
-<!-- Shimmer Efferct Start -->
-<section class="section-b-space_  p-0 ratio_asos">
-   <div class="container mb-md-5 shimmer_effect">
-      <div class="row">
-         <div class="col-12 cards">
-            <h2 class="h2-heading loading mb-3"></h2>
-         </div>
-      </div>
-      <div class="row">
-         <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-            <div class="card_image loading"></div>
-            <div class="d-flex align-items-center justify-content-between">
-               <div class="card_title loading"></div>
-            </div>
-            <div class="card_content loading mt-0 w-75"></div>
-            <div class="card_content loading mt-0 w-50"></div>
-            <div class="card_line loading"></div>
-            <div class="card_price loading"></div>
-         </div>
-         <div class="col-sm-10">
-            <div class="grid-row grid-4-4">
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-            </div>
-         </div>
-         <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-            <div class="card_image loading"></div>
-            <div class="d-flex align-items-center justify-content-between">
-               <div class="card_title loading"></div>
-               <div class="card_icon loading"></div>
-            </div>
-            <div class="card_content loading mt-0 w-75"></div>
-            <div class="card_content loading mt-0 w-50"></div>
-            <div class="card_line loading"></div>
-            <div class="card_price loading"></div>
-         </div>
-      </div>
-   </div>
-   <div class="container mb-md-5 shimmer_effect">
-      <div class="row">
-         <div class="col-12 cards">
-            <h2 class="h2-heading loading mb-3"></h2>
-         </div>
-      </div>
-      <div class="row">
-         <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-            <div class="card_image loading"></div>
-            <div class="d-flex align-items-center justify-content-between">
-               <div class="card_title loading"></div>
-            </div>
-            <div class="card_content loading mt-0 w-75"></div>
-            <div class="card_content loading mt-0 w-50"></div>
-            <div class="card_line loading"></div>
-            <div class="card_price loading"></div>
-         </div>
-         <div class="col-sm-10">
-            <div class="grid-row grid-4-4">
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-            </div>
-         </div>
-         <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-            <div class="card_image loading"></div>
-            <div class="d-flex align-items-center justify-content-between">
-               <div class="card_title loading"></div>
-               <div class="card_icon loading"></div>
-            </div>
-            <div class="card_content loading mt-0 w-75"></div>
-            <div class="card_content loading mt-0 w-50"></div>
-            <div class="card_line loading"></div>
-            <div class="card_price loading"></div>
-         </div>
-      </div>
-   </div>
-   <div class="container mb-md-5 shimmer_effect">
-      <div class="row">
-         <div class="col-12 cards">
-            <h2 class="h2-heading loading mb-3"></h2>
-         </div>
-      </div>
-      <div class="row">
-         <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-            <div class="card_image loading"></div>
-            <div class="d-flex align-items-center justify-content-between">
-               <div class="card_title loading"></div>
-            </div>
-            <div class="card_content loading mt-0 w-75"></div>
-            <div class="card_content loading mt-0 w-50"></div>
-            <div class="card_line loading"></div>
-            <div class="card_price loading"></div>
-         </div>
-         <div class="col-sm-10">
-            <div class="grid-row grid-4-4">
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-               <div class="cards">
-                  <div class="card_image loading"></div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <div class="card_title loading"></div>
-                     <div class="card_icon loading"></div>
-                  </div>
-                  <div class="card_content loading mt-0 w-75"></div>
-                  <div class="card_content loading mt-0 w-50"></div>
-                  <div class="card_line loading"></div>
-                  <div class="card_price loading"></div>
-               </div>
-            </div>
-         </div>
-         <div class="col-sm-1 grid-row px-sm-3 p-0 d-sm-block d-none">
-            <div class="card_image loading"></div>
-            <div class="d-flex align-items-center justify-content-between">
-               <div class="card_title loading"></div>
-               <div class="card_icon loading"></div>
-            </div>
-            <div class="card_content loading mt-0 w-75"></div>
-            <div class="card_content loading mt-0 w-50"></div>
-            <div class="card_line loading"></div>
-            <div class="card_price loading"></div>
-         </div>
-      </div>
-   </div>
-</section>
-<!-- Shimmer Efferct End -->
+
 <!-- no-store-wrapper start -->
 <section class="no-store-wrapper mb-3 mt-3" >
    <div class="container">
@@ -380,6 +335,7 @@
    </div>
 </section>
 <!-- no-store-wrapper end -->
+
 <!-- vendors_template start -->
 <script type="text/template" id="vendors_template" >
    <% _.each(vendors, function(vendor, k){%>
@@ -513,25 +469,30 @@
    									<ul class="status_box mt-1 pl-0">
    										<% if(vendor.order_status){%>
    											<li>
-   												<% if(vendor.order_status=='placed'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/order-icon.svg')}}" alt="" title="">
-   													<%}else if(vendor.order_status=='accepted'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/payment_icon.svg')}}" alt="" title="">
-   														<%}else if(vendor.order_status=='processing'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/customize_icon.svg')}}" alt="" title="">
-   															<%}else if(vendor.order_status=='out for delivery'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/driver_icon.svg')}}" alt="" title="">
-   																<%}%>
-   																	<label class="m-0 in-progress">
-   																		<%=(vendor.order_status).charAt(0).toUpperCase() + (vendor.order_status).slice(1) %>
-   																	</label>
+                                       <% if(vendor.order_status=='placed'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/order-icon.svg')}}" alt="" title="">
+                                       <%}else if(vendor.order_status=='accepted'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/payment_icon.svg')}}" alt="" title="">
+                                       <%}else if(vendor.order_status=='processing'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/customize_icon.svg')}}" alt="" title="">
+                                       <%}else if(vendor.order_status=='out for delivery'){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/driver_icon.svg')}}" alt="" title="">
+                                       <%}%>
+                                       <label class="m-0 in-progress">
+                                       <%=(vendor.order_status).charAt(0).toUpperCase() + (vendor.order_status).slice(1) %>
+                                       </label>
    											</li>
    											<%}%>
-   												<% if(vendor.dispatch_traking_url){%> <img class="blur-up lazyload" data-src="{{asset('assets/images/order-icon.svg')}}" alt="" title=""> <a href="{{route('front.booking.details')}}/<%=order.order_number %>" target="_blank">{{__('Details')}}</a>
-   													<%}%>
-   														<% if(vendor.dineInTable){%>
-   															<li>
-   																<h5 class="mb-1">{{__('Dine-in')}}</h5>
-   																<h6 class="m-0"><%=vendor.dineInTableName %></h6>
-   																<h6 class="m-0">Category : <%=vendor.dineInTableCategory %></h6>
-   																<h6 class="m-0">Capacity : <%=vendor.dineInTableCapacity %></h6> </li>
-   															<%}%>
+                                    <li>
+                                    <% if(vendor.dispatch_traking_url){%>
+                                       <img class="blur-up lazyload" data-src="{{asset('assets/images/order-icon.svg')}}" alt="" title="">
+                                       <a class="alOrderDetailsLink" href="{{route('front.booking.details')}}/<%=order.order_number %>" target="_blank">{{__('Details')}}</a>
+                                    <%}%>
+                                    </li>
+                                    <% if(vendor.dineInTable){%>
+                                    <li>
+                                       <h5 class="mb-1">{{__('Dine-in')}}</h5>
+                                       <h6 class="m-0"><%=vendor.dineInTableName %></h6>
+                                       <h6 class="m-0">Category : <%=vendor.dineInTableCategory %></h6>
+                                       <h6 class="m-0">Capacity : <%=vendor.dineInTableCapacity %></h6>
+                                    </li>
+                                    <%}%>
    									</ul>
    								</div>
    								<div class="col-7 col-sm-4">
@@ -626,165 +587,10 @@
    </div>
 </section>
 <!-- our_vendor_main_div end -->
-<!-- section Spa list start -->
-<section class="alSpaList">
-            <div class="container">
-                <div class="row py-5">
-                    <div class="alSpaListHead text-center text-lg-left col-12">
-                        <p class="alLgFontSize">Middle east’s best spa specialist!</p>
-                        <p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="container pr-0">
-                <!-- alSpaListSlider start -->
-                <div class="alSpaListSlider">
-                    <div><div class="alSpaListBox mx-2"><img class="w-100" src="{{asset('frontend/template_six/spaimages/dubai.jpg')}}"><p>Dubai</p></div></div>
-                    <div><div class="alSpaListBox mx-2"><img class="w-100" src="{{asset('frontend/template_six/spaimages/abudhabi.jpg')}}"><p> Abu Dhabi</p></div></div>
-                    <div><div class="alSpaListBox mx-2"><img class="w-100" src="{{asset('frontend/template_six/spaimages/rasalkhaimah.jpg')}}"><p>Ras Al Khaimah</p></div></div>
-                    <div><div class="alSpaListBox mx-2"><img class="w-100" src="{{asset('frontend/template_six/spaimages/Sharjah.jpg')}}"><p>Sharjah</p></div></div>
-                    <div><div class="alSpaListBox mx-2"><img class="w-100" src="{{asset('frontend/template_six/spaimages/Ajman.jpg')}}"><p>Ajman</p></div></div>
-                </div><!-- alSpaListSlider start -->
-            </div>
-        </section>
-        <!-- section Spa list end -->
 
-        <!-- section Featured deals start -->
-        <section class="featuredDeals">
-            <div class="container">
-                <div class="row py-5">
-                    <div class="alSpaListHead text-center text-lg-left col-12">
-                        <p class="alLgFontSize">Featured deals</p>
-                        <p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="alFeaturedDealsBox">
-                            <img src="{{asset('frontend/template_six/spaimages/fd1.jpg')}}" class="w-100">
-                            <p class="alFdTitle my-2">Spa Me collection</p>
-                            <p class="alFdText">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-                            <p class="alFdLink"><a href="#"> Explore more </a></p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="alFeaturedDealsBox">
-                            <img src="{{asset('frontend/template_six/spaimages/fd2.jpg')}}" class="w-100">
-                            <p class="alFdTitle my-2">Gifts</p>
-                            <p class="alFdText">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-                            <p class="alFdLink"><a href="#"> Explore more </a></p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="alFeaturedDealsBox">
-                            <img src="{{asset('frontend/template_six/spaimages/fd3.jpg')}}" class="w-100">
-                            <p class="alFdTitle my-2">Competitions</p>
-                            <p class="alFdText">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-                            <p class="alFdLink"><a href="#"> Explore more </a></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- section Featured deals end -->
 
-        <!-- spamiddleeast section start -->
-        <section class="spamiddleeast">
-            <div class="container">
-                <div class="row py-5">
-                    <div class="alSLsliderHead text-center text-lg-left col-12">
-                        <p class="alLgFontSize">Spa middle east</p>
-                        <p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="container-fluid">
-                <div class="row alSLslider">
-                    <div>
-                        <div class="alSLsliderBox mx-2">
-                            <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm1.jpg')}}">
-                            <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm2.jpg')}}">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="alSLsliderBox mx-2">
-                            <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm3.jpg')}}">
-                            <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm4.jpg')}}">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="alSLsliderBox mx-2">
-                            <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm5.jpg')}}">
-                            <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm6.jpg')}}">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="alSLsliderBox mx-2">
-                            <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm7.jpg')}}">
-                            <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm8.jpg')}}">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="alSLsliderBox mx-2">
-                            <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm9.jpg')}}">
-                            <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm10.jpg')}}">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="alSLsliderBox mx-2">
-                            <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm1.jpg')}}">
-                            <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm2.jpg')}}">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="alSLsliderBox mx-2">
-                            <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm3.jpg')}}">
-                            <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm4.jpg')}}">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="alSLsliderBox mx-2">
-                            <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm5.jpg')}}">
-                            <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm6.jpg')}}">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- spamiddleeast section end -->
 
-        <!-- testimonials sections start -->
-        <section class="testimonials py-5">
-            <div class="container text-center">
-                <p class="alTesimonialsTitle mt-4">What our clients are saying</p>
-                <div class="clientsFeedBack">
-                    <div class="clientsFeedBackSlider">
-                        <div class="clientsFeedBackBox">
-                            <p class="alTesimonialsText">“I felt completely rejuvinated after my first hydrotherapy session”</p>
-                            <p class="alTesimonialsUsername m-0">Jenny Davis</p>
-                            <small class="alTesimonialsFrom text-uppercase">actor, sydney</small>
-                        </div>
-                        <div class="clientsFeedBackBox">
-                            <p class="alTesimonialsText">“I felt completely rejuvinated after my first hydrotherapy session”</p>
-                            <p class="alTesimonialsUsername m-0">Jenny Davis</p>
-                            <small class="alTesimonialsFrom text-uppercase">actor, sydney</small>
-                        </div>
-                        <div class="clientsFeedBackBox">
-                            <p class="alTesimonialsText">“I felt completely rejuvinated after my first hydrotherapy session”</p>
-                            <p class="alTesimonialsUsername m-0">Jenny Davis</p>
-                            <small class="alTesimonialsFrom text-uppercase">actor, sydney</small>
-                        </div>
-                        <div class="clientsFeedBackBox">
-                            <p class="alTesimonialsText">“I felt completely rejuvinated after my first hydrotherapy session”</p>
-                            <p class="alTesimonialsUsername m-0">Jenny Davis</p>
-                            <small class="alTesimonialsFrom text-uppercase">actor, sydney</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- testimonials sections end -->
 <!-- age-restriction star -->
 <div class="modal age-restriction fade" id="age_restriction" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog modal-dialog-centered">
@@ -817,6 +623,11 @@
 @endsection
 @section('script')
 <script type="text/javascript">
+    @if(count($banners))
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+    @endif
    // AOS.init();
    function changeImage(image, check) {
       var  icon = $(image).attr('data-icon');
@@ -836,115 +647,8 @@
       }
    }
 </script>
-<script type="text/javascript">
-   $(document).on('ready', function() {
 
-     if ( $('.product__slider-main').length ) {
-       var $slider = $('.product__slider-main')
-           .on('init', function(slick) {
-               $('.product__slider-main').fadeIn(1000);
-           })
-           .slick({
-               slidesToShow: 1,
-               slidesToScroll: 1,
-               arrows: true,
-               autoplay: false,
-               lazyLoad: 'ondemand',
-               autoplaySpeed: 3000,
-               inifinte: false,
-               asNavFor: '.product__slider-thmb'
-           });
-
-           var $slider2 = $('.product__slider-thmb')
-                   .on('init', function(slick) {
-                       $('.product__slider-thmb').fadeIn(1000);
-                   })
-                   .slick({
-                       slidesToShow: 5,
-                       slidesToScroll: 1,
-                       lazyLoad: 'ondemand',
-                       asNavFor: '.product__slider-main',
-                       dots: true,
-                       centerMode: false,
-                       focusOnSelect: true,
-                       inifinte: false
-                   });
-
-        //remove active class from all thumbnail slides
-        $('.product__slider-thmb .slick-slide').removeClass('slick-active');
-
-        //set active class to first thumbnail slides
-        $('.product__slider-thmb .slick-slide').eq(0).addClass('slick-active');
-
-        // On before slide change match active thumbnail to current slide
-        $('.product__slider-main').on('beforeChange', function (event, slick, currentSlide, nextSlide) {
-         var mySlideNumber = nextSlide;
-         $('.product__slider-thmb .slick-slide').removeClass('slick-active');
-         $('.product__slider-thmb .slick-slide').eq(mySlideNumber).addClass('slick-active');
-       });
-
-
-         // init slider
-       require(['js-sliderWithProgressbar'], function(slider) {
-
-           $('.product__slider-main').each(function() {
-
-               me.slider = new slider($(this), options, sliderOptions, previewSliderOptions);
-
-               // stop slider
-               //me.slider.stop();
-
-               // start slider
-               //me.slider.start(index);
-
-               // get reference to slick slider
-               //me.slider.getSlick();
-
-           });
-       });
-         var options = {
-           progressbarSelector    : '.bJS_progressbar'
-           , slideSelector        : '.bJS_slider'
-           , previewSlideSelector : '.bJS_previewSlider'
-           , progressInterval     : ''
-               // add your own progressbar animation function to sync it i.e. with a video
-               // function will be called if the current preview slider item (".b_previewItem") has the data-customprogressbar="true" property set
-           , onCustomProgressbar : function($slide, $progressbar) {}
-       }
-
-           // slick slider options
-           // see: https://kenwheeler.github.io/slick/
-       var sliderOptions = {
-           slidesToShow   : 1,
-           slidesToScroll : 1,
-           arrows         : false,
-           fade           : true,
-           autoplay       : true
-       }
-
-           // slick slider options
-           // see: https://kenwheeler.github.io/slick/
-       var previewSliderOptions = {
-           slidesToShow   : 1,
-           slidesToScroll : 1,
-           dots           : false,
-           focusOnSelect  : true,
-           centerMode     : true
-       }
-       }
-
-   });
-</script>
 <script>
-   $(document).ready(function(){
-       $(".alHamBurgerIcon").click(function(){
-          $(".alSpaMenuCard").addClass("active");
-       });
-       $(".alMenuClose").click(function(){
-           $(".alSpaMenuCard").removeClass("active");
-       });
-   });
-
    $(window).scroll(function() {
        var scroll = $(window).scrollTop();
 
