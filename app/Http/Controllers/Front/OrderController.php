@@ -1869,7 +1869,7 @@ class OrderController extends FrontController
             $res = $client->post(
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
-            );Log::info(json_encode($postdata));
+            );
             $response = json_decode($res->getBody(), true);
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
@@ -1992,7 +1992,7 @@ class OrderController extends FrontController
             $res = $client->post(
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
-            );Log::info(json_encode($postdata));
+            );
             $response = json_decode($res->getBody(), true);
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
@@ -2166,7 +2166,7 @@ class OrderController extends FrontController
                 $url . '/api/task/create',
                 ['form_params' => ($postdata
                 )]
-            );Log::info(json_encode($postdata));
+            );
             $response = json_decode($res->getBody(), true);
 
             if ($response && $response['task_id'] > 0) {
