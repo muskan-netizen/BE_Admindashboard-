@@ -278,8 +278,7 @@ class OrderController extends FrontController
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
         $order = Order::with(['products.pvariant.vset', 'products.pvariant.translation_one', 'address'])->findOrfail($request->order_id);
-        // dd($order->toArray());
-
+        
         $langId = Session::get('customerLanguage');
         $fixedFeeNomenclatures = $this->fixedFee($langId);
         $order_vendors =  OrderVendor::where('order_id', $request->order_id)->whereNotNull('dispatch_traking_url')->get();
@@ -294,6 +293,7 @@ class OrderController extends FrontController
             $total_other_taxes+=(float)$row;
         }
         $order->total_other_taxes_amount=$total_other_taxes;
+        //dd($order->toArray());
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency','fixedFeeNomenclatures'));
@@ -1133,7 +1133,7 @@ class OrderController extends FrontController
                 $order_status->order_vendor_id = $OrderVendor->id;
                 $order_status->order_status_option_id = 1;
                 $order_status->save();
-            }
+            }//End cart product loop
             //echo "loop end";
             $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
 

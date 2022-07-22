@@ -9,7 +9,7 @@ class Variant extends Model
 {
   protected $fillable = ['title', 'type', 'position', 'status'];
 
-  protected $appends = ['price'];
+  protected $appends = ['actual_price'];
 
 
   public function translation(){
@@ -46,9 +46,24 @@ class Variant extends Model
     return $this->belongsToMany(Category::class, 'variant_categories', 'variant_id', 'category_id');
   }
 
-  public function getPriceAttribute()
+
+  public function getActualPriceAttribute()
     {
-      return  $this->attributes['price'] +  $this->attributes['markup_price'];
+        //if vendor actual price = price - markup price
+        if(auth()->user() !=null && !auth()->user()->is_admin == 1){
+                return $this->price - $this->markup_price;
+        }
+                return $this->price;
+    }
+
+    public function getPriceAttribute($value)
+    {
+        //if vendor price add with markup price
+           if(auth()->user() !=null && auth()->user()->is_admin == 1){
+                return $value;
+           }
+                return $value + $this->markup_price;
+           
     }
 
 }

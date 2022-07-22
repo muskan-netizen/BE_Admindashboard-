@@ -249,11 +249,13 @@
                                                                                     if (count($data->addOn) > 0) {
                                                                                         $isAddonExist = 1;
                                                                                     }
+                                                                                   // dd($data->variant);
                                                                                 @endphp
 
                                                                                 @foreach ($data->variant as $var)
                                                                                     @if (isset($var->checkIfInCart) && count($var->checkIfInCart) > 0)
                                                                                         @php
+                                                                                            //dd($var->_markup_price);
                                                                                             $productVariantInCart = 1;
                                                                                             $productVariantIdInCart = $var->checkIfInCart['0']['variant_id'];
                                                                                             $cartProductId = $var->checkIfInCart['0']['id'];

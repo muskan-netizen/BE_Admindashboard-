@@ -6,10 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 use Session;
+use App\Models\UserVendor;
 
 class ProductVariant extends Model
 {
 	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price'];
+
+  protected $appends = ['actual_price'];
+
 
 	public function getImageAttribute($value)
     {
@@ -102,6 +106,29 @@ class ProductVariant extends Model
         });
     }
 
-    
+
+    public function getActualPriceAttribute()
+    {
+        //if vendor actual price = price - markup price
+        if(auth()->user() !=null && !auth()->user()->is_admin == 1){
+                return $this->price - $this->markup_price??0;
+        }
+                return $this->price;
+    }
+
+    public function getPriceAttribute($value)
+    {
+        //if vendor price add with markup price
+           if(auth()->user() !=null && auth()->user()->is_admin == 1){
+            $vendor = Product::where('id', $this->product_id)->value('vendor_id');
+            $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor)->first();
+            if($userVendor){
+                return $value;
+            }
+           }
+                return $value + $this->markup_price??0;
+           
+    }
+
     
 }
