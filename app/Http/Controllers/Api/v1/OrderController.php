@@ -85,6 +85,8 @@ class OrderController extends BaseController
     public function postPlaceOrder(Request $request)
     {
         try {
+            $action = ($request->has('type')) ? $request->type : 'delivery';
+
             if($request->has('type') && $request->type != 'delivery'){
                 $rules = [
                     'payment_option_id' => 'required'
@@ -117,9 +119,17 @@ class OrderController extends BaseController
             $tax_category_ids = [];
             $user = Auth::user();
             $language_id = $user->language ?? 1;
+            $latitude = '';
+            $longitude = '';
 
             if ($user) {
                 DB::beginTransaction();
+
+                if($action == 'takeaway' || $action == 'dine_in'){
+                    $latitude = $user->latitude ?? '';
+                    $longitude = $user->longitude ?? '';
+                }
+
                 $subscription_features = array();
                 $now = Carbon::now()->toDateTimeString();
                 $user_subscription = SubscriptionInvoicesUser::with('features')
@@ -154,8 +164,7 @@ class OrderController extends BaseController
                     if (!$user_address) {
                         return response()->json(['error' => 'Invalid address id.'], 404);
                     }
-                }            
-                $action = ($request->has('type')) ? $request->type : 'delivery';
+                }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
                 if ($cart) {
@@ -221,6 +230,26 @@ class OrderController extends BaseController
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                         $order_vendor->save();
                         foreach ($vendor_cart_products as $vendor_cart_product) {
+
+                            if ((isset($client_preference->is_hyperlocal)) && ($client_preference->is_hyperlocal == 1) && ($latitude) && ($longitude)){
+                                if (!empty($latitude) && !empty($longitude)) {
+                                    if(($client_preference->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
+                                        $serviceArea = $vendor_cart_product->vendor->where(function($query) use ($latitude, $longitude) {
+                                            $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                                $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                            })
+                                            ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                                $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                            });
+                                        })->where('id', $vendor_id)->get();
+    
+                                        if($serviceArea->isEmpty()){
+                                            return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
+                                        }
+                                    }
+                                }
+                            }
+
                             if($is_restricted == 0 && $passbase_check && isset($vendor_cart_product->product) && $vendor_cart_product->product->age_restriction == 1)
                             {
                                 $is_restricted = 1;
@@ -946,7 +975,10 @@ class OrderController extends BaseController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1070,7 +1102,10 @@ class OrderController extends BaseController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1240,7 +1275,10 @@ class OrderController extends BaseController
                  'call_back_url' => $call_back_url ?? null,
                  'task' => $tasks,
                  'request_type'=> $rtype,
-                 'is_restricted' => $order_vendor->is_restricted
+                 'is_restricted' => $order_vendor->is_restricted,
+                 'vendor_id' => $vendor_details->id,
+                 'order_vendor_id' => $order_vendor->id,
+                 'order_id' => $order->id
              ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1585,6 +1623,8 @@ class OrderController extends BaseController
             $language_id = $user->language;
             $order_id = $request->order_id;
             $vendor_id = $request->vendor_id;
+            $preferences = ClientPreference::first();
+
             if ($vendor_id) {
                 $order = Order::with(['driver_rating','reports',
                     'vendors' => function ($q) use ($vendor_id) {
@@ -1658,8 +1698,11 @@ class OrderController extends BaseController
                         $q1->orWhere(function ($q2) {
                             $q2->whereIn('payment_option_id', [1,38]);
                         });
-                    })
-                    ->where('user_id', $user->id)->where('id', $order_id)->select('*', 'id as total_discount_calculate')
+                    });
+                    if(!$user->is_admin){
+                        $order = $order->where('user_id', $user->id);
+                    }
+                    $order = $order->where('id', $order_id)->select('*', 'id as total_discount_calculate')
                     ->first();
             }
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
@@ -1757,6 +1800,27 @@ class OrderController extends BaseController
                         $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
                         $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
                     }
+
+                        $vendorId = $vendor->vendor->id;
+                        //type must be a : delivery , takeaway,dine_in
+                        $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
+                        $slotsDate = findSlot('',$vendorId,'','api');
+                        $slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                        $vendor->slots = $slots;
+                        if($preferences->business_type == 'laundry'){
+                            $dropoff_slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                            $vendor->dropoff_slots = $dropoff_slots;
+                        }else{
+                            $vendor->dropoff_slots = [];
+                        }
+                        if(count($slots)>0){
+                            $vendor->closed_store_order_scheduled = $duration->closed_store_order_scheduled ?? 0;
+                         }else{
+                            $vendor->closed_store_order_scheduled = 0;
+                        }
+                        $slotsDate = findSlot('',$vendorId,'','api');
+                        $vendor->delaySlot = $slotsDate;
+                        $vendor->same_day_orders_for_rescheduling = $preferences->same_day_orders_for_rescheduing??0;
 
                     // dispatch status
                     $vendor->vendor_dispatcher_status = VendorOrderDispatcherStatus::whereNotIn('dispatcher_status_option_id',[2])

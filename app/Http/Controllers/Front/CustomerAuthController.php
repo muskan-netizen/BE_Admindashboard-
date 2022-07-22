@@ -332,6 +332,27 @@ class CustomerAuthController extends FrontController
                 }
                 Auth::login($user);
                 $this->checkCookies($user->id);
+                $user_cart = Cart::where('user_id', $user->id)->first();
+                if ($user_cart) {
+                    $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
+                    if ($unique_identifier_cart) {
+                        $unique_identifier_cart_products = CartProduct::where('cart_id', $unique_identifier_cart->id)->get();
+                        foreach ($unique_identifier_cart_products as $unique_identifier_cart_product) {
+                            $user_cart_product_detail = CartProduct::where('cart_id', $user_cart->id)->where('product_id', $unique_identifier_cart_product->product_id)->first();
+                            if ($user_cart_product_detail) {
+                                $user_cart_product_detail->quantity = ($unique_identifier_cart_product->quantity + $user_cart_product_detail->quantity);
+                                $user_cart_product_detail->save();
+                                $unique_identifier_cart_product->delete();
+                            } else {
+                                $unique_identifier_cart_product->cart_id = $user_cart->id;
+                                $unique_identifier_cart_product->save();
+                            }
+                        }
+                        $unique_identifier_cart->delete();
+                    }
+                } else {
+                    Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $user->id, 'created_by' => $user->id, 'unique_identifier' => '']);
+                }
                 Session::forget('referrer');
                 $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
                         'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from',

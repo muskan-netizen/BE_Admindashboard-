@@ -55,6 +55,8 @@ class PaymentOptionController extends BaseController{
                 $option->title = __('Digicel MyCash');
             }elseif($option->code == 'windcave'){
                 $option->title = __('Windcave (Debit/Credit card)');
+            }elseif($option->code == 'stripe_ideal'){
+                $option->title = __('iDEAL');
             }
             $option->title = __($option->title);
         }
@@ -71,7 +73,7 @@ class PaymentOptionController extends BaseController{
             }else{
                 $domain = $client->sub_domain.env('SUBMAINDOMAIN');
             }
-            // $server_url = "http://192.168.96.67:8007/";
+            //$server_url = "http://192.168.97.160:9091/";
             $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
