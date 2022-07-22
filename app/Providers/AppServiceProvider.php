@@ -95,8 +95,8 @@ class AppServiceProvider extends ServiceProvider
         $last_mile_common_set = $this->checkIfLastMileDeliveryOn();
 
         $client_payment_options = PaymentOption::where('status', 1)->pluck('code')->toArray();
-        $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-        $selected_template = isset($set_template) ? $set_template->template_id : 1;
+       // $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+        $selected_template =  1;
 
         view()->share('last_mile_common_set', $last_mile_common_set);
 
