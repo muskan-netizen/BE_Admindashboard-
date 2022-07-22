@@ -42,9 +42,9 @@ class VendorProductTempleteSeeder extends Seeder
                 'status' =>'1'
             ],
             ['id' => 6,
-                'title' => 'Product with Category',
+                'title' => 'Product with Category Extended',
                 'type' => 'List',
-                'status' =>'0'
+                'status' =>'1'
             ]
         ); 
         DB::table('vendor_templetes')->insert($vendor_templete_array);
