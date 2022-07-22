@@ -252,7 +252,7 @@
                         </select>
                     </div>
                     
-
+                    @if($vendor->need_container_charges == 1)
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Container Charges'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="container_charges_tax" class="form-control" data-color="#43bee1" @if($vendor->container_charges_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
@@ -269,7 +269,7 @@
                             @endforeach
                         </select>
                     </div> 
-
+                    @endif
                     
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Fixed Fee'),['class' => 'control-label']) !!}
@@ -287,12 +287,12 @@
                         </select>
                     </div>
 
-
+                    @if($vendor->add_markup_price == 1)
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Markup Price'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="markup_fee_tax" class="form-control" data-color="#43bee1" @if($vendor->markup_fee_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
-                
+                   
                     
                     <div class="form-group w-100" style="display:{{$vendor->markup_fee_tax == 0 ? 'none!important' : 'block'}}" id="markup_fee_tax_id">
                      {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
@@ -303,6 +303,8 @@
                             @endforeach
                         </select>
                     </div>
+                    @endif
+
                     @endif
 
                     <div class="col-12">

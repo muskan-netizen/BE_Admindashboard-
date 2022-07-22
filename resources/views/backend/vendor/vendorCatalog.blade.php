@@ -632,7 +632,9 @@
                                   @endif
                                   <option value="for_live">{{__('Draft/Published')}}</option>
                                   <option value="for_tax">{{__('Tax Category')}}</option>
+                                @if(@$vendor->add_markup_price)
                                   <option value="for_markup">{{__('Markup Price')}}</option>
+                                @endif
                                   <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock')}}</option>
                                   <option value="delete">{{__('Delete')}}</option>
                              </select>
