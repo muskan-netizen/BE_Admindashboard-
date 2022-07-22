@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserAddress;
 use App\Models\Vendor;
 use App\Models\VendorOrderDispatcherStatus;
+use App\Models\VendorOrderStatus;
 use App\Models\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

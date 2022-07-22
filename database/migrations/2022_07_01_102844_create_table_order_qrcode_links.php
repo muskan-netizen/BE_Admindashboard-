@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateQrcodeImportsTable extends Migration
+class CreateTableOrderQrcodeLinks extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateQrcodeImportsTable extends Migration
      */
     public function up()
     {
-        Schema::create('qrcode_imports', function (Blueprint $table) {
+        Schema::create('order_qrcode_links', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->nullable();
-            $table->string('image')->nullable();
-            $table->integer('vendor_id')->nullable();
-            $table->tinyInteger('status')->default('1');
+            $table->integer('order_id');
+            $table->integer('qrcode_id');
+            $table->string('order_number');
+            $table->string('code');
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreateQrcodeImportsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('qrcode_imports');
+        Schema::dropIfExists('order_qrcode_links');
     }
 }
