@@ -610,7 +610,7 @@ class PickupDeliveryController extends BaseController{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-                
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -633,7 +633,10 @@ class PickupDeliveryController extends BaseController{
                             'images_array' => $request->images_array??null,
                             'type'=>$type,
                             'friend_name'=>$friendName,
-                            'friend_phone_number'=>$friendPhoneNumber
+                            'friend_phone_number'=>$friendPhoneNumber,
+                            'vendor_id' => $vendor,
+                            'order_vendor_id' => $order_vendor->id,
+                            'order_id' => $order->id
                         ];
 
 
