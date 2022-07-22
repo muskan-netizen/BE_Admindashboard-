@@ -190,6 +190,8 @@ class OrderController extends BaseController
                     // $order->specific_instructions = $cart->specific_instructions ?? null;
                     $order->specific_instructions = $request->specific_instructions ?? null;
                     $order->is_gift = $request->is_gift ?? 0;
+                    $order->user_latitude = $latitude ? $latitude : null;
+                    $order->user_longitude = $longitude ? $longitude : null;
                     $order->save();
                   
                   
