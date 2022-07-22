@@ -21,7 +21,6 @@
         });
     }
     $(".openCategoryModal").click(function(e) {
-        alert('ghk'); 
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -98,6 +97,7 @@
         var form = document.getElementById('addCategoryForm');
         var formData = new FormData(form);
         var url = "{{route('category.store')}}";
+        // console.log('url', url);return false;
         saveCategory(formData, '', url);
 
     });

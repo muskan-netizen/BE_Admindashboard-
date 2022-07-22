@@ -44,7 +44,7 @@ class CategoryController extends BaseController
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
 
         $categories = $categories->get();
-
+// pr($categories);die;
         if ($categories) {
             $build = $this->buildTree($categories->toArray());
             $tree = $this->printTree($build);
@@ -113,7 +113,7 @@ class CategoryController extends BaseController
     public function store(Request $request)
     {
         $rules = array(
-            'name.0' => 'required|string|max:60',
+            'cat_lang.name' => 'required|string|max:60',
             'slug' => 'required|string|max:30|unique:categories',
         );
         if ($request->type == 'Vendor') {
@@ -123,16 +123,18 @@ class CategoryController extends BaseController
         $cate = new Category();
         $save = $this->save($request, $cate, 'false');
         if ($save > 0) {
-            foreach ($request->language_id as $key => $value) {
-                $category_translation = new Category_translation();
-                $category_translation->name = $request->name[$key];
-                $category_translation->meta_title = $request->meta_title[$key];
-                $category_translation->meta_description = $request->meta_description[$key];
-                $category_translation->meta_keywords = $request->meta_keywords[$key];
-                $category_translation->category_id = $save;
-                $category_translation->language_id = $request->language_id[$key];
-                $category_translation->save();
+            if (!empty($request->cat_lang['language_id'])) {
+                $languageId = $request->cat_lang['language_id'];
+                $trans = new Category_translation();
+                $trans->category_id = $save;
+                $trans->language_id = $languageId;
+                $trans->name = $request->cat_lang['name'];
+                $trans->meta_title = $request->cat_lang['meta_title'];
+                $trans->meta_description = $request->cat_lang['meta_description'];
+                $trans->meta_keywords = $request->cat_lang['meta_keywords'];
+                $trans->save();              
             }
+die;
             $hs = new CategoryHistory();
             $hs->category_id = $save;
             $hs->action = 'Add';
@@ -334,6 +336,15 @@ class CategoryController extends BaseController
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $cate->image = Storage::disk('s3')->put('/category/image', $file, 'public');
+            }
+            if ($request->hasFile('cat_banner')) {
+                $catBannerImages = [];
+                if(!empty($request->cat_banner)){
+                    foreach($request->cat_banner as $catBanner){
+                        $catBannerImages[] = Storage::disk('s3')->put('/category/image', $catBanner, 'public');
+                    }
+                }
+                $cate->sub_cat_banners = implode(',',$catBannerImages);
             }
             $cate->save();
             $tagDelete = CategoryTag::where('category_id', $cate->id)->delete();

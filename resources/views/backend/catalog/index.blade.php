@@ -51,6 +51,9 @@
     #edit-category-form .modal-dialog.modal-dialog-centered.modal-md {
         max-width: 800px;
     }
+    #add-category-form .modal-dialog.modal-dialog-centered.modal-md {
+        max-width: 800px;
+    }
     .Category-select_option select {
     border: none;
     padding-left: 0px;
