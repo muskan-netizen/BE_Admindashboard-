@@ -214,7 +214,8 @@
 
                                             @forelse($data->products as $prod)
                                                 
-                                                <div class="card mb-3">
+                                                <div class="card mb-3 product_row"  data-p_sku="{{ $prod->sku }}"
+                                                    data-slug="{{ $prod->url_slug }}">
                                                     <div class="card-body">
                                                         <div class="d-flex align-items-center justify-content-between border-bottom">
                                                             <p class="m-0 productTitle"> {{ $prod->translation_title }}</p>
