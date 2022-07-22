@@ -357,11 +357,16 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         </div>
         <div class="col-md-6">
             <div class="page-title-box page-title-box text-right pt-2">
-                <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
+                <a class="return-btn mr-2" href="{{route('backend.order.returns',['Pending'])}}">
                     <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
-                        <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
+                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
                     </b>
-                </a> 
+                </a>
+                <a class="mr-2" href="{{route('cancel-order.requests')}}">
+                    <b>{{ __("Cancel Order Request") }}<sup class="total-items"></sup>
+                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                    </b>
+                </a>
                 @if ($client_preferences->business_type == 'laundry')
                 <a class="return-btn" href="{{route('rescheduled.orders')}}">
                     <b>{{ __("Rescheduled Orders") }} <sup class="total-items">({{$rescheduleOrderCount}})</sup>
