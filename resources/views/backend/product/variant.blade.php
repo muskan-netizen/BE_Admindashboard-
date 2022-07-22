@@ -4,16 +4,16 @@
         <div class="col-8" style="margin:auto;">
             <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
         </div>
-        @if($productVariants->count() > 0)
+        {{-- @if($productVariants->count() > 0)
         <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
             <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make Variant Sets") }}</button>
         </div>
-        @endif
+        @endif --}}
     </div>
-    <p>{{ __("Select or change category to get variants") }}</p>
+    {{-- <p>{{ __("Select or change category to get variants") }}</p> --}}
 
     <div class="row" style="width:100%; overflow-x: scroll;">
-        <div id="variantAjaxDiv" class="col-12 mb-2">
+        {{-- <div id="variantAjaxDiv" class="col-12 mb-2">
             <h5 class="">{{__('Variant List')}}</h5>
             <div class="row mb-2">
                 @foreach($productVariants as $vk => $var)
@@ -32,7 +32,7 @@
                 </div>
                 @endforeach
             </div>
-        </div>
+        </div> --}}
 
         {{-- @if($product->has_variant == 1) --}}
         <div class="col-12" id="exist_variant_div">
@@ -41,15 +41,17 @@
                 <thead>
                     <th>{{ __("Image") }}</th>
                     <th>{{ __("Name") }}</th>
-                    <th>{{ __("Variants") }}</th>
+                    {{-- <th>{{ __("Variants") }}</th> --}}
                     <th>{{ __("Price") }}</th>
-                    <th>{{ __('Compare at price') }}</th>
-                    <th>{{ __('Cost Price') }}</th>
-                    <th class="check_inventory">{{ __("Quantity") }}</th>
+                    <th>{{ __('Minimum Duration') }}</th>
+                    <th>{{ __('Incremental Price') }}</th>
                     <th>{{ __("Action") }}</th>
                 </thead>
-                <tbody id="product_tbody_{{$product->id}}">
-                    @foreach($product->variant as $varnt)
+                <tbody id="product_tbody_{{$product->id}}" class="product_variant_table">
+                    @php
+                        $variant_count = count($product->variant);
+                    @endphp
+                    @foreach($product->variant as $key => $varnt)
                     <?php
                     $existSet = array();
 
@@ -60,7 +62,7 @@
                     }
                     $existSet = explode('-', $varnt->sku);
                     $vsets = '';
-
+                    
                     foreach ($varnt->set as $vs) {
                         if(isset($vs) && !empty($vs->title)){
                             $vsets .= $vs->title . ', ';
@@ -83,23 +85,32 @@
                             <input type="hidden" class="exist_sets" value="{{$existSet[(count($existSet) - 1)]}}">
                             <input type="text" name="variant_titles[]" value="{{$varnt->title??null}}">
                         </td>
-                        <td>{{rtrim($vsets, ', ')}}</td>
+                        {{-- <td>{{rtrim($vsets, ', ')}}</td> --}}
                         <td>
                             <input type="text" style="width: 70px;" name="variant_price[]" value="{{decimal_format($varnt->price)}}" onkeypress="return isNumberKey(event)">
                         </td>
                         <td>
-                            <input type="text" style="width: 100px;" name="variant_compare_price[]" value="{{decimal_format($varnt->compare_at_price)}}" onkeypress="return isNumberKey(event)">
+                            <input type="text" style="width: 100px;" name="variant_minimum_duration[]" value="{{decimal_format($varnt->minimum_duration)}}" onkeypress="return isNumberKey(event)">
                         </td>
                         <td>
-                            <input type="text" style="width: 70px;" name="variant_cost_price[]" value="{{decimal_format($varnt->cost_price)}}" onkeypress="return isNumberKey(event)">
+                            <input type="text" style="width: 70px;" name="variant_incremental_price[]" value="{{decimal_format($varnt->incremental_price)}}" onkeypress="return isNumberKey(event)">
                         </td>
-                        <td class="check_inventory">
+                        {{-- <td class="check_inventory">
                             <input type="text" style="width: 70px;" name="variant_quantity[]" value="{{$varnt->quantity}}" onkeypress="return isNumberKey(event)">
-                        </td>
+                        </td> --}}
                         <td>
+                            
                             <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}" class="action-icon deleteExistRow">
                                 <i class="mdi mdi-delete"></i>
                             </a>
+                            <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}" class="action-icon viewC">
+                                <i class="mdi mdi-eye"></i>
+                            </a>
+                            @if ($variant_count == ($key+1) )
+                                <a href="javascript:void(0);" data-varient_id="{{$varnt->id}}"  data-product_id="{{$product->id}}" class="action-icon product_varient_ids addExistRow">
+                                    <i class="mdi mdi-plus"></i>
+                                </a>
+                            @endif
                         </td>
                     </tr>
                     @endforeach
@@ -110,3 +121,8 @@
         <div id="variantRowDiv" class="col-12"></div>
     </div>
 </div>
+@section('js-script')
+<script>
+
+</script>
+@endsection
