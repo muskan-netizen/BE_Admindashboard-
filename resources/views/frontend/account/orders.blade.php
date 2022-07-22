@@ -1986,6 +1986,9 @@
     @if(in_array('payphone',$client_payment_options))
     <script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
     @endif
+    @if(in_array('khalti',$client_payment_options))
+        <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
+    @endif
     <script src="{{ asset('js/payment.js') }}"></script>
     <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
     <script type="text/javascript">
@@ -2043,6 +2046,8 @@
         var payment_paystack_url = "{{ route('payment.paystackPurchase') }}";
         var payment_success_paystack_url = "{{ route('payment.paystackCompletePurchase') }}";
         var payment_payfast_url = "{{ route('payment.payfastPurchase') }}";
+        var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
+        var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
         var amount_required_error_msg = "{{ __('Please enter amount.') }}";
         var payment_method_required_error_msg = "{{ __('Please select payment method.') }}";
         var check_pickup_schedule_slots = "{{route('cart.check_pickup_schedule_slots')}}";

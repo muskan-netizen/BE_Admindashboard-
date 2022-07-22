@@ -378,6 +378,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('payphone',$client_payment_options))
 <script src="https://pay.payphonetodoesposible.com/api/button/js?appId={{$payphone_id}}"></script>
 @endif
+@if(in_array('khalti',$client_payment_options))
+    <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
+@endif
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
@@ -406,6 +409,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
+    var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
+    var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
     var stripe_ideal_publishable_key ='{{ $stripe_ideal_publishable_key }}';
 

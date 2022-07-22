@@ -49,8 +49,8 @@ class AppServiceProvider extends ServiceProvider
         }
         $client_head = Client::where(['id' => 1])->first();
 
-        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo','stripe_ideal'];
-        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = $stripe_oxxo_publishable_key = $stripe_ideal_publishable_key = '';
+        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo','stripe_ideal','khalti'];
+        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = $stripe_oxxo_publishable_key = $stripe_ideal_publishable_key = $khalti_api_key = '';
         $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
         if($payment_options){
             foreach($payment_options as $option){
@@ -81,10 +81,11 @@ class AppServiceProvider extends ServiceProvider
                     $payphone_id = $creds->id??'';
                     $payphone_token = $creds->token??'';
                 }
+                if($option->code == 'khalti'){
+                    $khalti_api_key = (isset($creds->api_key) && (!empty($creds->api_key))) ? $creds->api_key : '';
+                }
             }
         }
-        
-
         $count = 0;
         if($client_preference_detail){
             if($client_preference_detail->dinein_check == 1){$count++;}
@@ -108,6 +109,7 @@ class AppServiceProvider extends ServiceProvider
         view()->share('stripe_fpx_publishable_key', $stripe_fpx_publishable_key);
         view()->share('stripe_oxxo_publishable_key', $stripe_oxxo_publishable_key);
         view()->share('stripe_ideal_publishable_key', $stripe_ideal_publishable_key);
+        view()->share('khalti_api_key', $khalti_api_key);
         view()->share('yoco_public_key', $yoco_public_key);
         view()->share('checkout_public_key', $checkout_public_key);
         view()->share('client_preference_detail', $client_preference_detail);

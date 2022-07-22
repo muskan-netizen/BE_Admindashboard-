@@ -438,14 +438,14 @@ $(document).ready(function () {
         fpxBank.mount('#fpx-bank-element');
     }
 
-    if ($("#stripe-card-element").length > 0) {
+    if (($("#stripe-card-element").length > 0) && (stripe_publishable_key != '')) {
         stripeInitialize();
     }
-    if ($("#fpx-bank-element").length > 0) {
+    if (($("#fpx-bank-element").length > 0) && (stripe_fpx_publishable_key != '')) {
         stripeFPXInitialize();
     }
  
-    if ($("#ideal-bank-element").length > 0) {
+    if (($("#ideal-bank-element").length > 0) && (stripe_ideal_publishable_key != '')) {
         stripeIdealInitialize();
     }
 
@@ -4214,6 +4214,10 @@ $(document).ready(function () {
             case 45:
                 paymentViaTelr('', payment_option_id, ''); 
             break;
+
+            case 46:
+                paymentViaKhalti('', ''); 
+            break;
         
         }
 
@@ -4621,7 +4625,6 @@ $(document).ready(function () {
             break;
             case '42':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     //payWithDpo
                     payWithDpo(order);
@@ -4632,7 +4635,6 @@ $(document).ready(function () {
             break;
             case '43':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     paymentViaUPay(address_id, order);
                 }
@@ -4642,7 +4644,6 @@ $(document).ready(function () {
             break;
             case '44':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     paymentViaConekta(address_id, order);
                 }
@@ -4652,7 +4653,6 @@ $(document).ready(function () {
             break;
             case '45':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                console.log('order', order);
                 if (order != '') {
                     paymentViaTelr(address_id, order);
                 }
@@ -4661,7 +4661,15 @@ $(document).ready(function () {
                 }
             break;
            
-        
+            case '46':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaKhalti(address_id, order, payment_from='cart');
+                }
+                else{
+                    return false;
+                }
+            break;
         }
 
     }
@@ -4876,6 +4884,9 @@ $(document).ready(function () {
                 paymentViaTelr('', payment_option_id, ''); 
                 break;
 
+            case 46:
+                paymentViaKhalti('', ''); 
+                break;
         }
     }
 

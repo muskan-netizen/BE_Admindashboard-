@@ -274,6 +274,12 @@ Route::group(['middleware' => ['domain']], function () {
 		return View::make('frontend.yoco_webview');
 	 });
 
+	//Khalti payment gateway
+	Route::post('payment/khalti/verification', 'Front\KhaltiGatewayController@khaltiVerification')->name('payment.khaltiVerification');
+	Route::post('payment/khalti/transactionstatus', 'Front\KhaltiGatewayController@khaltiCompletePurchase')->name('payment.khaltiCompletePurchase');
+	Route::post('payment/khalti/completePurchase/app', 'Front\KhaltiGatewayController@khaltiCompletePurchaseApp')->name('payment.khaltiCompletePurchaseApp');
+	Route::get('payment/webview/khalti', 'Front\KhaltiGatewayController@webView')->name('payment.khalti.webView');
+
 	Route::post('payment/paylink', 'Front\PaylinkGatewayController@paylinkPurchase')->name('payment.paylinkPurchase');
 	Route::get('payment/paylink/return', 'Front\PaylinkGatewayController@paylinkReturn')->name('payment.paylinkReturn');
 	Route::get('payment/paylink/return/app', 'Front\PaylinkGatewayController@paylinkReturnApp')->name('payment.paylinkReturnApp');
