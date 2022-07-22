@@ -15,6 +15,7 @@
 <link defer type="text/css" href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
 <link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">
+<link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/spinner.css')}}">
 @if(isset($set_template)  && $set_template->template_id == 1)
 <link defer type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/header/header.css')}}">
