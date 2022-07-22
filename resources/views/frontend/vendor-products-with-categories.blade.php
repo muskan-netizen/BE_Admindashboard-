@@ -559,13 +559,13 @@
                                         <% } %>
 
                                     <% }); %>
-                                    <% if(product.delivery_fee_charges > 0) { %>
+                                    <% if(cart_details.delivery_charges > 0) { %>
                                         <div class="row justify-content-between">
                                             <div class="col-md-6 col-sm-6 text-left">
-                                                <h6 class="m-0 font-14"><b>{{ __('Delivery fee') }}</b></h6>
+                                                <h6 class="m-0 font-14">{{ __('Delivery fee') }}</h6>
                                             </div>
                                             <div class="col-md-6 col-sm-6 text-right">
-                                                <div class="extra-items-price font-14 mr-xl-3">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.delivery_fee_charges) %></div>
+                                                <div class="font-14 mr-xl-2">{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.delivery_charges) %></div>
                                             </div>
                                         </div>
                                     <% } %>
@@ -576,7 +576,7 @@
                                 <li class="p-0">
                                     <div class='media-body'>
                                         <h6 class="d-flex align-items-center justify-content-between">
-                                            <span class="ellips">{{ __('Price') }}</span>
+                                            <span class="ellips">{{ __('Total') }}</span>
                                             <span >{{ Session::get('currencySymbol') }}<%= Helper.formatPrice(cart_details.gross_amount) %></span>
                                         </h6>
                                     </div>
