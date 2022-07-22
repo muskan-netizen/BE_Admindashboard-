@@ -286,6 +286,16 @@ class Product extends Model implements Auditable{
     {
         return $this->hasManyThrough('App\Models\OrderReturnRequest', 'App\Models\OrderProduct', 'product_id', 'order_vendor_product_id', 'id', 'id');
     }
+    public function productcategory(){
+      return $this->hasOne('App\Models\Category','id','category_id');
+    }
+    public function scopeByProductCategoryServiceType($query,$type)
+    {  
+        $categoryTypesArray = getServiceTypesCategory($type);
+        return $query->whereHas('productcategory',function($q) use ($categoryTypesArray){ 
+          $q->whereIn('type_id',$categoryTypesArray);
+        });
+    }
 
 
 

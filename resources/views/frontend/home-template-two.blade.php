@@ -549,7 +549,7 @@
         @elseif($homePageLabel->slug == 'dynamic_page')
         @include('frontend.included_files.dynamic_page')
         @else
-        <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+        <div class="container render_full_{{$homePageLabel->slug}} d-none" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
                 <div class="col-12"   >
                     @if($homePageLabel->slug == 'vendors')

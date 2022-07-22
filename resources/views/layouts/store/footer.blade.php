@@ -44,16 +44,19 @@
 $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endphp
 <script>
+      var setShowSubscriptionPlan = "";
     @if($showSubscriptionPlanPopUp == 1)
-        var setShowSubscriptionPlan = "showed";
+         setShowSubscriptionPlan = "showed";
     @endif
-    
+
 </script>
+{{-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> --}}
+<script type="text/javascript" src="{{asset('front-assets/js/axios.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.cookie.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('assets/js/constants.js')}}"></script>
-<script defer type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script> 
+<script defer type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
@@ -64,6 +67,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 <script defer type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/location.js')}}"></script>
+
 
 {{--
 <!-- All js merged -->
@@ -94,6 +98,8 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+
+
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {
@@ -158,6 +164,23 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     });
 </script>
 @endif
+<!-- /** socket_accept */ -->
+<script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+@if((!empty(Auth::user())))
+<script>
+    createSocketConnection();
+    async function createSocketConnection(){
+
+        socket = new io(SocketConstants.Socket_url);
+        await socket.connect(); 
+        console.log(socket);
+        console.log(SocketConstants.Socket_url);
+    }
+  
+</script>
+@endif
+<!-- /**socket_accept end */ -->
+
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
 <script type="text/javascript">
@@ -174,7 +197,7 @@ $(document).ready(function() {
 <!-- End googletagmanager -->
 @php
 if($showSubscriptionPlanPopUp == 1){
-    setcookie('show-subscription-plan','showed',0); 
+    setcookie('show-subscription-plan','showed',0);
 }
 @endphp
 
@@ -197,6 +220,7 @@ if($showSubscriptionPlanPopUp == 1){
     else
     var home_page_url = "{{ route('userHome') }}";
 
+    var category_page_url = "{{ route('categoryDetail', ':id') }}";
     var home_page_url_template_one = "{{ route('indexTemplateOne') }}";
     let home_page_url2 = home_page_url.concat("/");
     var add_to_whishlist_url = "{{ route('addWishlist') }}";

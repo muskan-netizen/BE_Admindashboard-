@@ -538,4 +538,10 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	//Passbase
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
 	Route::match(['get','post'],'passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
+	Route::get('user/chat/userVendor/{room_id?}', 'Front\ChatController@UservendorChat')->name("userChat.UservendorChat");
+	Route::get('user/chat/userAgent/{room_id?}', 'Front\ChatController@UserAgentChat')->name("userChat.UserAgentChat");
+
+	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
+	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');
+
 });

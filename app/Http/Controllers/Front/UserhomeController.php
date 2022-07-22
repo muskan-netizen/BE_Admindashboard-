@@ -262,6 +262,7 @@ class UserhomeController extends FrontController
     }
     public function index(Request $request, $domain='')
     {
+       
         try {
             $home = array();
             $vendor_ids = array();
@@ -351,7 +352,10 @@ class UserhomeController extends FrontController
                 $view_page = "home-template-four";
             }elseif(isset($set_template)  && $set_template->template_id == 5){
                 $view_page = "home-template-five";
+            }elseif(isset($set_template)  && $set_template->template_id == 6){
+                $view_page = "home-template-six";
             }
+            //pr($set_template->toArray());exit();
             return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
 
         } catch (Exception $e) {
@@ -718,7 +722,7 @@ class UserhomeController extends FrontController
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type)
     {
-        $products = Product::with([
+        $products = Product::byProductCategoryServiceType($type)->with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
@@ -1006,7 +1010,10 @@ class UserhomeController extends FrontController
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
         if(isset($slug)){
-            $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'show_slot')->where($request->type, 1);
+            $categoryTypes = getServiceTypesCategory($request->type);
+            $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                $q->whereIn('type_id',$categoryTypes);
+            })->with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'show_slot')->where($request->type, 1);
             if ($preferences) {
                 if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                     $selectedAddress = $preferences->Default_location_name;

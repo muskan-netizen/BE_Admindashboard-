@@ -9,6 +9,7 @@
 @endswitch
 @extends('layouts.store', ['title' => __('My '.getNomenclatureName($ordertitle, true))])
 @section('css')
+
     <style type="text/css">
         .main-menu .brand-logo {
             display: inline-block;
@@ -300,7 +301,9 @@
                                                                                                 } elseif ($luxury_option->title == 'dine_in') {
                                                                                                     $luxury_option_name = 'Dine-In';
                                                                                                 } else {
-                                                                                                    $luxury_option_name = 'Delivery';
+                                                                                                  //  $luxury_option_name = 'Delivery';
+                                                                                                    $luxury_option_name = getNomenclatureName($luxury_option->title);
+                                                                                                   
                                                                                                 }
                                                                                             @endphp
                                                                                             <span
@@ -337,6 +340,10 @@
                                                                                                     class="align-middle">This
                                                                                                     is a gift.</span>
                                                                                             </div>
+                                                                                        @endif
+                                                                                        <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="{{$vendor->id}}" data-vendor_id="{{$vendor->vendor_id}}" data-orderid="" data-order_id="{{$order->id}}">{{__('Chat')}}</a>
+                                                                                        @if(isset($vendor->driver_chat) && ($vendor->driver_chat == 1) && ($vendor->dispatch_traking_url != ''))
+                                                                                        <a class="start_chat_driver chat-icon btn btn-solid" data-driver_details_api="{{$vendor->dispatch_traking_url}}" data-vendor_order_id="{{$vendor->id}}" data-vendor_id="{{$vendor->vendor_id}}" data-orderid="" data-order_id="{{$order->id}}">{{__('Driver Chat')}}</a>
                                                                                         @endif
                                                                                     </div>
                                                                                 @endif
@@ -436,6 +443,7 @@
                                                                                                 @endif
                                                                                             @endforeach
                                                                                         </ul>
+                                                                                        
                                                                                     </div>
                                                                                     <div class="col-md-5 mt-md-0 mt-sm-2">
                                                                                         <ul class="price_box_bottom m-0 p-0">
@@ -1623,7 +1631,9 @@
                                                                                                 } elseif ($luxury_option->title == 'dine_in') {
                                                                                                     $luxury_option_name = 'Dine-In';
                                                                                                 } else {
-                                                                                                    $luxury_option_name = 'Delivery';
+                                                                                                    
+                                                                                                    //$luxury_option_name = 'Delivery';
+                                                                                                    $luxury_option_name = $this->getNomenclatureName($luxury_option->title);
                                                                                                 }
                                                                                             @endphp
                                                                                             <span
@@ -1640,6 +1650,7 @@
                                                                                                     is a gift.</span>
                                                                                             </div>
                                                                                         @endif
+                                                                                        <button class="chat-icon btn btn-solid" style="font-size:10px; padding: 0 5px; float: right; margin-top: 5px;" >{{__('Chat')}}</button>
                                                                                     </div>
                                                                                 @endif
                                                                                 <span class="left_arrow pulse"></span>
@@ -1724,6 +1735,7 @@
                                                                                         </ul>
                                                                                     </div>
                                                                                 </div>
+                                                                                sdf
                                                                             </div>
                                                                         @endforeach
                                                                     </div>
@@ -2286,4 +2298,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
 <script src="{{asset('front-assets/js/reschedule_order.js')}}"></script>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 @endsection

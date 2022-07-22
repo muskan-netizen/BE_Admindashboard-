@@ -723,6 +723,7 @@ class CartController extends FrontController
             ]);
         }
 
+        
 
         return response()->json([
             'message' => "No product found in cart",
@@ -892,6 +893,7 @@ class CartController extends FrontController
            // $sub_total+=$opt_price_in_currency;
             /* Getting in vendor loop */
             foreach ($cartData as $ven_key => $vendorData) {
+               
                 $opt_quantity_price_new = 0.00;
                 $addon_price=0;
                 $is_promo_code_available = 0;
@@ -1190,7 +1192,7 @@ class CartController extends FrontController
                         }//End Check last time stone
                     }
                 }
-
+               
                     $product = Product::with([
                         'variant' => function ($sel) {
                             $sel->groupBy('product_id');
@@ -1285,7 +1287,7 @@ class CartController extends FrontController
                         }
                     }
                 }
-
+                
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
                 $promoCodeRequest->setMethod('POST');
@@ -1375,6 +1377,7 @@ class CartController extends FrontController
                     $vendorData->is_vendor_closed = 1;
                     $delivery_status = 0;
                 }
+                
                 // if ($loyalty_amount_saved > 0) {
                 // dd($payable_amount+(float)($cartData[0]->vendor->fixed_fee_amount)-(float)($loyalty_amount_saved)); //36.81
                 // }
@@ -1395,7 +1398,7 @@ class CartController extends FrontController
 
                 $vendorData->is_promo_code_available = $is_promo_code_available;
             }
-
+            
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {
@@ -1449,7 +1452,7 @@ class CartController extends FrontController
                     $cart->wallet_amount_used = decimal_format($wallet_amount_used);
                 }
             }
-
+          
             $scheduled = (object)array(
                 'scheduled_date_time'=>(($cart->scheduled_slot)?date('Y-m-d',strtotime($cart->scheduled_date_time)):$cart->scheduled_date_time),'slot'=>$cart->scheduled_slot,
             );
@@ -1556,7 +1559,7 @@ class CartController extends FrontController
                 $dropoffSlots = [];
             }
             $cart->without_category_kyc = 0;
-
+          
             if( $preferences->category_kyc_documents ==1 && $user ){
 
                 $category_query =  CategoryKycDocuments::whereHas('categoryMapping',function($q) use($category_array){
