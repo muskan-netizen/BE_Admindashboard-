@@ -85,6 +85,8 @@ class OrderController extends BaseController
     public function postPlaceOrder(Request $request)
     {
         try {
+            $action = ($request->has('type')) ? $request->type : 'delivery';
+
             if($request->has('type') && $request->type != 'delivery'){
                 $rules = [
                     'payment_option_id' => 'required'
@@ -117,9 +119,17 @@ class OrderController extends BaseController
             $tax_category_ids = [];
             $user = Auth::user();
             $language_id = $user->language ?? 1;
+            $latitude = '';
+            $longitude = '';
 
             if ($user) {
                 DB::beginTransaction();
+
+                if($action == 'takeaway' || $action == 'dine_in'){
+                    $latitude = $user->latitude ?? '';
+                    $longitude = $user->longitude ?? '';
+                }
+
                 $subscription_features = array();
                 $now = Carbon::now()->toDateTimeString();
                 $user_subscription = SubscriptionInvoicesUser::with('features')
@@ -154,8 +164,7 @@ class OrderController extends BaseController
                     if (!$user_address) {
                         return response()->json(['error' => 'Invalid address id.'], 404);
                     }
-                }            
-                $action = ($request->has('type')) ? $request->type : 'delivery';
+                }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
                 if ($cart) {
@@ -221,6 +230,26 @@ class OrderController extends BaseController
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                         $order_vendor->save();
                         foreach ($vendor_cart_products as $vendor_cart_product) {
+
+                            if ((isset($client_preference->is_hyperlocal)) && ($client_preference->is_hyperlocal == 1) && ($latitude) && ($longitude)){
+                                if (!empty($latitude) && !empty($longitude)) {
+                                    if(($client_preference->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
+                                        $serviceArea = $vendor_cart_product->vendor->where(function($query) use ($latitude, $longitude) {
+                                            $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                                $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                            })
+                                            ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                                $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                            });
+                                        })->where('id', $vendor_id)->get();
+    
+                                        if($serviceArea->isEmpty()){
+                                            return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
+                                        }
+                                    }
+                                }
+                            }
+
                             if($is_restricted == 0 && $passbase_check && isset($vendor_cart_product->product) && $vendor_cart_product->product->age_restriction == 1)
                             {
                                 $is_restricted = 1;

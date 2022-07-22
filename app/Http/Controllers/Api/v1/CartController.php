@@ -579,8 +579,14 @@ class CartController extends BaseController
             $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
             $address_id = ($address) ? $address->id : 0;
         }
-        $latitude = ($address) ? $address->latitude : '';
-        $longitude = ($address) ? $address->longitude : '';
+        if($type != 'delivery'){
+            $loggedin_user = Auth::user();
+            $latitude = $loggedin_user->latitude ?? '';
+            $longitude = $loggedin_user->longitude ?? '';
+        }else{
+            $latitude = ($address) ? $address->latitude : '';
+            $longitude = ($address) ? $address->longitude : '';
+        }
         $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = 0.00;
         $total_tax = $total_paying = $total_disc_amount = 0.00;
         $item_count = 0;
@@ -623,12 +629,28 @@ class CartController extends BaseController
                         $vendor_details['vendor_tables'] = $vendor_tables;
                     //    return $vendor_details['vendor_tables']; 
                     }
-                } else {
+                } 
+                else {
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
                         if ($address_id > 0) {
                             $serviceArea = $vendorData->vendor->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
                                 $query->select('vendor_id')
                                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                            })->where('id', $vendorData->vendor_id)->get();
+                        }
+                    }
+                }
+
+                if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                    if (!empty($latitude) && !empty($longitude)) {
+                        if(($preferences->slots_with_service_area == 1) && ($vendorData->vendor->show_slot == 0)){
+                            $serviceArea = $vendorData->vendor->where(function($query) use ($latitude, $longitude) {
+                                $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                })
+                                ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                    $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                });
                             })->where('id', $vendorData->vendor_id)->get();
                         }
                     }
