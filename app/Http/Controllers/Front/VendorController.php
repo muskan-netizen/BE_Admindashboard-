@@ -329,7 +329,6 @@ class VendorController extends FrontController
         }
 
 
-
         return view('frontend/vendor-'.$page)->with(['vendor' => $vendor, 'show_range' => $show_range, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products, 'vendor_category' => $slug2]);
     }
 
@@ -355,7 +354,7 @@ class VendorController extends FrontController
             }
             return $categoryData;
         }
-        elseif($type == 5){
+        elseif($type == 5 || $type == 6){
             // listing category with products
             $user = Auth::user();
             if ($user) {

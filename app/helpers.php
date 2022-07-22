@@ -87,7 +87,7 @@ if (!function_exists('pr')) {
         echo '<pre>';
         print_r($var);
         echo '</pre>';
-        // exit();
+         exit();
     }
 }
 if (!function_exists('http_check')) {
