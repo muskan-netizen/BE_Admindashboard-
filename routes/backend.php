@@ -421,6 +421,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('static-dropoff/save', 'Client\StaticDropoffController@store')->name('static-dropoff.create');
         Route::get('static-dropoff/edit', 'Client\StaticDropoffController@edit')->name('static-dropoff.edit');
         Route::delete('static-dropoff/destroy/{id}', 'Client\StaticDropoffController@delete')->name('static-dropoff.destroy');
+
+        // rental product 
+        Route::post('rental-variant_row', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
     });
 });
 
