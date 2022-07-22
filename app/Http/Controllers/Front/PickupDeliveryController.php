@@ -816,7 +816,7 @@ class PickupDeliveryController extends FrontController{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-                
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     //'order_type' =>  $order->type,
@@ -842,7 +842,10 @@ class PickupDeliveryController extends FrontController{
                     'customer_dial_code' => $customer->dial_code ?? null,
                     'type'=>$type,
                     'friend_name'=>$friendName,
-                    'friend_phone_number'=>$friendPhoneNumber
+                    'friend_phone_number'=>$friendPhoneNumber,
+                    'vendor_id' => $vendor,
+                    'order_vendor_id' => $order_vendor->id,
+                    'order_id' => $order->id
                 ];
                 // dd($postdata);
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
