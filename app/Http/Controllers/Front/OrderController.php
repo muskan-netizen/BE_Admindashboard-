@@ -42,7 +42,7 @@ use App\Models\OrderProductPrescription;
 use App\Models\SubscriptionInvoicesUser;
 use App\Models\UserRegistrationDocuments;
 use App\Models\DriverRegistrationDocument;
-use App\Models\{VendorOrderDispatcherStatus, VerificationOption};
+use App\Models\{VendorOrderDispatcherStatus, VerificationOption ,DispatcherStatusOption};
 
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -159,9 +159,11 @@ class OrderController extends FrontController
                 $vendor->vendor_dispatcher_status = $vendor->vendor_dispatcher_status->get();
                 $vendor->vendor_dispatcher_status_count = 6;
                 $vendor->dispatcher_status_icons = [asset('assets/icons/driver_1_1.png'),asset('assets/icons/driver_2_1.png'),asset('assets/icons/driver_4_1.png'),asset('assets/icons/driver_3_1.png'),asset('assets/icons/driver_4_2.png'),asset('assets/icons/driver_5_1.png')];
-
+                // $dispatcher_status_options =VendorOrderDispatcherStatus::where(['order_id'=> $order->id,'vendor_id'=>$vendor->vendor->id,'dispatcher_status_option_id'=>'2'])->first();
+                // $vendor->driver_chat =  $dispatcher_status_options ? 1 : 0 ;
             }
         }
+      //  pr($activeOrders->toArray());exit();
        // return $pastOrders;
         foreach ($pastOrders as $order) {
             foreach ($order->vendors as $vendor) {
@@ -693,11 +695,17 @@ class OrderController extends FrontController
     public function orderSave($request, $paymentStatus)
     {
         try {
-           
+            $latitude = '';
+            $longitude = '';
+            $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
+            if($action == 'takeaway' || $action == 'dine_in'){
+                $latitude = Session::get('latitude') ?? '';
+                $longitude = Session::get('longitude') ?? '';
+            }
+
             $fixed_fee_amount=$request->total_fixed_fee_amount??0.00;
             DB::beginTransaction();
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code')->first();
-            $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
+            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area')->first();
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -715,6 +723,7 @@ class OrderController extends FrontController
                     return $this->errorResponse('Transaction has already been done', 400);
                 }
             }
+
             $loyalty_amount_saved = 0;
             $redeem_points_per_primary_currency = '';
             $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -798,7 +807,7 @@ class OrderController extends FrontController
             }
 
             /* Get all products blongs to cart */
-            $cart_products = CartProduct::select('*')->with(['vendor', 'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
+            $cart_products = CartProduct::select('*')->with(['vendor', 'vendor.slot.geos.serviceArea', 'vendor.slotDate.geos.serviceArea',  'product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                 $query->where('cart_id', $cart->id);
             }, 'coupon.promo', 'product.addon'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
             
@@ -860,6 +869,26 @@ class OrderController extends FrontController
                 $vendorProductIds = array();
                 // $addonArray = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
+
+                    if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                        if (!empty($latitude) && !empty($longitude)) {
+                            if(($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)){
+                                $serviceArea = $vendor_cart_product->vendor->where(function($query) use ($latitude, $longitude) {
+                                    $query->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                        $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                    })
+                                    ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                                        $q->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                                    });
+                                })->where('id', $vendor_id)->get();
+
+                                if($serviceArea->isEmpty()){
+                                    return $this->errorResponse(__('Products for this vendor are not deliverable at your area. Please change address or remove product.'), 400);
+                                }
+                            }
+                        }
+                    }
+
                     if($is_restricted == 0 && $passbase_check && isset($vendor_cart_product->product) && $vendor_cart_product->product->age_restriction == 1)
                     {
                         $is_restricted = 1;
@@ -1845,7 +1874,10 @@ class OrderController extends FrontController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1965,7 +1997,10 @@ class OrderController extends FrontController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2135,7 +2170,10 @@ class OrderController extends FrontController
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'request_type'=> $rtype,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
             {

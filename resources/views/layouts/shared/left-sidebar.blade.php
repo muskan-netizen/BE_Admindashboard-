@@ -2,7 +2,7 @@
     <div class="logo-box m-hide d-lg-block">
         @php
             $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
-            $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
+            $clientData = \App\Models\Client::select('id', 'logo','socket_url')->where('id', '>', 0)->first();
             if($clientData){
                 $urlImg = $clientData ? $clientData->logo['original'] : ' ';
             }
@@ -234,8 +234,32 @@
                                     </ul>
                                 </div>
                             </li>
+
+                               
                             @endif
-                            
+                            @if(@$clientData->socket_url)
+                                <li>
+                                    <a href="#chat" data-toggle="collapse"> 
+                                    <span class="mdi-message"></span>
+                                        <span> {{ __('Chat') }} </span>
+                                    </a>
+                                    <div class="collapse" id="chat">
+                                        <ul class="nav-second-level">
+                                            <li>
+                                                <a href="{{route('chat.VendorUserChat')}}">{{ __('User/Vendor') }}</a>
+                                            </li>
+                                            @if(Auth::user()->is_superadmin == 1)
+                                                <li>
+                                                    <a href="{{route('chat.userAgentChatRoom')}}">{{ __('User/Agent') }}</a>
+                                                </li>
+                                                @endif
+                                            {{-- <li>
+                                                <a href="{{route('report.productperformance')}}">{{ __("Product Performance Report") }}</a>
+                                            </li> --}}
+                                        </ul>
+                                    </div>
+                                </li>
+                            @endif
                         </ul>
                 </li>
                 @endif

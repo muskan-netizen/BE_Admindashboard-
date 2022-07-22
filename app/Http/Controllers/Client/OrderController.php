@@ -157,13 +157,14 @@ class OrderController extends BaseController
     public function postOrderFilter(Request $request, $domain = '')
     {
       $user = Auth::user();
+      $preferences = ClientPreference::first();
       $client_timezone = DB::table('clients')->first('timezone'); 
       $user->timezone = $client_timezone->timezone ?? $user->timezone;
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $orders = Order::with(['vendors.products'=>function($q){
             $q->withoutAppends();
-        }, 'vendors.status', 'orderStatusVendor', 'address', 'user'])->orderBy('id', 'DESC');
+        }, 'vendors.status', 'orderStatusVendor', 'address', 'user']);
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -270,7 +271,30 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1,38]);
             });
-        })->select('*', 'id as total_discount_calculate')->paginate(30);
+        });
+        
+        //sort by distance
+        if($request->has('sort_order') && ($request->sort_order == 'distance')){
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $latitude = ($preferences->Default_latitude) ? floatval($preferences->Default_latitude) : null;
+                $longitude = ($preferences->Default_longitude) ? floatval($preferences->Default_longitude) : null;
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                //3961 for miles and 6371 for kilometers
+                $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                if(!empty($latitude) && !empty($longitude)){
+                    $orders = $orders->select('*', 'id as total_discount_calculate', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                            cos( radians( user_latitude ) ) * cos( radians( user_longitude ) - radians(' . $longitude . ') ) +
+                            sin( radians(' . $latitude . ') ) *
+                            sin( radians( user_latitude ) ) ) )  AS sortByUserDistance'));
+                    $orders = $orders->orderBy(DB::raw('ISNULL(sortByUserDistance), sortByUserDistance'), 'ASC');
+                }
+            }
+        }
+        else{
+            $orders = $orders->select('*', 'id as total_discount_calculate')->orderBy('id', 'DESC');
+        }
+        
+        $orders = $orders->paginate(30);
         
 
         $pending_orders = $pending_orders->with('vendors', function ($query) use($user) {
@@ -321,6 +345,8 @@ class OrderController extends BaseController
             $order->total_other_taxes_amount = $total_other_taxes;
 
             foreach ($order->vendors as $vendor) {
+                $vendor->isAlert = false;
+                $vendor->alertMessage = "";
                 if(isset($vendor) && !empty($vendor->vendor_id))
                 $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);
                 else
@@ -333,6 +359,11 @@ class OrderController extends BaseController
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
+                    if($product->quantity > $product->product->variant[0]->quantity)
+                    {
+                        $vendor->isAlert = true;
+                        $vendor->alertMessage = __("You are low on stock");
+                    }
                 }
 
                 if ($vendor->delivery_fee > 0) {
@@ -356,7 +387,8 @@ class OrderController extends BaseController
                 } elseif ($luxury_option->title == 'dine_in') {
                     $luxury_option_name = 'Dine-In';
                 } else {
-                    $luxury_option_name = 'Delivery';
+                    $luxury_option_name = getNomenclatureName($luxury_option->title);
+                    //$luxury_option_name = 'Delivery';
                 }
             }
             $order->luxury_option_name = __($luxury_option_name);
@@ -491,7 +523,7 @@ class OrderController extends BaseController
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = 'Dine-In';
             } else {
-                $luxury_option_name = 'Delivery';
+                $luxury_option_name = $this->getNomenclatureName($luxury_option->title);
             }
         }
         $order->luxury_option_name = $luxury_option_name;
@@ -1097,7 +1129,10 @@ class OrderController extends BaseController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $orderVendorDetails->is_restricted
+                'is_restricted' => $orderVendorDetails->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $orderVendorDetails->id,
+                'order_id' => $order->id
             ];
             if($orderVendorDetails->is_restricted == 1)
             {
@@ -1217,7 +1252,10 @@ class OrderController extends BaseController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1378,7 +1416,10 @@ class OrderController extends BaseController
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'request_type'=>$rtype??'P',
-                'is_restricted' => $order_vendor->is_restricted??'0'
+                'is_restricted' => $order_vendor->is_restricted??'0',
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
 
             // if($order_vendor->is_restricted == 1)
@@ -1762,7 +1803,8 @@ class OrderController extends BaseController
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = 'Dine-In';
             } else {
-                $luxury_option_name = 'Delivery';
+                //$luxury_option_name = 'Delivery';
+                $luxury_option_name = $this->getNomenclatureName($luxury_option->title);
             }
         }
         $order->luxury_option_name = $luxury_option_name;

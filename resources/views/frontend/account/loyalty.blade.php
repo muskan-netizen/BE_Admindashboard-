@@ -87,7 +87,7 @@
                                                 <div class="point-img-box">
                                                     <img src="{{ $loyalty->image['proxy_url'] .'200/200'. $loyalty->image['image_path'] }}" alt="">
                                                 </div>
-                                                <h4 class="mb-0 mt-3"><b>{{$loyalty->points_to_reach}} points to {{$loyalty->name}}</b></h4>
+                                                <h4 class="mb-0 mt-3"><b><span class="alLoyaltyPrice"> {{$loyalty->points_to_reach}}</span> points to <span class="alLoyaltyName"> {{$loyalty->name}} </span></b></h4>
                                             </div>
                                         </div>
                                         @endforeach
