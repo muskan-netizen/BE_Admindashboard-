@@ -32,7 +32,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-5">
+            <div class="row mb-5 homepageSix">
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
@@ -193,4 +193,11 @@
 </section>
 @endsection
 @section('script')
+<script>
+    @if(!empty($category->image) && $category->image['is_original'])
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+    @endif
+</script>
 @endsection
