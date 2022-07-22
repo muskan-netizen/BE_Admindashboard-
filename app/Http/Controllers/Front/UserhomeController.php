@@ -967,6 +967,9 @@ class UserhomeController extends FrontController
         }elseif(isset($set_template)  && $set_template->template_id == 2){
             $p_dim = '260/180';
         }
+        elseif(isset($set_template)  && $set_template->template_id == 6){
+            $p_dim = '300/300';
+        }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
         $preferences = ClientPreference::first();
@@ -1137,7 +1140,7 @@ class UserhomeController extends FrontController
                         }
                     }
                 }
-            } 
+            }
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
             }
@@ -1146,7 +1149,7 @@ class UserhomeController extends FrontController
         }
 
 
-        if (isset($slug) && $slug == 'best_sellers') { 
+        if (isset($slug) && $slug == 'best_sellers') {
             $mostSellingVendors = Vendor::with('slot.day', 'slotDate')->select('vendors.*', DB::raw('count(vendor_id) as max_sales'))->join('order_vendors', 'vendors.id', '=', 'order_vendors.vendor_id')->whereIn('vendors.id', $vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'), 'desc')->get();
             if ((!empty($mostSellingVendors) && count($mostSellingVendors) > 0)) {
                 foreach ($mostSellingVendors as $key => $value) {

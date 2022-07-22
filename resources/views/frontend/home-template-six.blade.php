@@ -12,7 +12,8 @@
 	<div class="container_al mb-3 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">
-				<div class="cardbanner loading"></div>
+				<div class="headerLoding loading"></div>
+            <div class="cardbanner loading"></div>
 			</div>
 		</div>
 	</div>
@@ -42,7 +43,7 @@
 	<div class="container mb-5 shimmer_effect">
       <div class="row">
          <div class="col-12">
-         <div class="card_title loading"></div>
+         <div class="card_title mb-4 maintitle loading"></div>
          </div>
       </div>
       <div class="row">
@@ -271,7 +272,7 @@
 <section class="alSixMainMenu p-0">
    @if(count($navCategories))
    <div class="menu-navigation_al">
-   <div class="container">
+   <div class="container-fulid">
       <div class="row">
          <div class="col-12">
             <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider" >
@@ -334,6 +335,7 @@
    </div>
 </section>
 <!-- no-store-wrapper end -->
+
 <!-- vendors_template start -->
 <script type="text/template" id="vendors_template" >
    <% _.each(vendors, function(vendor, k){%>
@@ -585,165 +587,7 @@
    </div>
 </section>
 <!-- our_vendor_main_div end -->
-<!-- section Spa list start -->
-<section class="alSpaList">
-   <div class="container">
-         <div class="row py-5">
-            <div class="alSpaListHead text-center text-lg-left col-12">
-               <p class="alLgFontSize">Middle east’s best spa specialist!</p>
-               <p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            </div>
-         </div>
-   </div>
-   <div class="container pr-0">
-         <!-- alSpaListSlider start -->
-         <div class="alSpaListSlider">
-            <div><div class="alSpaListBox mx-2"><img class="w-100" src="{{asset('frontend/template_six/spaimages/dubai.jpg')}}"><p>Dubai</p></div></div>
-            <div><div class="alSpaListBox mx-2"><img class="w-100" src="{{asset('frontend/template_six/spaimages/abudhabi.jpg')}}"><p> Abu Dhabi</p></div></div>
-            <div><div class="alSpaListBox mx-2"><img class="w-100" src="{{asset('frontend/template_six/spaimages/rasalkhaimah.jpg')}}"><p>Ras Al Khaimah</p></div></div>
-            <div><div class="alSpaListBox mx-2"><img class="w-100" src="{{asset('frontend/template_six/spaimages/Sharjah.jpg')}}"><p>Sharjah</p></div></div>
-            <div><div class="alSpaListBox mx-2"><img class="w-100" src="{{asset('frontend/template_six/spaimages/Ajman.jpg')}}"><p>Ajman</p></div></div>
-         </div><!-- alSpaListSlider start -->
-   </div>
-</section>
-<!-- section Spa list end -->
 
-<!-- section Featured deals start -->
-<section class="featuredDeals">
-   <div class="container">
-         <div class="row py-5">
-            <div class="alSpaListHead text-center text-lg-left col-12">
-               <p class="alLgFontSize">Featured deals</p>
-               <p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            </div>
-         </div>
-
-         <div class="row">
-            <div class="col-md-6">
-               <div class="alFeaturedDealsBox">
-                     <img src="{{asset('frontend/template_six/spaimages/fd1.jpg')}}" class="w-100">
-                     <p class="alFdTitle my-2">Spa Me collection</p>
-                     <p class="alFdText">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-                     <p class="alFdLink"><a href="#"> Explore more </a></p>
-               </div>
-            </div>
-            <div class="col-md-3">
-               <div class="alFeaturedDealsBox">
-                     <img src="{{asset('frontend/template_six/spaimages/fd2.jpg')}}" class="w-100">
-                     <p class="alFdTitle my-2">Gifts</p>
-                     <p class="alFdText">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-                     <p class="alFdLink"><a href="#"> Explore more </a></p>
-               </div>
-            </div>
-            <div class="col-md-3">
-               <div class="alFeaturedDealsBox">
-                     <img src="{{asset('frontend/template_six/spaimages/fd3.jpg')}}" class="w-100">
-                     <p class="alFdTitle my-2">Competitions</p>
-                     <p class="alFdText">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-                     <p class="alFdLink"><a href="#"> Explore more </a></p>
-               </div>
-            </div>
-         </div>
-   </div>
-</section>
-<!-- section Featured deals end -->
-
-<!-- spamiddleeast section start -->
-<section class="spamiddleeast">
-   <div class="container">
-         <div class="row py-5">
-            <div class="alSLsliderHead text-center text-lg-left col-12">
-               <p class="alLgFontSize">Spa middle east</p>
-               <p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            </div>
-         </div>
-   </div>
-   <div class="container-fluid">
-         <div class="row alSLslider">
-            <div>
-               <div class="alSLsliderBox mx-2">
-                     <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm1.jpg')}}">
-                     <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm2.jpg')}}">
-               </div>
-            </div>
-            <div>
-               <div class="alSLsliderBox mx-2">
-                     <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm3.jpg')}}">
-                     <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm4.jpg')}}">
-               </div>
-            </div>
-            <div>
-               <div class="alSLsliderBox mx-2">
-                     <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm5.jpg')}}">
-                     <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm6.jpg')}}">
-               </div>
-            </div>
-            <div>
-               <div class="alSLsliderBox mx-2">
-                     <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm7.jpg')}}">
-                     <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm8.jpg')}}">
-               </div>
-            </div>
-            <div>
-               <div class="alSLsliderBox mx-2">
-                     <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm9.jpg')}}">
-                     <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm10.jpg')}}">
-               </div>
-            </div>
-            <div>
-               <div class="alSLsliderBox mx-2">
-                     <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm1.jpg')}}">
-                     <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm2.jpg')}}">
-               </div>
-            </div>
-            <div>
-               <div class="alSLsliderBox mx-2">
-                     <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm3.jpg')}}">
-                     <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm4.jpg')}}">
-               </div>
-            </div>
-            <div>
-               <div class="alSLsliderBox mx-2">
-                     <img class="w-100 mb-3" src="{{asset('frontend/template_six/spaimages/sm5.jpg')}}">
-                     <img class="w-100" src="{{asset('frontend/template_six/spaimages/sm6.jpg')}}">
-               </div>
-            </div>
-         </div>
-   </div>
-</section>
-<!-- spamiddleeast section end -->
-
-<!-- testimonials sections start -->
-<section class="testimonials py-5">
-   <div class="container text-center">
-         <p class="alTesimonialsTitle mt-4">What our clients are saying</p>
-         <div class="clientsFeedBack">
-            <div class="clientsFeedBackSlider">
-               <div class="clientsFeedBackBox">
-                     <p class="alTesimonialsText">“I felt completely rejuvinated after my first hydrotherapy session”</p>
-                     <p class="alTesimonialsUsername m-0">Jenny Davis</p>
-                     <small class="alTesimonialsFrom text-uppercase">actor, sydney</small>
-               </div>
-               <div class="clientsFeedBackBox">
-                     <p class="alTesimonialsText">“I felt completely rejuvinated after my first hydrotherapy session”</p>
-                     <p class="alTesimonialsUsername m-0">Jenny Davis</p>
-                     <small class="alTesimonialsFrom text-uppercase">actor, sydney</small>
-               </div>
-               <div class="clientsFeedBackBox">
-                     <p class="alTesimonialsText">“I felt completely rejuvinated after my first hydrotherapy session”</p>
-                     <p class="alTesimonialsUsername m-0">Jenny Davis</p>
-                     <small class="alTesimonialsFrom text-uppercase">actor, sydney</small>
-               </div>
-               <div class="clientsFeedBackBox">
-                     <p class="alTesimonialsText">“I felt completely rejuvinated after my first hydrotherapy session”</p>
-                     <p class="alTesimonialsUsername m-0">Jenny Davis</p>
-                     <small class="alTesimonialsFrom text-uppercase">actor, sydney</small>
-               </div>
-            </div>
-         </div>
-   </div>
-</section>
-<!-- testimonials sections end -->
 
 
 

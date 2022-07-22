@@ -22,6 +22,10 @@ footer#footer .social-links li a:hover i{-webkit-transform: scale(1);transform: 
 /* ============ dark theme css ============================= */
 
 /*============== dark background-color ========== */
+.site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material{border-color: #0C0C0C;}
+.site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material .nav-link.active{color: #fff;}
+.site-header.fixed-bar .nav-tabs.navigation-tab_al.nav-material .nav-link,
+.dark .nav-tabs.navigation-tab_al.nav-material .nav-link{color: #0C0C0C;}
 body.al_body_template_six.dark,
 .dark.al_body_template_six .alSixMainMenu .slick-slide,
 .dark .alFindSec,

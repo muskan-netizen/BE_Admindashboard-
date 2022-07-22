@@ -293,12 +293,16 @@ $(document).ready(function () {
             ajaxData.selectedAddress = selected_address;
             ajaxData.selectedPlaceId = selected_place_id;
         }
+       /// remove_spinner('#our_vendor_main_div');
+        add_spinner('#our_vendor_main_div');
+
         $.ajax({
             data: ajaxData,
             type: "POST",
             dataType: 'json',
             url: home_page_data_url_new,
             beforeSend: function(){
+
                 //$(".no-store-wrapper, .home-slider, .home-banner-slider, #our_vendor_main_div").hide();
             },
             success: function (response) {

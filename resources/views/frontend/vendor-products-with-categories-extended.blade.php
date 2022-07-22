@@ -216,7 +216,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                             <div class="viewAllProductSec" >
 
                                             @forelse($data->products as $prod)
-                                                
+
                                                 <div class="card mb-3 product_row"  data-p_sku="{{ $prod->sku }}"
                                                     data-slug="{{ $prod->url_slug }}">
                                                     <div class="card-body">
@@ -224,7 +224,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                             <p class="m-0 productTitle"> {{ $prod->translation_title }}</p>
                                                             <ul class="m-0 p-0 d-flex align-items-center">
                                                                 <li>From</li>
-                                                                
+
                                                                 <li class="ml-2"><span class="productsPrice">
                                                                     {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
                                                                     @if ($prod->variant[0]->compare_at_price > 0)
@@ -426,7 +426,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                             @endif
                                                         @endif
                                                     </div>
-                    
+
                                                     </div>
                                                 </div>
                                             @empty
@@ -464,7 +464,7 @@ $checkSlot = findSlot('', $vendor->id, '');
             </div>
         </section>
 
-        <section class="chooseYourOffer mb-5">
+        <!-- <section class="chooseYourOffer mb-5">
         	<div class="container">
         		<div class="row">
         			<div class="col-md-6 offset-md-3">
@@ -533,7 +533,8 @@ $checkSlot = findSlot('', $vendor->id, '');
         			</div>
         		</div>
         	</div>
-        </section><!-- chooseYourOffer start -->
+        </section> -->
+        <!-- chooseYourOffer start -->
 
         <!-- Why people visit here start -->
         <section class="whyPeopleVisit py-5">
@@ -581,7 +582,10 @@ $checkSlot = findSlot('', $vendor->id, '');
         	<div class="container-fluid">
         		<div class="row">
         			<div class="googleMapArea col-md-12 p-0">
-        				<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13720.904154980397!2d76.81441854999998!3d30.71204525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1657101273720!5m2!1sen!2sin" width="100%" height="550" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        				<!-- <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13720.904154980397!2d76.81441854999998!3d30.71204525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1657101273720!5m2!1sen!2sin" width="100%" height="550" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> -->
+                        <div id="vendor-map-container">
+                            <div id="vendor-map" class="w-100" style="height:400px"></div>
+                        </div>
         			</div>
         		</div>
         	</div>
@@ -661,7 +665,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                 </div>
             </div>
         </section>
-        
+
     <script type="text/template" id="header_cart_template_ondemand">
         <ul class="pl-2 pr-2 pb-2 pt-0 ">
             <div class="dcpj" >
@@ -1257,6 +1261,24 @@ $checkSlot = findSlot('', $vendor->id, '');
             });
             // }
         }
+
+        function displayVendorLocation() {
+            var latitude = "{{ $vendor->latitude }}";
+            var longitude = "{{ $vendor->longitude }}";
+            var latlng = new google.maps.LatLng(latitude, longitude);
+
+            const map = new google.maps.Map(document.getElementById('vendor-map'), {
+                center: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
+                zoom: 13
+            });
+
+            const marker = new google.maps.Marker({
+                map: map,
+                position: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
+            });
+        }
+
+        google.maps.event.addDomListener(window, 'load', displayVendorLocation );
     </script>
 
 @endsection
