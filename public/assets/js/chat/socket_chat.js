@@ -21,8 +21,8 @@ socket.on('disconnect',function() {
 });
 
 
-socket.on('room-created',function(data) {
-    newChatGroup(data)
+socket.on('room-created',async function(data) {
+    await newChatGroup(data)
     console.log('Du doooo',data);
 });
 //})()
