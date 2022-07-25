@@ -87,9 +87,15 @@ class AppServiceProvider extends ServiceProvider
 
         $count = 0;
         if($client_preference_detail){
-            if($client_preference_detail->dinein_check == 1){$count++;}
-            if($client_preference_detail->takeaway_check == 1){$count++;}
-            if($client_preference_detail->delivery_check == 1){$count++;}
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                if($client_preference_detail->$clientVendorTypes == 1){
+                    $count++;
+                }
+            }
+            // if($client_preference_detail->dinein_check == 1){$count++;}
+            // if($client_preference_detail->takeaway_check == 1){$count++;}
+            // if($client_preference_detail->delivery_check == 1){$count++;}
         }
 
         $last_mile_common_set = $this->checkIfLastMileDeliveryOn();

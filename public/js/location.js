@@ -1,4 +1,5 @@
 let nav_click_vendor_mode = 0;
+let redirect = 0;
 jQuery(window).scroll(function () {
     var scroll = jQuery(window).scrollTop();
 
@@ -12,7 +13,7 @@ jQuery(window).scroll(function () {
 
     }
 });
-$(document).ready(function () {
+$(document).ready( async function () {
     getLocation();
     
 
@@ -25,12 +26,15 @@ $(document).ready(function () {
         if($("#address-longitude").length > 0){
             longitude = $("#address-longitude").val();
         }
-        getHomePageCategoryMenu(latitude, longitude);
+       await getHomePageCategoryMenu(latitude, longitude);
         getHomePage(latitude, longitude);
         // $(document).ready(function () {
         if ($.cookie("age_restriction") != 1) {
             if(is_age_restricted == "1" || is_age_restricted == 1)
             {
+                if(redirect){
+                    return false;
+                } 
                 $('#age_restriction').modal({backdrop: 'static', keyboard: false});
             }
         }
@@ -919,7 +923,8 @@ $(document).ready(function () {
                 if((data.navCategories).length > 0 && vendor_type == "pick_drop"){
                     var category = data.navCategories[0].slug;
                     window.location.href = category_page_url.replace(":id", category);
-                    return;
+                    redirect =  1;
+                    return false;
                 }
 
                 if($('.menu-slider').hasClass('slick-initialized')){
