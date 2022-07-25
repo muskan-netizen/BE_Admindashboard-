@@ -104,7 +104,7 @@ class Product extends Model implements Auditable{
     /* for app */
 
     public function variants(){
-      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode','container_charges');
+      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode','container_charges','markup_price');
     }
 
     public function reviews(){
