@@ -636,7 +636,9 @@ class PickupDeliveryController extends BaseController{
                             'friend_phone_number'=>$friendPhoneNumber,
                             'vendor_id' => $vendor,
                             'order_vendor_id' => $order_vendor->id,
-                            'order_id' => $order->id
+                            'order_id' => $order->id,
+                            'customer_id' => $order->user_id,
+                            'user_icon' => $customer->image
                         ];
 
 

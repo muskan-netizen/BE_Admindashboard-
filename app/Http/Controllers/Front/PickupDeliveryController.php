@@ -845,9 +845,11 @@ class PickupDeliveryController extends FrontController{
                     'friend_phone_number'=>$friendPhoneNumber,
                     'vendor_id' => $vendor,
                     'order_vendor_id' => $order_vendor->id,
-                    'order_id' => $order->id
+                    'order_id' => $order->id,
+                    'customer_id' => $order->user_id,
+                    'user_icon' => $customer->image
                 ];
-                // dd($postdata);
+                
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);
