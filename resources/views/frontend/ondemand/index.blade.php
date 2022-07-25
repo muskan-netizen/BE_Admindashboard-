@@ -5,10 +5,10 @@ use Illuminate\Support\Arr;
 @endphp
 
 
-<section class="home-serivces">
+<section class="home-serivces" id="alSixHomeServices">
     <div class="container">
         <div class="row mb-lg-5 mb-md-4 mb-3">
-            <div class="col-lg-8 offset-lg-2">
+            <div class="col-xl-8 offset-xl-2">
                 <div class="step-indicator">
 
                     <div class="step step1 @if(app('request')->input('step') >= '1' || empty(app('request')->input('step'))) active @endif">
@@ -65,7 +65,7 @@ use Illuminate\Support\Arr;
                                                 @if($childs->type_id == 8)
 
                                                 <h4><b>{{ $childs->translation_name }}</b></h4>
-                                                      <div class='' id='section_set{{$key}}'>
+                                                    <div class='' id='section_set{{$key}}'>
                                                         @if(!empty($childs))
                                                         <div class="service-img mb-3">
                                                             <img class="img-fluid" src="{{$childs->image['proxy_url'] . '1000/200' . $childs->image['image_path']}}" alt="">
