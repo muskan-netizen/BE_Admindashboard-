@@ -934,12 +934,13 @@ $(document).ready( async function () {
                 $('#main-menu').smartmenus('destroy');
                 let nav_categories_template = _.template($('#nav_categories_template').html());
                 await  $("#main-menu").html(nav_categories_template({ nav_categories: response.data.navCategories }));
-                await $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
+                await  $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
                 //     if($(window).width() >= 320){
                 //         if(!$('.menu-slider').hasClass('slick-initialized')){
                 //             loadMainMenuSlider();
                 //         }
                 //    }
+                console.log('asd');
                 resizeMenuSlider();
                 $("#main-menu").css("display" , "flex");
 
