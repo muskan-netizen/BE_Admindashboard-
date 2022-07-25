@@ -54,11 +54,14 @@ $(function () {
         return document.ajax_loading;
     };
     $(document).ajaxStart(function () {
-        add_spinner('#our_vendor_main_div');
+        //add_spinner('#our_vendor_main_div');
         document.ajax_loading = true;
     });
     $(document).ajaxStop(function () {
-        remove_spinner('#our_vendor_main_div');
+        //remove_spinner('#our_vendor_main_div');
+        document.ajax_loading = false;
+    });
+    $(document).ajaxComplete(function () {
         document.ajax_loading = false;
     });
 });
@@ -2081,7 +2084,6 @@ $(document).ready(function () {
                 cart_qty_total += $(this).data('qty');
             }
         });
-        console.log(cart_qty_total);
         if (cart_qty_total > 0) {
             $("#cart_qty_span").addClass("bg-cart-header");
             $('#cart_qty_span, .cart_qty_cls').html(cart_qty_total).show();
@@ -2168,7 +2170,7 @@ $(document).ready(function () {
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
 
-                                if (vendor_type != 'delivery') {
+                                if (vendor_type != 'delivery' &&  vendor_type !='on_demand') {
                                     var latitude = $('#latitude').val();
                                     var longitude = $('#longitude').val();
                                     displayMapLocation(latitude, longitude, 'vendor-address-map');

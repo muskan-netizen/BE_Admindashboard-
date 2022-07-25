@@ -250,13 +250,33 @@ class ClientPreferenceController extends BaseController{
         }
         if($request->has('verify_vendor_type') && $request->verify_vendor_type == '1')
         {
-            if((!$request->has('dinein_check') && !$request->dinein_check == 'on') && (!$request->has('takeaway_check') && !$request->dinein_check == 'on') && (!$request->has('delivery_check') && !$request->dinein_check == 'on')){
-                return redirect()->route('configure.customize')->with('error', 'One Option must be acitve');
+            $roles = [
+                'dinein_check'   => 'required_without_all:takeaway_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check',
+                'takeaway_check' => 'required_without_all:dinein_check,delivery_check,rental_check,pick_drop_check,on_demand_check,laundry_check',
+                'delivery_check' => 'required_without_all:dinein_check,takeaway_check,rental_check,pick_drop_check,on_demand_check,laundry_check',
+                'rental_check'   => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,laundry_check',
+                'pick_drop_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,rental_check,on_demand_check,laundry_check',
+                'on_demand_check'=> 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,rental_check,laundry_check',
+                'laundry_check'  => 'required_without_all:dinein_check,takeaway_check,delivery_check,pick_drop_check,on_demand_check,rental_check',
+        
+            ];
+            // atleast one is required
+            $validator = Validator::make($request->all(), $roles);
+            if ($validator->fails()) {
+                return redirect()->route('configure.customize')->with('error', 'Vendor Type One Option must be acitve');
             }
+            // save vendor mode in client preference table
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $vendor_typ_name = $vendor_typ_key."_check";
+                $preference->$vendor_typ_name = ($request->has($vendor_typ_name) && $request->$vendor_typ_name == 'on') ? 1 : 0;
+            }
+            // if((!$request->has('dinein_check') && !$request->dinein_check == 'on') && (!$request->has('takeaway_check') && !$request->dinein_check == 'on') && (!$request->has('delivery_check') && !$request->dinein_check == 'on')){
+            //     return redirect()->route('configure.customize')->with('error', 'One Option must be acitve');
+            // }
             
-            $preference->dinein_check = ($request->has('dinein_check') && $request->dinein_check == 'on') ? 1 : 0;
-            $preference->takeaway_check = ($request->has('takeaway_check') && $request->takeaway_check == 'on') ? 1 : 0;
-            $preference->delivery_check = ($request->has('delivery_check') && $request->delivery_check == 'on') ? 1 : 0;
+            // $preference->dinein_check = ($request->has('dinein_check') && $request->dinein_check == 'on') ? 1 : 0;
+            // $preference->takeaway_check = ($request->has('takeaway_check') && $request->takeaway_check == 'on') ? 1 : 0;
+            // $preference->delivery_check = ($request->has('delivery_check') && $request->delivery_check == 'on') ? 1 : 0;
         }
         if($request->has('custom_mods_config') && $request->custom_mods_config == '1'){
             $preference->enquire_mode = ($request->has('enquire_mode') && $request->enquire_mode == 'on') ? 1 : 0;
@@ -401,6 +421,7 @@ class ClientPreferenceController extends BaseController{
             $preference->scheduling_with_slots = ($request->has('scheduling_with_slots') && $request->scheduling_with_slots == 'on') ? 1 : 0; //Added by ovi
             $preference->same_day_delivery_for_schedule = ($request->has('same_day_delivery_for_schedule') && $request->same_day_delivery_for_schedule == 'on') ? 1 : 0;  //Added by ovi
             $preference->same_day_orders_for_rescheduing = ($request->has('same_day_orders_for_rescheduing') && $request->same_day_orders_for_rescheduing == 'on') ? 1 : 0; //Added by ovi
+            $preference->slots_with_service_area = ($request->has('slots_with_service_area') && $request->slots_with_service_area == 'on') ? 1 : 0;
         }
         $preference->concise_signup = (!empty($request->concise_signup) && $request->concise_signup == 'on')? 1 : 0;
         $preference->save();

@@ -18,6 +18,11 @@ Route::group(['prefix' => '/godpanel'], function () {
 		Route::post('migrateDefaultData/{id}', 'Godpanel\ClientController@migrateDefaultData')->name('client.migrateDefaultData');
 		Route::post('singleVendorSetting/{id}', 'Godpanel\ClientController@singleVendorSetting')->name('client.update_single_vendor');
 
+		/**socket url update */
+		Route::post('socketUpdate/{id}', 'Godpanel\ClientController@socketUrl')->name('client.socketUpdate');
+		Route::post('socketUpdateAction/{id}', 'Godpanel\ClientController@socketUpdateAction')->name('client.socketUpdateAction');
+		/**socket url update */
+
 		Route::post('exportDb/{dbname}', 'Godpanel\ClientController@exportDb')->name('client.exportdb');
         
 
@@ -49,6 +54,16 @@ Route::group(['prefix' => '/godpanel'], function () {
 		Route::get('deleteclientsubscription/{slug}', 'Godpanel\billingController@deleteClientSubscription')->name('clientsubscription.delete');
 		Route::get('clientsubscriptions/editpayment/{slug}', 'Godpanel\billingController@editSubscriptionPayment')->name('clientsubscription.editpayment');
 		Route::post('clientsubscriptions/updatepayment', 'Godpanel\billingController@updateClientSubscriptionPayment')->name('clientsubscription.updatepayment');
+
+		/** 24 june 2022  chatsocket crud */
+		Route::get('chatsocket', 'Godpanel\chatSocketController@chatsocket')->name('chatsocket');
+		Route::post('chatsocket/save/{id?}', 'Godpanel\chatSocketController@chatsocketSave')->name('chatsocket.save');
+		Route::get('chatsocket/edit/{id}', 'Godpanel\chatSocketController@editchatsocket')->name('chatsocket.edit');
+		Route::post('chatsocket/upDateSocket/{id}', 'Godpanel\chatSocketController@upDateSocket')->name('chatsocket.upDateSocket');
+        Route::post('chatsocket/upDateSocketStatus/{id}', 'Godpanel\chatSocketController@upDateSocketStatus')->name('chatsocket.upDateSocketStatus');
+		Route::get('chatsocket/deleteSocketUrl/{id}', 'Godpanel\chatSocketController@deleteSocketUrl')->name('chatsocket.delete');
+
+		/** */
 		
 	});
 });

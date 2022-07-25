@@ -128,41 +128,49 @@ class ProductController extends BaseController
         if ($validation->fails()) {
             return redirect()->back()->withInput()->withErrors($validation);
         }
-        $product = new Product();
-        $product->sku = $request->sku;
-        $product->url_slug = empty($request->url_slug) ? $request->sku : $request->url_slug;
-        $product->title = empty($request->product_name) ? $request->sku : $request->product_name;
-        $product->type_id = $request->type_id;
-        $product->category_id = $request->category;
-        $product->vendor_id = $request->vendor_id;
-        $client_lang = ClientLanguage::where('is_primary', 1)->first();
-        if (!$client_lang) {
-            $client_lang = ClientLanguage::where('is_active', 1)->first();
-        }
-        $product->save();
-        if ($product->id > 0) {
-            $datatrans[] = [
-                'title' => $request->product_name??null,
-                'body_html' => '',
-                'meta_title' => '',
-                'meta_keyword' => '',
-                'meta_description' => '',
-                'product_id' => $product->id,
-                'language_id' => $client_lang->language_id
-            ];
-            $product_category = new ProductCategory();
-            $product_category->product_id = $product->id;
-            $product_category->category_id = $request->category;
-            $product_category->save();
-            $proVariant = new ProductVariant();
-            $proVariant->sku = $request->sku;
-            $proVariant->product_id = $product->id;
-            $proVariant->product_id = $product->id;
-            $proVariant->barcode = $this->generateBarcodeNumber();
-            $proVariant->save();
-            ProductTranslation::insert($datatrans);
-            return redirect('client/product/' . $product->id . '/edit')->with('success', __('Product added successfully!') );
-        }
+        try {
+            DB::beginTransaction();
+            $product = new Product();
+            $product->sku = $request->sku;
+            $product->url_slug = empty($request->url_slug) ? $request->sku : $request->url_slug;
+            $product->title = empty($request->product_name) ? $request->sku : $request->product_name;
+            $product->type_id = $request->type_id;
+            $product->category_id = $request->category;
+            $product->vendor_id = $request->vendor_id;
+            $client_lang = ClientLanguage::where('is_primary', 1)->first();
+            if (!$client_lang) {
+                $client_lang = ClientLanguage::where('is_active', 1)->first();
+            }
+            $product->save();
+            if ($product->id > 0) {
+                $datatrans[] = [
+                    'title' => $request->product_name??null,
+                    'body_html' => '',
+                    'meta_title' => '',
+                    'meta_keyword' => '',
+                    'meta_description' => '',
+                    'product_id' => $product->id,
+                    'language_id' => $client_lang->language_id
+                ];
+                $product_category = new ProductCategory();
+                $product_category->product_id = $product->id;
+                $product_category->category_id = $request->category;
+                $product_category->save();
+                $proVariant = new ProductVariant();
+                $proVariant->sku = $request->sku;
+                $proVariant->title = $request->sku . '-' .  empty($request->product_name) ? $request->sku : $request->product_name;
+                $proVariant->product_id = $product->id;
+                $proVariant->barcode = $this->generateBarcodeNumber();
+                $proVariant->save();
+                ProductTranslation::insert($datatrans);
+                DB::commit();
+                return redirect('client/product/' . $product->id . '/edit')->with('success', __('Product added successfully!') );
+            }
+          
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput()->withError($e->getMessage());
+        }    
     }
 
     /**
@@ -253,7 +261,7 @@ class ProductController extends BaseController
 
         
         $set_product_tags = ProductTag::where('product_id',$product->id)->pluck('tag_id')->toArray();
-        
+        //pr($product->variant->toArray());exit();
         return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags,'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids]);
     }
 
@@ -357,6 +365,11 @@ class ProductController extends BaseController
             if(isset($product->category) && in_array($product->category->categoryDetail->type_id,[8,9]))
             $product->sell_when_out_of_stock = 1;
         }
+        $product->minimum_duration = $request->minimum_duration??null;
+        $product->additional_increments = $request->additional_increments??null;
+        $product->buffer_time_duration  = $request->buffer_time_duration??null;
+        $product->check_in_time         = $request->check_in_time??null;
+        $product->is_fix_check_in_time = ($request->has('is_fix_check_in_time') && $request->is_fix_check_in_time == 'on') ? 1 : 0;
         $product->save();
 
         if ($product->id > 0) {

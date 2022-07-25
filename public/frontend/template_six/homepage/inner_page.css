@@ -25,7 +25,7 @@
 .scrollspy-menu li.active a{color: var(--theme-deafult);}
 .product-banner-img{height: 550px;overflow: hidden;width: 100%;}
 .alScrollspyProduct .text-right span{display: none !important;}
-.alScrollspyProduct select#order_type{border: 1px solid #ced4da;color: #ced4da;}
+.alScrollspyProduct select#order_type{border: 1px solid #ced4da;color: #000000a1;}
 .alScrollspyProduct h2.category-head{font-size: 18px;}
 .class_img.product_image img{width: 100%;}
 .member_no span{font-size: 14px;line-height: normal;}

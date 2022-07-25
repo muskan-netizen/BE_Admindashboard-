@@ -87,17 +87,22 @@ class AppServiceProvider extends ServiceProvider
 
         $count = 0;
         if($client_preference_detail){
-            if($client_preference_detail->dinein_check == 1){$count++;}
-            if($client_preference_detail->takeaway_check == 1){$count++;}
-            if($client_preference_detail->delivery_check == 1){$count++;}
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                if($client_preference_detail->$clientVendorTypes == 1){
+                    $count++;
+                }
+            }
+            // if($client_preference_detail->dinein_check == 1){$count++;}
+            // if($client_preference_detail->takeaway_check == 1){$count++;}
+            // if($client_preference_detail->delivery_check == 1){$count++;}
         }
 
         $last_mile_common_set = $this->checkIfLastMileDeliveryOn();
 
         $client_payment_options = PaymentOption::where('status', 1)->pluck('code')->toArray();
-        $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-        $selected_template = isset($set_template) ? $set_template->template_id : 1;
-
+       // $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+     
         view()->share('last_mile_common_set', $last_mile_common_set);
 
         view()->share('favicon', $favicon_url);
@@ -115,7 +120,7 @@ class AppServiceProvider extends ServiceProvider
         view()->share('cashfree_test_mode', $cashfree_test_mode);
         view()->share('payphone_id', $payphone_id??'');
         view()->share('payPhoneToken', $payphone_token??'');
-        view()->share('selected_template', $selected_template??'');
+       
     }
 
     public function connectDynamicDb($request)

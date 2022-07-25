@@ -50,6 +50,8 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     @endif
 
 </script>
+{{-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> --}}
+<script type="text/javascript" src="{{asset('front-assets/js/axios.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.cookie.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
@@ -66,6 +68,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 <script defer type="text/javascript" src="{{asset('js/spinner.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/location.js')}}"></script>
+
 
 {{--
 <!-- All js merged -->
@@ -98,6 +101,8 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @if (Auth::check() && Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script  type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+
+
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {
@@ -162,9 +167,28 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     });
 </script>
 @endif
+@if((!empty($socket_url)))
+<!-- /** socket_accept */ -->
+    <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+    @if((!empty(Auth::user())))
+    <script>
+        createSocketConnection();
+        async function createSocketConnection(){
+
+            socket = new io(SocketConstants.Socket_url);
+            await socket.connect(); 
+            console.log(socket);
+            console.log(SocketConstants.Socket_url);
+        }
+    
+    </script>
+    @endif
+@endif
+<!-- /**socket_accept end */ -->
+
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
-@if ($selected_template == 6)
+@if (isset($set_template)  && $set_template->template_id == 6))
 <script async src="{{asset('frontend/template_six/homepage/spa_slider_custom.js')}}"></script>
 @endif
 <script type="text/javascript">
@@ -204,6 +228,7 @@ if($showSubscriptionPlanPopUp == 1){
     else
     var home_page_url = "{{ route('userHome') }}";
 
+    var category_page_url = "{{ route('categoryDetail', ':id') }}";
     var home_page_url_template_one = "{{ route('indexTemplateOne') }}";
     let home_page_url2 = home_page_url.concat("/");
     var add_to_whishlist_url = "{{ route('addWishlist') }}";

@@ -1,3 +1,6 @@
+@php
+$checkSlot = findSlot('', $vendor->id, '');
+@endphp
 @extends('layouts.store', ['title' => $vendor->name])
 @section('css')
 <style type="text/css">
@@ -67,7 +70,7 @@
 							<div class="col-md-7 p-0">
 								<div class="alSpaListHead text-center text-lg-left col-12 mb-4">
 			                        <p class="alLgFontSize pr-5">{{ $vendor->name }}</p>
-			                        <p class="alShareLink alBodyText d-flex align-items-center"><a href="#">{{ $vendor->address }}
+			                        <p class="alShareLink alBodyText d-flex align-items-center"><a href="javascript:void(0)">{{ $vendor->address }}
                                         <span class="ml-3"><img src="{{asset('frontend/template_six/spaimages/share.svg')  }}"></span></a></p>
 			                    </div>
 							</div>
@@ -77,7 +80,7 @@
                                         @if ($vendor->vendorRating > 0)
 		                        		    <li class="d-flex align-items-center"><img class="mr-2" src="{{asset('frontend/template_six/spaimages/Star.svg')  }}">  {{ $vendor->vendorRating }} {{ __('Very Good') }}</li>
                                         @endif
-		                        		<li class="border-left ml-3 pl-3"><a href="#">92 customers reviews</a></li>
+		                        		<li class="border-left ml-3 pl-3"><a href="javascript:void(0)">92 customers reviews</a></li>
 		                        	</ul>
 			                    </div>
 							</div>
@@ -128,7 +131,7 @@
 								<span>Gym</span>
 							</li>
 							<li class="mr-0">
-								<a href="#"><u>View all facilities</u></a>
+								<a href="javascript:void(0)"><u>View all facilities</u></a>
 							</li>
 						</ul>
 					</div>
@@ -1238,6 +1241,7 @@
                     keyword: keyword,
                     order_type: order_type,
                     vendor: "{{ $vendor->id }}",
+                    vendor_template_id: "6",
                     vendor_category: "{{ $vendor_category ?? '' }}"
                 },
                 beforeSend: function() {

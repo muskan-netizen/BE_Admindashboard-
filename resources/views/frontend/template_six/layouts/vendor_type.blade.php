@@ -5,7 +5,24 @@
 					<div class="al_count_tabs_fourdesign"  >
 								@if($mod_count > 1)
 								<ul class="nav nav-tabs navigation_tab_al nav-material tab-icons vendor_mods" id="top-tab" role="tablist">
-									@if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
+								@foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+									@php
+										$clientVendorTypes = $vendor_typ_key.'_check';
+										$VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+										$NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+									@endphp
+
+									@if($client_preference_detail->$clientVendorTypes == 1)
+										<li class="navigation-tab-item" role="presentation"> <a
+										class="nav-link {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
+										id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
+										aria-controls="profile" aria-selected="false">
+												{{$NomenclatureName}}
+											</a>
+										</li>
+									@endif
+								@endforeach 
+								<!-- @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
 									<li class="navigation-tab-item" role="presentation">
 										<a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
 											{{$Delivery}}
@@ -24,7 +41,7 @@
 											{{$Takeaway}}
 										</a>
 									</li>
-									@endif
+									@endif -->
 									<div class="navigation-tab-overlay_alnew_design"></div>
 								</ul>
 								@endif

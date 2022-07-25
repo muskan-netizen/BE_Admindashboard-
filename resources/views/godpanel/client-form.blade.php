@@ -207,7 +207,19 @@
                                 </select>
                             </div>
                         </div>
-                        
+                        <div class="row mb-2">
+                            <div class="col-md-4">
+                                <label>Socket url</label>
+                                <select class="form-control" id="socket_url" name="socket_url">
+                                    <option class="" value="" data-id="">Disable chat</option>
+                                    @if(isset($ChatSocketUrl))
+                                        @foreach ($ChatSocketUrl as $socketUrl)
+                                            <option class="" value="{{$socketUrl->domain_url}}" data-id="{{$socketUrl->id}}">{{ $socketUrl->domain_url }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-info waves-effect waves-light">Submit</button>
