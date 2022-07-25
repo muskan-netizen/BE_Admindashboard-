@@ -44,9 +44,8 @@ class CategoryController extends BaseController
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
 
         $categories = $categories->get();
-// pr($categories);die;
         if ($categories) {
-            $build = $this->buildTree($categories->toArray());
+            $build = $this->buildTree($categories->toArray());;
             $tree = $this->printTree($build);
         }
         $tags = Tag::with('primary')->get();
@@ -123,18 +122,16 @@ class CategoryController extends BaseController
         $cate = new Category();
         $save = $this->save($request, $cate, 'false');
         if ($save > 0) {
-            if (!empty($request->cat_lang['language_id'])) {
-                $languageId = $request->cat_lang['language_id'];
-                $trans = new Category_translation();
-                $trans->category_id = $save;
-                $trans->language_id = $languageId;
-                $trans->name = $request->cat_lang['name'];
-                $trans->meta_title = $request->cat_lang['meta_title'];
-                $trans->meta_description = $request->cat_lang['meta_description'];
-                $trans->meta_keywords = $request->cat_lang['meta_keywords'];
-                $trans->save();              
-            }
-die;
+            $languageId = $request->cat_lang['lang_id'];
+            $trans = new Category_translation();
+            $trans->category_id = $save;
+            $trans->language_id = $languageId;
+            $trans->name = $request->cat_lang['name'];
+            $trans->meta_title = $request->cat_lang['meta_title'];
+            $trans->meta_description = $request->cat_lang['meta_description'];
+            $trans->meta_keywords = $request->cat_lang['meta_keywords'];
+            $trans->save();
+
             $hs = new CategoryHistory();
             $hs->category_id = $save;
             $hs->action = 'Add';
