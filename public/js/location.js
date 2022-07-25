@@ -322,7 +322,7 @@ $(document).ready( async function () {
             },
             success: function (response) {
                 if (response.status == "Success") {
-
+                    remove_spinner('#our_vendor_main_div');
                     var path = window.location.pathname;
                     if (path == '/') {
 
@@ -395,6 +395,7 @@ $(document).ready( async function () {
                 }
             },
             complete:function(data){
+                remove_spinner('#our_vendor_main_div');
                 // Hide image container
                 $(".shimmer_effect").hide();
                 $(".home-slider, .home-banner-slider").show();

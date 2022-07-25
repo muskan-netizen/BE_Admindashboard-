@@ -54,11 +54,11 @@ $(function () {
         return document.ajax_loading;
     };
     $(document).ajaxStart(function () {
-        add_spinner('#our_vendor_main_div');
+        //add_spinner('#our_vendor_main_div');
         document.ajax_loading = true;
     });
     $(document).ajaxStop(function () {
-        remove_spinner('#our_vendor_main_div');
+        //remove_spinner('#our_vendor_main_div');
         document.ajax_loading = false;
     });
     $(document).ajaxComplete(function () {
