@@ -20,7 +20,7 @@ class WebStylingController extends BaseController{
     public function index()
     {
         $client_preferences = ClientPreference::first();
-       
+
         switch($client_preferences->business_type){
             case "taxi":
             $home_page_labels = HomePageLabel::whereIn('slug',['dynamic_page','pickup_delivery'])->with('translations')->orderBy('order_by');
@@ -55,6 +55,7 @@ class WebStylingController extends BaseController{
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
         $homepage_style = WebStyling::where('name', 'Home Page Style')->first();
+        $homepage_style_options = [];
         if ($homepage_style) {
             $homepage_style_options = WebStylingOption::where('web_styling_id', $homepage_style->id)->get();
         $themeId = WebStylingOption::where(['web_styling_id'=> $homepage_style->id,'is_selected'=>'1'])->first('id');
@@ -171,14 +172,14 @@ class WebStylingController extends BaseController{
         $client_preferences->show_payment_icons = $request->show_payment_icons == 'on' ? 1 : 0;
         $client_preferences->save();
         return back()->with('success',__('Payment Method Updated Successfully!'));
-        
+
     }
     public function updatePaymentMethods(Request $request){
         $status = $request->has('state') ? $request->state : null;
         $is_show  = ($status == 'true') ? 1 : 0;
-    
+
         $Payment_method =  PaymentMethod::where('id',$request->id)->first();
-    
+
         if($Payment_method){
             $Payment_method->is_show = $is_show;
             $Payment_method->save();
@@ -188,7 +189,7 @@ class WebStylingController extends BaseController{
             'status' => 'success',
             'message' => __('Payment Method Updated Successfully!')
         ]);
-      
+
     }
 
     /**
@@ -379,7 +380,7 @@ class WebStylingController extends BaseController{
 
 
         }
-       
+
         foreach ($request->pickup_labels as $key => $value) {
 
             if(isset($request->is_active[$key]) && !empty($request->is_active[$key]))

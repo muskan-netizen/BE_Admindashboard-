@@ -241,7 +241,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <div id="update-single-status" class="my-2">
                                             {{-- <a class=start_chat data-vendor_order_id="<%= vendor.id%>" data-vendor_id="<%= vendor.vendor_id %>" data-orderId="<%= order.order_id  %>" data-order_id="<%= order.id %>">Start Chat</a> --}}
                                                 <% if(vendor.order_status_option_id == 1) { %>
-                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Accept') }}</button>
+                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-is_alert = "<%= vendor.isAlert %>" data-alert_message = "<%= vendor.alertMessage %>">{{ __('Accept') }}</button>
                                                     <!--<button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>-->
                                                 <% } else if(vendor.order_status_option_id == 2) { %>
                                                     <button class="update-status btn-warning" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="4" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-order_luxury_option="<%= order.luxury_option_id %>">{{ __('Processing') }}</button>
@@ -422,6 +422,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     </select>
                 </div>
                 <div class="col">
+                    <select class="form-control" id="sort_order">
+                        <option value="">{{ __('Change Sort') }}</option>
+                        <option value="distance">{{ __('Distance') }}</option>
+                    </select>
+                </div>
+                <div class="col">
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
                             <i class="mdi mdi-close"></i>
@@ -539,6 +545,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         init(typ, "{{ route('orders.filter') }}", '', false);
     });
+    $("#sort_order").change(function() {
+        var typ=  $("a.nav-link.active").data('rel');
+        init(typ, "{{ route('orders.filter') }}", '', false);
+    });
     $("#clear_filter_btn_icon").click(function() {
         $('#range-datepicker').val('');
         $('#vendor_select_box').val('');
@@ -557,6 +567,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
+    var sort_order = $('#sort_order option:selected').val();
         ajaxCall = $.ajax({
             url: url,
             type: "POST",
@@ -571,7 +582,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 filter_order_status: filter_order_status,
                 search_keyword: search_keyword,
                 vendor_id: vendor_id,
-                date_filter: date_filter
+                date_filter: date_filter,
+                sort_order: sort_order
             },
             success: function(response) {
                 // reload after 10 sec
@@ -766,12 +778,18 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var order_id = that.data("order_id");
             var vendor_id = that.data("vendor_id");
             var count = that.data("count");
+            var alertMessage = "";
+            if(status_option_id == 2 && that.data('is_alert'))
+            {
+                alertMessage = that.data('alert_message');
+            }
             if (status_option_id == 3) {
                 return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id);
             } else {
                 Swal.fire({
                   title: "{{__('Are you Sure?')}}",
                   // icon: 'info',
+                  text: alertMessage,
                   showCancelButton: true,
                   confirmButtonText: 'Ok',
                 }).then((result) => {

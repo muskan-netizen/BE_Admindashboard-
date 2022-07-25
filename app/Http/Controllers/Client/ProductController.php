@@ -128,41 +128,49 @@ class ProductController extends BaseController
         if ($validation->fails()) {
             return redirect()->back()->withInput()->withErrors($validation);
         }
-        $product = new Product();
-        $product->sku = $request->sku;
-        $product->url_slug = empty($request->url_slug) ? $request->sku : $request->url_slug;
-        $product->title = empty($request->product_name) ? $request->sku : $request->product_name;
-        $product->type_id = $request->type_id;
-        $product->category_id = $request->category;
-        $product->vendor_id = $request->vendor_id;
-        $client_lang = ClientLanguage::where('is_primary', 1)->first();
-        if (!$client_lang) {
-            $client_lang = ClientLanguage::where('is_active', 1)->first();
-        }
-        $product->save();
-        if ($product->id > 0) {
-            $datatrans[] = [
-                'title' => $request->product_name??null,
-                'body_html' => '',
-                'meta_title' => '',
-                'meta_keyword' => '',
-                'meta_description' => '',
-                'product_id' => $product->id,
-                'language_id' => $client_lang->language_id
-            ];
-            $product_category = new ProductCategory();
-            $product_category->product_id = $product->id;
-            $product_category->category_id = $request->category;
-            $product_category->save();
-            $proVariant = new ProductVariant();
-            $proVariant->sku = $request->sku;
-            $proVariant->product_id = $product->id;
-            $proVariant->product_id = $product->id;
-            $proVariant->barcode = $this->generateBarcodeNumber();
-            $proVariant->save();
-            ProductTranslation::insert($datatrans);
-            return redirect('client/product/' . $product->id . '/edit')->with('success', __('Product added successfully!') );
-        }
+        try {
+            DB::beginTransaction();
+            $product = new Product();
+            $product->sku = $request->sku;
+            $product->url_slug = empty($request->url_slug) ? $request->sku : $request->url_slug;
+            $product->title = empty($request->product_name) ? $request->sku : $request->product_name;
+            $product->type_id = $request->type_id;
+            $product->category_id = $request->category;
+            $product->vendor_id = $request->vendor_id;
+            $client_lang = ClientLanguage::where('is_primary', 1)->first();
+            if (!$client_lang) {
+                $client_lang = ClientLanguage::where('is_active', 1)->first();
+            }
+            $product->save();
+            if ($product->id > 0) {
+                $datatrans[] = [
+                    'title' => $request->product_name??null,
+                    'body_html' => '',
+                    'meta_title' => '',
+                    'meta_keyword' => '',
+                    'meta_description' => '',
+                    'product_id' => $product->id,
+                    'language_id' => $client_lang->language_id
+                ];
+                $product_category = new ProductCategory();
+                $product_category->product_id = $product->id;
+                $product_category->category_id = $request->category;
+                $product_category->save();
+                $proVariant = new ProductVariant();
+                $proVariant->sku = $request->sku;
+                $proVariant->title = $request->sku . '-' .  empty($request->product_name) ? $request->sku : $request->product_name;
+                $proVariant->product_id = $product->id;
+                $proVariant->barcode = $this->generateBarcodeNumber();
+                $proVariant->save();
+                ProductTranslation::insert($datatrans);
+                DB::commit();
+                return redirect('client/product/' . $product->id . '/edit')->with('success', __('Product added successfully!') );
+            }
+          
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput()->withError($e->getMessage());
+        }    
     }
 
     /**
@@ -173,7 +181,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $id)->firstOrFail();
+        $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $id)->firstOrFail();
         //dd($product->global_product_id);
         $type = Type::all();
         $countries = Country::all();
@@ -218,6 +226,9 @@ class ProductController extends BaseController
 
         foreach ($product->crossSell as $key => $value) {
             $crossSell_ids[] = $value->cross_product_id;
+        }
+        foreach($product->variantSets as $key=>$value){
+            $existOptions[] = $value->variant_option_id;
         }
 
         foreach ($product->celebrities as $key => $value) {
@@ -356,8 +367,8 @@ class ProductController extends BaseController
         }
         $product->minimum_duration = $request->minimum_duration??null;
         $product->additional_increments = $request->additional_increments??null;
-        $product->buffer_time_duration = $request->buffer_time_duration??null;
-        $product->check_in_time = $request->check_in_time??null;
+        $product->buffer_time_duration  = $request->buffer_time_duration??null;
+        $product->check_in_time         = $request->check_in_time??null;
         $product->is_fix_check_in_time = ($request->has('is_fix_check_in_time') && $request->is_fix_check_in_time == 'on') ? 1 : 0;
         $product->save();
 
@@ -856,15 +867,18 @@ class ProductController extends BaseController
 
     public function importCsvQrcode(Request $request){
        
+        $vendor_id = $request->vendor_id??null;
         $fileModel = new CsvQrcodeImport;
         if($request->file('qrcode_excel')) {
             $fileName = time().'_'.$request->file('qrcode_excel')->getClientOriginalName();
             $filePath = $request->file('qrcode_excel')->storeAs('csv_qrcodes', $fileName, 'public');
             $fileModel->name = $fileName;
+            $fileModel->vendor_id = $request->vendor_id??null;
             $fileModel->path = '/storage/' . $filePath;
             $fileModel->status = 1;
             $fileModel->save();
-            $data = Excel::import(new QrcodesImport($fileModel->id), $request->file('qrcode_excel'));
+
+            $data = Excel::import(new QrcodesImport($vendor_id,$fileModel->id), $request->file('qrcode_excel'));
 
             return response()->json([
                 'status' => 'success',

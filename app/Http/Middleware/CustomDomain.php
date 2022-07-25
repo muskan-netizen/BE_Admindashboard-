@@ -22,7 +22,7 @@ class CustomDomain{
      * @return mixed
      */
     public function handle($request, Closure $next){
-     
+
       $path = $request->path();
       $domain = $request->getHost();
       $domain = str_replace(array('http://', '.test.com/login'), '', $domain);
@@ -39,7 +39,7 @@ class CustomDomain{
       }
       $callback = '';
       $redisData = json_decode($existRedis);
-      if($redisData){ 
+      if($redisData){
           $database_name = 'royo_'.$redisData->database_name;
           $database_host = !empty($redisData->database_host) ? $redisData->database_host : env('DB_HOST', '127.0.0.1');
           $database_port = !empty($redisData->database_port) ? $redisData->database_port : env('DB_PORT', '3306');
@@ -97,7 +97,7 @@ class CustomDomain{
           $lang_detail = Language::where('id', Session::get('customerLanguage'))->first();
           App::setLocale($lang_detail->sort_code);
           Session::put('applocale', $lang_detail->sort_code);
-          
+
           // Set Currency
           $primeCurcy = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.is_primary', 1)->first();
           Session::put('client_primary_currency', $primeCurcy->iso_code);
@@ -163,7 +163,7 @@ class CustomDomain{
           Session::put('default_country_phonecode', $phoneCode);
 
           Session::put('preferences', $preferData);
-         
+
       }else{
         return redirect()->route('error_404');
       }

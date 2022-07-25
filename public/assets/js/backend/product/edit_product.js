@@ -15,6 +15,43 @@ $(document).ready(function(){
             //$('.check_in_time').hide();
         }
     });
+    $(document).on('click', '.addExistRow', function() {
+        
+        var psku = $('#sku').val();
+        var pid = $(this).attr('data-product_id');
+        var vid = $(this).attr('data-varient_id');
+        var variant_ids = [];
+        var variant_name = $("input[name='variant_titles[]']").val();;
+        var exist = [];
+        var $thisRow = $(this);
+        $(".product_varient_ids").each(function() {
+            var $this = $(this);
+            variant_ids.push($this.attr('data-varient_id'));
+        });
+        $("#exist_variant_div .exist_sets").each(function() {
+            exist.push($(this).val());
+        });
+
+        axios.post(`/client/rental-variant_row`, {
+            sku:  psku,   
+            existing:exist,
+            variant_ids:variant_ids,
+            variant_name:variant_name,
+            pid:pid,
+            vid:vid,
+        })
+        .then(async response => {
+            $($thisRow).hide();
+             console.log(response);
+        })
+        .catch(e => {
+            Swal.fire(
+                'Something went wrong, try again later!',                                    
+                'error'
+            )
+        })    
+    });
+    
 })
 
 

@@ -51,7 +51,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-5">
+            <div class="row mb-5 homepageSix">
                 <div class="collection-filter col-lg-3">
                     <!-- side-bar colleps block stat -->
                     <div class="collection-filter-block bg-transparent p-0 m-0">
@@ -336,6 +336,13 @@
 @section('script')
 <script src="{{asset('front-assets/js/rangeSlider.min.js')}}"></script>
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
+<script>
+    @if(!empty($category->image) && $category->image['is_original'])
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+    @endif
+</script>
 <script>
     $('.js-range-slider').ionRangeSlider({
         type: 'double',

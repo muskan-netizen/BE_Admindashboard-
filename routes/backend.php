@@ -182,7 +182,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('tag/update', [TagController::class, 'update'])->name('tag.update');
         Route::post('tag/delete', [TagController::class, 'destroy'])->name('tag.delete');
 
-        Route::get('estimations/barcode', [EstimationController::class, 'barcode'])->name('estimations.barcode');
+        Route::get('estimations/barcode/{vendor?}', [EstimationController::class, 'barcode'])->name('estimations.barcode');
         Route::resource('estimations', 'Client\EstimationController');
         Route::resource('estimationsAddon', 'Client\EstimationAddonController');
 
@@ -244,6 +244,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/activeCategory/{id}', 'Client\VendorController@activeCategory')->name('vendor.category.update');
         Route::post('vendor/addCategory/{id}', 'Client\TableBookingController@storeCategory')->name('vendor.addCategory');
         Route::get('vendor/vendor_specific_categories/{id}', 'Client\VendorController@vendor_specific_categories')->name('vendor.specific_categories');
+        Route::post('vendor/saveCronStatusForServiceArea/{id}', 'Client\VendorController@updateCronStatusForServiceArea')->name('vendor.serviceArea.cron.update');
         Route::post('vendor/updateCategory/{id}', 'Client\TableBookingController@updateCategory')->name('vendor.updateCategory');
         Route::get('vendor/table/category/edit', 'Client\TableBookingController@editCategory')->name('vendor_table_category_edit');
         Route::get('vendor/table/number/edit', 'Client\TableBookingController@editTable')->name('vendor_table_edit');
@@ -273,6 +274,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/serviceArea/{vid}', 'Client\ServiceAreaController@store')->name('vendor.serviceArea');
         Route::post('vendor/editArea/{vid}', 'Client\ServiceAreaController@edit')->name('vendor.serviceArea.edit');
         Route::post('vendor/updateArea/{id}', 'Client\ServiceAreaController@update');
+        Route::post('vendor/updateAreaStatusForSlot/{id}', 'Client\ServiceAreaController@updateActiveStatusForSlot');
         Route::post('vendor/deleteArea/{vid}', 'Client\ServiceAreaController@destroy')->name('vendor.serviceArea.delete');
         Route::post('draw-circle-with-radius/{vid}', 'Client\ServiceAreaController@drawCircleWithRadius')->name('draw.circle.with.radius');
         Route::resource('order', 'Client\OrderController');
@@ -419,6 +421,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('static-dropoff/save', 'Client\StaticDropoffController@store')->name('static-dropoff.create');
         Route::get('static-dropoff/edit', 'Client\StaticDropoffController@edit')->name('static-dropoff.edit');
         Route::delete('static-dropoff/destroy/{id}', 'Client\StaticDropoffController@delete')->name('static-dropoff.destroy');
+
+        // rental product 
+        Route::post('rental-variant_row', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
     });
 });
 

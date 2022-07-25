@@ -46,7 +46,7 @@ class VendorProductTempleteSeeder extends Seeder
                 'type' => 'List',
                 'status' =>'1'
             ]
-        ); 
+        );
         DB::table('vendor_templetes')->insert($vendor_templete_array);
     }
 }

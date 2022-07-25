@@ -235,7 +235,7 @@ class PickupDeliveryController extends BaseController{
         try {
             $order_place = $this->orderPlaceForPickupDelivery($request);
             if($order_place && $order_place['status'] == 200){
-                if (($request->payment_option_id == 1) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
+                if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                     $data = [];
                     $order = $order_place['data'];
                     $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
@@ -586,7 +586,6 @@ class PickupDeliveryController extends BaseController{
                     $request->scheduled_date_time = $request->schedule_time;
                     $request->order_time = $request->schedule_time;
                 }
-
                 $dynamic = uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
@@ -611,7 +610,7 @@ class PickupDeliveryController extends BaseController{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-                
+                $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -634,7 +633,10 @@ class PickupDeliveryController extends BaseController{
                             'images_array' => $request->images_array??null,
                             'type'=>$type,
                             'friend_name'=>$friendName,
-                            'friend_phone_number'=>$friendPhoneNumber
+                            'friend_phone_number'=>$friendPhoneNumber,
+                            'vendor_id' => $vendor,
+                            'order_vendor_id' => $order_vendor->id,
+                            'order_id' => $order->id
                         ];
 
 

@@ -21,8 +21,6 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 ->orderBy('order_by', 'ASC')
 ->get();
 @endphp
-@section('css')
-@endsection
 @if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify'))
 <header id="al_new_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
    @include('layouts.store/topbar-template-six')
@@ -70,7 +68,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                   <li class="onhover-dropdown change-language">
                      <a href="javascript:void(0)">
                         {{ session()->get('locale') }}
-                        <span class="icon-icLang align-middle">
+                        <span class="icon-icLang_ align-middle">
                            <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path fill-rule="evenodd" clip-rule="evenodd" d="M6.59803 0H15.3954C16.3301 0 17.0449 0.714786 17.0449 1.64951V7.6977C17.0449 8.63242 16.3301 9.3472 15.3954 9.3472H9.3472V13.1961H5.66331L2.19934 16.0002V13.1961H1.64951C0.714786 13.1961 0 12.4813 0 11.5465V5.49836C0 4.56364 0.714786 3.84885 1.64951 3.84885H8.79737V2.74918H6.59803V0ZM5.66331 10.062L5.93822 10.9417H7.25783L5.44337 6.04819H4.12377L2.30931 10.9417H3.62891L3.95882 10.062H5.66331ZM12.1514 7.14786C12.8112 7.47776 13.5809 7.6977 14.2957 7.6977V6.59803C13.9658 6.59803 13.6359 6.54304 13.251 6.43308C14.0758 5.60832 14.5157 4.45367 14.4607 3.29901L14.4057 2.74918H12.5912V1.64951H11.4916V2.74918H9.84206V3.84885H13.1411C13.0861 4.6736 12.7012 5.38839 12.0964 5.88324C11.7115 5.55334 11.3816 5.16845 11.2166 4.6736H10.062C10.2269 5.33341 10.5568 5.93822 11.0517 6.43308C10.6668 6.54304 10.2819 6.59803 9.89704 6.59803L9.95202 7.6977C10.7218 7.64271 11.4916 7.47776 12.1514 7.14786ZM4.23384 9.12727L4.78368 7.42278L5.33351 9.12727H4.23384Z" fill="#777777"/>
                            </svg>
@@ -151,6 +149,36 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    </div>
    <!-- End Cab Booking Header From Here -->
    @else
+   <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif">
+      <div class="al_count_tabs_new_design"  >
+         @if($mod_count > 1)
+         <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons vendor_mods" id="top-tab" role="tablist">
+            @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
+            <li class="navigation-tab-item" role="presentation">
+               <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
+                     <span class="al_textTabsText">{{$Delivery}} </span>
+               </a>
+            </li>
+            @endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
+            <li class="navigation-tab-item " role="presentation">
+               <a class="nav-link al_dinein d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
+                  <span class="al_textTabsText"> {{$Dine_In}} </span>
+               </a>
+            </li>
+            @endif @if($client_preference_detail->takeaway_check==1)
+            <li class="navigation-tab-item " role="presentation">
+               @php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
+               <a class="nav-link al_takeway d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
+                     <span class="al_textTabsText">{{$Takeaway}} </span>
+               </a>
+            </li>
+            @endif
+            <div class="navigation-tab-overlay_alnew_design"></div>
+         </ul>
+         @endif
+   </div>
+    </div>
+
    @endif
 </header>
 @endif
@@ -167,14 +195,14 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
       }
       %>
 
-   <li class="al_main_category"  >
+   <li class="al_main_category">
        <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category[0]) && $category->slug == $cate[0]['slug'] ? 'current_category' : ''}}">
            @if($client_preference_detail->show_icons==1)
            <div class="nav-cate-img {{ \Request::route()->getName()=='userHome' ? '' : 'activ_nav'}}">
                <img class="blur-up lazyload" data-icon_two="<%=icon_two_url %>" data-icon="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""  onmouseover='changeImage(this,1)' onmouseout='changeImage(this,0)'>
            </div>
            @endif
-           <%=category.name %>
+           <span class="alCategoryName"><%=category.name %></span>
        </a>
        <% if(category.children){%>
        <ul class="al_main_category_list">
