@@ -290,16 +290,16 @@
                     @if($vendor->add_markup_price == 1)
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('On Markup Price'),['class' => 'control-label']) !!}
-                        <input type="checkbox" data-plugin="switchery" name="markup_fee_tax" class="form-control" data-color="#43bee1" @if($vendor->markup_fee_tax == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        <input type="checkbox" data-plugin="switchery" name="markup_fee_tax" class="form-control" data-color="#43bee1" @if($vendor->add_markup_price == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                    
                     
-                    <div class="form-group w-100" style="display:{{$vendor->markup_fee_tax == 0 ? 'none!important' : 'block'}}" id="markup_fee_tax_id">
+                    <div class="form-group w-100" style="display:{{$vendor->add_markup_price == 0 ? 'none!important' : 'block'}}" id="markup_price_tax_id">
                      {!! Form::label('title', __('Taxes Available'),['class' => 'control-label']) !!}
-                        <select class="form-control" name="markup_fee_tax_id">
+                        <select class="form-control" name="markup_price_tax_id">
                             <option value="">{{__('Select any')}}</option>
                             @foreach(taxRates() as $row)
-                                <option value="{{$row->id}}" {{$vendor->markup_fee_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
+                                <option value="{{$row->id}}" {{$vendor->markup_price_tax_id == $row->id ? 'selected' : ''}}>{{$row->identifier}}</option>
                             @endforeach
                         </select>
                     </div>

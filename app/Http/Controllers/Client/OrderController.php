@@ -523,7 +523,7 @@ class OrderController extends BaseController
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = 'Dine-In';
             } else {
-                $luxury_option_name = $this->getNomenclatureName($luxury_option->title);
+                $luxury_option_name = $this->getNomenclatureName($luxury_option->title,$langId,false);
             }
         }
         $order->luxury_option_name = $luxury_option_name;

@@ -115,7 +115,11 @@
                                     <th>{{ __('Customer Name') }}</th>
                                     <th>{{ __('Vendor') }}</th>
                                     <th>{{ __('Subtotal Amount') }}</th>
+                                    @if(auth()->user()->is_superadmin ==1)
+                                        <th>{{ __('Markup Price') }}({{ __("Visible For Admin") }})</th>
+                                    @endif
                                     <th>{{ __('Promo Code Discount') }}</th>
+                                    <th>{{ __('Delivery Fee') }}</th>
                                     <th>{{ __('Admin Commission') }} [{{ __("Fixed") }}]</th>
                                     <th>{{ __('Admin Commission') }} [%{{ __("Age") }}]
                                     <a href="javascript:void(0);" onclick="alert('First, it shows the total admin commission of the sub total amount then it shows the total percentage value.');" rel="noopener noreferrer"> <i class="fa fa-info-circle"></i> </a>
@@ -231,19 +235,31 @@
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
                             }},
+                            @if(auth()->user()->is_superadmin ==1)
+                            {data: 'markup_price', name: 'action', orderable: false, searchable: false},
+                            @endif
+
                             {data: 'discount_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
                             }},
+
+                            {data: 'delivery_fee', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
+
                             {data: 'admin_commission_fixed_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
                             }},
+
                             {data: 'admin_commission', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return data;
                                 // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
+                           
                             {data: 'payable_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);

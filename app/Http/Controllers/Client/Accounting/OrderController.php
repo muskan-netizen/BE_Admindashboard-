@@ -96,6 +96,9 @@ class OrderController extends Controller{
             ->addColumn('user_name', function($vendor_orders) {
                 return $vendor_orders->user ? $vendor_orders->user->name : '';
             })
+            ->addColumn('subtotal_amount', function($vendor_orders) {
+                return number_format($vendor_orders->subtotal_amount - $vendor_orders->total_markup_price??0, 2);
+            })
             ->addColumn('admin_commission', function($vendor_orders) {
                 return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
             })
@@ -104,6 +107,12 @@ class OrderController extends Controller{
             })
             ->addColumn('vendor_name',function($vendor_orders){
                 return $vendor_orders->vendor ? __($vendor_orders->vendor->name) : '';
+            })
+            ->addColumn('markup_price',function($vendor_orders){
+                return $vendor_orders->vendor ? __($vendor_orders->total_markup_price??0) : '0';
+            })
+            ->addColumn('payable_amount', function($vendor_orders) {
+                return number_format($vendor_orders->payable_amount - $vendor_orders->total_markup_price??0, 2);
             })
             ->addColumn('payment_option_title',function($vendor_orders){
                
