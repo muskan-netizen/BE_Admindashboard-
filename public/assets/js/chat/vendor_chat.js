@@ -406,10 +406,10 @@
         .then(async response => {
              console.log(response.data.status);
              if(response.data.status) {
-                if($('#chatHistory >  div').length == 0){
+                //if($('#chatHistory >  div').length == 0){
                     await getAllUser(room_id);
 
-                }
+                //}
                 socket.emit('save-message', response.data)
                 $('#message_box').val('');
              }
@@ -491,6 +491,7 @@
         }
     }
 
+
     async function newChatGroup(message){
        
         //var data = message.message.chatData;
@@ -518,5 +519,11 @@
                 </div>
             </div>	`;
 
-        $('.sortDiv').prepend(html);
+        if(document.getElementById(`chatRooms_${roomData._id}`) === null) {
+            //$('.sortDiv').prepend(html);
+        }
+
+        
     }
+
+    

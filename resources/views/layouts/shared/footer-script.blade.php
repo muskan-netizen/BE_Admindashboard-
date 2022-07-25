@@ -153,11 +153,13 @@ if (Session::has('toaster')) {
     //     get_latest_order_socket(message.order_number);
     // });
     async function createSocketConnection(){
+        if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
 
-        socket = new io(SocketConstants.Socket_url);
-        await socket.connect(); 
-        console.log(socket);
-        console.log(SocketConstants.Socket_url);
+            socket = new io(SocketConstants.Socket_url);
+            await socket.connect(); 
+            console.log(socket);
+            console.log(SocketConstants.Socket_url);
+        }
     }
     function get_latest_order_socket(order_number){
         console.log(order_number);
