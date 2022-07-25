@@ -190,6 +190,8 @@ class OrderController extends BaseController
                     // $order->specific_instructions = $cart->specific_instructions ?? null;
                     $order->specific_instructions = $request->specific_instructions ?? null;
                     $order->is_gift = $request->is_gift ?? 0;
+                    $order->user_latitude = $latitude ? $latitude : null;
+                    $order->user_longitude = $longitude ? $longitude : null;
                     $order->save();
                   
                   
@@ -978,8 +980,11 @@ class OrderController extends BaseController
                 'is_restricted' => $order_vendor->is_restricted,
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
+
                 'dbname' => $client->database_name,
-                'order_id' => $order->id
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1107,7 +1112,9 @@ class OrderController extends BaseController
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
                 'dbname' => $client->database_name,
-                'order_id' => $order->id
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1281,7 +1288,9 @@ class OrderController extends BaseController
                  'vendor_id' => $vendor_details->id,
                  'order_vendor_id' => $order_vendor->id,
                  'dbname' => $client->database_name,
-                 'order_id' => $order->id
+                 'order_id' => $order->id,
+                 'customer_id' => $order->user_id,
+                 'user_icon' => $customer->image
              ];
             if($order_vendor->is_restricted == 1)
             {
