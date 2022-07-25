@@ -166,11 +166,12 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 <script>
     createSocketConnection();
     async function createSocketConnection(){
-
-        socket = new io(SocketConstants.Socket_url);
-        await socket.connect(); 
-        console.log(socket);
-        console.log(SocketConstants.Socket_url);
+        if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
+            socket = new io(SocketConstants.Socket_url);
+            await socket.connect(); 
+            console.log(socket);
+            console.log(SocketConstants.Socket_url);
+        }
     }
   
 </script>
