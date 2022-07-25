@@ -95,6 +95,7 @@
                 </div>
                 <div class="row rowYK">
                     @foreach($category->translationSetUnique as $trans)
+                    @if($trans->language_id == 1)
                     <div class="col-md-6">
                         <div class="form-group" id="nameInputEdit">
                             <label for="title" class="control-label">Name</label>
@@ -119,6 +120,7 @@
                             <textarea class="form-control" rows="3" name="cat_lang[meta_keywords]" id="cat-lang-meta-keywords" cols="50">{{$trans->meta_keywords}}</textarea>
                         </div>
                     </div>
+                    @endif
                     @endforeach
                 </div>
             </div>
