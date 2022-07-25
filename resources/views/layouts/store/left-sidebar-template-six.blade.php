@@ -39,7 +39,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
                aria-controls="profile" aria-selected="false">
                <span class="al_tabsIcons">
-               <img src="{{$client_preference_detail->$iconFiledName ? $client_preference_detail->$iconFiledName['proxy_url'].'36/26'.$client_preference_detail-> $iconFiledName['image_path'] : asset('images/al_custom3.png')}}" alt="{{$iconFiledName}}"></span>
+               {{-- <img src="{{$client_preference_detail->$iconFiledName ? $client_preference_detail->$iconFiledName['proxy_url'].'36/26'.$client_preference_detail-> $iconFiledName['image_path'] : asset('images/al_custom3.png')}}" alt="{{$iconFiledName}}"></span> --}}
                <span class="al_textTabsText">{{$NomenclatureName}} </span></a>
                </li>
             @endif
