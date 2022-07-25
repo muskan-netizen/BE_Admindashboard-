@@ -980,6 +980,7 @@ class OrderController extends BaseController
                 'is_restricted' => $order_vendor->is_restricted,
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
+                'dbname' => $client->database_name,
                 'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
@@ -1107,6 +1108,7 @@ class OrderController extends BaseController
                 'is_restricted' => $order_vendor->is_restricted,
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
+                'dbname' => $client->database_name,
                 'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
@@ -1258,8 +1260,8 @@ class OrderController extends BaseController
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
  
- 
-             $postdata =  [
+            $client = Client::orderBy('id', 'asc')->first();
+            $postdata =  [
                 'order_number' =>  $order->order_number,
                  'customer_name' => $customer->name ?? 'Dummy Customer',
                  'customer_phone_number' => $customerno ?? rand(111111, 11111),
@@ -1280,6 +1282,7 @@ class OrderController extends BaseController
                  'is_restricted' => $order_vendor->is_restricted,
                  'vendor_id' => $vendor_details->id,
                  'order_vendor_id' => $order_vendor->id,
+                 'dbname' => $client->database_name,
                  'order_id' => $order->id
              ];
             if($order_vendor->is_restricted == 1)

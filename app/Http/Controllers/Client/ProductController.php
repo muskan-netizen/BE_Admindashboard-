@@ -309,6 +309,7 @@ class ProductController extends BaseController
 
 
         $product->sku = $request->sku;
+        $product->markup_price = $request->markup_price;
         $product->url_slug = $request->url_slug;
         $product->tags        = $request->tags??null;
         $product->category_id = $request->category_id;
@@ -467,6 +468,7 @@ class ProductController extends BaseController
                     if ($variantData) {
                         $variantData->title             = $request->variant_titles[$key];
                         $variantData->price             = $request->variant_price[$key];
+                        $variantData->markup_price      = $request->markup_price[$key];
                         $variantData->compare_at_price  = $request->variant_compare_price[$key];
                         $variantData->container_charges  = $request->container_charges[$key]??"";
                         $variantData->cost_price        = $request->variant_cost_price[$key];
@@ -486,6 +488,7 @@ class ProductController extends BaseController
                     $variantData->barcode       = $this->generateBarcodeNumber();
                 }
                 $variantData->price             = $request->price;
+                $variantData->markup_price      = $request->markup_price;
                 $variantData->compare_at_price  = $request->compare_at_price;
                 $variantData->container_charges  = $request->container_charges;
                 $variantData->cost_price        = $request->cost_price;
@@ -999,6 +1002,13 @@ class ProductController extends BaseController
                 break;
                 case "for_tax":
                     $update_product = Product::whereIn('id',$request->product_id)->update(['tax_category_id' => $request->tax_category]);
+                break;
+                case "for_markup":
+
+                    $update_product = Product::whereIn('id',$request->product_id)->update(['markup_price' => $request->markup_price]);
+
+                    $update_product = ProductVariant::whereIn('product_id',$request->product_id)->update(['markup_price' => $request->markup_price]);
+
                 break;
                 case "for_sell_when_out_of_stock":
                     $update_product = Product::whereIn('id',$request->product_id)->update(['sell_when_out_of_stock' => $sell_when_out_of_stock]);
