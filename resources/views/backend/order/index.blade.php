@@ -422,6 +422,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     </select>
                 </div>
                 <div class="col">
+                    <select class="form-control" id="sort_order">
+                        <option value="">{{ __('Change Sort') }}</option>
+                        <option value="distance">{{ __('Distance') }}</option>
+                    </select>
+                </div>
+                <div class="col">
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
                             <i class="mdi mdi-close"></i>
@@ -539,6 +545,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         init(typ, "{{ route('orders.filter') }}", '', false);
     });
+    $("#sort_order").change(function() {
+        var typ=  $("a.nav-link.active").data('rel');
+        init(typ, "{{ route('orders.filter') }}", '', false);
+    });
     $("#clear_filter_btn_icon").click(function() {
         $('#range-datepicker').val('');
         $('#vendor_select_box').val('');
@@ -557,6 +567,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
+    var sort_order = $('#sort_order option:selected').val();
         ajaxCall = $.ajax({
             url: url,
             type: "POST",
@@ -571,7 +582,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 filter_order_status: filter_order_status,
                 search_keyword: search_keyword,
                 vendor_id: vendor_id,
-                date_filter: date_filter
+                date_filter: date_filter,
+                sort_order: sort_order
             },
             success: function(response) {
                 // reload after 10 sec
