@@ -1131,14 +1131,10 @@ class OrderController extends BaseController
                 'is_restricted' => $orderVendorDetails->is_restricted,
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $orderVendorDetails->id,
-<<<<<<< HEAD
                 'dbname' => $client->database_name,
-                'order_id' => $order->id
-=======
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image
->>>>>>> dev
             ];
             if($orderVendorDetails->is_restricted == 1)
             {
@@ -1261,14 +1257,10 @@ class OrderController extends BaseController
                 'is_restricted' => $order_vendor->is_restricted,
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
-<<<<<<< HEAD
                 'dbname' => $client->database_name,
-                'order_id' => $order->id
-=======
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image
->>>>>>> dev
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1432,14 +1424,10 @@ class OrderController extends BaseController
                 'is_restricted' => $order_vendor->is_restricted??'0',
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
-<<<<<<< HEAD
                 'dbname' => $client->database_name,
-                'order_id' => $order->id
-=======
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image
->>>>>>> dev
             ];
 
             // if($order_vendor->is_restricted == 1)
