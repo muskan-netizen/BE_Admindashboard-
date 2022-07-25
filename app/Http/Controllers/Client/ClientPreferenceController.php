@@ -292,6 +292,7 @@ class ClientPreferenceController extends BaseController{
             $preference->minimum_order_batch = ($request->has('minimum_order_batch') && $request->minimum_order_batch == 'on') ? 1 : 0;
             $preference->static_delivey_fee = ($request->has('static_delivey_fee') && $request->static_delivey_fee == 'on') ? 1 : 0;
             $preference->get_estimations = ($request->has('get_estimations') && $request->get_estimations == 'on') ? 1 : 0;
+            $preference->is_scan_qrcode_bag = ($request->has('is_scan_qrcode_bag') && $request->is_scan_qrcode_bag == 'on') ? 1 : 0;
             $preference->view_get_estimation_in_category = ($request->has('view_get_estimation_in_category') && $request->view_get_estimation_in_category == 'on') ? 1 : 0; //Added by ovi
             $preference->max_safety_mod = ($request->has('max_safety_mod') && $request->max_safety_mod == 'on') ? 1 : 0;
 
