@@ -17,6 +17,7 @@ class CreateQrcodeImportsTable extends Migration
             $table->id();
             $table->string('code')->nullable();
             $table->string('image')->nullable();
+            $table->integer('vendor_id')->nullable();
             $table->tinyInteger('status')->default('1');
             $table->timestamps();
         });

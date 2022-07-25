@@ -157,13 +157,14 @@ class OrderController extends BaseController
     public function postOrderFilter(Request $request, $domain = '')
     {
       $user = Auth::user();
+      $preferences = ClientPreference::first();
       $client_timezone = DB::table('clients')->first('timezone'); 
       $user->timezone = $client_timezone->timezone ?? $user->timezone;
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $orders = Order::with(['vendors.products'=>function($q){
             $q->withoutAppends();
-        }, 'vendors.status', 'orderStatusVendor', 'address', 'user'])->orderBy('id', 'DESC');
+        }, 'vendors.status', 'orderStatusVendor', 'address', 'user']);
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -270,7 +271,30 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1,38]);
             });
-        })->select('*', 'id as total_discount_calculate')->paginate(30);
+        });
+        
+        //sort by distance
+        if($request->has('sort_order') && ($request->sort_order == 'distance')){
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $latitude = ($preferences->Default_latitude) ? floatval($preferences->Default_latitude) : null;
+                $longitude = ($preferences->Default_longitude) ? floatval($preferences->Default_longitude) : null;
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                //3961 for miles and 6371 for kilometers
+                $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                if(!empty($latitude) && !empty($longitude)){
+                    $orders = $orders->select('*', 'id as total_discount_calculate', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                            cos( radians( user_latitude ) ) * cos( radians( user_longitude ) - radians(' . $longitude . ') ) +
+                            sin( radians(' . $latitude . ') ) *
+                            sin( radians( user_latitude ) ) ) )  AS sortByUserDistance'));
+                    $orders = $orders->orderBy(DB::raw('ISNULL(sortByUserDistance), sortByUserDistance'), 'ASC');
+                }
+            }
+        }
+        else{
+            $orders = $orders->select('*', 'id as total_discount_calculate')->orderBy('id', 'DESC');
+        }
+        
+        $orders = $orders->paginate(30);
         
 
         $pending_orders = $pending_orders->with('vendors', function ($query) use($user) {
@@ -466,10 +490,10 @@ class OrderController extends BaseController
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
                 foreach ($product->addon as $ck => $addons) {
-                    $opt_price_in_currency = $addons->option->price;
-                    $opt_price_in_doller_compare = $addons->option->price;
+                    $opt_price_in_currency = $addons->option->price??0;
+                    $opt_price_in_doller_compare = $addons->option->price??0;
                     if ($clientCurrency) {
-                        $opt_price_in_currency = $addons->option->price / $divider;
+                        $opt_price_in_currency = $addons->option->price??0 / $divider;
                         $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                     }
                     $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
@@ -1104,7 +1128,10 @@ class OrderController extends BaseController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $orderVendorDetails->is_restricted
+                'is_restricted' => $orderVendorDetails->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $orderVendorDetails->id,
+                'order_id' => $order->id
             ];
             if($orderVendorDetails->is_restricted == 1)
             {
@@ -1224,7 +1251,10 @@ class OrderController extends BaseController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1385,7 +1415,10 @@ class OrderController extends BaseController
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'request_type'=>$rtype??'P',
-                'is_restricted' => $order_vendor->is_restricted??'0'
+                'is_restricted' => $order_vendor->is_restricted??'0',
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'order_id' => $order->id
             ];
 
             // if($order_vendor->is_restricted == 1)

@@ -27,6 +27,7 @@ use App\Models\AssignQrcodesToOrder;
 use App\Models\EstimatedProductCart;
 use Illuminate\Support\Facades\Auth;
 use App\Models\EstimatedProductAddons;
+use App\Models\EstimateProductAddon;
 use App\Models\EstimateProductTranslation;
 use App\Models\QrcodeImport;
 
@@ -136,63 +137,65 @@ class ProductEstimationController extends Controller
          //$userProducts = EstimatedProduct::where('estimated_cart_id', $userCart->id )->get();
         // Search for similar products and addons. - By Ovi
         //foreach($request->product as $product){
-            $userProducts = $request->product;
+            // $userProducts = $request->product;
+            // \Log::info($request->product);
+            // return json_encode($request->product);
             $searchResult = $this->searchProductExpection($request->product, $langId);
         //}
 
         // $navCategories = $this->categoryNav($langId);
     
-        foreach($searchResult as $vendor){
+        // foreach($searchResult as $vendor){
            
-            $addon_price = 0; 
-            foreach ($vendor->productsLive as $prod){
-                foreach($prod->sets as $set){
-                    // array_push($addon_id, $set->addon_id);
-                    $addon_price = $set->setoptions->sum('price');
-                }
-            }
+        //     $addon_price = 0; 
+        //     foreach ($vendor->productsLive as $prod){
+        //         foreach($prod->sets as $set){
+        //             // array_push($addon_id, $set->addon_id);
+        //             $addon_price = $set->setoptions->sum('price');
+        //         }
+        //     }
 
-          foreach($vendor->productsLive as $product){
+        //   foreach($vendor->productsLive as $product){
             
-            $p_id = $product->id;
+        //     $p_id = $product->id;
 
-            $variantData = $product->with(['variantSet' => function ($z) use ($langId, $p_id) {
-                $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
-                $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
-                $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
-                $z->where('vt.language_id', $langId);
-                $z->where('product_variant_sets.product_id', $p_id)->where('vr.status', 1)->orderBy('product_variant_sets.variant_type_id', 'asc');
-            },'variantSet.option2'=> function ($zx) use ($langId, $p_id) {
-                $zx->where('vt.language_id', $langId)
-                ->where('product_variant_sets.product_id', $p_id);
-            }])->where('id', $p_id)->first();
+        //     $variantData = $product->with(['variantSet' => function ($z) use ($langId, $p_id) {
+        //         $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+        //         $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+        //         $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+        //         $z->where('vt.language_id', $langId);
+        //         $z->where('product_variant_sets.product_id', $p_id)->where('vr.status', 1)->orderBy('product_variant_sets.variant_type_id', 'asc');
+        //     },'variantSet.option2'=> function ($zx) use ($langId, $p_id) {
+        //         $zx->where('vt.language_id', $langId)
+        //         ->where('product_variant_sets.product_id', $p_id);
+        //     }])->where('id', $p_id)->first();
 
-            $product->variantSet = $variantData->variantSet;
-            $product->variant_multiplier = 1;
-            $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
-            $vendor->variant_multiplier = $doller_compare;
-            $vendor->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
-            $vendor->product_price = ($product->variant->isNotEmpty()) ? (($product->variant->first()->price*$doller_compare)+$addon_price) : 0;
+        //     $product->variantSet = $variantData->variantSet;
+        //     $product->variant_multiplier = 1;
+        //     $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+        //     $vendor->variant_multiplier = $doller_compare;
+        //     $vendor->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+        //     $vendor->product_price = ($product->variant->isNotEmpty()) ? (($product->variant->first()->price*$doller_compare)+$addon_price) : 0;
 
-            $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
-            $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
+        //     $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+        //     $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
 
-            // foreach($userProducts as $userProduct){
-            //     \Log::info($userProduct->count());
-            //     \Log::info($vendor->products->count());
-            //     if($userProduct->count() <= $vendor->products->count()){
-            //         $vendor->match = "Complete Match";
-            //     }
-            // }
-          }
-        }
-
+        //     // foreach($userProducts as $userProduct){
+        //     //     \Log::info($userProduct->count());
+        //     //     \Log::info($vendor->products->count());
+        //     //     if($userProduct->count() <= $vendor->products->count()){
+        //     //         $vendor->match = "Complete Match";
+        //     //     }
+        //     // }
+        //   }
+        // }
+        return $this->successResponse($searchResult);
         // Return Vendor Count and Result.
-        if($searchResult->count()>0){
-            return $this->successResponse($searchResult);
-        }else{
-            return $this->errorResponse('Vendors Found','404');
-        }
+        // if($searchResult->count()>0){
+        //     return $this->successResponse($searchResult);
+        // }else{
+        //     return $this->errorResponse('Vendors Found','404');
+        // }
        
 
     }
@@ -232,56 +235,194 @@ class ProductEstimationController extends Controller
     //     return $this->errorResponse('Qrcode not found in System.','404');
     // }
 
+    public function getImage($value){
+        $values = array();
+        $img = 'default/default_image.png';
+        if(!empty($value)){
+          $img = $value;
+          $ex = checkImageExtension($img);
+              $values['proxy_url'] = \Config::get('app.IMG_URL1');
+              if (substr($img, 0, 7) == "http://" || substr($img, 0, 8) == "https://"){
+                  $values['image_path'] = \Config::get('app.IMG_URL2').'/'.$img;
+              } else {
+                  $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+              }
+              $values['image_fit'] = \Config::get('app.FIT_URl');
+              $values['original'] = $img;
+          return $values;
+        }
+        return $value;
+  
+      }
+
     public function searchProductExpection($userProducts, $langId)
     {
-            // Make empty array for vendors, product keywords and adoon keywords - By Ovi
+            // Make empty array for vendors, product keywords and adoon keywords
             $all_vendors = array();
             $keywords = array();
             $addonKeywords = array();
             // Loop through cart products
-            foreach($userProducts as $product)
+            foreach($userProducts as $i=> $product)
             {
-                // Get Specific ($this) Product Translation - By Ovi
+                // Get Specific ($this) Product Translation
                 $estimateProductTranslation = EstimateProductTranslation::where('estimate_product_id', $product['estimate_product_id'])->where('language_id', $langId)->first();
-        
-                // Save Product Name in $keywords, so that we can run search later - By Ovi
+                //dd($estimateProductTranslation);
+                // Save Product Name in $keywords, so that we can run search later
                 $keywords[] =  ($estimateProductTranslation) ? $estimateProductTranslation->name : '';
 
-                // Get All Addons of ($this) Specific Product - By Ovi
-                $estimatedProductAddons = EstimatedProductAddons::where('estimated_product_id', $product['estimate_product_id'])->get();
-
-                // Loop through these addons and save the ($title) for later search - By Ovi
-                foreach($estimatedProductAddons as $estimatedProductAddon){
-                    $addonKeywords[] = $estimatedProductAddon->estimated_product_addon_option->title;
-                }
-            }
-
-            // ***Start*** BY - OVI 
-            // Query to get:
-            // 1) All the Vendor list with similar product, string saved in ($keywords)
-            // Product Addons of Specific Product with Translations
-            // Product Media and Variants
-            // Product Translations, comparing ($language_id)
-            // By Checking Vendor (status) active, inactive, or pending.
-            // ***End*** BY - OVI 
-            $teststests = 0;
-            $all_vendors = Vendor::OrderBy('id','desc')->with(['productsLive' => function($q) use($langId, $keywords, $addonKeywords){
-                $q->whereHas('translation',function($q) use($langId, $keywords){
-                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
+                // Loop through these addons and save the ($title) for later search
+                    foreach($product['estimate_products'] as $k=> $estimatedProductAddon){
+                        $addonKeywords[$estimateProductTranslation->name][] = $estimatedProductAddon['title'];
                     }
-            )->with(['sets.setoptions' => function($ad) use($langId, $addonKeywords){
-                $ad->whereHas('translation_one',function($ad) use($langId, $addonKeywords){
-                    $ad->select('id', 'title')->where('language_id', $langId)->whereIn('title', $addonKeywords);
-                    });
-            }])->with('media.image','variant');
-        }])->whereHas('productsLive.translation',function($q) use($langId, $keywords, $teststests){
-                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
-        })->where('status',1)->get();
-        //\Log::info($all_vendors);
+            }
+      
+            $pkeyCnt = count($keywords);
+            $pkeys = '';
+            foreach($keywords as $no => $name)
+            {
+                $comma = '';
+                if($no<$pkeyCnt-1)$comma = ',';
 
-            // Return All Vendors with Products, Addons - By Ovi 
-            return $all_vendors;
+                $pkeys .= "'".$name."'".$comma;
+            }
+           
+
+            $data = array();
+            //FEtch Vendor with Products
+            $vendorsgb = DB::select("SELECT v.id as vid,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN ($pkeys) and is_live='1' group by v.id");
+            foreach($vendorsgb as $vpg)
+            {
+                $products = array();
+                $vendors = DB::select("SELECT v.id as vid,p.sku,v.address,v.name as vname,v.logo,ps.title as ptitle,p.id as pid,pv.id  as variant_id,pv.price as pprice from vendors as v join products as p on v.id=p.vendor_id join product_translations as ps on p.id=ps.product_id join product_variants as pv  on p.id=pv.product_id where v.status='1' and ps.title IN ($pkeys) and is_live='1' and v.id='$vpg->vid' group by ps.title ");
+                foreach($vendors as $vp)
+                {
+
+                    $pkeyCnt = 0;
+                    $pkeyCnt = count($addonKeywords[$vp->ptitle]);
+                    $addonsKeys = '';
+                    foreach($addonKeywords[$vp->ptitle] as $no => $name)
+                    {
+                        $comma = '';
+                        if($no<$pkeyCnt-1)$comma = ',';
+
+                        $addonsKeys .= "'".$name."'".$comma;
+                    }
+
+                        $addons =array();
+                        $addon_id = array();
+                        $option_id = array();
+                        $addon_price = array(); 
+                        //Fetch Products Addon set
+                        $addon = DB::select("SELECT paj.addon_id as aid,sa.title,ado.id as aoid from product_addons as paj join addon_sets as sa on sa.id=paj.addon_id join addon_options as ado on paj.addon_id=ado.addon_id join addon_option_translations as adot on ado.id=adot.addon_opt_id where sa.status='1' and product_id='$vp->pid' and adot.title IN ($addonsKeys) group by paj.addon_id ");
+                        foreach($addon as $vpa)
+                        {
+                        
+                            $addoption = array();
+                            $addoptionP = array();
+                            $addoptiont = array();
+
+                            //Fetch Addon options
+                            $addonSetOpt = DB::select("SELECT ao.id as aoid,ao.price,ao.title from addon_options as ao join addon_option_translations as aot on ao.id=aot.addon_opt_id where addon_id='$vpa->aid' and  aot.title IN ($addonsKeys) group by ao.title");
+                            foreach($addonSetOpt as $opts)
+                            {
+                                $addoption[] = array(
+                                    'optId' => $opts->aoid,
+                                    'title' => $opts->title,
+                                    'price' => $opts->price
+                                );
+                                array_push($option_id, $opts->aoid);
+                                array_push($addon_price, $opts->price??0);
+                            }
+
+                            $addons[] = array(
+                                'addonId' => $vpa->aid,
+                                'addonName' => $vpa->title,
+                                'option' => $addoption,
+                            );
+                            array_push($addon_id, $vpa->aid);
+                        }
+
+                    $products[] = array(
+                        'title' => $vp->ptitle,    
+                        'product_id' => $vp->pid,
+                        'product_sku' => $vp->sku,
+                        'product_variant_id' => $vp->variant_id,
+                        'price' => $vp->pprice + array_sum($addon_price),
+                        'addon'=> $addons,
+                        'addonIds'=> $addon_id,
+                        'optionIds'=> $option_id,
+                        'match'   => (($pkeyCnt==count($option_id))?'C':'P')          
+                    );
+
+                }
+
+            $data[] = array(
+                'id' => $vp->vid,
+                'address' => $vp->address,
+                'logo' => $this->getImage($vp->logo),    
+                'name' => $vp->vname,
+                'price' => $vp->pprice + array_sum($addon_price),
+                'product' => $products
+            );
+        }
+
+        // $data = usort($data, function ($a, $b) {
+        //     return ($a['price'] < $b['price']) ? -1 : 1;
+        //   });
+        // \Log::info(json_encode($data));
+        return $data;
     }
+
+    // public function searchProductExpection($userProducts, $langId)
+    // {
+    //         // Make empty array for vendors, product keywords and adoon keywords - By Ovi
+    //         $all_vendors = array();
+    //         $keywords = array();
+    //         $addonKeywords = array();
+    //         // Loop through cart products
+    //         foreach($userProducts as $product)
+    //         {
+    //             // Get Specific ($this) Product Translation - By Ovi
+    //             $estimateProductTranslation = EstimateProductTranslation::where('estimate_product_id', $product['estimate_product_id'])->where('language_id', $langId)->first();
+        
+    //             // Save Product Name in $keywords, so that we can run search later - By Ovi
+    //             $keywords[] =  ($estimateProductTranslation) ? $estimateProductTranslation->name : '';
+
+    //             // Get All Addons of ($this) Specific Product - By Ovi
+    //             $estimatedProductAddons = EstimatedProductAddons::where('estimated_product_id', $product['estimate_product_id'])->get();
+
+    //             // Loop through these addons and save the ($title) for later search - By Ovi
+    //             foreach($estimatedProductAddons as $estimatedProductAddon){
+    //                 $addonKeywords[] = $estimatedProductAddon->estimated_product_addon_option->title;
+    //             }
+    //         }
+
+    //         // ***Start*** BY - OVI 
+    //         // Query to get:
+    //         // 1) All the Vendor list with similar product, string saved in ($keywords)
+    //         // Product Addons of Specific Product with Translations
+    //         // Product Media and Variants
+    //         // Product Translations, comparing ($language_id)
+    //         // By Checking Vendor (status) active, inactive, or pending.
+    //         // ***End*** BY - OVI 
+    //         $teststests = 0;
+    //         $all_vendors = Vendor::OrderBy('id','desc')->with(['productsLive' => function($q) use($langId, $keywords, $addonKeywords){
+    //             $q->whereHas('translation',function($q) use($langId, $keywords){
+    //                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
+    //                 }
+    //         )->with(['sets.setoptions' => function($ad) use($langId, $addonKeywords){
+    //             $ad->whereHas('translation_one',function($ad) use($langId, $addonKeywords){
+    //                 $ad->select('id', 'title')->where('language_id', $langId)->whereIn('title', $addonKeywords);
+    //                 });
+    //         }])->with('media.image','variant');
+    //     }])->whereHas('productsLive.translation',function($q) use($langId, $keywords, $teststests){
+    //             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
+    //     })->where('status',1)->get();
+    //     //\Log::info($all_vendors);
+
+    //         // Return All Vendors with Products, Addons - By Ovi 
+    //         return $all_vendors;
+    // }
 
     // Remove Product From Estimated Cart **Table: estimated_products**
     public function removeProductFromEstimatedCart(Request $request)
