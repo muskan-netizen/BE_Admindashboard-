@@ -262,7 +262,7 @@ class UserhomeController extends FrontController
     }
     public function index(Request $request, $domain='')
     {
-       
+
         try {
             $home = array();
             $vendor_ids = array();
@@ -948,7 +948,7 @@ class UserhomeController extends FrontController
     #post Home Page Data Single
     public function postHomePageDataSingle(Request $request)
     {
-
+        Session::put('selectedDate', '07/25/2022');
         $slug = $request->slug??null;
         $vendor_ids = [];
         $new_products = [];

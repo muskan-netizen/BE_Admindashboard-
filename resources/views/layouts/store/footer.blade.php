@@ -50,6 +50,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     @endif
 
 </script>
+@yield('pre-custom-script')
 {{-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> --}}
 <script type="text/javascript" src="{{asset('front-assets/js/axios.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
@@ -176,11 +177,11 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
         async function createSocketConnection(){
 
             socket = new io(SocketConstants.Socket_url);
-            await socket.connect(); 
+            await socket.connect();
             console.log(socket);
             console.log(SocketConstants.Socket_url);
         }
-    
+
     </script>
     @endif
 @endif

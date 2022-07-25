@@ -283,7 +283,7 @@ use Illuminate\Support\Arr;
                                                 </h6>
                                                 <span class="productAddonSetOptions" data-min="{{$addon->addOnName->min_select}}" data-cart_id="{{$cart_data->cart_id}}" data-cart_product_id="{{$cart_data->id}}" data-max="{{$addon->addOnName->max_select}}" data-addonset-title="{{$addon->addOnName->title}}">
 
-                                                <div class="booking-time radio-btns long-radio">
+                                                <div class="booking-time radio-btns long-radio mb-0">
                                                         @foreach($addon->setoptions as $k => $option)
                                                             @php $checked = ''; @endphp
                                                             @foreach ($cart_data->addon as $value)
@@ -340,65 +340,66 @@ use Illuminate\Support\Arr;
 
                                         <div  id="date_time_set_div{{$cart_data->id}}" @if(count($cartData)>1 && ($cd !=  $lastKey)) style="pointer-events:none" @endif>
 
-                                        <h4 class="mb-2"><b>{{__('When would you like your service?')}}</b></h4>
-                                        <div class="date-items radio-btns hide">
-                                            @foreach ($period as $key => $date)
-                                                <div>
-                                                    @php
-                                                    $checked = '';
-                                                     $singleDate =  trim(date('Y-m-d', strtotime($date)));
-                                                     if($productDate == $singleDate && !empty($productDate)){
-                                                         $checked = "checked";
-                                                     }
-                                                    @endphp
-                                                    <div class="radios">
-                                                        <p>{{date('D', strtotime($date))}}</p>
-
-                                                        <input type="radio" class="check-time-slots" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' @if($key == 0) checked @endif />
-
-
-                                                        <label for='radio{{$cd}}{{$key}}'>
-                                                            <span class="customCheckbox" @if($checked) style='background-color:#34a099 !important;'@endif aria-hidden="true" >{{date('d', strtotime($date))}}</span>
-                                                        </label>
-                                                        <input type="hidden" name="productid" id="productid" value="{{$cart_data->id}}" />
+                                            <h4 class="mb-2"><b>{{__('When would you like your service?')}}</b></h4>
+                                            <div class="date-items radio-btns hide">
+                                                @foreach ($period as $key => $date)
+                                                    <div>
+                                                        @php
+                                                        $checked = '';
+                                                        $singleDate =  trim(date('Y-m-d', strtotime($date)));
+                                                        if($productDate == $singleDate && !empty($productDate)){
+                                                            $checked = "checked";
+                                                        }
+                                                        @endphp
+                                                        <div class="radios">
+                                                            <p>{{date('D', strtotime($date))}}</p>
+                                                            <div class="alCustomHomeServiceRadio">
+                                                                <input type="radio" class="check-time-slots ondemand-time-slots" data-product_vendor_id="{{$cart_data->vendor_id}}" data-cart_product_id = "{{$cart_data->id}}" value='{{date('Y-m-d', strtotime($date))}}' name='booking_date' id='radio{{$cd}}{{$key}}' @if($key == 0) checked @endif />
+                                                                <label for='radio{{$cd}}{{$key}}'>
+                                                                <span class="customCheckbox" aria-hidden="true" >{{date('d', strtotime($date))}}</span>
+                                                                </label>
+                                                                <input type="hidden" name="productid" id="productid" value="{{$cart_data->id}}" />
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-
-                                        <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
-                                            <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
-
-                                            <div class="booking-time radio-btns long-radio">
-                                                @php
-                                                if(!empty($cart_data->timeSlots)){
-                                                    $time_slots = $cart_data->timeSlots;
-                                                }
-                                                @endphp
-                                                @foreach ($time_slots as $key => $date)
-                                                @if($key+1 < count($time_slots))
-                                                @php
-                                                $checked='';
-                                                    $slotTime = $date.' - '.@$time_slots[$key+1];
-                                                    if(isset($cart_data->schedule_slot) && $cart_data->schedule_slot == $slotTime){
-                                                        echo $checked="checked";
-                                                    }
-                                                @endphp
-                                                <div>
-                                                    <div class="radios">
-                                                        <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_data->id}}{{$key+1}}' @if($checked) {{$checked}} @endif/>
-                                                        <label for='time{{$cart_data->id}}{{$key+1}}'>
-                                                            <span class="customCheckbox selected-time" @if($checked) style='background-color:#34a099 !important;'@endif   aria-hidden="true"  data-value='{{$date}} - {{@$time_slots[$key+1]}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                @endif
                                                 @endforeach
                                             </div>
-                                            <P id="message_of_time{{$cart_data->id}}"></P>
-                                        </div>
 
-                                        <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
+                                            <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" style="@if($cart_data->schedule_slot != '')  @else display: none; @endif ">
+                                                <h4 class="mt-4 mb-2"><b>{{__('What time would you like us to start?')}}</b></h4>
+
+                                                <div class="booking-time radio-btns long-radio mb-0">
+                                                    @php
+                                                    if(!empty($cart_data->timeSlots)){
+                                                        $time_slots = $cart_data->timeSlots;
+                                                    }
+                                                    @endphp
+                                                    @foreach ($time_slots as $key => $date)
+                                                    @if($key+1 < count($time_slots))
+                                                    @php
+                                                    $checked='';
+                                                        $slotTime = $date.' - '.@$time_slots[$key+1];
+                                                        if(isset($cart_data->schedule_slot) && $cart_data->schedule_slot == $slotTime){
+                                                            echo $checked="checked";
+                                                        }
+                                                    @endphp
+                                                    <div>
+                                                        <div class="radios">
+                                                            <div class="alCustomHomeServiceRadio">
+                                                                <input type="radio" value='{{$date}} - {{@$time_slots[$key+1]}}' name='booking_time' id='time{{$cart_data->id}}{{$key+1}}' @if($checked) {{$checked}} @endif/>
+                                                                <label for='time{{$cart_data->id}}{{$key+1}}'>
+                                                                    <span class="customCheckbox selected-time" aria-hidden="true"  data-value='{{$date}} - {{@$time_slots[$key+1]}}' data-cart_product_id='{{$cart_data->id}}'>{{$date}} - {{@$time_slots[$key+1]}}</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                    @endforeach
+                                                </div>
+                                                <P id="message_of_time{{$cart_data->id}}"></P>
+                                            </div>
+
+                                            <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
                                         </div>
                                         <hr>
                                         @endif
@@ -446,38 +447,13 @@ use Illuminate\Support\Arr;
 
                         </div>
 
-                         <div class="footer-card">
-                            @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && empty(app('request')->input('addons')))
-                                <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">Next</span></a>
-                                @elseif(app('request')->input('step') == '1' && app('request')->input('addons') == '1')
-                                    <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
-                                    <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">Next</span></a>
-                                @elseif(app('request')->input('step') == '2' && empty(app('request')->input('addons')))
-                                    <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
-                                    @if(Auth::guest())
-                                        <a href="{{route('customer.login')}}" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
-                                    @else
-                                        <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
-                                    @endif
-                                @elseif(app('request')->input('step') == '2' && !empty(app('request')->input('dateset')))
-                                        <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
-                                        @if(Auth::guest())
-                                            <a href="{{route('customer.login')}}" id="next-button-ondemand-3" ><span class="btn btn-solid float-right">Continue</span></a>
-                                        @else
-                                            <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
-                                        @endif
-                                @elseif(app('request')->input('step') == '3')
-                                    <a href="?step=2"><span class="btn btn-solid"><</span></a>
-                                    <a href="?step=3" id="next-button-ondemand-4"><span class="btn btn-solid float-right">Continue</span></a>
-                                @else
-                            @endif
-                        </div>
+
 
 
                     </div>
 
                     <div class="col-md-4">
-                        <div class="card-box p-2">
+                        <div class="card-box">
                             <div class="product-order">
                                 <div class="total-sec border-0 py-0 my-0">
                                     {{-- <h5 class="d-flex align-items-center justify-content-between pb-2 border-bottom"><b>City</b><b>Dubai</b></h5> --}}
@@ -617,6 +593,32 @@ use Illuminate\Support\Arr;
 
 
                             </div>
+                        </div>
+                        <div class="footer-card">
+                            @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && empty(app('request')->input('addons')))
+                                <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">Next</span></a>
+                                @elseif(app('request')->input('step') == '1' && app('request')->input('addons') == '1')
+                                    <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
+                                    <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">Next</span></a>
+                                @elseif(app('request')->input('step') == '2' && empty(app('request')->input('addons')))
+                                    <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
+                                    @if(Auth::guest())
+                                        <a href="{{route('customer.login')}}" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
+                                    @else
+                                        <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
+                                    @endif
+                                @elseif(app('request')->input('step') == '2' && !empty(app('request')->input('dateset')))
+                                        <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
+                                        @if(Auth::guest())
+                                            <a href="{{route('customer.login')}}" id="next-button-ondemand-3" ><span class="btn btn-solid float-right">Continue</span></a>
+                                        @else
+                                            <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
+                                        @endif
+                                @elseif(app('request')->input('step') == '3')
+                                    <a href="?step=2"><span class="btn btn-solid"><</span></a>
+                                    <a href="?step=3" id="next-button-ondemand-4"><span class="btn btn-solid float-right">Continue</span></a>
+                                @else
+                            @endif
                         </div>
                     </div>
                 </div>
