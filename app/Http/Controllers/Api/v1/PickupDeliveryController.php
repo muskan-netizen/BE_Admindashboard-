@@ -637,7 +637,9 @@ class PickupDeliveryController extends BaseController{
                             'vendor_id' => $vendor,
                             'order_vendor_id' => $order_vendor->id,
                             'dbname' => $client_do->database_name,
-                            'order_id' => $order->id
+                            'order_id' => $order->id,
+                            'customer_id' => $order->user_id,
+                            'user_icon' => $customer->image
                         ];
 
 

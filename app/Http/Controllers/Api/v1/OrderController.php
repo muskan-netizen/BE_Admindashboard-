@@ -981,7 +981,9 @@ class OrderController extends BaseController
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
                 'dbname' => $client->database_name,
-                'order_id' => $order->id
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1109,7 +1111,9 @@ class OrderController extends BaseController
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
                 'dbname' => $client->database_name,
-                'order_id' => $order->id
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1283,7 +1287,9 @@ class OrderController extends BaseController
                  'vendor_id' => $vendor_details->id,
                  'order_vendor_id' => $order_vendor->id,
                  'dbname' => $client->database_name,
-                 'order_id' => $order->id
+                 'order_id' => $order->id,
+                 'customer_id' => $order->user_id,
+                 'user_icon' => $customer->image
              ];
             if($order_vendor->is_restricted == 1)
             {
