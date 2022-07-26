@@ -86,11 +86,6 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
         }
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 10fb7d5e56d1849b115acdf5a30357805318387c
         $count = 0;
         if($client_preference_detail){
             foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
