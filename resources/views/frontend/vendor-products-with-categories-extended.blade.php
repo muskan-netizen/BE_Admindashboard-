@@ -80,7 +80,9 @@ $checkSlot = findSlot('', $vendor->id, '');
                                         @if ($vendor->vendorRating > 0)
 		                        		    <li class="d-flex align-items-center"><img class="mr-2" src="{{asset('frontend/template_six/spaimages/Star.svg')  }}">  {{ $vendor->vendorRating }} {{ __('Very Good') }}</li>
                                         @endif
-		                        		<li class="border-left ml-3 pl-3"><a href="javascript:void(0)">92 customers reviews</a></li>
+		                        		<li class="border-left ml-3 pl-3">
+                                            <a href="javascript:void(0)">{{ $vendor->review_count . ' customer reviews' }}</a>
+                                        </li>
 		                        	</ul>
 			                    </div>
 							</div>
@@ -843,7 +845,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                             <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d<%= variant.product_id %>" readonly placeholder="1" type="text" value="2" class="input-number input_qty" step="0.01">
                                             <span class="plus qty-plus-product"  data-id="" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
-                                            </span>
+                                            </span>spa_slider_custom
                                         </div>
                                     <% } %>
                                     <% if(is_customizable){ %>

@@ -84,7 +84,7 @@ class VendorController extends FrontController
         $tag_id = $request->has('tag') && $request->tag ? $request->tag : null;
         $preferences = Session::get('preferences');
         //die($slug);
-        $vendor = Vendor::with('slot.day', 'slotDate')
+        $vendor = Vendor::with('slot.day', 'slotDate', 'productsLive.reviews')
             ->select('id','email', 'name', 'slug', 'desc','short_desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled','instagram_url')->where('slug', $slug)->where('status', 1)->firstOrFail();
         $vendor->is_vendor_closed = 0;
         if($vendor->show_slot == 0){
@@ -101,7 +101,8 @@ class VendorController extends FrontController
                 }
             }
         }
-        //  dd($vendor->toArray());
+        $review_count = $vendor->whereHas('productsLive.reviews')->count();
+        $vendor->review_count = $review_count;
         if( $request->has('table') ){
             if(!Auth::user()){
                 session(['url.intended' => url()->full()]);
