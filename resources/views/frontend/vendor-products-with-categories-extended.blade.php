@@ -112,7 +112,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 				<!-- Spa and hotel facilities start -->
 				<div class="row py-5 border-bottom">
 					<div class="col-lg-12 hotelFacilities">
-						<h3 class="mb-4">Spa and hotel facilities </h3>
+						<h3 class="mb-4">{{ getNomenclatureName('vendors', false).' ' . __('facilities') }} </h3>
 						<ul class="p-0 m-0 d-flex align-items-center">
                             @php
                              $total_facilty =count($vendor->facilty);
