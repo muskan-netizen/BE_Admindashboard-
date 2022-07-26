@@ -1,0 +1,106 @@
+.al_mobile_menu{
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.al_toggle-menu {
+    width: 50px;
+    height: 40px;
+    display: inline-block;
+    position: relative;
+    top: 0px;
+    z-index: 1000;
+}
+.al_toggle-menu i {
+    margin: 0 auto;
+    right: 0;
+    position: absolute;
+    display: block;
+    height: 2px;
+    background: #777;
+    width: 24px;
+    left: 0;
+    -webkit-transition: all .3s;
+    transition: all .3s;
+}
+.al_toggle-menu i:nth-child(1) {
+    top: 12px;
+}
+.al_toggle-menu i:nth-child(2) {
+    top: 20px;
+}
+.al_toggle-menu i:nth-child(3) {
+    top: 28px;
+}
+.al_toggle-menu.active i:nth-child(1) {
+    top: 25px;
+    -webkit-transform: rotateZ(45deg);
+    transform: rotateZ(45deg);
+}
+.al_toggle-menu.active i:nth-child(2) {
+    background: 0 0;
+}
+.al_toggle-menu.active i:nth-child(3) {
+    top: 25px;
+    -webkit-transform: rotateZ(-45deg);
+    transform: rotateZ(-45deg);
+}
+.al_menu-drawer {
+    width: 0;
+    display: none;
+    background-color: #fff;
+    height: 100vh;
+    position: absolute;
+    right: -350px;
+    top: 0;
+    z-index: 999;
+    -webkit-transition: right linear .2s;
+    transition: right linear .2s;
+}
+.al_menu-drawer.open {
+    padding: 50px 20px;
+    width: 250px;
+    display: block;
+    right: 0;
+    -webkit-transition: right linear .2s;
+    transition: right linear .2s;
+    box-shadow: 0 0 5px rgb(0 0 0 / 50%);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media (max-width: 767px){
+.al_mobile_menu{
+display: block;
+}
+.al_menu-drawer.open .onhover-dropdown.mobile-account{
+    display: block;
+}
+.al_body_template_two  #content-wrap .site-header .navbar-brand img{
+    height: 40px;
+}
+.al_body_template_two ul.onhover-show-div{min-width: 200px;box-shadow: none;}
+.al_body_template_two ul.onhover-show-div li{
+    display: block;
+}
+.al_body_template_two ul.onhover-show-div li a{
+    color: #777;
+}
+.al_menu-drawer.open .onhover-dropdown.mobile-account i{
+    margin-right: 10px;
+}
+.al_body_template_two ul.onhover-show-div li a:hover{color: var(--theme-deafult);}
+}

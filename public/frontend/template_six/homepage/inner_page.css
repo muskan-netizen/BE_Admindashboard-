@@ -3,7 +3,10 @@
     display: block;
     width: 100%;
 }
-
+/* =============== hero area inner page =========================== */
+.heroArea .slider.regular{
+    height: 450px;
+}
 /* ============ inner page ========================= */
 .class_img.product_image{
     border-radius: 15px !important;
@@ -59,7 +62,10 @@
     font-weight: 300;
 }
 .alFourTemplateCartPage .product-img img{
-    border-radius: 30px;
+    border-radius: 15px;
+}
+.cart-page-layout .text-right p.total_amt{
+    font-weight: 600;
 }
 .cart-box-outer.al_white_bg_round.product_row{background-color: #fff;box-shadow: 0 0 10px rgb(0 0 0 / 10%);padding: 10px !important;border-radius: 15px;-webkit-transition: 0.5s;transition: 0.5s;}
 .cart-main-box .cart-sub-total{padding: 10px 12px;border-top: 1px solid #000;}
@@ -186,8 +192,11 @@ span.pagingInfo{position:absolute;top:-80px;right:35px;color:#fff}ol.breadcrumb{
 
 
 /* ==================== Home services page css ==================== */
-.class_img img{width: 100%;}
-.product-order{border-radius: 10px;box-shadow: 0 1px 7px rgb(62 62 76 / 12%);}
+.class_img img{width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;}
+.product-order{border-radius: 10px;box-shadow: 0 1px 7px rgb(62 62 76 / 12%); position: relative;margin-top: 0;}
 .product-order .total-sec{
     background-color: var(--theme-deafult);
     padding: 10px !important;border-radius: 10px 10px 0 0;
@@ -200,6 +209,51 @@ span.pagingInfo{position:absolute;top:-80px;right:35px;color:#fff}ol.breadcrumb{
     padding: 0 !important;
     margin: 0;
 }
+.radio-btns.long-radio input[type="radio"]+label .customCheckbox{
+    width: auto;
+    border-radius: 50px;
+    height: auto;
+    line-height: normal;
+    padding: 10px 14px;
+}
+.radio-btns input[type="radio"]{
+display: none;
+}
+.radio-btns input[type="radio"] + label span{
+    display: inline-block;
+    box-sizing: border-box;
+    position: relative;
+    width: 49px;
+    height: 49px;
+    line-height: 49px;
+    text-align: center;
+    padding: 0;
+    border-radius: 50%;
+    z-index: 1;
+    color: #1f2431;
+    background: #f3f3f3;
+    overflow: hidden;
+    transition: all .5s;
+    -webkit-transition: all .5s;
+    cursor: pointer;
+}
+.booking-time-wrapper p{
+    font-size: 12px;
+    color: var(--theme-deafult);
+}
+.booking-time.radio-btns.long-radio{margin-bottom: 0;}
+.alCustomHomeServiceRadio input[type="radio"]:checked + label span{
+background: var(--theme-deafult);
+color: #fff;
+}
+.radio-btns.long-radio input[type="radio"]:checked+label .customCheckbox{
+    background: var(--theme-deafult);
+    color: #fff;
+}
+.spinner-box{
+width:100%;height:100%;display:flex;justify-content:center;align-items:center;
+background-color:#000;position:fixed;top:0;left:0;z-index:999;opacity: .7;}
+.spinner-box .circle-border{width:50px;height:50px;padding:3px;display:flex;justify-content:center;align-items:center;border-radius:50%;background:var(--theme-deafult);background:linear-gradient(0deg,#f2f2f2 33%,var(--theme-deafult) 100%);animation:spin .8s linear 0s infinite}.spinner-box .circle-core{width:100%;height:100%;background-color:#fff;border-radius:50%}
 .product-order .total-sec h5{color: #fff;}
 .classes_wrapper{border-radius: 10px;box-shadow: 0 1px 7px rgb(62 62 76 / 12%);padding: 10px 20px;margin-bottom: 20px;}
 .ac-royo-btn{
@@ -282,11 +336,18 @@ box-shadow: none;
 .step.active .step-icon{background: var(--theme-deafult);}
 .indicator-line{width: 100%;height: 2px;background: #c2c2c2;flex: 1;}
 .step-indicator .step-icon-order img{height: 30px;width: 30px;}
-.home-serivces  .step-indicator{display: block;
+.class_img{
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 70%;
+    width: 100%;
+}
+.home-serivces .step-indicator{display: block;
 padding: 0;
 background-color: #eee;
 border-radius: 50px;
-margin: 50px auto 0;
+margin: 40px auto 0;
 max-width: 630px;
 width: 100%;}
 .home-serivces .step{display:inline-block; position: relative;z-index: 1;padding-right: 70px;}
@@ -338,12 +399,53 @@ width: auto;}
 .status_box i, .status_box label{vertical-align: middle;display: inline-block;}
 .alOrderDetailsLink,
 .status_box label{background: rgba(247,184,75,.25);color: #f7b84b;border-radius: 50px;padding: 2px 10px;font-size: 12px;overflow: hidden;margin-top: 2px;}
-.service-data h4{
-    margin: -2px 0 0 0;
-    padding: 12px 20px;
-    background-color: var(--theme-deafult);
-    border-radius: 10px 10px 0 0;
-    color: #fff;
-    font-weight: 100;
-}
+.service-data h4{margin: 0;padding: 12px 20px;background-color: var(--theme-deafult);border-radius: 10px 10px 0 0;color: #fff;font-weight: 100;}
+.home-serivces .service-data hr{display: none;}
 /* ==================== Home services page css ==================== */
+
+
+/*===================== login page css start here ==================== */
+.LogoInArea label,
+#register label{text-transform: capitalize;font-size: 12px;margin-top: 10px !important;}
+#login-section{background-image: url(../../../assets/images/bannerFour.jpg);background-color: var(--theme-deafult);height: 100%;width: 100%;background-position: center;background-size: cover;border-radius: 50px;position: relative;overflow: hidden;}
+#login-section .LoginLogoBG{position:relative;z-index: 1;text-align: center;}
+#login-section::before,#login-section::after{position: absolute;content:"";height:100%;width:50%;top:0;right:0;background-color:#fff;z-index: 0;}
+.bgFourPage{background-image: url(../../../assets/images/bannerFour.jpg);background-color: var(--theme-deafult);height: 100vh;position:fixed;width:100%;filter: blur(10px);}
+article.BGcenter{position: absolute;left: 50%;top: 50%;-webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%);width: 100%;}
+.LogoInArea{z-index: 1;}
+.LogoInArea h3{color: var(--theme-deafult);font-weight:700;}
+span.fa.fa-eye-slash.toggle-password.eye::before{content: "\f06e";}
+.fa-eye-slash:before{font-family: FontAwesome;}
+span.fa.fa-eye-slash.toggle-password{position: absolute;bottom: 10px;right: 10px;}
+body.al_body_template_four .submitLogin,
+body.al_body_template_four .login_continue_btn{font-weight: 700;font-size: 14px !important;}
+#password-wrapper a.font-14{line-height: 30px;color:#777}
+#password-wrapper a.font-14:hover{color: var(--theme-deafult);}
+.registerLink a{font-weight: bold;color: var(--theme-deafult);}
+.ALdivider_line{height: 1px;width: 100%;opacity: 1;background-color: #ccc;position: relative;margin: 40px 0 !important;}
+.ALdivider_line span{height: auto;line-height: normal;border: 0;box-shadow: 0 0 4px 0 rgb(0, 0, 0 / 5%);font-size: 14px;font-weight: 400;border-radius: 0;text-align: center;display: inline-block;background: #fff;position: absolute;top: -10px;left: 0;right: 0;max-width: 130px;margin: 0 auto;}
+.LogoInArea .social-links li a{height: 50px;width: 50px;line-height: 50px;border-radius: 10px;display: block;background-color: #fff;box-shadow: 0 0 5px rgb(0 0 0 / 10%);margin: 0 4px;}
+.LogoInArea label{margin-bottom:0;text-align: left;}
+.hide{display: none;}
+.checkbox-input label{position: relative;padding-left: 25px;font-size: 12px;}
+.checkbox-input input{position: absolute;left: 0;width: 18px;top: 0;height:25px}
+#register .user-info.d-block.w-100 h2{font-size: 18px;text-transform: capitalize;font-weight: 300;color: #777;}
+#register label.m-0{text-transform: capitalize;}
+#register .file.file--upload{height: 80px;}
+#register .file.file--upload span{position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);}
+#register .file.file--upload label{width: 100%;height: 100%;padding: 0;}
+.is-invalid ~ .fa.fa-eye-slash.toggle-password{display: none;}
+.BGcenter .tab-content button{width: 100%;height: 37px;}
+.BGcenter .nav-tabs{border-bottom: 0;}
+.BGcenter .nav-tabs .nav-item.show .nav-link,
+.BGcenter .nav-tabs .nav-link.active{color: var(--theme-deafult);background-color: #fff;border-color: var(--theme-deafult);}
+.BGcenter .nav-tabs .nav-link{border-width: 0 0 2px 0;border-color: transparent;border-style: solid; border-radius: 0;}
+.BGcenter .alDocumentsSection{max-height: 150px;overflow-y: auto;position: relative;background-color: var(--theme-deafult) 1%;width:100%;}
+.BGcenter .alDocumentsSection:before{position:absolute;width:100%;height:100%}
+.BGcenter .is-invalid ~ .fa.fa-eye-slash.toggle-password{display: none;}
+div#recent_orders5 .slick-list.draggable{padding: 20px;}
+.BGcenter .tab-content button{width: 100%;height: 37px;}
+ul.price_box_bottom li span{font-weight: 600;}
+.BGcenter a.alBtnGuestLink{color: var(--top-header-color);font-size: 20px;font-weight: 600;text-align: center;margin: 20px auto;display: block;text-decoration: underline;}
+span.registerLink{text-align: center;width: 100%;margin-top: 10px;display: block;font-size: 12px;}
+/*================== login page css end here ====================== */

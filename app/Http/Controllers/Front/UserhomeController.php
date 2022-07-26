@@ -262,7 +262,7 @@ class UserhomeController extends FrontController
     }
     public function index(Request $request, $domain='')
     {
-       
+
         try {
             $home = array();
             $vendor_ids = array();
@@ -948,7 +948,7 @@ class UserhomeController extends FrontController
     #post Home Page Data Single
     public function postHomePageDataSingle(Request $request)
     {
-
+        Session::put('selectedDate', '07/25/2022');
         $slug = $request->slug??null;
         $vendor_ids = [];
         $new_products = [];
@@ -968,11 +968,11 @@ class UserhomeController extends FrontController
 
         }
         $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-        $p_dim = '260/100';
+        $p_dim = '300/300';
         if (isset($set_template)  && $set_template->template_id == 3){
-            $p_dim = '300/350';
+            $p_dim = '300/300';
         }elseif(isset($set_template)  && $set_template->template_id == 2){
-            $p_dim = '260/180';
+            $p_dim = '300/300';
         }
         elseif(isset($set_template)  && $set_template->template_id == 6){
             $p_dim = '300/300';

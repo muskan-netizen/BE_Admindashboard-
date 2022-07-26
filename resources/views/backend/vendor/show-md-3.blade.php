@@ -213,6 +213,19 @@
                         </div>
                     </div>
                     @endif
+                    @if(count($facilties))
+                        <div class="col-md-12">
+                            <div class="form-group" id="social_link">
+                                {!! Form::label('title', 'Facilties',['class' => 'control-label']) !!}
+                                <select class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." id="facilty_list" name="facilty_ids[]">
+                                    @foreach ($facilties as $facilty)
+                                    <option value="{{ $facilty->id }}" {{ in_array($facilty->id, $vendor_facilty_ids) ? "selected" : '' }}>{{ $facilty->primary->name }}</option>
+                                    @endforeach
+                                    
+                                </select>
+                            </div>
+                        </div>
+                    @endif
 
                 @if(Auth::user()->is_superadmin == 1)
                     <div class="row">
