@@ -127,7 +127,7 @@
             $('#template_type_main_div').show();
             $('#warning_page_design_main_div').show();
             $("#" + for1 + "-category-form #" + for1 + "DispatcherHide").hide();
-        } if (id == '10') {
+        } if (id == '11') {
             $("#additional-fields-dv").css("display", "block");
             $(".cat-banners").css("display", "block");
             $("#" + for1 + "-category-form #" + for1 + "ProductHide").hide();
