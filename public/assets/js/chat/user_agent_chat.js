@@ -511,7 +511,7 @@
             </div>	`;
 
         if(document.getElementById(`chatRooms_${roomData._id}`) === null) {
-           // $('.sortDiv').prepend(html);
+            $('.sortDiv').prepend(html);
         }
 
         
