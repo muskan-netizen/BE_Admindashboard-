@@ -417,7 +417,7 @@
         // }
         var authDataParseData = JSON.parse(authData);
         var dImage = authDataParseData.image.image_fit+'500/500'+authDataParseData.image.image_path;
-        axios.post(`${SocketConstants.Socket_url}api/chat/sendMessageJoin`, {
+        axios.post(`${SocketConstants.Socket_url}/api/chat/sendMessageJoin`, {
             'room_id' : room_id,
             'message': message,
             'user_type': 'user',
@@ -436,6 +436,7 @@
         .then(async response => {
              console.log(response.data.status);
              if(response.data.status) {
+                await getAllUser(room_id);
                 socket.emit('save-message', response.data)
                 $('#message_box').val('');
              }
@@ -479,4 +480,39 @@
                 li[i].style.display = "none";
             }
         }
+    }
+
+
+    async function newChatGroup(message){
+       
+        //var data = message.message.chatData;
+        //console.log('lp',message);
+         var roomData = message.roomData;
+        // console.log(roomData);
+        if(roomData ==  undefined || roomData ==  'undefined'){
+            return;
+        }
+        var html='';
+        console.log('dd',message.message.roomData);
+        html = `<div id="chatRooms_${roomData._id}" data-text="${roomData.room_id}" data-sort="" data-timestamp="" class="list-group rounded-0 chatRoomsDivs">
+                    <div id="room_${roomData._id}"  data-OrderID="${roomData.order_id}" data-OrdervendorID="${roomData.order_vendor_id}" data-id="${roomData._id}" data-roomID="${roomData.room_id}" data-roomName="${roomData.room_name}" class="chat-list-item d-flex align-items-start rounded fetchChat">
+            
+                    <div class="align-self-center col-md-3">
+                        <div class="user_show">
+                            <p class="orderNumber m-0 mb-2">#${roomData.room_id}</p>                        
+                        </div>
+                    </div>
+                    <div class="col-md-9 position-relative">
+                        <div class="alNameTime last_message">
+                            <p id="preview_message_${roomData._id}" class="orderChatMessage mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>	`;
+
+        if(document.getElementById(`chatRooms_${roomData._id}`) === null) {
+           // $('.sortDiv').prepend(html);
+        }
+
+        
     }

@@ -359,7 +359,7 @@ class OrderController extends BaseController
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
-                    if($product->quantity > $product->product->variant[0]->quantity)
+                    if(!is_null($product->product) && ($product->quantity > $product->product->variant[0]->quantity))
                     {
                         $vendor->isAlert = true;
                         $vendor->alertMessage = __("You are low on stock");
@@ -1110,7 +1110,7 @@ class OrderController extends BaseController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -1132,7 +1132,10 @@ class OrderController extends BaseController
                 'is_restricted' => $orderVendorDetails->is_restricted,
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $orderVendorDetails->id,
-                'order_id' => $order->id
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($orderVendorDetails->is_restricted == 1)
             {
@@ -1235,7 +1238,7 @@ class OrderController extends BaseController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -1255,7 +1258,10 @@ class OrderController extends BaseController
                 'is_restricted' => $order_vendor->is_restricted,
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
-                'order_id' => $order->id
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1397,7 +1403,7 @@ class OrderController extends BaseController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -1419,7 +1425,10 @@ class OrderController extends BaseController
                 'is_restricted' => $order_vendor->is_restricted??'0',
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
-                'order_id' => $order->id
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
 
             // if($order_vendor->is_restricted == 1)

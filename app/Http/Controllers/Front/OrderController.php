@@ -1261,7 +1261,7 @@ class OrderController extends FrontController
             $order->save();
             // $this->sendOrderNotification($user->id, $vendor_ids);
            
-            $ex_gateways = [4,5,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31,32,34,35,36,37,39,40,41,42]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal
+            $ex_gateways = [4,5,7,8,9,10,12,13,15,17,18,19,20,21,23,24,25,26,28,29,30,31,32,34,35,36,37,39,40,41,42,43,44,45]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal 
            
             if (!in_array($request->payment_option_id, $ex_gateways)) {
 
@@ -1862,7 +1862,7 @@ class OrderController extends FrontController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -1883,7 +1883,10 @@ class OrderController extends FrontController
                 'is_restricted' => $order_vendor->is_restricted,
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
-                'order_id' => $order->id
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1986,7 +1989,7 @@ class OrderController extends FrontController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -2006,7 +2009,10 @@ class OrderController extends FrontController
                 'is_restricted' => $order_vendor->is_restricted,
                 'vendor_id' => $vendor_details->id,
                 'order_vendor_id' => $order_vendor->id,
-                'order_id' => $order->id
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2157,7 +2163,7 @@ class OrderController extends FrontController
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
 
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -2178,8 +2184,11 @@ class OrderController extends FrontController
                 'request_type'=> $rtype,
                 'is_restricted' => $order_vendor->is_restricted,
                 'vendor_id' => $vendor_details->id,
+                'dbname' => $client->database_name,
                 'order_vendor_id' => $order_vendor->id,
-                'order_id' => $order->id
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($order_vendor->is_restricted == 1)
             {

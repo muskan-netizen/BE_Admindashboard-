@@ -89,6 +89,7 @@ class ChatController extends BaseController
 
     }
     public function vendorUserChatRoom(Request $request){
+        die;
         $user = Auth::user();
         $data = $request->all();
         $sub_domain = $data['sub_domain'];
