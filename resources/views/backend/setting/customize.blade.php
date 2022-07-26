@@ -1319,59 +1319,7 @@
          @endif
          <!-- static_dropoff Ends -->
 
-         {{--  facilty section --}}
-            <div class="col-md-3 mb-3">
-                <div class="card-box pb-2 h-100">
-                    <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="header-title m-0">{{ __("Facilties List") }}</h4>
-                    <a class="btn btn-info d-block" id="add_facilties_modal_btn">
-                        <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
-                    </a>
-                    </div>
-                    <div class="table-responsive mt-3 mb-1">
-                    <table class="table table-centered  nowrap table-striped  w-100" id="Facilties_datatable">
-                        <thead>
-                            <tr>
-                                <th>{{ __("Icon") }}</th>
-                                <th>{{ __("Name") }}</th>
-                                <th>{{ __("Action") }}</th>
-                            </tr>
-                        </thead>
-                        <tbody id="post_list">
-                            @forelse($facilties as $facilty)
-                            <tr>
-                                <td>
-                                    <img class="rounded-circle" src="{{$facilty->image['proxy_url'].'30/30'.$facilty->image['image_path']}}">
-                                </td>
-                                <td  width="60%"> <a class="edit_facilty_btn" data-facilty_id="{{$facilty->id}}" href="javascript:void(0)">
-                                    {{$facilty->primary ? $facilty->primary->name : 'NA' }}
-                                </a></td>
-                                <td>
-                                <div>
-                                    <div class="inner-div" style="float: left;">
-                                        <a class="action-icon edit_facilty_btn" data-facilty_id="{{$facilty->id}}" href="javascript:void(0)">
-                                            <i class="mdi mdi-square-edit-outline"></i>
-                                        </a>
-                                    </div>
-                                    <div class="inner-div">
-                                        <button type="button" class="btn btn-primary-outline action-icon delete_facilty_btn" data-facilty_id="{{$facilty->id}}">
-                                            <i class="mdi mdi-delete"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr align="center">
-                                <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                    </div>
-                </div>
-            </div>
-        {{--  facilty section Ends--}}
+         
     </div>
     <!-- Miscellaneous End  -->
 

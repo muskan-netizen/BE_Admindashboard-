@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Facilty,FaciltyTranslation};
+use App\Models\{Facilty,FaciltyTranslation,VendorFacilty};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Str;
 use DB;
@@ -67,7 +67,7 @@ class FaciltyController extends BaseController
             }
 
             DB::commit();
-            return $this->successResponse($facilty, 'facilty Added Successfully.');
+            return $this->successResponse($facilty, 'Vendor Tag Added Successfully.');
         } catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse([], $e->getMessage());
@@ -122,9 +122,9 @@ class FaciltyController extends BaseController
                 }
             }
             
-            return $this->successResponse([], __('facilty updated Successfully!'));
+            return $this->successResponse([], __('Vendor Tag updated Successfully!'));
         }
-        return $this->successResponse([], __('facilty updated Successfully!'));
+        return $this->successResponse([], __('Vendor Tag updated Successfully!'));
     }
 
     /**
@@ -148,7 +148,7 @@ class FaciltyController extends BaseController
             Facilty::where('id',$request->facilty_id)->delete();
             FaciltyTranslation::where('facilties_id',$request->facilty_id)->delete();
             VendorFacilty::where('facilty_id',$request->facilty_id)->delete();
-            return $this->successResponse([],__('facilty deleted successfully!'));
+            return $this->successResponse([],__('Vendor Tag deleted successfully!'));
         } catch (Exception $e) {
             return $this->errorResponse([], $e->getMessage());
         }
