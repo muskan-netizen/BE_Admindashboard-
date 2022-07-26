@@ -4258,7 +4258,7 @@ $(document).ready(function () {
                 paymentViaTelr('', payment_option_id, '');
             break;
 
-            case 46:
+            case 47:
                 paymentViaKhalti('', ''); 
             break;
         
@@ -4704,7 +4704,7 @@ $(document).ready(function () {
                 }
             break;
            
-            case '46':
+            case '47':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
                     paymentViaKhalti(address_id, order, payment_from='cart');
@@ -4927,7 +4927,7 @@ $(document).ready(function () {
                 paymentViaTelr('', payment_option_id, '');
                 break;
 
-            case 46:
+            case 47:
                 paymentViaKhalti('', ''); 
                 break;
         }
