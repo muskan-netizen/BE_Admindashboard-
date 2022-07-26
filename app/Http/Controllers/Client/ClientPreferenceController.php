@@ -264,7 +264,7 @@ class ClientPreferenceController extends BaseController{
             // atleast one is required
             $validator = Validator::make($request->all(), $roles);
             if ($validator->fails()) {
-                return redirect()->route('configure.customize')->with('error', 'Vendor Type One Option must be acitve');
+                return redirect()->route('configure.customize')->with('error', __('Atleast one vendor type will be active'));
             }
             // save vendor mode in client preference table
             foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
