@@ -496,7 +496,7 @@
        
         //var data = message.message.chatData;
         //console.log('lp',message);
-         var roomData = message.roomData;
+        var roomData = message.roomData[0];
         // console.log(roomData);
         if(roomData ==  undefined || roomData ==  'undefined'){
             return;
