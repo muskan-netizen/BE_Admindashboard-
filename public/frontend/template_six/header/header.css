@@ -42,14 +42,15 @@ z-index: 9999;
     max-width: max-content;border:none;
     width: 100%;
 }
-.nav-tabs.navigation-tab_al.nav-material .nav-link{border-radius: 50px;border: none;font-size: 14px;color: #0C0C0C;font-weight: 300;}
+.nav-tabs.navigation-tab_al.nav-material .nav-link{border-radius: 50px;border: none;font-size: 14px;color: #0C0C0C;font-weight: 300;padding: 7px 20px;}
 .nav-tabs.navigation-tab_al.nav-material .nav-link.active{background-color: var(--theme-deafult);color: #fff;}
-
 .vendor_mods_section {
     position: absolute;
     z-index: 111;
     width: 100%;
-    top: 10px;
+    top: 0;
+    padding: 5px 0;
+    background-color: var(--top-header-color);
 }
 
 
@@ -61,7 +62,7 @@ body.al_body_template_six{visibility: hidden;background-color: #fff;}
 body.al_body_template_six.dark,
 body.al_body_template_six.light{visibility: visible;}
 body.al_body_template_six{
-    margin-top: 90px;
+    margin-top: 130px;
 }
 body.al_body_template_six .menu-slider .slick-track{max-width:100%!important;width:100%!important;display:flex;justify-content:center;margin: 0 auto!important}
 body.al_body_template_six.homeHeader{
@@ -74,15 +75,16 @@ width: 100%;
 height: 130px;
 box-shadow: none;
 }
-.site-header.fixed-bar nav.navbar.navbar-expand-lg.fixed-top{top: 0;}
+
 nav.navbar.navbar-expand-lg.fixed-top{top:40px}
 
-.site-header,
-.site-header.fixed-bar{
+.site-header.fixed-bar{background:#fff;opacity: 1;
+    box-shadow: 0 1px 7px rgba(62,62,76,.2);}
+.site-header{
 background:#fff;
 opacity: 1;
 box-shadow: 0 1px 7px rgba(62,62,76,.2);
-height: 90px;
+height: 130px;
 }
 .homeHeader .site-header .rightHead ul li a svg path,
 .homeHeader .site-header .rightHead ul li a svg{
@@ -202,7 +204,12 @@ top: 8px;
 width: 100%;
 }
 .alChooseDate .form-control{
-border-radius: 0;border:none;
+    border-radius: 0;
+    border: none;
+    padding-left: 0;
+    width: 130px;
+    padding-right: 0px;
+    cursor: pointer;
 }
 .alSpaMenuCard ul{margin: 0 auto;}
 .alSpaMenuCard ul li{display: block;}
@@ -218,10 +225,11 @@ transform: rotate(45deg);
 position: absolute;
 content: "";
 right: 7px;
-top: 12px;
+top: 13px;
 opacity: .5;
 z-index: 1;
 }
+.alLocation:before{top: 7px;right: 4px;}
 .alFindGo .btn{
 background-color: var(--theme-deafult);
 padding: 0;
@@ -306,3 +314,27 @@ div#dark-light-btn-toggle{display: none;}
 
 
 
+/* date picker */
+div#ui-datepicker-div {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgb(0 0 0 / 20%);
+}
+.ui-datepicker-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.ui-datepicker-header .ui-corner-all{font-size: 10px;}
+.ui-datepicker-header .ui-datepicker-prev{
+    order: 1;
+}
+.ui-datepicker-header .ui-datepicker-next{
+    order: 3;
+}
+.ui-datepicker-title{order: 2;font-size: 12px;}
+table.ui-datepicker-calendar td a{font-size: 12px;height: 30px;width: 30px;line-height: 30px; text-align: center;padding: 0;display: inline-block;border-radius: 30px;}
+table.ui-datepicker-calendar a{color: #777;font-weight: 400;}
+table.ui-datepicker-calendar td.ui-datepicker-today a{color: #fff;background-color: var(--theme-deafult);}
+table.ui-datepicker-calendar td:hover a{background-color: #eee;}
