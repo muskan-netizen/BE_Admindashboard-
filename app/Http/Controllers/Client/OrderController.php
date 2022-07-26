@@ -156,10 +156,11 @@ class OrderController extends BaseController
 
     public function postOrderFilter(Request $request, $domain = '')
     {
-      $user = Auth::user();
-      $preferences = ClientPreference::first();
-      $client_timezone = DB::table('clients')->first('timezone'); 
-      $user->timezone = $client_timezone->timezone ?? $user->timezone;
+        $response = [];
+        $user = Auth::user();
+        $preferences = ClientPreference::first();
+        $client_timezone = DB::table('clients')->first('timezone'); 
+        $user->timezone = $client_timezone->timezone ?? $user->timezone;
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $orders = Order::with(['vendors.products'=>function($q){
@@ -207,6 +208,42 @@ class OrderController extends BaseController
         $pending_orders = clone $order_count;
         $active_orders = clone $order_count;
         $orders_history = clone $order_count;
+
+        /* luxury option orders (only active orders) */
+        $luxury_order_status_options = [6, 3];
+        $filter_orders = clone $orders;
+        $filter_orders = $filter_orders->with(['vendors' => function ($query) use ($luxury_order_status_options, $user) {
+            $query->whereNotIn('order_status_option_id', $luxury_order_status_options);
+            if ($user->is_superadmin == 0) {
+                $query->whereHas('vendor.permissionToUser', function ($query1) use($user) {
+                    $query1->where('user_id', $user->id);
+                });
+            }
+        }])
+        ->whereHas('vendors', function ($query) use ($luxury_order_status_options, $request) {
+            $query->whereNotIn('order_status_option_id', $luxury_order_status_options)
+            ->where(function ($q1) {
+                // 1 for cod ,38 for offline manual by harbans
+                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+                $q1->orWhere(function ($q2) {
+                    $q2->whereIn('payment_option_id', [1,38]);
+                });
+            });
+            if (!empty($request->get('vendor_id'))) {
+                $query->where('vendor_id', $request->get('vendor_id'));
+            }
+        });
+
+        foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+            $clientVendorTypes = $vendor_typ_key.'_check';
+            $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+            
+            if($preferences->$clientVendorTypes == 1){
+                $vendorTypeOrders = $VendorTypesName.'_orders';
+                $$vendorTypeOrders = clone $filter_orders;
+            }
+        }        
+        /* luxury option orders */
 
         if ($filter_order_status) {
             switch ($filter_order_status) {
@@ -263,6 +300,36 @@ class OrderController extends BaseController
                         }
                     });
                     break;
+                
+                /* luxury option orders */
+                case 'delivery_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 1);
+                    break;
+                
+                case 'dine_in_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 2);
+                    break;
+                
+                case 'takeaway_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 3);
+                    break;
+
+                case 'rental_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 4);
+                    break;
+
+                case 'pick_drop_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 5);
+                    break;
+                
+                case 'on_demand_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 6);
+                    break;
+                
+                case 'laundry_orders':
+                    $orders = $filter_orders->where('luxury_option_id', 7);
+                    break;
+                /* luxury option orders */
             }
         }
         $orders = $orders->whereHas('vendors')->where(function ($q1) {
@@ -296,7 +363,7 @@ class OrderController extends BaseController
         
         $orders = $orders->paginate(30);
         
-
+        // Pending orders count
         $pending_orders = $pending_orders->with('vendors', function ($query) use($user) {
             $query->where('order_status_option_id', 1);
             if ($user->is_superadmin == 0) {
@@ -308,6 +375,7 @@ class OrderController extends BaseController
             $query->where('order_status_option_id', 1);
         })->count();
 
+        // Active orders count
         $order_status_optionsa = [2, 4, 5];
         $active_orders = $active_orders->with('vendors', function ($query) use ($order_status_optionsa, $user) {
             $query->whereIn('order_status_option_id', $order_status_optionsa);
@@ -320,6 +388,7 @@ class OrderController extends BaseController
             $query->whereIn('order_status_option_id', $order_status_optionsa);
         })->count();
 
+        // Past orders count
         $order_status_optionsd = [6, 3];
         $orders_history = $orders_history->with('vendors', function ($query) use ($order_status_optionsd, $user) {
             $query->whereIn('order_status_option_id', $order_status_optionsd);
@@ -331,6 +400,49 @@ class OrderController extends BaseController
         })->whereHas('vendors', function ($query) use ($order_status_optionsd) {
             $query->whereIn('order_status_option_id', $order_status_optionsd);
         })->count();
+
+
+        // Delivery orders count
+        if(isset($delivery_orders)){
+            $delivery_orders = $delivery_orders->where('luxury_option_id', 1)->count();
+            $response['delivery_orders'] = $delivery_orders;
+        }
+
+        // Dine in orders count
+        if(isset($dine_in_orders)){
+            $dine_in_orders = $dine_in_orders->where('luxury_option_id', 2)->count();
+            $response['dine_in_orders'] = $dine_in_orders;
+        }
+
+        // Takeaway orders count
+        if(isset($takeaway_orders)){
+            $takeaway_orders = $takeaway_orders->where('luxury_option_id', 3)->count();
+            $response['takeaway_orders'] = $takeaway_orders;
+        }
+
+        // Rental orders count
+        if(isset($rental_orders)){
+            $rental_orders = $rental_orders->where('luxury_option_id', 4)->count();
+            $response['rental_orders'] = $rental_orders;
+        }
+
+        // Pick drop orders count
+        if(isset($pick_drop_orders)){
+            $pick_drop_orders = $pick_drop_orders->where('luxury_option_id', 5)->count();
+            $response['pick_drop_orders'] = $pick_drop_orders;
+        }
+
+        // On demand orders count
+        if(isset($on_demand_orders)){
+            $on_demand_orders = $on_demand_orders->where('luxury_option_id', 6)->count();
+            $response['on_demand_orders'] = $on_demand_orders;
+        }
+
+        // Laundry orders count
+        if(isset($laundry_orders)){
+            $laundry_orders = $laundry_orders->where('luxury_option_id', 7)->count();
+            $response['laundry_orders'] = $laundry_orders;
+        }
 
 
         foreach ($orders as $key => $order) {
@@ -400,7 +512,13 @@ class OrderController extends BaseController
         }
         $admincurrency = ClientCurrency::getAdminCurrencySymbol();
 
-        return $this->successResponse(['orders' => $orders, 'pending_orders' => $pending_orders, 'active_orders' => $active_orders, 'orders_history' => $orders_history,'admin_currency' => $admincurrency], '', 201);
+        $response['orders'] = $orders;
+        $response['pending_orders'] = $pending_orders;
+        $response['active_orders'] = $active_orders;
+        $response['orders_history'] = $orders_history;
+        $response['admin_currency'] = $admincurrency;
+
+        return $this->successResponse($response, '', 201);
     }
 
     public function uploadReport(Request $request)

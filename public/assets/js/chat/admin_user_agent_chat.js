@@ -465,7 +465,7 @@
         //console.log(document.getElementById(`chatRooms_${roomData._id}`));
         if(document.getElementById(`chatRooms_${roomData._id}`) === null) {
             //alert();
-            //$('.sortDiv').prepend(html);
+            $('.sortDiv').prepend(html);
         }
 
         

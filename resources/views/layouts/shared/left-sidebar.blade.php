@@ -83,14 +83,14 @@
                                 </li>
                             @endif
                             @if(in_array('orders',$allowed) || Auth::user()->is_superadmin == 1)
-                                <!-- <li>
+                                <li>
                                     <a href="{{route('order.index')}}">
                                         <span class="icon-orders"></span>
                                         <span> {{ __('Orders') }} </span>
                                     </a>
-                                </li> -->
+                                </li>
 
-                                <li>
+                                {{-- <li>
                                     <a href="#sidebarorders" data-toggle="collapse"> 
                                     <span class="icon-accounting"></span>
                                         <span> {{ __('Orders') }} </span>
@@ -111,7 +111,7 @@
                                                 </li>
                                         </ul>
                                     </div>
-                                </li>
+                                </li> --}}
                             @endif
                             @if(in_array('vendors',$allowed) || Auth::user()->is_superadmin == 1)
                                 <li>
