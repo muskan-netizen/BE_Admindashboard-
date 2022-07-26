@@ -339,8 +339,8 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                             @endphp
 
                                                             @if ($productVariantInCart > 0)
-                                                                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                                                <a class="add-cart-btn add_vendor_product alProductBtns"
+                                                                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>  alProductBtns--}}
+                                                                <a class="add-cart-btn add_vendor_product "
                                                                     style="display:none;"
                                                                     id="add_button_href{{ $cartProductId }}"
                                                                     data-variant_id="{{ $productVariantIdInCart }}"
@@ -482,8 +482,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                             </div>
                                         </div>
                                         <div id="header_cart_main_ul_ondemand">
-                                            <img class="mb-2" src="{{asset('images/no-order.svg')}}">
-                                            <p>{{ __("You don't have orders right now.") }}</p>
+                                        
                                         </div>
                                     </div>
                                 </div>
