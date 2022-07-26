@@ -167,26 +167,28 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     });
 </script>
 @endif
+@if((!empty($socket_url)))
 <!-- /** socket_accept */ -->
-<script src="{{$socket_url}}/socket.io/socket.io.js"></script>
-@if((!empty(Auth::user())))
-<script>
-    createSocketConnection();
-    async function createSocketConnection(){
-
-        socket = new io(SocketConstants.Socket_url);
-        await socket.connect(); 
-        console.log(socket);
-        console.log(SocketConstants.Socket_url);
-    }
-  
-</script>
+    <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+    @if((!empty(Auth::user())))
+    <script>
+        createSocketConnection();
+        async function createSocketConnection(){
+            if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
+                socket = new io(SocketConstants.Socket_url);
+                await socket.connect(); 
+                console.log(socket);
+                console.log(SocketConstants.Socket_url);
+            }
+        }    
+    </script>
+    @endif
 @endif
 <!-- /**socket_accept end */ -->
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
-@if ($selected_template == 6)
+@if (isset($set_template)  && $set_template->template_id == 6))
 <script async src="{{asset('frontend/template_six/homepage/spa_slider_custom.js')}}"></script>
 @endif
 <script type="text/javascript">

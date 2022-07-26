@@ -129,12 +129,16 @@ $(document).ready(function() {
                     $('#edit_vendor_modal').modal('show');
                     $('.selectize-select').selectize();
                     $('#edit_vendor_modal #editVendorBox').html(data.html);
-                    dine = document.getElementsByClassName('dine_in');
-                    var switchery = new Switchery(dine[0]);
-                    take = document.getElementsByClassName('takeaway');
-                    var switchery = new Switchery(take[0]);
-                    delivery = document.getElementsByClassName('delivery');
-                    var switchery = new Switchery(delivery[0]);
+                    // dine = document.getElementsByClassName('dine_in');
+                    // var switchery = new Switchery(dine[0]);
+                    // take = document.getElementsByClassName('takeaway');
+                    // var switchery = new Switchery(take[0]);
+                    // delivery = document.getElementsByClassName('delivery');
+                    // var switchery = new Switchery(delivery[0]);
+                    var elems = document.querySelectorAll('.editSwitchery');
+                    elems.forEach(function(html) {
+                        var switchery = new Switchery(html);
+                    });
                     autocompletesWraps.push('edit');
                     loadMap(autocompletesWraps);
                     $('.dropify').dropify();

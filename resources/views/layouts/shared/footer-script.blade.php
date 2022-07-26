@@ -37,7 +37,9 @@ if (Session::has('toaster')) {
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
-<script src="https://chat.royoorders.com/socket.io/socket.io.js"></script>
+@if((!empty($socket_url)))
+    <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+@endif
 
 <script>
     
@@ -99,6 +101,11 @@ if (Session::has('toaster')) {
 </script>
 @if(!str_contains(url()->current(), '/godpanel'))
 @if((!empty(Auth::user())))
+@if((!empty($socket_url)))
+    <script>
+        createSocketConnection();
+    </script>
+@endif
 <script>
      createSocketConnection();
       $(document).ready( async function() {
@@ -146,11 +153,13 @@ if (Session::has('toaster')) {
     //     get_latest_order_socket(message.order_number);
     // });
     async function createSocketConnection(){
+        if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
 
-        socket = new io(SocketConstants.Socket_url);
-        await socket.connect(); 
-        console.log(socket);
-        console.log(SocketConstants.Socket_url);
+            socket = new io(SocketConstants.Socket_url);
+            await socket.connect(); 
+            console.log(socket);
+            console.log(SocketConstants.Socket_url);
+        }
     }
     function get_latest_order_socket(order_number){
         console.log(order_number);

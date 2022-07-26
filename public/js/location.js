@@ -1,4 +1,5 @@
 let nav_click_vendor_mode = 0;
+let redirect = 0;
 jQuery(window).scroll(function () {
     var scroll = jQuery(window).scrollTop();
 
@@ -12,7 +13,7 @@ jQuery(window).scroll(function () {
 
     }
 });
-$(document).ready(function () {
+$(document).ready( async function () {
     getLocation();
     
 
@@ -25,12 +26,15 @@ $(document).ready(function () {
         if($("#address-longitude").length > 0){
             longitude = $("#address-longitude").val();
         }
-        getHomePageCategoryMenu(latitude, longitude);
+       await getHomePageCategoryMenu(latitude, longitude);
         getHomePage(latitude, longitude);
         // $(document).ready(function () {
         if ($.cookie("age_restriction") != 1) {
             if(is_age_restricted == "1" || is_age_restricted == 1)
             {
+                if(redirect){
+                    return false;
+                } 
                 $('#age_restriction').modal({backdrop: 'static', keyboard: false});
             }
         }
@@ -318,7 +322,7 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.status == "Success") {
-
+                    remove_spinner('#our_vendor_main_div');
                     var path = window.location.pathname;
                     if (path == '/') {
 
@@ -391,6 +395,7 @@ $(document).ready(function () {
                 }
             },
             complete:function(data){
+                remove_spinner('#our_vendor_main_div');
                 // Hide image container
                 $(".shimmer_effect").hide();
                 $(".home-slider, .home-banner-slider").show();
@@ -919,7 +924,8 @@ $(document).ready(function () {
                 if((data.navCategories).length > 0 && vendor_type == "pick_drop"){
                     var category = data.navCategories[0].slug;
                     window.location.href = category_page_url.replace(":id", category);
-                    return;
+                    redirect =  1;
+                    return false;
                 }
 
                 if($('.menu-slider').hasClass('slick-initialized')){
@@ -928,12 +934,13 @@ $(document).ready(function () {
                 $('#main-menu').smartmenus('destroy');
                 let nav_categories_template = _.template($('#nav_categories_template').html());
                 await  $("#main-menu").html(nav_categories_template({ nav_categories: response.data.navCategories }));
-                await $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
+                await  $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
                 //     if($(window).width() >= 320){
                 //         if(!$('.menu-slider').hasClass('slick-initialized')){
                 //             loadMainMenuSlider();
                 //         }
                 //    }
+                console.log('asd');
                 resizeMenuSlider();
                 $("#main-menu").css("display" , "flex");
 

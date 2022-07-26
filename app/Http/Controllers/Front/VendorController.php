@@ -426,7 +426,7 @@ class VendorController extends FrontController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId,$column,$value){
-                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
+                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price','markup_price')->orderBy('quantity', 'desc');
                             // $q->groupBy('product_id');
                         },'variant.checkIfInCart.addon',
                         'addOn' => function ($q1) use ($langId) {

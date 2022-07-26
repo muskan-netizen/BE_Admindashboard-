@@ -221,7 +221,9 @@
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
                             @include('backend.primary_currency')
-                            {!! Form::text('price', decimal_format($product->variant[0]->price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            
+                            {!! Form::text('price', decimal_format($product->variant[0]->actual_price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+
                         </div>
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
@@ -234,6 +236,13 @@
                             {!! Form::label('title', __('Container Charges (Optional)'), ['class' => 'control-label']) !!}
                             @include('backend.primary_currency')
                             {!! Form::text('container_charges', $product->variant[0]->container_charges, ['class'=>'form-control', 'id' => 'container_charges', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
+                        @endif
+                        @if($product->vendor->add_markup_price == 1 && Auth::user()->is_superadmin == 1)
+                        <div class="col-4 mb-2">
+                            {!! Form::label('title', __('Markup Price'), ['class' => 'control-label']) !!} 
+                            @include('backend.primary_currency') ({{ __("Visible For Admin") }})
+                            {!! Form::text('markup_price', $product->variant[0]->markup_price, ['class'=>'form-control', 'id' => 'markup_price', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         @endif
                         {{-- <div class="col-4 mb-2">
