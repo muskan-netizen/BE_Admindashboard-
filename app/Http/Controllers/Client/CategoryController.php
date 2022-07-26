@@ -199,7 +199,7 @@ class CategoryController extends BaseController
         foreach ($category->translationSetUnique as $key => $value) {
             $existlangs[] = $value->language_id;
         }
-        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('categories.id', '!=', $id)->where('status', '!=', $this->blocking)->whereIn('type_id', ['1', '3', '6', '8','9'])->where('deleted_at', NULL)->get();
+        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('categories.id', '!=', $id)->where('status', '!=', $this->blocking)->whereIn('type_id', ['1', '3', '6', '8','9','10'])->where('deleted_at', NULL)->get();
         $dispatcher_warning_page_options = DispatcherWarningPage::where('status', 1)->get();
         $dispatcher_template_type_options = DispatcherTemplateTypeOption::where('status', 1)->get();
 
