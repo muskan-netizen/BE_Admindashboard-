@@ -2406,7 +2406,7 @@ $(document).ready(function(){
     $(document).on('click', '.submitSaveFacilty', function(e) {
         var vendor_registration_document_id = $("#add_facilty_modal input[name=facilty_id]").val();
         if (vendor_registration_document_id) {
-            var post_url = "{{ route('vendor.registration.document.update') }}";
+            var post_url = "{{ route('facilty.update') }}";
         } else {
             var post_url = "{{ route('facilty.store') }}";
         }
@@ -2452,14 +2452,16 @@ $(document).ready(function(){
             success: function(response) {
                if (response.status = 'Success') {
                    console.log(response.data);
+                   console.log(response.data.image.image_fit+'90/90'+response.data.image.image_path);
                 //   $(document).find("#add_vendor_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
 
                   $("#add_facilty_modal input[name=facilty_id]").val(response.data.id);
                   
-                  $("#add_facilty_modal input[name=facilty_image]").setAttribute('data-default-file',response.data.image.image_fit+response.data.image.image_path );
+                  $("#add_facilty_modal input[name=facilty_image]").attr('data-default-file',response.data.image.image_fit+'90/90'+response.data.image.image_path );
+                  $('.dropify').dropify();
                   $('#add_facilty_modal #standard-modalLabel').html('Update facilty');
                   $('#add_facilty_modal').modal('show');
-                  data-default-file
+                  
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_facilty_modal #facilty_name_'+value.language_id).val(value.name);
                   });
@@ -2468,6 +2470,38 @@ $(document).ready(function(){
             error: function() {}
         });
     }
+     // delete kyc document 
+     $(document).on("click", ".delete_facilty_btn", function() {
+         var facilty_id = $(this).data('facilty_id');
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+         }).then((result) => {
+            if (result.value) {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('facilty.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     facilty_id: facilty_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
+                  }
+               });
+            }
+        });
+    });
+
+    
  $('#add_facilties_modal_btn').click(function(e) {
         document.getElementById("userRegistrationDocumentForm").reset();
         $('#faciltyForm input[name=facilty_id]').val("");

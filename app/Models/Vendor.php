@@ -159,5 +159,9 @@ class Vendor extends Model implements Auditable{
   public function getById($id){
     return self::where('id',$id)->first();
   }
+  public function Facilty(){
+     // return $this->hasMany('App\Models\VendorFacilty', 'vendor_id', 'id');
+      return $this->belongsToMany(\App\Models\Facilty::class, 'vendor_facilties', 'vendor_id', 'facilty_id');
+  }
 
 }

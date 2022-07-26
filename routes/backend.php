@@ -428,6 +428,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('facilty/store', 'Client\FaciltyController@store')->name('facilty.store');
         Route::post('facilty/update', 'Client\FaciltyController@update')->name('facilty.update');
         Route::get('facilty/edit', 'Client\FaciltyController@show')->name('facilty.edit');
+        Route::post('facilty/delete', 'Client\FaciltyController@destroy')->name('facilty.delete');
     });
 });
 
