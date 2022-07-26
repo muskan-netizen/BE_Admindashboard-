@@ -20,4 +20,9 @@ socket.on('disconnect',function() {
  console.log('The client has disconnected!');
 });
 
+
+socket.on('room-created',async function(data) {
+    await newChatGroup(data)
+    console.log('Du doooo',data);
+});
 //})()
