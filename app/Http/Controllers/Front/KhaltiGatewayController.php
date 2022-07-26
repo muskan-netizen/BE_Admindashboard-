@@ -220,9 +220,19 @@ class KhaltiGatewayController extends FrontController
             if($subscriptionController->purchaseSubscriptionPlan($request, '', $request['data']['subscription_id'])) {
                 $returnUrl = route('user.subscription.plans');
                 $response['status'] = 'Success';
-                $response['payment_from'] = 'tip';
+                $response['payment_from'] = 'subscription';
                 $response['route'] = $returnUrl;
             }
+        }elseif($request['data']['payment_from'] == 'pickup_delivery'){
+            $request->request->add(['payment_option_id' => 47, 'amount' => $amount,'order_number' => $request['data']['order_id'], 'transaction_id' => $transactionId]);
+            $plaseOrderForPickup = new PickupDeliveryController();
+            $pickupDeliveryResponse = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+            $responseData = $this->successResponse($pickupDeliveryResponse, '', 200)->getData();
+            \Log::info(json_encode($responseData));
+            $returnUrl = route('front.booking.details', $request['data']['order_id']);
+            $response['status'] = 'Success';
+            $response['payment_from'] = 'pickup_delivery';
+            $response['route'] = $returnUrl;
         }
         return $response;
         //return route('order.return.success');

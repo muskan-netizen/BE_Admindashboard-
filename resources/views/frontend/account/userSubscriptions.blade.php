@@ -413,7 +413,6 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
-    var stripe_ideal_publishable_key ='{{ $stripe_ideal_publishable_key }}';
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();

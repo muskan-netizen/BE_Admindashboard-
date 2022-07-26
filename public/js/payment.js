@@ -2844,6 +2844,7 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
     window.paymentViaKhalti = function paymentViaKhalti(address_id, order, payment_form) {
         let total_amount = 0;
         let tip = 0;
+        let cabElement = $("#pickup_now");
         let tipElement = $("#cart_tip_amount");
         let cartElement = $("input[name='cart_total_payable_amount']");
         let cart_id = $("#cart_total_payable_amount").data("cart_id");
@@ -2879,10 +2880,14 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
             total_amount = subscriptionElement.val();
             ajaxData = $("#subscription_payment_form").serializeArray();
             ajaxData.push({name: 'payment_form', value: 'subscription'});
-        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+        } else if ((typeof tip_for_past_order !== 'undefined') && (tip_for_past_order == 1)) {
             total_amount = walletElement.val();
             ajaxData.push({name: 'payment_form', value: 'tip'});
             ajaxData.push({name: 'order_id', value: $("#order_number").val()});
+        } else if (cabElement.length > 0) {
+            total_amount = cabElement.attr('data-amount');
+            ajaxData.push({name: 'payment_form', value: 'pickup_delivery'});
+            ajaxData.push({name: 'order_id', value: order.order_number});
         }
     
         var khaltipay_options = {
@@ -2893,7 +2898,7 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
             "productIdentity": product_id_arr_string,
             "productName": product_name_arr_string,
             "productName": product_name_arr_string,
-            "productUrl": "https://www.sales.royoorders.com/",
+            "productUrl": "https://sales.royoorders.com/",
             "eventHandler": {
                 onSuccess (payload) {
                     console.log(payload,'payload');
@@ -2959,7 +2964,8 @@ window.paymentViaDpoSubscription= function paymentViaDpoSubscription(address_id=
 
                 }
             },
-            error: function(error) {
+            error: function(response) {
+                var error = response.responseJSON;
                 console.log(error, 'Error');
             }
         });
