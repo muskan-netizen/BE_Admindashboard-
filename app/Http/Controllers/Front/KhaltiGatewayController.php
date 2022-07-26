@@ -215,7 +215,7 @@ class KhaltiGatewayController extends FrontController
                 $response['route'] = $returnUrl;
             }
         }elseif($request['data']['payment_from'] == 'subscription'){
-            $request->request->add(['payment_option_id' => 46, 'transaction_id' => $transactionId, 'amount' => $amount]);
+            $request->request->add(['payment_option_id' => 47, 'transaction_id' => $transactionId, 'amount' => $amount]);
             $subscriptionController = new UserSubscriptionController();
             if($subscriptionController->purchaseSubscriptionPlan($request, '', $request['data']['subscription_id'])) {
                 $returnUrl = route('user.subscription.plans');
@@ -344,11 +344,11 @@ class KhaltiGatewayController extends FrontController
                     $orderController = new OrderController();
                     $orderController->tipAfterOrder($request);
                 }elseif($request['data']['payment_from'] == 'subscription'){
-                    $request->request->add(['payment_option_id' => 46, 'transaction_id' => $transactionId, 'amount' => $amount]);
+                    $request->request->add(['payment_option_id' => 47, 'transaction_id' => $transactionId, 'amount' => $amount]);
                     $subscriptionController = new UserSubscriptionController();
                     $subscriptionController->purchaseSubscriptionPlan($request, '', $request['data']['subscription_id']);
                 }elseif($request['data']['payment_from'] == 'pickup_delivery'){
-                    $request->request->add(['payment_option_id' => 46, 'amount' => $amount,'order_number' => $request['data']['order_id'], 'transaction_id' => $transactionId]);
+                    $request->request->add(['payment_option_id' => 47, 'amount' => $amount,'order_number' => $request['data']['order_id'], 'transaction_id' => $transactionId]);
                     $plaseOrderForPickup = new PickupDeliveryController();
                     $pickupDeliveryResponse = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
                     $response = $this->successResponse($pickupDeliveryResponse, '', 200)->getData();

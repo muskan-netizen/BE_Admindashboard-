@@ -196,12 +196,12 @@
                                     </div>
                                 </li>
                                 @endif
-                                <li class="d-flex align-items-center justify-content-between mt-2">
+                                {{-- <li class="d-flex align-items-center justify-content-between mt-2">
                                     <h4 class="header-title mb-2">{{ __("Show Payment Icons") }}</h4>
                                     <div class="mb-0">
                                         <input type="checkbox" id="show_payment_icons" data-plugin="switchery" name="show_payment_icons" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
                                     </div>
-                                </li>
+                                </li> --}}
                                 @if($client_preference_detail->business_type != 'taxi')
                                 <li class="d-flex align-items-center justify-content-between mt-2">
                                     <h4 class="header-title mb-2">{{ __('Hide Nav Bar') }}</h4>

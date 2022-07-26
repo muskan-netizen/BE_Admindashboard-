@@ -182,7 +182,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('tag/update', [TagController::class, 'update'])->name('tag.update');
         Route::post('tag/delete', [TagController::class, 'destroy'])->name('tag.delete');
 
-        Route::get('estimations/barcode', [EstimationController::class, 'barcode'])->name('estimations.barcode');
+        Route::get('estimations/barcode/{vendor?}', [EstimationController::class, 'barcode'])->name('estimations.barcode');
         Route::resource('estimations', 'Client\EstimationController');
         Route::resource('estimationsAddon', 'Client\EstimationAddonController');
 
@@ -404,11 +404,26 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('cancel-order/requests', 'Client\OrderCancelRequestsController@index')->name('cancel-order.requests');
         Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');
         Route::post('cancel-order/request/status/update', 'Client\OrderCancelRequestsController@updateStatus')->name('cancel-order.request.status.update');
+
+        /**Chat resourses */
+        //Route::resource('chat', 'Client\ChatController');
+        //Route::get('chat/user/{room_id?}', 'Client\ChatController@index')->name("chat.index");
+        Route::get('chat/vendorUser/{room_id?}', 'Client\ChatController@VendorUserChat')->name("chat.VendorUserChat");
+        Route::post('chat/startChat', 'Client\ChatController@startChat')->name('chat.startChat');
+        Route::get('chat/vendor/{room_id?}', 'Client\ChatController@UserVendorChat')->name("chat.UserVendorChat");
+        Route::post('chat/joinChatRoom', 'Client\ChatController@JoinRoom')->name('chat.joinChatRoom');
+        Route::post('chat/sendMessage', 'Client\ChatController@sendMessage')->name('chat.sendMessage');
+        Route::get('chat/agentUser/{room_id?}', 'Client\ChatController@userAgentChatRoom')->name("chat.userAgentChatRoom");
+
+        Route::post('chat/fetchOrderDetail', 'Client\ChatController@fetchOrderDetail')->name('chat.fetchOrderDetail');
         //static dropoff edit
         Route::get('static-dropoff/index', 'Client\StaticDropoffController@index')->name('static-dropoff.index');
         Route::post('static-dropoff/save', 'Client\StaticDropoffController@store')->name('static-dropoff.create');
         Route::get('static-dropoff/edit', 'Client\StaticDropoffController@edit')->name('static-dropoff.edit');
         Route::delete('static-dropoff/destroy/{id}', 'Client\StaticDropoffController@delete')->name('static-dropoff.destroy');
+
+        // rental product 
+        Route::post('rental-variant_row', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
     });
 });
 

@@ -258,8 +258,9 @@ Route::group(['middleware' => ['domain']], function () {
 	//payPhone routes
 	Route::post('payment/payphone', 'Front\PayphoneController@createHash')->name('payphone.createHash');
 	Route::get('payment/payphone/success', 'Front\PayphoneController@successPage')->name('payphone.success');
-	Route::any('payment/payphone/api', 'Front\PayphoneController@webViewPay')->name('payphone.webview');
-
+	Route::any('payment/payphone/api/{url?}/{token?}', 'Front\PayphoneController@webViewPay')->name('payphone.webview');
+	Route::any('payment/payphone/refundWalletAmount', 'Front\PayphoneController@refundWalletAmount')->name('payphone.refund');
+	
 	//KongaPay routes 
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
 	Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
@@ -424,6 +425,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('stripe/make', 'Front\PaymentController@makePayment')->name('stripe.makePayment');
 	Route::post('inquiryMode/store', 'Front\ProductInquiryController@store')->name('inquiryMode.store');
 	Route::get('viewcart', 'Front\CartController@showCart')->name('showCart');
+	Route::get('cart', 'Front\CartController@showCartNew')->name('cartNew');
 	Route::get('checkSlotOrders', 'Front\CartController@checkSlotOrders')->name('checkSlotOrders'); //Added by Ovi
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
@@ -542,4 +544,10 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	//Passbase
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
 	Route::match(['get','post'],'passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
+	Route::get('user/chat/userVendor/{room_id?}', 'Front\ChatController@UservendorChat')->name("userChat.UservendorChat");
+	Route::get('user/chat/userAgent/{room_id?}', 'Front\ChatController@UserAgentChat')->name("userChat.UserAgentChat");
+
+	Route::post('user/chat/fetchOrderDetail', 'Front\ChatController@fetchOrderDetail')->name('userChat.fetchOrderDetail');
+	Route::post('user/chat/startChat', 'Front\ChatController@startChat')->name('userChat.startChat');
+
 });

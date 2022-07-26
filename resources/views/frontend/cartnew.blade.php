@@ -1765,6 +1765,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
+    var payphone_refund_wallet = "{{route('payphone.refund')}}";
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";
     var create_dpo_tocken_url = "{{route('dpo.createTocken')}}";

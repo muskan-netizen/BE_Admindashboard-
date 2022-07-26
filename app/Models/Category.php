@@ -73,7 +73,7 @@ class Category extends Model
         return $this->hasMany(Product::class, 'category_id', 'id');
     }
     public function type(){
-      return $this->belongsTo('App\Models\Type')->select('id', 'title');
+      return $this->belongsTo('App\Models\Type')->select('id', 'title','service_type');
     }
     public function vendor(){
       return $this->belongsTo('App\Models\Vendor');
@@ -177,5 +177,12 @@ class Category extends Model
   {
     return $this->hasMany(Product::class,'category_id', 'id');
   }
-
+  
+  public function scopeServiceType($query)
+  {  
+      $categoryTypesArray = getCategoryTypes();
+      return $query->whereHas('type',function($q) use ($categoryTypesArray){ 
+        $q->whereIn('service_type',$categoryTypesArray);
+      });
+  }
 }

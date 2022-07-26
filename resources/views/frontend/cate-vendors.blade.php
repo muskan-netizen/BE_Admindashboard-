@@ -34,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-sm-5">
+            <div class="row mb-sm-5 homepageSix">
                 <div class="collection-filter col-lg-3 al">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
@@ -348,7 +348,13 @@
 @section('script')
 <script src="{{asset('front-assets/js/rangeSlider.min.js')}}"></script>
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
+
 <script>
+    @if(!empty($category->image) && $category->image['is_original'])
+    $(document).ready(function() {
+        $("body").addClass("homeHeader");
+    });
+    @endif
     $('.js-range-slider').ionRangeSlider({
         type: 'double',
         grid: false,
@@ -405,6 +411,7 @@
     }
 
 </script>
+
 
 
 @endsection

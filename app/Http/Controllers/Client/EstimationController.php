@@ -265,12 +265,28 @@ class EstimationController extends BaseController{
         return redirect()->back();
     }
 
-    public function barcode(Request $request)
+    public function barcode(Request $request,$vendor = null)
+    {
+        try {
+                $codes = QrcodeImport::with('vendorDetail')->latest();
+                if($vendor){
+                    $codes = $codes->where('vendor_id',$request->vendor);   
+                }
+                $codes  = $codes->paginate(25);
+            $files = CsvQrcodeImport::get();
+            return view('backend.qrcode.index')->with(['codes' => $codes,'files'=>$files]);
+
+        } catch (Exception $e) {
+            return $this->errorResponse([], $e->getMessage());
+        }
+    }
+
+    public function deleteBarcode(Request $request)
     {
         try {
 
-            $codes = QrcodeImport::paginate(25);
-            $files = CsvQrcodeImport::get();
+            $codes = QrcodeImport::find($request->qrCode);
+            // $files = CsvQrcodeImport::get();
             return view('backend.qrcode.index')->with(['codes' => $codes,'files'=>$files]);
 
         } catch (Exception $e) {

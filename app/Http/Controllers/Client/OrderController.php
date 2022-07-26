@@ -345,6 +345,8 @@ class OrderController extends BaseController
             $order->total_other_taxes_amount = $total_other_taxes;
 
             foreach ($order->vendors as $vendor) {
+                $vendor->isAlert = false;
+                $vendor->alertMessage = "";
                 if(isset($vendor) && !empty($vendor->vendor_id))
                 $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);
                 else
@@ -357,6 +359,11 @@ class OrderController extends BaseController
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image)? $product->media->first()->image->path : getDefaultImagePath();
+                    if(!is_null($product->product) && ($product->quantity > $product->product->variant[0]->quantity))
+                    {
+                        $vendor->isAlert = true;
+                        $vendor->alertMessage = __("You are low on stock");
+                    }
                 }
 
                 if ($vendor->delivery_fee > 0) {
@@ -380,7 +387,8 @@ class OrderController extends BaseController
                 } elseif ($luxury_option->title == 'dine_in') {
                     $luxury_option_name = 'Dine-In';
                 } else {
-                    $luxury_option_name = 'Delivery';
+                    $luxury_option_name = getNomenclatureName($luxury_option->title);
+                    //$luxury_option_name = 'Delivery';
                 }
             }
             $order->luxury_option_name = __($luxury_option_name);
@@ -483,10 +491,10 @@ class OrderController extends BaseController
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
                 foreach ($product->addon as $ck => $addons) {
-                    $opt_price_in_currency = $addons->option->price;
-                    $opt_price_in_doller_compare = $addons->option->price;
+                    $opt_price_in_currency = $addons->option->price??0;
+                    $opt_price_in_doller_compare = $addons->option->price??0;
                     if ($clientCurrency) {
-                        $opt_price_in_currency = $addons->option->price / $divider;
+                        $opt_price_in_currency = $addons->option->price??0 / $divider;
                         $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                     }
                     $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
@@ -515,7 +523,7 @@ class OrderController extends BaseController
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = 'Dine-In';
             } else {
-                $luxury_option_name = 'Delivery';
+                $luxury_option_name = $this->getNomenclatureName($luxury_option->title);
             }
         }
         $order->luxury_option_name = $luxury_option_name;
@@ -1102,7 +1110,7 @@ class OrderController extends BaseController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -1121,7 +1129,13 @@ class OrderController extends BaseController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $orderVendorDetails->is_restricted
+                'is_restricted' => $orderVendorDetails->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $orderVendorDetails->id,
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($orderVendorDetails->is_restricted == 1)
             {
@@ -1224,7 +1238,7 @@ class OrderController extends BaseController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -1241,7 +1255,13 @@ class OrderController extends BaseController
                 'order_team_tag' => $team_tag,
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
-                'is_restricted' => $order_vendor->is_restricted
+                'is_restricted' => $order_vendor->is_restricted,
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1383,7 +1403,7 @@ class OrderController extends BaseController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            $client = CP::orderBy('id', 'asc')->first();
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -1402,7 +1422,13 @@ class OrderController extends BaseController
                 'call_back_url' => $call_back_url ?? null,
                 'task' => $tasks,
                 'request_type'=>$rtype??'P',
-                'is_restricted' => $order_vendor->is_restricted??'0'
+                'is_restricted' => $order_vendor->is_restricted??'0',
+                'vendor_id' => $vendor_details->id,
+                'order_vendor_id' => $order_vendor->id,
+                'dbname' => $client->database_name,
+                'order_id' => $order->id,
+                'customer_id' => $order->user_id,
+                'user_icon' => $customer->image
             ];
 
             // if($order_vendor->is_restricted == 1)
@@ -1786,7 +1812,8 @@ class OrderController extends BaseController
             } elseif ($luxury_option->title == 'dine_in') {
                 $luxury_option_name = 'Dine-In';
             } else {
-                $luxury_option_name = 'Delivery';
+                //$luxury_option_name = 'Delivery';
+                $luxury_option_name = $this->getNomenclatureName($luxury_option->title);
             }
         }
         $order->luxury_option_name = $luxury_option_name;

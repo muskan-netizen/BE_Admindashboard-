@@ -14,11 +14,12 @@ class TelrController extends Controller
 	use \App\Http\Traits\ApiResponser;
 	public function __construct()
   	{
-		$this->telr_creds = PaymentOption::select('credentials')->where('code', 'telr')->where('status', 1)->first();
+		$this->telr_creds = PaymentOption::select('credentials','test_mode')->where('code', 'telr')->where('status', 1)->first(); 
 	    $this->creds_arr = json_decode($this->telr_creds->credentials);
 	    $this->merchant_id = $this->creds_arr->merchant_id ?? '';
 	    $this->api_key = $this->creds_arr->api_key ?? '';
 	    $this->url = url('payment/telr');
+        $this->is_test = $this->telr_creds->test_mode ? true : false;
 	}
 	public function beforePayment(Request $request)
     {
@@ -33,9 +34,16 @@ class TelrController extends Controller
             Auth::login($user);
         }
         $user = Auth::user();
+        $address = $user->defaultAddress;
+        if(is_null($address))
+        {
+            $address = $user->address[0];
+        }
         $data['customer_name'] = $user->name;
         $data['customer_email'] = $user->email??'dummy@yopmail.com';
         $data['customer_phone'] = '+'.($user->dial_code??'91').($user->phone_number??'9876543210');
+        $data['billing_address'] = $address;
+        // dd($user->defaultAddress);
     	$response = $this->createPaymentpage($data);
     	// dd($response);
     	if(!is_null($response)) 

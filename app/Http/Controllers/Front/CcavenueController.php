@@ -226,7 +226,7 @@ class CcavenueController extends Controller
 
                 if(isset($request->merchant_param3) && $request->merchant_param3=='mob')
                 {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order->order_number;
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=ccavenue'.'&status=200&order='.$order->order_number;
                 return Redirect::to($returnUrl); 
                 }else{
                 return Redirect::to(route('order.success',[$order->id]));
