@@ -185,6 +185,7 @@ $client_preferences = \App\Models\ClientPreference::first();
     /* Getting other taxes */
     let tax_fixed_fee_percentage=0;
     let tax_container_charges_percentage=0;
+    let tax_markup_charges_percentage=0;
     let tax_service_charges_percentage=0;
     let tax_delivery_charges_percentage=0;
     
@@ -195,18 +196,7 @@ $client_preferences = \App\Models\ClientPreference::first();
     let other_taxes_string="";
     _.each(cart_details.products, function(product, key){
         /*console.log(JSON.stringify(product));*/
-       /* if (product.vendor.get_tax_fixed_fee != null) {
-            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
-        }
-        if (product.vendor.get_tax_container_charges != null) {
-            tax_container_charges_percentage=product.vendor.get_tax_container_charges.tax_rate;
-        }
-        if (product.vendor.get_tax_service_charges != null) {
-            tax_service_charges_percentage=product.vendor.get_tax_service_charges.tax_rate;
-        }
-        if (product.vendor.get_tax_delivery_charges != null) {
-            tax_delivery_charges_percentage=product.vendor.get_tax_delivery_charges.tax_rate;
-        }*/
+      
         
         /* --- Vendor Tax Get Percentage ---- */
         _.each(cart_details.taxRates, function(tax, index){
@@ -233,30 +223,13 @@ $client_preferences = \App\Models\ClientPreference::first();
                     tax_container_charges_percentage=tax.tax_rate;
                 }
             }
+            if(product.vendor.markup_price_tax_id!=null){
+                if(product.vendor.markup_price_tax_id==index){
+                    tax_markup_charges_percentage=tax.tax_rate;
+                }
+            }
         });
 
-
-         
-
-        /*console.log(tax_fixed_fee_percentage);
-        if (product.vendor.get_tax_fixed_fee != null) {
-            tax_fixed_fee_percentage=product.vendor.get_tax_fixed_fee.tax_rate;
-        }tax_fixed_fee_percentage,tax_container_charges_percentage,tax_service_charges_percentage,tax_delivery_charges_percentage
-        if (product.vendor.get_tax_container_charges != null) {
-            tax_container_charges_percentage=product.vendor.get_tax_container_charges.tax_rate;
-        }
-        if (product.vendor.get_tax_service_charges != null) {
-            tax_service_charges_percentage=product.vendor.get_tax_service_charges.tax_rate;
-        }
-        if (product.vendor.get_tax_delivery_charges != null) {
-            tax_delivery_charges_percentage=product.vendor.get_tax_delivery_charges.tax_rate;
-        }*/
-
-
-        /*console.log("tax_fixed_fee_percentage"+tax_fixed_fee_percentage);
-        console.log("tax_container_charges_percentage"+tax_container_charges_percentage);
-        console.log("tax_service_charges_percentage"+tax_service_charges_percentage);
-        console.log("tax_delivery_charges_percentage"+tax_delivery_charges_percentage);*/
         fixed_fee=product.vendor.fixed_fee;
         fixed_fee_amount=product.vendor.fixed_fee_amount;
         total_fixed_fee_amount=parseFloat(total_fixed_fee_amount)+parseFloat(product.vendor.fixed_fee_amount);
@@ -265,9 +238,9 @@ $client_preferences = \App\Models\ClientPreference::first();
             total_wallet_amount_used=parseFloat(total_wallet_amount_used)+parseFloat(cart_details.wallet_amount_used);
         }
 
-        other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.all_vendor_deliver_charges)*tax_delivery_charges_percentage/100);
-        other_taxes_string='tax_fixed_fee:'+(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+',tax_service_charges:'+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+',tax_delivery_charges:'+(parseFloat(cart_details.all_vendor_deliver_charges)*tax_delivery_charges_percentage/100);
-           
+        other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.all_vendor_deliver_charges)*tax_delivery_charges_percentage/100)+(parseFloat(cart_details.all_vendor_markup_charges)*tax_markup_charges_percentage/100);
+        other_taxes_string='tax_fixed_fee:'+(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+',tax_service_charges:'+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+',tax_delivery_charges:'+(parseFloat(cart_details.all_vendor_deliver_charges)*tax_delivery_charges_percentage/100)+',tax_markup_charges:'+(parseFloat(cart_details.all_vendor_markup_charges)*tax_markup_charges_percentage/100);
+          
         %>
         <div id="thead_<%= product.vendor.id %>">
             <div class="row">

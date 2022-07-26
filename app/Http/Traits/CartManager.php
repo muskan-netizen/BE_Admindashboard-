@@ -76,7 +76,7 @@ trait cartManager{
 
 
 
-  public function cartVendorProducts()
+  public function cartVendorOtherTaxes()
   {
 
   }

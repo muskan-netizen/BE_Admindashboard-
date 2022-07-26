@@ -807,7 +807,7 @@ class CartController extends FrontController
             $d = 0;
             $total_container_charges = 0 ;
             $all_vendor_deliver_charges = 0 ;
-
+            $all_vendor_markup_charges = 0;
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
@@ -910,6 +910,7 @@ class CartController extends FrontController
                     }
                 }
                 $cart_product_ids = [];
+                $totalMarkup = 0;
                 /* Getting in Vendor product loop and setting product values*/
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
 
@@ -950,6 +951,7 @@ class CartController extends FrontController
                     //need change here
                     //dd($prod->pvariant->price);
                     $price_in_currency = $prod->pvariant->price??0;
+                    $totalMarkup += $prod->pvariant->markup_price??0;
                     $price_in_doller_compare = $prod->pvariant->price??0; 
                     $container_charges_in_currency = $prod->pvariant->container_charges??0;
                     $coupon_apply_price+=$price_in_currency;
@@ -1241,7 +1243,8 @@ class CartController extends FrontController
                 if($vendorData->vendor->delivery_charges_tax_id)
                 $all_vendor_deliver_charges +=  $deliveryCharges;
 
-
+                if($vendorData->vendor->add_markup_price)
+                $all_vendor_markup_charges +=  $totalMarkup;
 
                 $subtotal_amount = $payable_amount;
                 // if($PromoFreeDeliver != 1){
@@ -1535,6 +1538,7 @@ class CartController extends FrontController
             $cart->total_payable_amount = decimal_format($total_payable_amount);
             $cart->delivery_charges = decimal_format($deliveryCharges);
             $cart->all_vendor_deliver_charges = decimal_format($all_vendor_deliver_charges);
+            $cart->all_vendor_markup_charges = decimal_format($all_vendor_markup_charges);
             $cart->total_discount_amount = decimal_format($total_discount_amount);
             $cart->total_taxable_amount = decimal_format($total_taxable_amount); 
             $total_payable_amount_calc_tip = $total_payable_amount - $total_taxable_amount;
