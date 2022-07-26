@@ -22,7 +22,7 @@ class CustomDomain{
      * @return mixed
      */
     public function handle($request, Closure $next){
-     
+
       $path = $request->path();
       $domain = $request->getHost();
       $domain = str_replace(array('http://', '.test.com/login'), '', $domain);
@@ -39,7 +39,7 @@ class CustomDomain{
       }
       $callback = '';
       $redisData = json_decode($existRedis);
-      if($redisData){ 
+      if($redisData){
           $database_name = 'royo_'.$redisData->database_name;
           $database_host = !empty($redisData->database_host) ? $redisData->database_host : env('DB_HOST', '127.0.0.1');
           $database_port = !empty($redisData->database_port) ? $redisData->database_port : env('DB_PORT', '3306');
@@ -74,7 +74,7 @@ class CustomDomain{
             $sub_domain = ltrim($sub_domain, "https://");
             $callback = "https://".$sub_domain.".royoorders.com/auth/facebook/callback";
           }
-          $clientPreference = ClientPreference::select('theme_admin', 'distance_unit', 'currency_id', 'date_format', 'time_format', 'fb_login', 'fb_client_id', 'fb_client_secret', 'fb_client_url', 'twitter_login', 'twitter_client_id', 'twitter_client_secret', 'twitter_client_url', 'google_login', 'google_client_id', 'google_client_secret', 'google_client_url', 'apple_login', 'apple_client_id', 'apple_client_secret', 'apple_client_url', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'map_provider', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'web_template_id', 'is_hyperlocal', 'need_delivery_service', 'need_dispacher_ride', 'delivery_service_key', 'dispatcher_key', 'primary_color', 'secondary_color', 'fcm_api_key', 'fcm_auth_domain', 'fcm_project_id', 'fcm_storage_bucket', 'fcm_messaging_sender_id', 'fcm_app_id', 'fcm_measurement_id', 'distance_unit_for_time', 'distance_to_time_multiplier','delay_order','product_order_form','digit_after_decimal','dinein_check','takeaway_check','delivery_check','concise_signup', 'slots_with_service_area')->where('client_code', $redisData->code)->first();
+          $clientPreference = ClientPreference::select('theme_admin', 'distance_unit', 'currency_id', 'date_format', 'time_format', 'fb_login', 'fb_client_id', 'fb_client_secret', 'fb_client_url', 'twitter_login', 'twitter_client_id', 'twitter_client_secret', 'twitter_client_url', 'google_login', 'google_client_id', 'google_client_secret', 'google_client_url', 'apple_login', 'apple_client_id', 'apple_client_secret', 'apple_client_url', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'map_provider', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'web_template_id', 'is_hyperlocal', 'need_delivery_service', 'need_dispacher_ride', 'delivery_service_key', 'dispatcher_key', 'primary_color', 'secondary_color', 'fcm_api_key', 'fcm_auth_domain', 'fcm_project_id', 'fcm_storage_bucket', 'fcm_messaging_sender_id', 'fcm_app_id', 'fcm_measurement_id', 'distance_unit_for_time', 'distance_to_time_multiplier','delay_order','product_order_form','digit_after_decimal','dinein_check','takeaway_check','delivery_check','concise_signup','rental_check','pick_drop_check','on_demand_check','laundry_check', 'slots_with_service_area')->where('client_code', $redisData->code)->first();
           if($clientPreference){
             Config::set('FACEBOOK_CLIENT_ID', $clientPreference->fb_client_id);
             Config::set('FACEBOOK_CLIENT_SECRET', $clientPreference->fb_client_secret);
@@ -97,7 +97,7 @@ class CustomDomain{
           $lang_detail = Language::where('id', Session::get('customerLanguage'))->first();
           App::setLocale($lang_detail->sort_code);
           Session::put('applocale', $lang_detail->sort_code);
-          
+
           // Set Currency
           $primeCurcy = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.is_primary', 1)->first();
           Session::put('client_primary_currency', $primeCurcy->iso_code);
@@ -136,9 +136,23 @@ class CustomDomain{
           $vendor_mode_count = 0;
           $single_vendor_type = "";
           if($clientPreference){
-              if($clientPreference->dinein_check == 1){$vendor_mode_count++;    $single_vendor_type = "dine_in";}
-              if($clientPreference->takeaway_check == 1){$vendor_mode_count++;  $single_vendor_type = "takeaway";}
-              if($clientPreference->delivery_check == 1){$vendor_mode_count++;  $single_vendor_type = "delivery";}
+              // if($clientPreference->dinein_check == 1){$vendor_mode_count++;    $single_vendor_type = "dine_in";}
+              // if($clientPreference->takeaway_check == 1){$vendor_mode_count++;  $single_vendor_type = "takeaway";}
+              // if($clientPreference->delivery_check == 1){$vendor_mode_count++;  $single_vendor_type = "delivery";}
+
+              foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+									$clientVendorTypes = $vendor_typ_key.'_check';
+										if($clientPreference->$clientVendorTypes == 1){
+                      if($vendor_mode_count == 0){
+                        $single_vendor_type = $vendor_typ_key;
+                      }
+                      $vendor_mode_count++;
+                    }
+              }
+          }
+       
+          if(empty(Session::get('vendorType'))){
+              Session::put('vendorType', $single_vendor_type);
           }
           if($vendor_mode_count ==1){
               Session::forget('vendorType');
@@ -149,7 +163,7 @@ class CustomDomain{
           Session::put('default_country_phonecode', $phoneCode);
 
           Session::put('preferences', $preferData);
-         
+
       }else{
         return redirect()->route('error_404');
       }

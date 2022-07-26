@@ -10,6 +10,7 @@ class TypeSeeder extends Seeder
      * Run the database seeds.
      *
      * @return void
+     * service_type :: you can see this in constants.php in config
      */
     public function run(){
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
@@ -18,6 +19,7 @@ class TypeSeeder extends Seeder
         $types = array(
             [
                 'id' => 1,
+                'service_type' => 'products_service',
                 'sequence' => 2,
                 'title' => 'Product',
                 'image' => 'product.png',
@@ -25,6 +27,7 @@ class TypeSeeder extends Seeder
             ],
             [
                 'id' => 2,
+                'service_type' => 'pick_drop_service',
                 'sequence' => 7,
                 'title' => 'Pickup/Parent',
                 'image' => 'pickup_delivery.png',
@@ -32,6 +35,7 @@ class TypeSeeder extends Seeder
             ],
             [
                 'id' => 3,
+                'service_type' => 'products_service',
                 'sequence' => 3,
                 'title' => 'Vendor',
                 'image' => 'vendor.png',
@@ -40,12 +44,14 @@ class TypeSeeder extends Seeder
             [
                 'id' => 4,
                 'sequence' => 4,
+                'service_type' => 'products_service',
                 'title' => 'Brand',
                 'image' => 'brand.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
             ],
             [
                 'id' => 5,
+                'service_type' => 'products_service',
                 'sequence' => 6,
                 'title' => 'Celebrity',
                 'image' => 'celebrity.png',
@@ -54,12 +60,14 @@ class TypeSeeder extends Seeder
             [
                 'id' => 6,
                 'sequence' => 1,
+                'service_type' => 'products_service',
                 'title' => 'Subcategory',
                 'image' => 'subcategory.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
             ],
             [
                 'id' => 7,
+                'service_type' => 'pick_drop_service',
                 'sequence' => 6,
                 'title' => 'Pickup/Delivery',
                 'image' => 'dispatcher.png',
@@ -67,6 +75,7 @@ class TypeSeeder extends Seeder
             ],
             [
                 'id' => 8,
+                'service_type' => 'on_demand_service',
                 'sequence' => 7,
                 'title' => 'On Demand Service',
                 'image' => 'ondemand.png',
@@ -74,6 +83,7 @@ class TypeSeeder extends Seeder
             ],
             [
                 'id' => 9,
+                'service_type' => 'laundry_service',
                 'sequence' => 8,
                 'title' => 'Laundry',
                 'image' => 'laundry.png',
@@ -81,10 +91,20 @@ class TypeSeeder extends Seeder
             ],
             [
                 'id' => 10,
+                'service_type' => 'rental_service',
                 'sequence' => 9,
+                'title' => 'Rental Service',
+                'image' => 'rental.png',
+                'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                
+            ],
+            [
+                'id' => 11,
+                'sequence' => 10,
                 'title' => 'Food',
                 'image' => 'home_five.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                
             ]
         );
         foreach ($types as $type) {

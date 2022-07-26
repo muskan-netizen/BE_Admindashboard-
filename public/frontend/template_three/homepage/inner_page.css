@@ -472,5 +472,9 @@ body[dir="rtl"].al_body_template_three .vendor-products-wrapper .scrollspy-menu 
 body[dir="rtl"].al_body_template_three .main-menu .menu-right .icon-nav .onhover-div .show-div.shopping-cart {padding: 0; min-width: 270px;right: unset;left: 0;}
 body[dir="rtl"].al_body_template_three .main-menu .menu-right .icon-nav .onhover-div .show-div.shopping-cart .buttons {text-align: right;}
 
-
+.start_chat{
+    float: right;
+    margin: -15px;
+    padding: 0px 132px 0px 0px ;   
+}
 

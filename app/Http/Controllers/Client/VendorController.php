@@ -156,7 +156,8 @@ class VendorController extends BaseController
             return Redirect::route('vendor.catalogs', $vendors->first()->id);
         }else{
             $build = array();
-            $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+            
+            $categories = Category::serviceType()->with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             // ->where('is_core', 1)
             ->whereNotIn('type_id', [4, 5])
@@ -248,9 +249,13 @@ class VendorController extends BaseController
         foreach ($request->only('name', 'address', 'latitude', 'longitude', 'desc','short_desc') as $key => $value) {
             $vendor->{$key} = $value;
         }
-        $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-        $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-        $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+        foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+            $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+            $vendor->$VendorTypesName = ($request->has($VendorTypesName) && $request->$VendorTypesName == 'on') ? 1 : 0;
+        }
+        // $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
+        // $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
+        // $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
         if ($update == 'false') {
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
@@ -521,7 +526,7 @@ class VendorController extends BaseController
         $csvVendors = [];
         $vendor = Vendor::findOrFail($id);
         $VendorCategory = VendorCategory::where('vendor_id', $id)->where('status', 1)->pluck('category_id')->toArray();
-        $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+        $categories = Category::serviceType()->with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             ->where(function ($q) use ($id) {
                 $q->whereNull('vendor_id')
@@ -645,6 +650,8 @@ class VendorController extends BaseController
             $q->whereNull('deleted_at')->orWhere('deleted_at', '');
         })
         ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
+        
+
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
@@ -1080,6 +1087,7 @@ class VendorController extends BaseController
         $vendor->show_slot = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
         $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
         $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
+        $vendor->add_markup_price = ($request->has('add_markup_price') && $request->add_markup_price == 'on') ? 1 : 0;
         $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
         // $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
         if($request->has('slot_minutes')){
@@ -1663,6 +1671,7 @@ class VendorController extends BaseController
             $q->whereNull('deleted_at')->orWhere('deleted_at', '');
         })
         ->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
+        
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
@@ -1672,7 +1681,7 @@ class VendorController extends BaseController
             $product_categories_build = $this->buildTree($p_categories->toArray());
             $product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
             foreach($product_categories_hierarchy as $k => $cat){
-                $myArr = array(1,3,7,8,9);
+                $myArr = array(1,3,7,8,9,10);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
                     unset($product_categories_hierarchy[$k]);
                 }

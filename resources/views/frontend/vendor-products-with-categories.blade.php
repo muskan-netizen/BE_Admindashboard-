@@ -249,11 +249,13 @@
                                                                                     if (count($data->addOn) > 0) {
                                                                                         $isAddonExist = 1;
                                                                                     }
+                                                                                   // dd($data->variant);
                                                                                 @endphp
 
                                                                                 @foreach ($data->variant as $var)
                                                                                     @if (isset($var->checkIfInCart) && count($var->checkIfInCart) > 0)
                                                                                         @php
+                                                                                            //dd($var->_markup_price);
                                                                                             $productVariantInCart = 1;
                                                                                             $productVariantIdInCart = $var->checkIfInCart['0']['variant_id'];
                                                                                             $cartProductId = $var->checkIfInCart['0']['id'];
@@ -853,11 +855,17 @@
 
 @endsection
 @section('script')
+
     <script src="{{ asset('front-assets/js/rangeSlider.min.js') }}"></script>
     <script src="{{ asset('front-assets/js/my-sliders.js') }}"></script>
     <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
-
     <script>
+        // @if(!empty($vendor->banner))
+        //     $(document).ready(function() {
+        //         $("body").addClass("homeHeader");
+        //     });
+        // @endif
+
          //Get the modal vendorStories
         var modal = document.getElementById("vendorStories");
 
@@ -886,7 +894,7 @@
 
             var scroll = jQuery(window).scrollTop();
             var categories_list_height = $('.vendor-products-wrapper').height() +400;
-            
+
             if (scroll >= 400) {
                 jQuery(".categories-product-list").addClass("fixed-bar");
             } else {
