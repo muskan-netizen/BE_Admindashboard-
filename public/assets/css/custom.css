@@ -369,8 +369,23 @@ color:#43bee1
   overflow-x: visible;
 }
 
-
-
+.tabs_radio {display: none;}
+/* .tabs_radio_controls{text-align:center} */
+.tabs_radio_controls label{margin:15px 10px;}
+.tabs_radio_controls .total-items{position: absolute; top: -20px; right: -10px;}
+.tabs_label {
+  display: inline-block;
+  background: #fff;
+  border: 1px solid #43bee1;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-bottom: 1rem;
+  text-align: center;
+  position: relative;
+}
+.tabs_radio:checked+.tabs_label {background: #43bee1; box-shadow: 0 0 5px #43bee1;}
+.tabs_radio:checked+.tabs_label h5, .tabs_radio:checked+.tabs_label p {color: #fff;}
+.tabs_radio:not(:disabled)~label {cursor: pointer;}
 
 
 
