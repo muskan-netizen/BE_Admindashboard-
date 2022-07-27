@@ -2,7 +2,7 @@
 	{{-- <div class="px-4 py-4" style="border-bottom: 1px solid rgb(238, 238, 238);">
 		<h2 id="roomName" class="font-size-15 mb-0"></h2>
 	</div> --}}
-	<div class="conversation-head row py-3 px-3 mb-2">
+	<div class="conversation-head row py-3 px-3 mx-0 mb-2">
 		<div class="col-5 alOrderDetailsBox pr-0">
 			<p class="alOrderDetails m-0">Order #<span id="order_num"></span></p>
 			<p class="alVendorDetails m-0">Vendor <span id="vendor_name">Food Hub (Cheese Avenue, Texas)</span></p>
@@ -30,8 +30,8 @@
 				</div> --}}
 			</div>
 		</div>
-		
-	
+
+
 	</div>
 	<div class="chat-box-wrapper position-relative d-flex chatitem">
 		<div id="chatHistory" class="px-4 pt-3 chat-box col-12 ">

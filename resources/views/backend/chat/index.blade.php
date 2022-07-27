@@ -65,14 +65,10 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body position-relative">
-                        <div class="container">
-                            <div class="chat-body row overflow-hidden shadow bg-light rounded">
-
-                                @include('backend.chat.part.left') 
-                                @include('backend.chat.part.right') 
-                            </div>
+                        <div class="chat-body row overflow-hidden shadow bg-light rounded">
+                            @include('backend.chat.part.left')
+                            @include('backend.chat.part.right')
                         </div>
-                    
                     </div>
                 </div>
             </div>
@@ -101,6 +97,6 @@
 
           // Create SocketIO instance, connect
     })
-   
+
   </script>
 @endsection
