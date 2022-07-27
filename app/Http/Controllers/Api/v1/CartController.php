@@ -1164,46 +1164,38 @@ class CartController extends BaseController
         }
         
 
-        $fixed_fee_tax_rate = 0;
-        if($vendorData->vendor->fixed_fee_tax_id!=null){
-            if($vendorData->vendor->fixed_fee_tax_id==$taxRates[$vendorData->vendor->fixed_fee_tax_id]){
-                $fixed_fee_tax_rate=$taxRates['tax_rate'];
-            }
-        }
-        //dd($fixed_fee_tax_rate);
-
         $delivery_charges_tax_rate = 0;
         if($vendorData->vendor->delivery_charges_tax_id!=null){
-            if($vendorData->vendor->delivery_charges_tax_id==$taxRates[$vendorData->vendor->delivery_charges_tax_id]){
-                $delivery_charges_tax_rate=$taxRates['tax_rate'];
-            }
+                $delivery_charges_tax_rate=$taxRates[$vendorData->vendor->delivery_charges_tax_id]['tax_rate'];
         }
+        
+
+        $fixed_fee_tax_rate = 0;
+        if($vendorData->vendor->fixed_fee_tax_id!=null){
+                $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
+        }
+
 
         $service_charges_tax_rate = 0;
         if($vendorData->vendor->service_charges_tax_id!=null){
-            if($vendorData->vendor->service_charges_tax_id>0 && $vendorData->vendor->service_charges_tax_id==$taxRates[$vendorData->vendor->service_charges_tax_id]){
-                $service_charges_tax_rate=$taxRates['tax_rate'];
-            }
+                $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
         }
 
         $markup_price_tax_rate = 0;
         if($vendorData->vendor->markup_price_tax_id!=null){
-            if($vendorData->vendor->markup_price_tax_id==$taxRates[$vendorData->vendor->markup_price_tax_id]){
-                $markup_price_tax_rate=$taxRates['tax_rate'];
-            }
+                $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
         }
 
 
         if($vendorData->vendor->delivery_charges_tax)
         $total_tax +=  $totalDeliveryCharges * $delivery_charges_tax_rate/100;
         
-        //  echo 'tc--'.$totalDeliveryCharges.' ---txid--'.$delivery_charges_tax_rate;
-        //  dd($total_tax);
+
         if($vendorData->vendor->service_charges_tax)
         $total_tax +=  $total_service_fee * $service_charges_tax_rate/100;
 
         if($vendorData->vendor->fixed_fee_tax)
-        $total_tax +=  $total_service_fee * $fixed_fee_tax_rate/100;
+        $total_tax +=  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
 
         if($vendorData->vendor->add_markup_price)
         $total_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
