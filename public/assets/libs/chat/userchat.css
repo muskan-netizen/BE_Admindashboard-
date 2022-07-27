@@ -179,19 +179,14 @@ line-height: inherit;
 .alPhoneNumberDetails ul li {
     list-style: none;
 }
+
+.user_data_left span {
+    position: inherit;
+}
 .user_data_left img {
     width: 30px;
     height: 30px;
 }
-.user_data_left span {
-    position: inherit;
-}
-.user_show a {
-    display: inline-block;
-    width: 20px;
-    float: left;
-}
-
 .hidden {
     display: none;
 }
