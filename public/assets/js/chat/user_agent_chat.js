@@ -487,7 +487,7 @@
        
         //var data = message.message.chatData;
         //console.log('lp',message);
-         var roomData = message.roomData;
+        var roomData = message.roomData[0];
         // console.log(roomData);
         if(roomData ==  undefined || roomData ==  'undefined'){
             return;
@@ -511,7 +511,7 @@
             </div>	`;
 
         if(document.getElementById(`chatRooms_${roomData._id}`) === null) {
-           // $('.sortDiv').prepend(html);
+            $('.sortDiv').prepend(html);
         }
 
         

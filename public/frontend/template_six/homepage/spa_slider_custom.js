@@ -138,4 +138,6 @@ $(document).ready(function() {
                }
             }]
       });
+      $('#inputDate').datepicker({
+      });
 });

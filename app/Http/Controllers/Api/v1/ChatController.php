@@ -32,7 +32,7 @@ class ChatController extends BaseController
         
         $this->middleware(function ($request, $next) {
             $this->id = Auth::user()->id;
-            $data = Client::find(1);
+            $data = Client::first();
             $this->client_data =  $data;
             if ($data->socket_url == null) {
                 abort(404);
