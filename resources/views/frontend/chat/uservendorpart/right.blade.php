@@ -3,12 +3,12 @@
 		<h2 id="roomName" class="font-size-15 mb-0"></h2>
 	</div> --}}
 	<div class="conversation-head row py-3 px-3 mx-0 mb-2">
-		<div class="col-5 alOrderDetailsBox pr-0">
+		<div class="col-4 alOrderDetailsBox pr-0">
 			<p class="alOrderDetails m-0">Order #<span id="order_num"></span></p>
 			<p class="alVendorDetails m-0">Vendor <span id="vendor_name">Food Hub (Cheese Avenue, Texas)</span></p>
 			<p class="alAmountDetails m-0">Order Amount <span id="order_vendor_price">$100</span></p>
 		</div>
-		<div class="col-7 pl-0">
+		<div class="col-8 pl-0">
 			<div class="d-flex align-items-center justify-content-between user_data">
 				{{-- <div class="alPhoneNumberDetails">
 					<ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">

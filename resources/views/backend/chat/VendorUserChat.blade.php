@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-body position-relative">
+                    <div class="card-body position-relative p-0">
 
                             <div class="chat-body row overflow-hidden shadow bg-light rounded">
 
