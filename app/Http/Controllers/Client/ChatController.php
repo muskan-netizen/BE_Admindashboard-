@@ -139,7 +139,8 @@ class ChatController extends BaseController
         }
 
 
-        $roomData = $this->getAllChatRoom('agent_to_user');
+        //$roomData = $this->getAllChatRoom('agent_to_user');
+        $roomData['status'] = false;
         $view = "AgentUserChat";
        if($roomData['status']){
             $chatroom = $roomData['roomData'];
