@@ -108,7 +108,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 						<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. Quis hendrerit dolor magna eget est lorem. Sed faucibus turpis in eu. Mattis vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor. Elementum facilisis leo vel fringilla est. Nunc non blandit massa enim nec dui nunc mattis. Ac placerat vestibulum lectus mauris ultrices. Sagittis purus sit amet volutpat consequat. <a class="readMore" href="#"><u> Read more </u></a></p>
 					</div> --}}
 				</div>
-
+                @if($client_preference_detail->is_vendor_tags == '1')
 				<!-- Spa and hotel facilities start -->
 				<div class="row py-5 border-bottom">
 					<div class="col-lg-12 hotelFacilities">
@@ -166,6 +166,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 					</div>
 				</div>
 				<!-- Spa and hotel facilities end -->
+                @endif
         	</div>
         </section><!-- single products content end -->
 
