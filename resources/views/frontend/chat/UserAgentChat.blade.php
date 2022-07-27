@@ -67,15 +67,15 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-body position-relative">
+                                <div class="card-body position-relative p-0">
                                     <div class="container">
                                         <div class="chat-body row overflow-hidden shadow bg-light rounded">
 
-                                            @include('frontend.chat.useragentpart.left') 
-                                            @include('frontend.chat.useragentpart.right') 
+                                            @include('frontend.chat.useragentpart.left')
+                                            @include('frontend.chat.useragentpart.right')
                                         </div>
                                     </div>
-                                
+
                                 </div>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
             </div>
         </div>
     </div>
-</section>   
+</section>
     <!-- <script type="text/javascript">
         $(document).ready(function() {
             $.ajaxSetup({
@@ -108,6 +108,6 @@
 
           // Create SocketIO instance, connect
     })
-   
+
   </script>
 @endsection
