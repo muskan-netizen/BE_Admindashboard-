@@ -27,7 +27,11 @@
             return;
             
         }
+        var authDataParseData = JSON.parse(authData);
+        var email = authDataParseData.email;
         $('#roomName').html(roomIDn);
+        socket.emit('joinRoom', { email: email, roomId: roomId, message: 'Join this room', created_date: new Date() });
+
         await fetchOderVendorDetails(OrdervendorID,order_id);
         await getALLchat(roomId,roomIdText);
         await getAllUser(roomId,roomIdText);
@@ -414,7 +418,7 @@
              console.log(response.data.status);
              if(response.data.status) {
                 //if($('#chatHistory >  div').length == 0){
-                    await getAllUser(room_id,roomIdText);
+                   // await getAllUser(room_id,roomIdText);
 
                // }
                 socket.emit('save-message', response.data)

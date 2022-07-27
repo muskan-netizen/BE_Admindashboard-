@@ -170,20 +170,9 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @endif
 @if((!empty($socket_url)))
 <!-- /** socket_accept */ -->
-    <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
-    @if((!empty(Auth::user())))
-    <script>
-        createSocketConnection();
-        async function createSocketConnection(){
-            if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
-                socket = new io(SocketConstants.Socket_url);
-                await socket.connect();
-                console.log(socket);
-                console.log(SocketConstants.Socket_url);
-            }
-        }
-    </script>
-    @endif
+<script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+@if((!empty(Auth::user())))
+
 @endif
 <!-- /**socket_accept end */ -->
 
