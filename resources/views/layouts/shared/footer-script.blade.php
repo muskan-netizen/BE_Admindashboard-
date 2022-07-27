@@ -100,7 +100,7 @@ if (Session::has('toaster')) {
 @if(!str_contains(url()->current(), '/godpanel'))
 @if((!empty(Auth::user())))
 <script>
-     createSocketConnection();
+     //createSocketConnection();
       $(document).ready( async function() {
        
         // Audio.prototype.play = (function(play) {
@@ -145,15 +145,15 @@ if (Session::has('toaster')) {
     // socket.on('createOrderByCustomer_' + host_arr[0] + "_" + "{{ (!empty(Auth::user()))?Auth::user()->id:0 }}", (message) => {
     //     get_latest_order_socket(message.order_number);
     // });
-    async function createSocketConnection(){
-        if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
+    // async function createSocketConnection(){
+    //     if(SocketConstants.Socket_url != '' && SocketConstants.Socket_url != null && SocketConstants.Socket_url != undefined) {
 
-            socket = new io(SocketConstants.Socket_url);
-            await socket.connect(); 
-            console.log(socket);
-            console.log(SocketConstants.Socket_url);
-        }
-    }
+    //         socket = new io(SocketConstants.Socket_url);
+    //         await socket.connect(); 
+    //         console.log(socket);
+    //         console.log(SocketConstants.Socket_url);
+    //     }
+    // }
     function get_latest_order_socket(order_number){
         console.log(order_number);
         Audio.prototype.play = (function(play) {
