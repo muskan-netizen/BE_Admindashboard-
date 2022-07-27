@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
-use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption}; 
+use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, TaxRate, VerificationOption}; 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
 //use App\Http\Traits\MpesaStkpush;
@@ -557,6 +557,12 @@ class CartController extends BaseController
             }, 'vendorProducts.product.taxCategory.taxRate',
         ])->select('vendor_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         
+        $taxes=TaxRate::all();
+        $taxRates=array();
+        foreach($taxes as $tax){
+            $taxRates[$tax->id]=['tax_rate'=>$tax->tax_rate,'tax_amount'=>$tax->tax_amount];
+        }
+
         $loyalty_amount_saved = 0;
         $subscription_features = array();
         $user_subscription = null;
@@ -1189,9 +1195,50 @@ class CartController extends BaseController
             $cart->without_category_kyc = 1; 
         }
 
+
+         //All other tax calculations 
+         if(!empty($taxRates)){
+            $delivery_charges_tax_rate = 0;
+            if($vendorData->vendor->delivery_charges_tax_id!=null){
+                    $delivery_charges_tax_rate=$taxRates[$vendorData->vendor->delivery_charges_tax_id]['tax_rate'];
+            }
+            
+
+            $fixed_fee_tax_rate = 0;
+            if($vendorData->vendor->fixed_fee_tax_id!=null){
+                    $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
+            }
+
+
+            $service_charges_tax_rate = 0;
+            if($vendorData->vendor->service_charges_tax_id!=null){
+                    $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
+            }
+
+            // $markup_price_tax_rate = 0;
+            // if($vendorData->vendor->markup_price_tax_id!=null){
+            //         $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
+            // }
+
+
+            if($vendorData->vendor->delivery_charges_tax)
+            $total_tax +=  $totalDeliveryCharges * $delivery_charges_tax_rate/100;
+            
+
+            if($vendorData->vendor->service_charges_tax)
+            $total_tax +=  $total_service_fee * $service_charges_tax_rate/100;
+
+            if($vendorData->vendor->fixed_fee_tax)
+            $total_tax +=  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
+
+            // if($vendorData->vendor->add_markup_price)
+            // $total_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
+    }
+
+
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
-        $cart->total_tax = $total_tax;
+        $cart->total_tax = decimal_format($total_tax);
         $cart->tax_details = $tax_details;
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
