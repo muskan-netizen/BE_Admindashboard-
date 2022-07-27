@@ -672,6 +672,11 @@ class CartController extends BaseController
                 $deliveryCharges = 0;
                 $delivery_fee_charges = 0.00;
                 $couponData = $couponProducts = array();
+
+                $deliver_fee_charges = 0;
+                $total_fixed_fee_tax = 0;
+                $total_service_fee = 0;
+                $total_markup_fee_tax = 0;
                
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
                     if(isset($prod->product) && !empty($prod->product)){
@@ -1068,6 +1073,85 @@ class CartController extends BaseController
                 $slotsDate = findSlot('',$vendorData->vendor->id,'','api');
                 $vendorData->delaySlot = $slotsDate;
                 $totalDeliveryCharges+=$deliveryCharges;
+
+        
+        // //All other tax calculations 
+        // if(!empty($taxRates)){
+        //     $delivery_charges_tax_rate = 0;
+        //     if($vendorData->vendor->delivery_charges_tax_id!=null){
+        //             $delivery_charges_tax_rate=$taxRates[$vendorData->vendor->delivery_charges_tax_id]['tax_rate'];
+        //     }
+
+        //     $fixed_fee_tax_rate = 0;
+        //     if($vendorData->vendor->fixed_fee_tax_id!=null){
+        //             $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
+        //     }
+
+
+        //     $service_charges_tax_rate = 0;
+        //     if($vendorData->vendor->service_charges_tax_id!=null){
+        //             $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
+        //     }
+
+        //     $markup_price_tax_rate = 0;
+        //     if($vendorData->vendor->markup_price_tax_id!=null){
+        //             $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
+        //     }
+
+
+        //     if($vendorData->vendor->delivery_charges_tax)
+        //     $total_tax +=  $deliveryCharges * $delivery_charges_tax_rate/100;
+            
+        //     if($vendorData->vendor->service_charges_tax)
+        //     $total_tax +=  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
+
+        //     if($vendorData->vendor->fixed_fee_tax)
+        //     $total_tax +=  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
+
+        //     if($vendorData->vendor->add_markup_price)
+        //     $total_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
+
+        //     } //End Tax Code
+
+
+            //All other tax calculations 
+         if(!empty($taxRates)){
+            $delivery_charges_tax_rate = 0;
+            if($vendorData->vendor->delivery_charges_tax_id!=null){
+                    $delivery_charges_tax_rate=$taxRates[$vendorData->vendor->delivery_charges_tax_id]['tax_rate'];
+            }
+
+            $fixed_fee_tax_rate = 0;
+            if($vendorData->vendor->fixed_fee_tax_id!=null){
+                    $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
+            }
+
+
+            $service_charges_tax_rate = 0;
+            if($vendorData->vendor->service_charges_tax_id!=null){
+                    $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
+            }
+
+            $markup_price_tax_rate = 0;
+            if($vendorData->vendor->markup_price_tax_id!=null){
+                    $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
+            }
+
+
+            if($vendorData->vendor->delivery_charges_tax)
+            $deliver_fee_charges +=  $deliveryCharges * $delivery_charges_tax_rate/100;
+            
+            if($vendorData->vendor->service_charges_tax)
+            $total_service_fee +=  $vendor_service_fee_percentage_amount * $service_charges_tax_rate/100;
+
+            if($vendorData->vendor->fixed_fee_tax)
+            $total_fixed_fee_tax +=  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
+
+            if($vendorData->vendor->add_markup_price)
+            $total_markup_fee_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
+            } //End Tax Code
+
+
             }
             ++$vondorCnt;
         }//End cart Vendor loop
@@ -1162,50 +1246,18 @@ class CartController extends BaseController
         }else{
             $cart->without_category_kyc = 1; 
         }
-        
 
-        $delivery_charges_tax_rate = 0;
-        if($vendorData->vendor->delivery_charges_tax_id!=null){
-                $delivery_charges_tax_rate=$taxRates[$vendorData->vendor->delivery_charges_tax_id]['tax_rate'];
-        }
-        
+        $other_taxes_string='tax_fixed_fee:'.$total_fixed_fee_tax.',tax_service_charges:'.$total_service_fee.',tax_delivery_charges:'.$deliver_fee_charges.',tax_markup_fee:'.$total_markup_fee_tax;
 
-        $fixed_fee_tax_rate = 0;
-        if($vendorData->vendor->fixed_fee_tax_id!=null){
-                $fixed_fee_tax_rate=$taxRates[$vendorData->vendor->fixed_fee_tax_id]['tax_rate'];
-        }
-
-
-        $service_charges_tax_rate = 0;
-        if($vendorData->vendor->service_charges_tax_id!=null){
-                $service_charges_tax_rate=$taxRates[$vendorData->vendor->service_charges_tax_id]['tax_rate'];
-        }
-
-        $markup_price_tax_rate = 0;
-        if($vendorData->vendor->markup_price_tax_id!=null){
-                $markup_price_tax_rate=$taxRates[$vendorData->vendor->markup_price_tax_id]['tax_rate'];
-        }
-
-
-        if($vendorData->vendor->delivery_charges_tax)
-        $total_tax +=  $totalDeliveryCharges * $delivery_charges_tax_rate/100;
-        
-
-        if($vendorData->vendor->service_charges_tax)
-        $total_tax +=  $total_service_fee * $service_charges_tax_rate/100;
-
-        if($vendorData->vendor->fixed_fee_tax)
-        $total_tax +=  $total_fixed_fee_amount * $fixed_fee_tax_rate/100;
-
-        if($vendorData->vendor->add_markup_price)
-        $total_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
-
+        $userCart = Cart::find($cartID);
+        $userCart->total_other_taxes  = $other_taxes_string;
+        $userCart->save();
 
 
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_markup_charges = decimal_format($total_markup_charges);
-        $cart->total_tax = $total_tax;
+        $cart->total_tax = decimal_format($total_tax + $total_fixed_fee_tax + $total_service_fee + $deliver_fee_charges + $total_markup_fee_tax);
         $cart->tax_details = $tax_details;
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;

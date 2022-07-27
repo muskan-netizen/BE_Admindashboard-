@@ -11,7 +11,7 @@
    .shimmer_effect .grid-row .cards {margin-bottom: 20px;}
    .shimmer_effect .grid-row .card_icon{display:none;}
    .shimmer_effect .grid-row .card_image{border-radius:12px;height:200px !important;}
-   .alOneTemplate{position: absolute !important;}
+   .alOneTemplate{position: fixed !important;width: 100%; background: #fff;z-index: 999 !important;top: 0;}
    @media(max-width:767px){.cardbanner {height:120px;}}
 </style>
 @endsection

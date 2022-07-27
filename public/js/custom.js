@@ -1,29 +1,32 @@
-$(document).ready(function () {
-    var footer_height = $('.footer-light').height();
-    var header_height = $('.site-header').height();
-    var window_height = $(window).height();
-    var header_content_width = $('#content-wrap').height();
+$(document).ready(async function () {
+    //alert();
+    await setTimeout(function(){
+        var footer_height = $('.footer-light').height();
+        var header_height = $('.site-header').height();
+        var window_height = $(window).height();
+        var header_content_width = $('#content-wrap').height();
 
-    // console.log('header_height',header_height,'footer_height',footer_height);
-    jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
-    jQuery("#content-wrap").css('padding-bottom', footer_height);
+        // console.log('header_height',header_height,'footer_height',footer_height);
+        jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
+        jQuery("#content-wrap").css('padding-bottom', footer_height);
 
 
-    jQuery(window).scroll(function () {
-        var scroll = jQuery(window).scrollTop();
-        if (scroll <= 100) {
-            jQuery(".site-header").removeClass("fixed-bar");
+        jQuery(window).scroll(function () {
+            var scroll = jQuery(window).scrollTop();
+            if (scroll <= 100) {
+                jQuery(".site-header").removeClass("fixed-bar");
 
-        } else {
-            jQuery(".site-header").addClass("fixed-bar");
-        }
-    });
+            } else {
+                jQuery(".site-header").addClass("fixed-bar");
+            }
+        });
 
-    $('.scrollspy-menu a').on('click',function(){
-        $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
-    })
+        $('.scrollspy-menu a').on('click',function(){
+            $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
+        })
+    },2000)
+
 });
-
 
 
 $(".mobile-account .fa").click(function(){
