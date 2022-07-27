@@ -1419,6 +1419,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                </div>
                @endif
+               <div class="col-md-4">
+                  <div class="form-group d-flex justify-content-between mb-3">
+                     <label for="db_audit_logs" class="mr-2 mb-0">{{__('Vendor Tags')}}<small class="d-block pr-5">{{__('Enable to add vendor tags.')}}</small></label>
+                    <span> <input type="checkbox" data-plugin="switchery" name="is_vendor_tags" id="is_vendor_tags" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_vendor_tags == '1')) checked='checked' @endif>
+                     </span>
+                  </div>
+               </div>
 
                </div>
             </div>

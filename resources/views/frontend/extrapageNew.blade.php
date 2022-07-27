@@ -402,7 +402,7 @@
                                                             @endif
                                                     </div>
                                                 </div>
-                                                @if(isset($user->is_superadmin) && ($user->is_superadmin == 1))
+                                                {{-- @if(isset($user->is_superadmin) && ($user->is_superadmin == 1))
                                                     <div class="col-md-4">
                                                         <div class="al_advanced_details p-2">
                                                             <p class="al_custom_title mb-1"><span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</p>
@@ -424,7 +424,7 @@
 
                                                         </div>
                                                     </div>
-                                                @endif
+                                                @endif --}}
                                                 <div class="col-md-4">
 
                                                     <div class="col-md-12">
