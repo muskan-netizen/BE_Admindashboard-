@@ -183,10 +183,12 @@ class VendorController extends FrontController
             $page = 'products-with-categories-extended';
             $products = Product::select('averageRating')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
             $vendor->vendorRating = $this->vendorRating($products);
-            
-            $vendor->facilty  = Facilty::with(['translations'=> function ($q) use ($langId) {
-                $q->where('language_id',$langId);
-            }])->get();
+            $vendor->facilty  = [];
+            if( (isset($preferences->is_vendor_tags)) && ($preferences->is_vendor_tags == 1) ){
+                $vendor->facilty  = Facilty::with(['translations'=> function ($q) use ($langId) {
+                    $q->where('language_id',$langId);
+                }])->get();
+            }
             
         }
         else{
