@@ -171,6 +171,7 @@ class OrderController extends BaseController
                     $order->user_id = $user->id;
                     $order->order_number = generateOrderNo();
                     $order->address_id = $request->address_id;
+                    $order->total_other_taxes = $cart->total_other_taxes;
                     $order->payment_option_id = $request->payment_option_id;
                     $order->specific_instructions = $request->specific_instructions;
                     $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
@@ -1815,6 +1816,18 @@ class OrderController extends BaseController
             // })->get();
 
            // $order['user_document_value'] =  $user_docs;
+           /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
+           $total_other_taxes = 0;
+           if($order->total_other_taxes!=''){
+               foreach(explode(",",$order->total_other_taxes) as $row){
+               $row1 = explode(":",$row);
+                   $total_other_taxes+=(float)$row1[1];
+               }
+           }
+
+            // $order['user_document_value'] =  $user_docs;
+            $order->taxable_amount =  $total_other_taxes??0;
+            $order->total_other_taxes =  $total_other_taxes??0;
             $order['user_document_list'] =  $user_registration_documents;
 
             $order['category_KYC_document'] = $category_KYC_document??null;
