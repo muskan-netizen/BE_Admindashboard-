@@ -37,18 +37,18 @@ class ChatController extends BaseController
             if ($data->socket_url == null) {
                 abort(404);
             }
-    
+
             return $next($request);
         });
-        
 
-        
+
+
     }
     public function getAllChatRoom($type){
         $clientData = $this->client_data;
         $server_name = $_SERVER['SERVER_NAME'];
         $response =   Http::post($clientData->socket_url.'/api/room/fetchAllRoom', [
-            //'vendor_id' => $vendor_id, 
+            //'vendor_id' => $vendor_id,
             'sub_domain' =>$server_name,
             'type'=>$type,
             'db_name'=>$clientData->database_name,
@@ -69,7 +69,7 @@ class ChatController extends BaseController
         $clientData = $this->client_data;
         $server_name = $_SERVER['SERVER_NAME'];
         $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByVendor', [
-            'vendor_id' => $vendor_id, 
+            'vendor_id' => $vendor_id,
             'sub_domain' =>$server_name,
             'type'=>$type,
             'db_name'=>$clientData->database_name,
@@ -93,26 +93,26 @@ class ChatController extends BaseController
         $clientData = $this->client_data;
         $server_name = $_SERVER['SERVER_NAME'];
         $response =   Http::post($clientData->socket_url.'/api/room/fetchRoomByUserId', [
-            'order_user_id' => $order_user_id, 
+            'order_user_id' => $order_user_id,
             'sub_domain' =>$server_name,
             'type'=>$type,
             'db_name'=>$clientData->database_name,
             'client_id'=>$clientData->id
         ]);
-        
+
         // echo "<pre>";
         // print_r($response['roomData']);
         // die;
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
             $roomData = $response['roomData'];
-           
+
             return ['status' => true, 'roomData' => $roomData , 'message' => __('Room list !!!')];
         } else {
 
             return ['status' => false, 'message' => __('Something went wrong!!!')];
         }
-    
+
 
     }
 
@@ -121,7 +121,7 @@ class ChatController extends BaseController
         if ($user->is_superadmin != 1) {
             abort(404);
         }
-        
+
         $roomData = $this->getAllChatRoom('vendor_to_user');
         if($roomData['status']){
             $chatroom = $roomData['roomData'];
@@ -137,8 +137,8 @@ class ChatController extends BaseController
         if ($user->is_superadmin != 1) {
             abort(404);
         }
-       
-      
+
+
         $roomData = $this->getAllChatRoom('agent_to_user');
         $view = "AgentUserChat";
        if($roomData['status']){
@@ -164,7 +164,7 @@ class ChatController extends BaseController
             $view = "VendorUserChat";
         }
 
-        
+
 
         if($roomData['status']){
             $chatroom = $roomData['roomData'];
@@ -178,7 +178,7 @@ class ChatController extends BaseController
 
     public function UserVendorChat(Request $request){
         $user = Auth::user();
-      
+
         $roomData = $this->getChatRoomForUser($user->id,'vendor_to_user');
         if($roomData['status']){
             $chatroom = $roomData['roomData'];
@@ -192,7 +192,7 @@ class ChatController extends BaseController
     public function joinSocketRoom($data,$user,$type,$userType){
         $clientData = $this->client_data;
         $server_name = $_SERVER['SERVER_NAME'];
-      
+
         $response =   Http::post($clientData->socket_url.'/api/chat/joinRoomByID', [
             'sub_domain' =>$server_name,
             'room_id' =>$data['room_id'],
@@ -240,7 +240,7 @@ class ChatController extends BaseController
             'room_id' =>$data['room_id'],
             //'room_name' =>$data->name,
             'chat_type' =>$chat_type,
-           
+
         ]);
 
         $statusCode = $response->getStatusCode();
@@ -248,7 +248,7 @@ class ChatController extends BaseController
             $chatData = $response['chatData'];
             //$roomUser = $response['RoomUser'];
             $message = $response['message'];
-          
+
             return ['status' => $response['status'] ,'chatData' => $chatData , 'message' => __($message)];
         } else {
 
@@ -278,7 +278,7 @@ class ChatController extends BaseController
         } else {
             $messageData = $this->sendSocketMessage($data,$user,'to_vendor','user','from_user','vendor_to_user');
         }
-        
+
         if($messageData['status']) {
             return $messageData;
         } else {
@@ -316,7 +316,7 @@ class ChatController extends BaseController
      */
     public function show(Request $request,$domain = '',$product_sku)
     {
-       
+
     }
 
     /**
@@ -348,7 +348,7 @@ class ChatController extends BaseController
      */
     public function destroy(Request $request,$domain = '',$review_id)
     {
-       
+
     }
 
 
@@ -364,7 +364,7 @@ class ChatController extends BaseController
         $vendor_id = $data['vendor_id'];
         $vendor_order_id = $data['vendor_order_id'];
         $order_id = $data['order_id'];
-       
+
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $server_name = $_SERVER['SERVER_NAME'];
         $order = Order::with(array(
@@ -402,7 +402,7 @@ class ChatController extends BaseController
             $orderby_user_id = $order->user_id;
             //$response = $client->request('Post', 'https://chat.royoorders.com/api/room', ['body' => [
             $response =   Http::post($socket_url.'/api/room/createRoom', [
-                'room_id' => $room_id, 
+                'room_id' => $room_id,
                 'room_name' => $room_name,
                 'order_vendor_id'=>$order_vendor_id,
                 'order_id'=>$order_id,
@@ -422,7 +422,7 @@ class ChatController extends BaseController
 
                 return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
             }
-        
+
         }
 
     }
@@ -431,12 +431,12 @@ class ChatController extends BaseController
         try {
             $orderData = $this->OrderVendorDetail($request);
             return response()->json(['status' => true, 'orderData' => $orderData , 'message' => __('Data fetched !!!')]);
-            
+
             //code...
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'orderData' => [] , 'message' => __('No Data found !!!')]);
         }
-            
+
     }
 
 

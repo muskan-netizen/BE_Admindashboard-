@@ -35,11 +35,11 @@
                         <div class="container">
                             <div class="chat-body row overflow-hidden shadow bg-light rounded">
 
-                                @include('backend.chat.uservendorpart.left') 
-                                @include('backend.chat.uservendorpart.right') 
+                                @include('backend.chat.uservendorpart.left')
+                                @include('backend.chat.uservendorpart.right')
                             </div>
                         </div>
-                    
+
                     </div>
                 </div>
             </div>
@@ -68,6 +68,6 @@
 
           // Create SocketIO instance, connect
     })
-   
+
   </script>
 @endsection
