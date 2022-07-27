@@ -171,6 +171,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 @if((!empty($socket_url)))
 <!-- /** socket_accept */ -->
 <script src="{{$socket_url}}/socket.io/socket.io.js"></script>
+@endif
 @if((!empty(Auth::user())))
 
 @endif

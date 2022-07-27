@@ -71,11 +71,11 @@
                                     <div class="container">
                                         <div class="chat-body row overflow-hidden shadow bg-light rounded">
 
-                                            @include('frontend.chat.uservendorpart.left') 
-                                            @include('frontend.chat.uservendorpart.right') 
+                                            @include('frontend.chat.uservendorpart.left')
+                                            @include('frontend.chat.uservendorpart.right')
                                         </div>
                                     </div>
-                                
+
                                 </div>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
             </div>
         </div>
     </div>
-</section>   
+</section>
     <!-- <script type="text/javascript">
         $(document).ready(function() {
             $.ajaxSetup({
@@ -108,6 +108,6 @@
 
           // Create SocketIO instance, connect
     })
-   
+
   </script>
 @endsection
