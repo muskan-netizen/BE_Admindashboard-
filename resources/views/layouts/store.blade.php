@@ -56,10 +56,18 @@ if(isset($set_template))
     $body_class = "al_body_template_four";
   elseif($set_template->template_id == 5)
     $body_class = "al_body_template_five";
-  elseif($set_template->template_id == 6)
+  elseif($set_template->template_id == 6){
     $body_class = "al_body_template_six";
+    if(Route::currentRouteName() == "customer.login" || Route::currentRouteName() == "customer.register"){
+      $body_class =  $body_class. " login";
+    }
+  }
+    
 }
+
+
 @endphp
+
 
 <script>
 	var sUrl = "{!! $socket_url !!}";
