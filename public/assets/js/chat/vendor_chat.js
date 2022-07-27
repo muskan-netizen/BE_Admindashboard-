@@ -400,7 +400,7 @@
     // }
 
 
-    function sendMessage(message,room_id){
+    function sendMessage(message,room_id,roomIdText){
         // if($data['from'] == 'vendor') {
         //     $messageData = $this->sendSocketMessage($data,$user,'to_user','vendor','from_vendor','vendor_to_user');
         // } else {
