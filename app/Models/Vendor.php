@@ -58,9 +58,13 @@ class Vendor extends Model implements Auditable{
       $current_time = $mytime->toTimeString();
       return $this->hasMany('App\Models\VendorSlotDate', 'vendor_id', 'id')->where('specific_date', '=', $current_date)->where('start_time', '<', $current_time)->where('end_time', '>', $current_time);
     }
-
+    
     public function avgRating(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->avg('averageRating');
+    }
+    public function getReviewsCountAttribute(){
+      $reviews_count = OrderProductRating::join('products', 'products.id', '=', 'order_product_ratings.product_id')->join('products','	products.vendor_id', '=', 'vendors.id')->where('vendors.id',$this->id)->count();
+     return $reviews_count;
     }
 
     public function getLogoAttribute($value){
@@ -154,6 +158,10 @@ class Vendor extends Model implements Auditable{
 
   public function getById($id){
     return self::where('id',$id)->first();
+  }
+  public function Facilty(){
+     // return $this->hasMany('App\Models\VendorFacilty', 'vendor_id', 'id');
+      return $this->belongsToMany(\App\Models\Facilty::class, 'vendor_facilties', 'vendor_id', 'facilty_id');
   }
 
 }

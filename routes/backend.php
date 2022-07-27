@@ -425,6 +425,11 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         // rental product 
         Route::post('rental-variant_row', 'Client\RentalProductController@getRow')->name('rental-product.variant_row');   # update all product actions
+    
+        Route::post('facilty/store', 'Client\FaciltyController@store')->name('facilty.store');
+        Route::post('facilty/update', 'Client\FaciltyController@update')->name('facilty.update');
+        Route::get('facilty/edit', 'Client\FaciltyController@show')->name('facilty.edit');
+        Route::post('facilty/delete', 'Client\FaciltyController@destroy')->name('facilty.delete');
     });
 });
 

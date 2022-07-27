@@ -1318,6 +1318,8 @@
         <!-- Vendor Registration Documents end -->
          @endif
          <!-- static_dropoff Ends -->
+
+         
     </div>
     <!-- Miscellaneous End  -->
 
@@ -1732,6 +1734,60 @@
     </div>
 </div>
 
+<!--End Add facilty Modal -->
+<div id="add_facilty_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-bottom al">
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add facilty") }}</h4>
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <form id="faciltyForm" method="POST" action="javascript:void(0)">
+                  @csrf
+                  <div id="save_social_media">
+                     <input type="hidden" name="facilty_id" value="">
+                     <div class="row">
+                        
+                        <div class="col-md-6">
+                                <label>{{ __('Upload Logo') }} </label>
+                                <input type="file" accept="image/*" data-plugins="dropify" name="facilty_image" class="dropify" data-default-file="" />
+                                <label class="logo-size text-right w-100">{{ __('Logo Size') }} 170x96</label>
+                        </div>
+                        <div class="col-md-12 selector-option-al ">
+                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
+                                <tr class="trForClone">
+
+                                    @foreach($client_languages as $langs)
+                                        <th>{{$langs->langName}}</th>
+                                    @endforeach
+                                    <th></th>
+                                </tr>
+                                <tbody id="table_body">
+                                        <tr>
+                                    @foreach($client_languages as $lankey => $User_langs)
+                                        <td>
+                                            <input class="form-control" name="language_id[{{$lankey}}]" type="hidden" value="{{$User_langs->langId}}">
+                                            <input class="form-control" name="name[{{$lankey}}]" type="text" id="facilty_name_{{$User_langs->langId}}">
+                                        </td>
+                                    @endforeach
+                                    <td class="lasttd"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary submitSaveFacilty">{{ __("Save") }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
 
    <!-- Add category kyc Document Modal -->
 <div id="add_category_kyc_document_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
@@ -1933,14 +1989,7 @@ $(document).ready(function(){
         $('#add_vendor_registration_document_modal #standard-modalLabel').html('Add Vendor Registration Document');
     });
 
-    //user document model
-    $('#add_user_registration_document_modal_btn').click(function(e) {
-        document.getElementById("userRegistrationDocumentForm").reset();
-        $('#add_user_registration_document_modal input[name=user_registration_document_id]').val("");
-        $('#add_user_registration_document_modal').modal('show');
-        $('#add_user_registration_document_modal #standard-modalLabel').html('Add User Registration Document');
-    });
-
+    
     $(document).on('click', '.submitSaveUserRegistrationDocument', function(e) {
         // alert('af');
         // return false;
@@ -2292,6 +2341,120 @@ $(document).ready(function(){
                });
             }
         });
+    });
+
+    //user document model
+    $('#add_facilties_modal_btn').click(function(e) {
+        document.getElementById("userRegistrationDocumentForm").reset();
+        $('#faciltyForm input[name=facilty_id]').val("");
+        $('#add_facilty_modal').modal('show');
+        $('#add_facilty_modal #standard-modalLabel').html('Add facilty');
+    });
+    //vendor registration document
+    $(document).on('click', '.submitSaveFacilty', function(e) {
+        var vendor_registration_document_id = $("#add_facilty_modal input[name=facilty_id]").val();
+        if (vendor_registration_document_id) {
+            var post_url = "{{ route('facilty.update') }}";
+        } else {
+            var post_url = "{{ route('facilty.store') }}";
+        }
+        var form_data = new FormData(document.getElementById("faciltyForm"));
+        $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+               if (response.status == 'Success') {
+                  $('#add_or_edit_social_media_modal').modal('hide');
+                  $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+               }
+            },
+            error: function(response) {
+               $('#add_vendor_registration_document_modal .social_media_url_err').html('The default language name field is required.');
+            }
+        });
+    });
+    
+    $(document).on("click", ".edit_facilty_btn", function() {
+        let facilty_id = $(this).data('facilty_id');
+        //console.log(facilty_id);
+        editfaciltyForm(facilty_id);
+    });
+    function editfaciltyForm(facilty_id){
+        let language_id = $('#option_client_language').val();
+         $('#faciltyForm input[name=facilty_id]').val(facilty_id);
+         $.ajax({
+            method: 'GET',
+            data: {
+                facilty_id: facilty_id,
+                language_id:language_id
+            },
+            url: "{{ route('facilty.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                   console.log(response.data);
+                   console.log(response.data.image.image_fit+'90/90'+response.data.image.image_path);
+                //   $(document).find("#add_vendor_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
+
+                  $("#add_facilty_modal input[name=facilty_id]").val(response.data.id);
+                  
+                  $("#add_facilty_modal input[name=facilty_image]").attr('data-default-file',response.data.image.image_fit+'90/90'+response.data.image.image_path );
+                  $('.dropify').dropify();
+                  $('#add_facilty_modal #standard-modalLabel').html('Update facilty');
+                  $('#add_facilty_modal').modal('show');
+                  
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_facilty_modal #facilty_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {}
+        });
+    }
+     // delete kyc document 
+     $(document).on("click", ".delete_facilty_btn", function() {
+         var facilty_id = $(this).data('facilty_id');
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+         }).then((result) => {
+            if (result.value) {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('facilty.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     facilty_id: facilty_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
+                  }
+               });
+            }
+        });
+    });
+
+    
+ $('#add_facilties_modal_btn').click(function(e) {
+        document.getElementById("userRegistrationDocumentForm").reset();
+        $('#faciltyForm input[name=facilty_id]').val("");
+        $('#add_facilty_modal').modal('show');
+        $('#add_facilty_modal #standard-modalLabel').html('Add facilty');
     });
     //End Vendor Registration Document Script
     $(document).ready(function() {

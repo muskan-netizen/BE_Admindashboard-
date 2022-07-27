@@ -28,6 +28,7 @@
     });
     $(document).on('click','.fetchChat',async function(){
         var roomId = $(this).attr('data-id');
+        var roomIdText = $(this).attr('data-roomid');
         var roomName = $(this).attr('data-roomName');
         var roomIDn = $(this).attr('data-roomID');
         var OrdervendorID = $(this).attr('data-ordervendorid');
@@ -40,8 +41,8 @@
         }
         $('#roomName').html(roomIDn);
         await fetchOderVendorDetails(OrdervendorID,order_id);
-        await getALLchat(roomId);
-        await getAllUser(roomId);
+        await getALLchat(roomId,roomIdText);
+        await getAllUser(roomId,roomIdText);
     });
 
     $(document).on('click','.join_room',async function(){
@@ -59,6 +60,8 @@
 
     $(document).on('click','.send_message',async function(){
         var room_id = $(this).attr('data-id');
+        var roomIdText = $(`#room_${room_id}`).attr('data-roomid');
+
          var message = $('#message_box').val();
         // var vendor_id = $(this).attr('data-vendor_id');
         // var order_id = $(this).attr('data-order_id');
@@ -68,7 +71,7 @@
             
         }
         //$('#order_list_order').show();
-        await sendMessage(message,room_id);
+        await sendMessage(message,room_id,roomIdText);
     });
 
     $(document).on('keyup','#outer_search',function() {
@@ -78,8 +81,7 @@
            var value = $this.attr( "data-text" ); //convert attribute value to lowercase
            $this.toggleClass( "hidden", !value.includes( n ) );
         })
-      });
-
+    });
 
     async function startChat(vendor_order_id,vendor_id,order_id){
 
@@ -121,6 +123,7 @@
     function convertDateTime(cdate){
         return cdate.toDateString() +' '+ cdate.toLocaleTimeString();
     }
+
     function convertDateTimeStamp(cdate){
         var currentTimeStamp = new Date(cdate);
         return currentTimeStamp
@@ -155,7 +158,7 @@
         })
     }
 
-    async function getALLchat(roomId){
+    async function getALLchat(roomId,roomIdText){
         var html='';
         axios.get(`${SocketConstants.Socket_url}/api/chat/${roomId}`)
         .then(async response => {
@@ -202,21 +205,26 @@
                             </div>`;
 
                     });
+                    $('.user_data').attr('id',`right_room_${roomId}`);
                     $('#rightChat').show();
                     $('#chatHistory').addClass('room_'+roomId);
                     $('.join_room').attr('data-id',roomId);
                     $('.send_message').attr('data-id',roomId);
                     await $('#chatHistory').html(html);
                     scrollDown();
+                    await getAllUser(room_id,roomIdText);
+                    
                 } else {
                     $('#chatHistory').html(``);
                     $('.join_room').attr('data-id',roomId);
+                    $('.user_data').attr('id',`right_room_${roomId}`);
                     $('.send_message').attr('data-id',roomId);
                     $('#rightChat').show();
                     $('#chatHistory').addClass('room_'+roomId);
                 }
 
              } else {
+                $('.user_data').attr('id',``);
                 $('#chatHistory').html(``);
              }
         })
@@ -225,8 +233,9 @@
         })
     }
 
-    async function getAllUser(roomId){
+    async function getAllUser(roomId,roomIdText){
         var html='';
+        var html2='';
         axios.get(`${SocketConstants.Socket_url}/api/chat/getRoomUser/${roomId}`)
         .then(async response => {
             console.log(response);
@@ -241,17 +250,32 @@
                         </div>`;
 
                     });
-                 $('.user_data').html(html);
+                    html2+= `<p class="orderNumber m-0 mb-2">#${roomIdText}</p>`;
+                    await response.data.userData.forEach(function (data) {
+                        
+                        html2+=   `<a class="user_data_left" href="javascript:void(0)">
+                                    <img class="rounded-circle userImg" src="${data.display_image}">
+                                </a>`;
+   
+                       });
+                 $(`#right_room_${roomId}`).html(html);
+                 $(`#room_${roomId}`).find('.user_show').html(html2)
                 } else {
-                 $('.user_data').html('');
+                    
+                    $(`#right_room_${roomId}`).html('');
+                 $(`#room_${roomId}`).find('.user_show').html('');
+
                 }
 
              } else {
-                $('.user_data').html('');
+                $(`#right_room_${roomId}`).html('');
+                $(`#room_${roomId}`).find('.user_show').html('');
+
              }
         })
         .catch(e => {
-            $('.user_data').html('');
+            $(`#right_room_${roomId}`).html('');
+            $(`#room_${roomId}`).find('.user_data').html('');
         })
     }
 
@@ -262,7 +286,6 @@
         console.log(message);
         var data = message.message.chatData;
         var roomData = message.message.roomData;
-        
         if(data.message ==  undefined || data.message ==  'undefined'){
             return;
         }
@@ -274,7 +297,6 @@
              className= 'right-message';
             //  flex = '<div style="flex: 110%;"></div>';
         }
-        console.log('dd',message.message.roomData);
         var updateDate =  roomData?.updated_date;
             html = `<div class=" ${className}">
                 ${flex}
@@ -296,19 +318,18 @@
                     </div>
                 </div>
             </div>`;
+        
             await $('.room_'+data.room).append(html);
             await $('#preview_message_'+data.room).html(data.message);
             await $('#preview_message_name_'+data.room).html(data.username);
             await $('#preview_message_time_'+data.room).html(convertDateTime(cdate));
-            // console.log('updateDate');
-            // console.log(updateDate);
-            // console.log(roomData);
             await $('#chatRooms_'+data.room).attr('data-timestamp',convertDateTimeStamp(updateDate));
             var length =  $('.chatRoomsDivs').first().attr('data-sort');
-            //await $('#time_stamp_'+data.room).html(updateDate);
             await $('#chatRooms_'+data.room).attr('data-sort',parseInt(length)+parseInt(1));
+            
             sortChatBox();
             scrollDown();
+            await getAllUser(roomData._id,roomData.room_id);
 
                   
     }
@@ -316,7 +337,6 @@
     
 
     function scrollDown(){
-        console.log('scrollDown');
         var messageBody = document.querySelector('.chatitem');
         messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
     }
@@ -380,7 +400,7 @@
     // }
 
 
-    function sendMessage(message,room_id){
+    function sendMessage(message,room_id,roomIdText){
         // if($data['from'] == 'vendor') {
         //     $messageData = $this->sendSocketMessage($data,$user,'to_user','vendor','from_vendor','vendor_to_user');
         // } else {
@@ -407,9 +427,9 @@
              console.log(response.data.status);
              if(response.data.status) {
                 //if($('#chatHistory >  div').length == 0){
-                    await getAllUser(room_id);
+                    await getAllUser(room_id,roomIdText);
 
-                //}
+               // }
                 socket.emit('save-message', response.data)
                 $('#message_box').val('');
              }
@@ -465,11 +485,11 @@
       
         var $wrap = $('.sortDiv');
         $wrap.find('.chatRoomsDivs').sort(function(a, b) 
-            {
-                return +b.dataset.sort -
-                    +a.dataset.sort;
-            })
-            .appendTo($wrap);
+        {
+            return +b.dataset.sort -
+                +a.dataset.sort;
+        })
+        .appendTo($wrap);
 
     }
 
@@ -496,7 +516,7 @@
        
         //var data = message.message.chatData;
         //console.log('lp',message);
-         var roomData = message.roomData;
+         var roomData = message.roomData[0];
         // console.log(roomData);
         if(roomData ==  undefined || roomData ==  'undefined'){
             return;
@@ -518,12 +538,11 @@
                     </div>
                 </div>
             </div>	`;
-
+        //console.log(document.getElementById(`chatRooms_${roomData._id}`));
         if(document.getElementById(`chatRooms_${roomData._id}`) === null) {
+            //alert();
             $('.sortDiv').prepend(html);
         }
 
         
     }
-
-    
