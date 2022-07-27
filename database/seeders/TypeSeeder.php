@@ -102,6 +102,7 @@ class TypeSeeder extends Seeder
                 'id' => 11,
                 'sequence' => 10,
                 'title' => 'Food',
+                'service_type' => 'products_service',
                 'image' => 'home_five.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
                 
