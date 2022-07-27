@@ -808,6 +808,13 @@ class PickupDeliveryController extends FrontController{
                 if(empty($friendPhoneNumber)){
                     $type=0;
                 }
+
+                $task_type = 'now';
+                if($request->has('task_type')){
+                    $task_type = $request->task_type;
+                }elseif(!empty($order->scheduled_date_time)){
+                    $task_type = 'schedule';
+                }
                 
                 if ($customer->dial_code == "971") {
                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
@@ -827,7 +834,7 @@ class PickupDeliveryController extends FrontController{
                     'allocation_type' => 'a',
                     'task' => $request->tasks,
                     'order_team_tag' => $team_tag,
-                    'task_type' => $request->task_type,
+                    'task_type' => $task_type,
                     'order_agent_tag' => $order_agent_tag,
                     'call_back_url' => $call_back_url??null,
                     'customer_email' => $customer->email ?? '',
