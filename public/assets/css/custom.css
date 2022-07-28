@@ -371,8 +371,21 @@ color:#43bee1
 
 .tabs_radio {display: none;}
 /* .tabs_radio_controls{text-align:center} */
-.tabs_radio_controls label{margin:15px 10px;}
-.tabs_radio_controls .total-items{position: absolute; top: -20px; right: -10px;}
+.tabs_radio_controls label {
+  margin: 10px 4px;
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+  height: 40px;
+}
+
+.tabs_radio_controls .total-items {
+  margin-left: 10px;
+  display: inline-block;
+  position: relative;
+  top: 0;
+  color: #000;
+}
 .tabs_label {
   display: inline-block;
   background: #fff;
@@ -383,9 +396,52 @@ color:#43bee1
   text-align: center;
   position: relative;
 }
-.tabs_radio:checked+.tabs_label {background: #43bee1; box-shadow: 0 0 5px #43bee1;}
-.tabs_radio:checked+.tabs_label h5, .tabs_radio:checked+.tabs_label p {color: #fff;}
+.tabs_radio_controls label[for="all_tab"] {
+  background-color: #d9f4f0;
+  border-color: #d9f4f0;
+}
+.tabs_radio_controls label[for="delivery_tab"] {
+  background-color: #e9f4ff;
+  border-color: #e9f4ff;
+}
+.tabs_radio_controls label[for="dine_in_tab"] {
+  background-color: #f2f4d9;
+  border-color: #f2f4d9;
+}
+.tabs_radio_controls label[for="takeaway_tab"] {
+  background-color: #fef5d9;
+  border-color: #fef5d9;
+}
+.tabs_radio_controls label[for="rental_tab"] {
+  background-color: #fef3eb;
+  border-color: #fef3eb;
+}
+.tabs_radio_controls label[for="pick_drop_tab"] {
+  background-color: #ffe8e8;
+  border-color: #ffe8e8;
+}
+.tabs_radio_controls label[for="on_demand_tab"] {
+  background-color: #f6f2ff;
+  border-color: #f6f2ff;
+}
+.tabs_radio_controls label[for="laundry_tab"] {
+  background-color: #f1ffce;
+  border-color: #f1ffce;
+}
+.tabs_radio_controls label:hover{
+  border-color: #888;color: #000;
+}
+.tabs_radio:checked+label {
+  border-color: #888;color: #000;}
 .tabs_radio:not(:disabled)~label {cursor: pointer;}
+.order_data_box .badge.badge-info{color: #777;font-size: 12px;letter-spacing: 0;padding: 3px 6px;text-shadow: none;}
+.order_data_box .badge.badge-info.badge_1{background-color: #e9f4ff;}
+.order_data_box .badge.badge-info.badge_2{background-color: #f2f4d9;}
+.order_data_box .badge.badge-info.badge_3{background-color: #fef5d9;}
+.order_data_box .badge.badge-info.badge_4{background-color: #fef3eb;}
+.order_data_box .badge.badge-info.badge_5{background-color: #ffe8e8;}
+.order_data_box .badge.badge-info.badge_6{background-color: #f6f2ff;}
+.order_data_box .badge.badge-info.badge_7{background-color: #f1ffce;}
 
 
 

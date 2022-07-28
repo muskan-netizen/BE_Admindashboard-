@@ -243,7 +243,7 @@ class PickupDeliveryController extends BaseController{
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
 
                         //Send message if ride is booked for friend
-                        if($request->type == 1 && isset($request->friendPhoneNumber))
+                        if($request->bookingType == 1 && isset($request->friendPhoneNumber))
                         {
                             $msg = "Hi ".$request->friendName??'User'.", ".$user->name." has booked a ride for you.";
                             $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
@@ -280,6 +280,8 @@ class PickupDeliveryController extends BaseController{
         $taxable_amount = 0;
         $payable_amount = 0;
         $user = Auth::user();
+        $action = 'pick_drop';
+        $luxury_option = LuxuryOption::where('title', $action)->first();
         $request->address_id = $request->address_id ??null;
         $request->payment_option_id = $request->payment_option_id ??1;
         if ($user) {
@@ -330,10 +332,10 @@ class PickupDeliveryController extends BaseController{
                 $order->address_id = $request->address_id;
                 $order->payment_option_id = $payment_option;
                 /*book for a friend*/
-                $order->type = $request->type;
+                $order->type = $request->bookingType ?? 0;
                 $order->friend_name = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
-
+                $order->luxury_option_id = $luxury_option->id;
                 $order->scheduled_date_time = $request->schedule_time??NULL;
                 $order->save();
 
@@ -595,7 +597,7 @@ class PickupDeliveryController extends BaseController{
                 $team_tag = $unique."_".$vendor;
                 $product = Product::find($request->product_id);
                 $order_agent_tag = $product->tags??'';
-                $type=$request->type??0;
+                $type = $request->bookingType ?? 0;
                 $friendName=$request->friendName?? null;
                 $friendPhoneNumber=$request->friendPhoneNumber?? null;
                 if(empty($friendPhoneNumber)){

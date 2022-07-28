@@ -87,7 +87,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                 <div class="progress-order font-12  d-flex align-items-center justify-content-between pr-2">
                                                     <% if(order.luxury_option_name != '') { %>
 
-                                                        <span class="badge badge-info ml-2 my-1"><%= order.luxury_option_name %></span>
+                                                        <span class="badge badge-info ml-2 my-1 badge_<%= order.luxury_option_id %>"><%= order.luxury_option_name %></span>
                                                     <% } %>
                                                     <% if(vendor.order_status == 'Accepted' && vendor.accepted_by != null) { %>
                                                        <span class="ml-2 text-info"><%= vendor.order_status %> by <%= vendor.accepted_by.name %></span>
@@ -722,7 +722,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         }, 1500);
 
         setInterval(function() {
-            autoloaddashboad();
+            // autoloaddashboad();
         }, 17000);
 
         $(document).on("click", ".load-more-btn", function() {

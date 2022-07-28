@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,OrderLocations,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,User, UserAddress,Order,SubscriptionInvoicesUser,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage, Payment, PaymentOption,Rider};
+use App\Models\{Category,OrderLocations,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,User, UserAddress,Order,SubscriptionInvoicesUser,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage, Payment, PaymentOption,Rider,LuxuryOption};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -37,6 +37,9 @@ class PickupDeliveryController extends FrontController{
             }
             elseif($option->code == 'mobbex'){
                 $option->title = __('Mobbex');
+            }
+            elseif($option->code == 'authorize_net'){
+                $option->title = __('Credit/Debit Card');
             }
             elseif($option->code == 'offline_manual'){
                 $json = json_decode($option->credentials);
@@ -532,6 +535,8 @@ class PickupDeliveryController extends FrontController{
         $payable_amount = 0;
         $user = Auth::user();
         $currency_id = Session::get('customerCurrency');
+        $action = 'pick_drop';
+        $luxury_option = LuxuryOption::where('title', $action)->first();
         $request->address_id = $request->address_id ??null;
         $request->payment_option_id = $request->payment_option_id ??1;
         if ($user) {
@@ -586,7 +591,7 @@ class PickupDeliveryController extends FrontController{
                 $order->type = $request->type;
                 $order->friend_name = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
-                
+                $order->luxury_option_id = $luxury_option->id;
                 $order->save();
   
                 // save pickup delivery task 
