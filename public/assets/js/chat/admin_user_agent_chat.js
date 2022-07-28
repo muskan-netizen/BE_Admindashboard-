@@ -524,17 +524,17 @@
         
     }
 
-     async function fetchChatGroups(){
-        // 'sub_domain' =>$server_name,
-        //     'type'=>'agent_to_user',
-        //     'db_name'=>$clientData->database_name,
-        //     'client_id'=>$clientData->id
+     async function fetchChatGroups(client_data){
+        var client_data = JSON.parse(client_data);
+         if(client_data == undefined && client_data == 'undefined'){
+            return;
+         }
         var html='';
          axios.post(`${SocketConstants.Socket_url}/api/room/fetchAllRoom`, {
             sub_domain: window.location.host,
             type:'agent_to_user',
             db_name:Auth.database_name,
-            client_id:  1,
+            client_id: client_data.id,
         })
         .then(async response => {
             console.log(response);
@@ -587,4 +587,4 @@
 
     }
     
-    fetchChatGroups();
+    //fetchChatGroups();

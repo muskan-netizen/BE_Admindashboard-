@@ -54,9 +54,17 @@
             });
         });
     </script>
+      @php
+      $authData = json_encode(@$data->toArray());
+      pr($authData);
+  @endphp
 @endsection
 @section('script-bottom')
+<script>
+    var client_data = `<?php echo $authData; ?>`;
+    fetchChatGroups(client_data);
 
+</script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>

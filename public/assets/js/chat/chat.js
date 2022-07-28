@@ -220,7 +220,7 @@
         })
     }
 
-    async function getAllUser(roomId,roomIdText){
+    async function getAllUser(roomId,roomIdText,notify=0,message=''){
         var html='';
         var html2='';
         axios.get(`${SocketConstants.Socket_url}/api/chat/getRoomUser/${roomId}`)
@@ -228,6 +228,7 @@
             console.log(response);
             if(response.status == 200) {
                 if(response.data.userData.length > 0) {
+                   
                    await response.data.userData.forEach(function (data) {
                      html+= `<div class="alPhoneNumberDetails">
                             <ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
@@ -245,6 +246,10 @@
                                 </a>`;
    
                        });
+                    if(notify) {
+                        sendNotification(response.data.userData,message)
+                    }
+                
                  $(`#right_room_${roomId}`).html(html);
                  $(`#room_${roomId}`).find('.user_show').html(html2)
                 } else {
@@ -357,34 +362,7 @@
     
     }
 
-    // function sendMessage(message,room_id){
 
-    //     axios.post(`/client/chat/sendMessage`, {
-    //         sub_domain: window.location.origin,
-    //         client_id:  1,
-    //         db_name:Auth.database_name,
-    //         user_id:  Auth.auth_id,   
-    //         message:message,
-    //         room_id:room_id ,
-    //         chattype:'vendor_to_user',
-    //         from:'vendor',
-    //     })
-    //     .then(async response => {
-    //          console.log(response.data.status);
-    //          if(response.data.status) {
-    //             socket.emit('save-message', response.data)
-    //             $('#message_box').val('');
-    //          }
-             
-    //     })
-    //     .catch(e => {
-    //         Swal.fire(
-    //             'Something went wrong, try again later!',                                    
-    //             'error'
-    //         )
-    //     })
-          
-    // }
 
 
     function sendMessage(message,room_id,roomIdText){
@@ -414,7 +392,8 @@
              console.log(response.data.status);
              if(response.data.status) {
                 //if($('#chatHistory >  div').length == 0){
-                    await getAllUser(room_id,roomIdText);
+                    var notify = 1;
+                    await getAllUser(room_id,roomIdText,notify,message);
 
                // }
                 socket.emit('save-message', response.data)
@@ -515,17 +494,18 @@
     }
 
 
-    async function fetchChatGroups(){
-        // 'sub_domain' =>$server_name,
-        //     'type'=>'agent_to_user',
-        //     'db_name'=>$clientData->database_name,
-        //     'client_id'=>$clientData->id
+    async function fetchChatGroups(client_data){
+        var client_data = JSON.parse(client_data);
+         if(client_data == undefined && client_data == 'undefined'){
+            return;
+         }
         var html='';
          axios.post(`${SocketConstants.Socket_url}/api/room/fetchAllRoom`, {
             sub_domain: window.location.host,
             type:'vendor_to_user',
             db_name:Auth.database_name,
-            client_id:  1,
+            client_id: client_data.id,
+
         })
         .then(async response => {
             console.log(response);
@@ -578,4 +558,19 @@
 
     }
     
-    fetchChatGroups();
+    ///fetchChatGroups();
+
+
+
+
+    function sendNotification(user_ids,message){
+        axios.post(`/common/chat/sendNotificationToUser`, {
+            user_ids: user_ids,
+            text_message:message
+        })
+        .then(async response => {
+        })
+        .catch(e => {
+            
+        })
+    }
