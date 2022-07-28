@@ -1,4 +1,7 @@
 $(document).ready(async function () {
+    $(".alMobileChatIcons").click(function(){
+        $(".chat-list-container").addClass("open");
+    });
     //alert();
     await setTimeout(function(){
         var footer_height = $('.footer-light').height();
@@ -2127,7 +2130,7 @@ $(document).ready(function () {
         //     }
         // );
     }
-    function cartHeader(address_id) {   
+    function cartHeader(address_id) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();
 
