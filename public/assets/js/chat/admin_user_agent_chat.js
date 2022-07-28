@@ -30,7 +30,7 @@
         var authDataParseData = JSON.parse(authData);
         var email = authDataParseData.email;
         $('#roomName').html(roomIDn);
-        socket.emit('joinRoom', { email: email, roomId: roomId, message: 'Join this room', created_date: new Date() });
+       // socket.emit('joinRoom', { email: email, roomId: roomId, message: 'Join this room', created_date: new Date() });
 
         await fetchOderVendorDetails(OrdervendorID,order_id);
         await getALLchat(roomId,roomIdText);
@@ -88,7 +88,7 @@
             order_id:order_id      
         })
         .then(async response => {
-             console.log(response.data.status);
+             //console.log(response.data.status);
              $('#order_list_order').hide();
              if(response.data.status === true) {
                 var data = response.data;
@@ -122,13 +122,15 @@
         // return cdate.toDateString() +' '+ cdate.toLocaleTimeString();
     }
     async function fetchOderVendorDetails(order_vendor_id,order_id){
-        axios.post(`/client/chat/fetchOrderDetail`, {
+       await axios.post(`/client/chat/fetchOrderDetail`, {
             order_vendor_id: order_vendor_id,
             order_id:order_id
         })
         .then(async response => {
+         
             if(response.data.status) {
                 if(response.data.orderData != undefined) {
+                    console.log(response.data.orderData);
                     var data = response.data.orderData;
                     Chat.orderData.order_number  =  (data.order_number != undefined ) ? data.order_number : '';
                     Chat.orderData.payable_amount = (data.vendors[0].payable_amount != undefined ) ? data.vendors[0].payable_amount : '';
@@ -142,10 +144,11 @@
              
         })
         .catch(e => {
-            Swal.fire(
-                'Something went wrong, try again later!',                                    
-                'error'
-            )
+            console.log(e);
+            // Swal.fire(
+            //     'Something went wrong, try again later!',                                    
+            //     'error'
+            // )
         })
     }
 
@@ -203,7 +206,7 @@
                     $('.send_message').attr('data-id',roomId);
                     await $('#chatHistory').html(html);
                     scrollDown();
-                    await getAllUser(room_id,roomIdText);
+                    await getAllUser(roomId,roomIdText);
                     
                 } else {
                     $('#chatHistory').html(``);
@@ -220,7 +223,7 @@
              }
         })
         .catch(e => {
-        
+        console.log(e);
         })
     }
 
@@ -232,6 +235,7 @@
             console.log(response);
             if(response.status == 200) {
                 if(response.data.userData.length > 0) {
+                    html2+= `<p class="orderNumber m-0 mb-2">#${roomIdText}</p>`;
                    await response.data.userData.forEach(function (data) {
                      html+= `<div class="alPhoneNumberDetails">
                             <ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
@@ -239,22 +243,24 @@
                                 <li><span class="alUserName">${data.username}  (${data.user_type}) </span><p class="m-0 alPhoneNumber">${data.phone_num}</p></li>
                             </ul>
                         </div>`;
+                      
+                        html2+=   `<a class="user_data_left" href="javascript:void(0)">
+                            <img class="rounded-circle userImg" src="${data.display_image}">
+                        </a>`;
 
                     });
-                    html2+= `<p class="orderNumber m-0 mb-2">#${roomIdText}</p>`;
-                    await response.data.userData.forEach(function (data) {
+                   
+                    // await response.data.userData.forEach(function (data) {
                         
-                        html2+=   `<a class="user_data_left" href="javascript:void(0)">
-                                    <img class="rounded-circle userImg" src="${data.display_image}">
-                                </a>`;
+                       
    
-                       });
+                    //    });
                  $(`#right_room_${roomId}`).html(html);
                  $(`#room_${roomId}`).find('.user_show').html(html2)
                 } else {
                     
                     $(`#right_room_${roomId}`).html('');
-                 $(`#room_${roomId}`).find('.user_show').html('');
+                   $(`#room_${roomId}`).find('.user_show').html('');
 
                 }
 
@@ -265,6 +271,7 @@
              }
         })
         .catch(e => {
+            console.log(e);
             $(`#right_room_${roomId}`).html('');
             $(`#room_${roomId}`).find('.user_data').html('');
         })
@@ -501,3 +508,83 @@
 
         
     }
+    async function renderUser(data){
+        var html2='';
+        if(data.user_Data.length > 0) {
+            html2+= `<p class="orderNumber m-0 mb-2">#${data.room_id}</p>`;
+             await data.user_Data.forEach(function (data) {
+                html2+=   `<a class="user_data_left" href="javascript:void(0)">
+                <img class="rounded-circle userImg" src="${data.display_image}">
+                </a>`;
+            });
+            return html2; 
+        }
+        //console.log(html2);
+        return html2; 
+        
+    }
+
+     async function fetchChatGroups(){
+        // 'sub_domain' =>$server_name,
+        //     'type'=>'agent_to_user',
+        //     'db_name'=>$clientData->database_name,
+        //     'client_id'=>$clientData->id
+        var html='';
+         axios.post(`${SocketConstants.Socket_url}/api/room/fetchAllRoom`, {
+            sub_domain: window.location.host,
+            type:'agent_to_user',
+            db_name:Auth.database_name,
+            client_id:  1,
+        })
+        .then(async response => {
+            console.log(response);
+            if(response.status == 200) {
+                if(response.data.roomData.length > 0) {
+                    await response.data.roomData.reverse().forEach(async function (data,i) {
+                    console.log(data.updated_date);
+                    var renderUserd = await renderUser(data);
+                    var last_message = data.chat_Data[0].message??data.chat_Data[0].message;
+                    var updateDate =  new Date(data.updated_date);
+                    html = `<div id="chatRooms_${data._id}" data-text="${data.room_id}" data-sort="${i}" data-timestamp="" class="list-group rounded-0 chatRoomsDivs">
+                        <div id="room_${data._id}" data-orderid="${data.order_id}" data-ordervendorid="${data.order_vendor_id}" data-id="${data._id}" data-roomid="${data.room_id}" data-roomname="${data.room_id}" class="chat-list-item row fetchChat">
+                            <div class="align-self-center col-4">
+                                <div class="user_show">
+                                ${renderUserd}
+                                </div>
+                            </div>
+                            <div class="col-8 position-relative pl-0">
+                                <div class="alNameTime last_message">
+                                    <h6 id="preview_message_name_${data._id}" class="mb-1 mt-0">Sales Demo</h6>
+                                    <span id="preview_message_time_${data._id}">
+                                    ${convertDateTime(updateDate)}
+                                    </span>
+                                </div>
+                                <p id="preview_message_${data._id}" class="orderChatMessage mb-0">${last_message} </p>
+                            </div>
+                        </div>
+                        </div>`;
+                        //if(document.getElementById(`chatRooms_${roomData._id}`) === null) {
+                            //alert();
+                          //console.log(html);
+                          await  $('.sortDiv').prepend(html);
+                          
+                        //}
+                    });
+                 
+                    
+                } else {
+                    $('.sortDiv').html('')
+                }
+
+             } else {
+                $('.sortDiv').html('')
+             }
+        })
+        .catch(e => {
+            $('.sortDiv').html('')
+        })
+        
+
+    }
+    
+    fetchChatGroups();

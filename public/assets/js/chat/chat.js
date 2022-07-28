@@ -497,3 +497,85 @@
 
         
     }
+
+    async function renderUser(data){
+        var html2='';
+        if(data.user_Data.length > 0) {
+            html2+= `<p class="orderNumber m-0 mb-2">#${data.room_id}</p>`;
+             await data.user_Data.forEach(function (data) {
+                html2+=   `<a class="user_data_left" href="javascript:void(0)">
+                <img class="rounded-circle userImg" src="${data.display_image}">
+                </a>`;
+            });
+            return html2; 
+        }
+        //console.log(html2);
+        return html2; 
+        
+    }
+
+
+    async function fetchChatGroups(){
+        // 'sub_domain' =>$server_name,
+        //     'type'=>'agent_to_user',
+        //     'db_name'=>$clientData->database_name,
+        //     'client_id'=>$clientData->id
+        var html='';
+         axios.post(`${SocketConstants.Socket_url}/api/room/fetchAllRoom`, {
+            sub_domain: window.location.host,
+            type:'vendor_to_user',
+            db_name:Auth.database_name,
+            client_id:  1,
+        })
+        .then(async response => {
+            console.log(response);
+            if(response.status == 200) {
+                if(response.data.roomData.length > 0) {
+                    await response.data.roomData.reverse().forEach(async function (data,i) {
+                    console.log(data.updated_date);
+                    var renderUserd = await renderUser(data);
+                    var last_message = data.chat_Data[0].message??data.chat_Data[0].message;
+                    var updateDate =  new Date(data.updated_date);
+                    html = `<div id="chatRooms_${data._id}" data-text="${data.room_id}" data-sort="${i}" data-timestamp="" class="list-group rounded-0 chatRoomsDivs">
+                        <div id="room_${data._id}" data-orderid="${data.order_id}" data-ordervendorid="${data.order_vendor_id}" data-id="${data._id}" data-roomid="${data.room_id}" data-roomname="${data.room_id}" class="chat-list-item row fetchChat">
+                            <div class="align-self-center col-4">
+                                <div class="user_show">
+                                ${renderUserd}
+                                </div>
+                            </div>
+                            <div class="col-8 position-relative pl-0">
+                                <div class="alNameTime last_message">
+                                    <h6 id="preview_message_name_${data._id}" class="mb-1 mt-0">Sales Demo</h6>
+                                    <span id="preview_message_time_${data._id}">
+                                    ${convertDateTime(updateDate)}
+                                    </span>
+                                </div>
+                                <p id="preview_message_${data._id}" class="orderChatMessage mb-0">${last_message} </p>
+                            </div>
+                        </div>
+                        </div>`;
+                        //if(document.getElementById(`chatRooms_${roomData._id}`) === null) {
+                            //alert();
+                          //console.log(html);
+                          await  $('.sortDiv').prepend(html);
+                          
+                        //}
+                    });
+                 
+                    
+                } else {
+                    $('.sortDiv').html('')
+                }
+
+             } else {
+                $('.sortDiv').html('')
+             }
+        })
+        .catch(e => {
+            $('.sortDiv').html('')
+        })
+        
+
+    }
+    
+    fetchChatGroups();

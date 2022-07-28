@@ -59,15 +59,26 @@
             });
         });
     </script>
+    @php
+        $authData = json_encode(@$data->toArray());
+    @endphp
 @endsection
+
+
 @section('script-bottom')
+<script>
+    var client_data = `<?php echo $authData; ?>`;
+</script>
 <script src="https://momentjs.com/downloads/moment.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/vendor_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
 {{-- <script src="{{asset('assets/js/chat/chatNotifications.js')}}"></script> --}}
+<script>
+    var client_data = `<?php echo $authData; ?>`;
+    fetchChatGroups(client_data);
 
-
+</script>
 <script>
     $(document).ready(async function(){
 //alert(window.location.pathname.split('/')[4])
