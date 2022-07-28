@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag};
+use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout,ProductTag,Facilty};
 use Log;
 class VendorController extends FrontController
 {
@@ -84,8 +84,8 @@ class VendorController extends FrontController
         $tag_id = $request->has('tag') && $request->tag ? $request->tag : null;
         $preferences = Session::get('preferences');
         //die($slug);
-        $vendor = Vendor::with('slot.day', 'slotDate')
-            ->select('id','email', 'name', 'slug', 'desc','short_desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled','instagram_url')->where('slug', $slug)->where('status', 1)->firstOrFail();
+        $vendor = Vendor::with('slot.day', 'slotDate', 'productsLive.reviews')
+            ->select('id','email', 'name', 'slug', 'desc','short_desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled','instagram_url','country','state')->where('slug', $slug)->where('status', 1)->firstOrFail();
         $vendor->is_vendor_closed = 0;
         if($vendor->show_slot == 0){
             if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
@@ -101,7 +101,8 @@ class VendorController extends FrontController
                 }
             }
         }
-        //  dd($vendor->toArray());
+        $review_count = $vendor->whereHas('productsLive.reviews')->count();
+        $vendor->review_count = $review_count;
         if( $request->has('table') ){
             if(!Auth::user()){
                 session(['url.intended' => url()->full()]);
@@ -182,6 +183,13 @@ class VendorController extends FrontController
             $page = 'products-with-categories-extended';
             $products = Product::select('averageRating')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
             $vendor->vendorRating = $this->vendorRating($products);
+            $vendor->facilty  = [];
+            if( (isset($preferences->is_vendor_tags)) && ($preferences->is_vendor_tags == 1) ){
+                $vendor->facilty  = Facilty::with(['translations'=> function ($q) use ($langId) {
+                    $q->where('language_id',$langId);
+                }])->get();
+            }
+            
         }
         else{
             $page = 'products';
@@ -223,6 +231,7 @@ class VendorController extends FrontController
                 $is_vendor_closed = 0;
             }
         }
+       // pr($vendor->toArray());
         $product_tag_ids = Product::byProductCategoryServiceType($type)->where('vendor_id', $vendor->id)->where('is_live', 1)->pluck('id')->toArray();
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
@@ -905,7 +914,7 @@ class VendorController extends FrontController
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
         $listData = $vendor_categories;
-        if( $request->has('vendor_template_id') && $vendor_template_id == 6) {
+        if( $request->has('vendor_template_id') && $request->vendor_template_id == 6) {
             $returnHTML = view('frontend.vendor-temp-six-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData,'tagId'=>$tagId, 'input'=>$request->all()])->render();
         } else {
             $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData,'tagId'=>$tagId, 'input'=>$request->all()])->render();

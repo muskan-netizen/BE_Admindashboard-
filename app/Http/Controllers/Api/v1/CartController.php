@@ -505,6 +505,8 @@ class CartController extends BaseController
             return false;
         }
         $nowdate = Carbon::now()->toDateTimeString();
+        $nowdate = convertDateTimeInClientTimeZone($nowdate);
+        
         $vondorCnt = 0;
         $address = [];
         $category_array = [];

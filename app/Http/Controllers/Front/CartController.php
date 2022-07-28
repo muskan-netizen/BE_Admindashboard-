@@ -148,8 +148,7 @@ class CartController extends FrontController
     public function postCartRequestFromEstimation(Request $request)
     {
         $product_ids = explode(',', $request->product_id);
-        // \Log::info($request->all());
-        // dd('hi');
+        $user = Auth::user();
         $vendor_id = $request->vendor_id;
         $variant_id = array();
         $minimum_order_count = array();
@@ -193,7 +192,12 @@ class CartController extends FrontController
 
     
         // Remove Estimation Cart
-        $estimatedProductCart = EstimatedProductCart::where('user_id', Auth::user()->id)->first();
+        if($user){
+            $estimatedProductCart = EstimatedProductCart::where('user_id', $user->id)->first();
+        }else{
+            $user_token = session()->get('_token');
+            $estimatedProductCart = EstimatedProductCart::where('unique_identifier', $user_token)->first();
+        }
         $estimatedProduct = EstimatedProduct::where('estimated_cart_id', $estimatedProductCart->id )->first();
         $estimatedProductAddons = EstimatedProductAddons::where('estimated_product_id', $estimatedProduct->id )->delete();
         $estimatedProduct->delete();
@@ -452,6 +456,7 @@ class CartController extends FrontController
             // }
             return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id]);
         } catch (Exception $e) {
+            \Log::info($e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
@@ -680,6 +685,7 @@ class CartController extends FrontController
         $cart->pharmacy_check = $preferences->pharmacy_check;
         $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
         $nowdate = Carbon::now()->toDateTimeString();
+        $nowdate = convertDateTimeInClientTimeZone($nowdate);
         $latitude = '';
         $longitude = '';
         $user_allAddresses = collect();

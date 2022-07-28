@@ -24,7 +24,7 @@ $(document).ready(async function () {
         $('.scrollspy-menu a').on('click',function(){
             $("html, body").animate({ scrollTop:  $('#'+$(this).data('slug')).offset().top - (header_height+30) });
         })
-    },2000)
+    },3000)
 
 });
 
@@ -2194,14 +2194,13 @@ $(document).ready(function () {
                             }
                             cartTotalProductCount();
 
-
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $("#header_cart_main_ul_ondemand").html('');
                                 let header_cart_template_ondemand = _.template($('#header_cart_template_ondemand').html());
                                 var CartTemplateOndemandData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url });
                                 $("#header_cart_main_ul_ondemand").removeClass('d-none');
 
-                                $("#header_cart_main_ul_ondemand").append(header_cart_template_ondemand(CartTemplateOndemandData));
+                                $("#header_cart_main_ul_ondemand").html(header_cart_template_ondemand(CartTemplateOndemandData));
                                 $("#next-button-ondemand-2").show();
                                 $('#placeorder_form_ondemand .left_box').html('');
                                 $('#placeorder_form_ondemand .left_box').html(cart_details.left_section);
@@ -2216,12 +2215,19 @@ $(document).ready(function () {
                             }
 
                         } else {
+                            console.log('header_cart_main_ul_ondemand no productss');
                             if ($('#cart_main_page').length != 0) {
                                 $('#cart_main_page').html('');
                                 let empty_cart_template = _.template($('#empty_cart_template').html());
                                 $("#cart_main_page").append(empty_cart_template());
                             }
                             if ($('.categories-product-list').length > 0) {
+                                $('#header_cart_main_ul_ondemand').html('');
+                                let empty_cart_template = _.template($('#empty_cart_template').html());
+                                $("#header_cart_main_ul_ondemand").append(empty_cart_template());
+                            }
+                            if ($("#header_cart_template_ondemand").length != 0) {
+                                console.log('header_cart_main_ul_ondemand exists');
                                 $('#header_cart_main_ul_ondemand').html('');
                                 let empty_cart_template = _.template($('#empty_cart_template').html());
                                 $("#header_cart_main_ul_ondemand").append(empty_cart_template());
@@ -2234,6 +2240,11 @@ $(document).ready(function () {
                             $("#cart_main_page").append(empty_cart_template());
                         }
                         if ($('.categories-product-list').length > 0) {
+                            $('#header_cart_main_ul_ondemand').html('');
+                            let empty_cart_template = _.template($('#empty_cart_template').html());
+                            $("#header_cart_main_ul_ondemand").append(empty_cart_template());
+                        }
+                        if ($("#header_cart_template_ondemand").length != 0) {
                             $('#header_cart_main_ul_ondemand').html('');
                             let empty_cart_template = _.template($('#empty_cart_template').html());
                             $("#header_cart_main_ul_ondemand").append(empty_cart_template());
@@ -3582,16 +3593,29 @@ $(document).ready(function () {
     }
 
 
+    if ($(".ondemand-time-slots")[0]){
+        let cur_date = $('input[name="booking_date"]:checked').val();
+        if(cur_date && cur_date != undefined){
+            let cart_product_id = $('input[name="booking_date"]:checked').data("cart_product_id");
+            let product_vendor_id = $('input[name="booking_date"]:checked').data("product_vendor_id");
 
+            showSlotOnDate(cur_date,cart_product_id,product_vendor_id)
+        }
+
+    }
 
     // get time slots according to date
     $(document).on('click', '.check-time-slots', function () {
+        //$(".check-time-slots").removeAttr('checked');
         let cur_date = $(this).val();
         let cart_product_id = $(this).data("cart_product_id");
         let product_vendor_id = $(this).data("product_vendor_id");
-        getTimeSlots(cur_date, cart_product_id , product_vendor_id);
-
+        //$(this).addAttr('checked');
+        showSlotOnDate(cur_date,cart_product_id,product_vendor_id)
     });
+    function showSlotOnDate(cur_date,cart_product_id,product_vendor_id){
+        getTimeSlots(cur_date, cart_product_id , product_vendor_id);
+    }
 
     $(document).on('change', '.vendor_schedule_datetime, .vendor_schedule_slot', function () {
 

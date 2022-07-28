@@ -382,11 +382,16 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         </div>
         <div class="col-md-6">
             <div class="page-title-box page-title-box text-right pt-2">
-                <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
+                <a class="return-btn mr-2" href="{{route('backend.order.returns',['Pending'])}}">
                     <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
-                        <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
+                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
                     </b>
-                </a> 
+                </a>
+                <a class="mr-2" href="{{route('cancel-order.requests')}}">
+                    <b>{{ __("Cancel Order Request") }}<sup class="total-items">({{$cancel_order_requests}})</sup>
+                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                    </b>
+                </a>
                 @if ($client_preferences->business_type == 'laundry')
                 <a class="return-btn" href="{{route('rescheduled.orders')}}">
                     <b>{{ __("Rescheduled Orders") }} <sup class="total-items">({{$rescheduleOrderCount}})</sup>
@@ -473,6 +478,27 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                             </a>
                             <div class="material-border"></div>
                         </li>
+                        
+                        {{-- <li class="nav-item">
+                            <a class="nav-link active" id="all_luxury_tab" data-toggle="tab" href="#all_luxury_tab" role="tab" aria-controls="profile" aria-selected="false">{{__('All')}}</a>
+                        </li> --}}
+                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                            @php
+                                $clientVendorTypes = $vendor_typ_key.'_check';
+                                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                                $vendorTypeOrders = $VendorTypesName.'_orders';
+                            @endphp
+                            
+                            @if($client_preference_detail->$clientVendorTypes == 1)
+                            <li class="nav-item">
+                                <a class="nav-link" id="{{$VendorTypesName}}_tab" data-toggle="tab" href="#{{$VendorTypesName}}_orders" role="tab" aria-selected="false" data-rel="{{$VendorTypesName}}_orders">{{$NomenclatureName}} 
+                                    <sup class="total-items" id="{{$VendorTypesName}}-orders">({{ $$vendorTypeOrders ?? 0 }})</sup>
+                                </a> 
+                            </li>
+                            @endif
+                        @endforeach
+                        <div class="navigation-tab-overlay_alnew_design"></div>
                     </ul>
                     <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
                         <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
@@ -483,6 +509,22 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 <p>{{ __("You don't have orders right now.") }}</p>
                             </div>
                         </div>
+                        @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
+                            @php
+                                $clientVendorTypes = $vendor_typ_key.'_check';
+                                $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
+                                $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
+                            @endphp
+                            
+                            @if($client_preference_detail->$clientVendorTypes == 1)
+                                <div class="tab-pane fade past-order position-relative h-100" id="{{$VendorTypesName}}_orders" role="tabpanel" aria-labelledby="{{$VendorTypesName}}_tab">
+                                    <div class="error-msg mt-3">
+                                        <img class="mb-2" src="{{asset('images/no-order.svg')}}">
+                                        <p>{{ __("You don't have orders right now.") }}</p>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -613,7 +655,27 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     $("#active-orders").html("(" + response.data.active_orders + ")");
                     $("#pending-orders").html("(" + response.data.pending_orders + ")");
                     $("#history-orders").html("(" + response.data.orders_history + ")");
-
+                    if(response.data.delivery_orders !== undefined){
+                        $("#delivery-orders").html("(" + response.data.delivery_orders + ")");
+                    }
+                    if(response.data.dine_in_orders !== undefined){
+                        $("#dine_in-orders").html("(" + response.data.dine_in_orders + ")");
+                    }
+                    if(response.data.takeaway_orders !== undefined){
+                        $("#takeaway-orders").html("(" + response.data.takeaway_orders + ")");
+                    }
+                    if(response.data.rental_orders !== undefined){
+                        $("#rental-orders").html("(" + response.data.rental_orders + ")");
+                    }
+                    if(response.data.pick_drop_orders !== undefined){
+                        $("#pick_drop-orders").html("(" + response.data.pick_drop_orders + ")");
+                    }
+                    if(response.data.on_demand_orders !== undefined){
+                        $("#on_demand-orders").html("(" + response.data.on_demand_orders + ")");
+                    }
+                    if(response.data.laundry_orders !== undefined){
+                        $("#laundry-orders").html("(" + response.data.laundry_orders + ")");
+                    }
                  }
 
             },

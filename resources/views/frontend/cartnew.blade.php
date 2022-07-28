@@ -174,6 +174,38 @@ $client_preferences = \App\Models\ClientPreference::first();
 </div>
 
 <script type="text/template" id="cart_template">
+    <div class="col-lg-8">
+        <div class="shoping_cart p-3">
+            <div class="row mb-2 border-bottom">
+                        <div class="col-6">
+                            <div class="single_cart_heading">
+                                    <h3>Shopping Cart</h3>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="item-show-cart text-right">
+                                <h4>4 Items</h4>
+                            </div>
+                        </div>
+            </div>
+            <div class="row border-bottom product_title_add py-1">
+                    <div class="col-md-4">
+                        <span>Product Details</span>
+                    </div>
+
+                    <div class="col-md-2 text-center">
+                        <span>Price</span>
+                    </div>
+
+                    <div class="col-md-2 text-center">
+                        <span>Quantity</span>
+                    </div>
+
+                    <div class="col-md-4 text-center">
+                        <span>Total</span>
+                    </div>
+
+            </div>
     <%
     let fixed_fee=0;
     let fixed_fee_amount=0;
@@ -244,10 +276,7 @@ $client_preferences = \App\Models\ClientPreference::first();
         %>
         <div id="thead_<%= product.vendor.id %>">
             <div class="row">
-                <div class="col-12">
-                    <h5 class="m-0"><b><%= product.vendor.name %><%= product.fix_fee_tax %></b></h5>
-                    <input type="hidden" name="category_name" id="category_name" value= "<%= product.vendor.name %>" />
-                </div>
+                
                 <div class="col-12">
                     <div class="countdownholder alert-danger" id="min_order_validation_error_<%= product.vendor.id %>" style="display:none;">Your cart will be expired in </div>
                 </div>
@@ -285,11 +314,17 @@ $client_preferences = \App\Models\ClientPreference::first();
 
             </div>
         </div>
-        <hr class="mt-2">
+        
+        <div class="col-12 cart-heading mt-2 px-0">
+            <h5 class="my-1"><b><%= product.vendor.name %><%= product.fix_fee_tax %></b></h5>
+            <input type="hidden" name="category_name" id="category_name" value= "<%= product.vendor.name %>" />
+        </div>
+
         <div id="tbody_<%= product.vendor.id %>">
+
             <% _.each(product.vendor_products, function(vendor_product, vp){%>
                 <div class="row align-items-md-center vendor_products_tr alFourTemplateCartPage" id="tr_vendor_products_<%= vendor_product.id %>">
-                    <div class="product-img col-3 col-md-2 pr-0">
+                    <div class="product-img col-3 col-md-2">
                         <% if(vendor_product.pvariant.media_one) { %>
                             <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
                         <% }else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){ %>
@@ -301,7 +336,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <div class="col-9 col-md-10">
                         <div class="row align-items-md-center">
                             <div class="col-md-3 order-md-1">
-                                <h4><%= vendor_product.product.category_name.name %></h4>
+                                <h4 class="cart_product_name"><%= vendor_product.product.category_name.name %></h4>
                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px"><strong><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></strong></h4>
                                 <input type="hidden" name="hidden_product_name" id="hidden_product_name" value= "<%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %>" />
                                 <% _.each(vendor_product.pvariant.vset, function(vset, vs){%>
@@ -350,7 +385,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                         </div>
                         <% if(vendor_product.addon.length != 0) { %>
                             <hr class="my-2">
-                            <div class="row align-items-md-center">
+                            <div class="row align-items-md-center add_head">
                                 <div class="col-12">
                                     <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                 </div>
@@ -434,7 +469,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 
                 <hr class="my-1">
             <% }); %>
-            <div class="row">
+            <div class="row my-2">
                  @if(!$guest_user)
                 <div class="col-lg-6 ">
                 <% if(product.is_promo_code_available > 0) { %>
@@ -534,8 +569,28 @@ $client_preferences = \App\Models\ClientPreference::first();
         </div>
         <hr class="my-1">
     <% }); %>
-    <div class="row">
-    <input type="hidden" name="without_category_kyc" value="<%= cart_details.without_category_kyc %>">
+        <div class="row mb-md-1 alFourTemplateCartButtons mt-3">
+            <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
+                <a class="btn shoping" href="{{ url('/') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+ {{__('Continue Shopping')}}</a>
+            </div>
+        </div>
+    </div>
+
+    @if(!$guest_user)
+   
+                    <div class="col-lg-12 left_box new_cart mt-4 p-3">
+
+                    </div>
+                    @endif
+</div>
+    <div class="col-lg-4">
+        <div class="row m-0">
+         <div class="cart-summary p-2 pb-4">
+            <div class="col-12 mb-2">
+                <h5 class="order_text">Order Summary</h5>
+            </div>
+        <input type="hidden" name="without_category_kyc" value="<%= cart_details.without_category_kyc %>">
         @if($client_preference_detail->category_kyc_documents ==1)
             <% if( (cart_details.category_kyc_count > 0 ) ) { %>
             <div class=" col-3 <%= cart_details.category_kyc_count %>  " id="category_kyc_dev_<%= cart_details.category_rendem_id %>">
@@ -553,7 +608,7 @@ $client_preferences = \App\Models\ClientPreference::first();
             @endphp
             @if(isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry')
             <div class="row">
-                <div class="col-4">{{__('Comment for Pickup Driver ')}}</div>
+                <div class="col-4"><span>{{__('Comment for Pickup Driver ')}}</span></div>
                 <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Please reach before time if possible')}}" id="comment_for_pickup_driver" value ="{{$cart->comment_for_pickup_driver??''}}" name="comment_for_pickup_driver"></div>
             </div>
             <hr class="my-2">
@@ -570,7 +625,7 @@ $client_preferences = \App\Models\ClientPreference::first();
             <hr class="my-2">
                 @if($client_preference_detail->scheduling_with_slots == 1 && $client_preference_detail->off_scheduling_at_cart == 0 )
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <label for="">{{__('Schedule Pickup ')}}</label> <span class="loaderforjs"><img class="img-fluid" style="display:none;" id="loaderforjs" src="{{asset('front-assets/images/loading.gif')}}" alt=""></span>
                             <div class="row">
                                 <div class="col-md-6">
@@ -593,8 +648,9 @@ $client_preferences = \App\Models\ClientPreference::first();
                                     </select>
                                 </div>
                             </div>
+
                         </div>                    
-                        <div class="col-md-6">
+                        <div class="col-md-12 mt-2">
                             <label for="">{{__('Schedule Dropoff ')}} </label> <span class="loaderfordrop"><img class="img-fluid" style="display:none;" id="loaderfordrop" src="{{asset('front-assets/images/loading.gif')}}" alt=""></span>
                             <div class="row">
                                 <div class="col-md-6">
@@ -619,14 +675,14 @@ $client_preferences = \App\Models\ClientPreference::first();
             <div class="row">
 
                 <div class="col-12 alFourSpecificInstructions">
-                    {{__('Specific instructions')}}
+                   <span class="pb-1"> {{__('Specific instructions')}}</span>
                     <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions">
                 </div>
             </div>
            @endif
 
         </div>
-        <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
+        <div class="col-lg-12 mt-3 cart-price">
 
             <% if(cart_details.sub_total > 0 ) { %>
                 <div class="row">
@@ -675,7 +731,7 @@ $client_preferences = \App\Models\ClientPreference::first();
             
 
             <% if(price_bifurcation!=1){ %>
-            <hr class="my-2">
+            <!-- <hr class="my-2"> -->
             <div class="row">
                 <div class="col-6">{{__('Total')}}</div>
                 <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount"><%= Helper.formatPrice(parseFloat(cart_details.gross_amount)) %></b></span>
@@ -806,17 +862,14 @@ $client_preferences = \App\Models\ClientPreference::first();
             </div>
             <hr class="my-2">
 
+                    </div>
 
-
-        </div>
-
-    </div>
-    {{-- Schedual code Start at down --}}
+                    {{-- Schedual code Start at down --}}
             <% if((cart_details.closed_store_order_scheduled == 1 || client_preference_detail.off_scheduling_at_cart != 1) && cart_details.vendorCnt==1) { %>
                 @if($client_preference_detail->business_type != 'laundry')
-            <div class="row arabic-lng position-relative mb-2" id="dateredio">
+            <div class="row arabic-lng position-relative my-3" id="dateredio">
                 <div class=" col-md-12 mb-2 mb-md-0 text-right">
-                    <div class="login-form">
+                    <div class="login-form col schedule_btn">
                         <ul class="list-inline ml-auto d-flex align-items-center justify-content-end">
                             <li class="d-inline-block mr-1">
                                 <input type="hidden" class="custom-control-input check" id="vendor_id" name="vendor_id" value="<%= cart_details.vendor_id %>" >
@@ -843,7 +896,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 </li>
                                 <% } %>
                         </ul>
-                        <div class=" col-sm-4 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="<%= ((cart_details.schedule_type == 'schedule') ? '' : 'display:none!important') %>">
+                        <div class=" col-sm-10 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1" id="schedule_div" style="<%= ((cart_details.schedule_type == 'schedule') ? '' : 'display:none!important') %>">
                     <% if(cart_details.slotsCnt == 0) { %>
                     <% if(cart_details.delay_date != 0) { %>
                         <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
@@ -874,7 +927,20 @@ $client_preferences = \App\Models\ClientPreference::first();
             </div>
             @endif
             <% } %>
+                    
+                    <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
+                        @if(isset($ageVerify->status) && $ageVerify->status == 1)
+                            {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
+                        @endif
+                        <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                    </div>
 
+        </div>
+
+    </div>
+   
+    </div>
+    </div>
             {{-- Schedual code end at down --}}
 </script>
 
@@ -905,30 +971,25 @@ $client_preferences = \App\Models\ClientPreference::first();
         <p>{{__('No Other Coupons Available.')}}</p>
     </div>
 </script>
-<div id="cart_main_page">
+<div id="cart_main_page" class="cart-design">
     <div class="container">
         @if($cartData)
         <form method="post" action="" id="placeorder_form">
             @csrf
-            <div class="card-box">
-                <div class="row d-flex justify-space-around">
-                    @if(!$guest_user)
-                    <div class="col-lg-4 left_box">
-
-                    </div>
-                    @endif
-                    <div class="{{ $guest_user ? 'col-md-12' : 'col-lg-8' }}">
-                        <div class="spinner-box">
-                            <div class="circle-border">
-                                <div class="circle-core"></div>
-                            </div>
+            <div class="card-box bg-transparent">
+                <!-- <div class="row d-flex justify-space-around"> -->
+                   
+                    
+                    <div class="spinner-box">
+                        <div class="circle-border">
+                            <div class="circle-core"></div>
                         </div>
-
-                        <div class="cart-page-layout" id="cart_table"></div>
-
                     </div>
-                </div>
-                <div class="row mb-md-3 alFourTemplateCartButtons">
+
+                    <div class="row cart-page-layout" id="cart_table"></div>
+                    
+                <!-- </div> -->
+                <!-- <div class="row mb-md-3 alFourTemplateCartButtons mt-4">
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
                         @if(!empty(Auth::user()))
@@ -938,15 +999,8 @@ $client_preferences = \App\Models\ClientPreference::first();
 
 
 
-                    <div class="col-sm-6 col-lg-8 text-sm-right">
-
-                        @if(isset($ageVerify->status) && $ageVerify->status == 1)
-                            {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
-                        @endif
-
-                        <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
-                    </div>
-                </div>
+                    
+                </div> -->
             </div>
 
         </form>

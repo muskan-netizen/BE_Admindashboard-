@@ -226,51 +226,6 @@ body.al_body_template_six.light{visibility: visible;}
 .al_body_template_six .vendors span.rating-number{position: absolute;top: 5px;right: 10px;}
 .al_body_template_six .vendors .al_custom_brand .slick-slide{margin:  0 10px;}
 
-/*===================== login page css start here ==================== */
-.LogoInArea label,
-#register label{text-transform: capitalize;font-size: 12px;margin-top: 10px !important;}
-#login-section{background-image: url(../../../assets/images/bannerFour.jpg);background-color: var(--theme-deafult);height: 100%;width: 100%;background-position: center;background-size: cover;border-radius: 50px;position: relative;overflow: hidden;}
-#login-section .LoginLogoBG{position:relative;z-index: 1;text-align: center;}
-#login-section::before,#login-section::after{position: absolute;content:"";height:100%;width:50%;top:0;right:0;background-color:#fff;z-index: 0;}
-.bgFourPage{background-image: url(../../../assets/images/bannerFour.jpg);background-color: var(--theme-deafult);height: 100vh;position:fixed;width:100%;filter: blur(10px);}
-article.BGcenter{position: absolute;left: 50%;top: 50%;-webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%);width: 100%;}
-.LogoInArea{z-index: 1;}
-.LogoInArea h3{color: var(--theme-deafult);font-weight:700;}
-span.fa.fa-eye-slash.toggle-password.eye::before{content: "\f06e";}
-.fa-eye-slash:before{font-family: FontAwesome;}
-span.fa.fa-eye-slash.toggle-password{position: absolute;bottom: 10px;right: 10px;}
-body.al_body_template_four .submitLogin,
-body.al_body_template_four .login_continue_btn{font-weight: 700;font-size: 14px !important;}
-#password-wrapper a.font-14{line-height: 30px;color:#777}
-#password-wrapper a.font-14:hover{color: var(--theme-deafult);}
-.registerLink a{font-weight: bold;color: var(--theme-deafult);}
-.ALdivider_line{height: 1px;width: 100%;opacity: 1;background-color: #ccc;position: relative;margin: 40px 0 !important;}
-.ALdivider_line span{height: auto;line-height: normal;border: 0;box-shadow: 0 0 4px 0 rgb(0, 0, 0 / 5%);font-size: 14px;font-weight: 400;border-radius: 0;text-align: center;display: inline-block;background: #fff;position: absolute;top: -10px;left: 0;right: 0;max-width: 130px;margin: 0 auto;}
-.LogoInArea .social-links li a{height: 50px;width: 50px;line-height: 50px;border-radius: 10px;display: block;background-color: #fff;box-shadow: 0 0 5px rgb(0 0 0 / 10%);margin: 0 4px;}
-.LogoInArea label{margin-bottom:0;text-align: left;}
-.hide{display: none;}
-.checkbox-input label{position: relative;padding-left: 25px;font-size: 12px;}
-.checkbox-input input{position: absolute;left: 0;width: 18px;top: 0;height:25px}
-#register .user-info.d-block.w-100 h2{font-size: 18px;text-transform: capitalize;font-weight: 300;color: #777;}
-#register label.m-0{text-transform: capitalize;}
-#register .file.file--upload{height: 80px;}
-#register .file.file--upload span{position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);}
-#register .file.file--upload label{width: 100%;height: 100%;padding: 0;}
-.is-invalid ~ .fa.fa-eye-slash.toggle-password{display: none;}
-.BGcenter .tab-content button{width: 100%;height: 37px;}
-.BGcenter .nav-tabs{border-bottom: 0;}
-.BGcenter .nav-tabs .nav-item.show .nav-link,
-.BGcenter .nav-tabs .nav-link.active{color: var(--theme-deafult);background-color: #fff;border-color: var(--theme-deafult);}
-.BGcenter .nav-tabs .nav-link{border-width: 0 0 2px 0;border-color: transparent;border-style: solid; border-radius: 0;}
-.BGcenter .alDocumentsSection{max-height: 150px;overflow-y: auto;position: relative;background-color: var(--theme-deafult) 1%;width:100%;}
-.BGcenter .alDocumentsSection:before{position:absolute;width:100%;height:100%}
-.BGcenter .is-invalid ~ .fa.fa-eye-slash.toggle-password{display: none;}
-div#recent_orders5 .slick-list.draggable{padding: 20px;}
-.BGcenter .tab-content button{width: 100%;height: 37px;}
-ul.price_box_bottom li span{font-weight: 600;}
-.BGcenter a.alBtnGuestLink{color: var(--top-header-color);font-size: 20px;font-weight: 600;text-align: center;margin: 20px auto;display: block;text-decoration: underline;}
-span.registerLink{text-align: center;width: 100%;margin-top: 10px;display: block;font-size: 12px;}
-/*================== login page css end here ====================== */
 
 
 a.brand-box.d-block.black-box{text-align: center;}

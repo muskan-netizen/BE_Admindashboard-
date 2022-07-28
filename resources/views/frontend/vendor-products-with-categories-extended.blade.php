@@ -61,8 +61,12 @@ $checkSlot = findSlot('', $vendor->id, '');
 	        		<!-- breadcrumb start -->
 	        		<nav class="col-12 p-0" aria-label="breadcrumb">
 					  <ol class="breadcrumb p-0">
-					    <li class="breadcrumb-item pr-3"><a href="{{ url('/') }}">{{ __('Home') }}</a></li>
-					    <li class="breadcrumb-item active pl-4" aria-current="page">{{ getNomenclatureName('Vendors', true) }}</li>
+                        @if( $vendor->country)
+					        <li class="breadcrumb-item pr-3"><a href="javascript:void(0)">{{  $vendor->country ?? '' }}</a></li>
+                        @endif
+                        @if( $vendor->state)
+					        <li class="breadcrumb-item active pl-4" aria-current="page">{{ $vendor->state ?? '' }}</li>
+                        @endif
 					  </ol>
 					</nav><!-- breadcrumb end -->
 					<div class="col-12 p-0">
@@ -71,7 +75,8 @@ $checkSlot = findSlot('', $vendor->id, '');
 								<div class="alSpaListHead text-center text-lg-left col-12 mb-4">
 			                        <p class="alLgFontSize pr-5">{{ $vendor->name }}</p>
 			                        <p class="alShareLink alBodyText d-flex align-items-center"><a href="javascript:void(0)">{{ $vendor->address }}
-                                        <span class="ml-3"><img src="{{asset('frontend/template_six/spaimages/share.svg')  }}"></span></a></p>
+                                        {{-- <span class="ml-3"><img src="{{asset('frontend/template_six/spaimages/share.svg')  }}"></span> --}}
+                                    </a></p>
 			                    </div>
 							</div>
 							<div class="col-md-5 p-0">
@@ -79,8 +84,11 @@ $checkSlot = findSlot('', $vendor->id, '');
 			                        <ul class="d-flex align-items-center">
                                         @if ($vendor->vendorRating > 0)
 		                        		    <li class="d-flex align-items-center"><img class="mr-2" src="{{asset('frontend/template_six/spaimages/Star.svg')  }}">  {{ $vendor->vendorRating }} {{ __('Very Good') }}</li>
+                                        
+		                        		<li class="border-left ml-3 pl-3">
+                                            <a href="javascript:void(0)">{{ $vendor->review_count . ' customer reviews' }}</a>
+                                        </li>
                                         @endif
-		                        		<li class="border-left ml-3 pl-3"><a href="javascript:void(0)">92 customers reviews</a></li>
 		                        	</ul>
 			                    </div>
 							</div>
@@ -100,13 +108,34 @@ $checkSlot = findSlot('', $vendor->id, '');
 						<p class="alBodyText">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Cursus sit amet dictum sit amet justo. Quis hendrerit dolor magna eget est lorem. Sed faucibus turpis in eu. Mattis vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor. Elementum facilisis leo vel fringilla est. Nunc non blandit massa enim nec dui nunc mattis. Ac placerat vestibulum lectus mauris ultrices. Sagittis purus sit amet volutpat consequat. <a class="readMore" href="#"><u> Read more </u></a></p>
 					</div> --}}
 				</div>
-
+                @if($client_preference_detail->is_vendor_tags == '1')
 				<!-- Spa and hotel facilities start -->
 				<div class="row py-5 border-bottom">
 					<div class="col-lg-12 hotelFacilities">
-						<h3 class="mb-4">Spa and hotel facilities </h3>
+						<h3 class="mb-4">{{ getNomenclatureName('vendors', false).' ' . __('facilities') }} </h3>
 						<ul class="p-0 m-0 d-flex align-items-center">
-							<li class="mr-4">
+                            @php
+                             $total_facilty =count($vendor->facilty);
+                            @endphp
+                            @foreach($vendor->facilty  as $key => $facilty)
+                            @if($key ==6)
+                                <li class="mr-0" id="show_facilty">
+                                    <a href="javascript:void(0)" ><u>{{ __('View all facilities') }}</u></a>
+                                </li>
+                                <div class="more-show_facilty d-none" id="show_facilty_more" >
+                             @endif
+                                <li class="mr-4">
+                                    <img class="mr-2" src="{{ $facilty->image['proxy_url'].'30/30'.$facilty->image['image_path']}}">
+                                    <span>{{ $facilty->translations->first() ? $facilty->translations->first()->name : 'NA' }}</span>
+                                    
+
+                                    
+                                </li>
+                                @if($key ==6 && $key == ($total_facilty-1) )
+                                </div>
+                                @endif
+                            @endforeach
+							{{-- <li class="mr-4">
 								<img class="mr-2" src="{{asset('frontend/template_six/spaimages/pool.svg') }}">
 								<span>Pool</span>
 							</li>
@@ -129,14 +158,15 @@ $checkSlot = findSlot('', $vendor->id, '');
 							<li class="mr-4">
 								<img class="mr-2" src="{{asset('frontend/template_six/spaimages/fitness_center.svg') }}">
 								<span>Gym</span>
-							</li>
-							<li class="mr-0">
+							</li> --}}
+							{{-- <li class="mr-0">
 								<a href="javascript:void(0)"><u>View all facilities</u></a>
-							</li>
+							</li> --}}
 						</ul>
 					</div>
 				</div>
 				<!-- Spa and hotel facilities end -->
+                @endif
         	</div>
         </section><!-- single products content end -->
 
@@ -310,8 +340,8 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                             @endphp
 
                                                             @if ($productVariantInCart > 0)
-                                                                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
-                                                                <a class="add-cart-btn add_vendor_product alProductBtns"
+                                                                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>  alProductBtns--}}
+                                                                <a class="add-cart-btn add_vendor_product "
                                                                     style="display:none;"
                                                                     id="add_button_href{{ $cartProductId }}"
                                                                     data-variant_id="{{ $productVariantIdInCart }}"
@@ -452,8 +482,9 @@ $checkSlot = findSlot('', $vendor->id, '');
                                                 <div class="circle-core"></div>
                                             </div>
                                         </div>
-                                        <div
-                                            id="header_cart_main_ul_ondemand"></div>
+                                        <div id="header_cart_main_ul_ondemand">
+                                        
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -603,7 +634,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                         		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
                         		<div class="SpasRelatedDetails p-2">
 	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
+	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
 	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
                         		</div>
                         	</div>
@@ -614,7 +645,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                         		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
                         		<div class="SpasRelatedDetails p-2">
 	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
+	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
 	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
                         		</div>
                         	</div>
@@ -624,7 +655,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                         		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
                         		<div class="SpasRelatedDetails p-2">
 	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
+	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
 	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
                         		</div>
                         	</div>
@@ -634,7 +665,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                         		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
                         		<div class="SpasRelatedDetails p-2">
 	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
+	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
 	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
                         		</div>
                         	</div>
@@ -645,7 +676,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                         		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
                         		<div class="SpasRelatedDetails p-2">
 	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
+	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
 	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
                         		</div>
                         	</div>
@@ -655,7 +686,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                         		<img class="rounded" src="{{asset('frontend/template_six/spaimages/related1.jpg')}}">
                         		<div class="SpasRelatedDetails p-2">
 	                        		<p class="text-left m-0">Park Plaza Cardiff</p>
-	                        		<a href="#">10 Excellent (2 reviews)</a>
+	                        		<a href="javascript:void(0)">10 Excellent (2 reviews)</a>
 	                        		<p class="alBodyText m-0 d-flex align-items-center"><span class="border-right pr-2 mr-2">Business Bay</span><span>3.9 miles away</span></p>
                         		</div>
                         	</div>
@@ -843,7 +874,7 @@ $checkSlot = findSlot('', $vendor->id, '');
                                             <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d<%= variant.product_id %>" readonly placeholder="1" type="text" value="2" class="input-number input_qty" step="0.01">
                                             <span class="plus qty-plus-product"  data-id="" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
-                                            </span>
+                                            </span>spa_slider_custom
                                         </div>
                                     <% } %>
                                     <% if(is_customizable){ %>
@@ -1139,6 +1170,13 @@ $checkSlot = findSlot('', $vendor->id, '');
             var show_class = $(this).data("div_id_show");
             $(this).addClass("d-none");
             $("#" + show_class).removeClass("d-none");
+        });
+        $(document).on('click', '#show_facilty', function(e) {
+            e.preventDefault();  
+            console.log('asd');
+            $(this).addClass("d-none");
+            $('#show_facilty_more').removeClass("d-none");
+           
         });
 
         $(document).delegate('.changeVariant', 'change', function() {

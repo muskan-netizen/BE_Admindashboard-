@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class EstimatedProductAddons extends Model
 {
+    protected $table = 'estimated_product_addon_new';
     use HasFactory;
 
     public function estimated_products(){

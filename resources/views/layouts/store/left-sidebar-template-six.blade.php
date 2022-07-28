@@ -21,34 +21,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 ->orderBy('order_by', 'ASC')
 ->get();
 @endphp
-@if($mod_count > 1)
-   <div class="vendor_mods_section">
-      <div class="al_count_tabs_new_design "  >
-         <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons vendor_mods" id="top-tab" role="tablist">
-            @foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value)
-               @php
-               $clientVendorTypes = $vendor_typ_key.'_check';
-               $VendorTypesName = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key ;
-               $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
-               $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key)
-               @endphp
 
-               @if($client_preference_detail->$clientVendorTypes == 1)
-               <li class="navigation-tab-item pr-lg-3" role="presentation">
-               <a class="nav-link al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
-               id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
-               aria-controls="profile" aria-selected="false">
-               <span class="al_tabsIcons">
-               {{-- <img src="{{$client_preference_detail->$iconFiledName ? $client_preference_detail->$iconFiledName['proxy_url'].'36/26'.$client_preference_detail-> $iconFiledName['image_path'] : asset('images/al_custom3.png')}}" alt="{{$iconFiledName}}"></span> --}}
-               <span class="al_textTabsText">{{$NomenclatureName}} </span></a>
-               </li>
-            @endif
-            @endforeach
-            <div class="navigation-tab-overlay_alnew_design"></div>
-         </ul>
-      </div>
-   </div>
-@endif
 @if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify'))
 <header id="al_new_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
    @include('layouts.store/topbar-template-six')
@@ -177,7 +150,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    </div>
    <!-- End Cab Booking Header From Here -->
    @else
-   
+
 
    @endif
 </header>
