@@ -11,9 +11,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
    <div class="cab-booking-header">
    <div class="container">
       <div class="row align-items-center">
-         <div class="col-3 col-md-2"> <a class="navbar-brand mr-0" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a> </div>
-         <div class="col-9 col-md-10 top-header bg-transparent d-flex align-items-center justify-content-end">
-            <ul class="header-dropdown">
+         <div class="col-6"> <a class="navbar-brand mr-0" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a> </div>
+         <div class="col-6 text-right top-header bg-transparent d-md-block d-none">
+            <ul class="header-dropdown ml-auto">
                @if(count($languageList) > 1)
                <li class="onhover-dropdown change-language">
                   <a href="javascript:void(0)">{{session()->get('locale')}}<span class="icon-ic_lang align-middle"></span> <span class="language ml-1 align-middle">{{__('language')}}</span> </a>
@@ -56,6 +56,57 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                @endif
             </ul>
          </div>
+         <div class="al_mobile_menu al_new_mobile_header">
+               <a class="al_toggle-menu" href="#">
+                    <i></i>
+                    <i></i>
+                    <i></i>
+               </a>
+               <div class="al_menu-drawer">
+                  <ul class="header-dropdown">
+                     @if(count($languageList) > 1)
+                     <li class="onhover-dropdown change-language">
+                        <a href="javascript:void(0)">{{session()->get('locale')}}<span class="icon-ic_lang align-middle"></span> <span class="language ml-1 align-middle">{{__('language')}}</span> </a>
+                        <ul class="onhover-show-div">
+                           @foreach($languageList as $key=> $listl)
+                           <li class="{{session()->get('locale')==$listl->language->sort_code ? 'active' : ''}}"> <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a> </li>
+                           @endforeach
+                        </ul>
+                     </li>
+                     @endif
+                     @if(count($currencyList) > 1)
+                     <li class="onhover-dropdown change-currency">
+                        <a href="javascript:void(0)">{{session()->get('iso_code')}}<span class="icon-ic_currency align-middle"></span> <span class="currency ml-1 align-middle">{{('currency')}}</span> </a>
+                        <ul class="onhover-show-div">
+                           @foreach($currencyList as $key=> $listc)
+                           <li class="{{session()->get('iso_code')==$listc->currency->iso_code ? 'active' : ''}}"> <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr" currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a> </li>
+                           @endforeach
+                        </ul>
+                     </li>
+                     @endif
+                     @if(Auth::guest())
+                     <li class="onhover-dropdown mobile-account">
+                        <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
+                        <ul class="onhover-show-div">
+                           <li> <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a> </li>
+                           <li> <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a> </li>
+                        </ul>
+                     </li>
+                     @else
+                     <li class="onhover-dropdown mobile-account">
+                        <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
+                        <ul class="onhover-show-div">
+                           @if(Auth::user()->is_superadmin==1 || Auth::user()->is_admin==1)
+                           <li> <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a> </li>
+                           @endif
+                           <li> <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a> </li>
+                           <li> <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a> </li>
+                        </ul>
+                     </li>
+                     @endif
+                  </ul>
+               </div>
+            </div>
       </div>
    </div>
 </div>
