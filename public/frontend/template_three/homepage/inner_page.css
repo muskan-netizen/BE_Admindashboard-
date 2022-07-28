@@ -445,8 +445,20 @@ footer#footer{
     body.al_body_template_three.dark .sm-horizontal{
         background-color: transparent;
     }
+    body[dir=rtl] .al_footer_template_three ul {
+        text-align: right;
+    }
+    body[dir=rtl] .al_footer_template_three ul li {
+        padding-right: 0px !important;
+    }
 }
 
+
+/*customer css start here*/
+.al_body_template_three .iti--separate-dial-code .iti__selected-flag {
+    height: auto;
+    padding: 6px 5px;
+} 
 
 /*----arbic language ----*/
 body[dir="rtl"] #login-section .border-right {
