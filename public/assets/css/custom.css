@@ -377,25 +377,23 @@ color:#43bee1
   vertical-align: middle;
   align-items: center;
   height: 40px;
+  background: #fff;
+  border: 1px solid #43bee1;
+  border-radius: 5px;
+  padding: 5px 10px;
+  text-align: center;
+  position: relative;
+  color: #000;
 }
 
-.tabs_radio_controls .total-items {
+/* .tabs_radio_controls .total-items {
   margin-left: 10px;
   display: inline-block;
   position: relative;
   top: 0;
   color: #000;
-}
-.tabs_label {
-  display: inline-block;
-  background: #fff;
-  border: 1px solid #43bee1;
-  border-radius: 5px;
-  padding: 5px 10px;
-  margin-bottom: 1rem;
-  text-align: center;
-  position: relative;
-}
+} */
+.tabs_label h5{font-size: 14px}
 .tabs_radio_controls label[for="all_tab"] {
   background-color: #d9f4f0;
   border-color: #d9f4f0;
