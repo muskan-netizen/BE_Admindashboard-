@@ -1,7 +1,10 @@
-$(document).ready(async function () {
+$(document).ready(function(){
     $(".alMobileChatIcons").click(function(){
-        $(".chat-list-container").addClass("open");
+        $(".chat-list-container").toggleClass("open");
     });
+});
+
+$(document).ready(async function () {
     //alert();
     await setTimeout(function(){
         var footer_height = $('.footer-light').height();
