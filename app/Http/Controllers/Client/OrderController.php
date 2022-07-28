@@ -524,6 +524,7 @@ class OrderController extends BaseController
                     $luxury_option_name = getNomenclatureName($luxury_option->title, $langId, false);
                     //$luxury_option_name = 'Delivery';
                 }
+                $luxury_option_name = ucwords(str_replace('_', ' ', $luxury_option_name));
             }
             $order->luxury_option_name = __($luxury_option_name);
             if ($order->vendors->count() == 0) {

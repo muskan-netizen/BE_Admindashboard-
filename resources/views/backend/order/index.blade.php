@@ -230,6 +230,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
                                                         {{-- <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(parseFloat(vendor.payable_amount)+parseFloat(order.fixed_fee_amount)) %></span> --}}
+                                                        <%
+                                                        if(vendor.delivery_fee == '' || vendor.delivery_fee == null){
+                                                            vendor.delivery_fee = 0;
+                                                        }
+                                                        %>
                                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (parseFloat(vendor.subtotal_amount) - parseFloat(vendor.discount_amount) ) + parseFloat(vendor.total_container_charges) + parseFloat(vendor.taxable_amount) + parseFloat(vendor.service_fee_percentage_amount) + parseFloat(order.fixed_fee_amount) + parseFloat(vendor.delivery_fee )) %></span>
                                                     </li>
                                                 </ul>
