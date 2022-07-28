@@ -1,4 +1,4 @@
-<div class="col-xl-8 px-0 flex-column bg-white rounded-lg" id="rightChat" style="display: none;">
+<div class="col-lg-7 col-xl-8 px-0 flex-column bg-white rounded-lg" id="rightChat" style="display: none;">
 	{{-- <div class="px-4 py-4" style="border-bottom: 1px solid rgb(238, 238, 238);">
 		<h2 id="roomName" class="font-size-15 mb-0"></h2>
 	</div> --}}

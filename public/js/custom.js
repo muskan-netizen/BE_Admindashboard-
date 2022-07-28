@@ -1,9 +1,3 @@
-$(document).ready(function(){
-    $(".alMobileChatIcons").click(function(){
-        $(".chat-list-container").toggleClass("open");
-    });
-});
-
 $(document).ready(async function () {
     //alert();
     await setTimeout(function(){
